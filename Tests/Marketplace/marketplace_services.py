@@ -408,6 +408,14 @@ class Pack(object):
     def all_levels_dependencies(self):
         return self._all_levels_dependencies
 
+    @property
+    def is_data_source(self):
+        return self._is_data_source
+
+    @is_data_source.setter
+    def is_data_source(self, is_data_source):
+        self._is_data_source = is_data_source
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -511,7 +519,7 @@ class Pack(object):
     def is_data_source_pack(self, yaml_content):
 
         is_data_source = self._is_data_source
-        # this's the first integration in the pack, and the pack is in xsiem
+        # this's the first integration in the pack, and the pack is in xsiam
         if self._single_integration and 'marketplacev2' in self.marketplaces:
 
             # the integration is not deprecated

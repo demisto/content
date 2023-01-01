@@ -22,7 +22,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH, \
-    SKIPPED_STATUS_CODES
+    SKIPPED_STATUS_CODES, XSIAM_MP
 from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
@@ -1147,6 +1147,11 @@ def main():
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
+
+        # remove XSIAM specific flags when not on XSIAM
+        if marketplace != XSIAM_MP:
+            if pack.is_data_source:
+                pack.is_data_source = False
 
         # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
