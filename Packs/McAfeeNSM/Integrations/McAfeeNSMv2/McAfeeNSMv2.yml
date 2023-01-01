@@ -302,6 +302,10 @@ script:
             - Range IP V.6
             - Network IP V.6
           required: false
+      outputs:
+        - contextPath: NSM.Policy.createdResourceId
+          description: The id of the newly created firewall policy.
+          type: Number
     - name: nsm-update-firewall-policy
       description: Updates the Firewall Policy details. If the argument is_overwrite=true than the new values of the provided addresses will replace the existing values else the addresses will be added to them. 
         If you want to delete a rule than enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before.
@@ -704,6 +708,10 @@ script:
           required: false
           description: End IPv6 Range.
           isArray: false
+      outputs:
+        - contextPath: NSM.Rule.createdResourceId
+          description: The id of the newly created rule object.
+          type: Number
     - name: nsm-update-rule-object
       description: Updates a Rule Object.
       arguments:
@@ -1887,7 +1895,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42008
+  dockerimage: demisto/python3:3.10.9.42476
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

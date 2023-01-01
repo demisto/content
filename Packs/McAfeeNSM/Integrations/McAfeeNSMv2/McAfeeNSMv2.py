@@ -1028,7 +1028,12 @@ def create_firewall_policy_command(client: Client, args: Dict) -> CommandResults
 
     response = client.create_firewall_policy_request(body)
     new_firewall_policy_id = response.get('createdResourceId')
-    return CommandResults(readable_output=f'The firewall policy no.{new_firewall_policy_id} was created successfully')
+    return CommandResults(readable_output=f'The firewall policy no.{new_firewall_policy_id} was created successfully',
+                          outputs_prefix='NSM.Policy',
+                          outputs=response,
+                          raw_response=response,
+                          outputs_key_field='createdResourceId'
+                          )
 
 
 def update_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
@@ -1248,7 +1253,12 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
     response = client.create_rule_object_request(body)
 
     return CommandResults(readable_output=f'The rule object no.{response.get("createdResourceId")} '
-                                          f'was created successfully')
+                                          f'was created successfully',
+                          outputs_prefix='NSM.Rule',
+                          outputs=response,
+                          raw_response=response,
+                          outputs_key_field='createdResourceId'
+                          )
 
 
 def update_rule_object_command(client: Client, args: Dict) -> CommandResults:

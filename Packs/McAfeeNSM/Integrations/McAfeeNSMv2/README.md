@@ -260,11 +260,23 @@ Adds a new Firewall Policy and Access Rules. You have to provide at lease one of
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.Policy.createdResourceId | Number | The id of the newly created firewall policy. | 
 
 #### Command example
 ```!nsm-create-firewall-policy domain=0 name=policy visible_to_child=yes description="a new policy" is_editable=yes policy_type=Advanced response=Scan rule_description="Test Member Rule" direction=Inbound destination_rule_object_id=111 destination_rule_object_type="Range IP V.4"```
 
+#### Context Example
+```json
+{
+    "NSM": {
+        "Policy": {
+            "createdResourceId":112
+        }
+    }
+}
+```
 
 #### Human Readable Output
 ```The firewall policy no.112 was created successfully```
@@ -595,10 +607,23 @@ Adds a new Rule Object.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.Rule.createdResourceId | Number | The id of the newly created rule object. | 
 
 #### Command example
 ```!nsm-create-rule-object domain=0 rule_object_type="Range IP V.4" name="ruleo" visible_to_child=yes from_address_ip_v.4=1.1.1.1 to_address_ip_v.4=2.2.2.2```
+
+#### Context Example
+```json
+{
+    "NSM": {
+        "Rule": {
+            "createdResourceId":135
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
