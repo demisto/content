@@ -19,4 +19,4 @@ dockerimage: demisto/python3:3.10.9.42476
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- Threat_Intel_Report_test
