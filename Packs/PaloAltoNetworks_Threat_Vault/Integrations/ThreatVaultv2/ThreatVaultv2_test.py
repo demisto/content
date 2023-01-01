@@ -13,6 +13,7 @@ from ThreatVaultv2 import (
     parse_resp_by_type,
     resp_to_hr,
     parse_date,
+    convert_reputation_type_to_readable,
 )
 
 
@@ -977,3 +978,41 @@ def test_parse_date(date, expected_result):
 
     res = parse_date(date)
     assert res == expected_result
+
+
+@pytest.mark.parametrize(
+    'reputation_type, expected_results',
+    [
+        (
+            'spyware',
+            'Spyware'
+        ),
+        (
+            'vulnerability',
+            'Vulnerability'
+        ),
+        (
+            'antivirus',
+            'Antivirus'
+        ),
+        (
+            'fileformat',
+            'Fileformat'
+        ),
+        (
+            'spywarec2',
+            'SpywareC2'
+        ),
+        (
+            'dns',
+            'DNS'
+        ),
+        (
+            'rtdns',
+            'RTDNS'
+        )
+    ]
+)
+def test_convert_reputation_type_to_readable(reputation_type, expected_results):
+
+    assert convert_reputation_type_to_readable(reputation_type) == expected_results
