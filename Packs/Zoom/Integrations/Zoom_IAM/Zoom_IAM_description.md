@@ -15,7 +15,7 @@ Click [here](https://marketplace.zoom.us/develop/create) to create an app.
 
 For more information about creating an OAuth app click [here](https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/).
 
-### For the JWT method (Deprecated from June 2023)
+### For the JWT method (deprecated)
 - Create an JWT app.
 - Use the following account credentials to get an access token:
     API Key
