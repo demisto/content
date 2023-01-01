@@ -5,10 +5,11 @@ import sys
 
 import requests
 import urllib3
+import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-CONTRIBUTION_BUILD_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/" \
+gold_server_url = os.getenv('GOLD_SERVER_URL')
+CONTRIBUTION_BUILD_INSTANCE_URL = f"{gold_server_url}/instance/" \
                                   "execute/GenericWebhook_trigger_contribution_build"
 
 

@@ -4,6 +4,7 @@ import argparse
 import ast
 import sys
 import time
+import os
 
 import demisto_client
 
@@ -15,7 +16,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60 * 12
 SLEEP_WAIT_SECONDS = 10
-GOLD_SERVER_URL = "https://content-gold.paloaltonetworks.com"
+GOLD_SERVER_URL = os.getenv('GOLD_SERVER_URL')
 
 
 def get_playbook_state(client: demisto_client, inv_id: str):

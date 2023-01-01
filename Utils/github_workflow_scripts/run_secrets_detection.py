@@ -4,10 +4,12 @@ import argparse
 
 import requests
 import urllib3
+import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-SECRETS_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/execute/GenericWebhook_Secrets"
+gold_server_url = os.getenv('GOLD_SERVER_URL')
+SECRETS_INSTANCE_URL = f"{gold_server_url}/instance/execute/GenericWebhook_Secrets"
 
 
 def arguments_handler():
