@@ -92,9 +92,9 @@ script:
           required: true
           auto: PREDEFINED
           predefined:
-            - instant
-            - scheduled
-            - recurring meeting with fixed time
+            - Instant
+            - Scheduled
+            - Recurring meeting with fixed time
           description: The type of the meeting
           defaultValue: Instant
         - name: end_date_time

@@ -30,14 +30,14 @@ MONTHLY_RECURRING_TYPE_MAPPING = {
     "Weekly": 2,
     "Monthly": 3
 }
-INSTANT = "instant"
-SCHEDULED = "scheduled"
-RECURRING_WITH_TIME = "recurring meeting with fixed time"
+INSTANT = "Instant"
+SCHEDULED = "Scheduled"
+RECURRING_WITH_TIME = "Recurring meeting with fixed time"
 
 MEETING_TYPE_NUM_MAPPING = {
-    "instant": 1,
-    "scheduled": 2,
-    "recurring meeting with fixed time": 8
+    "Instant": 1,
+    "Scheduled": 2,
+    "Recurring meeting with fixed time": 8
 }
 # ERRORS
 INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
@@ -471,7 +471,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     join_before_host_time = args.get('join_before_host_time')
     start_time = args.get('start_time')
     timezone = args.get('timezone', "")
-    type = args.get('type', "instant")
+    type = args.get('type', "Instant")
     auto_record_meeting = args.get('auto_record_meeting')
     encryption_type = args.get('encryption_type')
     join_before_host = argToBoolean(args.get('join_before_host', False))
@@ -561,7 +561,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     # call the API
     raw_data = client.zoom_create_meeting(url_suffix=url_suffix, json_data=json_data)
     # parsing the response
-    if type == "recurring meeting with fixed time":
+    if type == "Recurring meeting with fixed time":
         raw_data.update({'start_time': raw_data.get("occurrences")[0].get('start_time')})
         raw_data.update({'duration': raw_data.get("occurrences")[0].get('duration')})
 
