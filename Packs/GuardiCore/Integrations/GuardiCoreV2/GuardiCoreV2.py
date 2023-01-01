@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import requests
 from typing import Dict, Any, Tuple
 import base64
 import json
