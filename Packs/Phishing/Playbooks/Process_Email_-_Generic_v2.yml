@@ -2176,7 +2176,7 @@ tasks:
       version: -1
       name: Set incident attachments
       description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
-      scriptName: DemistoUploadFileV2
+      scriptName: UploadFileV2
       type: regular
       iscommand: false
       brand: ''
