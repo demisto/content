@@ -1,5 +1,5 @@
 {
-    "delinea_sercretserver_raw": {
+    "thycotic_software_secret_server_raw": {
         "cs2": {
           "type": "string",
           "is_array": false
