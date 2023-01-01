@@ -5373,6 +5373,7 @@
         "AD v2 - debug-mode": "No credentials",
         "Google-KMS-test": "",
         "hashicorp_test": "",
+        "Google BigQuery Test": "",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
