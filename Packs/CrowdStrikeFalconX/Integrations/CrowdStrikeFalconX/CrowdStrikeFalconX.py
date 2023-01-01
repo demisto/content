@@ -1089,8 +1089,7 @@ def download_ioc_command(
     response: Optional[dict] = None
     try:
         response = client.download_ioc(id, name, accept_encoding)
-        if response.get('File'):  # In case the returned response is a file, output the file to the war room.
-            demisto.log('added comment to test build')
+        if isinstance(response, dict) and response.get('File'):  # In case the returned response is a file, output the file to the war room.
             return response
         else:
             return CommandResults(
