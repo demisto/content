@@ -1148,11 +1148,6 @@ def main():
             pack.cleanup()
             continue
 
-        # remove XSIAM specific flags when not on XSIAM
-        if marketplace != XSIAM_MP:
-            if pack.is_data_source:
-                pack.is_data_source = False
-
         # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
                                   override_all_packs, marketplace):

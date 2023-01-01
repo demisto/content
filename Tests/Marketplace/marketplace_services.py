@@ -408,14 +408,6 @@ class Pack(object):
     def all_levels_dependencies(self):
         return self._all_levels_dependencies
 
-    @property
-    def is_data_source(self):
-        return self._is_data_source
-
-    @is_data_source.setter
-    def is_data_source(self, is_data_source):
-        self._is_data_source = is_data_source
-
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -2409,7 +2401,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {PackTags.DATA_SOURCE} if self._is_data_source else set()
+        tags |= {PackTags.DATA_SOURCE} if self._is_data_source and marketplace == XSIAM_MP else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
