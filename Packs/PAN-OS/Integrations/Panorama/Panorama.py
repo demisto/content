@@ -12864,8 +12864,7 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     """
     params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch)
     response = http_request(URL, 'GET', params=params)
-    job_id = response.get('response', {}).get('result', {}).get('job')
-    return job_id
+    return response.get('response', {}).get('result', {}).get('job')
 
 
 def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
