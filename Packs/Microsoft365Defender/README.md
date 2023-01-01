@@ -6,4 +6,4 @@ With the Microsoft 365 Defender content pack, you can determine how a threat ent
 - Enables you to hunt for both known and potential threats.
 
 ## License information
-Available for Office 365 E5 ,Microsoft 365 E5 and standalone license.
+Available for Office 365 E5, Microsoft 365 E5, and standalone licenses.
