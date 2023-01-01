@@ -6,6 +6,7 @@ import io
 import os
 from typing import Any, Union
 from http import HTTPStatus
+import unittest
 from unittest import mock
 import pytest
 from CommonServerPython import CommandResults
@@ -428,6 +429,44 @@ def mock_client(requests_mock) -> Client:
         username=USERNAME,
         password=PASSWORD,
     )
+
+
+def test_generate_token_error():
+    """
+    Scenario:
+    -   Test the handling of an error while generating a token during client initialization.
+    Given:
+    -   A mock response object with a pre-set side effect for the raise_for_status method
+    When:
+    -   The Client class is initialized
+    Then:
+    -   Ensure that the correct exception is raised when the _http_request method is called
+    """
+    mock_response = mock.Mock()
+    mock_response.headers = {
+        'X-auth-access-token': '123456',
+        'DOMAIN_UUID': 'abcdef',
+    }
+    mock_response.raise_for_status.side_effect = Exception('HTTP request failed')
+
+    @mock.patch.object(Client, '_http_request', return_value=mock_response)
+    def test(mock_request):
+        client = Client(
+            base_url=BASE_URL,
+            username='test',
+            password='test',
+        )
+
+        try:
+            client._http_request(
+                method='POST',
+                url_suffix='api/test',
+                resp_type='response'
+            )
+        except Exception as e:
+            assert str(e) == 'HTTP request failed'
+
+    test()
 
 
 ''' Intrusion Policy CRUD '''  # pylint: disable=pointless-string-statement

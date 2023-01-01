@@ -4431,8 +4431,9 @@ def main():  # pragma: no cover
         )
 
         if command == 'test-module':
+            # In the Client __init__ there is a already a request made to receive a Bearer token.
+            # If the token has been received successfully, then that means that the test connections has passed.
             return_results('ok')
-            # Login is performed at the beginning of each flow if the login fails we return an error.
 
         elif command in commands:
             return_results(commands[command](client, args))
