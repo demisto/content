@@ -1,7 +1,6 @@
 [file:FeedTAXII.yml]
 
 [file:FeedTAXII2.yml]
-ignore=IN145
 
 [known_words]
 TLP

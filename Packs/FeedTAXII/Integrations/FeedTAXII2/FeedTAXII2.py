@@ -228,7 +228,7 @@ def main():
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
     certificate = params.get('certificate', None)
-    key = params.get('key', None)
+    key = params.get('certificate_key', {}).get('password') or params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root')
 
