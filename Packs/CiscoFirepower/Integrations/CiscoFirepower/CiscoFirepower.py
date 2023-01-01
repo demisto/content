@@ -4003,7 +4003,7 @@ def upload_intrusion_rule_file_command(client: Client, args: Dict[str, Any]) -> 
     if file_type not in ('.txt', '.rules'):
         raise ValueError(f'Supported file formats are ".txt" and ".rules", got {file_type}')
 
-    with open(file_entry['path'], 'rb') as file_handler:
+    with open(file_entry['path'], 'r') as file_handler:
         raw_response = client.upload_intrusion_rule_file(
             filename=filename,
             payload_file=file_handler.read(),
