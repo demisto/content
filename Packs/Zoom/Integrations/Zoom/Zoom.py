@@ -195,10 +195,10 @@ class Client(BaseClient):
                 'next_page_token': next_page_token,
                 'role_id': role_id})
 
-    def zoom_delete_user(self, user_id: str, action: str):
+    def zoom_delete_user(self, user: str, action: str):
         return self.error_handled_http_request(
             method='DELETE',
-            url_suffix='users/' + user_id,
+            url_suffix='users/' + user,
             headers={'authorization': f'Bearer {self.access_token}'},
             json_data={'action': action},
             resp_type='response',
@@ -455,11 +455,11 @@ def zoom_create_user_command(client, **args) -> CommandResults:
 
 def zoom_delete_user_command(client, **args) -> CommandResults:
     client = client
-    user_id = args.get('user_id')
+    user = args.get('user')
     action = args.get("action")
-    client.zoom_delete_user(user_id, action)
+    client.zoom_delete_user(user, action)
     return CommandResults(
-        readable_output=f'User {user_id} was deleted successfully',
+        readable_output=f'User {user} was deleted successfully',
     )
 
 

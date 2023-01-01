@@ -1,525 +1,524 @@
+category: Messaging
 commonfields:
   id: Zoom
   version: -1
-name: Zoom
-display: Zoom
-category: Messaging
-image: data:image/png;base64,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
-description: Use the Zoom integration manage your Zoom users and meetings
-detaileddescription: "[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/zoom)"
 configuration:
-  - defaultvalue: "https://api.zoom.us/v2/"
-    display: Server URL (e.g. 'https://api.zoom.us/v2/')
-    name: url
-    required: false
-    type: 0
-  - display: Account ID (OAuth)
-    name: account_id
-    type: 0
-    required: false
-  - display: Client ID (OAuth)
-    displaypassword: Client Secret (OAuth)
-    name: credentials
-    type: 9
-    required: false
-  - display: API Key (JWT-Deprecated)
-    name: api_key
-    type: 4
-    required: false
-    additionalinfo: This authentication method is deprecated
-  - display: API Secret (JWT-Deprecated)
-    name: api_secret
-    type: 4
-    required: false
-    additionalinfo: This authentication method is deprecated
-  - display: Use system proxy settings
-    name: proxy
-    type: 8
-    required: false
-  - display: Trust any certificate (not secure)
-    name: insecure
-    type: 8
-    required: false
+- display: Server URL (e.g. 'https://api.zoom.us/v2/')
+  name: url
+  required: false
+  type: 0
+  defaultvalue: "https://api.zoom.us/v2/"
+- display: Account ID (OAuth)
+  name: account_id
+  required: false
+  type: 0
+- display: Client ID (OAuth)
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Client Secret (OAuth)
+- display: API Key (JWT-Deprecated)
+  name: api_key
+  required: false
+  type: 4
+  additionalinfo: This authentication method is deprecated
+- display: API Secret (JWT-Deprecated)
+  name: api_secret
+  type: 4
+  required: false
+  additionalinfo: This authentication method is deprecated
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+description: Use the Zoom integration manage your Zoom users and meetings
+display: Zoom
+name: Zoom
 script:
-  type: python
   commands:
-    - name: zoom-create-user
-      arguments:
-        - name: first_name
-          required: true
-          description: First name of the new user
-        - name: last_name
-          required: true
-          description: Last name of the new user
-        - name: email
-          required: true
-          description: The email of the new user
-        - name: user_type
-          auto: PREDEFINED
-          predefined:
-            - Basic
-            - Licensed
-            - pro
-            - Corporate
-          description: >
-            The type of the newly created user. 
-            Note: the old type "pro" in now called "Licensed", and the type "Corporate" is not sopprted in Zoom v2 and above.
-          defaultValue: Basic
-      outputs:
-        - contextPath: Zoom.User.id
-          description: The ID of the created user
-          type: string
-        - contextPath: Zoom.User.first_name
-          description: First name of the created user
-          type: string
-        - contextPath: Zoom.User.last_name
-          description: Last name for the created user
-          type: string
-        - contextPath: Zoom.User.email
-          description: Email of the created user
-          type: string
-        - contextPath: Zoom.User.created_at
-          description: Created date of the user. Note that this field does not appear in zoom v2 and above.
-          type: date
-        - contextPath: Zoom.User.type
-          description: The type of the user
-          type: number
-      description: Create a new user in zoom account
-      execution: true
-    - name: zoom-create-meeting
-      arguments:
-        - name: type
-          required: true
-          auto: PREDEFINED
-          predefined:
-            - 'Instant'
-            - 'Scheduled'
-            - 'Recurring meeting with fixed time'
-          description: The type of the meeting
-          defaultValue: Instant
-        - name: end_date_time
-          description: >
-            For recurring meetings only.
-            Select the final date on which the meeting will recur before it is canceled
-
-            For example: 2017-11-25T12:00:00Z
-        - name: end_times
-          description: >
-            For recurring meetings only.
-
-            Select how many times the meeting should recur before it is canceled. 
-
-            max = 365. Default = 1.
-        - name: monthly_day
-          description: >
-            For recurring meetings with Monthly recurrence_type only.
-
-            State the day in a month, the meeting should recur. The value range is from 1 to 31. Default = 1.
-        - name: monthly_week
-          description: >
-            For recurring meetings with Monthly recurrence_type only.
-
-            State the week of the month when the meeting should recur. If you use this field, you must also use the monthly_week_day field to state the day of the week when the meeting should recur.
-            Allowed: -1 (for last week of the month) ┃1┃2┃3┃4
-        - name: monthly_week_day
-          description: >
-            For recurring meetings with Monthly recurrence_type only.
-
-            State a specific day in a week when the monthly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7
-
-            To use this field, you must also use the monthly_week field.
-        - name: repeat_interval
-          description: >
-            For recurring meeting with fixed time only.
-
-            Define the interval at which the meeting should recur. For instance, if you would like to schedule a meeting that recurs every two months, you must set the value of this field as 2 and the value of the type parameter as Monthly.
-
-            For a daily meeting, the maximum is 90 days. For a weekly meeting the maximum is of 12 weeks. For a monthly meeting, there is a maximum of 3 months.
-        - name: recurrence_type
-          description: >
-            For recurring meetings  only.
-
-            Set the recurrence meeting types.
-          auto: PREDEFINED
-          predefined:
-            - Daily
-            - Weekly
-            - Monthly
-        - name: weekly_days
-          description: >
-            For recurring meetings with a Weekly recurrence_type only.
-
-            State a specific day in a week when the weekly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7  Default = 1.
-        - name: auto-record-meeting
-          auto: PREDEFINED
-          predefined:
-            - local
-            - cloud
-            - none
-          defaultValue: none
-          description: >
-            The automatic recording settings. 
-
-            Note that the Cloud option is available for zoom paid customers only.
-        - name: encryption_type
-          defaultValue: enhanced_encryption
-          description: The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee
-          auto: PREDEFINED
-          predefined:
-            - enhanced_encryption
-            - e2ee
-        - name: host_video
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          defaultValue: true
-          description: start meetings with the host video on.
-        - name: join_before_host_time
-          auto: PREDEFINED
-          predefined:
-            - "0"
-            - "5"
-            - "10"
-          description: >
-            If the value of the join_before_host field is true, this field sets the time that a participant can join before the meeting's host. 
-
-            You can choose: 5 or 10 (minuts), or 0 for any time.
-        - name: join_before_host
-          auto: PREDEFINED
-          predefined:
-            - "False"
-            - "True"
-          description: Whether participants can join the meeting before its host. For scheduled or recurring meetings only. The default value is False.
-        - name: meeting_authentication
-          auto: PREDEFINED
-          defaultValue: "false"
-          predefined:
-            - "false"
-            - "true"
-          description: If true, only authenticated users can join the meeting.
-        - name: user
-          required: true
-          description: email address or id of user for meeting
-        - name: topic
-          required: true
-          description: The topic of the meeting
-        - name: waiting_room
-          auto: PREDEFINED
-          predefined:
-            - "false"
-            - "true"
-          description: This allows the host to control when a participant joins the meeting. The default is False.
-        - name: start-time
-          description: Meeting start time. When using a format like “yyyy-MM-ddTHH:mm:ssZ”, always use GMT time. When using a format like “yyyy-MM-ddTHH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
-        - name: timezone
-          description: "Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. "
-      outputs:
-        - contextPath: Zoom.Meeting.join_url
-          description: Join url for the meeting
-          type: string
-        - contextPath: Zoom.Meeting.id
-          description: Meeting id of the new meeting that is created
-          type: string
-        - contextPath: Zoom.Meeting.start_url
-          description: The URL to start the meeting
-          type: string
-        - contextPath: Zoom.Meeting.uuid
-          description: Unique meeting ID of the new meeting that is created
-          type: string
-        - contextPath: Zoom.Meeting.status
-          description: The status of the meeting
-          type: string
-        - contextPath: Zoom.Meeting.start_time
-          description: The time that the meeting will start at
-          type: Date
-        - contextPath: Zoom.Meeting.host email
-          description: The email of the host of this meeting
-          type: string
-        - contextPath: Zoom.Meeting.topic
-          description: The topic of the meeting
-          type: string
-        - contextPath: Zoom.Meeting.duration
-          description: The duratian of the meeting
-          type: number
-        - contextPath: Zoom.Meeting.created_at
-          description: The time that this meeting was created
-          type: Date
-        - contextPath: Zoom.Meeting.type
-          description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
-          type: number
-      description: Create a new zoom meeting (scheduled ,instant, or recurring)
-    - name: zoom-fetch-recording
-      arguments:
-        - name: meeting_id
-          required: true
-          description: Meeting id to get the recording
-      outputs:
-        - contextPath: File.SHA256
-          description: Attachment's SHA256
-          type: Unknown
-        - contextPath: File.SHA1
-          description: Attachment's SHA1
-          type: Unknown
-        - contextPath: File.MD5
-          description: Attachment's MD5
-          type: Unknown
-        - contextPath: File.Name
-          description: Attachment's Name
-          type: Unknown
-        - contextPath: File.Info
-          description: Attachment's Info
-          type: Unknown
-        - contextPath: File.Size
-          description: Attachment's Size (In Bytes)
-          type: Unknown
-        - contextPath: File.Extension
-          description: Attachment's Extension
-          type: Unknown
-        - contextPath: File.Type
-          description: Attachment's Type
-          type: Unknown
-        - contextPath: File.EntryID
-          description: Attachment's EntryID
-          type: Unknown
-        - contextPath: File.SSDeep
-          description: Attachment's SSDeep hash
-          type: Unknown
-      description: Get meeting record and save as file in the warroom
-    - name: zoom-list-users
-      arguments:
-        - name: status
-          default: false
-          required: false
-          auto: PREDEFINED
-          predefined:
-            - active
-            - inactive
-            - pending
-          description: Which status of users to list
-          defaultValue: active
-        - name: page-size
-          description: Number of users to return. Max 300. The default is 30.
-          type: int
-        - name: next_page_token
-          description: >
-            The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
-          type: string
-          required: false
-        - name: page-number
-          description: >
-            Which page of results to return. The default = 1.
-
-            Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
-        - name: limit
-          required: false
-          description: The total amunt of results to show.
-        - name: user_id
-          description: A user ID. this is for a singel user
-          required: false
-          type: string
-        - name: role_id
-          required: false
-          description: >
-            Filter the response by a specific role.
-
-            For example: role_id=0 (Owner), role_id=2 (Member)
-      outputs:
-        - contextPath: Zoom.Metadata.Count
-          description: Total page count available
-          type: number
-        - contextPath: Zoom.Metadata.Number
-          description: Current page number
-          type: number
-        - contextPath: Zoom.Metadata.Size
-          description: Number of results in current page
-          type: number
-        - contextPath: Zoom.Metadata.Total
-          description: Total number of records
-          type: number
-        - contextPath: Zoom.User.id
-          description: ID of the user
-          type: string
-        - contextPath: Zoom.User.first_name
-          description: First name of user
-          type: string
-        - contextPath: Zoom.User.last_name
-          description: Last name of user
-          type: string
-        - contextPath: Zoom.User.email
-          description: Email of user
-          type: string
-        - contextPath: Zoom.User.type
-          description: Type of user
-          type: number
-        - contextPath: Zoom.User.created_at
-          description: Date when user was created
-          type: date
-        - contextPath: Zoom.User.dept
-          description: Department for user
-          type: string
-        - contextPath: Zoom.User.verified
-          description: Is the user verified
-          type: number
-        - contextPath: Zoom.User.last_login_time
-          description: Last login time of the user
-          type: date
-        - contextPath: Zoom.User.timezone
-          description: Default timezone for the user
-          type: string
-        - contextPath: Zoom.User.pmi
-          description: PMI of user
-          type: string
-        - contextPath: Zoom.User.group_ids
-          description: Groups user belongs to
-          type: string
-      description: List the existing users
-    - name: zoom-delete-user
-      arguments:
-        - name: user_id
-          required: true
-          default: true
-          description: The user ID or email to delete
-        - name: action
-          auto: PREDEFINED
-          predefined:
-            - disassociate
-            - delete
-          description: The action to take
-          defaultValue: disassociate
-      description: Delete a user from Zoom
-      execution: true
-    - name: zoom-meeting-get
-      arguments:
-        - name: meeting_id
-          required: true
-          description: The id of the existing meeting
-          type: string
-        - name: occurrence_id
-          description: Provide this field to view meeting details of a particular occurrence of the recurring meeting.
-          type: string
-        - name: show_previous_occurrences
-          auto: PREDEFINED
-          predefined:
-            - "False"
-            - "True"
-          description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
-          defaultValue: true
-      outputs:
-        - contextPath: Zoom.Meeting.join_url
-          description: Join url for the meeting
-          type: string
-        - contextPath: Zoom.Meeting.id
-          description: Meeting id of the new meeting that is created
-          type: string
-        - contextPath: Zoom.Meeting.start_url
-          description: The URL to start the meeting
-          type: string
-        - contextPath: Zoom.Meeting.uuid
-          description: Unique meeting ID of the new meeting that is created
-          type: string
-        - contextPath: Zoom.Meeting.status
-          description: The status of the meeting
-          type: string
-        - contextPath: Zoom.Meeting.start_time
-          description: The time that the meeting will start at
-          type: Date
-        - contextPath: Zoom.Meeting.host email
-          description: The email of the host of this meeting
-          type: string
-        - contextPath: Zoom.Meeting.topic
-          description: The topic of the meeting
-          type: string
-        - contextPath: Zoom.Meeting.duration
-          description: The duratian of the meeting
-          type: number
-        - contextPath: Zoom.Meeting.created_at
-          description: The time that this meeting was created
-          type: Date
-        - contextPath: Zoom.Meeting.type
-          description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
-          type: number
-      description: Get the information of an existing zoom meeting
-    - name: zoom-meeting-list
-      arguments:
-        - name: user_id
-          required: true
-          description: The user ID
-          type: string
-        - name: page_size
-          description: Number of users to return. Default = 30. Max = 300.
-        - name: page_number
-          description: >
-            Which page of results to return. The default = 1.
-
-            Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
-        - name: next_page_token
-          description: >
-            The next page token is used to paginate te the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
-          type: string
-        - name: limit
-          description: The total amunt of results to show.
-          type: string
-        - name: type
-          description: Filter the results by searching specific types.
-          auto: PREDEFINED
-          predefined:
-            - all
-            - scheduled
-            - live
-            - upcoming
-            - upcoming_meetings
-            - previous_meetings
-          defaultValue: '"scheduled"'
-      outputs:
-        - contextPath: Zoom.Metadata.Total
-          description: Total number of records
-          type: number
-        - contextPath: Zoom.Meeting.page_size
-          description: The size of the page returned from the API
-          type: number
-        - contextPath: Zoom.Meeting.total_records
-          description: The total records in the API for this request.
-          type: number
-        - contextPath: Zoom.Meeting.join_url
-          description: Join url for the meeting
-          type: string
-        - contextPath: Zoom.Meeting.id
-          description: Meeting id of the new meeting that is created
-          type: string
-        - contextPath: Zoom.Meeting.start_url
-          description: The URL to start the meeting
-          type: string
-        - contextPath: Zoom.Meeting.uuid
-          description: Unique meeting ID of the new meeting that is created
-          type: string
-        - contextPath: Zoom.Meeting.status
-          description: The status of the meeting
-          type: string
-        - contextPath: Zoom.Meeting.start_time
-          description: The time that the meeting will start at
-          type: Date
-        - contextPath: Zoom.Meeting.host email
-          description: The email of the host of this meeting
-          type: string
-        - contextPath: Zoom.Meeting.topic
-          description: The topic of the meeting
-          type: string
-        - contextPath: Zoom.Meeting.duration
-          description: The duratian of the meeting
-          type: number
-        - contextPath: Zoom.Meeting.created_at
-          description: The time that this meeting was created
-          type: Date
-        - contextPath: Zoom.Meeting.type
-          description: The ty pe of this meeting 
+  - arguments:
+    - description: First name of the new user
+      name: first_name
+      required: true
+    - description: Last name of the new user
+      name: last_name
+      required: true
+    - description: The email of the new user
+      name: email
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Basic
       description: >
-        Show all the meetings of a given user.
-        Note: only scheduled and unexpired meetings will appear.
-  dockerimage: demisto/pyjwt3:1.0.0.38747
+        The type of the newly created user.  Note: the old type "pro" in now called "Licensed", and the type "Corporate" is not sopprted in Zoom v2 and above.
+      name: user_type
+      predefined:
+      - Basic
+      - Licensed
+      - pro
+      - Corporate
+    description: Create a new user in zoom account
+    execution: true
+    name: zoom-create-user
+    outputs:
+    - contextPath: Zoom.User.id
+      description: The ID of the created user
+      type: string
+    - contextPath: Zoom.User.first_name
+      description: First name of the created user
+      type: string
+    - contextPath: Zoom.User.last_name
+      description: Last name for the created user
+      type: string
+    - contextPath: Zoom.User.email
+      description: Email of the created user
+      type: string
+    - contextPath: Zoom.User.created_at
+      description: Created date of the user. Note that this field does not appear in zoom v2 and above.
+      type: date
+    - contextPath: Zoom.User.type
+      description: The type of the user
+      type: number
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Instant
+      description: The type of the meeting
+      name: type
+      predefined:
+      - Instant
+      - Scheduled
+      - 'Recurring meeting with fixed time'
+      required: true
+    - description: >
+        For recurring meetings only.
+        Select the final date on which the meeting will recur before it is canceled
+
+        For example: 2017-11-25T12:00:00Z
+      name: end_date_time
+    - description: >
+        For recurring meetings only.
+
+        Select how many times the meeting should recur before it is canceled. 
+
+        max = 365. Default = 1.
+      name: end_times
+    - description: >
+        For recurring meetings with Monthly recurrence_type only.
+
+        State the day in a month, the meeting should recur. The value range is from 1 to 31. Default = 1.
+      name: monthly_day
+    - description: >
+        For recurring meetings with Monthly recurrence_type only.
+
+        State the week of the month when the meeting should recur. If you use this field, you must also use the monthly_week_day field to state the day of the week when the meeting should recur.
+        Allowed: -1 (for last week of the month) ┃1┃2┃3┃4
+      name: monthly_week
+    - description: >
+        For recurring meetings with Monthly recurrence_type only.
+
+        State a specific day in a week when the monthly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7
+
+        To use this field, you must also use the monthly_week field.
+      name: monthly_week_day
+    - name: repeat_interval
+      description: >
+        For recurring meeting with fixed time only.
+
+        Define the interval at which the meeting should recur. For instance, if you would like to schedule a meeting that recurs every two months, you must set the value of this field as 2 and the value of the type parameter as Monthly.
+
+        For a daily meeting, the maximum is 90 days. For a weekly meeting the maximum is of 12 weeks. For a monthly meeting, there is a maximum of 3 months.
+    - name: recurrence_type
+      description: >
+        For recurring meetings  only.
+
+        Set the recurrence meeting types.
+      auto: PREDEFINED
+      predefined:
+      - Daily
+      - Weekly
+      - Monthly
+    - name: weekly_days
+      description: >
+        For recurring meetings with a Weekly recurrence_type only.
+
+        State a specific day in a week when the weekly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7  Default = 1.
+    - name: auto-record-meeting
+      auto: PREDEFINED
+      predefined:
+      - local
+      - cloud
+      - none
+      defaultValue: none
+      description: >
+        The automatic recording settings. 
+
+        Note that the Cloud option is available for zoom paid customers only.
+    - name: encryption_type
+      defaultValue: enhanced_encryption
+      description: The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee
+      auto: PREDEFINED
+      predefined:
+      - enhanced_encryption
+      - e2ee
+    - name: host_video
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: true
+      description: start meetings with the host video on.
+    - name: join_before_host_time
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "5"
+      - "10"
+      description: >
+        If the value of the join_before_host field is true, this field sets the time that a participant can join before the meeting's host. 
+
+        You can choose: 5 or 10 (minuts), or 0 for any time.
+    - name: join_before_host
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Whether participants can join the meeting before its host. For scheduled or recurring meetings only. The default value is False.
+    - name: meeting_authentication
+      auto: PREDEFINED
+      defaultValue: "false"
+      predefined:
+      - "false"
+      - "true"
+      description: If true, only authenticated users can join the meeting.
+    - name: user
+      required: true
+      description: email address or id of user for meeting
+    - name: topic
+      required: true
+      description: The topic of the meeting
+    - name: waiting_room
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: This allows the host to control when a participant joins the meeting. The default is False.
+    - name: start-time
+      description: Meeting start time. When using a format like “yyyy-MM-ddTHH:mm:ssZ”, always use GMT time. When using a format like “yyyy-MM-ddTHH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
+    - name: timezone
+      description: "Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. "
+    description: Create a new zoom meeting (scheduled ,instant, or recurring)
+    name: zoom-create-meeting
+    outputs:
+    - contextPath: Zoom.Meeting.join_url
+      description: Join url for the meeting
+      type: string
+    - contextPath: Zoom.Meeting.id
+      description: Meeting id of the new meeting that is created
+      type: string
+    - contextPath: Zoom.Meeting.start_url
+      description: The URL to start the meeting
+      type: string
+    - contextPath: Zoom.Meeting.uuid
+      description: Unique meeting ID of the new meeting that is created
+      type: string
+    - contextPath: Zoom.Meeting.status
+      description: The status of the meeting
+      type: string
+    - contextPath: Zoom.Meeting.start_time
+      description: The time that the meeting will start at
+      type: Date
+    - contextPath: Zoom.Meeting.host email
+      description: The email of the host of this meeting
+      type: string
+    - contextPath: Zoom.Meeting.topic
+      description: The topic of the meeting
+      type: string
+    - contextPath: Zoom.Meeting.duration
+      description: The duratian of the meeting
+      type: number
+    - contextPath: Zoom.Meeting.created_at
+      description: The time that this meeting was created
+      type: Date
+    - contextPath: Zoom.Meeting.type
+      description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
+      type: number
+  - arguments:
+    - description: Meeting id to get the recording
+      name: meeting_id
+      required: true
+    description: Get meeting record and save as file in the warroom
+    name: zoom-fetch-recording
+    outputs:
+    - contextPath: File.SHA256
+      description: Attachment's SHA256
+      type: Unknown
+    - contextPath: File.SHA1
+      description: Attachment's SHA1
+      type: Unknown
+    - contextPath: File.MD5
+      description: Attachment's MD5
+      type: Unknown
+    - contextPath: File.Name
+      description: Attachment's Name
+      type: Unknown
+    - contextPath: File.Info
+      description: Attachment's Info
+      type: Unknown
+    - contextPath: File.Size
+      description: Attachment's Size (In Bytes)
+      type: Unknown
+    - contextPath: File.Extension
+      description: Attachment's Extension
+      type: Unknown
+    - contextPath: File.Type
+      description: Attachment's Type
+      type: Unknown
+    - contextPath: File.EntryID
+      description: Attachment's EntryID
+      type: Unknown
+    - contextPath: File.SSDeep
+      description: Attachment's SSDeep hash
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: active
+      description: Which status of users to list
+      name: status
+      predefined:
+      - active
+      - inactive
+      - pending
+      required: false
+    - description: Number of users to return. Max 300. The default is 30.
+      name: page-size
+      type: int
+    - description: >
+        The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
+      name: next_page_token
+      required: false
+      type: string
+    - name: page-number
+      description: >
+        Which page of results to return. The default = 1.
+
+        Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
+    - name: limit
+      required: false
+      description: The total amunt of results to show.
+    - name: user_id
+      description: A user ID. this is for a singel user
+      required: false
+      type: string
+    - name: role_id
+      required: false
+      description: >
+        Filter the response by a specific role.
+
+        For example: role_id=0 (Owner), role_id=2 (Member)
+    description: List the existing users
+    name: zoom-list-users
+    outputs:
+    - contextPath: Zoom.Metadata.Count
+      description: Total page count available
+      type: number
+    - contextPath: Zoom.Metadata.Number
+      description: Current page number
+      type: number
+    - contextPath: Zoom.Metadata.Size
+      description: Number of results in current page
+      type: number
+    - contextPath: Zoom.Metadata.Total
+      description: Total number of records
+      type: number
+    - contextPath: Zoom.User.id
+      description: ID of the user
+      type: string
+    - contextPath: Zoom.User.first_name
+      description: First name of user
+      type: string
+    - contextPath: Zoom.User.last_name
+      description: Last name of user
+      type: string
+    - contextPath: Zoom.User.email
+      description: Email of user
+      type: string
+    - contextPath: Zoom.User.type
+      description: Type of user
+      type: number
+    - contextPath: Zoom.User.created_at
+      description: Date when user was created
+      type: date
+    - contextPath: Zoom.User.dept
+      description: Department for user
+      type: string
+    - contextPath: Zoom.User.verified
+      description: Is the user verified
+      type: number
+    - contextPath: Zoom.User.last_login_time
+      description: Last login time of the user
+      type: date
+    - contextPath: Zoom.User.timezone
+      description: Default timezone for the user
+      type: string
+    - contextPath: Zoom.User.pmi
+      description: PMI of user
+      type: string
+    - contextPath: Zoom.User.group_ids
+      description: Groups user belongs to
+      type: string
+  - arguments:
+    - default: true
+      description: The user ID or email to delete
+      name: user
+      required: true
+    - auto: PREDEFINED
+      defaultValue: disassociate
+      description: The action to take
+      name: action
+      predefined:
+      - disassociate
+      - delete
+    description: Delete a user from Zoom
+    execution: true
+    name: zoom-delete-user
+  - name: zoom-meeting-get
+    arguments:
+    - name: meeting_id
+      required: true
+      description: The id of the existing meeting
+      type: string
+    - name: occurrence_id
+      description: Provide this field to view meeting details of a particular occurrence of the recurring meeting.
+      type: string
+    - name: show_previous_occurrences
+      auto: PREDEFINED
+      predefined:
+      - "False"
+      - "True"
+      description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
+      defaultValue: true
+    outputs:
+    - contextPath: Zoom.Meeting.join_url
+      description: Join url for the meeting
+      type: string
+    - contextPath: Zoom.Meeting.id
+      description: Meeting id of the new meeting that is created
+      type: string
+    - contextPath: Zoom.Meeting.start_url
+      description: The URL to start the meeting
+      type: string
+    - contextPath: Zoom.Meeting.uuid
+      description: Unique meeting ID of the new meeting that is created
+      type: string
+    - contextPath: Zoom.Meeting.status
+      description: The status of the meeting
+      type: string
+    - contextPath: Zoom.Meeting.start_time
+      description: The time that the meeting will start at
+      type: Date
+    - contextPath: Zoom.Meeting.host email
+      description: The email of the host of this meeting
+      type: string
+    - contextPath: Zoom.Meeting.topic
+      description: The topic of the meeting
+      type: string
+    - contextPath: Zoom.Meeting.duration
+      description: The duratian of the meeting
+      type: number
+    - contextPath: Zoom.Meeting.created_at
+      description: The time that this meeting was created
+      type: Date
+    - contextPath: Zoom.Meeting.type
+      description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
+      type: number
+    description: Get the information of an existing zoom meeting
+  - name: zoom-meeting-list
+    arguments:
+    - name: user_id
+      required: true
+      description: The user ID
+      type: string
+    - name: page_size
+      description: Number of users to return. Default = 30. Max = 300.
+    - name: page_number
+      description: >
+        Which page of results to return. The default = 1.
+
+        Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
+    - name: next_page_token
+      description: >
+        The next page token is used to paginate te the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
+      type: string
+    - name: limit
+      description: The total amunt of results to show.
+      type: string
+    - name: type
+      description: Filter the results by searching specific types.
+      auto: PREDEFINED
+      predefined:
+      - all
+      - scheduled
+      - live
+      - upcoming
+      - upcoming_meetings
+      - previous_meetings
+      defaultValue: '"scheduled"'
+    outputs:
+    - contextPath: Zoom.Metadata.Total
+      description: Total number of records
+      type: number
+    - contextPath: Zoom.Meeting.page_size
+      description: The size of the page returned from the API
+      type: number
+    - contextPath: Zoom.Meeting.total_records
+      description: The total records in the API for this request.
+      type: number
+    - contextPath: Zoom.Meeting.join_url
+      description: Join url for the meeting
+      type: string
+    - contextPath: Zoom.Meeting.id
+      description: Meeting id of the new meeting that is created
+      type: string
+    - contextPath: Zoom.Meeting.start_url
+      description: The URL to start the meeting
+      type: string
+    - contextPath: Zoom.Meeting.uuid
+      description: Unique meeting ID of the new meeting that is created
+      type: string
+    - contextPath: Zoom.Meeting.status
+      description: The status of the meeting
+      type: string
+    - contextPath: Zoom.Meeting.start_time
+      description: The time that the meeting will start at
+      type: Date
+    - contextPath: Zoom.Meeting.host email
+      description: The email of the host of this meeting
+      type: string
+    - contextPath: Zoom.Meeting.topic
+      description: The topic of the meeting
+      type: string
+    - contextPath: Zoom.Meeting.duration
+      description: The duratian of the meeting
+      type: number
+    - contextPath: Zoom.Meeting.created_at
+      description: The time that this meeting was created
+      type: Date
+    - contextPath: Zoom.Meeting.type
+      description: The ty pe of this meeting
+    description: >
+      Show all the meetings of a given user.
+      Note: only scheduled and unexpired meetings will appear.
+  dockerimage: demisto/pyjwt3:1.0.0.43045
   runonce: false
   script: "-"
   subtype: python3
+  type: python
 fromversion: 6.5.0
+image: data:image/png;base64,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
+detaileddescription: "[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/zoom)"
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
