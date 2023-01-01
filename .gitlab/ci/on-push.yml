@@ -119,6 +119,7 @@ validate-content-conf:
       echo "Moving exported CSV files to artifacts"
       mkdir $ARTIFACTS_FOLDER/content_graph
       cp -R /var/lib/neo4j/import $ARTIFACTS_FOLDER/content_graph
+      zip -r $ARTIFACTS_FOLDER/content_graph/content_graph.zip $ARTIFACTS_FOLDER/content_graph/import/*
 
     - section_end "Update content graph"
 
