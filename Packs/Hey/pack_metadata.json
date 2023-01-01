@@ -1,5 +1,5 @@
 {
-    "name": "Hey",
+    "name": "Hey (deprecated)",
     "description": "Use rakyll/hey to test a web application with a load of requests.",
     "support": "xsoar",
     "currentVersion": "1.0.2",
@@ -25,5 +25,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }
