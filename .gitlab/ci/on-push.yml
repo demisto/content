@@ -96,30 +96,12 @@ validate-content-conf:
     - section_start "Create or update content graph" --collapsed
 
     - |
-      echo "Trying to pull all CSV import files from bucket"
-      # gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-      # gsutil -m cp -r "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/*" /var/lib/neo4j/import || echo "failed to download graph imports."
-      echo "Successfully pulled all CSV import files from bucket"
-    - |
-      if [ -z "$(ls -A /var/lib/neo4j/import)" ]; then
-        echo "No CSV files to import, creating the content graph"
-        demisto-sdk create-content-graph
-        echo "Successfully created content graph"
-      else
-        echo "Getting the list of packs to update in content graph"
-        PACKS_TO_UPDATE=( $(git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq) )
-        echo "Updating graph for packs: $PACKS_TO_UPDATE"
-
+        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
         echo "Updating the content graph"
-        demisto-sdk update-content-graph -p $PACKS_TO_UPDATE
+        mkdir $ARTIFACTS_FOLDER/content_graph
+        demisto-sdk update-content-graph --marketplace $MARKETPLACE_VERSION -g -o $ARTIFACTS_FOLDER/content_graph
         echo "Successfully updated content graph"
-      fi
-
-    - |
-      echo "Moving exported CSV files to artifacts"
-      mkdir $ARTIFACTS_FOLDER/content_graph
-      cp -R /var/lib/neo4j/import $ARTIFACTS_FOLDER/content_graph
-
+      
     - section_end "Update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
