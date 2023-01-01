@@ -1232,7 +1232,7 @@ script:
     - contextPath: ThreatVault.SpywareC2.status
       description: The status of the signature.
       type: String
-  dockerimage: demisto/crypto:1.0.0.40696
+  dockerimage: demisto/crypto:1.0.0.42817
   isfetch: true
   longRunning: false
   longRunningPort: false
