@@ -35,7 +35,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return.
+          description: The maximum number of projects to return. The default value is 50.
           defaultValue: 50
         - name: page
           required: false
@@ -82,7 +82,7 @@ script:
           isArray: false
         - name: include_rule_objects
           required: false
-          description: Whether to insert the rule object that are linked to the policy in the context. True- the rule object will bw inserted. False- not inserted.
+          description: Whether to insert the rule object that are linked to the policy in the context. True- the rule object will bw inserted. False- not inserted. The default value is false.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -208,7 +208,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the policy be visible to the child domain.
+          description: Will the policy be visible to the child domain. The default is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -220,13 +220,14 @@ script:
           description: The description of the policy.
           isArray: false
         - name: is_editable
-          required: true
-          description: If the policy is editable or not.
+          required: false
+          description: If the policy is editable or not. The default is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
             - yes
             - no
+          defaultValue: yes
         - name: policy_type
           auto: PREDEFINED
           description: The type of the policy.
@@ -254,7 +255,7 @@ script:
           required: true
         - name: rule_enabled
           required: false
-          description: Is Rule Enabled or not.
+          description: Is Rule Enabled or not. The default is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -303,13 +304,14 @@ script:
             - Network IP V.6
           required: false
       outputs:
-        - contextPath: NSM.Policy.createdResourceId
+        - contextPath: NSM.Policy.FirewallPolicyId
           description: The id of the newly created firewall policy.
           type: Number
     - name: nsm-update-firewall-policy
       description: Updates the Firewall Policy details. If the argument is_overwrite=true than the new values of the provided addresses will replace the existing values else the addresses will be added to them. 
         If you want to delete a rule than enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before.
         If is_overwrite=true than at least one of the rules (source or destination) must be provided.
+        If you provide one of the source/destination fields, you must provide the other one as well.
       arguments:
         - name: policy_id
           required: true
@@ -325,7 +327,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the policy be visible to the child domain.
+          description: Will the policy be visible to the child domain. The default is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -371,7 +373,7 @@ script:
           required: false
         - name: rule_enabled
           required: false
-          description: Is Rule Enabled or not.
+          description: Is Rule Enabled or not. The default is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -443,7 +445,7 @@ script:
           isArray: false
         - name: type
           auto: PREDEFINED
-          description: The type of the rule.
+          description: The type of the rule. The default is All.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -458,7 +460,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return.
+          description: The maximum number of projects to return. The default is 50.
           defaultValue: 50
         - name: page
           required: false
@@ -649,7 +651,7 @@ script:
           description: HostIPv4 address list.
           type: String
     - name: nsm-create-rule-object
-      description: Adds a new Rule Object.
+      description: Adds a new Rule Object. If the type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
       arguments:
         - name: domain
           required: true
@@ -657,7 +659,7 @@ script:
           isArray: false
         - name: rule_object_type
           auto: PREDEFINED
-          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” => the arguments “from_address_ip_v.X” and “to_address_ip_v.X” must contain a value.
+          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -673,7 +675,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the rule object be visible to the child domain.
+          description: Will the rule object be visible to the child domain. The default is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -709,11 +711,11 @@ script:
           description: End IPv6 Range.
           isArray: false
       outputs:
-        - contextPath: NSM.Rule.createdResourceId
+        - contextPath: NSM.Rule.ruleobjId
           description: The id of the newly created rule object.
           type: Number
     - name: nsm-update-rule-object
-      description: Updates a Rule Object.
+      description: Updates a Rule Object. If you want to update the addresses of the rule than, if the rule type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value. Where X is 4 or 6 respectively.
       arguments:
         - name: domain
           required: true
@@ -729,7 +731,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the rule object be visible to the child domain.
+          description: Will the rule object be visible to the child domain. The default is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -785,7 +787,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return.
+          description: The maximum number of projects to return. The default is 50.
           defaultValue: 50
         - name: page
           required: false
@@ -806,7 +808,7 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period.
+          description: Time Period. The default is LAST_7_DAYS.
           required: false
           isArray: false
           defaultValue: LAST_7_DAYS
@@ -826,7 +828,7 @@ script:
             - ANY
             - Acknowledged
             - Unacknowledged
-          description: Alert State.
+          description: Alert State. The default is Any.
           defaultValue: ANY
           required: false
           isArray: false
@@ -840,7 +842,7 @@ script:
           isArray: false
         - name: domain_id
           required: false
-          description: The id of the domain. To get the domain_id, use the !nsm-get-domains command.
+          description: The id of the domain. To get the domain_id, use the !nsm-get-domains command. The default is 0.
           isArray: false
           defaultValue: 0
       outputs:
@@ -1414,7 +1416,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return.
+          description: The maximum number of projects to return. The default is 50.
           defaultValue: 50.
         - name: page
           required: false
@@ -1444,7 +1446,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return.
+          description: The maximum number of projects to return. The default is 50.
           defaultValue: 50
         - name: page
           required: false
@@ -1528,7 +1530,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return.
+          description: The maximum number of projects to return. The default is 50.
           defaultValue: 50
         - name: page
           required: false
@@ -1601,7 +1603,7 @@ script:
             - ANY
             - Acknowledged
             - Unacknowledged
-          description: Alert State.
+          description: Alert State. The default is Any.
           defaultValue: ANY
           required: false
           isArray: false
@@ -1616,7 +1618,7 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period.
+          description: Time Period. The default is LAST_7_DAYS.
           required: false
           isArray: false
           defaultValue: LAST_7_DAYS
@@ -1849,7 +1851,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return.
+          description: The maximum number of projects to return. The default is 50.
           defaultValue: 50
         - name: page
           required: false

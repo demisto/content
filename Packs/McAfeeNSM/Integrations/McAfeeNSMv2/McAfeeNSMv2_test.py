@@ -447,7 +447,7 @@ def test_get_addresses_from_response():
     from McAfeeNSMv2 import get_addresses_from_response
     get_rule_object1 = util_load_json('test_data/commands_test_data.json').get('get_rule_object1')
     get_rule_object2 = util_load_json('test_data/commands_test_data.json').get('get_rule_object2')
-    expected_addresses1 = ['1.1.1.1 - 2.2.2.2']
+    expected_addresses1 = [{'FromAddress': '1.1.1.1', 'ToAddress': '2.2.2.2'}]
     expected_addresses2 = ['3.3.3.3/33', '4.4.4.4/44']
     result1 = get_addresses_from_response(get_rule_object1)
     result2 = get_addresses_from_response(get_rule_object2)

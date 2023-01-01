@@ -570,19 +570,14 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
     """
     if ('4' in rule_type and number == 6) or ('6' in rule_type and number == 4):
         raise Exception('The version of the IP in "rule_object_type" should match the addresses version.')
-    if ('HOST' in rule_type or 'NETWORK' in rule_type) and not address:
-        raise Exception(
-            f'If the "rule_object_type" is “Endpoint IP V.{number}” or “Network IP V.{number}” than the argument '
-            f'“address_ip_v.{number}” must contain a value.')
-    if ('HOST' in rule_type or 'NETWORK' in rule_type) and (from_address or to_address):
-        raise Exception('If the "rule_object_type" is Endpoint or Network than from_address and to_addresses parameters'
-                        ' should not contain value.')
-    if 'ADDRESS_RANGE' in rule_type and not to_address and not from_address:
-        raise Exception(f'If the "rule_object_type" is “Range IP V.{number}” than the arguments '
-                        f'“from_address_ip_v.{number}” and “to_address_ip_v.{number}” must contain a value.')
-    if 'ADDRESS_RANGE' in rule_type and address:
-        raise Exception(f'If the "rule_object_type" is “Range IP V.{number} than the both address_ip_v.4 and '
-                        f'address_ip_v.6 should not contain a value')
+    if ('HOST' in rule_type or 'NETWORK' in rule_type) and (not address or from_address or to_address):
+        raise Exception(f'If the "rule_object_type" is “Endpoint IP V.{number}” or “Network IP V.{number}” than only'
+                        f' the argument “address_ip_v.{number}” must contain a value. The other address arguments '
+                        f'should be empty.')
+    if 'ADDRESS_RANGE' in rule_type and (not to_address or not from_address or address):
+        raise Exception(f'If the "rule_object_type" is “Range IP V.{number}” than only the arguments '
+                        f'“from_address_ip_v.{number}” and “to_address_ip_v.{number}” must contain a value, the other'
+                        f' address arguments should be empty.')
 
 
 def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
@@ -734,6 +729,9 @@ def update_source_destination_object(obj: List[Dict], rule_object_id: int | None
             The updated object.
     """
     if rule_object_id:
+        if rule_object_id == -1:
+            raise Exception('If you want to delete an address please provide is_overwrite=true and the relevant '
+                            'rule_object_id=-1.')
         new_object = {
             'RuleObjectId': rule_object_id,
             'RuleObjectType': rule_object_type
@@ -846,26 +844,13 @@ def get_addresses_from_response(response: Dict) -> List:
             The list of addresses.
     """
     rule_type = response.get('ruleobjType', '')
-    if 'HOST_IPV_4' in rule_type:
-        return response.get('HostIPv4', {}).get('hostIPv4AddressList', [])
-    elif 'IPV_4_ADDRESS_RANGE' in rule_type:
-        addresses_list = response.get('IPv4AddressRange', {}).get('IPV4RangeList', [Dict])
-        result_list = []
-        for address in addresses_list:
-            result_list.append(f'{address.get("FromAddress")} - {address.get("ToAddress")}')
-        return result_list
-    elif 'NETWORK_IPV_4' in rule_type:
-        return response.get('Network_IPV_4', {}).get('networkIPV4List', [])
-    elif 'HOST_IPV_6' in rule_type:
-        return response.get('HostIPv6', {}).get('hostIPv6AddressList', [])
-    elif 'IPV_6_ADDRESS_RANGE' in rule_type:
-        addresses_list = response.get('IPv6AddressRange', {}).get('IPV6RangeList', [Dict])
-        result_list = []
-        for address in addresses_list:
-            result_list.append(f'{address.get("FromAddress")} - {address.get("ToAddress")}')
-        return result_list
-    else:  # NETWORK_IPV_6
-        return response.get('Network_IPV_6', {}).get('networkIPV6List', [])
+    number = 4 if '4' in rule_type else 6
+    if 'HOST' in rule_type:
+        return response.get(f'HostIPv{number}', {}).get(f'hostIPv{number}AddressList', [])
+    elif 'ADDRESS_RANGE' in rule_type:
+        return response.get(f'IPv{number}AddressRange', {}).get(f'IPV{number}RangeList', [Dict])
+    else:  # 'NETWORK'
+        return response.get(f'Network_IPV_{number}', {}).get(f'networkIPV{number}List', [])
 
 
 ''' COMMAND FUNCTIONS '''
@@ -978,7 +963,7 @@ def get_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
         outputs_prefix='NSM.Policy',
         outputs=response,
         raw_response=response,
-        outputs_key_field='name'
+        outputs_key_field='FirewallPolicyId'
     )
 
 
@@ -994,7 +979,7 @@ def create_firewall_policy_command(client: Client, args: Dict) -> CommandResults
     name = args.get('name', '')
     visible_to_child = argToBoolean(args.get('visible_to_child', True))
     description = args.get('description', '')
-    is_editable = argToBoolean(args.get('is_editable')) or True
+    is_editable = argToBoolean(args.get('is_editable', True)) or True
     policy_type = args.get('policy_type', '').upper()
     rule_description = args.get('rule_description', '')
     rule_enabled = argToBoolean(args.get('rule_enabled', True))
@@ -1027,12 +1012,14 @@ def create_firewall_policy_command(client: Client, args: Dict) -> CommandResults
                                        destination_object)
 
     response = client.create_firewall_policy_request(body)
-    new_firewall_policy_id = response.get('createdResourceId')
+    response['FirewallPolicyId'] = response.get('createdResourceId')
+    del response['createdResourceId']
+    new_firewall_policy_id = response.get('FirewallPolicyId')
     return CommandResults(readable_output=f'The firewall policy no.{new_firewall_policy_id} was created successfully',
                           outputs_prefix='NSM.Policy',
                           outputs=response,
                           raw_response=response,
-                          outputs_key_field='createdResourceId'
+                          outputs_key_field='FirewallPolicyId'
                           )
 
 
@@ -1222,7 +1209,7 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
 
     if (address_ip_v_4 and address_ip_v_6) or (from_address_ip_v_4 and from_address_ip_v_6) or \
             (to_address_ip_v_4 and to_address_ip_v_6):
-        raise Exception('This pair arguments (address_ip_v_4 and address_ip_v_6) or '
+        raise Exception('Those pairs of arguments (address_ip_v_4 and address_ip_v_6) or '
                         '(from_address_ip_v_4 and from_address_ip_v_6) or (to_address_ip_v_4 and to_address_ip_v_6)'
                         'should not have values in parallel, only one at a time.')
     address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
@@ -1251,6 +1238,8 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
     rule_obj_def = body.get('RuleObjDef', {})
     rule_obj_def[d_name] = extra_body
     response = client.create_rule_object_request(body)
+    response['ruleobjId'] = response.get('createdResourceId')
+    del response['createdResourceId']
 
     return CommandResults(readable_output=f'The rule object no.{response.get("createdResourceId")} '
                                           f'was created successfully',
@@ -1481,7 +1470,7 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
         outputs_prefix='NSM.Alerts',
         outputs=alerts_list,
         raw_response=response,
-        outputs_key_field='uniqueAlertId'
+        outputs_key_field='ID'
     )
 
 
@@ -1619,7 +1608,7 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
         outputs_prefix='NSM.Domains',
         outputs=results,
         raw_response=results,
-        outputs_key_field='id'
+        outputs_key_field='ID'
     )
 
 

@@ -244,9 +244,9 @@ Adds a new Firewall Policy and Access Rules. You have to provide at lease one of
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | domain | The id of the domain. To get the domain id, use the !nsm-get-domains command.                                                                                                                                                                     | Required | 
 | name | The policy name.                                                                                                                                                                                                                                  | Required | 
-| visible_to_child | Will the policy be visible to the child domain. Possible values are: yes, no. Default is yes.                                                                                                                           | Optional | 
+| visible_to_child | Will the policy be visible to the child domain. Possible values are: yes, no. Default is yes.                                                                                                                                                     | Optional | 
 | description | The description of the policy.                                                                                                                                                                                                                    | Required | 
-| is_editable | If the policy is editable or not. Possible values are: yes, no.                                                                                                                                                                                   | Required | 
+| is_editable | If the policy is editable or not. Possible values are: yes, no. Default is yes.                                                                                                                                                                   | Optional | 
 | policy_type | The type of the policy. Possible values are: Advanced, Classic.                                                                                                                                                                                   | Required | 
 | rule_description | The rule description.                                                                                                                                                                                                                             | Required | 
 | response | Action to be performed if the traffic matches this rule. Possible values are: Scan, Drop, Deny, Ignore, Stateless Ignore, Stateless Drop, Require Authentication.                                                                                 | Required | 
@@ -262,7 +262,7 @@ Adds a new Firewall Policy and Access Rules. You have to provide at lease one of
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NSM.Policy.createdResourceId | Number | The id of the newly created firewall policy. | 
+| NSM.Policy.FirewallPolicyId | Number | The id of the newly created firewall policy. | 
 
 #### Command example
 ```!nsm-create-firewall-policy domain=0 name=policy visible_to_child=yes description="a new policy" is_editable=yes policy_type=Advanced response=Scan rule_description="Test Member Rule" direction=Inbound destination_rule_object_id=111 destination_rule_object_type="Range IP V.4"```
@@ -272,7 +272,7 @@ Adds a new Firewall Policy and Access Rules. You have to provide at lease one of
 {
     "NSM": {
         "Policy": {
-            "createdResourceId":112
+            "FirewallPolicyId":112
         }
     }
 }
@@ -284,8 +284,8 @@ Adds a new Firewall Policy and Access Rules. You have to provide at lease one of
 
 ### nsm-update-firewall-policy
 ***
-Updates the Firewall Policy details. If the argument is_overwrite=true, then the new values of the provided addresses will replace the existing values else the addresses will be added to them. If you want to delete a rule than enter is_overwrite=true and the relevant rule_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before. If is_overwrite=true then at least one of the rules (source or destination) must be provided.
-
+Updates the Firewall Policy details. If the argument is_overwrite=true, then the new values of the provided addresses will replace the existing values, else the addresses will be added to them. If you want to delete a rule than enter is_overwrite=true and the relevant rule_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before. If is_overwrite=true then at least one of the rules (source or destination) must be provided.
+If you provide one of the source/destination fields, you must provide the other one as well.
 
 #### Base Command
 
@@ -582,7 +582,7 @@ Gets the details of a Rule Object.
 
 ### nsm-create-rule-object
 ***
-Adds a new Rule Object.
+Adds a new Rule Object. If the type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
 
 
 #### Base Command
@@ -590,26 +590,26 @@ Adds a new Rule Object.
 `nsm-create-rule-object`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| domain | The id of the domain. To get the domain id, use the !nsm-get-domains command. | Required | 
-| rule_object_type | The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” =&gt; the arguments “from_address_ip_v.X” and “to_address_ip_v.X” must contain a value. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Required | 
-| name | The rule object name. | Required | 
-| visible_to_child | Will the rule object be visible to the child domain. Possible values are: yes, no. Default is yes. | Optional | 
-| description | The description of the rule object. | Optional | 
-| address_ip_v.4 | List of IPv4 host Address, separated by comma. | Optional | 
-| from_address_ip_v.4 | Start IPv4 Range. | Optional | 
-| to_address_ip_v.4 | End IPv4 Range. | Optional | 
-| address_ip_v.6 | List of IPv6 host Address, separated by comma. | Optional | 
-| from_address_ip_v.6 | Start IPv6 Range. | Optional | 
-| to_address_ip_v.6 | End IPv6 Range. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                    | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| domain | The id of the domain. To get the domain id, use the !nsm-get-domains command.                                                                                                                                                                                                                                                                                                      | Required | 
+| rule_object_type | The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Required | 
+| name | The rule object name.                                                                                                                                                                                                                                                                                                                                                              | Required | 
+| visible_to_child | Will the rule object be visible to the child domain. Possible values are: yes, no. Default is yes.                                                                                                                                                                                                                                                                                 | Optional | 
+| description | The description of the rule object.                                                                                                                                                                                                                                                                                                                                                | Optional | 
+| address_ip_v.4 | List of IPv4 host Address, separated by comma.                                                                                                                                                                                                                                                                                                                                     | Optional | 
+| from_address_ip_v.4 | Start IPv4 Range.                                                                                                                                                                                                                                                                                                                                                                  | Optional | 
+| to_address_ip_v.4 | End IPv4 Range.                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
+| address_ip_v.6 | List of IPv6 host Address, separated by comma.                                                                                                                                                                                                                                                                                                                                     | Optional | 
+| from_address_ip_v.6 | Start IPv6 Range.                                                                                                                                                                                                                                                                                                                                                                  | Optional | 
+| to_address_ip_v.6 | End IPv6 Range.                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NSM.Rule.createdResourceId | Number | The id of the newly created rule object. | 
+| NSM.Rule.ruleobjId | Number | The id of the newly created rule object. | 
 
 #### Command example
 ```!nsm-create-rule-object domain=0 rule_object_type="Range IP V.4" name="ruleo" visible_to_child=yes from_address_ip_v.4=1.1.1.1 to_address_ip_v.4=2.2.2.2```
@@ -619,7 +619,7 @@ Adds a new Rule Object.
 {
     "NSM": {
         "Rule": {
-            "createdResourceId":135
+            "ruleobjId":135
         }
     }
 }
@@ -631,7 +631,7 @@ Adds a new Rule Object.
 
 ### nsm-update-rule-object
 ***
-Updates a Rule Object.
+Updates a Rule Object. If you want to update the addresses of the rule than, if the rule type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value. Where X is 4 or 6 respectively.
 
 
 #### Base Command
