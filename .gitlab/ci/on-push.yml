@@ -98,10 +98,9 @@ validate-content-conf:
     - |
       echo "Trying to pull all CSV import files from bucket"
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-      gsutil -m cp "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/content_graph.zip" /var/lib/neo4j/import/content_graph.zip || echo "failed to download graph imports."
-      unzip -o /var/lib/neo4j/import/content_graph.zip -d /var/lib/neo4j/import
-      rm /var/lib/neo4j/import/content_graph.zip
-      echo "Successfully pulled all CSV import files from bucket"
+      gsutil -m cp "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip" /var/lib/neo4j/import/content_graph.zip || echo "failed to download graph imports."
+      unzip -o /var/lib/neo4j/import/content_graph.zip -d /var/lib/neo4j/import || echo "failed to unzip graph imports."
+      rm /var/lib/neo4j/import/content_graph.zip || echo "failed to remove graph imports zip."
     - |
       if [ -z "$(ls -A /var/lib/neo4j/import)" ]; then
         echo "No CSV files to import, creating the content graph"
@@ -120,7 +119,7 @@ validate-content-conf:
     - |
       echo "Moving exported CSV files to artifacts"
       mkdir $ARTIFACTS_FOLDER/content_graph
-      zip -r $ARTIFACTS_FOLDER/content_graph/content_graph.zip /var/lib/neo4j/import/*
+      zip -r $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip /var/lib/neo4j/import/*
 
     - section_end "Update content graph"
 

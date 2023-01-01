@@ -33,7 +33,7 @@
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload content graph CSVs to GCP" --collapsed
-        gsutil -m cp -r $ARTIFACTS_FOLDER/content_graph/content_graph.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION"
+        gsutil -m cp $ARTIFACTS_FOLDER/content_graph/MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
         section_end "Upload content graph CSVs to GCP"
       fi
 
