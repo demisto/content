@@ -1222,7 +1222,7 @@ class Client(BaseClient):
     def upload_intrusion_rule_file(
         self,
         filename: str,
-        payload_file: bytes,
+        payload_file: str,
         validate_only: bool,
         rule_import_mode: str = None,
         rule_group_ids: List[str] = None,
