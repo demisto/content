@@ -3829,13 +3829,6 @@
             ]
         },
         {
-            "playbookID": "test_MsGraphFiles",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Microsoft_Graph_Files"
-            ]
-        },
-        {
             "playbookID": "AlphaVantage Test Playbook",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5378,6 +5371,7 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
         "Phishing v3 - Get Original Email + Search & Delete - Test": "Issue CRTX-70684",
