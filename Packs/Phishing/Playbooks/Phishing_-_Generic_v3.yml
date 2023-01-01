@@ -51,6 +51,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
+      assignBy:
+        simple: less-busy-user
       onCall:
         complex:
           root: inputs.OnCall
@@ -2783,8 +2785,7 @@ view: |-
   }
 inputs:
 - key: Role
-  value:
-    simple: Administrator
+  value: {}
   required: true
   description: The default role to assign the incident to.
   playbookInputQuery:
