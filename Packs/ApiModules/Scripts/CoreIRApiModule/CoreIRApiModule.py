@@ -2587,11 +2587,12 @@ def handle_outgoing_issue_closure(remote_args):
     # force closing remote incident only if:
     #   The XSOAR incident is closed
     #   and the remote incident isn't already closed
-    if remote_args.inc_status == 2 and \
-       current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
-
+    if remote_args.inc_status == 2 and current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
         update_args['resolve_comment'] = update_args.get('closeNotes') or update_args.get('resolve_comment', '')
-        update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason') or update_args.get('status', 'Other'))
+
+        if update_args.get('status') not in XDR_RESOLVED_STATUS_TO_XSOAR:
+            update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason') or
+                                                              update_args.get('status', 'Other'))
         demisto.debug(f"Closing Remote incident with status {update_args['status']}")
 
 
