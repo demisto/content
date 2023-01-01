@@ -5,18 +5,20 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3ee1e64e-959b-4ad7-898d-925fef501d8c
+    taskid: 7426b3ea-3fd2-450b-82ff-0367b9cd1721
     type: start
     task:
-      id: 3ee1e64e-959b-4ad7-898d-925fef501d8c
+      id: 7426b3ea-3fd2-450b-82ff-0367b9cd1721
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -29,12 +31,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ff4b93cf-43cd-4166-8765-cc045ed3a30e
+    taskid: ea1f7e37-6a8b-4e7d-8c40-519d8f2af3fa
     type: regular
     task:
-      id: ff4b93cf-43cd-4166-8765-cc045ed3a30e
+      id: ea1f7e37-6a8b-4e7d-8c40-519d8f2af3fa
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -49,6 +53,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -61,21 +66,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f2da7cfd-f707-427d-8b3f-4fa07c7a21cf
+    taskid: cc8cb986-dbb6-42b3-8a24-eb469467b3f5
     type: title
     task:
-      id: f2da7cfd-f707-427d-8b3f-4fa07c7a21cf
+      id: cc8cb986-dbb6-42b3-8a24-eb469467b3f5
       version: -1
-      name: Test Done
+      name: Test Second Condition
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "22"
+      - "23"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -88,55 +98,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: fdf454ba-e56f-4cd8-8a7b-c7a02b3343cf
-    type: regular
-    task:
-      id: fdf454ba-e56f-4cd8-8a7b-c7a02b3343cf
-      version: -1
-      name: Close Investigation
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      adgroups: {}
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      code42alerttype: {}
-      computermodel: {}
-      emailclassification: {}
-      hiredate: {}
-      homeaddresscity: {}
-      homeaddressstreet2: {}
-      homephone: {}
-      id: {}
-      mobilephone: {}
-      phishingconfirmationstatus: {}
-      phishingsubtype: {}
-      userfirstmiddlename: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 77e0e67a-b609-4e43-8735-04374951b4f5
+    taskid: 06236cb8-cd5d-4cda-8b36-9469d0a7b00a
     type: regular
     task:
-      id: 77e0e67a-b609-4e43-8735-04374951b4f5
+      id: 06236cb8-cd5d-4cda-8b36-9469d0a7b00a
       version: -1
       name: Set inputA in context
       description: Sets a value into the context with the given context key
@@ -152,10 +121,10 @@ tasks:
         simple: "false"
       key:
         simple: inputA
-      stringify: {}
       value:
         simple: abc
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -168,12 +137,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 05637b1c-4786-4b10-879b-8b369c372125
+    taskid: 49732b77-6c19-41b6-8971-7481019672d8
     type: regular
     task:
-      id: 05637b1c-4786-4b10-879b-8b369c372125
+      id: 49732b77-6c19-41b6-8971-7481019672d8
       version: -1
       name: Set inputB in context
       description: Sets a value into the context with the given context key
@@ -189,10 +160,10 @@ tasks:
         simple: "false"
       key:
         simple: inputB
-      stringify: {}
       value:
         simple: xyz
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -205,21 +176,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 81dc6b75-eb76-47ef-89d9-b529d765f76a
+    taskid: 98bd2de9-9b01-4cb3-87fc-160ceb416946
     type: title
     task:
-      id: 81dc6b75-eb76-47ef-89d9-b529d765f76a
+      id: 98bd2de9-9b01-4cb3-87fc-160ceb416946
       version: -1
       name: Test 'If-Then'
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -232,12 +207,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a709a128-e029-4b58-89f1-4848992ce632
+    taskid: 6609aba7-3124-4f91-83d9-768234177948
     type: regular
     task:
-      id: a709a128-e029-4b58-89f1-4848992ce632
+      id: 6609aba7-3124-4f91-83d9-768234177948
       version: -1
       name: Set outputA using transformer
       description: Sets a value into the context with the given context key
@@ -253,7 +230,6 @@ tasks:
         simple: "false"
       key:
         simple: outputA
-      stringify: {}
       value:
         complex:
           root: inputA
@@ -270,6 +246,7 @@ tasks:
                 value:
                   simple: success
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -282,12 +259,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6cdf4388-7671-4f7f-828d-cf0bd81b441d
+    taskid: a50475f4-c3c7-4f68-86de-7e286ac949f9
     type: condition
     task:
-      id: 6cdf4388-7671-4f7f-828d-cf0bd81b441d
+      id: a50475f4-c3c7-4f68-86de-7e286ac949f9
       version: -1
       name: Does outputA equal 'success'?
       type: condition
@@ -310,6 +289,7 @@ tasks:
           right:
             value:
               simple: success
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -322,21 +302,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7b30d750-0f2e-46e8-8205-f73ff1769865
+    taskid: 2e529b19-795d-4e7a-8466-4c5230c363d9
     type: title
     task:
-      id: 7b30d750-0f2e-46e8-8205-f73ff1769865
+      id: 2e529b19-795d-4e7a-8466-4c5230c363d9
       version: -1
       name: Success
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -349,21 +333,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 5f0263e5-bc01-48e7-8502-486bb35d909d
+    taskid: da374592-5629-492e-87be-6a7bb37d5045
     type: title
     task:
-      id: 5f0263e5-bc01-48e7-8502-486bb35d909d
+      id: da374592-5629-492e-87be-6a7bb37d5045
       version: -1
       name: Failure
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -376,21 +364,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 565e6969-285e-4d0e-80e9-b56f3a84f2e2
+    taskid: 037f6c87-80c5-49d1-8598-e5e7c4d11cd6
     type: title
     task:
-      id: 565e6969-285e-4d0e-80e9-b56f3a84f2e2
+      id: 037f6c87-80c5-49d1-8598-e5e7c4d11cd6
       version: -1
       name: Test 'If-Else'
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -403,12 +395,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f911d8ad-79cf-4465-8362-3456a5481d4e
+    taskid: 867704fc-fcc4-4a83-8754-2e9abf4c8d5a
     type: regular
     task:
-      id: f911d8ad-79cf-4465-8362-3456a5481d4e
+      id: 867704fc-fcc4-4a83-8754-2e9abf4c8d5a
       version: -1
       name: Set outputB using transformer
       description: Sets a value into the context with the given context key
@@ -424,7 +418,6 @@ tasks:
         simple: "false"
       key:
         simple: outputB
-      stringify: {}
       value:
         complex:
           root: inputB
@@ -441,6 +434,7 @@ tasks:
                 value:
                   simple: failure
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -453,12 +447,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6e765cdd-1f71-42b1-8a8d-d2161a53bb2c
+    taskid: df71d308-8cb1-4a1b-8cad-8c4ba619d6a9
     type: condition
     task:
-      id: 6e765cdd-1f71-42b1-8a8d-d2161a53bb2c
+      id: df71d308-8cb1-4a1b-8cad-8c4ba619d6a9
       version: -1
       name: Does outputB equal 'success'?
       type: condition
@@ -481,6 +477,7 @@ tasks:
           right:
             value:
               simple: success
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -493,21 +490,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c64f232b-feee-4884-874b-5552d9ec56c7
+    taskid: 4621d31c-d991-4812-813c-576a8b62ea92
     type: title
     task:
-      id: c64f232b-feee-4884-874b-5552d9ec56c7
+      id: 4621d31c-d991-4812-813c-576a8b62ea92
       version: -1
       name: Success
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -520,21 +521,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: fb7ae356-d214-4d82-8327-fda1c10a03f6
+    taskid: df4372c7-d878-4d20-88da-c2b0dacc659d
     type: title
     task:
-      id: fb7ae356-d214-4d82-8327-fda1c10a03f6
+      id: df4372c7-d878-4d20-88da-c2b0dacc659d
       version: -1
       name: Failure
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -547,12 +552,654 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 70d0b599-6a1f-4ab5-8982-cdf1e7f995f0
+    type: title
+    task:
+      id: 70d0b599-6a1f-4ab5-8982-cdf1e7f995f0
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c879c986-9338-4aba-871c-4eb05a6bcf81
+    type: regular
+    task:
+      id: c879c986-9338-4aba-871c-4eb05a6bcf81
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 216927c0-1862-4a26-839e-d764f01127e6
+    type: title
+    task:
+      id: 216927c0-1862-4a26-839e-d764f01127e6
+      version: -1
+      name: Test 'or' & 'If-Then'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 915baafd-bd72-443a-845d-c5c9602db0f6
+    type: title
+    task:
+      id: 915baafd-bd72-443a-845d-c5c9602db0f6
+      version: -1
+      name: Test 'and' & 'If-Then'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 83bc4159-af71-4445-809a-d72dfbc5775b
+    type: regular
+    task:
+      id: 83bc4159-af71-4445-809a-d72dfbc5775b
+      version: -1
+      name: Set inputC1 in context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: inputC1
+      value:
+        simple: "123"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 230c7c24-9c6d-4ecb-88ee-a5f8d894f6fd
+    type: regular
+    task:
+      id: 230c7c24-9c6d-4ecb-88ee-a5f8d894f6fd
+      version: -1
+      name: Set outputC using transformer
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: outputC
+      value:
+        complex:
+          root: inputC1
+          transformers:
+          - operator: 8dc9ab33-663b-4e3a-8505-fe0740aabf1e
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB:
+                value:
+                  simple: lhsB==rhsB
+              conditionInBetween:
+                value:
+                  simple: or
+              else:
+                value:
+                  simple: failure
+              equals: {}
+              lhs:
+                value:
+                  simple: inputC1
+                iscontext: true
+              lhsB:
+                value:
+                  simple: inputC2
+                iscontext: true
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "123"
+              rhsB:
+                value:
+                  simple: def_bad
+              then:
+                value:
+                  simple: success
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: b94fc99b-ff1b-4ab8-8327-5e308c8829d4
+    type: condition
+    task:
+      id: b94fc99b-ff1b-4ab8-8327-5e308c8829d4
+      version: -1
+      name: Does outputC equal 'success'?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: outputC
+            iscontext: true
+          right:
+            value:
+              simple: success
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2e9d65c8-449a-4b76-876b-f5e71c44678d
+    type: regular
+    task:
+      id: 2e9d65c8-449a-4b76-876b-f5e71c44678d
+      version: -1
+      name: Set inputC2 in context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: inputC2
+      value:
+        simple: def
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: ee026dcc-c8ba-4011-876d-3e96c8d67312
+    type: regular
+    task:
+      id: ee026dcc-c8ba-4011-876d-3e96c8d67312
+      version: -1
+      name: Set inputD1 in context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: inputD1
+      value:
+        simple: "123"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: fd5ee31a-a19c-48fd-8eda-109c0515cb74
+    type: regular
+    task:
+      id: fd5ee31a-a19c-48fd-8eda-109c0515cb74
+      version: -1
+      name: Set outputD using transformer
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: outputD
+      value:
+        complex:
+          root: inputD1
+          transformers:
+          - operator: 8dc9ab33-663b-4e3a-8505-fe0740aabf1e
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB:
+                value:
+                  simple: lhsB==rhsB
+              conditionInBetween:
+                value:
+                  simple: or
+              else:
+                value:
+                  simple: failure
+              equals: {}
+              lhs:
+                value:
+                  simple: inputD1
+                iscontext: true
+              lhsB:
+                value:
+                  simple: inputD2
+                iscontext: true
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "123"
+              rhsB:
+                value:
+                  simple: def
+              then:
+                value:
+                  simple: success
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 18366dcc-3749-4e1e-84fd-0ea80b950de4
+    type: condition
+    task:
+      id: 18366dcc-3749-4e1e-84fd-0ea80b950de4
+      version: -1
+      name: Does outputD equal 'success'?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: outputD
+            iscontext: true
+          right:
+            value:
+              simple: success
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 171c0864-717e-43b5-825b-6581858226ee
+    type: regular
+    task:
+      id: 171c0864-717e-43b5-825b-6581858226ee
+      version: -1
+      name: Set inputD2 in context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: inputD2
+      value:
+        simple: def
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b2e50e14-fd5d-4e8b-808b-f45201698e6e
+    type: title
+    task:
+      id: b2e50e14-fd5d-4e8b-808b-f45201698e6e
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 59703b2d-b25a-4a42-8c1f-e764395e3dc6
+    type: title
+    task:
+      id: 59703b2d-b25a-4a42-8c1f-e764395e3dc6
+      version: -1
+      name: Failure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: b5cc8c12-4901-4d8b-8033-4cdedfe54901
+    type: title
+    task:
+      id: b5cc8c12-4901-4d8b-8033-4cdedfe54901
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 184484d5-a993-42cb-8d60-91d00c4867ed
+    type: title
+    task:
+      id: 184484d5-a993-42cb-8d60-91d00c4867ed
+      version: -1
+      name: Failure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1375,
+        "height": 2345,
         "width": 1670,
         "x": 50,
         "y": 50
