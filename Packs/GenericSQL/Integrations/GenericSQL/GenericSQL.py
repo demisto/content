@@ -224,6 +224,9 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         if params.get('format_time') == 'Relative Time' and not params.get('offset'):
             msg += 'An Offset is missing where Relative Time is chosen, please enter Offset. '
 
+        # The request to the database is pointless if one of the validations failed - so returns informative message
+        if msg:
+            return msg, {}, []
         # Verify the correctness of the query / procedure
         try:
             params['fetch_limit'] = 1
@@ -233,7 +236,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         except Exception as e:
             raise e
 
-    return msg if msg else 'ok', {}, []
+    return 'ok', {}, []
 
 
 def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -467,7 +470,6 @@ def main():
             incidents, last_run = fetch_incidents(client, params)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
-
         else:
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
     except Exception as err:
