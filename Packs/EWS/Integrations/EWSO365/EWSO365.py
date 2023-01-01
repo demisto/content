@@ -1105,15 +1105,14 @@ def move_item_between_mailboxes(
     source_account = client.get_account(source_mailbox)
     destination_account = client.get_account(destination_mailbox)
     is_public = client.is_default_folder(destination_folder_path, is_public)
+    # print('hello4')
     destination_folder = client.get_folder_by_path(
         destination_folder_path, destination_account, is_public
     )
     item = client.get_item_from_mailbox(source_account, item_id)
-
     exported_items = source_account.export([item])
     destination_account.upload([(destination_folder, exported_items[0])])
     source_account.bulk_delete([item])
-
     move_result = {
         MOVED_TO_MAILBOX: destination_mailbox,
         MOVED_TO_FOLDER: destination_folder_path,
@@ -2384,10 +2383,11 @@ def sub_main():
     is_test_module = False
     params = demisto.params()
     args = prepare_args(demisto.args())
+    command = demisto.command()
     # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
-    command = demisto.command()
-    if params.get('upn_mailbox') and command != 'ews-get-searchable-mailboxes' and command != 'ews-get-out-of-office':
+    if params.get('upn_mailbox') and not(args.get('target_mailbox')) and command not in ('ews-get-searchable-mailboxes',
+                                                                                         'ews-get-out-of-office'):
         params['default_target_mailbox'] = params.get('upn_mailbox')
     try:
         client = EWSClient(**params)
