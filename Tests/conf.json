@@ -5228,7 +5228,7 @@
                 "UnpublishThreatIntelReport"
 
             ]
-        },
+        }
     ],
     "skipped_tests": {
         "CirclIntegrationTest": "No instance",
