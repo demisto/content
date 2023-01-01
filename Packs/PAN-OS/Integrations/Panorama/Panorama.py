@@ -12877,8 +12877,7 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
         Dict[str,Any]: a dictionary of the raw entries linked to the Job ID
     """
     params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
-    response = http_request(URL, 'GET', params=params)
-    return response
+    return http_request(URL, 'GET', params=params)
 
 
 def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[Any, Any]]:
@@ -12907,7 +12906,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
         elif isinstance(result,dict):
             entries.append(result)
         else:
-            raise DemistoException('Could not parse fetch results.')
+            raise DemistoException(f'Could not parse fetch results: {result}')
     
     entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
     demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
@@ -12927,7 +12926,6 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
     """
     if 'time_generated' in query or not last_fetch:
         raise DemistoException('Query parameter must not contain time_generated filter.')
-    # time_generated = ' and (time_generated geq ' + '\'' + last_fetch.strftime(QUERY_DATE_FORMAT) + '\')'
     time_generated = f" and (time_generated geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
     return query + time_generated
 
@@ -12949,7 +12947,7 @@ def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
         if isinstance(last_id_int, int):
             # last_id is can be filtered only by '>=' so we need to add 1 to it.
             last_id_int += 1
-            unique_id_filter = f" and (seqno geq '{str(last_id_int)}')"
+            unique_id_filter = f" and (seqno geq '{last_id_int}')"
             return query + unique_id_filter
         else:
             return query
@@ -12977,8 +12975,7 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
                 query = add_time_filter_to_query_parameter(query, fetch_start_time)
             if id := last_id_dict.get(log_type):
                 query = add_unique_id_filter_to_query_parameter(query, id)
-            response_entries = get_query_entries(log_type, query, max_fetch)
-            entries[log_type] = response_entries
+            entries[log_type] = get_query_entries(log_type, query, max_fetch)
     return entries
 
 
