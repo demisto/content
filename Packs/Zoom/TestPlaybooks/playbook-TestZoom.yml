@@ -1,23 +1,27 @@
 id: Zoom_Test
-version: -1
-name: Zoom_Test_my_version
+version: 38
+vcShouldKeepItemLegacyProdMachine: false
+name: Zoom_Test
+description: |-
+  Important!
+  Because  API  token limit, if you run this playbook again, it will crash. So wait a few minutes between each time.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 548f58d6-ed58-4f6a-8ce0-1e08b5a1d90f
+    taskid: 42971dfb-2e59-4908-80d6-b40b9de236f7
     type: start
     task:
-      id: 548f58d6-ed58-4f6a-8ce0-1e08b5a1d90f
+      id: 42971dfb-2e59-4908-80d6-b40b9de236f7
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -32,13 +36,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 99f926c6-71c7-4b03-8078-df36dcf89484
+    taskid: 5c699f8f-13bb-49af-853d-ff673b52cf93
     type: regular
     task:
-      id: 99f926c6-71c7-4b03-8078-df36dcf89484
+      id: 5c699f8f-13bb-49af-853d-ff673b52cf93
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -53,6 +56,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -67,13 +71,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 30c374dd-3584-4f19-824e-c5e844105dba
+    taskid: 28148171-dbb8-4480-83dd-3adb0f1ca9de
     type: regular
     task:
-      id: 30c374dd-3584-4f19-824e-c5e844105dba
+      id: 28148171-dbb8-4480-83dd-3adb0f1ca9de
       version: -1
       name: Generate Email
       scriptName: GenerateEmail
@@ -84,6 +87,7 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -98,20 +102,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 7a55edfa-40d2-4cd1-8253-f4061f613744
+    taskid: c24b04ca-0563-4f4f-81e6-368f55017e46
     type: regular
     task:
-      id: 7a55edfa-40d2-4cd1-8253-f4061f613744
+      id: c24b04ca-0563-4f4f-81e6-368f55017e46
       version: -1
       name: zoom-create-user (default=Basic)
-      script: "|||zoom-create-user"
+      description: Create a new user in zoom account
+      script: '|||zoom-create-user'
       type: regular
       iscommand: true
       brand: ""
-      description: Create a new user in zoom account
     nexttasks:
       '#none#':
       - "4"
@@ -123,6 +126,7 @@ tasks:
       last_name:
         simple: McTesty
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -137,20 +141,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: f33cb5a5-df05-4dfe-816e-44e242ca5a1b
+    taskid: cf2e87ad-1111-4625-8648-9315c71746e3
     type: regular
     task:
-      id: f33cb5a5-df05-4dfe-816e-44e242ca5a1b
+      id: cf2e87ad-1111-4625-8648-9315c71746e3
       version: -1
       name: zoom-delete-user
-      script: "|||zoom-delete-user"
+      description: Delete a user from Zoom
+      script: '|||zoom-delete-user'
       type: regular
       iscommand: true
       brand: ""
-      description: Delete a user from Zoom
     nexttasks:
       '#none#':
       - "5"
@@ -158,6 +161,7 @@ tasks:
       user_id:
         simple: ${Zoom.User.email}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -172,13 +176,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: a9f6fe1f-3232-412b-8d21-2a52c9714ea2
+    taskid: dee4f962-0689-4915-87f7-cafb0d950c40
     type: condition
     task:
-      id: a9f6fe1f-3232-412b-8d21-2a52c9714ea2
+      id: dee4f962-0689-4915-87f7-cafb0d950c40
       version: -1
       name: Verify created user
       type: condition
@@ -224,6 +227,7 @@ tasks:
           right:
             value:
               simple: "1"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -238,13 +242,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: b47878cb-117a-4072-841b-eac8f8b911af
+    taskid: 1915afaa-b342-485c-8afd-d73dfd1cf6d9
     type: regular
     task:
-      id: b47878cb-117a-4072-841b-eac8f8b911af
+      id: 1915afaa-b342-485c-8afd-d73dfd1cf6d9
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -258,6 +261,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -272,13 +276,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 71b0dba9-bba2-4860-862e-06c732539739
+    taskid: 6aca67b4-1e4c-457e-8248-83dc7b49287b
     type: regular
     task:
-      id: 71b0dba9-bba2-4860-862e-06c732539739
+      id: 6aca67b4-1e4c-457e-8248-83dc7b49287b
       version: -1
       name: Generate Email
       scriptName: GenerateEmail
@@ -289,6 +292,7 @@ tasks:
       '#none#':
       - "11"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -303,13 +307,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: c85e67d9-7474-4606-8d2d-4306e5ddbd8c
+    taskid: 295a7aec-81f2-4dae-85e4-e6b3b314e852
     type: regular
     task:
-      id: c85e67d9-7474-4606-8d2d-4306e5ddbd8c
+      id: 295a7aec-81f2-4dae-85e4-e6b3b314e852
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -323,6 +326,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -337,24 +341,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "16":
     id: "16"
-    taskid: 3f03ebeb-5e1c-421d-8c01-54ee58caa3fc
+    taskid: 0fe75f05-ad92-4f88-8607-3eb8025d00b2
     type: regular
     task:
-      id: 3f03ebeb-5e1c-421d-8c01-54ee58caa3fc
+      id: 0fe75f05-ad92-4f88-8607-3eb8025d00b2
       version: -1
       name: zoom-list-users
-      script: "|||zoom-list-users"
+      description: List the existing users
+      script: '|||zoom-list-users'
       type: regular
       iscommand: true
       brand: ""
-      description: List the existing users
     nexttasks:
       '#none#':
       - "17"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -369,13 +373,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "17":
     id: "17"
-    taskid: 02f6459b-f350-40b2-8271-397046493f56
+    taskid: 0b136e16-1573-45e4-887f-203ee85515e5
     type: condition
     task:
-      id: 02f6459b-f350-40b2-8271-397046493f56
+      id: 0b136e16-1573-45e4-887f-203ee85515e5
       version: -1
       name: Verify admin is in user list
       type: condition
@@ -396,6 +399,7 @@ tasks:
           right:
             value:
               simple: admin@demistodev.com
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -410,20 +414,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "18":
     id: "18"
-    taskid: a471785f-8c8a-45fc-8b8e-0445b15e6838
+    taskid: 8735cee4-9e28-4736-8281-786d817a32d8
     type: regular
     task:
-      id: a471785f-8c8a-45fc-8b8e-0445b15e6838
+      id: 8735cee4-9e28-4736-8281-786d817a32d8
       version: -1
       name: zoom-create-meeting
-      script: "|||zoom-create-meeting"
+      description: Create a new zoom meeting (scheduled or instant)
+      script: '|||zoom-create-meeting'
       type: regular
       iscommand: true
       brand: ""
-      description: Create a new zoom meeting (scheduled or instant)
     nexttasks:
       '#none#':
       - "19"
@@ -433,6 +436,7 @@ tasks:
       user_id:
         simple: admin@demistodev.com
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -447,25 +451,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "19":
     id: "19"
-    taskid: ae1e769a-98cd-41fe-8465-3695e22bdf6d
+    taskid: 25bc69e8-f5fb-4a42-8b2c-d959380284c8
     type: regular
     task:
-      id: ae1e769a-98cd-41fe-8465-3695e22bdf6d
+      id: 25bc69e8-f5fb-4a42-8b2c-d959380284c8
       version: -1
       name: Verify meeting was created
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
     scriptarguments:
       fields:
         simple: id
       path:
         simple: Zoom.Meeting
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -480,16 +487,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nexttasks:
-      "#none#":
-      - "22"
-    continueonerrortype: ""
   "20":
     id: "20"
-    taskid: c17e3c01-10fe-4d6d-8783-0cd0860495e5
+    taskid: f35c7500-cc76-4bfe-8087-214b6ecbd4bb
     type: regular
     task:
-      id: c17e3c01-10fe-4d6d-8783-0cd0860495e5
+      id: f35c7500-cc76-4bfe-8087-214b6ecbd4bb
       version: -1
       name: Print test result
       scriptName: Print
@@ -500,6 +503,7 @@ tasks:
       value:
         simple: Zoom test completed successfuly
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -514,25 +518,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: b930bad1-404c-464d-89ca-94d0c7418a3b
+    taskid: a7e6f786-812a-4878-8ff8-1532e9bf3e2f
     type: regular
     task:
-      id: b930bad1-404c-464d-89ca-94d0c7418a3b
+      id: a7e6f786-812a-4878-8ff8-1532e9bf3e2f
       version: -1
       name: zoom-fetch-recording
-      script: "|||zoom-fetch-recording"
+      description: Get meeting record and save as file in the warroom
+      script: '|||zoom-fetch-recording'
       type: regular
       iscommand: true
       brand: ""
-      description: Get meeting record and save as file in the warroom
     scriptarguments:
       meeting_id:
         simple: "120332943"
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -547,22 +551,21 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 5a61e1db-c9ed-42fb-8ec2-8768f0d06ff9
+    taskid: 036976c6-b1b0-4570-8eb9-8d725efb8cf4
     type: regular
     task:
-      id: 5a61e1db-c9ed-42fb-8ec2-8768f0d06ff9
+      id: 036976c6-b1b0-4570-8eb9-8d725efb8cf4
       version: -1
       name: zoom-create-meeting#2
       description: Create a new zoom meeting (scheduled or instant)
-      script: "|||zoom-create-meeting"
+      script: '|||zoom-create-meeting'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "27"
     scriptarguments:
       topic:
@@ -587,19 +590,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 8dfcb746-81b6-451f-8ec6-5b53ef2713d8
+    taskid: 6bf4c4ad-4e63-4a4a-8e03-552d5a7ffe96
     type: regular
     task:
-      id: 8dfcb746-81b6-451f-8ec6-5b53ef2713d8
+      id: 6bf4c4ad-4e63-4a4a-8e03-552d5a7ffe96
       version: -1
       name: zoom-meeting-get
       description: Get the information of an existing zoom meeting
-      script: "|||zoom-meeting-get"
+      script: '|||zoom-meeting-get'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "24"
     scriptarguments:
       meeting_id:
@@ -622,10 +625,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: c4390472-5ca8-4068-80c7-7dbeacc693cf
+    taskid: 38fdfa77-b8bc-43c6-8623-3c85e0548577
     type: regular
     task:
-      id: c4390472-5ca8-4068-80c7-7dbeacc693cf
+      id: 38fdfa77-b8bc-43c6-8623-3c85e0548577
       version: -1
       name: Verify meeting was reached
       scriptName: VerifyContext
@@ -633,7 +636,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "25"
     scriptarguments:
       fields:
@@ -658,20 +661,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: ee6dc2ac-ec7f-42ec-8442-5415357b9923
+    taskid: c3233a02-70ae-47b6-82cc-57dd5085aaff
     type: regular
     task:
-      id: ee6dc2ac-ec7f-42ec-8442-5415357b9923
+      id: c3233a02-70ae-47b6-82cc-57dd5085aaff
       version: -1
       name: zoom-meeting-list
       description: |
         Show all the meetings of a given user. Note: only scheduled and unexpired meetings will appear.
-      script: "|||zoom-meeting-list"
+      script: '|||zoom-meeting-list'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "26"
     scriptarguments:
       user_id:
@@ -694,10 +697,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 2ac9cad4-c803-4cd4-8e09-8988265108aa
+    taskid: abdf4be2-dd21-4d49-8175-9fe16f3d0d14
     type: condition
     task:
-      id: 2ac9cad4-c803-4cd4-8e09-8988265108aa
+      id: abdf4be2-dd21-4d49-8175-9fe16f3d0d14
       version: -1
       name: validate that the list contains at least 2 meetings
       type: condition
@@ -739,10 +742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 0ba833d7-8a63-49f1-87b6-fc979e994ee8
+    taskid: a087d8ca-ed3e-4920-8ae0-770899b8c27b
     type: regular
     task:
-      id: 0ba833d7-8a63-49f1-87b6-fc979e994ee8
+      id: a087d8ca-ed3e-4920-8ae0-770899b8c27b
       version: -1
       name: Sleep(2sec)
       description: Sleep for X seconds
@@ -751,7 +754,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
+      '#none#':
       - "23"
     scriptarguments:
       seconds:
@@ -786,7 +789,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: |-
-  Important!
-  Because  API  token limit, if you run this playbook again, it will crash. So wait a few minutes between each time.

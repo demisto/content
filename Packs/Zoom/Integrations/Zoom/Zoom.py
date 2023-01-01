@@ -685,7 +685,7 @@ def zoom_meeting_list_command(client, **args) -> CommandResults:
     else:
         # one request in needed
         raw_data = client.zoom_meeting_list(user_id=user_id, next_page_token=next_page_token,
-                                            page_size=page_size, limit=limit, type=type, page_number=page_number)
+                                            page_size=page_size, type=type, page_number=page_number)
         # parsing the data
         md = tableToMarkdown("Meeting list", raw_data.get("meetings"), ['uuid', 'id',
                                                                         'host_id', 'topic', 'type', 'start_time', 'duration',

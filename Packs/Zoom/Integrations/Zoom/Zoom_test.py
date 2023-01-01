@@ -375,7 +375,7 @@ def test_zoom__create_meeting_command__instant_meeting(mocker):
     zoom_create_meeting_command(client=client,
                                 user_id="mock@moker.com",
                                 topic="nonsense",
-                                type="instant",)
+                                type="Instant",)
     assert zoom_create_meeting_mocker.call_args[1]["json_data"].get("type") == 1
 
 
@@ -397,7 +397,7 @@ def test_zoom_meeting_create_command__scheduled_meeting(mocker):
     zoom_create_meeting_command(client=client,
                                 user_id="mock@moker.com",
                                 topic="nonsense",
-                                type="scheduled")
+                                type="Scheduled")
     assert zoom_create_meeting_mocker.call_args[1]["json_data"].get("type") == 2
 
 
@@ -420,7 +420,7 @@ def test_zoom_create_meeting_command__too_meny_arguments(mocker):
         zoom_create_meeting_command(client=client,
                                     user_id="mock@moker.com",
                                     topic="nonsense",
-                                    type="scheduled",
+                                    type="Scheduled",
                                     waiting_room=True, join_before_host=True)
     assert e.value.message == "Collision arguments. join_before_host argument can be used only if waiting_room is 'False'."
 
@@ -444,7 +444,7 @@ def test_zoom_create_meeting__too_meny_arguments(mocker):
         zoom_create_meeting_command(client=client,
                                     user_id="mock@moker.com",
                                     topic="nonsense",
-                                    type="scheduled",
+                                    type="Scheduled",
                                     join_before_host_time=5, join_before_host=False)
     assert e.value.message == """Collision arguments.
 join_before_host_time argument can be used only if join_before_host is 'True'."""
@@ -467,7 +467,7 @@ def test_zoom_create_meeting_command__too_meny_arguments1(mocker):
     from Zoom import zoom_create_meeting_command
     with pytest.raises(DemistoException) as e:
         zoom_create_meeting_command(client=client,
-                                    type="instant", topic="nonsense", user_id="mock@moker.com",
+                                    type="Instant", topic="nonsense", user_id="mock@moker.com",
                                     start_time="2022-10-04T15:59:00Z")
     assert e.value.message == "Too many arguments.Use start_time and timezone for scheduled meetings only."
 
@@ -489,7 +489,7 @@ def test_zoom_create_meeting_command__too_many_arguments2(mocker):
     from Zoom import zoom_create_meeting_command
     with pytest.raises(DemistoException) as e:
         zoom_create_meeting_command(client=client,
-                                    type="instant", recurrence_type=3, topic="nonsense", user_id="mock@moker.com",
+                                    type="Instant", recurrence_type=3, topic="nonsense", user_id="mock@moker.com",
                                     end_date_time="2022-10-04T15:59:00Z", monthly_week=2, monthly_week_day=3, end_times=7)
     assert e.value.message == "Collision arguments. Choose only one of these two arguments, end_time or end_date_time."
 
@@ -512,7 +512,7 @@ def test_zoom_create_meeting_command__too_meny_arguments3(mocker):
     from Zoom import zoom_create_meeting_command
     with pytest.raises(DemistoException) as e:
         zoom_create_meeting_command(client=client,
-                                    type="recurring meeting with fixed time", recurrence_type="Monthly",
+                                    type="Recurring meeting with fixed time", recurrence_type="Monthly",
                                     topic="nonsense", user_id="mock@moker.com",
                                     end_date_time="2022-10-04T15:59:00Z", end_times=None)
     assert e.value.message == """Missing arguments. A recurring meeting with a fixed time and monthly recurrence_type
@@ -537,7 +537,7 @@ def test_zoom_create_meeting_command__too_meny_arguments4(mocker):
     from Zoom import zoom_create_meeting_command
     with pytest.raises(DemistoException) as e:
         zoom_create_meeting_command(client=client,
-                                    type="recurring meeting with fixed time", topic="nonsense", user_id="mock@moker.com")
+                                    type="Recurring meeting with fixed time", topic="nonsense", user_id="mock@moker.com")
     assert e.value.message == """Missing arguments. A recurring meeting with a fixed
 time is missing this argument: recurrence_type."""
 
