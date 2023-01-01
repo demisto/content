@@ -55,6 +55,6 @@
         }
     },
     "expiration": 0,
-    "layout": "Layout",
+    "layout": "Software",
     "fromVersion": "6.5.0"
 }
