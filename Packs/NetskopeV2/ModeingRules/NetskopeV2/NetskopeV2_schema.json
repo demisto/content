@@ -1,0 +1,100 @@
+{
+    "netskope_netskopev2_raw": {
+      "dstport": {
+        "type": "int",
+        "is_array": false
+      },
+      "request_id": {
+        "type": "int",
+        "is_array": false
+      },
+      "client_bytes": {
+        "type": "int",
+        "is_array": false
+      },
+      "dst_latitude": {
+        "type": "float",
+        "is_array": false
+      },
+      "dst_longitude": {
+        "type": "float",
+        "is_array": false
+      },
+      "server_bytes": {
+        "type": "int",
+        "is_array": false
+      },
+      "src_latitude": {
+        "type": "float",
+        "is_array": false
+      },
+      "src_longitude": {
+        "type": "float",
+        "is_array": false
+      },
+      "conn_duration": {
+        "type": "int",
+        "is_array": false
+      },
+      "app_session_id": {
+        "type": "int",
+        "is_array": false
+      },
+      "browser_session_id": {
+        "type": "int",
+        "is_array": false
+      },
+      "os": {
+        "type": "string",
+        "is_array": false
+      },
+      "app": {
+        "type": "string",
+        "is_array": false
+      },
+      "ccl": {
+        "type": "string",
+        "is_array": false
+      },
+      "url": {
+        "type": "string",
+        "is_array": false
+      },
+      "page": {
+        "type": "string",
+        "is_array": false
+      },
+      "domain": {
+        "type": "string",
+        "is_array": false
+      },
+      "type": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "dstip": {
+        "type": "string",
+        "is_array": false
+      },
+      "device": {
+        "type": "string",
+        "is_array": false
+      },
+      "userip": {
+        "type": "string",
+        "is_array": false
+      },
+      "browser": {
+        "type": "string",
+        "is_array": false
+      },
+      "userkey": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

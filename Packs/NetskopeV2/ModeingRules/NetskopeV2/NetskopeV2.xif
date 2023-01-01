@@ -1,0 +1,33 @@
+[MODEL: dataset="netskope_netskopev2_raw"] %%%%%% Verify %%%%%%%
+alter
+    type_cloud = lowercase(if(traffic_type = "CloudApp", site, null)),
+    type_web = lowercase(if(traffic_type ~= "[w|W]eb", site, null)),
+    lower_c = lowercase(device)
+| alter
+	xdm.observer.type = "PageEvents",
+    xdm.target.port = dstport,						
+	xdm.event.id = request_id,
+	xdm.source.sent_bytes = client_bytes,
+	xdm.target.location.latitude = dst_latitude,
+	xdm.target.location.longitude = dst_longitude,
+	xdm.target.sent_bytes = server_bytes,
+	xdm.source.location.latitude = src_latitude,
+	xdm.source.location.longitude = src_longitude,
+	xdm.event.duration = conn_duration,				
+	xdm.session_context_id = app_session_id,
+	xdm.network.session_id = browser_session_id,
+	xdm.source.host.os = os,
+	xdm.source.application.name = app,
+	xdm.alert.severity = ccl,
+	xdm.network.http.url = url,
+	xdm.target.url = page,
+	xdm.target.application.name = type_cloud,				
+	xdm.target.domain = coalesce(domain, type_web),				
+	xdm.event.type = type,
+	xdm.source.user.username = user,
+	xdm.target.ipv4 = dstip,
+	xdm.source.host.ipv4_addresses = srcip,
+	xdm.source.host.os_family = if(lower_c ~= "android", "ANDROID", lower_c ~= "windows", "WINDOWS", lower_c ~= "mac", "MACOS", lower_c ~= "linux", "LINUX", lower_c ~= "ios", "IOS", lower_c ~= "ubuntu", "UBUNTU", lower_c ~= "debian", "DEBIAN", lower_c ~= "fedora", "FEDORA", lower_c ~= "centos", "CENTOS", lower_c ~= "chrome", "CHROMEOS", lower_c ~= "solaris", "SOLARIS", lower_c ~= "scada", "SCADA", lower_c = null, null, "UNKNOWN"),
+	xdm.source.ipv4 = userip,
+	xdm.network.http.browser = browser,
+	xdm.source.user.employee_id = userkey;
