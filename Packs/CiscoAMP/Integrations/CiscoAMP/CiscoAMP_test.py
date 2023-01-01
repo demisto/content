@@ -235,7 +235,15 @@ def mock_client() -> Client:
         )
     ]
 )
-def test_computer_list_command(requests_mock, mock_client, args, suffix, file, expected_readable_output, expected_output):
+def test_computer_list_command(
+    requests_mock,
+    mock_client,
+    args,
+    suffix,
+    file,
+    expected_readable_output,
+    expected_output
+):
     """
     Scenario:
     -   Get a list of 34 computers.
@@ -710,7 +718,9 @@ def test_computer_isolation_feature_availability_get_command(requests_mock, mock
     from CiscoAMP import computers_isolation_feature_availability_get_command
     response = computers_isolation_feature_availability_get_command(mock_client, args)
 
-    assert response.readable_output == 'Can get information about an isolation with computer-isolation-get\nCan request to create a new isolation with computer-isolation-create\nCan request to stop the isolation with computer-isolation-delete\n'
+    assert response.readable_output == 'Can get information about an isolation with computer-isolation-get\n' + \
+        'Can request to create a new isolation with computer-isolation-create\n' + \
+        'Can request to stop the isolation with computer-isolation-delete\n'
 
 
 def test_computer_isolation_get_command(requests_mock, mock_client):
@@ -1398,7 +1408,6 @@ def test_indicator_list_command(requests_mock, mock_client, file, args, suffix):
     )
 
     from CiscoAMP import indicator_list_command
-    from CommonServerPython import dict_safe_get
     response = indicator_list_command(mock_client, args)
 
     assert response.outputs_prefix == 'CiscoAMP.Indicator'
