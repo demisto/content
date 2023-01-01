@@ -358,6 +358,9 @@ script:
     - contextPath: ThreatVault.Antivirus.name
       description: The name of the signature.
       type: String
+    - contextPath: ThreatVault.Antivirus.action
+      description: The action of the signature.
+      type: String
     - contextPath: ThreatVault.Antivirus.description
       description: The description of the signature.
       type: String
@@ -374,7 +377,7 @@ script:
       description: The related sha256 hashes of the threat.
       type: String
     - contextPath: ThreatVault.Antivirus.release
-      description: The default action when the signature is triggered.
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.Fileformat.id
       description: The unique ID of the signature.
@@ -485,7 +488,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.DNS.release
-      description: 
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.DNS.status
       description: The status of the signature.
@@ -542,7 +545,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.SpywareC2.release
-      description: 
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.SpywareC2.status
       description: The status of the signature.
@@ -704,6 +707,9 @@ script:
     - contextPath: ThreatVault.Antivirus.name
       description: The name of the signature.
       type: String
+    - contextPath: ThreatVault.Antivirus.action
+      description: The action of the signature.
+      type: String
     - contextPath: ThreatVault.Antivirus.description
       description: The description of the signature.
       type: String
@@ -720,7 +726,7 @@ script:
       description: The related SHA256 hashes of the threat.
       type: String
     - contextPath: ThreatVault.Antivirus.release
-      description: The default action when the signature is triggered.
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.FileInfo.filetype
       description: The file type of the file.
@@ -816,7 +822,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.DNS.release
-      description: 
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.DNS.status
       description: The status of the signature.
@@ -873,7 +879,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.SpywareC2.release
-      description: 
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.SpywareC2.status
       description: The status of the signature.
@@ -1067,6 +1073,9 @@ script:
     - contextPath: ThreatVault.Antivirus.name
       description: The name of the signature.
       type: String
+    - contextPath: ThreatVault.Antivirus.action
+      description: The action of the signature.
+      type: String
     - contextPath: ThreatVault.Antivirus.description
       description: The description of the signature.
       type: String
@@ -1083,7 +1092,7 @@ script:
       description: The related SHA256 hashes of the threat.
       type: String
     - contextPath: ThreatVault.Antivirus.release
-      description: The default action when the signature is triggered.
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.Fileformat.id
       description: The unique ID of the signature.
@@ -1161,7 +1170,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.DNS.release
-      description: 
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.DNS.status
       description: The status of the signature.
@@ -1218,7 +1227,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.SpywareC2.release
-      description: 
+      description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.SpywareC2.status
       description: The status of the signature.

@@ -20,6 +20,74 @@ LIST_OF_RN_KEYS = [
 
 HEADERS_FILE = ["FileType", "MD5", "SHA256", "SHA1", "Size", "Status"]
 HEADERS_CVE = ["ID", "Description", "Score", "Published", "Modified"]
+HEADERS_SPYWARE = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Vendor",
+    "Score",
+    "Default action",
+    "Details",
+    "Reference",
+    "Status",
+    "Min version",
+    "Max version",
+    "CVE"
+]
+HEADERS_VULNERABILITY = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Category",
+    "Score",
+    "Default action",
+    "Vendor",
+    "Reference",
+    "Status",
+    "Published version",
+    "Latest release version",
+    "Published",
+    "Latest release time",
+    "CVE"
+]
+HEADERS_FILEFORMAT = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Category",
+    "Score",
+    "Default action",
+    "Vendor",
+    "Reference",
+    "Status",
+    "Published version",
+    "Latest release version",
+    "Published",
+    "Latest release time"
+]
+HEADERS_ANTIVIRUS = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Subtype",
+    "Score",
+    "Action",
+    "Create Time",
+    "Related sha256 hashes",
+    "Release"
+]
+HEADERS_DNS_RTDNS_SPYWAREC2 = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Severity",
+    "Type",
+    "Subtype",
+    "Action",
+    "Create Time",
+    "Status",
+    "Release"
+]
 
 DATE_REGEX = r"\d{4}-[0-9]{2}-[0-9]{2}$"
 
@@ -191,7 +259,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 table_for_md.update(
                     {
                         "Release": antivirus.get("release"),
-                        "CreateTime": response.get("create_time"),
+                        "Create Time": response.get("create_time"),
                         "SignatureId": antivirus.get("id"),
                         "Family": response.get("family"),
                         "Platform": response.get("platform"),
@@ -253,8 +321,8 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 "Description": response.get("description"),
                 "Subtype": response.get("subtype"),
                 "Score": response.get("severity"),
-                "Default action": response.get("default_action"),
-                "Create time": response.get("create_time"),
+                "Action": response.get("action"),
+                "Create Time": response.get("create_time"),
                 "Related sha256 hashes": response.get("related_sha256_hashes"),
                 "Release": response.get("release"),
             }
@@ -273,6 +341,20 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 "Min version": response.get("min_version"),
                 "Max version": response.get("max_version"),
                 "CVE": response.get("cve"),
+            }
+
+        case "rtdns" | "dns" | "spywarec2":
+            table_for_md = {
+                "ThreatID": response.get("id"),
+                "Name": response.get("name"),
+                "Description": response.get("description"),
+                "Severity": response.get("severity"),
+                "Type": response.get("type"),
+                "Subtype": response.get("subtype"),
+                "Action": response.get("action"),
+                "Create Time": response.get("create_time"),
+                "Status": response.get('status'),
+                "Release": response.get("release"),
             }
 
         case "release_notes":
@@ -324,6 +406,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
             readable_output = tableToMarkdown(
                 name=f"Antivirus Reputation: {antivirus.get('id')}",
                 t=table_for_md,
+                headers=HEADERS_ANTIVIRUS,
                 removeNull=True,
             )
             command_results_list.append(
@@ -348,6 +431,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
             readable_output = tableToMarkdown(
                 name=f"Spyware Reputation: {spyware.get('id')}",
                 t=table_for_md,
+                headers=HEADERS_SPYWARE,
                 removeNull=True,
             )
             command_results_list.append(
@@ -372,6 +456,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
             readable_output = tableToMarkdown(
                 name=f"Vulnerability Reputation: {vulnerability.get('id')}",
                 t=table_for_md,
+                headers=HEADERS_VULNERABILITY,
                 removeNull=True,
             )
             command_results_list.append(
@@ -396,6 +481,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
             readable_output = tableToMarkdown(
                 name=f"Fileformat Reputation: {fileformat.get('id')}",
                 t=table_for_md,
+                headers=HEADERS_FILEFORMAT,
                 removeNull=True,
             )
             command_results_list.append(
@@ -405,6 +491,81 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                     outputs=fileformat
                     if expanded
                     else response.get("data", {}).get("fileformat", []),
+                    readable_output=readable_output,
+                )
+            )
+
+    if "dns" in response["data"]:
+        if expanded:
+            dns = response.get("data", {}).get("dns", [])
+        else:
+            dns = [response.get("data", {}).get("dns", ([],))[0]]
+
+        for d in dns:
+            table_for_md = resp_to_hr(response=d, type_="dns")
+            readable_output = tableToMarkdown(
+                name=f"DNS Reputation: {d.get('id')}",
+                t=table_for_md,
+                headers=HEADERS_DNS_RTDNS_SPYWAREC2,
+                removeNull=True,
+            )
+            command_results_list.append(
+                CommandResults(
+                    outputs_prefix="ThreatVault.DNS",
+                    outputs_key_field="id",
+                    outputs=d
+                    if expanded
+                    else response.get("data", {}).get("dns", []),
+                    readable_output=readable_output,
+                )
+            )
+
+    if "rtdns" in response["data"]:
+        if expanded:
+            rtdns = response.get("data", {}).get("rtdns", [])
+        else:
+            rtdns = [response.get("data", {}).get("rtdns", ([],))[0]]
+
+        for rtd in rtdns:
+            table_for_md = resp_to_hr(response=rtd, type_="rtdns")
+            readable_output = tableToMarkdown(
+                name=f"RTDNS Reputation: {rtd.get('id')}",
+                t=table_for_md,
+                headers=HEADERS_DNS_RTDNS_SPYWAREC2,
+                removeNull=True,
+            )
+            command_results_list.append(
+                CommandResults(
+                    outputs_prefix="ThreatVault.RTDNS",
+                    outputs_key_field="id",
+                    outputs=d
+                    if expanded
+                    else response.get("data", {}).get("rtdns", []),
+                    readable_output=readable_output,
+                )
+            )
+
+    if "spywarec2" in response["data"]:
+        if expanded:
+            spywarec2 = response.get("data", {}).get("spywarec2", [])
+        else:
+            spywarec2 = [response.get("data", {}).get("spywarec2", ([],))[0]]
+
+        for spyc2 in spywarec2:
+            table_for_md = resp_to_hr(response=spyc2, type_="spywarec2")
+            readable_output = tableToMarkdown(
+                name=f"SpywareC2 Reputation: {spyc2.get('id')}",
+                t=table_for_md,
+                headers=HEADERS_DNS_RTDNS_SPYWAREC2,
+                removeNull=True,
+            )
+            command_results_list.append(
+                CommandResults(
+                    outputs_prefix="ThreatVault.SpywareC2",
+                    outputs_key_field="id",
+                    outputs=spyc2
+                    if expanded
+                    else response.get("data", {}).get("spywarec2", []),
                     readable_output=readable_output,
                 )
             )
