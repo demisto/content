@@ -221,7 +221,12 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         if not (params.get('start_id') or params.get('start_timestamp')):
             msg += 'A starting point for fetching is missing, please enter First fetch ID or First fetch timestamp. '
 
-        if params.get('format_time') == 'Relative Time' and not params.get('offset'):
+        if params.get('start_timestamp') and params.get('start_id'):
+            msg += 'In case of ID and timestamp, fill only First fetch timestamp, First fetch ID should be unfilled. ' \
+                   'In case of Unique ascending ID or unique timestamp, fill only First fetch timestamp either ' \
+                   'First fetch ID, but not both. '
+
+        if params.get('format_time') == 'Relative Time' and params.get('start_timestamp') and not params.get('offset'):
             msg += 'An Offset is missing where Relative Time is chosen, please enter Offset. '
 
         # The request to the database is pointless if one of the validations failed - so returns informative message
@@ -386,6 +391,7 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
             if record.get(params.get('id_column')) in last_run.get('ids'):
                 continue
 
+        record['type'] = 'GenericSQL Record'
         incident_context = {
             'name': record.get(params.get('incident_name')) if record.get(params.get('incident_name'))
             else record.get(params.get('column_name')),
