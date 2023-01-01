@@ -591,6 +591,32 @@ def test_event_list_command(requests_mock, mock_client):
         if computer := response.outputs.get('computer'):
             assert 'links' not in computer
 
+    assert responses[-1].readable_output == \
+        '### Results\n' + \
+        '|Current Item Count|Index|Items Per Page|Total|\n' + \
+        '|---|---|---|---|\n' + \
+        '| metadata_results_current_item_count | metadata_results_index | ' + \
+        'metadata_results_items_per_page | metadata_results_total |\n' + \
+        '### Event Information\n' + \
+        '|ID|Date|Event Type|Detection|Connector GUID|Severity|\n' + \
+        '|---|---|---|---|---|---|\n' + \
+        '| data[0]_id | data[0]_date | data[0]_event_type |  | data[0]_connector_guid |  |\n' + \
+        '| data[1]_id | data[1]_date | data[1]_event_type |  | data[1]_connector_guid |  |\n' + \
+        '| data[2]_id | data[2]_date | data[2]_event_type |  | data[2]_connector_guid |  |\n' + \
+        '| data[3]_id | data[3]_date | data[3]_event_type |  | data[3]_connector_guid |  |\n' + \
+        '| data[4]_id | data[4]_date | data[4]_event_type |  | data[4]_connector_guid |  |\n' + \
+        '| data[5]_id | data[5]_date | data[5]_event_type |  | data[5]_connector_guid |  |\n' + \
+        '| data[6]_id | data[6]_date | data[6]_event_type |  | data[6]_connector_guid |  |\n' + \
+        '| data[7]_id | data[7]_date | data[7]_event_type |  | data[7]_connector_guid |  |\n' + \
+        '| data[8]_id | data[8]_date | data[8]_event_type |  | data[8]_connector_guid |  |\n' + \
+        '| data[9]_id | data[9]_date | data[9]_event_type |  | data[9]_connector_guid |  |\n' + \
+        '| data[10]_id | data[10]_date | data[10]_event_type |  | data[10]_connector_guid |  |\n' + \
+        '| data[11]_id | data[11]_date | data[11]_event_type |  | data[11]_connector_guid |  |\n' + \
+        '| data[12]_id | data[12]_date | data[12]_event_type |  | data[12]_connector_guid |  |\n' + \
+        '| data[13]_id | data[13]_date | data[13]_event_type |  |  |  |\n' + \
+        '| data[14]_id | data[14]_date | data[14]_event_type | ' + \
+        'data[14]_detection | data[14]_connector_guid | data[14]_severity |\n'
+
 
 @pytest.mark.parametrize(
     'args, expected_number_of_results, expected_value',
