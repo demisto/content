@@ -294,7 +294,7 @@
             "playbookID": "Azure NSG - Test"
         },
         {
-            "integrations": "OpenCTI Feed",
+            "integrations": "OpenCTI Feed 4.X",
             "playbookID": "OpenCTI Feed Test",
             "fromversion": "5.5.0"
         },
@@ -3826,13 +3826,6 @@
             ]
         },
         {
-            "playbookID": "test_MsGraphFiles",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Microsoft_Graph_Files"
-            ]
-        },
-        {
             "playbookID": "AlphaVantage Test Playbook",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5226,6 +5219,7 @@
         }
     ],
     "skipped_tests": {
+        "CirclIntegrationTest": "No instance",
         "QRadar_v3-test": "Issue CIAC-4976",
         "Detonate URL - Generic Test": "Issue CRTX-67708",
         "Test XDR Playbook": "Issue CIAC-4624",
@@ -5374,6 +5368,9 @@
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
+        "Google-KMS-test": "",
+        "hashicorp_test": "",
+        "Google BigQuery Test": "",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
