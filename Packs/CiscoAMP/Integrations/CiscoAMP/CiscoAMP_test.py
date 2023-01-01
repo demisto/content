@@ -61,11 +61,181 @@ def mock_client() -> Client:
 
 
 @pytest.mark.parametrize(
-    'args, suffix, file',
-    [({'limit': '34'}, '', 'computer_list_response.json'),
-     ({'connector_guid': '1'}, '/1', 'computer_get_response.json')]
+    'args, suffix, file, expected_readable_output, expected_output',
+    [
+        (
+            {'limit': '34'},
+            '',
+            'computer_list_response.json',
+            '### Results\n'
+            '|Current Item Count|Index|Items Per Page|Total|\n'
+            '|---|---|---|---|\n'
+            '| metadata_results_current_item_count | metadata_results_index | metadata_results_current_item_count '
+            '| metadata_results_total |\n'
+            '### Computer Information\n'
+            '|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|\n'
+            '|---|---|---|---|---|---|\n'
+            '| data[0]_hostname | data[0]_connector_guid | data[0]_operating_system (Build data[0]_os_version) '
+            '| data[0]_external_ip | data[0]_group_guid | data[0]_policy_guid |\n'
+            '| data[1]_hostname | data[1]_connector_guid | data[1]_operating_system (Build data[1]_os_version) '
+            '| data[1]_external_ip | data[1]_group_guid | data[1]_policy_guid |\n'
+            '| data[2]_hostname | data[2]_connector_guid | data[2]_operating_system (Build data[2]_os_version) '
+            '| data[2]_external_ip | data[2]_group_guid | data[2]_policy_guid |\n'
+            '| data[3]_hostname | data[3]_connector_guid | data[3]_operating_system (Build data[3]_os_version) '
+            '| data[3]_external_ip | data[3]_group_guid | data[3]_policy_guid |\n'
+            '| data[4]_hostname | data[4]_connector_guid | data[4]_operating_system (Build data[4]_os_version) '
+            '| data[4]_external_ip | data[4]_group_guid | data[4]_policy_guid |\n'
+            '| data[5]_hostname | data[5]_connector_guid | data[5]_operating_system (Build data[5]_os_version) '
+            '| data[5]_external_ip | data[5]_group_guid | data[5]_policy_guid |\n'
+            '| data[6]_hostname | data[6]_connector_guid | data[6]_operating_system (Build data[6]_os_version) '
+            '| data[6]_external_ip | data[6]_group_guid | data[6]_policy_guid |\n'
+            '| data[7]_hostname | data[7]_connector_guid | data[7]_operating_system (Build data[7]_os_version) '
+            '| data[7]_external_ip | data[7]_group_guid | data[7]_policy_guid |\n'
+            '| data[8]_hostname | data[8]_connector_guid | data[8]_operating_system (Build data[8]_os_version) '
+            '| data[8]_external_ip | data[8]_group_guid | data[8]_policy_guid |\n'
+            '| data[9]_hostname | data[9]_connector_guid | data[9]_operating_system (Build data[9]_os_version) '
+            '| data[9]_external_ip | data[9]_group_guid | data[9]_policy_guid |\n'
+            '| data[10]_hostname | data[10]_connector_guid | data[10]_operating_system (Build data[10]_os_version) '
+            '| data[10]_external_ip | data[10]_group_guid | data[10]_policy_guid |\n'
+            '| data[11]_hostname | data[11]_connector_guid | data[11]_operating_system (Build data[11]_os_version) '
+            '| data[11]_external_ip | data[11]_group_guid | data[11]_policy_guid |\n'
+            '| data[12]_hostname | data[12]_connector_guid | data[12]_operating_system (Build data[12]_os_version) '
+            '| data[12]_external_ip | data[12]_group_guid | data[12]_policy_guid |\n'
+            '| data[13]_hostname | data[13]_connector_guid | data[13]_operating_system (Build data[13]_os_version) '
+            '| data[13]_external_ip | data[13]_group_guid | data[13]_policy_guid |\n'
+            '| data[14]_hostname | data[14]_connector_guid | data[14]_operating_system (Build data[14]_os_version) '
+            '| data[14]_external_ip | data[14]_group_guid | data[14]_policy_guid |\n'
+            '| data[15]_hostname | data[15]_connector_guid | data[15]_operating_system (Build data[15]_os_version) '
+            '| data[15]_external_ip | data[15]_group_guid | data[15]_policy_guid |\n'
+            '| data[16]_hostname | data[16]_connector_guid | data[16]_operating_system (Build data[16]_os_version) '
+            '| data[16]_external_ip | data[16]_group_guid | data[16]_policy_guid |\n'
+            '| data[17]_hostname | data[17]_connector_guid | data[17]_operating_system (Build data[17]_os_version) '
+            '| data[17]_external_ip | data[17]_group_guid | data[17]_policy_guid |\n'
+            '| data[18]_hostname | data[18]_connector_guid | data[18]_operating_system (Build data[18]_os_version) '
+            '| data[18]_external_ip | data[18]_group_guid | data[18]_policy_guid |\n'
+            '| data[19]_hostname | data[19]_connector_guid | data[19]_operating_system (Build data[19]_os_version) '
+            '| data[19]_external_ip | data[19]_group_guid | data[19]_policy_guid |\n'
+            '| data[20]_hostname | data[20]_connector_guid | data[20]_operating_system (Build data[20]_os_version) '
+            '| data[20]_external_ip | data[20]_group_guid | data[20]_policy_guid |\n'
+            '| data[21]_hostname | data[21]_connector_guid | data[21]_operating_system (Build data[21]_os_version) '
+            '| data[21]_external_ip | data[21]_group_guid | data[21]_policy_guid |\n'
+            '| data[22]_hostname | data[22]_connector_guid | data[22]_operating_system (Build data[22]_os_version) '
+            '| data[22]_external_ip | data[22]_group_guid | data[22]_policy_guid |\n'
+            '| data[23]_hostname | data[23]_connector_guid | data[23]_operating_system (Build data[23]_os_version) '
+            '| data[23]_external_ip | data[23]_group_guid | data[23]_policy_guid |\n'
+            '| data[24]_hostname | data[24]_connector_guid | data[24]_operating_system (Build data[24]_os_version) '
+            '| data[24]_external_ip | data[24]_group_guid | data[24]_policy_guid |\n'
+            '| data[25]_hostname | data[25]_connector_guid | data[25]_operating_system (Build data[25]_os_version) '
+            '| data[25]_external_ip | data[25]_group_guid | data[25]_policy_guid |\n'
+            '| data[26]_hostname | data[26]_connector_guid | data[26]_operating_system (Build data[26]_os_version) '
+            '| data[26]_external_ip | data[26]_group_guid | data[26]_policy_guid |\n'
+            '| data[27]_hostname | data[27]_connector_guid | data[27]_operating_system (Build data[27]_os_version) '
+            '| data[27]_external_ip | data[27]_group_guid | data[27]_policy_guid |\n'
+            '| data[28]_hostname | data[28]_connector_guid | data[28]_operating_system (Build data[28]_os_version) '
+            '| data[28]_external_ip | data[28]_group_guid | data[28]_policy_guid |\n'
+            '| data[29]_hostname | data[29]_connector_guid | data[29]_operating_system (Build data[29]_os_version) '
+            '| data[29]_external_ip | data[29]_group_guid | data[29]_policy_guid |\n'
+            '| data[30]_hostname | data[30]_connector_guid | data[30]_operating_system (Build data[30]_os_version) '
+            '| data[30]_external_ip | data[30]_group_guid | data[30]_policy_guid |\n'
+            '| data[31]_hostname | data[31]_connector_guid | data[31]_operating_system (Build data[31]_os_version) '
+            '| data[31]_external_ip | data[31]_group_guid | data[31]_policy_guid |\n'
+            '| data[32]_hostname | data[32]_connector_guid | data[32]_operating_system (Build data[32]_os_version) '
+            '| data[32]_external_ip | data[32]_group_guid | data[32]_policy_guid |\n'
+            '| data[33]_hostname | data[33]_connector_guid | data[33]_operating_system (Build data[33]_os_version) '
+            '| data[33]_external_ip | data[33]_group_guid | data[33]_policy_guid |\n',
+            {
+                'connector_guid': 'data[33]_connector_guid',
+                'hostname': 'data[33]_hostname',
+                'windows_processor_id': 'data[33]_windows_processor_id',
+                'active': 'data[33]_active',
+                'connector_version': 'data[33]_connector_version',
+                'operating_system': 'data[33]_operating_system',
+                'os_version': 'data[33]_os_version',
+                'internal_ips': ['data[33]_internal_ips_0'],
+                'external_ip': 'data[33]_external_ip',
+                'group_guid': 'data[33]_group_guid',
+                'install_date': 'data[33]_install_date',
+                'is_compromised': 'data[33]_is_compromised',
+                'demo': 'data[33]_demo',
+                'windows_machine_guid': 'data[33]_windows_machine_guid',
+                'network_addresses': [{
+                    'mac': 'data[33]_network_addresses[0]_mac',
+                    'ip': 'data[33]_network_addresses[0]_ip'
+                }],
+                'policy': {
+                    'guid': 'data[33]_policy_guid',
+                    'name': 'data[33]_policy_name'
+                },
+                'groups': [{
+                    'guid': 'data[33]_groups[0]_guid',
+                    'name': 'data[33]_groups[0]_name'
+                }],
+                'last_seen': 'data[33]_last_seen',
+                'av_update_definitions': {
+                    'status': 'data[33]_av_update_definitions_status',
+                    'detection_engine': 'data[33]_av_update_definitions_detection_engine',
+                    'version': 'data[33]_av_update_definitions_version',
+                    'updated_at': 'data[33]_av_update_definitions_updated_at'
+                },
+                'faults': [],
+                'isolation': {
+                    'available': 'data[33]_isolation_available',
+                    'status': 'data[33]_isolation_status'
+                },
+                'orbital': {
+                    'status': 'data[33]_orbital_status'
+                }
+            }
+        ),
+        (
+            {'connector_guid': '1'},
+            '/1',
+            'computer_get_response.json',
+            '### Computer Information\n'
+            '|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|\n'
+            '|---|---|---|---|---|---|\n'
+            '| data_hostname | data_connector_guid | data_operating_system (Build data_os_version) |'
+            ' data_external_ip | data_group_guid | data_policy_guid |\n',
+            {
+                'connector_guid': 'data_connector_guid',
+                'hostname': 'data_hostname',
+                'windows_processor_id': 'data_windows_processor_id',
+                'active': 'data_active',
+                'connector_version': 'data_connector_version',
+                'operating_system': 'data_operating_system',
+                'os_version': 'data_os_version',
+                'internal_ips': ['data_internal_ips_0'],
+                'external_ip': 'data_external_ip',
+                'group_guid': 'data_group_guid',
+                'install_date': 'data_install_date',
+                'is_compromised': 'data_is_compromised',
+                'demo': 'data_demo',
+                'network_addresses': [{
+                    'mac': 'data_network_addresses[0]_mac',
+                    'ip': 'data_network_addresses[0]_ip'
+                }],
+                'policy': {
+                    'guid': 'data_policy_guid',
+                    'name': 'data_policy_name'
+                },
+                'groups': [{
+                    'guid': 'data_groups[0]_guid',
+                    'name': 'data_groups[0]_name'
+                }],
+                'last_seen': 'data_last_seen',
+                'faults': [],
+                'isolation': {
+                    'available': 'data_isolation_available',
+                    'status': 'data_isolation_status'
+                },
+                'orbital': {
+                    'status': 'data_orbital_status'
+                }
+            }
+        )
+    ]
 )
-def test_computer_list_command(requests_mock, mock_client, args, suffix, file):
+def test_computer_list_command(requests_mock, mock_client, args, suffix, file, expected_readable_output, expected_output):
     """
     Scenario:
     -   Get a list of 34 computers.
@@ -88,9 +258,6 @@ def test_computer_list_command(requests_mock, mock_client, args, suffix, file):
     from CiscoAMP import computer_list_command
     responses = computer_list_command(mock_client, args)
 
-    counter = 0
-
-    # Last CommandResults has only a readableOutput, therefore it won't be checked.
     for response in responses[:-1]:
         assert response.outputs_prefix == 'CiscoAMP.Computer'
         assert 'links' not in response.outputs
@@ -99,7 +266,8 @@ def test_computer_list_command(requests_mock, mock_client, args, suffix, file):
         assert response.indicator.status == 'Online' if response.outputs['active'] else 'Offline'
         assert response.indicator.vendor == 'CiscoAMP Response'
 
-        counter += 1
+    assert response.outputs == expected_output
+    assert responses[-1].readable_output == expected_readable_output
 
 
 def test_computer_list_error_command(requests_mock, mock_client):
@@ -160,7 +328,51 @@ def test_computer_trajectory_list_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.ComputerTrajectory'
     assert len(response.outputs) == args['page_size']
-    assert response.outputs[0]['timestamp'] == 'data_events[2]_timestamp'
+    assert response.outputs == [{
+        'timestamp': 'data_events[2]_timestamp',
+        'timestamp_nanoseconds': 'data_events[2]_timestamp_nanoseconds',
+        'date': 'data_events[2]_date',
+        'event_type': 'data_events[2]_event_type',
+        'group_guids': ['data_events[2]_group_guids_0'],
+        'file': {
+            'disposition': 'data_events[2]_file_disposition',
+            'file_name': 'data_events[2]_file_file_name',
+            'file_path': 'data_events[2]_file_file_path',
+            'file_type': 'data_events[2]_file_file_type',
+            'identity': {
+                'sha256': 'data_events[2]_file_identity_sha256'
+            },
+            'parent': {
+                'disposition': 'data_events[2]_file_parent_disposition',
+                'identity': {
+                    'sha256': 'data_events[2]_file_parent_identity_sha256'
+                }
+            }
+        },
+        'connector_guid': 'data_computer_connector_guid'
+    }, {
+        'timestamp': 'data_events[3]_timestamp',
+        'timestamp_nanoseconds': 'data_events[3]_timestamp_nanoseconds',
+        'date': 'data_events[3]_date',
+        'event_type': 'data_events[3]_event_type',
+        'group_guids': ['data_events[3]_group_guids_0'],
+        'file': {
+            'disposition': 'data_events[3]_file_disposition',
+            'file_name': 'data_events[3]_file_file_name',
+            'file_path': 'data_events[3]_file_file_path',
+            'file_type': 'data_events[3]_file_file_type',
+            'identity': {
+                'sha256': 'data_events[3]_file_identity_sha256'
+            },
+            'parent': {
+                'disposition': 'data_events[3]_file_parent_disposition',
+                'identity': {
+                    'sha256': 'data_events[3]_file_parent_identity_sha256'
+                }
+            }
+        },
+        'connector_guid': 'data_computer_connector_guid'
+    }]
     assert_output_has_no_links(response.outputs)
 
 
@@ -216,16 +428,11 @@ def test_computer_user_activity_list_command(requests_mock, mock_client):
     assert_output_has_no_links(response.outputs)
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['connector_guid'] == mock_output['connector_guid']
-        assert output['hostname'] == mock_output['hostname']
-        assert output['active'] == mock_output['active']
+        mock_output.pop('links', None)
+        assert output == mock_output
 
 
-@pytest.mark.parametrize(
-    'args',
-    [({'connector_guid': '1', 'page': '1', 'page_size': '1'})]
-)
-def test_computer_user_trajectory_list_command(requests_mock, mock_client, args):
+def test_computer_user_trajectory_list_command(requests_mock, mock_client):
     """
     Scenario:
     -   Get a computer's trajectory with pagination.
@@ -238,6 +445,8 @@ def test_computer_user_trajectory_list_command(requests_mock, mock_client, args)
     -   Ensure length of the outputs is correct.
     -   Ensure connector_guid is in the outputs.
     """
+    args = {'connector_guid': '1', 'page': '1', 'page_size': '1'}
+
     mock_response = load_mock_response('computer_user_trajectory_response.json')
     requests_mock.get(
         f'{BASE_URL}/computers/{args["connector_guid"]}/user_trajectory',
@@ -249,11 +458,48 @@ def test_computer_user_trajectory_list_command(requests_mock, mock_client, args)
 
     assert response.outputs_prefix == 'CiscoAMP.ComputerUserTrajectory'
     assert len(response.outputs) == 1
-
-    for output, mock_output in zip(response.outputs, mock_response['data']['events']):
-        assert output['id'] == mock_output['id']
-        assert output['date'] == mock_output['date']
-        assert output['event_type'] == mock_output['event_type']
+    assert response.outputs == [{
+        'id': 'data_events[0]_id',
+        'timestamp': 'data_events[0]_timestamp',
+        'timestamp_nanoseconds': 'data_events[0]_timestamp_nanoseconds',
+        'date': 'data_events[0]_date',
+        'event_type': 'data_events[0]_event_type',
+        'event_type_id': 'data_events[0]_event_type_id',
+        'detection_id': 'data_events[0]_detection_id',
+        'group_guids': ['data_events[0]_group_guids_0'],
+        'severity': 'data_events[0]_severity',
+        'file': {
+            'disposition': 'data_events[0]_file_disposition',
+            'file_name': 'data_events[0]_file_file_name',
+            'file_path': 'data_events[0]_file_file_path',
+            'identity': {
+                'sha256': 'data_events[0]_file_identity_sha256',
+                'sha1': 'data_events[0]_file_identity_sha1',
+                'md5': 'data_events[0]_file_identity_md5'
+            },
+            'attack_details': {
+                'application':
+                'data_events[0]_file_attack_details_application',
+                'attacked_module':
+                'data_events[0]_file_attack_details_attacked_module',
+                'base_address':
+                'data_events[0]_file_attack_details_base_address',
+                'suspicious_files': ['data_events[0]_file_attack_details_suspicious_files_0'],
+                'indicators': [{
+                    'tactics': ['data_events[0]_file_attack_details_indicators[0]_tactics_0'],
+                    'severity': 'data_events[0]_file_attack_details_indicators[0]_severity',
+                    'description': 'data_events[0]_file_attack_details_indicators[0]_description',
+                    'short_description': 'data_events[0]_file_attack_details_indicators[0]_short_description',
+                    'id': 'data_events[0]_file_attack_details_indicators[0]_id',
+                    'techniques': ['data_events[0]_file_attack_details_indicators[0]_techniques_0']
+                }]
+            }
+        },
+        'user_name': 'data_events[0]_user_name',
+        'tactics': ['data_events[0]_tactics_0'],
+        'techniques': ['data_events[0]_techniques_0'],
+        'connector_guid': 'data_computer_connector_guid'
+    }]
 
 
 def test_computer_vulnerabilities_list_command(requests_mock, mock_client):
@@ -288,7 +534,10 @@ def test_computer_vulnerabilities_list_command(requests_mock, mock_client):
 
     for output, mock_output in zip(response.outputs, mock_response['data']['vulnerabilities']):
         assert output['connector_guid'] == mock_response['data']['connector_guid']
-        assert output['file']['identity']['sha256'] == mock_output['file']['identity']['sha256']
+
+        output.pop('connector_guid', None)
+        mock_output.pop('links', None)
+        assert output == mock_output
 
 
 def test_computer_move_command(requests_mock, mock_client):
@@ -319,7 +568,8 @@ def test_computer_move_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.Computer'
     assert 'links' not in response.outputs
-    assert response.outputs[0]['connector_guid'] == mock_response['data']['connector_guid']
+    mock_response['data'].pop('links', None)
+    assert response.outputs[0] == mock_response['data']
 
 
 def test_computer_delete_command(requests_mock, mock_client):
@@ -407,9 +657,8 @@ def test_computer_activity_list_command(requests_mock, mock_client):
     assert_output_has_no_links(response.outputs)
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['connector_guid'] == mock_output['connector_guid']
-        assert output['hostname'] == mock_output['hostname']
-        assert output['active'] == mock_output['active']
+        mock_output.pop('links', None)
+        assert output == mock_output
 
 
 def test_computer_activity_list_error_command(requests_mock, mock_client):
@@ -491,6 +740,8 @@ def test_computer_isolation_get_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.ComputerIsolation'
     assert response.outputs['connector_guid'] == args['connector_guid']
+    response.outputs.pop('connector_guid', None)
+    assert response.outputs == mock_response['data']
 
 
 def test_computer_isolation_create_command(requests_mock, mock_client):
@@ -521,9 +772,8 @@ def test_computer_isolation_create_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.ComputerIsolation'
     assert response.outputs['connector_guid'] == args['connector_guid']
-    assert response.outputs['available'] == mock_response['data']['available']
-    assert response.outputs['status'] == mock_response['data']['status']
-    assert response.outputs['unlock_code'] == mock_response['data']['unlock_code']
+    response.outputs.pop('connector_guid', None)
+    assert response.outputs == mock_response['data']
 
 
 def test_computer_isolation_delete_command(requests_mock, mock_client):
@@ -579,7 +829,6 @@ def test_event_list_command(requests_mock, mock_client):
     from CiscoAMP import event_list_command
     responses = event_list_command(mock_client, args)
 
-    # Not including last element as it is only a readable output.
     for response in responses[:-1]:
         assert response.outputs_prefix == 'CiscoAMP.Event'
 
@@ -619,12 +868,12 @@ def test_event_list_command(requests_mock, mock_client):
 
 
 @pytest.mark.parametrize(
-    'args, expected_number_of_results, expected_value',
-    [({}, 100, 'data[0]_id'),
-     ({'limit': '50'}, 50, 'data[0]_id'),
-     ({'page': '7', 'page_size': '5'}, 5, 'data[30]_id')]
+    'args, expected_number_of_results, start, end',
+    [({}, 100, 0, 100),
+     ({'limit': '50'}, 50, 0, 50),
+     ({'page': '7', 'page_size': '5'}, 5, 30, 35)]
 )
-def test_event_types_list_command(requests_mock, mock_client, args, expected_number_of_results, expected_value):
+def test_event_types_list_command(requests_mock, mock_client, args, expected_number_of_results, start, end):
     """
     Scenario:
     -   Get list of event types.
@@ -649,7 +898,10 @@ def test_event_types_list_command(requests_mock, mock_client, args, expected_num
 
     assert response.outputs_prefix == 'CiscoAMP.EventType'
     assert len(response.outputs) == expected_number_of_results
-    assert response.outputs[0]['id'] == expected_value
+
+    for output, mock_output in zip(response.outputs, mock_response['data'][start:end]):
+        mock_output.pop('links', None)
+        assert output == mock_output
 
 
 @pytest.mark.parametrize(
@@ -710,9 +962,8 @@ def test_file_list_list_command(requests_mock, mock_client, file, suffix, args, 
         assert output['type'] == expected_file_list_type
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['guid'] == mock_output['guid']
-        assert output['name'] == mock_output['name']
-        assert output['type'] == mock_output['type']
+        mock_output.pop('links', None)
+        assert output == mock_output
 
 
 @pytest.mark.parametrize(
@@ -757,15 +1008,15 @@ def test_file_list_item_list_command(requests_mock, mock_client, file, suffix, a
         assert_output_has_no_links(policies)
 
         for policy, mock_policy in zip(policies, mock_response['data']['policies']):
-            assert policy['guid'] == mock_policy['guid']
-            assert policy['name'] == mock_policy['name']
+            mock_policy.pop('links', None)
+            assert policy == mock_policy
 
     if items := response.outputs[0].get('items'):
         assert_output_has_no_links(items)
 
         for item, mock_item in zip(items, mock_response['data']['items']):
-            assert item['sha256'] == mock_item['sha256']
-            assert item['source'] == mock_item['source']
+            mock_item.pop('links', None)
+            assert item == mock_item
 
 
 def test_file_list_item_create_command(requests_mock, mock_client):
@@ -796,8 +1047,8 @@ def test_file_list_item_create_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.FileListItem'
     assert 'links' not in response.outputs
-    assert response.outputs[0]['sha256'] == mock_response['data']['sha256']
-    assert response.outputs[0]['description'] == mock_response['data']['description']
+    mock_response['data'].pop('links', None)
+    assert response.outputs[0] == mock_response['data']
 
 
 def test_file_list_item_delete_command(requests_mock, mock_client):
@@ -898,8 +1149,12 @@ def test_group_list_command(requests_mock, mock_client, file, args, suffix):
         mock_response['data'] = [mock_response['data']]
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['name'] == mock_output['name']
-        assert output['description'] == mock_output['description']
+        mock_output.pop('links', None)
+
+        for policy in mock_output.get('policies', []):
+            policy.pop('links', None)
+
+        assert output == mock_output
 
 
 def test_group_policy_update_command(requests_mock, mock_client):
@@ -938,8 +1193,12 @@ def test_group_policy_update_command(requests_mock, mock_client):
         mock_response['data'] = [mock_response['data']]
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['name'] == mock_output['name']
-        assert output['description'] == mock_output['description']
+        mock_output.pop('links', None)
+
+        for policy in mock_output.get('policies', []):
+            policy.pop('links', None)
+
+        assert output == mock_output
 
 
 def test_group_policy_update_error_command(requests_mock, mock_client):
@@ -1007,8 +1266,12 @@ def test_group_parent_update_command(requests_mock, mock_client, file):
         mock_response['data'] = [mock_response['data']]
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['name'] == mock_output['name']
-        assert output['description'] == mock_output['description']
+        mock_output.pop('links', None)
+
+        for policy in mock_output.get('policies', []):
+            policy.pop('links', None)
+
+        assert output == mock_output
 
 
 def test_group_create_command(requests_mock, mock_client):
@@ -1046,8 +1309,12 @@ def test_group_create_command(requests_mock, mock_client):
         mock_response['data'] = [mock_response['data']]
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['name'] == mock_output['name']
-        assert output['description'] == mock_output['description']
+        mock_output.pop('links', None)
+
+        for policy in mock_output.get('policies', []):
+            policy.pop('links', None)
+
+        assert output == mock_output
 
 
 def test_group_delete_command(requests_mock, mock_client):
@@ -1141,11 +1408,8 @@ def test_indicator_list_command(requests_mock, mock_client, file, args, suffix):
         mock_response['data'] = [mock_response['data']]
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['guid'] == mock_output['guid']
-        assert output['name'] == mock_output['name']
-        assert output['description'] == mock_output['description']
-        assert dict_safe_get(output, ['mitre', 'tactics']) == dict_safe_get(mock_output, ['mitre', 'tactics'])
-        assert dict_safe_get(output, ['mitre', 'techniques']) == dict_safe_get(mock_output, ['mitre', 'techniques'])
+        mock_output.pop('links', None)
+        assert output == mock_output
 
 
 @pytest.mark.parametrize(
@@ -1183,23 +1447,23 @@ def test_policy_list_command(requests_mock, mock_client, file, args, suffix):
         mock_response['data'] = [mock_response['data']]
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        assert output['guid'] == mock_output['guid']
-        assert output['name'] == mock_output['name']
-        assert output['description'] == mock_output['description']
+        mock_output.pop('links', None)
+        assert output == mock_output
 
 
 @pytest.mark.parametrize(
-    'args, expected_number_of_results, expected_value',
-    [({'ios_bid': 'Gotta'}, 100, 'data[0]_connector_guid'),
-     ({'ios_bid': 'Catch-em', 'limit': '50'}, 50, 'data[0]_connector_guid'),
-     ({'ios_bid': 'All', 'page': '7', 'page_size': '5'}, 5, 'data[30]_connector_guid')]
+    'args, expected_number_of_results, start, end',
+    [({'ios_bid': 'Gotta'}, 100, 0, 100),
+     ({'ios_bid': 'Catch-em', 'limit': '50'}, 50, 0, 50),
+     ({'ios_bid': 'All', 'page': '7', 'page_size': '5'}, 5, 30, 35)]
 )
 def test_app_trajectory_query_list_command(
     requests_mock,
     mock_client,
     args,
     expected_number_of_results,
-    expected_value
+    start,
+    end,
 ):
     """
     Scenario:
@@ -1225,7 +1489,10 @@ def test_app_trajectory_query_list_command(
 
     assert response.outputs_prefix == 'CiscoAMP.AppTrajectoryQuery'
     assert len(response.outputs) == expected_number_of_results
-    assert response.outputs[0]['connector_guid'] == expected_value
+
+    for output, mock_output in zip(response.outputs, mock_response['data'][start:end]):
+        mock_output.pop('links', None)
+        assert output == mock_output
 
 
 def test_version_get_command(requests_mock, mock_client):
@@ -1283,10 +1550,9 @@ def test_vulnerability_list_command(requests_mock, mock_client, file, args, suff
     assert_output_has_no_links(response.outputs)
 
     for output, mock_output in zip(response.outputs, mock_response['data']):
-        if is_list:
-            assert output['application'] == mock_output['application']
-            assert output['version'] == mock_output['version']
+        mock_output.pop('links', None)
 
-        else:
-            assert output['connector_guid'] == mock_output['connector_guid']
-            assert output['hostname'] == mock_output['hostname']
+        for computer in mock_output.get('computers', []):
+            computer.pop('links', None)
+
+        assert output == mock_output
