@@ -17,6 +17,9 @@ Okta
 SecneurX
 VirusTotal
 HasResults
+hostnames
+CVE
+Nexpose
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101

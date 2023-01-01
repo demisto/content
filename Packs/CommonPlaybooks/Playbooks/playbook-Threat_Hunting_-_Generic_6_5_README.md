@@ -10,8 +10,9 @@ This playbook enables threat hunting for IOCs in your enterprise. It currently s
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Splunk Indicator Hunting
 * Microsoft 365 Defender - Threat Hunting Generic
+* Search Endpoint by CVE - Generic
+* Splunk Indicator Hunting
 * QRadar Indicator Hunting V2
 * Palo Alto Networks - Hunting And Threat Detection
 
@@ -19,7 +20,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+* SetAndHandleEmpty
 
 ### Commands
 This playbook does not use any commands.
@@ -41,6 +42,7 @@ This playbook does not use any commands.
 | SplunkEarliestTime | The earliest time to search in Splunk. | -7d@d | Optional |
 | SplunkLatestTime | The latest time to search in Splunk. | now | Optional |
 | MessageID | This input will be used in the "Microsoft 365 Defender - Get Email URL clicks" playbook. MessageID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:<br/>- The value of the header "Message-ID".<br/>- The internal ID of the message within Microsoft's products \(e.g. <br/> NetworkMessageId\).<br/><br/>Can be a single MessageID or an array of MessageIDs to search. |  | Optional |
+| CVE_ID | Hunt for assets with a given CVE using available tools.<br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -96,8 +98,10 @@ This playbook does not use any commands.
 | Microsoft365Defender.RetrievedEmails.SenderMailFromAddress | Sender email address in the MAIL FROM header, also known as the envelope sender or the Return-Path address. | string |
 | Microsoft365Defender.RetrievedEmails.Subject | Subject of the email. | string |
 | Microsoft365Defender.RetrievedEmails.ThreatTypes | Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats. | unknown |
-| HasResults | Indicates whether any results were retrieved for the threat hunting queries. | unknown |
+| HasResults.Indicators | Indicates whether any results were retrieved for the indicator's threat hunting queries. | unknown |
+| HasResults.Vulnerability | Indicates whether any results were retrieved for the vulnerability threat hunting queries. | unknown |
+| Endpoint | Global compromised Assets | unknown |
 
 ## Playbook Image
 ---
-![Threat Hunting - Generic](../doc_files/Threat_Hunting_-_Generic_6_5.png)
+![Threat Hunting - Generic](../doc_files/Threat_Hunting_-_Generic.png)

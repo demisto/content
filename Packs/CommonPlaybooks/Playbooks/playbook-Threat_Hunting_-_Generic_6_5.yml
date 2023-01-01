@@ -19,17 +19,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
-      - "3"
-      - "5"
-      - "6"
+      - "17"
+      - "18"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 60
+          "x": 650,
+          "y": -80
         }
       }
     note: false
@@ -41,13 +39,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: faee0e93-b767-4148-8d8f-b1762d1e1039
+    taskid: 03b8e993-6134-41eb-8708-9e50e5a790fd
     type: playbook
     task:
-      id: faee0e93-b767-4148-8d8f-b1762d1e1039
+      id: 03b8e993-6134-41eb-8708-9e50e5a790fd
       version: -1
       name: Splunk Indicator Hunting
-      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or URLs. It returns detected users, IP addresses, and hostnames related to the indicators.
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or urls. It outputs detected users, ip addresses, and hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
@@ -57,25 +55,65 @@ tasks:
       - "7"
     scriptarguments:
       IPAddress:
-        simple: ${inputs.IPAddress}
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
       IndexName:
         simple: '*'
       InternalDomainName:
-        simple: ${inputs.InternalDomainName}
+        complex:
+          root: inputs.InternalDomainName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalDomainName
+                iscontext: true
+          transformers:
+          - operator: uniq
       InternalHostRegex:
-        simple: ${inputs.InternalHostRegex}
+        complex:
+          root: inputs.InternalHostRegex
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalHostRegex
+                iscontext: true
       InternalIPRange:
-        simple: ${inputs.InternalRange}
+        complex:
+          root: inputs.InternalRange
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalRange
+                iscontext: true
+          transformers:
+          - operator: uniq
       MD5:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
       SHA1:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
       SHA256:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
       SelectFields:
         simple: source,timestamp
       URLDomain:
-        simple: ${inputs.URLDomain}
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: uniq
       earliest_time:
         complex:
           root: inputs.SplunkEarliestTime
@@ -107,13 +145,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 41273c47-6b21-49dd-869a-35e115202d0a
+    taskid: 369e31f3-133b-4b7d-8872-d17649667eb3
     type: playbook
     task:
-      id: 41273c47-6b21-49dd-869a-35e115202d0a
+      id: 369e31f3-133b-4b7d-8872-d17649667eb3
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
-      description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs from other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including Cortex Data Lake, Autofocus, and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
+      description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
@@ -123,21 +161,61 @@ tasks:
       - "7"
     scriptarguments:
       IPAddresses:
-        simple: ${inputs.IPAddress}
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
       InternalDomainName:
-        simple: ${inputs.InternalDomainName}
+        complex:
+          root: inputs.InternalDomainName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalDomainName
+                iscontext: true
+          transformers:
+          - operator: uniq
       InternalHostRegex:
-        simple: ${inputs.InternalHostRegex}
+        complex:
+          root: inputs.InternalHostRegex
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalHostRegex
+                iscontext: true
       InternalRange:
-        simple: ${inputs.InternalRange}
+        complex:
+          root: inputs.InternalRange
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalRange
+                iscontext: true
+          transformers:
+          - operator: uniq
       MD5:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
       SHA1:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
       SHA256:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
       URLDomain:
-        simple: ${inputs.URLDomain}
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -176,8 +254,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 890
+          "x": 650,
+          "y": 900
         }
       }
     note: false
@@ -189,13 +267,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6f545ba4-aeb9-4c82-87d0-4e3a1f0b5826
+    taskid: 279db603-6d7b-4d19-811a-eb642b0b135c
     type: playbook
     task:
-      id: 6f545ba4-aeb9-4c82-87d0-4e3a1f0b5826
+      id: 279db603-6d7b-4d19-811a-eb642b0b135c
       version: -1
       name: QRadar Indicator Hunting V2
-      description: 'This playbook queries the QRadar SIEM for indicators such as file hashes, IP addresses, domains, or URLs. '
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
@@ -205,26 +283,50 @@ tasks:
       - "7"
     scriptarguments:
       IPAddress:
-        simple: ${inputs.IPAddress}
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
       InternalRange:
-        simple: ${inputs.InternalRange}
+        complex:
+          root: inputs.InternalRange
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalRange
+                iscontext: true
+          transformers:
+          - operator: uniq
       InvestigationIPFields:
         simple: sourceip,destinationip
       InvestigationUserFields:
         simple: username
       MD5:
-        simple: ${inputs.MD5}
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
       QradarIPfield:
         simple: sourceip,destinationip
       SHA1:
-        simple: ${inputs.SHA1}
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
       SHA256:
-        simple: ${inputs.SHA256}
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
       TimeFrame:
         complex:
           root: inputs.QRadarTimeFrame
       URLDomain:
-        simple: ${inputs.URLDomain}
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -248,14 +350,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7bf5bd95-cefc-4259-81aa-e5f187e015c8
+    taskid: dbcde651-941f-42d6-81ea-dc70df6bba33
     type: playbook
     task:
-      id: 7bf5bd95-cefc-4259-81aa-e5f187e015c8
+      id: dbcde651-941f-42d6-81ea-dc70df6bba33
       version: -1
       name: Microsoft 365 Defender - Threat Hunting Generic
       description: |
-        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress` and `MessageID` inputs. The output will be a unified object with all of the retrieved emails based on the sub-playbooks outputs:
+        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`. and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
 
         - **Microsoft 365 Defender - Get Email URL clicks**:
                 Retrieves data based on URL click events.
@@ -264,7 +366,7 @@ tasks:
         - **Microsoft 365 Defender - Emails Indicators Hunt**:
                 Retrieves data based on several different email events.
 
-        Please read the playbooks descriptions in order to get the full details.
+        Read the playbook's descriptions in order to get the full details.
       playbookName: Microsoft 365 Defender - Threat Hunting Generic
       type: playbook
       iscommand: false
@@ -276,14 +378,20 @@ tasks:
       IPAddress:
         complex:
           root: inputs.IPAddress
+          transformers:
+          - operator: uniq
       MessageID:
         complex:
           root: inputs.MessageID
+          transformers:
+          - operator: uniq
       ResultsLimit:
         simple: "50"
       SHA256:
         complex:
           root: inputs.SHA256
+          transformers:
+          - operator: uniq
       SearchTimeframe:
         simple: "7"
       Timeout:
@@ -291,6 +399,8 @@ tasks:
       URLDomain:
         complex:
           root: inputs.URLDomain
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -301,7 +411,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
+          "x": -410,
           "y": 230
         }
       }
@@ -332,7 +442,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
+          "x": 650,
           "y": 410
         }
       }
@@ -345,10 +455,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 43330f15-d191-4c2c-8204-a94b0ce1dea7
+    taskid: f90d1d68-dcf7-4c38-889a-7a48fe552445
     type: condition
     task:
-      id: 43330f15-d191-4c2c-8204-a94b0ce1dea7
+      id: f90d1d68-dcf7-4c38-889a-7a48fe552445
       version: -1
       name: Were Any Hunting Results Retrieved?
       description: Checks if any hunting results were retrieved.
@@ -358,11 +468,15 @@ tasks:
     nexttasks:
       '#default#':
       - "15"
-      "yes":
+      Indicators Hunting Results Exists:
       - "14"
+      Vulnerability Hunting Results Exists:
+      - "19"
+      Vulnerability Hunting Results is Empty:
+      - "20"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Indicators Hunting Results Exists
       condition:
       - - operator: isNotEmpty
           left:
@@ -371,6 +485,8 @@ tasks:
                 root: Microsoft365Defender
                 accessor: RetrievedEmails
             iscontext: true
+          right:
+            value: {}
         - operator: isNotEmpty
           left:
             value:
@@ -483,12 +599,28 @@ tasks:
                 root: Splunk
                 accessor: DetectedExternalHosts
             iscontext: true
+    - label: Vulnerability Hunting Results Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Endpoint
+            iscontext: true
+    - label: Vulnerability Hunting Results is Empty
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: Endpoint
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 530
+          "x": 650,
+          "y": 560
         }
       }
     note: false
@@ -500,14 +632,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ce35ec55-01f0-422e-8f51-9bef6c15e5ea
+    taskid: a8a67e08-052e-42b4-8d64-9f9c8649dcfe
     type: regular
     task:
-      id: ce35ec55-01f0-422e-8f51-9bef6c15e5ea
+      id: a8a67e08-052e-42b4-8d64-9f9c8649dcfe
       version: -1
-      name: Set 'HasResults' to True
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      name: Set 'HasResults.Indicators' to True
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -515,8 +652,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      append:
+        simple: "false"
       key:
-        simple: HasResults
+        simple: HasResults.Indicators
       value:
         simple: "True"
     separatecontext: false
@@ -524,8 +663,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 710
+          "x": 430,
+          "y": 730
         }
       }
     note: false
@@ -537,14 +676,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 8ca9338a-e63b-41fd-8cfe-f55a0103f337
+    taskid: 46a9d980-28ad-4b85-8666-326f7073584b
     type: regular
     task:
-      id: 8ca9338a-e63b-41fd-8cfe-f55a0103f337
+      id: 46a9d980-28ad-4b85-8666-326f7073584b
       version: -1
-      name: Set 'HasResults' to False
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      name: Set 'HasResults.Indicators' to False
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -552,8 +696,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      append:
+        simple: "false"
       key:
-        simple: HasResults
+        simple: HasResults.Indicators
       value:
         simple: "False"
     separatecontext: false
@@ -561,8 +707,202 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 710
+          "x": 10,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d80978f0-c6ad-49f8-8d6f-4093b00ed2d7
+    type: playbook
+    task:
+      id: d80978f0-c6ad-49f8-8d6f-4093b00ed2d7
+      version: -1
+      name: Search Endpoint by CVE - Generic
+      playbookName: Search Endpoint by CVE - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      CVE_ID:
+        complex:
+          root: inputs.CVE_ID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: a16f48ba-4fc3-4ce8-8ac1-f89a682bc3ad
+    type: title
+    task:
+      id: a16f48ba-4fc3-4ce8-8ac1-f89a682bc3ad
+      version: -1
+      name: Indicators Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "3"
+      - "5"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 0b40d9c2-57ff-4e5a-800b-5801e099c93a
+    type: title
+    task:
+      id: 0b40d9c2-57ff-4e5a-800b-5801e099c93a
+      version: -1
+      name: Vulnerability Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 44663910-9c5c-4c40-8cce-6dde8f6aa873
+    type: regular
+    task:
+      id: 44663910-9c5c-4c40-8cce-6dde8f6aa873
+      version: -1
+      name: Set 'HasResults.Vulnerability' to True
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: HasResults.Vulnerability
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 451f9225-970f-4867-86d7-b02ea132b66b
+    type: regular
+    task:
+      id: 451f9225-970f-4867-86d7-b02ea132b66b
+      version: -1
+      name: Set 'HasResults.Vulnerability' to False
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: HasResults.Vulnerability
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 730
         }
       }
     note: false
@@ -574,13 +914,16 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "13_14_Indicators Hunting Results Exists": 0.88,
+      "13_15_#default#": 0.86
+    },
     "paper": {
       "dimensions": {
-        "height": 895,
-        "width": 1640,
-        "x": -400,
-        "y": 60
+        "height": 1045,
+        "width": 2110,
+        "x": -410,
+        "y": -80
       }
     }
   }
@@ -648,6 +991,13 @@ inputs:
   value: {}
   required: false
   description: "This input will be used in the \"Microsoft 365 Defender - Get Email URL clicks\" playbook. MessageID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:\n- The value of the header \"Message-ID\".\n- The internal ID of the message within Microsoft's products (e.g. \n NetworkMessageId).\n\nCan be a single MessageID or an array of MessageIDs to search."
+  playbookInputQuery:
+- key: CVE_ID
+  value: {}
+  required: false
+  description: |-
+    Hunt for assets with a given CVE using available tools.
+    Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
 outputs:
 - contextPath: Splunk.DetectedUsers
@@ -797,8 +1147,14 @@ outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
   description: Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats.
   type: unknown
-- contextPath: HasResults
-  description: Indicates whether any results were retrieved for the threat hunting queries.
+- contextPath: HasResults.Indicators
+  description: Indicates whether any results were retrieved for the indicator's threat hunting queries.
+  type: unknown
+- contextPath: HasResults.Vulnerability
+  description: Indicates whether any results were retrieved for the vulnerability threat hunting queries.
+  type: unknown
+- contextPath: Endpoint
+  description: Global compromised Assets
   type: unknown
 tests:
 - No tests (auto formatted)
