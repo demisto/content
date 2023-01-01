@@ -134,7 +134,7 @@ tasks:
       id: 4dde15ac-db8b-41e3-8680-4e7927257751
       iscommand: false
       name: Is the Demisto Dev - Demisto REST API integration instance enabled?
-      script: IsDemistoRestAPIInstanceAvailable
+      script: IsCoreRestAPIInstanceAvailable
       type: condition
       version: -1
     taskid: 4dde15ac-db8b-41e3-8680-4e7927257751
@@ -1300,7 +1300,7 @@ tasks:
       id: 2f1df859-7924-4ccd-856c-1f17300cfb5b
       iscommand: false
       name: Is the Demisto Prod - Demisto REST API integration instance enabled?
-      script: IsDemistoRestAPIInstanceAvailable
+      script: IsCoreRestAPIInstanceAvailable
       type: condition
       version: -1
     taskid: 2f1df859-7924-4ccd-856c-1f17300cfb5b

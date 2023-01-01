@@ -127,7 +127,7 @@ tasks:
       id: 7f36491b-0d32-469e-8a27-fd14a6f045c5
       iscommand: false
       name: Is the Demisto Dev REST API integration instance enabled?
-      script: IsDemistoRestAPIInstanceAvailable
+      script: IsCoreRestAPIInstanceAvailable
       type: condition
       version: -1
     taskid: 7f36491b-0d32-469e-8a27-fd14a6f045c5
