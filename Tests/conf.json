@@ -5229,6 +5229,7 @@
         }
     ],
     "skipped_tests": {
+        "CirclIntegrationTest": "No instance",
         "QRadar_v3-test": "Issue CIAC-4976",
         "Detonate URL - Generic Test": "Issue CRTX-67708",
         "Test XDR Playbook": "Issue CIAC-4624",
