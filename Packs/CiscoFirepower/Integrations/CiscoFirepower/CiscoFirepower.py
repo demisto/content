@@ -132,8 +132,8 @@ def pagination(
                 tuple[Union[list, dict], Union[list, dict]]:
                     All the items combined within raw response, All the raw responses combined
             """
-            is_automatic: bool = limit is not None and limit > 0
-            is_manual: bool = (page is not None and page > 0) or (page_size is not None and page_size > 0)
+            is_automatic = bool(limit is not None and limit > 0)
+            is_manual = bool((page is not None and page > 0) or (page_size is not None and page_size > 0))
 
             if all((is_manual, is_automatic)):
                 raise ValueError('page or page_size can not be entered with limit.')
