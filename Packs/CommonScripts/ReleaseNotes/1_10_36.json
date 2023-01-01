@@ -1,1 +1,2 @@
-{"breakingChanges":true,"breakingChangesNotes":null}
+{"breakingChanges":true,"breakingChangesNotes":"IsInCidrRanges, IsNotInCidrRanges, IsRFC1918Address, LowerCidrNumAddresses and ContainsArray scripts moved
+to FiltersAndTransformers pack."}
