@@ -141,8 +141,8 @@ def pagination(
             remaining_items: int
 
             # Automatic Pagination
-            if is_automatic:
-                remaining_items = limit  # type: ignore[assignment] # limit cannot be None in this case.
+            if is_automatic and limit is not None:
+                remaining_items = limit
                 offset = None
 
             # Manual Pagination
@@ -182,8 +182,8 @@ def pagination(
                 if items_key_path:
                     items = dict_safe_get(items, items_key_path)
 
-                if is_manual:
-                    stop = page * remaining_items  # type: ignore[operator] # page cannot be None in this case.
+                if is_manual and page is not None:
+                    stop = page * remaining_items
                     items = items[offset:stop]
 
                 else:  # is_automatic or no pagination.
