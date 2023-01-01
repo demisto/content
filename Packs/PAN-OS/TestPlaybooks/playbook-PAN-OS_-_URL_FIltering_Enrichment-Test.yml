@@ -45,7 +45,7 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: my url to enrich is http://www.amazon.com
+        simple: my url to enrich is https://www.amazon.com/
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -108,7 +108,7 @@ tasks:
       - "5"
     scriptarguments:
       indicator:
-        simple: http://www.amazon.com
+        simple: https://www.amazon.com/
     separatecontext: false
     view: |-
       {
@@ -194,7 +194,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: reputation of http://www.amazon.com is not 1
+        simple: reputation of https://www.amazon.com/ is not 1
     separatecontext: false
     view: |-
       {
