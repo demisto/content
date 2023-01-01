@@ -67,7 +67,7 @@ def format_output(rns_to_review: List[str], delimiter: str = ";") -> str:
     return delimiter.join(rns_to_review)
 
 
-def main(args: argparse.Namespace) -> str:  # pragma: no cover
+def get_xsoar_supported_release_notes(args: argparse.Namespace) -> str:  # pragma: no cover
 
     """
     Receives the delimiter and release note arguments,
@@ -115,7 +115,7 @@ if __name__ == "__main__":  # pragma: no cover
     args = parser.parse_args()
 
     try:
-        output = main(args)
+        output = get_xsoar_supported_release_notes(args)
         click.secho(output)
         sys.exit(0)
     except Exception:
