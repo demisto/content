@@ -501,7 +501,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     """
 
     address_object = {
-        "ip_netmask": args.get('ip_netmask'),
+        args.get('type'): args.get('value'),
         "name": args.get('name')}
 
     if args.get('description'):
@@ -535,7 +535,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     """
 
     address_object = {
-        "ip_netmask": args.get('ip_netmask'),
+        args.get('type'): args.get('value'),
         "name": args.get('name')}
 
     if description := args.get('description'):
