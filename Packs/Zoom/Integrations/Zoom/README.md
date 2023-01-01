@@ -1,5 +1,5 @@
 Use the Zoom integration manage your Zoom users and meetings
-This integration was integrated and tested with version xx of Zoom
+This integration was integrated and tested with version 2 of Zoom API
 
 ## Configure Zoom on Cortex XSOAR
 

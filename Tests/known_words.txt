@@ -216,3 +216,4 @@ ESXi
 MT
 AWS
 MicrosoftAPIModule
+IAMApiModule
