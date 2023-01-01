@@ -1975,7 +1975,7 @@ def get_context_output(
     return context_outputs
 
 
-def get_commandresults(
+def parse_results(
     raw_response: Dict[str, Any],
     command_headers_by_keys: Dict[str, Any],
     command_title: str,
@@ -3642,7 +3642,7 @@ def create_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Com
         inspection_mode=inspection_mode,
     )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_POLICY_HEADERS_BY_KEYS,
         command_title=f'Created {INTRUSION_POLICY_TITLE}',
@@ -3692,7 +3692,7 @@ def list_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Comma
             expanded_response=expanded_response,
         )
 
-    command_results = get_commandresults(
+    command_results = parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_POLICY_HEADERS_BY_KEYS,
         command_title=f'Fetched {INTRUSION_POLICY_TITLE}',
@@ -3750,7 +3750,7 @@ def update_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Com
         replicate_inspection_mode=replicate_inspection_mode,
     )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_POLICY_HEADERS_BY_KEYS,
         command_title=f'Updated {INTRUSION_POLICY_TITLE}',
@@ -3815,7 +3815,7 @@ def create_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Comma
         rule_group_ids=rule_group_ids,
     )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_HEADERS_BY_KEYS,
         command_title=f'Created {INTRUSION_RULE_TITLE}',
@@ -3870,7 +3870,7 @@ def list_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Command
             expanded_response=expanded_response,
         )
 
-    command_results = get_commandresults(
+    command_results = parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_HEADERS_BY_KEYS,
         command_title=f'Fetched {INTRUSION_RULE_TITLE}',
@@ -3933,7 +3933,7 @@ def update_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Comma
         rule_group_ids=rule_group_ids,
     )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_HEADERS_BY_KEYS,
         command_title=f'Updated {INTRUSION_RULE_TITLE}',
@@ -4027,7 +4027,7 @@ def upload_intrusion_rule_file_command(client: Client, args: Dict[str, Any]) -> 
             raw_response=raw_response,
         )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_UPLOAD_HEADERS_BY_KEYS,
         command_title=INTRUSION_RULE_UPLOAD_TITLE,
@@ -4054,7 +4054,7 @@ def create_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) ->
         description=description,
     )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_GROUP_HEADERS_BY_KEYS,
         command_title=f'Created {INTRUSION_RULE_GROUP_TITLE}',
@@ -4104,7 +4104,7 @@ def list_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> C
             expanded_response=expanded_response,
         )
 
-    command_results = get_commandresults(
+    command_results = parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_GROUP_HEADERS_BY_KEYS,
         command_title=f'Fetched {INTRUSION_RULE_GROUP_TITLE}',
@@ -4143,7 +4143,7 @@ def update_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) ->
         description=description,
     )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_GROUP_HEADERS_BY_KEYS,
         command_title=f'Updated {INTRUSION_RULE_GROUP_TITLE}',
@@ -4205,7 +4205,7 @@ def create_network_analysis_policy_command(client: Client, args: Dict[str, Any])
         inspection_mode=inspection_mode,
     )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=NETWORK_ANALYSIS_POLICY_HEADERS_BY_KEYS,
         command_title=f'Created {NETWORK_ANALYSIS_POLICY_TITLE}',
@@ -4253,7 +4253,7 @@ def list_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -
             expanded_response=expanded_response,
         )
 
-    command_results = get_commandresults(
+    command_results = parse_results(
         raw_response=raw_response,
         command_headers_by_keys=NETWORK_ANALYSIS_POLICY_HEADERS_BY_KEYS,
         command_title=f'Fetched {NETWORK_ANALYSIS_POLICY_TITLE}',
@@ -4311,7 +4311,7 @@ def update_network_analysis_policy_command(client: Client, args: Dict[str, Any])
         replicate_inspection_mode=replicate_inspection_mode,
     )
 
-    return get_commandresults(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=NETWORK_ANALYSIS_POLICY_HEADERS_BY_KEYS,
         command_title=f'Updated {NETWORK_ANALYSIS_POLICY_TITLE}',
