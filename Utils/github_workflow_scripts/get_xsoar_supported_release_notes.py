@@ -80,7 +80,7 @@ def main(args: argparse.Namespace) -> str:  # pragma: no cover
 
     arg_dict: Dict[str, Any] = vars(args)
 
-    delimiter: str = arg_dict.get("delimiter", ",")
+    delimiter: str = arg_dict.get("delimiter", ";")
     release_notes_arg: List[Path] = convert_files_to_paths(arg_dict.get("release_notes", []).split(delimiter))
 
     # Create new list to hold release notes to review
