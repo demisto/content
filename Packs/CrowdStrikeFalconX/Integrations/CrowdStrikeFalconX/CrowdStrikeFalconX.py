@@ -1090,6 +1090,7 @@ def download_ioc_command(
     try:
         response = client.download_ioc(id, name, accept_encoding)
         if response.get('File'):  # In case the returned response is a file, output the file to the war room.
+            demisto.log('added comment to test build')
             return response
         else:
             return CommandResults(
