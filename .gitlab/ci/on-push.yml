@@ -100,6 +100,7 @@ validate-content-conf:
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
       gsutil -m cp "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/content_graph.zip" /var/lib/neo4j/import/content_graph.zip || echo "failed to download graph imports."
       unzip -o /var/lib/neo4j/import/content_graph.zip -d /var/lib/neo4j/import
+      rm /var/lib/neo4j/import/content_graph.zip
       echo "Successfully pulled all CSV import files from bucket"
     - |
       if [ -z "$(ls -A /var/lib/neo4j/import)" ]; then
