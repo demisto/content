@@ -787,6 +787,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: |-
-  Important!
-  Because  API  token limit, if you run this playbook again, it will crash. So wait a few minutes between each time.
