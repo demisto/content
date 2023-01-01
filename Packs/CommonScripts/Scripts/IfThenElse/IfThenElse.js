@@ -149,14 +149,6 @@ const [rhsB_name, rhsB] = getValueB(args, conditionB, optionsB, false);
 const operator = getOperator(lhs_name, rhs_name, condition);
 const operator2 = getOperator(lhsB_name, rhsB_name, conditionB);
 
-if (!lhs || !rhs) {
-    throw "lhs and rhs parameters must be provided.";
-}
-
-if (lhsB && !rhsB) {
-    throw "rhsB is missing. please provide a value to compare.";
-}
-
 var resultA = evaluate(operator, lhs, rhs, options);
 
 var ret;
