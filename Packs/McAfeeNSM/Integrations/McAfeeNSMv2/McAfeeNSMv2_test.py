@@ -1053,3 +1053,40 @@ def test_get_ips_policies_command(mocker, mcafeensmv2_client):
                                '| 0 | Default | 0 | true | true |\n'
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_result
+
+
+args1_update_alerts = {
+    'state': 'Acknowledged'
+}
+args2_update_alerts = {
+    'state': 'Acknowledged',
+    'new_state': 'Unacknowledged',
+    'start_time': '12/12/2010 00:00',
+}
+args3_update_alerts = {
+    'state': 'Acknowledged',
+    'new_state': 'Unacknowledged',
+    'start_time': '12/12/2010 00:00',
+    'end_time': '12/12/2022 00:00'
+}
+update_alerts_command_params = [(args1_update_alerts, 'Error! You must specify a new alert state or a new assignee'),
+                                (args2_update_alerts,
+                                 'If you provide one of the time parameters, you must provide the other as well'),
+                                (args3_update_alerts, 'If you provided a start time or end time, you must assign the '
+                                                      'time_period parameter with the value "CUSTOM"')]
+
+
+@pytest.mark.parametrize('args, expected_error', update_alerts_command_params)
+def test_update_alerts_command(args, expected_error, mcafeensmv2_client):
+    """
+        Given:
+            - Args and an expected error.
+        When:
+            - Using the commands update-alerts.
+        Then:
+            - Check that the user gave the correct arguments.
+    """
+    from McAfeeNSMv2 import update_alerts_command
+    with pytest.raises(Exception) as e:
+        update_alerts_command(mcafeensmv2_client, args)
+        assert expected_error == str(e.value)
