@@ -5134,7 +5134,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "scripts": "CIDRBiggerThanPrefix",
+            "00": "CIDRBiggerThanPrefix",
             "playbookID": "CIDRBiggerThanPrefix_Test",
             "fromversion": "6.0.0"
         },
@@ -5219,7 +5219,16 @@
         {
             "integrations": "XSOAR EDL Checker",
             "playbookID": "TestXSOAREDLCheckerPlaybook"
-        }
+        },
+        {
+            "playbookID": "Threat_Intel_Report_test",
+            "fromversion": "6.5.0",
+            "scripts": [
+                "PublishThreatIntelReport",
+                "UnpublishThreatIntelReport"
+
+            ]
+        },
     ],
     "skipped_tests": {
         "CirclIntegrationTest": "No instance",
