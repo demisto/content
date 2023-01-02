@@ -557,7 +557,7 @@ def get_non_edr_malop_data(client, start_time):
             non_edr_malop_data.append(malops)
 
     malop_data.clear()
-    demisto.debug(f"Total length of EPP Malops fetched is: {len(non_edr_malop_data)}")
+    demisto.debug(f"Total count of EPP Malops fetched is: {len(non_edr_malop_data)}")
     return non_edr_malop_data
 
 def query_malops(
