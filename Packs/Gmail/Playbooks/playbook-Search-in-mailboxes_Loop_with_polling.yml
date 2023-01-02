@@ -1,7 +1,7 @@
 id: Search in mailboxes Gmail (Loop) with polling
 version: -1
 name: Search in mailboxes Gmail (Loop) with polling
-description: This playbook is used as a subplaybook for the Playbook Search-all-mailboxes - Gmail, it should not be used.
+description: This playbook should only run as a sub-playbook for the Search-all-mailboxes - Gmail playbook, it should not run alone.
 starttaskid: "0"
 tasks:
   "0":
@@ -195,7 +195,7 @@ tasks:
       id: 88d4d553-cf57-460d-8c91-272f69370990
       version: -1
       name: Is there NextPageToken
-      description: Checking if there is a new NextPageToken for next iteration.
+      description: Checks if there is a new NextPageToken for next iteration.
       type: condition
       iscommand: false
       brand: ""
@@ -451,17 +451,17 @@ inputs:
 - key: after
   value: {}
   required: false
-  description: Search for messages sent after a certain time period. For example, 2018/05/06
+  description: Search for messages sent after a specific date. For example, 2018/05/06
   playbookInputQuery:
 - key: before
   value: {}
   required: false
-  description: Search for messages sent before a certain time period. For example, 2018/05/09
+  description: Search for messages sent before a specific date. For example, 2018/05/09
   playbookInputQuery:
 - key: fields
   value: {}
   required: false
-  description: Enables partial responses to be retrieved in a comma separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+  description: Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
   playbookInputQuery:
 - key: filename
   value: {}
@@ -496,7 +496,7 @@ inputs:
 - key: labels-ids
   value: {}
   required: false
-  description: Only returns messages with labels that match all of the specified label IDs in a comma separated list.
+  description: Returns messages with labels that match all of the specified label IDs in a comma-separated list.
   playbookInputQuery:
 - key: page-token
   value: {}
@@ -520,37 +520,37 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Gmail.Mailboxes
-  description: The Gmail Mailbox.
+  description: The Gmail mailbox.
 - contextPath: Gmail.ID
-  description: Inner ID of the Gmail message.
+  description: The inner ID of the Gmail message.
 - contextPath: Gmail.ThreadId
   description: The thread ID.
 - contextPath: Gmail.Format
-  description: MIME type of the email.
+  description: The MIME type of the email.
 - contextPath: Gmail.Labels
-  description: Labels of a specific email.
+  description: The labels of a specific email.
 - contextPath: Gmail.To
-  description: Email Address of the receiver.
+  description: The email address of the receiver.
 - contextPath: Gmail.From
-  description: Email Address of the sender.
+  description: The email address of the sender.
 - contextPath: Gmail.Cc
-  description: Additional recipient email address (CC).
+  description: The additional recipient email address (CC).
 - contextPath: Gmail.Bcc
-  description: Additional recipient email address (BCC).
+  description: The additional recipient email address (BCC).
 - contextPath: Gmail.Subject
-  description: Subject of the specific email.
+  description: The subject of the specific email.
 - contextPath: Gmail.Body
   description: The content of the email.
 - contextPath: Gmail.Attachments
-  description: The attachments of the email. IDs are separated by ','.
+  description: The attachments of the email. IDs are separated by commas.
 - contextPath: Gmail.Headers
   description: All headers of specific mail (list).
 - contextPath: Email.Attachments.entryID
-  description: Email Attachments. IDs are separated by ','.
+  description: Email Attachments. IDs are separated by commas.
 - contextPath: NewPageToken
   description: In the next iteration, additional accounts will be imported using this output.
 - contextPath: Stop
-  description: As a result of this output, the loop will come to an end.
+  description: The result of this output causes the loop to end.
   type: unknown
 - contextPath: SearchProcess
   description: Needs rewrite.
