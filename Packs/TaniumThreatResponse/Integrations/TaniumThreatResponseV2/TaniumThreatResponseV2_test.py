@@ -1393,7 +1393,7 @@ def test_fetch_all_incidents(requests_mock):
     test_incidents = util_load_json('test_files/fetch_incidents.json')
     requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
-                                 '&state=unresolved&sort=-createdAt&limit=500&offset=0',
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=0&labelName=some_label',
                       json=test_incidents)
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
                                  '&state=unresolved&sort=-createdAt&limit=500&offset=500',
@@ -1405,11 +1405,12 @@ def test_fetch_all_incidents(requests_mock):
     last_run = {}
     fetch_time = '10 years'
     max_fetch = 2
+    filter_label_name = 'some_label'
 
     incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
         MOCK_CLIENT,
         alerts_states_to_retrieve,
-        '',
+        filter_label_name,
         last_run,
         fetch_time,
         max_fetch
@@ -1450,11 +1451,12 @@ def test_fetch_new_incidents(requests_mock):
     last_run = {'time': '2021-09-26T14:02:59.000000Z', 'id': '2'}
     fetch_time = '3 days'
     max_fetch = 2
+    filter_label_name = ''
 
     incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
         MOCK_CLIENT,
         alerts_states_to_retrieve,
-        '',
+        filter_label_name,
         last_run,
         fetch_time,
         max_fetch
