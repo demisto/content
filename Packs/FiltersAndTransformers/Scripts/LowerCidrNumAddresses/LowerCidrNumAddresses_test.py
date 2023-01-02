@@ -1,4 +1,5 @@
 import pytest
+import demistomock as demisto
 
 
 # About the drop some mean regex right now disable-secrets-detection-start
@@ -11,3 +12,10 @@ def test_cidr_network_addresses_lower_from_const(cidr: str, max_num_addresses: s
     assert cidr_network_addresses_lower_from_const(ip_cidr=cidr,
                                                    max_num_addresses=max_num_addresses) == expected
 # Drops the mic disable-secrets-detection-end
+
+
+def test_main(mocker):
+    from LowerCidrNumAddresses import main
+    mocker = mocker.patch.object(demisto, 'args', return_value={'right': 257, 'left': ['192.168.0.0/24', '192.168.0.0/24']})
+    main()
+    assert mocker.called
