@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://management.azure.com/
-  display: Microsoft Azure Management URL
+  display: Microsoft Azure Management URLa
   name: server_url
   required: false
   type: 0
