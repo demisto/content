@@ -49,10 +49,9 @@ script:
     - default: false
       description: Type of Issue to get
       isArray: false
-      auto: PREDEFINED
       name: issue_type
       predefined:
-      - ACCESS_ROLE
+      - 'ACCESS_ROLE'
       - ACCESS_ROLE_BINDING
       - ACCESS_ROLE_PERMISSION
       - API_GATEWAY
@@ -141,6 +140,7 @@ script:
       - DATA_WORKFLOW
       required: false
       secret: false
+      auto: PREDEFINED
     - default: false
       description: Get Issues of a specific resource
       isArray: false
@@ -302,7 +302,7 @@ script:
     - name: vm_id
       description: vm cloud provider id
       required: true
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: true
   longRunning: false
