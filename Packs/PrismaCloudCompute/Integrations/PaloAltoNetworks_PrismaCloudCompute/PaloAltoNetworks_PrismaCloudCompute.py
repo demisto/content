@@ -299,7 +299,7 @@ class PrismaCloudComputeClient(BaseClient):
         )
 
 
-    def get_waas_policies(self):
+    def get_waas_policies(self) -> dict:
         """
         Get the current WAAS policy
 
@@ -311,7 +311,7 @@ class PrismaCloudComputeClient(BaseClient):
         )
 
 
-    def update_waas_policies(self, policy):
+    def update_waas_policies(self, policy: dict) -> dict:
         """
         Update the waas policy.
 
@@ -326,7 +326,7 @@ class PrismaCloudComputeClient(BaseClient):
         )
 
 
-    def get_firewall_audit_container_alerts(self, image_name, from_time, to_time, limit, audit_type):
+    def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str):
         """
         Get the container audit alerts for a specific image.
 
@@ -344,7 +344,8 @@ class PrismaCloudComputeClient(BaseClient):
             "type": audit_type,
             "imageName": image_name,
             "from": from_time,
-            "to": to_time
+            "to": to_time,
+            "limit": limit
         }
         return self._http_request(
             method="GET", url_suffix="audits/firewall/app/container", params=params, resp_type="response"
@@ -1641,16 +1642,16 @@ def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandRe
 
     rules = policies["rules"][0]["applicationsSpec"][0]
     formatted_waas_policy = [{
-        "SQLInjection": rules["sqli"]["effect"],
-        "CrossSiteScriptingXSS": rules["xss"]["effect"],
-        "OSCommandInjetion": rules["cmdi"]["effect"],
-        "CodeInjection": rules["codeInjection"]["effect"],
-        "LocalFileInclusion": rules["lfi"]["effect"],
-        "AttackToolsAndVulnScanners": rules["attackTools"]["effect"],
-        "Shellshock": rules["shellshock"]["effect"],
-        "MalformedHTTPRequest": rules["malformedReq"]["effect"],
-        "ATP": rules["networkControls"]["advancedProtectionEffect"],
-        "DetectInformationLeakage": rules["intelGathering"]["infoLeakageEffect"]
+        "SQLInjection": rules.get("sqli").get("effect"),
+        "CrossSiteScriptingXSS": rules.get("xss").get("effect"),
+        "OSCommandInjetion": rules.get("cmdi").get("effect"),
+        "CodeInjection": rules.get("codeInjection").get("effect"),
+        "LocalFileInclusion": rules.get("lfi").get("effect"),
+        "AttackToolsAndVulnScanners": rules.get("attackTools").get("effect"),
+        "Shellshock": rules("shellshock").get("effect"),
+        "MalformedHTTPRequest": rules.get("malformedReq").get("effect"),
+        "ATP": rules.get("networkControls").get("advancedProtectionEffect"),
+        "DetectInformationLeakage": rules.get("intelGathering").get("infoLeakageEffect")
     }]
     data = {
         "Name": "dvwa",
@@ -1688,10 +1689,23 @@ def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> Comman
         policy["rules"][index]["applicationsSpec"][0][args.get("attack_type")] = {"effect": args.get("action") }
 
     res = client.update_waas_policies(policy)
-    if res.status_code == 200:
-        demisto.results("Successfully updated the WaaS policy")
-    else:
-        demisto.results("Something went wrong...")
+    #if res.status_code == 200:
+    #    demisto.results("Successfully updated the WaaS policy")
+    #else:
+    #    txt = f"Error: {res.status_code} - {res.text}"
+    #    entry = CommandResults(
+    #        human_readable=txt
+    #    )
+    #    demisto.results("Something went wrong...")
+
+    txt = "Successfully updated the WaaS policy"
+    if res.status_code != 200:
+        txt = f"Error: {res.status_code} - {res.text}"
+    
+    entry = CommandResults(
+        human_readable=txt
+    )
+    return entry
 
 
 def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -1707,10 +1721,11 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
         CommandResults: command-results object.
     """
     now = datetime.datetime.now()
-    from_time = now - datetime.timedelta(days=int(args.get("FromDays", 2)))
+    from_time = now - datetime.timedelta(days=arg_to_number(args.get("FromDays", 2)))
     image_name = urllib.parse.quote(args.get("ImageName"), safe='')
     audit_type = args.get("audit_type")
-    data = client.get_firewall_audit_container_alerts(image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=25, audit_type=audit_type).json()
+    limit = arg_to_number(args.get("limit", 25))
+    data = client.get_firewall_audit_container_alerts(image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=limit, audit_type=audit_type).json()
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.Audits",
@@ -1821,7 +1836,7 @@ def main():
         elif requested_command == 'prisma-cloud-compute-get-waas-policies':
             return_results(results=get_waas_policies(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-update-waas-policies':
-            update_waas_policies(client=client, args=demisto.args())
+            return_results(update_waas_policies(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
             return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
     # Log exceptions
