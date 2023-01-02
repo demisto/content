@@ -2053,9 +2053,6 @@ class ClientV1(Client):
             http_service (Optional[str]): HTTP service name.
             https_service (Optional[str]): HTTPS service name.
             http2 (Optional[str]): HTTP2 flag.
-            multi_certificate (Optional[str]): _description_
-            certificate_group (Optional[str]): _description_
-            proxy (Optional[str]): _description_
             redirect_to_https (Optional[str]): Redirect to HTTPS.
             inline_protection_profile (Optional[str]): Profile.
             monitor_mode (Optional[str]): Monitor mode flag.
@@ -3234,9 +3231,6 @@ class ClientV2(Client):
             http_service (Optional[str]): HTTP service name.
             https_service (Optional[str]): HTTPS service name.
             http2 (Optional[str]): HTTP2 flag.
-            multi_certificate (Optional[str]): _description_
-            certificate_group (Optional[str]): _description_
-            proxy (Optional[str]): _description_
             redirect_to_https (Optional[str]): Redirect to HTTPS.
             inline_protection_profile (Optional[str]): Profile.
             monitor_mode (Optional[str]): Monitor mode flag.
@@ -3244,6 +3238,9 @@ class ClientV2(Client):
             comments (Optional[str]): Comments.
             mach_once (Optional[str]): Match once flag.
             kwargs :
+                multi_certificate (Optional[str]): Enable Multi certificate.
+                certificate_group (Optional[str]): Certificate group name.
+                proxy (Optional[str]): Proxy flag.
                 ip_range (str): IP Range.
                 retry_on (str): Retry on flag.
                 retry_on_cache_size (Optional[str]): Retry on chache size:

@@ -1780,7 +1780,6 @@ script:
       isArray: false
       name: certificate_type
       defaultValue: Local
-      defaultValue: Local
       predefined:
       - Local
       - Multi Certificate
