@@ -28,6 +28,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 #### Required Permissions
 * microsoft-365-defender-incidents-list:
     * offline_access - Delegated 
+    * AdvancedQuery.Read.All - Application - can be found under WindowsDefenderATP on the "APIs my organization uses" section.
       
       And one of the following:
       * Incident.Read.All	- Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
@@ -36,6 +37,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 * microsoft-365-defender-incident-update:
    * offline_access - Delegated
+   * AdvancedQuery.Read.All - Application - can be found under WindowsDefenderATP on the "APIs my organization uses" section.
    * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 
 

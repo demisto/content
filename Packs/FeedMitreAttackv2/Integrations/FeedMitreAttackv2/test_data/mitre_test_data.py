@@ -652,3 +652,10 @@ NEW_ID_TO_NAME = {
     '8': 'Machete 1: Adups',
     '9': 'Machete 1: 4H RAT'
 }
+
+RELATIONSHIP_ENTITY = {'description': 'description',
+                       'modified': 'modified',
+                       'created': 'created',
+                       'relationship_type': 'not_supported_relationship_type',
+                       'source_ref': 'source_ref--source_ref',
+                       'target_ref': 'target_ref--target_ref'}

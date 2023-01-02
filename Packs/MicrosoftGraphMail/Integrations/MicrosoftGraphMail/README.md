@@ -8,25 +8,31 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- |-------| --- |
-    | Server URL | The host URL. | True  |
-    | Application ID or Client ID | The app registration ID. | False |
-    | Token or Tenant ID | The tenant ID. | False |
-    | Key or Client Secret | The app registration secret. | False |
-    | Certificate Thumbprint | Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app. | False |
+    | --- | --- | --- |
+    | Server URL |  | True |
+    | Application ID or Client ID | See the Help tab. | False |
+    | Token or Tenant ID | See the Help tab. | False |
+    | Key or Client Secret | See the Help tab. | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Fetch incidents | Whether to fetch incidents. | False |
     | Email address from which to fetch incidents | For example, "example@demisto.com" | False |
     | Name of the folder or sub-folder from which to fetch incidents | Supports folder ID and sub-folders, for example Inbox/Phishing. | False |
-    | First fetch timestamp | &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days. | False |
-    | HTTP Timeout | The timeout of the HTTP requests sent to Microsoft Graph API (in seconds). | False |
-    | Maximum number of emails to pull per fetch | The maximum number of emails to pull per fetch.  | False |
+    | First fetch timestamp | \<number\> /<time unit\>, for example 12 hours, 7 days. | False |
+    | HTTP Timeout | The timeout of the HTTP requests sent to Microsoft Graph API \(in seconds\). | False |
+    | Maximum number of emails to pull per fetch |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings | Whether to use the system proxy settings. | False |
-    | Use a self deployed Azure application | Whether to use a selp-deployed application. | False |
-    | Incident type | The incident type to assign. | False |
-    | Display the entire email body | Whether to fetch incidents with the entire email body or just an email body preview. If True, displays the full email body. | False |
-    | Advanced: Time in minutes to look back when fetching emails | Determines how far back in time to search for incidents that were created before the last run time and did not match the query when they were created. | False |
+    | Use system proxy settings |  | False |
+    | Use a self deployed Azure application |  | False |
+    | Incident type |  | False |
+    | ID or Client ID - see Detailed Instructions (?) |  | False |
+    | Token or Tenant ID - see Detailed Instructions (?) |  | False |
+    | Key or Client Secret (Deprecated) |  | False |
+    | ID or Client ID - see Detailed Instructions (?) (Deprecated) |  | False |
+    | Token or Tenant ID - see Detailed Instructions (?) (Deprecated) |  | False |
+    | Display full email body | If not active, only a preview of the email will be fetched. |  |
+    | Mark fetched emails as read | Relevant only if fetch incidents is active. |  |
+    | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how far backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -66,7 +72,7 @@ Gets the properties of returned emails. Typically shows partial results, use the
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
 | MSGraphMail.Subject | String | The subject of email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
-| MSGraphMail.Body | String | The content (body) of the email. | 
+| MSGraphMail.Body | String | The content \(body\) of the email. | 
 | MSGraphMail.Sender.Name | String | The name of sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
@@ -117,7 +123,7 @@ Returns the properties of an email.
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
 | MSGraphMail.Subject | String | The subject of email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
-| MSGraphMail.Body | String | The content (body) of the email. | 
+| MSGraphMail.Body | String | The content \(body\) of the email. | 
 | MSGraphMail.Sender.Name | String | The name of sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
@@ -592,3 +598,25 @@ Replies to an email using Graph Mail.
 | MicrosoftGraph.SentMail.bccRecipients | String | The BCC recipients of the email. | 
 | MicrosoftGraph.SentMail.ID | String | The immutable ID of the message. | 
 | MicrosoftGraph.SentMail.replyTo | String | The replyTo recipients of the email. | 
+
+### msgraph-mail-update-email-status
+***
+Update the status of an email to read / unread.
+
+
+#### Base Command
+
+`msgraph-mail-update-email-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User ID or principal ID (usually an email address. E.g., user@example.com). | Required | 
+| message_ids | Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. Can be a list of comma-separated values. | Required | 
+| folder_id | The folder ID. | Optional | 
+| status | Status to set the email to. Possible values are: Read, Unread. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.

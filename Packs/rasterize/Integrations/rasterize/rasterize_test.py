@@ -192,24 +192,33 @@ TEST_DATA = [
         'test_data/many_pages.pdf',
         21,
         2,
+        None
     ),
     (
         'test_data/many_pages.pdf',
         20,
         1,
+        None
     ),
     (
         'test_data/many_pages.pdf',
         '*',
         3,
+        None
     ),
+    (
+        'test_data/test_pw_mathias.pdf',
+        '*',
+        1,
+        'mathias',
+    )
 ]
 
 
-@pytest.mark.parametrize('file_path, max_pages, expected_length', TEST_DATA)
-def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length):
+@pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
+def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
     from rasterize import convert_pdf_to_jpeg
-    res = convert_pdf_to_jpeg(file_path, max_pages, "pass")
+    res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
     assert type(res) == list
     assert len(res) == expected_length
