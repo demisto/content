@@ -614,7 +614,7 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
@@ -655,7 +655,7 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch('builtins.open', open_mocker)
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
@@ -690,7 +690,7 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is False
@@ -727,7 +727,7 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
