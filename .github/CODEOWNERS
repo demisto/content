@@ -7,7 +7,7 @@
 /Tests/Marketplace/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 
 # Docker native image
-/Tests/native_image_config.json @GuyAfik @JudahSchwartz
+/Tests/docker_native_image_config.json @GuyAfik @JudahSchwartz
 
 # Marketplace & Upload-Flow
 /Tests/scripts/create_artifacts_graph/create_artifacts.py @ilaner
@@ -39,7 +39,7 @@
 
 # Important Integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
-/Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
+/Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders @Shellyber
 /Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
 /Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
 /Packs/QRadar/Integrations/QRadar_v3/* @tkatzir

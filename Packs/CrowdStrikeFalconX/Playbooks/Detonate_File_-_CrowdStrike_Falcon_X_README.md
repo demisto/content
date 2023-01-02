@@ -43,7 +43,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description**                                                          | **Default Value** | **Required** |
 |----------|--------------------------------------------------------------------------|-------------------|--------------|
-| File     | The file to detonate. The file is taken from the context.                | File.None         | Optional     |
+| File     | The file to detonate. The file is taken from the context.                | File         | Optional     |
 | Interval | Polling frequency - how often the polling command should run \(minutes\) | 1                 | Optional     |
 | Timeout  | How much time to wait before a timeout occurs \(minutes\)                | 15                | Optional     |
 

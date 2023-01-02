@@ -4,6 +4,7 @@ import json
 import requests
 import time
 import re
+import urllib3
 
 
 class ParameterError(Exception):
@@ -2224,7 +2225,7 @@ def mute_alert_src_subnet_command(instance, args):
 
 def main():
     # disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
+    urllib3.disable_warnings()
 
     # IP address or FQDN of your SDSo node
     SDSO = demisto.params().get('sdso')
