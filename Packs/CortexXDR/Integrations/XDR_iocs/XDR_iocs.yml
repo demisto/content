@@ -124,7 +124,7 @@ configuration:
   type: 0
   defaultvalue: 'sourceoriginalseverity'
 - defaultvalue: 'comments'
-  additionalinfo: The XSOAR field where comments are stored. Default is `comments`, expecting an XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
+  additionalinfo: The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
   display: XSOAR Comment Field
   name: xsoar_comments_field
   required: false
