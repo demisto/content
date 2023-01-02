@@ -4331,42 +4331,47 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
 
 def remove_old_versions_from_changelog(changelog: dict):
     """
-    Edits in place, ciac
-    Args:
+    Removes old pack versions from changelog in order to reduce index.zip size.
+    We are keeping the maximum number of versions between the following options:
+    1.  Versions were released last year.
+    2.  Last minor version and one version before it.
+    3.  Last five versions.
+    Edits the changelog entries in place.
 
+    Args:
+        changelog (dict): The changelog of some pack.
     Returns:
         (list) last pack versions
     """
+    if not changelog:
+        return []
+
+    last_same_minor_versions = []
+    last_year_versions = []
+    last_five_versions = list(changelog.keys())[-5:]
+
     year_ago_datetime_obj = datetime.utcnow() - timedelta(days=365)
-    last_ver = Version(list(changelog.keys())[-1])
-    last_minor = []
-    last_year = []
-    last5 = list(changelog.keys())[-5:]
+    last_version = Version(list(changelog.keys())[-1])
 
-    prev_ver = None
-    for ver, info in changelog.items():
-        version = Version(ver)
-        version_released = info.get(Changelog.RELEASED)
+    prev_version = None
+    for version, info in changelog.items():
+        # get versions that were released in last year
+        if version_release_date := info.get(Changelog.RELEASED):
+            version_released_datetime_obj = datetime.strptime(version_release_date, Metadata.DATE_FORMAT)
+            if version_released_datetime_obj > year_ago_datetime_obj:
+                last_year_versions.append(version)
 
-        # get last year
-        version_released_datetime_obj = datetime.strptime(version_released, Metadata.DATE_FORMAT)
+        # get versions with same minor version
+        if Version(version).minor == last_version.minor:
+            if prev_version:
+                last_same_minor_versions.append(prev_version)
+            last_same_minor_versions.append(version)
 
-        if version_released_datetime_obj > year_ago_datetime_obj:
-            last_year.append(ver)
+        prev_version = version
 
-        # get last minor -1
-        if version.minor == last_ver.minor:
-            if prev_ver:
-                last_minor.append(prev_ver)
-            last_minor.append(ver)
+    versions_to_keep = max([last_five_versions, last_year_versions, last_same_minor_versions], key=len)
 
-        prev_ver = ver
-
-    versions_to_keep = max([last5, last_year, last_minor], key=len)
-
-    for ver in list(changelog.keys()):
-        if ver not in versions_to_keep:
-            del changelog[ver]
+    [changelog.pop(version) for version in list(changelog.keys()) if version not in versions_to_keep]
 
     return versions_to_keep
 
