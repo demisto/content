@@ -58,7 +58,7 @@ alter start_raw_log = arrayindex(regextract(_raw_log , "^(\<\d+\>)"),0)
     xdm.target.port = to_integer(Destination_Port),
     xdm.source.port=to_integer(source_port),
     xdm.network.rule = Source_Nat_Rule_Name,
-    xdm.network.ip_protocol = Protocol_ID,
+    xdm.network.ip_protocol = if(Protocol_ID=ENUM.ICMP, XDM_CONST.IP_PROTOCOL_ICMP, action_network_protocol=ENUM.TCP, XDM_CONST.IP_PROTOCOL_TCP, action_network_protocol=ENUM.UDP, XDM_CONST.IP_PROTOCOL_UDP, to_string(action_network_protocol)),
     xdm.source.zone = Source_Zone,
     xdm.target.zone = Destination_Zone_Name,
     xdm.target.user.username = Username,

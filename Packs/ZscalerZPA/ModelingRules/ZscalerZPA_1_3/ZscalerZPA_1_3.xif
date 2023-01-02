@@ -24,7 +24,7 @@ filter
     xdm.network.tls.client_certificate.subject = CertificateCN,
     xdm.event.operation_sub_type = ApplicationSegment,
     xdm.source.host.ipv4_addresses = arraycreate(coalesce(srcPreNAT, "")),
-    xdm.network.application_protocol = to_string (proto),
+    xdm.network.ip_protocol = if(proto=ENUM.ICMP, XDM_CONST.IP_PROTOCOL_ICMP, proto=ENUM.TCP, XDM_CONST.IP_PROTOCOL_TCP, proto=ENUM.UDP, XDM_CONST.IP_PROTOCOL_UDP, to_string(proto)),
     xdm.event.duration = to_integer(PolicyProcessingTime),
     xdm.target.process.name = ApplicationName;
 
