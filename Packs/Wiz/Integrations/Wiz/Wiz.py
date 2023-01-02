@@ -697,7 +697,7 @@ def reject_issue(issue_id, reject_reason, reject_note):
     if 'errors' in response:
         demisto.error(f"Could not find Issue with ID {issue_id}")
         demisto.error(f"Error: {response}")
-        return (f"Could not find Issue with ID {issue_id}")
+        return f"Could not find Issue with ID {issue_id}"
 
     return response
 
