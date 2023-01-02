@@ -1,8 +1,7 @@
 id: CVE Exposure - RiskSense
 version: -1
 name: CVE Exposure - RiskSense
-description: Block IPs and apply the tag to assets that are vulnerable to the specified
-  CVE.
+description: Block IPs and apply the tag to assets that are vulnerable to the specified CVE.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,13 +17,13 @@ tasks:
       description: 'start'
     nexttasks:
       '#none#':
-      - "18"
+      - "1"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 40
+          "x": -210,
+          "y": 30
         }
       }
     note: false
@@ -32,6 +31,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 5c12e6b5-bebc-4667-845d-eeb7d826155a
@@ -40,8 +42,7 @@ tasks:
       id: 5c12e6b5-bebc-4667-845d-eeb7d826155a
       version: -1
       name: Is RiskSense enabled?
-      description: Returns 'yes' if RiskSense is enabled. Otherwise returns
-        'no'.
+      description: Returns 'yes' if RiskSense is enabled. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -50,7 +51,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "13"
+      - "18"
     scriptarguments:
       brandname:
         simple: RiskSense
@@ -60,8 +61,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 370
+          "x": -210,
+          "y": 170
         }
       }
     note: false
@@ -69,6 +70,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: e1a7f22d-c964-4537-80f8-c71c9ee58cd1
@@ -77,8 +81,7 @@ tasks:
       id: e1a7f22d-c964-4537-80f8-c71c9ee58cd1
       version: -1
       name: Apply tag to found assets
-      description: Apply the new or existing tag to the asset, or creates a new tag if
-        the tag does not exist in RiskSense.
+      description: Apply the new or existing tag to the asset, or creates a new tag if the tag does not exist in RiskSense.
       script: '|||risksense-apply-tag'
       type: regular
       iscommand: true
@@ -89,12 +92,10 @@ tasks:
     scriptarguments:
       assettype:
         simple: host
-      exclude: {}
       fieldname:
         simple: id
       operator:
         simple: IN
-      propagate_to_all_findings: {}
       tagname:
         complex:
           root: inputs.TagName
@@ -114,8 +115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1080
+          "x": 440,
+          "y": 990
         }
       }
     note: false
@@ -123,6 +124,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 7c77c3b8-f938-4e1d-81d7-9c04db2847fb
@@ -139,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 1510
+          "x": -210,
+          "y": 1380
         }
       }
     note: false
@@ -148,17 +152,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 16aa966e-1fd7-45c8-8d54-1107fd958cdf
+    taskid: 936bdd54-0740-4e4c-869c-84f8bb82487c
     type: regular
     task:
-      id: 16aa966e-1fd7-45c8-8d54-1107fd958cdf
+      id: 936bdd54-0740-4e4c-869c-84f8bb82487c
       version: -1
       name: Get open findings related to CVEs
-      description: A detailed host finding view with the severity level. Displays
-        vulnerability information like CVE, threats associated with current findings,
-        and origin of findings.
+      description: A detailed host finding view with the severity level. Displays vulnerability information like CVE, threats associated with current findings, and origin of findings.
       script: '|||risksense-get-host-findings'
       type: regular
       iscommand: true
@@ -167,12 +172,10 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      exclude: {}
       fieldname:
         simple: cves
       operator:
         simple: IN
-      page: {}
       size:
         simple: "1000"
       sort_by:
@@ -188,8 +191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 710
+          "x": 180,
+          "y": 640
         }
       }
     note: false
@@ -197,6 +200,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 4f42421d-9238-4871-8d95-48ef34cc08ae
@@ -228,8 +234,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 865
+          "x": 180,
+          "y": 800
         }
       }
     note: false
@@ -237,6 +243,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 9f36553b-2b15-4a90-85e0-65c486068d89
@@ -256,8 +265,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 590
+          "x": 180,
+          "y": 510
         }
       }
     note: false
@@ -265,6 +274,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 8023da73-46df-44a8-8355-9876a09da604
@@ -284,8 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1055
+          "x": 850,
+          "y": 990
         }
       }
     note: false
@@ -293,6 +305,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: ea128f99-f05a-47c6-8893-1c42fa831a2a
@@ -301,9 +316,7 @@ tasks:
       id: ea128f99-f05a-47c6-8893-1c42fa831a2a
       version: -1
       name: Get asset information with owner
-      description: Gets details of the supplied host. The host details can be searched
-        based on input parameters like fieldname (Host Name, IP Address, Criticality,
-        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by, and sort direction.
+      description: Gets details of the supplied host. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by, and sort direction.
       script: '|||risksense-get-hosts'
       type: regular
       iscommand: true
@@ -312,12 +325,10 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      exclude: {}
       fieldname:
         simple: id
       operator:
         simple: IN
-      page: {}
       size:
         simple: "1000"
       sort_by:
@@ -340,8 +351,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1215
+          "x": 40,
+          "y": 990
         }
       }
     note: false
@@ -349,6 +360,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 4083fb31-386a-4e65-8a14-78b53786244d
@@ -357,8 +371,7 @@ tasks:
       id: 4083fb31-386a-4e65-8a14-78b53786244d
       version: -1
       name: Apply tag to found asset findings
-      description: Apply the new or existing tag to the asset, or creates a new tag if
-        it does not exist in RiskSense.
+      description: Apply the new or existing tag to the asset, or creates a new tag if it does not exist in RiskSense.
       script: '|||risksense-apply-tag'
       type: regular
       iscommand: true
@@ -369,12 +382,10 @@ tasks:
     scriptarguments:
       assettype:
         simple: hostFinding
-      exclude: {}
       fieldname:
         simple: id
       operator:
         simple: IN
-      propagate_to_all_findings: {}
       tagname:
         complex:
           root: inputs.TagName
@@ -394,8 +405,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1215
+          "x": 440,
+          "y": 1165
         }
       }
     note: false
@@ -403,6 +414,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: b31a916a-9752-45fb-8354-5856a5124be6
@@ -424,18 +438,12 @@ tasks:
         simple: "No"
       CustomBlockRule:
         simple: "True"
-      DAG: {}
-      EDLServerIP: {}
       IP:
         complex:
           root: RiskSense
           accessor: HostFinding.HostIpAddress
           transformers:
           - operator: uniq
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding: {}
-      StaticAddressGroup: {}
     separatecontext: true
     loop:
       iscommand: false
@@ -445,8 +453,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1215
+          "x": 850,
+          "y": 1165
         }
       }
     note: false
@@ -454,12 +462,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7a49df8d-d2c9-44a4-897a-4ea385ed52f3
+    taskid: 6593a27e-f010-4f9c-8250-6f7744cd3a08
     type: condition
     task:
-      id: 7a49df8d-d2c9-44a4-897a-4ea385ed52f3
+      id: 6593a27e-f010-4f9c-8250-6f7744cd3a08
       version: -1
       name: Are Inputs provided?
       description: Returns 'yes' if inputs are provided. Otherwise returns 'no'.
@@ -470,7 +481,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "1"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -479,8 +490,10 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.CVES
+                root: inputs.CVE_ID
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -490,8 +503,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 175
+          "x": 0,
+          "y": 340
         }
       }
     note: false
@@ -499,36 +512,37 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "12_10_#default#": 0.17,
+      "12_10_#default#": 0.46,
       "12_15_yes": 0.76,
-      "18_1_yes": 0.18,
-      "1_10_#default#": 0.8
+      "18_10_#default#": 0.1,
+      "18_13_yes": 0.64,
+      "1_10_#default#": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 1535,
-        "width": 1510,
-        "x": -220,
-        "y": 40
+        "height": 1415,
+        "width": 1440,
+        "x": -210,
+        "y": 30
       }
     }
   }
 inputs:
-- key: CVES
+- key: CVE_ID
   value: {}
   required: true
-  description: Specify Common Vulnerabilities and Exposures (CVE). You can mention
-    multiple CVEs using a comma-separated list.
+  description: "Specify Common Vulnerabilities and Exposures (CVE). \nSeparate multiple search values by commas only (without spaces or any special characters)."
   playbookInputQuery:
 - key: TagName
   value: {}
   required: true
-  description: Tags in RiskSense can be applied to assets, web applications, and vulnerabilities.
-    Tags are useful in the soft grouping, workflow creation and to identify compliance-related
-    assets.
+  description: Tags in RiskSense can be applied to assets, web applications, and vulnerabilities. Tags are useful in the soft grouping, workflow creation and to identify compliance-related assets.
   playbookInputQuery:
 outputs:
 - contextPath: RiskSense.TagAssociation
@@ -543,3 +557,5 @@ outputs:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}

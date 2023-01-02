@@ -1,4 +1,4 @@
-Block IPs and apply the tag to assets that are vulnerable to specified CVE.
+Block IPs and apply the tag to assets that are vulnerable to the specified CVE.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -22,8 +22,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| CVES | Specify Common Vulnerabilities and Exposures \(CVE\). You can mention multiple CVEs using a comma\-separated list. |  | Required |
-| TagName | Tags in RiskSense can be applied to assets, web applications, and vulnerabilities. Tags are useful in the soft grouping, workflow creation, and to identify compliance\-related assets. |  | Required |
+| CVE_ID | Specify Common Vulnerabilities and Exposures \(CVE\). <br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Required |
+| TagName | Tags in RiskSense can be applied to assets, web applications, and vulnerabilities. Tags are useful in the soft grouping, workflow creation and to identify compliance-related assets. |  | Required |
 
 ## Playbook Outputs
 ---
@@ -36,4 +36,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![CVE Exposure - RiskSense](https://raw.githubusercontent.com/demisto/content/a754dc49eb361097936b6c53f5c5a989b82769d3/Packs/RiskSense/doc_files/CVE_Exposure_-_RiskSense.png)
+![CVE Exposure - RiskSense](../doc_files/CVE_Exposure_-_RiskSense.png)
