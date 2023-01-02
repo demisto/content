@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
-For information on how to configure log collections from Google Cloud Platform, please refer to the following documentation [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/external-data-ingestion/ingest-network-connection-logs/ingest-logs-and-data-from-gcp.html).
+For information on how to configure log collection from Google Cloud Platform, please refer to the following documentation [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/external-data-ingestion/ingest-network-connection-logs/ingest-logs-and-data-from-gcp.html).
 
 ## Collect Events from Vendor
 Please refer to the documentation provided above.
