@@ -41,8 +41,8 @@
             "display_name": "Palo Alto Networks WildFire"
           },
           {
-            "name": "CrowdStrikeFalconX",
-            "display_name": "CrowdStrike FalconX"
+            "name": "CrowdStrikeFalcon Intelligence Sandbox",
+            "display_name": "CrowdStrike Falcon Intelligence Sandbox"
           },
           {
             "name": "FortiSandbox",
@@ -289,12 +289,12 @@
           "description": "Configure Wildfire to enable file detonation to improve investigation."
         },
         {
-          "name": "CrowdStrike Falcon X",
+          "name": "CrowdStrike Falcon Intelligence Sandbox",
           "action": {
-            "existing": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation.",
-            "new": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
+            "existing": "Configure 'CrowdStrike Falcon Intelligence Sandbox' to enable file detonation to improve investigation.",
+            "new": "Configure 'CrowdStrike Falcon Intelligence Sandbox' to enable file detonation to improve investigation."
           },
-          "description": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
+          "description": "Configure 'CrowdStrike Falcon Intelligence Sandbox' to enable file detonation to improve investigation."
         },
         {
           "name": "Active Directory Query v2",

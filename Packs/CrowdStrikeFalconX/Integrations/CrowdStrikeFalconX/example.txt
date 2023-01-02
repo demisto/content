@@ -8,4 +8,4 @@ cs-fx-download-ioc id="e968cf9ec879d33bd8050e4f7482787b1a5ae3411ed9856cadc4a4781
 cs-fx-check-quota
 cs-fx-find-reports offset=1 limit=5
 cs-fx-find-submission-id offset=1 limit=5
-file using-brand="CrowdStrike Falcon X" file="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee,90f352c1fb7b21cc0216b2f0701a236db92b786e4301904d28f4ec4cb81f2a0b"
+file using-brand="CrowdStrike Falcon Intelligence Sandbox" file="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee,90f352c1fb7b21cc0216b2f0701a236db92b786e4301904d28f4ec4cb81f2a0b"

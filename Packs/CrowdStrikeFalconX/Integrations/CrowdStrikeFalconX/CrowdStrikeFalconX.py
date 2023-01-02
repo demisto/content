@@ -541,7 +541,7 @@ def parse_file_results(report_to_results: Dict[str, RawCommandResults]) -> List[
                 continue
 
             result.indicator = max_indicators.get(sha256)
-            readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+            readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output)
             added_hashes.add(sha256)
 
         else:  # no output for this report_id
@@ -796,7 +796,7 @@ def upload_file_command(  # type: ignore[return]
             outputs_key_field='sha256',
             outputs_prefix=OUTPUTS_PREFIX,
             outputs=result.output,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
             raw_response=response,
         )
 
@@ -847,7 +847,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
         outputs_key_field='submitted_id',
         outputs_prefix=OUTPUTS_PREFIX,
         outputs=result.output,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
         raw_response=result.response,
         indicator=result.indicator
     )

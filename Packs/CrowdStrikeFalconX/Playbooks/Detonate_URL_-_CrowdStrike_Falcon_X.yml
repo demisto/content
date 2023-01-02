@@ -40,7 +40,7 @@ tasks:
     task:
       id: fc1f205f-4605-402d-805d-57b7d4b4cef7
       version: -1
-      name: Is CrowdStrike Falcon X enabled?
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: |
         Verify that there is a valid instance of CrowdStrike enabled.
       type: condition
@@ -68,7 +68,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: CrowdStrike Falcon X
+                        simple: CrowdStrike Falcon Intelligence Sandbox
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -125,7 +125,7 @@ tasks:
     task:
       id: 9ab16bf8-de8e-4201-8561-992345b51280
       version: -1
-      name: CrowdStrike Falcon X Get Report
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report
       description: Get a full version of a sandbox report.
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
       type: regular
@@ -157,7 +157,7 @@ tasks:
     task:
       id: 251b7acf-b9ad-4122-8968-788528be9bc1
       version: -1
-      name: CrowdStrike Falcon X Submit URL
+      name: CrowdStrike Falcon Intelligence Sandbox Submit URL
       description: Submit a URL or FTP for sandbox analysis.
       script: '|||cs-fx-submit-url'
       type: regular

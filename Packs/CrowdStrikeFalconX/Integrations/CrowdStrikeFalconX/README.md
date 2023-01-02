@@ -1,10 +1,10 @@
-Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
-This integration was integrated and tested with version 2 of CrowdStrike Falcon X
+Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
+This integration was integrated and tested with version 2 of CrowdStrike Falcon Intelligence Sandbox
 
-## Configure CrowdStrike Falcon X on Cortex XSOAR
+## Configure CrowdStrike Falcon Intelligence Sandbox on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CrowdStrike Falcon X.
+2. Search for CrowdStrike Falcon Intelligence Sandbox.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
