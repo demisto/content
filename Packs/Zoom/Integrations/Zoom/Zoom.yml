@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Zoom
+  id: Zoom Dev
   version: -1
 configuration:
 - display: Server URL (e.g. 'https://api.zoom.us/v2/')
@@ -18,12 +18,12 @@ configuration:
   type: 9
   displaypassword: Client Secret (OAuth)
 - display: API Key (JWT-Deprecated. This method will be deprecated by Zoom in June 2023.)
-  name: api_key
+  name: apiKey
   required: false
   type: 4
   additionalinfo: This authentication method is deprecated
 - display: API Secret (JWT-Deprecated. This method will be deprecated by Zoom in June 2023.)
-  name: api_secret
+  name: apiSecret
   type: 4
   required: false
   additionalinfo: This authentication method is deprecated
@@ -517,6 +517,6 @@ script:
   script: "-"
   subtype: python3
   type: python
-fromversion: 6.5.0
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

@@ -599,7 +599,7 @@ def zoom_fetch_recording_command():
         encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
         return encoded
     URL = 'https://api.zoom.us/v2/'
-    ACCESS_TOKEN = get_jwt(demisto.getParam('api_key'), demisto.getParam('api_secret'))
+    ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
     PARAMS = {'access_token': ACCESS_TOKEN}
     HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
     USE_SSL = not demisto.params().get('insecure', False)
@@ -718,8 +718,8 @@ def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     base_url = params.get('url')
-    api_key = params.get('api_key')
-    api_secret = params.get('api_secret')
+    api_key = params.get('apiKey')
+    api_secret = params.get('apiSecret')
     account_id = params.get('account_id')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
