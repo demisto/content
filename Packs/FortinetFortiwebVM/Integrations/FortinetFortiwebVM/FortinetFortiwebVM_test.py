@@ -48,7 +48,7 @@ def mock_client(version: str) -> Client:
 def test_protected_hostname_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                  args: Dict[str, Any], jsonpath: str):
     """
-    Scenario: Create a protected hostname group.
+    Scenario: Create a Protected hostname group.
     Given:
      - User has provided correct parameters.
     When:
