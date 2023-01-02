@@ -636,7 +636,7 @@
             "Detected"
         ],
         "malopCloseTime": 1666167296850,
-        "closerName": "david.l@cyber-observer.com",
+        "closerName": "example@example.com",
         "escalated": false,
         "edr": false,
         "malopStatus": "Remediated",
@@ -1080,7 +1080,7 @@
             "Detected"
         ],
         "malopCloseTime": 1617629010643,
-        "closerName": "sivano@empow.co",
+        "closerName": "example@example.co",
         "escalated": false,
         "edr": false,
         "malopStatus": "Excluded",
