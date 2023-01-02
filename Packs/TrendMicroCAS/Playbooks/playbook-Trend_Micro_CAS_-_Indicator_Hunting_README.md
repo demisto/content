@@ -60,4 +60,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Trend Micro CAS - Indicator Hunting](../doc_files/Trend_Micro_CAS_-_Indicator_Hunting.png)
+![Trend Micro CAS - Indicator Hunting](../doc_files/playbook-Trend_Micro_CAS_-_Indicator_Hunting.png)
