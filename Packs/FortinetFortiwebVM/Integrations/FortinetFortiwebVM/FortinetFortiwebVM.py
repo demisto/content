@@ -5804,6 +5804,7 @@ def find_dict_in_array(container: List[Dict[str, Any]], key: str, value: str) ->
     for obj in container:
         if obj.get(key) and str(obj[key]) == value:
             return obj
+    return None
 
 
 def find_dicts_in_array(container: List[Dict[str, Any]], key: str, value: List[str]) -> Optional[List[Dict[str, Any]]]:
@@ -5869,6 +5870,7 @@ def get_object_data(version: str,
     if members_list := get_request(object_id) if object_id else get_request():
         members_list = members_list if version == ClientV1.API_VER else members_list['results']
         return find_dict_in_array(members_list, by_key, value)
+    return None
 
 
 def test_module(client: Client) -> str:
