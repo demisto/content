@@ -15,6 +15,7 @@ DEFAULT_OFFSET = 0
 PA_OUTPUT_PREFIX = "PrismaSase."
 CONFIG_URI_PREFIX = "/sse/config/v1/"
 
+
 SECURITYRULE_FIELDS = {
     "name": "",
     "action": "",
@@ -473,7 +474,7 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}CreatedSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rule Created', outputs, headerTransform=string_to_table_header),
@@ -630,13 +631,10 @@ def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     tsg_id = args.get('tsg_id') or client.default_tsg_id
 
     raw_response = client.delete_security_rule(rule_id, tsg_id)  # type: ignore
-    outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}DeletedSecurityRule',
-        outputs_key_field='id',
-        outputs=outputs,
-        readable_output=tableToMarkdown('Security Rule Deleted', outputs, headerTransform=string_to_table_header),
+        readable_output=f'Security Rule object with id {raw_response.get("id", "")} '
+                        f'and name {raw_response.get("name", "")} was deleted successfully',
         raw_response=raw_response
     )
 
@@ -693,7 +691,7 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}EditedSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rule Updated', outputs, headerTransform=string_to_table_header),
@@ -719,7 +717,7 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any]) -> Comma
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigPush',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Configuration Push Requested', outputs,
@@ -757,11 +755,11 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
     outputs = raw_response.get('data')
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}FoundSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rules', outputs, headers=[
-            'id', 'name', 'description', 'action', 'destination', 'folder'],
+            'id', 'name', 'description', 'action', 'destination', 'folder', 'disabled'],
                                         headerTransform=string_to_table_header,
                                         removeNull=True),
         raw_response=raw_response
