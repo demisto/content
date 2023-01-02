@@ -1025,7 +1025,7 @@ def main():
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    packs_to_upload = option.pack_names or ""
+    modified_packs_to_upload = option.pack_names or ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
@@ -1060,12 +1060,12 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
-    pack_names_to_upload = get_packs_names(packs_to_upload)
+    pack_names_to_upload = get_packs_names(modified_packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
                               is_modified=pack_name in pack_names_to_upload)
-                         for pack_name in os.listdir(extract_destination_path) if pack_name != 'index']
+                         for pack_name in os.listdir(extract_destination_path)]
 
     # pack's list to update their index metadata and upload them.
     # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
