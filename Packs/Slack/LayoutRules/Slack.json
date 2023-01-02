@@ -2,7 +2,7 @@
   "rule_id": "eyal_test",
   "layout_id": "test_layout_id",
   "description": "This trigger is responsible for handling Impossible Traveler alerts",
-  "rule_name": "test rule name",
+  "layout_rule_name": "test rule name",
   "alerts_filter": {
     "filter": {
       "AND": [
