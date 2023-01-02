@@ -403,7 +403,8 @@ def test_list_issue_comments_since(mocker):
     ({'assignee': 'user1, user2', 'pull_request_number': '1'}, b'{"message": "success"}',
      "The following users were assigned successfully to PR #1: \n['user1', 'user2']"),
     ({'assignee': 'user3', 'pull_request_number': '1'}, b'{"message": "success"}',
-     "\nThe following users were not assigned to #1: \n['user3'] \nVerify that the users exist and that you have the right permissions."),
+     "\nThe following users were not assigned to #1: \n['user3'] \nVerify that the users exist and that you have the "
+     "right permissions."),
 ])
 def test_assignee(mocker, args, response_content, expected_result):
     """
