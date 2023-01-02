@@ -1,0 +1,20 @@
+{
+    "google_cloud_logging_raw": {
+        "PROTOPAYLOAD": {
+          "type": "string",
+          "is_array": false
+        },
+        "RESOURCE": {
+          "type": "string",
+          "is_array": false
+        },
+        "OPERATION": {
+          "type": "string",
+          "is_array": false
+        },
+        "authorizationInfo": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+  }
