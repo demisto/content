@@ -51,7 +51,7 @@ script:
       isArray: false
       name: issue_type
       predefined:
-      - 'ACCESS_ROLE'
+      - ACCESS_ROLE
       - ACCESS_ROLE_BINDING
       - ACCESS_ROLE_PERMISSION
       - API_GATEWAY
