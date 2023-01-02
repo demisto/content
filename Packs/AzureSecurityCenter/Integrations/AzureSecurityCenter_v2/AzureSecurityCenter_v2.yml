@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://management.azure.com/
-  display: Microsoft Azure Management URLa
+  display: Microsoft Azure Management URL
   name: server_url
   required: false
   type: 0
@@ -528,7 +528,7 @@ script:
     - contextPath: Azure.Securescore.weight
       description: The relative weight for each subscription.
       type: String
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.42817
   isfetch: false
   longRunning: false
   longRunningPort: false
