@@ -1089,7 +1089,8 @@ def download_ioc_command(
     response: Optional[dict] = None
     try:
         response = client.download_ioc(id, name, accept_encoding)
-        if isinstance(response, dict) and response.get('File'):  # In case the returned response is a file, output the file to the war room.
+        # In case the returned response is a file, output the file to the war room.
+        if isinstance(response, dict) and response.get('File'):
             return response
         else:
             return CommandResults(
