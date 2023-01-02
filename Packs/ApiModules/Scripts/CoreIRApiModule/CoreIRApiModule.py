@@ -2591,8 +2591,8 @@ def handle_outgoing_issue_closure(remote_args):
         update_args['resolve_comment'] = update_args.get('closeNotes') or update_args.get('resolve_comment', '')
 
         if update_args.get('status') not in XDR_RESOLVED_STATUS_TO_XSOAR:
-            update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason') or
-                                                              update_args.get('status', 'Other'))
+            update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason')
+                                                              or update_args.get('status', 'Other'))
         demisto.debug(f"Closing Remote incident with status {update_args['status']}")
 
 
