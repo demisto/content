@@ -3058,7 +3058,9 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='GET', url_suffix='cmdb/server-policy/http-content-routing-policy')
-    def handle_certificates(self, certificate_type : str , certificate : str, multi_certificate : str, lets_certificate : str) -> Dict[str, Any]:
+
+    def handle_certificates(self, certificate_type: str, certificate: Optional[str], multi_certificate: Optional[str],
+                            lets_certificate: Optional[str]) -> Dict[str, Any]:
         """Hadle certificates for Fortiweb V2 server policy.
 
         Args:
@@ -3075,7 +3077,7 @@ class ClientV2(Client):
             case 'Letsencrypt':
                 data.update(
                     remove_empty_elements({
-                        'multi-certificate' : 'disable',
+                        'multi-certificate': 'disable',
                         'certificate-type': 'enable',
                         'lets-certificate': lets_certificate,
                         'certificate-group': '',
@@ -3133,7 +3135,7 @@ class ClientV2(Client):
                                    scripting_list: Optional[str],
                                    allow_list: Optional[str],
                                    replace_msg: Optional[str],
-                                   certificate_type: Optional[str],
+                                   certificate_type: str,
                                    lets_certificate: Optional[str],
                                    http2: Optional[str] = None,
                                    certificate: Optional[str] = None,
@@ -3207,8 +3209,9 @@ class ClientV2(Client):
                 mach_once
             })
         }
-        data.update(self.handle_certificates(certificate_type , certificate,multi_certificate , lets_certificate))
+        data.update(self.handle_certificates(certificate_type, certificate, multi_certificate, lets_certificate))
         return data
+
     def server_policy_create_request(self, name: str, deployment_mode: str, virtual_server: str,
                                      server_pool: Optional[str], protected_hostnames: Optional[str],
                                      client_real_ip: Optional[str], syn_cookie: Optional[str],
@@ -3288,7 +3291,7 @@ class ClientV2(Client):
             url_case_sensitivity=url_case_sensitivity,
             comments=comments,
             mach_once=mach_once,
-            certificate_type=kwards.get('certificate_type'),
+            certificate_type=kwards['certificate_type'],
             lets_certificate=kwards.get('lets_certificate'),
             multi_certificate=kwards.get('multi_certificate'),
         )
@@ -3378,7 +3381,7 @@ class ClientV2(Client):
             url_case_sensitivity=url_case_sensitivity,
             comments=comments,
             mach_once=mach_once,
-            certificate_type=kwards.get('certificate_type'),
+            certificate_type=kwards['certificate_type'],
             lets_certificate=kwards.get('lets_certificate'),
             multi_certificate=kwards.get('multi_certificate'),
             certificate=certificate,

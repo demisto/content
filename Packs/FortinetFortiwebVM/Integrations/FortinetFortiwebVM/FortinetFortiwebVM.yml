@@ -1780,6 +1780,7 @@ script:
       isArray: false
       name: certificate_type
       defaultValue: Local
+      defaultValue: Local
       predefined:
       - Local
       - Multi Certificate
@@ -2007,6 +2008,7 @@ script:
       description: "Enable allow FortiWeb to automatically retrieve CA certificates from Let's Encrypt. Supports API version 2 only."
       isArray: false
       name: certificate_type
+      defaultValue: Local
       predefined:
       - Local
       - Multi Certificate
