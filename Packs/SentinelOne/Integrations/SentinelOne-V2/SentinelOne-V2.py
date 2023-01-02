@@ -2574,7 +2574,7 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
 
     events, pagination = client.get_events_request(query_id, limit, cursor)
     context = {}
-    if pagination['nextCursor'] is not None:
+    if pagination and pagination.get('nextCursor') is not None:
         demisto.results("Use the below cursor value to get the next page events \n {}". format(pagination['nextCursor']))
         context.update({'SentinelOne.Cursor.Event': pagination['nextCursor']})
     for event in events:
