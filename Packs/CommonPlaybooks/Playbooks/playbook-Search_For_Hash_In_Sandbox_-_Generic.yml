@@ -56,7 +56,7 @@ tasks:
       - "6"
     scriptarguments:
       brandname:
-        simple: CrowdStrike Falcon Intelligence Sandbox
+        simple: CrowdStrike Falcon X
     results:
     - brandInstances
     separatecontext: false
@@ -269,7 +269,7 @@ tasks:
       id: 0cc08ef9-5225-44a8-8221-553bb90807b1
       version: -1
       name: Get full report from Falcon Intelligence Sandbox
-      description: Gets a full report from the Falcon Intelligence Sandbox sandbox.
+      description: Gets a full report from the Falcon Intelligence Sandbox.
       script: '|||cs-fx-get-full-report'
       type: regular
       iscommand: true
@@ -297,7 +297,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: Falcon Intelligence Sandbox sandbox report
+        simple: Falcon Intelligence Sandbox report
       customfields: {}
     timertriggers: []
     ignoreworker: false

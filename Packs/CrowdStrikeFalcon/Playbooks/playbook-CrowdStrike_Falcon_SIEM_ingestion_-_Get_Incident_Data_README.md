@@ -5,10 +5,10 @@ This playbook handles incident ingestion from the SIEM. The user provides the fi
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-CrowdStrike Falcon Intelligence Sandbox - Get Detections by Incident
+CrowdStrike Falcon - Get Detections by Incident
 
 ### Integrations
-CrowdStrikeFalcon Intelligence Sandbox
+CrowdStrikeFalcon
 
 ### Scripts
 This playbook does not use any scripts.

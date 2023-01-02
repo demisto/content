@@ -44,7 +44,7 @@ tasks:
       version: -1
       name: 'Falcon Intelligence Sandbox Detonate and Analyze File'
       description: Env ID - return to transformer.
-      playbookName: Falcon Intelligence Sandbox Detonate and Analyze File
+      playbookName: FalconX Detonate and Analyze File
       type: playbook
       iscommand: false
       brand: ""
@@ -176,7 +176,7 @@ tasks:
       - "1"
     scriptarguments:
       brandname:
-        simple: CrowdStrike Falcon Intelligence Sandbox
+        simple: CrowdStrike Falcon X
     results:
     - brandInstances
     separatecontext: false

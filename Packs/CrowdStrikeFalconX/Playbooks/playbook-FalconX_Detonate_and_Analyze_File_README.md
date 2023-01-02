@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalcon Intelligence Sandbox
+* CrowdStrikeFalconIntelligenceSandbox
 
 ### Scripts
 * IsIntegrationAvailable
@@ -38,4 +38,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![FalconX Detonate and Analyze File](../doc_files/FalconX_Detonate_and_Analyze.png)
+![Falcon Intelligence Sandbox Detonate and Analyze File](../doc_files/FalconX_Detonate_and_Analyze.png)

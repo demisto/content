@@ -2,7 +2,7 @@ id: FalconX Detonate and Analyze File
 version: -1
 fromversion: 6.5.0
 name: FalconX Detonate and Analyze File
-description: This playbook uploads, detonates, and analyzes files for the Falcon Intelligence Sandbox sandbox.
+description: This playbook uploads, detonates, and analyzes files for the Falcon Intelligence Sandbox.
 starttaskid: "0"
 tasks:
   "0":
@@ -258,7 +258,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: Falcon Intelligence Sandbox sandbox report
+        simple: Falcon Intelligence Sandbox report
       customfields: {}
     timertriggers: []
     ignoreworker: false

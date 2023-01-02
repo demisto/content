@@ -41,7 +41,7 @@
             "display_name": "Palo Alto Networks WildFire"
           },
           {
-            "name": "CrowdStrikeFalcon Intelligence Sandbox",
+            "name": "CrowdStrikeFalconX",
             "display_name": "CrowdStrike Falcon Intelligence Sandbox"
           },
           {
@@ -289,7 +289,7 @@
           "description": "Configure Wildfire to enable file detonation to improve investigation."
         },
         {
-          "name": "CrowdStrike Falcon Intelligence Sandbox",
+          "name": "CrowdStrike Falcon X",
           "action": {
             "existing": "Configure 'CrowdStrike Falcon Intelligence Sandbox' to enable file detonation to improve investigation.",
             "new": "Configure 'CrowdStrike Falcon Intelligence Sandbox' to enable file detonation to improve investigation."

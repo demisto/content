@@ -90,7 +90,7 @@
             "mandatory": false,
             "display_name": "FireEye Email Security (EX)"
         },
-        "CrowdStrikeFalcon Intelligence Sandbox": {
+        "CrowdStrikeFalconX": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon Intelligence Sandbox"
         },
@@ -325,7 +325,7 @@
         "Phishing",
         "RiskSense",
         "FireEyeEX",
-        "CrowdStrikeFalcon Intelligence Sandbox",
+        "CrowdStrikeFalconX",
         "VirusTotal-Private_API",
         "ThreatX",
         "Polygon",

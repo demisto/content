@@ -78,7 +78,7 @@
             "mandatory": true,
             "display_name": "Filters And Transformers"
         },
-        "CrowdStrikeFalcon Intelligence Sandbox": {
+        "CrowdStrikeFalconX": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon Intelligence Sandbox"
         },
