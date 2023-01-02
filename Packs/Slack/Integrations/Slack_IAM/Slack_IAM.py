@@ -484,7 +484,7 @@ def main():
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    access_token = params.get('access_token')
+    access_token = params.get('credentials', {}).get('password') or params.get('access_token')
 
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
