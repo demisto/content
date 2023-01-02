@@ -8,10 +8,8 @@ import pytest
 from unittest.mock import patch
 from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
 
-from Tests.Marketplace.marketplace_services import Pack
 
 # disable-secrets-detection-start
-
 
 class TestModifiedPacks:
     @pytest.mark.parametrize("packs_names_input, expected_result", [
@@ -427,8 +425,7 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-                                                   content_packs=[])
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert skipped_cleanup
 
@@ -457,8 +454,7 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-                                                   content_packs=[])
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert skipped_cleanup
 
@@ -504,16 +500,12 @@ class TestCleanPacks:
 
         private_packs = [{'id': private_pack, 'price': 120}]
 
-        skipped_cleanup = clean_non_existing_packs(
-            index_folder_path=index_folder_path,
-            private_packs=private_packs,
-            storage_bucket=dummy_storage_bucket,
-            storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-            content_packs=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")]
-        )
+        skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert not skipped_cleanup
-        shutil.rmtree.assert_called_with(os.path.join(index_folder_path, invalid_pack))
+        shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
 
 
 class TestUpdatedPrivatePacks:
@@ -572,7 +564,7 @@ class TestUpdatedPrivatePacks:
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
         assert len(updated_private_packs) == 1
         assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
-            updated_private_packs[0] != "second_non_updated_pack"
+               updated_private_packs[0] != "second_non_updated_pack"
 
     def test_is_private_packs_updated(self, mocker):
         """
