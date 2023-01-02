@@ -17,8 +17,8 @@ MIN_PAGE_SIZE = 1
 MAX_LIMIT = 50
 MIN_LIMIT = 1
 
-SUB_API = "/api/v2/"
-USER_API = "/api/v3/"
+API_V2_PREFIX = "/api/v2/"
+API_V3_PREFIX = "/api/v3/"
 
 MAX_DAYS_DIFF = 14
 
@@ -64,7 +64,6 @@ class Client(BaseClient):
     """ API Client to communicate with ThreatGris API. """
 
     def __init__(self, base_url: str, api_token: str, proxy: bool, verify: bool):
-        self.base_url = base_url
         headers = {
             "Authorization": f"bearer {api_token}",
         }
@@ -75,7 +74,7 @@ class Client(BaseClient):
             proxy=proxy,
         )
 
-    def sample_get_request(
+    def get_sample_request(
         self,
         sample_id: Optional[str] = None,
         limit: Optional[int] = None,
@@ -110,11 +109,11 @@ class Client(BaseClient):
             resp_type = "json"
 
         return self._http_request("GET",
-                                  f"{SUB_API}{url_suffix}",
+                                  f"{API_V2_PREFIX}{url_suffix}",
                                   params=params,
                                   resp_type=resp_type)
 
-    def sample_analysis_request(
+    def analysis_sample_request(
         self,
         sample_id: str,
         analysis_type: str,
@@ -134,7 +133,8 @@ class Client(BaseClient):
         analysis_type = f'{analysis_type}s' if analysis_type == 'network_stream' else analysis_type
         url_prefix = f"{analysis_type}/{arg_value}" if arg_value else analysis_type
 
-        return self._http_request("GET", f"{SUB_API}samples/{sample_id}/analysis/{url_prefix}")
+        return self._http_request("GET",
+                                  f"{API_V2_PREFIX}samples/{sample_id}/analysis/{url_prefix}")
 
     def whoami_request(self) -> Dict[str, Any]:
         """Get details about correct login user and organization.
@@ -142,9 +142,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        return self._http_request("GET", f"{USER_API}session/whoami")
+        return self._http_request("GET", f"{API_V3_PREFIX}session/whoami")
 
-    def associated_samples_list_request(
+    def list_associated_samples_request(
         self,
         arg_name: str,
         arg_value: str,
@@ -165,9 +165,11 @@ class Client(BaseClient):
             "limit": limit,
             "offset": offset,
         })
-        return self._http_request("GET", f"{SUB_API}{arg_name}s/{arg_value}/samples", params=params)
+        return self._http_request("GET",
+                                  f"{API_V2_PREFIX}{arg_name}s/{arg_value}/samples",
+                                  params=params)
 
-    def sample_state_request(self, sample_id: str) -> Dict[str, Any]:
+    def get_sample_state_request(self, sample_id: str) -> Dict[str, Any]:
         """Get the sample state.
 
         Args:
@@ -176,9 +178,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        return self._http_request("GET", f"{SUB_API}samples/{sample_id}/state")
+        return self._http_request("GET", f"{API_V2_PREFIX}samples/{sample_id}/state")
 
-    def sample_upload_request(self,
+    def upload_sample_request(self,
                               files: Optional[Dict] = None,
                               payload: Optional[Dict] = None) -> Dict[str, Any]:
         """Submits a sample (file or URL) to Malware Analytics for analysis.
@@ -190,7 +192,7 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
 
-        return self._http_request("POST", f"{SUB_API}samples", files=files, data=payload)
+        return self._http_request("POST", f"{API_V2_PREFIX}samples", files=files, data=payload)
 
     def associated_request(self, arg_name: str, arg_value: str, url_arg: str) -> Dict[str, Any]:
         """Returns a list of domains / URLs associated with the IP or
@@ -205,7 +207,7 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
         url_prefix = f"{arg_name}s/{arg_value}/{url_arg}"
-        return self._http_request("GET", f"{SUB_API}{url_prefix}")
+        return self._http_request("GET", f"{API_V2_PREFIX}{url_prefix}")
 
     def feeds_request(
         self,
@@ -260,9 +262,9 @@ class Client(BaseClient):
             "offset": offset,
         })
 
-        return self._http_request("GET", f"{SUB_API}iocs/feeds/{arg_name}s", params=params)
+        return self._http_request("GET", f"{API_V2_PREFIX}iocs/feeds/{arg_name}s", params=params)
 
-    def submission_search_request(
+    def search_submission_request(
         self,
         query: Optional[str] = None,
         sort_by: Optional[str] = None,
@@ -317,7 +319,7 @@ class Client(BaseClient):
             "limit": limit,
             "offset": offset,
         })
-        return self._http_request("GET", f"{SUB_API}search/submissions", params=params)
+        return self._http_request("GET", f"{API_V2_PREFIX}search/submissions", params=params)
 
     def search_request(
         self,
@@ -333,9 +335,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        return self._http_request("GET", f"{SUB_API}{arg_name}s/{arg_value}")
+        return self._http_request("GET", f"{API_V2_PREFIX}{arg_name}s/{arg_value}")
 
-    def rate_limit_get_request(
+    def get_rate_limit_request(
         self,
         login: str,
     ) -> Dict[str, Any]:
@@ -347,9 +349,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        return self._http_request("GET", f"{USER_API}users/{login}/rate-limit")
+        return self._http_request("GET", f"{API_V3_PREFIX}users/{login}/rate-limit")
 
-    def specific_feed_get_request(
+    def get_specific_feed_request(
         self,
         feed_name: str,
         output_type: str,
@@ -372,12 +374,12 @@ class Client(BaseClient):
         params = remove_empty_elements({"before": before, "after": after})
         return self._http_request(
             method="GET",
-            url_suffix=f"{USER_API}feeds/{feed_name}.{output_type}",
+            url_suffix=f"{API_V3_PREFIX}feeds/{feed_name}.{output_type}",
             params=params,
         )
 
 
-def submission_search_command(
+def search_submission_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
@@ -396,15 +398,15 @@ def submission_search_command(
     term = args.get("term")
     state = args.get("state")
     sort_order = args.get("sort_order")
-    highlight = arg_to_boolean(args.get("highlight"))
+    highlight = optional_arg_to_boolean(args.get("highlight"))
     before = args.get("before")
     after = args.get("after")
-    user_only = arg_to_boolean(args.get("user_only"))
-    org_only = arg_to_boolean(args.get("org_only"))
+    user_only = optional_arg_to_boolean(args.get("user_only"))
+    org_only = optional_arg_to_boolean(args.get("org_only"))
 
     limit, offset, pagination_message = pagination(args)
 
-    response = client.submission_search_request(
+    response = client.search_submission_request(
         query=query,
         sort_by=sort_by,
         term=term,
@@ -480,7 +482,7 @@ def search_command(
     )
 
 
-def associated_samples_list_command(
+def list_associated_samples_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
@@ -500,7 +502,7 @@ def associated_samples_list_command(
     arg_value = url_to_sha256(arg_value) if arg_name == "url" else arg_value
 
     limit, offset, pagination_message = pagination(args)
-    response = client.associated_samples_list_request(
+    response = client.list_associated_samples_request(
         arg_name,
         arg_value,
         limit,
@@ -525,7 +527,7 @@ def associated_samples_list_command(
     )
 
 
-def sample_analysis_command(
+def analysis_sample_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
@@ -543,10 +545,10 @@ def sample_analysis_command(
     arg_name = ANALYSIS_ARG_NAME.get(url_param)
     arg_value = args.get(arg_name)  # type: ignore[arg-type]
     sample_id = args["sample_id"]
-    response = client.sample_analysis_request(sample_id, url_param, arg_value)
+    response = client.analysis_sample_request(sample_id, url_param, arg_value)
 
     items = get_specific_key_from_dict(response["data"], "items")
-    items_to_display = get_relevant_output(items, url_param)  # type: ignore[arg-type]
+    items_to_display = parse_output(items, url_param)  # type: ignore[arg-type]
 
     response['data'].update({'sample_id': sample_id})
 
@@ -564,7 +566,7 @@ def sample_analysis_command(
     )
 
 
-def rate_limit_get_command(
+def get_rate_limit_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
@@ -579,7 +581,7 @@ def rate_limit_get_command(
     """
     login = args["login"]
     entity_type = args.get("entity_type")
-    response = client.rate_limit_get_request(login)
+    response = client.get_rate_limit_request(login)
 
     entity_data = response["data"][entity_type]
 
@@ -628,7 +630,7 @@ def who_am_i_command(
     )
 
 
-def specific_feed_get_command(
+def get_specific_feed_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
@@ -647,7 +649,7 @@ def specific_feed_get_command(
     before = args.get("before")
     after = args.get("after")
 
-    response = client.specific_feed_get_request(
+    response = client.get_specific_feed_request(
         feed_name,
         output_type,
         before,
@@ -731,8 +733,8 @@ def feeds_command(
     ioc = args.get("ioc")
     before = args.get("before")
     after = args.get("after")
-    user_only = arg_to_boolean(args.get("user_only"))
-    org_only = arg_to_boolean(args.get("org_only"))
+    user_only = optional_arg_to_boolean(args.get("user_only"))
+    org_only = optional_arg_to_boolean(args.get("org_only"))
 
     limit, offset, pagination_message = pagination(args)
 
@@ -767,7 +769,7 @@ def feeds_command(
     )
 
 
-def sample_upload_command(
+def upload_sample_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
@@ -787,11 +789,11 @@ def sample_upload_command(
         raise ValueError("You must specified file_id or url, not both.")
 
     if file_id:
-        file = open_file(file_id)
-        response = client.sample_upload_request(files=file)
+        file = parse_file_to_sample(file_id)
+        response = client.upload_sample_request(files=file)
     else:
         payload = {"url": url}
-        response = client.sample_upload_request(payload=payload)
+        response = client.upload_sample_request(payload=payload)
     uploaded_sample = response["data"]
 
     return CommandResults(
@@ -802,7 +804,7 @@ def sample_upload_command(
     )
 
 
-def sample_get_command(
+def get_sample_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
@@ -826,7 +828,7 @@ def sample_get_command(
     if artifact and not sample_id:
         raise ValueError("When 'artifact' argument is specified - 'sample_id' argument is required")
 
-    response = client.sample_get_request(
+    response = client.get_sample_request(
         sample_id=sample_id,
         limit=limit,
         offset=offset,
@@ -858,7 +860,7 @@ def sample_get_command(
     )
 
 
-def sample_state_get_command(
+def get_sample_state_command(
     client: Client,
     args: Dict[str, Any],
 ) -> CommandResults:
@@ -870,7 +872,7 @@ def sample_state_get_command(
         CommandResults: status, outputs, readable outputs and raw response for XSOAR.
     """
     sample_id = args["sample_id"]
-    response = client.sample_state_request(sample_id)
+    response = client.get_sample_state_request(sample_id)
     output = response["data"]
 
     readable_output = "The command was executed successfully"
@@ -894,35 +896,34 @@ def schedule_command(args: Dict[str, Any], client: Client) -> PollResult:
     """
 
     if "sample_id" not in args:
-        command_results = sample_upload_command(client, args)
+        command_results = upload_sample_command(client, args)
         sample_id = command_results.raw_response["id"]  # type: ignore[index]
         args["sample_id"] = sample_id
     else:
-        command_results = sample_state_get_command(client, args)
+        command_results = get_sample_state_command(client, args)
 
     sample_state = dict_safe_get(command_results.raw_response, ["state"])
     sample_id = args["sample_id"]
     args_for_next_run = {"sample_id": sample_id, **args}
 
     if sample_state == "succ":
-        command_results = sample_get_command(client, args)
+        command_results = get_sample_command(client, args)
         return PollResult(
             response=command_results,
             continue_to_poll=False,
         )
-    else:
-        results = CommandResults(readable_output="Polling job failed.")
-        return PollResult(
-            response=results,
-            continue_to_poll=True,
-            args_for_next_run=args_for_next_run,
-        )
+
+    return PollResult(
+        response=command_results,
+        continue_to_poll=True,
+        args_for_next_run=args_for_next_run,
+    )
 
 
 def get_dbotscore(
     api_score: int,
     generic_command_name: str,
-    command_arg: str,
+    indicator_value: str,
     reliability: str,
 ) -> Common.DBotScore:
     """Get XSOAR score for the file's / IP's / URL's / domain's disposition.
@@ -931,7 +932,7 @@ def get_dbotscore(
         api_score (int): The API score.
         generic_command_name (str): The generic command name for identify
             witch command are used for the indicator type.
-        command_arg (str): The command argument - the indicator.
+        indicator_value (str): The command argument - the indicator.
         reliability (str): The reliability that chosen.
 
     Returns:
@@ -948,7 +949,7 @@ def get_dbotscore(
         score = Common.DBotScore.GOOD
 
     return Common.DBotScore(
-        indicator=command_arg,
+        indicator=indicator_value,
         indicator_type=generic_command_name,
         integration_name="ThreatGrid",
         reliability=reliability,
@@ -976,7 +977,7 @@ def reputation_command(
     command_results = []
 
     for command_arg in command_args:
-        response = client.submission_search_request(
+        response = client.search_submission_request(
             query=command_arg,
             state="succ",
             sort_by="analyzed_at",
@@ -996,8 +997,7 @@ def reputation_command(
 
         dbot_score = get_dbotscore(score, generic_command_name, command_arg, reliability)
 
-        reputation_helper_command: Callable = REPUTATION_TYPE_TO_FUNCTION[
-            generic_command_name]  # type: ignore[assignment]
+        reputation_helper_command: Callable = REPUTATION_TYPE_TO_FUNCTION[generic_command_name]
         kwargs = {
             'client': client,
             'command_arg': command_arg,
@@ -1061,7 +1061,7 @@ def url_to_sha256(url: str) -> str:
     return hashlib.sha256(url.encode("utf-8")).hexdigest()
 
 
-def domain_reputation_helper(
+def parse_domain_indicator(
     command_arg: str,
     dbot_score: Common.DBotScore,
     **kwargs,
@@ -1093,7 +1093,7 @@ def domain_reputation_helper(
     return command_indicator, outputs_prefix, outputs_key_field, outputs
 
 
-def file_reputation_helper(
+def parse_file_indicator(
     dbot_score: Common.DBotScore,
     sample_details: dict,
     **kwargs,
@@ -1110,17 +1110,21 @@ def file_reputation_helper(
     Returns:
         Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
     """
+    md5 = sample_details.get('md5')
+    sha1 = sample_details.get('sha1')
+    sha256 = sample_details.get('sha256')
+
     command_indicator = Common.File(
-        md5=dict_safe_get(sample_details, ["md5"]),
-        sha1=dict_safe_get(sample_details, ["sha1"]),
-        sha256=dict_safe_get(sample_details, ["sha256"]),
-        name=dict_safe_get(sample_details, ["filename"]),
+        md5=md5,
+        sha1=sha1,
+        sha256=sha256,
+        name=sample_details.get('filename'),
         dbot_score=dbot_score,
     )
     file_reputation_from_threat_grid = {
-        "md5": dict_safe_get(sample_details, ["md5"]),
-        "sha1": dict_safe_get(sample_details, ["sha1"]),
-        "sha256": dict_safe_get(sample_details, ["sha256"]),
+        "md5": md5,
+        "sha1": sha1,
+        "sha256": sha256,
     }
     outputs_prefix = "ThreatGrid.File"
     outputs_key_field = "md5"
@@ -1128,7 +1132,7 @@ def file_reputation_helper(
     return command_indicator, outputs_prefix, outputs_key_field, outputs
 
 
-def ip_reputation_helper(
+def parse_ip_indicator(
     client: Client,
     command_arg: str,
     dbot_score: Common.DBotScore,
@@ -1148,7 +1152,7 @@ def ip_reputation_helper(
         Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
     """
 
-    response = client.sample_analysis_request(sample_id=sample_id, analysis_type="annotations")
+    response = client.analysis_sample_request(sample_id=sample_id, analysis_type="annotations")
 
     command_indicator = Common.IP(
         ip=command_arg,
@@ -1166,7 +1170,7 @@ def ip_reputation_helper(
     return command_indicator, outputs_prefix, outputs_key_field, outputs
 
 
-def url_reputation_helper(
+def parse_url_indicator(
     command_arg: str,
     dbot_score: Common.DBotScore,
     **kwargs,
@@ -1213,7 +1217,7 @@ def delete_keys_from_dict(dictionary: MutableMapping,
             if isinstance(value, MutableMapping):
                 modified_dict[key] = delete_keys_from_dict(value, keys_set)
 
-            elif (isinstance(value, MutableSequence) and len(value) > 0
+            elif (isinstance(value, MutableSequence) and value
                   and isinstance(value[0], MutableMapping)):
                 modified_dict[key] = []
 
@@ -1241,15 +1245,17 @@ def validate_pagination_arguments(
     """
     if page_size:
         if page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE:
-            raise ValueError("page size argument must be greater than 1 and smaller than 50.")
+            raise ValueError(
+                f"page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}."
+            )
 
     if page is not None:
         if page < MIN_PAGE_NUM:
-            raise ValueError("page argument must be greater than 0.")
+            raise ValueError(f"page argument must be greater than {MIN_PAGE_NUM-1}.")
 
-    if limit:
+    if limit is not None:
         if limit <= MIN_LIMIT:
-            raise ValueError("limit argument must be greater than 1.")
+            raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
 
 
 def pagination(args: Dict[str, Any]) -> Tuple:
@@ -1280,14 +1286,14 @@ def pagination(args: Dict[str, Any]) -> Tuple:
     return new_limit, offset, pagination_message
 
 
-def arg_to_boolean(arg: Optional[Any]) -> Optional[bool]:
+def optional_arg_to_boolean(arg: Optional[Any]) -> Optional[bool]:
     """Retrieve arg boolean value if it's not none.
     Args:
         arg (str): Boolean argument.
     Returns:
         Optional[bool]: The argument boolean value.
     """
-    return argToBoolean(arg) if arg else None
+    return argToBoolean(arg) if arg is not None else None
 
 
 def get_specific_key_from_dict(
@@ -1307,11 +1313,11 @@ def get_specific_key_from_dict(
     return dict_by_key
 
 
-REPUTATION_TYPE_TO_FUNCTION = {
-    'ip': ip_reputation_helper,
-    'url': url_reputation_helper,
-    'domain': domain_reputation_helper,
-    'file': file_reputation_helper
+REPUTATION_TYPE_TO_FUNCTION: Dict[str, Callable] = {
+    'ip': parse_ip_indicator,
+    'url': parse_url_indicator,
+    'domain': parse_domain_indicator,
+    'file': parse_file_indicator
 }
 
 ANALYSIS_ARG_NAME = {
@@ -1336,7 +1342,7 @@ SAMPLE_ARGS = {
 }
 
 
-def get_relevant_output(
+def parse_output(
     items: Union[List, Dict],
     analysis_arg: str,
 ) -> Union[Dict[Any, Any], Any, None]:
@@ -1364,7 +1370,7 @@ def get_relevant_output(
     return items_to_display
 
 
-def open_file(file_id: str) -> Dict[str, Any]:
+def parse_file_to_sample(file_id: str) -> Dict[str, Any]:
     """ Open file to send data to API.
 
     Args:
@@ -1396,13 +1402,18 @@ def get_arg_from_command_name(
     Returns:
         str: Argument name for the specific command.
     """
-    arg_name = command_name.split("-")[position_number]
-    if arg_name == "network":
-        arg_name = "network_stream"
-    elif arg_name == "registry":
-        arg_name = "registry_key"
+    try:
+        arg_name = command_name.split("-")[position_number]
+        if arg_name == "network":
+            return "network_stream"
+        elif arg_name == "registry":
+            return "registry_key"
 
-    return arg_name
+        return arg_name
+    except IndexError as exc:
+        raise IndexError(
+            f'Argument name from command {command_name} in position {position_number} dose not exist.\n Error: {exc}'
+        )
 
 
 def delete_key_from_list(items: list, keys_to_delete: list) -> List[dict]:
@@ -1414,10 +1425,7 @@ def delete_key_from_list(items: list, keys_to_delete: list) -> List[dict]:
     Returns:
         List[str, Any]: List without the specified keys.
     """
-    new_list = []
-    for item in items:
-        new_list.append(delete_keys_from_dict(item, keys_to_delete))
-    return new_list
+    return [delete_keys_from_dict(item, keys_to_delete) for item in items]
 
 
 def test_module(client: Client):
@@ -1432,10 +1440,7 @@ def test_module(client: Client):
     Returns:
         _type_: Authorization message.
     """
-    try:
-        client.whoami_request()
-    except DemistoException as exc:
-        raise exc
+    client.whoami_request()
     return "ok"
 
 
@@ -1457,14 +1462,14 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     commands = {
-        "threat-grid-submissions-search": submission_search_command,
-        "threat-grid-domain-samples-list": associated_samples_list_command,
-        "threat-grid-ip-samples-list": associated_samples_list_command,
-        "threat-grid-path-samples-list": associated_samples_list_command,
-        "threat-grid-url-samples-list": associated_samples_list_command,
-        "threat-grid-registry-key-samples-list": associated_samples_list_command,
-        "threat-grid-sample-upload": sample_upload_command,
-        "threat-grid-sample-list": sample_get_command,
+        "threat-grid-submissions-search": search_submission_command,
+        "threat-grid-domain-samples-list": list_associated_samples_command,
+        "threat-grid-ip-samples-list": list_associated_samples_command,
+        "threat-grid-path-samples-list": list_associated_samples_command,
+        "threat-grid-url-samples-list": list_associated_samples_command,
+        "threat-grid-registry-key-samples-list": list_associated_samples_command,
+        "threat-grid-sample-upload": upload_sample_command,
+        "threat-grid-sample-list": get_sample_command,
         "file": reputation_command,
         "ip": reputation_command,
         "url": reputation_command,
@@ -1479,18 +1484,18 @@ def main() -> None:
         "threat-grid-feeds-network-stream": feeds_command,
         "threat-grid-feeds-url": feeds_command,
         "threat-grid-feeds-path": feeds_command,
-        "threat-grid-analysis-artifacts-get": sample_analysis_command,
-        "threat-grid-analysis-iocs-get": sample_analysis_command,
-        "threat-grid-analysis-metadata-get": sample_analysis_command,
-        "threat-grid-analysis-network-streams-get": sample_analysis_command,
-        "threat-grid-analysis-processes-get": sample_analysis_command,
-        "threat-grid-analysis-annotations-get": sample_analysis_command,
-        "threat-grid-rate-limit-get": rate_limit_get_command,
+        "threat-grid-analysis-artifacts-get": analysis_sample_command,
+        "threat-grid-analysis-iocs-get": analysis_sample_command,
+        "threat-grid-analysis-metadata-get": analysis_sample_command,
+        "threat-grid-analysis-network-streams-get": analysis_sample_command,
+        "threat-grid-analysis-processes-get": analysis_sample_command,
+        "threat-grid-analysis-annotations-get": analysis_sample_command,
+        "threat-grid-rate-limit-get": get_rate_limit_command,
         "threat-grid-who-am-i": who_am_i_command,
-        "threat-grid-feed-specific-get": specific_feed_get_command,
+        "threat-grid-feed-specific-get": get_specific_feed_command,
         "threat-grid-ip-search": search_command,
         "threat-grid-url-search": search_command,
-        "threat-grid-sample-summary-get": sample_get_command,
+        "threat-grid-sample-summary-get": get_sample_command,
     }
 
     try:

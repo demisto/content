@@ -53,7 +53,7 @@ def mock_client():
         'command_name': 'threat-grid-sample-list'
     }, 'ThreatGrid.Sample'),
 ])
-def test_sample_get_command(requests_mock, mock_client, url, args, outputs):
+def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
     """
     Scenario: Retrieves the Sample Info record of a submission by sample ID.
     Given:
@@ -67,13 +67,13 @@ def test_sample_get_command(requests_mock, mock_client, url, args, outputs):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from ThreatGrid import sample_get_command
+    from ThreatGrid import get_sample_command
 
     mock_response = load_mock_response('sample_get.json')
 
     requests_mock.get(url=url, json=mock_response)
 
-    result = sample_get_command(mock_client, args)
+    result = get_sample_command(mock_client, args)
 
     if isinstance(result, dict):
         assert result.get('File') == f'sample_id-{args["artifact"]}'
@@ -106,7 +106,7 @@ def test_sample_get_command(requests_mock, mock_client, url, args, outputs):
         'command_name': 'threat-grid-path-samples-list'
     }, 'ThreatGrid.PathAssociatedSample'),
 ])
-def test_associated_samples_list_command(requests_mock, mock_client, url, args, outputs_prefix):
+def test_list_associated_samples_command(requests_mock, mock_client, url, args, outputs_prefix):
     """
     Scenario: Returns a list of samples associated to the
         domain / IP / URL / path / artifact / registry key that specified.
@@ -125,13 +125,13 @@ def test_associated_samples_list_command(requests_mock, mock_client, url, args, 
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from ThreatGrid import associated_samples_list_command
+    from ThreatGrid import list_associated_samples_command
 
     mock_response = load_mock_response('associated_samples_list.json')
 
     requests_mock.get(url=url, json=mock_response)
 
-    result = associated_samples_list_command(mock_client, args)
+    result = list_associated_samples_command(mock_client, args)
 
     assert result.outputs_prefix == outputs_prefix
     assert result.outputs['samples'][0]['sha256'] == 'sha256'  # type: ignore[assignment]
@@ -167,7 +167,7 @@ def test_associated_samples_list_command(requests_mock, mock_client, url, args, 
         'command_name': 'threat-grid-analysis-processes-get'
     }, 'ProcessAnalysis'),
 ])
-def test_sample_analysis_command(requests_mock, mock_client, url, args, outputs_prefix):
+def test_analysis_sample_command(requests_mock, mock_client, url, args, outputs_prefix):
     """
     Scenario: Get data about a specific IOC / processes / artifact / network-stream
         from the relevant section of the sample's analysis.json.
@@ -186,18 +186,18 @@ def test_sample_analysis_command(requests_mock, mock_client, url, args, outputs_
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from ThreatGrid import sample_analysis_command
+    from ThreatGrid import analysis_sample_command
 
     mock_response = load_mock_response('sample_analysis.json')
 
     requests_mock.get(url=url, json=mock_response)
 
-    result = sample_analysis_command(mock_client, args)
+    result = analysis_sample_command(mock_client, args)
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
 
 
-def test_rate_limit_get_command(requests_mock, mock_client):
+def test_get_rate_limit_command(requests_mock, mock_client):
     """
     Scenario: Get rate limit for a specific user name.
     Given:
@@ -210,7 +210,7 @@ def test_rate_limit_get_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from ThreatGrid import rate_limit_get_command
+    from ThreatGrid import get_rate_limit_command
 
     mock_response = load_mock_response('rate_limit.json')
     login = 'login'
@@ -219,7 +219,7 @@ def test_rate_limit_get_command(requests_mock, mock_client):
 
     requests_mock.get(url=url, json=mock_response)
 
-    result = rate_limit_get_command(mock_client, {
+    result = get_rate_limit_command(mock_client, {
         'login': login,
         'entity_type': entity_type,
     })
@@ -253,7 +253,7 @@ def test_who_am_i_command(requests_mock, mock_client):
     assert result.outputs['email'] == 'data_email'  # type: ignore[assignment]
 
 
-def test_specific_feed_get_command(requests_mock, mock_client):
+def test_get_specific_feed_command(requests_mock, mock_client):
     """
     Scenario: Gets a specific threat feed.
     Given:
@@ -266,7 +266,7 @@ def test_specific_feed_get_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from ThreatGrid import specific_feed_get_command
+    from ThreatGrid import get_specific_feed_command
 
     mock_response = load_mock_response('specific_feed.json')
     feed_name = 'feed_name'
@@ -275,7 +275,7 @@ def test_specific_feed_get_command(requests_mock, mock_client):
 
     requests_mock.get(url=url, json=mock_response)
 
-    result = specific_feed_get_command(mock_client, {
+    result = get_specific_feed_command(mock_client, {
         'feed_name': feed_name,
         'output_type': output_type,
         'before': 'before',
@@ -395,7 +395,7 @@ def test_feeds_command(requests_mock, mock_client, url, args, outputs_prefix):
     assert result.outputs[0]['ioc'] == 'data_items[0]_ioc'  # type: ignore[assignment]
 
 
-def test_sample_upload_command(requests_mock, mock_client):
+def test_upload_sample_command(requests_mock, mock_client):
     """
     Scenario: Submits a sample to threat grid for analysis. URL or file, not both.
     Given:
@@ -408,7 +408,7 @@ def test_sample_upload_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from ThreatGrid import sample_upload_command
+    from ThreatGrid import upload_sample_command
 
     mock_response = load_mock_response('sample_upload.json')
 
@@ -416,7 +416,7 @@ def test_sample_upload_command(requests_mock, mock_client):
 
     requests_mock.post(url=url, json=mock_response)
 
-    result = sample_upload_command(mock_client, {'url': 'url'})
+    result = upload_sample_command(mock_client, {'url': 'url'})
 
     assert result.outputs_prefix == 'ThreatGrid.Sample'
     assert result.outputs['id'] == 'data_id'  # type: ignore[assignment]
@@ -457,7 +457,7 @@ def test_search_command(requests_mock, mock_client, url_prefix, args, outputs_pr
     assert result.outputs_key_field == outputs_prefix
 
 
-def test_submission_search_command(requests_mock, mock_client):
+def test_search_submission_command(requests_mock, mock_client):
     """
     Scenario: Search threat grid submissions.
     Given:
@@ -470,7 +470,7 @@ def test_submission_search_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from ThreatGrid import submission_search_command
+    from ThreatGrid import search_submission_command
 
     mock_response = load_mock_response('submission_search.json')
 
@@ -478,7 +478,7 @@ def test_submission_search_command(requests_mock, mock_client):
 
     requests_mock.get(url=url, json=mock_response)
 
-    result = submission_search_command(mock_client, {})
+    result = search_submission_command(mock_client, {})
 
     assert result.outputs_prefix == 'ThreatGrid.Sample'
     assert result.outputs[0]['sample'] == 'sample_id'  # type: ignore[assignment]
