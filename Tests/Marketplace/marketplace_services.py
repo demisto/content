@@ -534,7 +534,7 @@ class Pack(object):
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
-        Checks if an pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
+        Checks if a pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
         Args:
             yaml_content: The yaml content extracted by yaml.safe_load().
             yaml_type: The type of object to check.
