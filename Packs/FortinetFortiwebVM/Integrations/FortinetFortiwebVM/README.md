@@ -1,5 +1,5 @@
 Fortiweb VM integration allows to manage WAF policies and block cookies, URLs, and hostnames.
-This integration was integrated and tested with version xx of fortiweb_vm
+This integration was integrated and tested with versions 1 and 2 of fortiweb_vm
 
 ## Configure Fortiweb VM on Cortex XSOAR
 
