@@ -1655,7 +1655,7 @@ class ClientV1(Client):
                 [member_type],
             )
         })
-        if member_type := 'Black IP':
+        if member_type == 'Black IP':
             data.update(
                 remove_empty_elements({
                     'severity':
