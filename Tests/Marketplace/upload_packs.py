@@ -989,7 +989,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
                 else:
-                    pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+                    if pack.status != PackStatus.SUCCESS.name:
+                        pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
 
         except Exception as e:
             logging.error(traceback.format_exc())
