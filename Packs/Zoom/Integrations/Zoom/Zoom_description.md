@@ -1,4 +1,4 @@
-## Zoom IAM Integration
+## Zoom Integration
 In order to use this integration, you need to enter your Zoom credentials in the relevant integration instance parameters.
 There are two authentication methods available: **OAuth** and **JWT**(deprecated).
 
