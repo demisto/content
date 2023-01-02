@@ -1,15 +1,15 @@
-Secure, store and tightly control access to tokens, pass[words, certificates, encryption keys for protecting secrets and other sensitive data using HashiCorp Vault. This integration fetches credentials. For more information, see [Managing Credentials.](https://xsoar.pan.dev/docs/reference/articles/managing-credentials)
+Secure, store, and tightly control access to tokens, passwords, certificates, and encryption keys for protecting secrets and other sensitive data using HashiCorp Vault. This integration fetches credentials. For more information, see [Managing Credentials](https://xsoar.pan.dev/docs/reference/articles/managing-credentials).
 
 This integration was integrated and tested with version 1.12.2 of HashiCorp Vault.
 
-##Authentication
+## Authentication
 The integration supports the following auth methods:
-###Userpass Auth Method
-It is required to fill in only the Username / Role ID parameter with the username and Password / Secret ID parameter with the password. For more details, see the [HashiCorp Vault documentation.](https://www.vaultproject.io/docs/auth/userpass)
-###Token Auth Method
-It is required to fill in only the Authentication token parameter. For more details, see the [HashiCorp Vault documentation.](https://www.vaultproject.io/docs/auth/token)
-###AppRole Auth Method
-It is required to fill in only the Username / Role ID parameter with the role ID and Password / Secret ID parameter with the secret ID, and tick the Use AppRole Auth Method checkbox. For more details, see the [HashiCorp Vault documentation.](https://www.vaultproject.io/docs/auth/approle)
+### Userpass Auth Method
+You are required to fill in only the *Username / Role ID* parameter with the username and *Password / Secret ID* parameter with the password. For more details, see the [HashiCorp Vault documentation](https://www.vaultproject.io/docs/auth/userpass).
+### Token Auth Method
+You are required to fill in only the *Authentication token* parameter. For more details, see the [HashiCorp Vault documentation](https://www.vaultproject.io/docs/auth/token).
+### AppRole Auth Method
+You are required to fill in only the *Username / Role ID* parameter with the role ID and *Password / Secret ID* parameter with the secret ID, and check the *Use AppRole Auth Method* checkbox. For more details, see the [HashiCorp Vault documentation](https://www.vaultproject.io/docs/auth/approle).
 
 ## Configure HashiCorp Vault on Cortex XSOAR
 
@@ -20,15 +20,15 @@ It is required to fill in only the Username / Role ID parameter with the role ID
     | **Parameter** | **Description**                                                                                                                  | **Required** |
     |----------------------------------------------------------------------------------------------------------------------------------| --- | --- |
     | HashiCorp server URL (e.g., https://192.168.0.1:8200) | The server URL                                                                                                                   | True |
-    | Use AppRole Auth Method | Set as true if you are using the approl for authentication, [more info](https://developer.hashicorp.com/vault/docs/auth/approle) | False |
-    | Username / Role ID | The username for the Hashicorp Vault                                                                                             | False |
-    | Password / Secret ID | The password for the Hashicorp Vault                                                                                             | False |
-    | Authentication token | A token for authentication for  Hashicorp Vault(use instead of password and username)                                            | False |
-    | Vault enterprise namespace | The namespace used for the vault by the user [more info](https://developer.hashicorp.com/vault/tutorials/enterprise/namespaces)  | False |
-    | Trust any certificate (not secure) | Mark as true to make unverified http requests                                                                                    | False |
-    | Use system proxy settings | Mark as true to use proxy                                                                                                        | False |
-    | Fetches credentials | Mark as true to fetch credentials to the XSOAR credentials vault                                                                 | False |
-    | CSV list of secrets engine types to fetch secrets from | Possible values are KV, Cubbyhole, AWS                                                                                           | False |
+    | Use AppRole Auth Method | Set as true if you are using the [AppRole](https://developer.hashicorp.com/vault/docs/auth/approle) method for authentication. | False |
+    | Username / Role ID | The username for the Hashicorp vault.                                                                                            | False |
+    | Password / Secret ID | The password for the Hashicorp vault.                                                                                             | False |
+    | Authentication token | A token for authentication for the Hashicorp vault. (Use instead of password and username.)                                            | False |
+    | Vault enterprise namespace | The [namespace](https://developer.hashicorp.com/vault/tutorials/enterprise/namespaces) used for the vault by the user.  | False |
+    | Trust any certificate (not secure) | Mark as true to make unverified HTTP requests.                                                                                    | False |
+    | Use system proxy settings | Mark as true to use proxy settings.                                                                                                        | False |
+    | Fetches credentials | Mark as true to fetch credentials to the Cortex XSOAR credentials vault.                                                                 | False |
+    | CSV list of secrets engine types to fetch secrets from | Possible values are KV, Cubbyhole, AWS.                                                                                           | False |
     | Concat username to credential object name | Should be used in case there are several secrets under the same folder in order to make the credential object unique.            | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -37,7 +37,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### hashicorp-list-secrets-engines
 ***
-List all secrets engines that exist in HashiCorp Vault
+List all secrets engines that exist in HashiCorp Vault.
 
 
 #### Base Command
@@ -45,24 +45,23 @@ List all secrets engines that exist in HashiCorp Vault
 `hashicorp-list-secrets-engines`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments.
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HashiCorp.Engine.Type | string | Secrets engine type | 
-| HashiCorp.Engine.Path | string | Secrets engine path in HashiCorp | 
-| HashiCorp.Engine.Description | string | Secrets engine description | 
-| HashiCorp.Engine.Accessor | string | Secrets engine accessor | 
+| HashiCorp.Engine.Type | string | Secrets engine type. | 
+| HashiCorp.Engine.Path | string | Secrets engine path in HashiCorp. | 
+| HashiCorp.Engine.Description | string | Secrets engine description. | 
+| HashiCorp.Engine.Accessor | string | Secrets engine accessor. | 
 
 #### Command example
 ```!hashicorp-list-secrets-engines```
 ### hashicorp-list-secrets
 ***
-List secrets (names) for a specified KV engine
+List secrets (names) for a specified KV engine.
 
 
 #### Base Command
@@ -72,7 +71,7 @@ List secrets (names) for a specified KV engine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| engine | Engine path, e.g.,"secret/". Use the list-secrets-engines command to retrieve the engine path. command. | Required | 
+| engine | Engine path, e.g.,"secret/". Use the list-secrets-engines command to retrieve the engine path. | Required | 
 | version | The version of the KV engine. Possible values are: 1, 2. Default is 1. | Optional | 
 
 
@@ -85,7 +84,7 @@ List secrets (names) for a specified KV engine
 ```!hashicorp-list-secrets```
 ### hashicorp-get-secret-metadata
 ***
-Returns information about a specified secret in a specified KV V2 engine 
+Returns information about a specified secret in a specified KV V2 engine. 
 
 
 #### Base Command
@@ -103,19 +102,19 @@ Returns information about a specified secret in a specified KV V2 engine
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HashiCorp.Secret.Created | date | Secret created time | 
-| HashiCorp.Secret.Version.Destroyed | boolean | Is the version destroyed | 
-| HashiCorp.Secret.Version.Created | number | Version creation time | 
-| HashiCorp.Secret.Version.Deleted | date | Version deletion time | 
-| HashiCorp.Secret.Updated | date | Secret last updated time | 
-| HashiCorp.Secret.Engine | string | Secret engine type | 
-| HashiCorp.Secret.CurrentVersion | number | Secret current version | 
-| HashiCorp.Secret.Path | string | Secret path | 
+| HashiCorp.Secret.Created | date | Secret creation time. | 
+| HashiCorp.Secret.Version.Destroyed | boolean | Is the version destroyed. | 
+| HashiCorp.Secret.Version.Created | number | Version creation time. | 
+| HashiCorp.Secret.Version.Deleted | date | Version deletion time. | 
+| HashiCorp.Secret.Updated | date | Secret last updated time. | 
+| HashiCorp.Secret.Engine | string | Secret engine type. | 
+| HashiCorp.Secret.CurrentVersion | number | Secret current version. | 
+| HashiCorp.Secret.Path | string | Secret path. | 
 #### Command example
 ```!hashicorp-get-secret-metadata engine_path=secret secret_path=test```
 ### hashicorp-delete-secret
 ***
-Deletes the data under a specified secret given the secret path. Performs a soft delete that allows you to run the hashicorp-undelete-secret command if necessary (for KV V2 engine)
+Deletes the data under a specified secret given the secret path. Performs a soft delete that allows you to run the hashicorp-undelete-secret command if necessary (for KV V2 engine).
 
 
 #### Base Command
@@ -138,7 +137,7 @@ There is no context output for this command.
 ```!hashicorp-delete-secret engine_path=secret secret_path=test versions=2```
 ### hashicorp-undelete-secret
 ***
-Undeletes (restores) a secret on HashiCorp (for KV V2 engine)
+Undeletes (restores) a secret on HashiCorp (for KV V2 engine).
 
 
 #### Base Command
@@ -160,7 +159,7 @@ There is no context output for this command.
 ```!hashicorp-undelete-secret engine_path=secret secret_path=test versions=2```
 ### hashicorp-destroy-secret
 ***
-Permanently deletes a secret (for KV V2 engine)
+Permanently deletes a secret (for KV V2 engine).
 
 
 #### Base Command
@@ -202,7 +201,7 @@ There is no context output for this command.
 ```!hashicorp-disable-engine path=secret```
 ### hashicorp-enable-engine
 ***!hashicorp-disable-engine path=secret
-Enables a new secrets engine at the specified path
+Enables a new secrets engine at the specified path.
 
 
 #### Base Command
@@ -214,13 +213,13 @@ Enables a new secrets engine at the specified path
 | --- | --- | --- |
 | path | The path where the secrets engine will be mounted. | Required | 
 | type | Type of backend, e.g., "aws". | Required | 
-| description | Human-friendly description of the mount. | Optional | 
+| description | Friendly description of the mount. | Optional | 
 | default_lease_ttl | The default lease duration, specified as a string duration, e.g., "5s" or "30m". | Optional | 
 | max_lease_ttl | The maximum lease duration, specified as a string duration, e.g., "5s" or "30m". | Optional | 
-| force_no_cache | Disable caching. | Optional | 
+| force_no_cache | Whether to disable caching. | Optional | 
 | audit_non_hmac_request_keys | CSV list of keys that will not be HMAC'd by audit devices in the request data object. | Optional | 
 | audit_non_hmac_response_keys | CSV list of keys that will not be HMAC'd by audit devices in the response data object. | Optional | 
-| listing_visibility | Whether to show this mount in the UI-specific listing endpoint; "unauth" or "hidden", default is "hidden" Default is hidden. Possible values are: unauth, hidden. | Optional | 
+| listing_visibility | Whether to show this mount in the UI-specific listing endpoint. Default is hidden. Possible values are: unauth, hidden. | Optional | 
 | passthrough_request_headers | CSV list of headers to add to allow list and pass from the request to the backend. | Optional | 
 | kv_version | KV version to mount. Set to "2" for mount KV V2. Possible values are: 1, 2. | Optional | 
 | local | Specifies if the secrets engine is a local mount only. Local mounts are not replicated, nor (if a secondary) removed by replication. Supported only in Vault Enterprise. | Optional | 
@@ -234,7 +233,7 @@ There is no context output for this command.
 ```!hashicorp-enable-engine path=secret type=AWS```
 ### hashicorp-list-policies
 ***
-Lists all configured policies
+Lists all configured policies.
 
 
 #### Base Command
@@ -250,12 +249,12 @@ Lists all configured policies
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HashiCorp.Policy.Name | string | Policy name | 
+| HashiCorp.Policy.Name | string | Policy name. | 
 #### Command example
 ```hashicorp-list-policies```
 ### hashicorp-get-policy
 ***
-Get information for a policy
+Get information for a policy.
 
 
 #### Base Command
@@ -272,14 +271,14 @@ Get information for a policy
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HashiCorp.Policy.Name | string | Policy name | 
-| HashiCorp.Policy.Rule.Path  | string | Policy rule path | 
-| HashiCorp.Policy.Rule.Capabilities | unknown | Policy rule capabilities | 
+| HashiCorp.Policy.Name | string | Policy name. | 
+| HashiCorp.Policy.Rule.Path  | string | Policy rule path. | 
+| HashiCorp.Policy.Rule.Capabilities | unknown | Policy rule capabilities. | 
 #### Command example
 ```!hashicorp-get-policy name=secret```
 ### hashicorp-seal-vault
 ***
-If you suspect your data has been compromised, you can seal your vault to prevent access to your secrets
+If you suspect your data has been compromised, you can seal your vault to prevent access to your secrets.
 
 
 #### Base Command
@@ -298,7 +297,7 @@ There is no context output for this command.
 ```!hashicorp-seal-vault```
 ### hashicorp-unseal-vault
 ***
-Use a single master key share to unseal the vault. If the master key shares threshold is met, vault will attempt to unseal the vault. Otherwise, this API must be called until the threshold is met.
+Use a single master key share to unseal the vault. If the master key shares threshold is met, the vault will attempt to unseal the vault. Otherwise, this API must be called until the threshold is met.
 
 
 #### Base Command
@@ -319,7 +318,7 @@ There is no context output for this command.
 ```!hashicorp-unseal-vault```
 ### hashicorp-configure-engine
 ***
-Configure a secrets engine to fetch secrets from
+Configure a secrets engine to fetch secrets from.
 
 
 #### Base Command
@@ -330,8 +329,8 @@ Configure a secrets engine to fetch secrets from
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | path | The engine path, e.g., "secret/". | Required | 
-| folder | Specific folder to fetch secrets from, e.g., "secret-folder/". (Supported only for engine type KV2). | Optional | 
-| ttl | The time until we delete the generated user in AWS(seconds, max value=43200,only available for AWS engine). (Supported only for engine type AWS in assume role or federation token). | Optional | 
+| folder | Specific folder to fetch secrets from, e.g., "secret-folder/". (Supported only for engine type KV2.) | Optional | 
+| ttl | The time in seconds until we delete the generated user in AWS. Max value=43200. (Supported only for engine type AWS in assume role or federation token). | Optional | 
 | type | The engine type, e.g., "KV". Possible values are: KV, Cubbyhole, AWS. | Required | 
 | version | The engine version (for KV engines); "1" or "2". Possible values are: 1, 2. | Optional | 
 
@@ -347,7 +346,7 @@ There is no context output for this command.
 
 ### hashicorp-reset-configuration
 ***
-Reset the engines configuration
+Reset the engine configuration.
 
 
 #### Base Command
@@ -366,11 +365,11 @@ There is no context output for this command.
 ```!hashicorp-reset-configuration```
 #### Human Readable Output
 
->Successfully reset the engines configuration
+>Successfully reset the engine configuration.
 
 ### hashicorp-create-token
 ***
-Creates a new authentication token
+Create a new authentication token.
 
 
 #### Base Command
@@ -384,22 +383,22 @@ Creates a new authentication token
 | policies | CSV list of policies for the token. This must be a subset of the policies belonging to the token making the request, unless root. If policies are not specified, all policies of the calling token are applied to the new token. | Optional | 
 | meta | A map of string-to-string valued metadata. This is passed through to the audit devices. | Optional | 
 | no_parent | If true and set by a root caller, the token will not have the parent token of the caller. This creates a token with no parent. Possible values are: true, false. | Optional | 
-| no_default_policy | If true the default policy will not be included in this token's policy set; "true" or "false". Possible values are: true, false. | Optional | 
-| renewable | If set to false, the token cannot be renewed past its initial TTL. If set to true, the token can be renewed up to the system/mount maximum TTL. "true" or "false". Possible values are: true, false. | Optional | 
-| ttl | The TTL(lease duration) period of the token, provided as "10m" or "1h", where hour is the largest suffix. If not provided, the token is valid for the default lease TTL, or indefinitely if the root policy is used. | Optional | 
-| explicit_max_ttl |  If set, the token will have an explicit max TTL applied to it. The maximum token TTL cannot be changed later, and unlike with normal tokens, updates to the system/mount max TTL value will have no effect at renewal time. The token can never be renewed or used past the value set at issue time. | Optional | 
+| no_default_policy | If true the default policy will not be included in this token's policy set. Possible values are: true, false. | Optional | 
+| renewable | If set to false, the token cannot be renewed past its initial TTL. If set to true, the token can be renewed up to the system/mount maximum TTL. Possible values are: true, false. | Optional | 
+| ttl | The TTL (lease duration) period of the token, provided as "10m" or "1h", where hour is the largest suffix. If not provided, the token is valid for the default lease TTL, or indefinitely if the root policy is used. | Optional | 
+| explicit_max_ttl | If set, the token will have an explicit max TTL applied to it. The maximum token TTL cannot be changed later, and unlike with normal tokens, updates to the system/mount max TTL value will have no effect at renewal time. The token can never be renewed or used past the value set at issue time. | Optional | 
 | display_name | The display name of the token. | Optional | 
 | num_uses | The maximum number of times the token can be used. Supply this argument to create a one-time-token, or limited use token. The value of 0 has no limit to the number of uses. | Optional | 
-| period | If specified, the token will be periodic; it will not have a maximum TTL (unless an "explicit-max-ttl" is also set), but every renewal will use the given period. Requires a root/sudo token to use. | Optional | 
+| period | If specified, the token will be periodic. It will not have a maximum TTL (unless an "explicit-max-ttl" is also set), but every renewal will use the given period. Requires a root/sudo token to use. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HashiCorp.Auth.Token | string | Authentication token | 
-| HashiCorp.Auth.Policy | unknown | Authentication policies | 
-| HashiCorp.Auth.LeaseDuration | number | Authentication lease duration in seconds, 0 if indefinitely  | 
+| HashiCorp.Auth.Token | string | Authentication token. | 
+| HashiCorp.Auth.Policy | unknown | Authentication policies. | 
+| HashiCorp.Auth.LeaseDuration | number | Authentication lease duration in seconds, 0 if indefinitely.  | 
 
 #### Command example
 ```!hashicorp-create-token display_name=token explicit_max_ttl=3600 renewable=false```
@@ -407,16 +406,16 @@ Creates a new authentication token
 ##Additional Information
 In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the configure-engine command.
 
-##Known Limitations
+## Known Limitations
 Currently the integration is able to fetch credentials from the following engines:  
 - **K/V Versions 1,2**  
 - **Cubbyhole**  
 - **AWS**  
 
-###The following commands are limited to the K/V V2 engine:
+### The following commands are limited to the K/V V2 engine:
 
-- hashicorp-list-secrets
-- hashicorp-get-secret-metadata
-- hashicorp-delete-secret
-- hashicorp-undelete-secret
-- hashicorp-destroy-secret
+- ***hashicorp-list-secrets***
+- ***hashicorp-get-secret-metadata***
+- ***hashicorp-delete-secret***
+- ***hashicorp-undelete-secret***
+- ***hashicorp-destroy-secret***
