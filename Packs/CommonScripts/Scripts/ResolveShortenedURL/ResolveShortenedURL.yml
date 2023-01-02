@@ -11,8 +11,8 @@ comment: Resolve the original URL from the given shortened URL and place it in b
 enabled: true
 args:
 - name: service
-  required: true
-  description: Service to use for resolving the URL.
+  required: false
+  description: Service to use for resolving the URL. If not set, a default service will be used.
   auto: PREDEFINED
   predefined:
   - "longurl.in"

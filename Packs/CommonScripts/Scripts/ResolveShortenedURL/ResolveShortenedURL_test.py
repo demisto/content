@@ -22,10 +22,52 @@ def load_test_data(folder: str, file_name: str) -> dict:
         return json.load(f)
 
 
+class TestLongurlInService:
+    @pytest.mark.parametrize("args, mock_files_prefix, mock_files_count, expected_output",
+                             [
+                                 (  # Generic test
+                                     {"url": "https://short.url/a", "redirect_limit": 6},
+                                     "nested_unshorten",
+                                     3,
+                                     load_test_data("longurl.in", "nested_unshorten_expected_output"),
+                                 ),
+                                 (  # Test a case where redirect is stopped because of `redirect_limit`
+                                     {"url": "https://short.url/a", "redirect_limit": 1},
+                                     "nested_unshorten",
+                                     2,
+                                     load_test_data("longurl.in", "limited_unshorten_expected_output"),
+                                 ),
+                             ])
+    def test_shortened_url(self, mocker, args: dict, mock_files_prefix: str,
+                           mock_files_count: int, expected_output: dict):
+        """
+        Given: Parameters for unshortening a URL using unshorten.me.
+        When: Calling the `unshorten_url` function.
+        Then: Ensure the context output is returned as expected, and that redirect_limit is working as expected.
+        """
+        mock_data = [load_test_data("longurl.in", mock_files_prefix + f"_{i}")
+                     for i in range(mock_files_count)]
+        # Add the last response again, as we try to unshorten the final URL since we don't know that it's not shortened.
+        mock_data.append(mock_data[-1])
+
+        def redirect_side_effect() -> dict:
+            for d in mock_data:
+                yield d
+
+        mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
+
+        result = unshorten_url(service="longurl.in",
+                               url=args["url"],
+                               redirect_limit=args["redirect_limit"])
+
+        assert result.outputs["RedirectCount"] <= args["redirect_limit"]
+        assert result.outputs == expected_output
+
+
 class TestUnshortenMeService:
     @pytest.mark.parametrize("args, mock_files_prefix, mock_files_count, expected_output",
                              [
-                                 (  # General test
+                                 (  # Generic test
                                      {"url": "https://short.url/a", "redirect_limit": 6},
                                      "nested_unshorten",
                                      3,
@@ -95,7 +137,7 @@ class TestBuiltInService:
 
     @pytest.mark.parametrize("args, responses, expected_output",
                              [
-                                 (
+                                 (  # Generic test
                                      {"url": "https://short.url/a", "redirect_limit": 6},
                                      [get_response_mock(url="https://short.url/a",
                                                         redirect_url="https://short.url/b"),
@@ -104,7 +146,7 @@ class TestBuiltInService:
                                       get_response_mock(url="https://xsoar.pan.dev/")],
                                      load_test_data("built-in", "nested_unshorten_expected_output"),
                                  ),
-                                 (
+                                 (  # Test a case where redirect is stopped because of `redirect_limit`
                                      {"url": "https://short.url/a", "redirect_limit": 1},
                                      [get_response_mock(url="https://short.url/a",
                                                         redirect_url="https://short.url/b"),
