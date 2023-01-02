@@ -1,4 +1,4 @@
-Replace current firewall rules with limited access firewall rules.
+This playbook adds new firewall rules with access only from  private ip address range and blocks traffic that's exposed to public internet. For example, if RDP is exposed to the entire world, this playbook adds new firewall rules that only allows traffic from private ip address and blocks rest of the RDP traffic.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
