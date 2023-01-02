@@ -948,7 +948,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
     logging.info("Starting to collect pack with dependencies zips")
     for pack_name, pack in packs_for_current_marketplace_dict.items():
         try:
-            if pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name] or pack.hidden:
+            if (pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]) or pack.hidden:
                 # avoid trying to upload dependencies zip for failed or hidden packs
                 continue
             pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in
@@ -1251,9 +1251,14 @@ def main():
             pack.cleanup()
             continue
 
+        logging.info(f"**** {pack.name} finished and giving success status")
         pack.status = PackStatus.SUCCESS.name
 
-    logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    logging.info(f"****1 successful_packs list: {successful_packs}")
+    logging.info(f"****1 successful_uploaded_dependencies_zip_packs list: {successful_uploaded_dependencies_zip_packs}")
+    logging.info(f"****1 skipped_packs list: {skipped_packs}")
+    logging.info(f"****1 failed_packs list: {failed_packs}")
 
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
@@ -1298,7 +1303,10 @@ def main():
 
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
-
+    logging.info(f"****2 successful_packs list: {successful_packs}")
+    logging.info(f"****2 successful_uploaded_dependencies_zip_packs list: {successful_uploaded_dependencies_zip_packs}")
+    logging.info(f"****2 skipped_packs list: {skipped_packs}")
+    logging.info(f"****2 failed_packs list: {failed_packs}")
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
