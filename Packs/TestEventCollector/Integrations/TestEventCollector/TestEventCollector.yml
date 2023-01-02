@@ -3,9 +3,19 @@ commonfields:
   id: Test Event Collector
   version: -1
 configuration:
+- display: Product
+  defaultvalue: test-product-1
+  name: product
+  required: false
+  type: 4
+- display: Vendor
+  defaultvalue: test-vendor-1
+  name: vendor
+  required: false
+  type: 4
 - display: The maximum number of events per fetch.
   additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to SaaS-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched.
-  defaultvalue: 1000
+  defaultvalue: 2
   name: max_fetch
   required: false
   type: 0

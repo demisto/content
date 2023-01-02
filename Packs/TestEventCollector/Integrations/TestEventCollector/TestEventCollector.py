@@ -14,7 +14,9 @@ def main() -> None:  # pragma: no cover
     # client_secret: str = params.get('credentials', {}).get('password', '')
     # base_url: str = params.get('url', '').rstrip('/')
     # verify_certificate = not params.get('insecure', False)
-    # proxy = params.get('proxy', False)
+    max_fetch = params.get('max_fetch', False)
+    vendor = params.get('vendor', False)
+    product = params.get('product', False)
     # args = demisto.args()
     from uuid import uuid4
     
@@ -23,23 +25,19 @@ def main() -> None:  # pragma: no cover
     
     try:
         if demisto.command() == 'fetch-events':
-            
-            events = [
-                {
+            events = []
+            for i in range(int(max_fetch)):
+                event = {
                     'test_event_id': str(uuid4()),
-                    'foo': 'foo1',
-                    'bar': 'bar1'
-                },
-                {
-                    'test_event_id': str(uuid4()),
-                    'foo': 'foo2',
-                    'bar': 'bar2'
+                    'foo': f'foo{i}',
+                    'bar': f'bar{i}',
                 }
-            ]
+                events.append(event)
+            
             send_events_to_xsiam(
                 events=events,
-                vendor='test-vendor-1',
-                product='test-product-1'
+                vendor=vendor,
+                product=product
             )
         else:
             return_error('command not exists')
