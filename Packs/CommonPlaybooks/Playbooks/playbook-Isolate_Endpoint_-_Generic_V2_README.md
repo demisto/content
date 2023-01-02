@@ -1,16 +1,18 @@
-This playbook isolates a given endpoint using various endpoint product integrations.  
+This playbook isolates a given endpoint using various endpoint product integrations.
 Make sure to provide valid playbook inputs for the integration you are using.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* FireEye HX - Isolate Endpoint
 * Microsoft Defender For Endpoint - Isolate Endpoint
+* Cortex XDR - Isolate Endpoint
+* Containment Plan
+* Block Endpoint - Carbon Black Response V2
 * Isolate Endpoint - Cybereason
 * Crowdstrike Falcon - Isolate Endpoint
-* Cortex XDR - Isolate Endpoint
-* Block Endpoint - Carbon Black Response V2
-* FireEye HX - Isolate Endpoint
+* Cortex XSIAM - Isolate Endpoint (Containment Plan)
 
 ### Integrations
 This playbook does not use any integrations.
@@ -30,6 +32,7 @@ This playbook does not use any commands.
 | ManualHunting.DetectedHosts | Hosts that were detected as infected during the manual hunting. |  | Optional |
 | Endpoint_ip | The IP of the endpoint to isolate. |  | Optional |
 | Endpoint_id | The ID of the endpoint to isolate. |  | Optional |
+| autoContainment | Whether to execute the Cortex XSIAM isolation automatically. | False | Optional |
 
 ## Playbook Outputs
 ---
@@ -56,6 +59,7 @@ This playbook does not use any commands.
 | MicrosoftATP.IncorrectIDs | Incorrect device IDs entered. | string |
 | MicrosoftATP.IncorrectHostnames | Incorrect device host names entered. | string |
 | MicrosoftATP.IncorrectIPs | Incorrect device IPs entered. | string |
+| Core.Isolation.endpoint_id | The ID of the isolated endpoint. | string |
 
 ## Playbook Image
 ---
