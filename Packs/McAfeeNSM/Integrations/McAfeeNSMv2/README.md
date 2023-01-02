@@ -1400,7 +1400,8 @@ Gets the list of sensors available in the specified domain. If the domain is not
 | NSM.Sensors.nsmVersion | String | NSM Version. | 
 | NSM.Sensors.capacity | String | Sensor capacity. | 
 | NSM.Sensors.isStack | Boolean | Is stack. | 
-| NSM.Sensorss.isStackMember | Boolean | Is stack member. | 
+| NSM.Sensors.isStackMember | Boolean | Is stack member. | 
+| NSM.Sensors.MemberSensors | Unknown | Sensors members | 
 
 #### Command example
 ```!nsm-get-sensors```

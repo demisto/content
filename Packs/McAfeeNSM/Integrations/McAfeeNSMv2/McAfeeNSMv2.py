@@ -11,16 +11,13 @@ import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
 
-    def __init__(self, url: str, auth: tuple, headers: Dict, proxy: bool = False, verify: bool = True):
+    def __init__(self, url: str, auth: tuple, headers: Dict, proxy: bool = False, verify: bool = False):
         self.url = url
         self.headers = headers
         super().__init__(base_url=url, verify=verify, proxy=proxy, auth=auth, headers=headers)
@@ -336,7 +333,7 @@ def pagination(records_list: List, limit: int, page: Optional[int], page_size: O
         records_list: List - The original list of objects.
         limit: str - The amount of records to be returned
         page: Optional[int] - The page of the results (The results in page 1, 2 ...)
-        page_siOptional[int]ze: int - the number of records that will be in the page.
+        page_size: Optional[int] - the number of records that will be in the page.
     Returns:
         The wanted records.
     """
@@ -587,36 +584,35 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
         Returns:
             Returns the updated alert list.
     """
+    result_list = []
     for alert in alert_list:
-        alert['ID'] = alert.get('event', {}).get('alertId')
-        alert['Name'] = alert.get('name')
-        alert['Event'] = alert.get('event')
-        alert['State'] = alert.get('alertState')
-        alert['AttackSeverity'] = alert.get('attackSeverity')
-        alert['CreatedTime'] = alert.get('event', {}).get('time')
-        alert['Assignee'] = alert.get('assignTo')
-        alert['Application'] = alert.get('application')
-        alert['EventResult'] = alert.get('event', {}).get('result')
-        alert['SensorID'] = alert.get('detection', {}).get('deviceId')
-        event_obj = alert.get('Event', {})
+        record = {
+            'ID': alert.get('event', {}).get('alertId'),
+            'Name': alert.get('name'),
+            'State': alert.get('alertState'),
+            'CreatedTime': alert.get('event', {}).get('time'),
+            'Assignee': alert.get('assignTo'),
+            'AttackSeverity': alert.get('attackSeverity'),
+            'Application': alert.get('application'),
+            'EventResult': alert.get('event', {}).get('result'),
+            'SensorID': alert.get('detection', {}).get('deviceId'),
+            'uniqueAlertId': alert.get('uniqueAlertId'),
+
+            'Event': alert.get('event'),
+            'Attack': alert.get('attack'),
+            'Attacker': alert.get('attacker'),
+            'Target': alert.get('target'),
+            'MalwareFile': alert.get('malwareFile'),
+            'endpointExcutable': alert.get('endpointExcutable'),
+            'detection': alert.get('detection'),
+            'layer7Data': alert.get('layer7Data')
+        }
+        event_obj = record.get('Event', {})
         event_obj['domain'] = alert.get('detection', {}).get('domain')
         event_obj['interface'] = alert.get('detection', {}).get('interface')
         event_obj['device'] = alert.get('detection', {}).get('device')
-        alert['Attack'] = alert.get('attack')
-        alert['Attacker'] = alert.get('attacker')
-        alert['Target'] = alert.get('target')
-        alert['MalwareFile'] = alert.get('malwareFile')
-        del alert['assignTo']
-        del alert['application']
-        del alert['attack']
-        del alert['attacker']
-        del alert['target']
-        del alert['malwareFile']
-        del alert['event']
-        del alert['name']
-        del alert['attackSeverity']
-        del alert['alertState']
-    return alert_list
+        result_list.append(record)
+    return result_list
 
 
 def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
@@ -626,14 +622,34 @@ def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
         Returns:
             Returns the updated sensors list.
     """
+    result_list = []
     for sensor in sensors_list:
-        sensor['ID'] = sensor.get('sensorId')
-        sensor['Name'] = sensor.get('name')
-        sensor['IP Address'] = sensor.get('sensorIPAddress')
-        del sensor['sensorId']
-        del sensor['name']
-        del sensor['sensorIPAddress']
-    return sensors_list
+        record = {
+            'ID': sensor.get('sensorId'),
+            'Name': sensor.get('name'),
+            'Description': sensor.get('Description'),
+            'DomainID': sensor.get('DomainID'),
+            'IPSPolicyID': sensor.get('IPSPolicyID'),
+            'IP Address': sensor.get('sensorIPAddress'),
+            'model': sensor.get('model'),
+            'isFailOver': sensor.get('isFailOver'),
+            'isNTBA': sensor.get('isNTBA'),
+            'isLoadBalancer': sensor.get('isLoadBalancer'),
+            'SerialNumber': sensor.get('SerialNumber'),
+            'SigsetVersion': sensor.get('SigsetVersion'),
+            'DATVersion': sensor.get('DATVersion'),
+            'SoftwareVersion': sensor.get('SoftwareVersion'),
+            'LastSignatureUpdateTs': sensor.get('LastSignatureUpdateTs'),
+            'ReconPolicyID': sensor.get('ReconPolicyID'),
+            'LastModTs': sensor.get('LastModTs'),
+            'nsmVersion': sensor.get('nsmVersion'),
+            'capacity': sensor.get('capacity'),
+            'isStack': sensor.get('isStack'),
+            'isStackMember': sensor.get('isStackMember'),
+            'MemberSensors': sensor.get('MemberSensors')
+        }
+        result_list.append(record)
+    return result_list
 
 
 def update_attacks_list_entries(attacks_list: list[Dict]) -> list[Dict]:
@@ -1123,6 +1139,10 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
+
+    if (page and not page_size) or (not page and page_size):
+        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+
     if rule_type == 'All':
         rule_type = 'hostipv4,hostipv6,ipv4addressrange,ipv6addressrange,networkipv4,networkipv6'
     else:
@@ -1580,6 +1600,9 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
+    if (page and not page_size) or (not page and page_size):
+        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+
     response = client.get_domains_request(domain_id)
     results = response.get('DomainDescriptor', {})
     human_readable = []
@@ -1625,6 +1648,9 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
+    if (page and not page_size) or (not page and page_size):
+        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+
     response = client.get_sensors_request(domain_id)
     sensors_list = pagination(response.get('SensorDescriptor', [Dict]), limit, page, page_size)
     sensors_list = update_sensors_list(sensors_list)
@@ -1791,6 +1817,9 @@ def list_pcap_file_command(client: Client, args: Dict) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
+    if (page and not page_size) or (not page and page_size):
+        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+
     response = client.list_pcap_file_request(sensor_id)
     files_list = pagination(response.get('files', []), limit, page, page_size)
     human_readable = []

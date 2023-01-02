@@ -1517,9 +1517,12 @@ script:
         - contextPath: NSM.Sensors.isStack
           description: Is stack.
           type: Boolean
-        - contextPath: NSM.Sensorss.isStackMember
+        - contextPath: NSM.Sensors.isStackMember
           description: Is stack member.
           type: Boolean
+        - contextPath: NSM.Sensors.MemberSensors
+          description: Sensors members.
+          type: Unknown
     - name: nsm-get-ips-policies
       description: Gets all the IPS Policies defined in the specific domain.
       arguments:
