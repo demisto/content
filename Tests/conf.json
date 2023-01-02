@@ -129,7 +129,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names":"azure_waf_user_auth_instance",
+            "instance_names": "azure_waf_user_auth_instance",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -559,7 +559,10 @@
             "instance_names": "ms_azure_compute_self_deployed"
         },
         {
-            "integrations": ["Symantec Data Loss Prevention", "Symantec Data Loss Prevention v2"],
+            "integrations": [
+                "Symantec Data Loss Prevention",
+                "Symantec Data Loss Prevention v2"
+            ],
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
         },
@@ -931,7 +934,7 @@
             "integrations": "ServiceNow v2",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
-            "timeout": 500
+            "timeout": 3000
         },
         {
             "integrations": "ServiceNow CMDB",
@@ -1447,6 +1450,10 @@
         },
         {
             "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "URL extraction test",
             "fromversion": "5.5.0"
         },
         {
@@ -2912,7 +2919,10 @@
         {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
-            "integrations": ["VirusTotal", "Zimperium"],
+            "integrations": [
+                "VirusTotal",
+                "Zimperium"
+            ],
             "instance_names": "virus_total_general"
         },
         {
@@ -3323,7 +3333,10 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": ["Zoom Feed", "Demisto REST API"],
+            "integrations": [
+                "Zoom Feed",
+                "Demisto REST API"
+            ],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
@@ -4945,7 +4958,6 @@
             "integrations": [
                 "Gmail"
             ]
-            
         },
         {
             "playbookID": "Get Original Email - EWS v2 - test",
@@ -5199,6 +5211,10 @@
             "integrations": "Cisco Umbrella Reporting",
             "playbookID": "Cisco Umbrella Reporting Test",
             "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "XSOAR EDL Checker",
+            "playbookID": "TestXSOAREDLCheckerPlaybook"
         }
     ],
     "skipped_tests": {
@@ -5206,8 +5222,8 @@
         "Test XDR Playbook": "Issue CIAC-4624",
         "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
         "Cortex Data Lake Test": "Issue CRTX-67423",
-        "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
-        "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
+        "playbook-CheckPointSandBlast_Test": "Checkpoint playbook no license",
+        "playbook-BmcITSM-Test": "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
@@ -5285,7 +5301,7 @@
         "iDefense_v2_Test": "Issue 40126",
         "Feed iDefense Test": "Issue 34035",
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
-        "McAfee ESM v2 (v11.3) - Test" : "Jira ticket CRTX-65370",
+        "McAfee ESM v2 (v11.3) - Test": "Jira ticket CRTX-65370",
         "McAfee ESM Watchlists - Test v11.3": "Jira ticket CRTX-65370",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
@@ -5353,7 +5369,9 @@
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
-        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
+        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
+        "Phishing v3 - Get Original Email + Search & Delete - Test": "Issue CRTX-70684",
+        "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test": "Issue CRTX-70684"
     },
     "skipped_integrations": {
         "Lastline v2": "No license",
@@ -5477,8 +5495,7 @@
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated"
     },
-    "nightly_integrations": [
-    ],
+    "nightly_integrations": [],
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",

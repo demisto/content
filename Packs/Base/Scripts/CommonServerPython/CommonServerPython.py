@@ -7557,7 +7557,7 @@ ipv6Regex = r'^(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}
 ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
 emailRegex = r'''(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
 hashRegex = r'\b[0-9a-fA-F]+\b'
-urlRegex = r"(?i)^[\[({\"']*(?P<url>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)[:-](?:\/\/|\\\\|3A__))?(?P<host>(?P<simple_domain>(?:[\w\-_]+\[?\.\]?)+[^\W\d]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\.){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)|[1])|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?(?P<path>\/(?:[^?#\s]+\/)*[^?#\s]+)(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)[\[({\"']*$"  # noqa: E501
+urlRegex = r"(?i)^[\[({\"']*(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)[:-](?:\/\/|\\\\|3A__))?(?P<host>(?P<simple_domain>(?:[\w\-_]+\[?\.\]?)+[^\W\d]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\.){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)|[1])|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?(?P<path>\/(?:[^?#\s]+\/)*[^?#\s]+)(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?:https?|hxxps?|s?ftps?|meows?)[:-](?:\/\/|\\\\|3A__)(?:(?:[\w\-_]+\[?\.\]?)+[^\W\d]{2,})\/?)[\[({\"']*$"  # noqa: E501
 domainRegex = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
@@ -8283,11 +8283,11 @@ if 'requests' in sys.modules:
             """
             context = create_urllib3_context(ciphers=CIPHERS_STRING)
 
-            def __init__(self, verify=True):
-                # type: (bool) -> None
+            def __init__(self, verify=True, **kwargs):
+                # type: (bool, dict) -> None
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
-                super().__init__()
+                super().__init__(**kwargs)
 
             def init_poolmanager(self, *args, **kwargs):
                 kwargs['ssl_context'] = self.context
@@ -10437,7 +10437,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     return new_found_incidents_ids
 
 
-def get_found_incident_ids(last_run, incidents, look_back, id_field):
+def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids):
     """
     Gets the found incident ids from the last run object and adds the new fetched incident IDs.
 
@@ -10462,8 +10462,8 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
 
     for incident in incidents:
         found_incidents[incident[id_field]] = current_time
-
-    found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
+    if remove_incident_ids:
+        found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
 
     return found_incidents
 
@@ -10505,6 +10505,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :rtype: ``Dict``
     """
 
+    remove_incident_ids = True
+
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
@@ -10518,12 +10520,13 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
             'limit': fetch_limit,
         }
     else:
+        remove_incident_ids = False
         new_last_run = {
             'time': start_fetch_time,
             'limit': last_run.get('limit', fetch_limit) + fetch_limit,
         }
 
-    return new_last_run
+    return new_last_run, remove_incident_ids
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
@@ -10565,10 +10568,18 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     :rtype: ``Dict``
     """
 
-    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field)
+    updated_last_run, remove_incident_ids = create_updated_last_run_object(last_run,
+                                                                           incidents,
+                                                                           fetch_limit,
+                                                                           look_back,
+                                                                           start_fetch_time,
+                                                                           end_fetch_time,
+                                                                           created_time_field,
+                                                                           date_format,
+                                                                           increase_last_run_time,
+                                                                           )
 
-    updated_last_run = create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time,
-                                                      end_fetch_time, created_time_field, date_format, increase_last_run_time)
+    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)
 
     if found_incidents:
         updated_last_run.update({'found_incident_ids': found_incidents})
