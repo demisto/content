@@ -36,7 +36,7 @@ Listens to a mailbox and enables incident triggering via e-mail.
 - [mail-listener-get-email-as-eml](#mail-listener-get-email-as-eml)
 ### mail-listener-list-emails
 ***
-Fetches mails according to the configuration
+Fetch mails according to the configuration
 
 
 #### Base Command

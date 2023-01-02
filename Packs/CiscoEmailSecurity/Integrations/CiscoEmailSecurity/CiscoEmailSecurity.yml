@@ -1218,3 +1218,4 @@ tests:
 - No tests
 fromversion: 5.0.0
 beta: true
+deprecated: true
