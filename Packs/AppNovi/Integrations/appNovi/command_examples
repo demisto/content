@@ -1,0 +1,5 @@
+!search-appnovi-components search_term=servername
+!search-appnovi-connected identity="{\"type\":\"mac\"}" category="IPAddress,Server"
+!search-appnovi-cve cve=CVE-2017-0123
+!search-appnovi-component-property property=forescout_awsInstanceType value=t2.micro
+!search-appnovi-server-by-ip ip=10.0.0.8

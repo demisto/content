@@ -911,6 +911,14 @@ tasks:
                     right:
                       value:
                         simple: SecurityAndCompliance
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndComplianceV2
                 - - operator: isEqualString
                     left:
                       value:

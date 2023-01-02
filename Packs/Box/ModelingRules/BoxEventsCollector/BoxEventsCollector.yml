@@ -1,8 +1,6 @@
-from_xdr_version: 3.4.0
 fromversion: 6.0.0
 id: BoxEventCollector
 name: BoxEventCollector
 rules: ''
 schema: ''
-to_xdr_version: 3.4.9
 toversion: 6.9.9

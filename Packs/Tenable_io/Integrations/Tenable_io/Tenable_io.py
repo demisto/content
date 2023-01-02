@@ -1,15 +1,18 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 import sys
 import time
 import traceback
 from datetime import datetime
+import urllib3
 
-import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *  # noqa: F401
+
 from requests.exceptions import HTTPError
 
-requests.packages.urllib3.disable_warnings()
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 FIELD_NAMES_MAP = {
     'ScanType': 'Type',
@@ -357,6 +360,44 @@ def send_asset_vuln_request(asset_id, date_range):
     return res.json()
 
 
+def send_asset_details_request(asset_id: str) -> Dict[str, Any]:
+    """Gets asset details using the '{BASE_URL}workbenches/assets/{asset_id}/info' endpoint.
+
+    Args:
+        asset_id (string): id of the asset.
+
+    Returns:
+        dict: dict containing information on an asset.
+    """
+    full_url = "{}workbenches/assets/{}/info".format(BASE_URL, asset_id)
+    try:
+        res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+        res.raise_for_status()
+    except HTTPError as exc:
+        return_error(f'Error calling for url {full_url}: error message {exc}')
+
+    return res.json()
+
+
+def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
+    """Gets asset attributes using the '{BASE_URL}api/v3/assets/{asset_id}/attributes' endpoint.
+
+    Args:
+        asset_id (string): id of the asset.
+
+    Returns:
+        dict: dict containing information on an asset.
+    """
+    full_url = "{}api/v3/assets/{}/attributes".format(BASE_URL, asset_id)
+    try:
+        res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+        res.raise_for_status()
+    except HTTPError as exc:
+        return_error(f'Error calling for url {full_url}: error message {exc}')
+
+    return res.json()
+
+
 def test_module():
     send_scan_request()
     return 'ok'
@@ -460,6 +501,55 @@ def args_to_request_params(hostname, ip, date_range):
             params["date_range"] = date_range
 
     return params, indicator
+
+
+def get_asset_details_command() -> CommandResults:
+    """
+    tenable-io-get-asset-details: Retrieves details for the specified asset to include custom attributes.
+
+    Args:
+        None
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains asset
+        details.
+    """
+    ip = demisto.getArg('ip')
+
+    if not ip:
+        return_error("Please provide an IP address")
+
+    params = {
+        "filter.0.filter": "host.target",
+        "filter.0.quality": "eq",
+        "filter.0.value": ip
+    }
+
+    asset_id = get_asset_id(params)
+    if not asset_id:
+        return CommandResults(readable_output=f'Asset not found: {ip}')
+
+    try:
+        info = send_asset_details_request(asset_id)
+        attrs = send_asset_attributes_request(asset_id)
+        if attrs:
+            attributes = []
+            for attr in attrs.get("attributes", []):
+                attributes.append({attr.get('name', ''): attr.get('value', '')})
+            info["info"]["attributes"] = attributes
+
+    except DemistoException as e:
+        return_error(f'Failed to include custom attributes. {e}')
+
+    readable_output = tableToMarkdown(
+        f'Asset Info for {ip}', info["info"], headers=["attributes", "fqdn", "interfaces", "ipv4", "id", "last_seen"])
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=info["info"],
+        outputs_prefix='TenableIO.AssetDetails',
+        outputs_key_field='id',
+        outputs=info["info"]
+    )
 
 
 def get_vulnerabilities_by_asset_command():
@@ -578,6 +668,8 @@ def main():  # pragma: no cover
         demisto.results(pause_scan_command())
     elif demisto.command() == 'tenable-io-resume-scan':
         demisto.results(resume_scan_command())
+    elif demisto.command() == 'tenable-io-get-asset-details':
+        return_results(get_asset_details_command())
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

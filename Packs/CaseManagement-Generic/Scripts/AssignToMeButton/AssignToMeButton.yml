@@ -2,7 +2,7 @@ comment: 'Assigns the current Incident to the Cortex XSOAR user who clicked the 
 commonfields:
   id: AssignToMeButton
   version: -1
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.9.42476
 enabled: true
 name: AssignToMeButton
 runas: DBotWeakRole

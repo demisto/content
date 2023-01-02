@@ -8,11 +8,11 @@ from CommonServerUserPython import *  # noqa
 from typing import Any, Dict
 from pyopnsense2 import core_core, core_diagnostics, core_firmware, core_firewall, plugins_firewall
 import json
-import requests
+import urllib3
 import traceback
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 if not demisto.params().get('proxy', False):
     for key in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:

@@ -1,0 +1,5 @@
+[INGEST:vendor="mysql", product="enterprise", target_dataset="mysql_enterprise_raw", no_hit = keep]
+alter tmp_raw_log = replex(_raw_log ,"\,$","")
+| alter tmp_timestamp = json_extract_scalar(tmp_raw_log ,"$.timestamp")
+| alter _time = parse_timestamp("%Y-%m-%d %H:%M:%S",tmp_timestamp)
+| fields - tmp_timestamp, tmp_raw_log;

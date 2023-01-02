@@ -179,7 +179,7 @@ def main():
     demisto_params['headers'] = headers
 
     request = IntegrationHTTPRequest(**demisto_params)
-    request.params = AlibabaParams.parse_obj(params)
+    request.params = AlibabaParams.parse_obj(params)  # type: ignore
 
     options = IntegrationOptions.parse_obj(demisto_params)
 

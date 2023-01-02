@@ -1,0 +1,11 @@
+[MODEL: dataset=atlassian_jira_raw]
+alter
+	xdm.event.operation = summary,
+	xdm.source.ipv4 = remoteAddress,
+	xdm.source.user.username = authorKey,
+	xdm.source.user.identifier = authorAccountId,
+	xdm.event.operation_sub_type = category,
+	xdm.target.user.identifier = json_extract_scalar(objectItem, "$.id"),
+	xdm.target.user.username = json_extract_scalar(objectItem, "$.name"),
+	xdm.target.user.user_type = json_extract_scalar(objectItem, "$.typeName"),
+	xdm.event.outcome = json_extract_scalar(changedValues, "$.changedTo");

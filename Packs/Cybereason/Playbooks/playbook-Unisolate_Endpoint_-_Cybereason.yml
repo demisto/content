@@ -1,39 +1,32 @@
 id: Unisolate Endpoint - Cybereason
 version: -1
 name: Unisolate Endpoint - Cybereason
-description: This playbook unisolates endpoints according to the hostname
- that is provided by the playbook input.
-starttaskid: "0"
+description: This playbook unisolates a machine based on the hostname provided.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 8dab4dea-7c75-49b5-8752-3e11f6a071e5
     type: start
     task:
       id: 8dab4dea-7c75-49b5-8752-3e11f6a071e5
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 29f3ba5b-96f3-4885-8d29-39d1927feb35
     type: condition
     task:
@@ -45,32 +38,26 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "2"
-      "yes":
-      - "3"
+      no:
+      - '2'
+      yes:
+      - '3'
     scriptarguments:
       brandname:
         simple: Cybereason
     results:
     - brandInstances
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 240
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 240\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 649ec0e2-13f5-4534-8e29-f052ece40603
     type: title
     task:
@@ -79,23 +66,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1030
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1030\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 409410a8-e855-455f-85fa-38ededec41d7
     type: condition
     task:
@@ -104,36 +85,30 @@ tasks:
       name: Is there an endpoint to unisolate?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "4"
+      - '2'
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
             value:
               simple: inputs.Hostname
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": 420
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 420\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: b7f22dfd-7f2f-4340-8246-767d4570afc8
     type: regular
     task:
@@ -144,40 +119,23 @@ tasks:
       script: '|||cybereason-unisolate-machine'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       machine:
         simple: ${inputs.Hostname}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1040,
-          "y": 600
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1040,\n    \"y\": 600\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {
-      "3_2_#default#": 0.37
-    },
-    "paper": {
-      "dimensions": {
-        "height": 1045,
-        "width": 970,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"3_2_#default#\": 0.37\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 1045,\n      \"width\": 970,\n   \
+  \   \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: Hostname
   value: {}

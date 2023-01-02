@@ -1478,7 +1478,7 @@ def authorize_security_group_ingress_command(args, aws_client):
     kwargs = {'GroupId': args.get('groupId')}
     IpPermissions = []
     UserIdGroupPairs = []
-    IpPermissions_dict = create_ip_premissions_dict(args)
+    IpPermissions_dict = create_ip_permissions_dict(args)
     UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
     kwargs.update(create_policy_kwargs_dict(args))
@@ -1505,7 +1505,7 @@ def authorize_security_group_egress_command(args, aws_client):
     kwargs = {'GroupId': args.get('groupId')}
     IpPermissions = []
     UserIdGroupPairs = []
-    IpPermissions_dict = create_ip_premissions_dict(args)
+    IpPermissions_dict = create_ip_permissions_dict(args)
     UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
     UserIdGroupPairs.append(UserIdGroupPairs_dict)
@@ -1518,13 +1518,15 @@ def authorize_security_group_egress_command(args, aws_client):
         demisto.results("The Security Group egress rule was created")
 
 
-def create_ip_premissions_dict(args):
-    IpPermissions_dict = {}
-    UserIdGroupPairs_keys = (('IpPermissionsfromPort', 'FromPort'), ('IpPermissionsIpProtocol', 'IpProtocol'),
-                             ('IpPermissionsToPort', 'ToPort'))
+def create_ip_permissions_dict(args):
+    IpPermissions_dict: dict[str, Any] = {}
+    UserIdGroupPairs_keys = (('IpPermissionsfromPort', 'FromPort'), ('IpPermissionsToPort', 'ToPort'))
     for args_key, dict_key in UserIdGroupPairs_keys:
         if args.get(args_key) is not None:
-            IpPermissions_dict.update({dict_key: args.get(args_key)})
+            IpPermissions_dict.update({dict_key: int(args.get(args_key))})
+
+    if args.get('IpPermissionsIpProtocol') is not None:
+        IpPermissions_dict.update({'IpProtocol': str(args.get('IpPermissionsIpProtocol'))})
 
     if args.get('IpRangesCidrIp') is not None:
         IpRanges = [{
@@ -1548,10 +1550,16 @@ def create_ip_premissions_dict(args):
 
 
 def create_policy_kwargs_dict(args):
-    policy_kwargs_keys = (('fromPort', 'FromPort'), ('cidrIp', 'CidrIp'), ('toPort', 'ToPort'), ('ipProtocol', 'IpProtocol'),
-                          ('sourceSecurityGroupName', 'SourceSecurityGroupName'),
-                          ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'))
+    policy_kwargs_keys = (('fromPort', 'FromPort'), ('toPort', 'ToPort'))
     policy_kwargs = {}
+    for args_key, dict_key in policy_kwargs_keys:
+        if key := args.get(args_key):
+            policy_kwargs.update({dict_key: arg_to_number(key)})
+    policy_kwargs_keys = (('cidrIp', 'CidrIp'), ('ipProtocol', 'IpProtocol'),
+                          ('sourceSecurityGroupName', 'SourceSecurityGroupName'),
+                          ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'),
+                          ('cidrIpv6', 'CidrIpv6'),
+                          )
     for args_key, dict_key in policy_kwargs_keys:
         if args.get(args_key) is not None:
             policy_kwargs.update({dict_key: args.get(args_key)})
@@ -1602,7 +1610,7 @@ def revoke_security_group_egress_command(args, aws_client):
         'GroupId': args.get('groupId')
     }
 
-    IpPermissions_dict = create_ip_premissions_dict(args)
+    IpPermissions_dict = create_ip_permissions_dict(args)
     UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
     IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
@@ -2923,8 +2931,8 @@ def main():
         aws_role_session_name = params.get('roleSessionName')
         aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
-        aws_access_key_id = params.get('access_key')
-        aws_secret_access_key = params.get('secret_key')
+        aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+        aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
         verify_certificate = not params.get('insecure', True)
         timeout = params.get('timeout')
         retries = params.get('retries') or 5

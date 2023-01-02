@@ -7,7 +7,7 @@
     "cliName": "cicdreviewer",
     "closeForm": false,
     "content": true,
-    "description": "Github username to set as pull request reviewer.",
+    "description": "For Github - username to set as pull request reviewer. For Bitbucket - account_id to set as pull request reviewer. in order to get the account_id please use the command !bitbucket-workspace-member-list.",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -1,4 +1,4 @@
-This playbook unisolates endpoints according to the hostname that is provided by the playbook input.
+This playbook unisolates a machine based on the hostname provided.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

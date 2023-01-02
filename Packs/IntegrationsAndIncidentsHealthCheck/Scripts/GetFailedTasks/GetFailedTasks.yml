@@ -36,11 +36,8 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.7.35188
+dockerimage: demisto/python3:3.10.9.40422
 runonce: false
 tests:
 - No tests
-dependson:
-  must:
-  - demisto-api-post
 fromversion: 6.0.0
