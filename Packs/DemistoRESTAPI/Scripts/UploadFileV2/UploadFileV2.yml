@@ -3,7 +3,7 @@ commonfields:
   version: -1
 enabled: true
 name: UploadFileV2
-fromversion: 5.0.0
+fromversion: 6.5.0
 script: '-'
 args:
 - default: false
@@ -17,7 +17,7 @@ args:
 - default: false
   description: Incident ID to upload the file to
   isArray: false
-  name: incidentID
+  name: ID
   required: true
   secret: false
 - default: false
@@ -44,7 +44,7 @@ args:
   secret: false
 comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 subtype: python3
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.9.42476
 system: false
 tags:
 - DemistoAPI
