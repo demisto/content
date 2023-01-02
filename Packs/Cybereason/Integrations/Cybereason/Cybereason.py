@@ -560,6 +560,7 @@ def get_non_edr_malop_data(client, start_time):
     demisto.debug(f"Total count of EPP Malops fetched is: {len(non_edr_malop_data)}")
     return non_edr_malop_data
 
+
 def query_malops(
     client: Client, total_result_limit: int = None, per_group_limit: int = None, template_context: str = None,
         filters: list = None, guid_list: str = None) -> Any:
@@ -1542,7 +1543,7 @@ def fetch_incidents(client: Client):
     demisto.setLastRun({
         'creation_time': max_update_time
     })
-    
+
     demisto.incidents(incidents)
 
 
