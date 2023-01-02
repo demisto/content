@@ -5,7 +5,6 @@ from CommonServerPython import *
 import json
 import pytest
 import os
-import demistomock as demisto
 
 
 def load_mock_response(file_name: str) -> str:

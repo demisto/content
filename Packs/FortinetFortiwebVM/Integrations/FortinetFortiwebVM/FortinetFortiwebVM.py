@@ -4,7 +4,6 @@ from abc import abstractmethod
 from CommonServerPython import *
 from enum import Enum
 from requests import Response
-import demistomock as demisto
 import re
 
 LIMIT_SIZE = 50
