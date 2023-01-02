@@ -428,7 +428,7 @@ class NoneTableData:
 
 class UseCaseDocument:
     """
-    Generates a "use case" document, that is, a document that collates the dependencies and requiremnts of a
+    Generates a "use case" document, that is, a document that collates the dependencies and requirements of a
     given playbook ("use case") within a running XSOAR environment.
     """
 
@@ -554,7 +554,7 @@ def build_document(
 
 
 def post_api_request(url, body):
-    """Post API request
+    """Post API request.
 
     Args:
         url (str): request url path
@@ -578,7 +578,7 @@ def post_api_request(url, body):
 
 
 def get_api_request(url):
-    """Get API request
+    """Get API request.
 
     Args:
         url (_type_): request url path
@@ -602,7 +602,7 @@ def get_api_request(url):
 
 
 def get_all_incidents(days=7, size=1000):
-    """Get all incidents from API request
+    """Get all incidents from API request.
 
     Args:
         days (int): number of days. Defaults to 7.
@@ -634,6 +634,15 @@ def get_all_incidents(days=7, size=1000):
 
 
 def get_open_incidents(days=7, size=1000):
+    """Get open incidents from API.
+
+    Args:
+        days (int): number of days. Defaults to 7.
+        size (int): number of incidents. Defaults to 1000.
+
+    Returns:
+        SingleFieldData: SingleFieldData object representing open incidents
+    """
     body = {
         "userFilter": False,
         "filter": {
@@ -659,6 +668,15 @@ def get_open_incidents(days=7, size=1000):
 
 
 def get_closed_incidents(days=7, size=1000):
+    """Get closed incidents from API.
+
+    Args:
+        days (int): number of days. Defaults to 7.
+        size (int): number of incidents. Defaults to 1000.
+
+    Returns:
+        SingleFieldData: SingleFieldData object representing closed incidents
+    """
     body = {
         "userFilter": False,
         "filter": {
