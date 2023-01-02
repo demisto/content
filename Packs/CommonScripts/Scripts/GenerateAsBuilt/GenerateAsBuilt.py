@@ -836,18 +836,16 @@ def get_system_config():
 
 
 def main():
-    if demisto.args().get("playbook"):
+    if playbook := demisto.args().get("playbook"):
         # If we get a playbook, we generate a use case document, instead of teh platform as build
-        r = get_playbook_dependencies(demisto.args().get("playbook"))
+        r = get_playbook_dependencies(playbook)
         doc = UseCaseDocument(
-            playbook_name=demisto.args().get("playbook"),
+            playbook_name=playbook,
             dependencies=r
         )
         fr = fileResult("usecase.html", doc.html(), file_type=EntryType.ENTRY_INFO_FILE)
         return_results(fr)
-        return_results(CommandResults(
-            readable_output=doc.markdown(),
-        ))
+        return_results(CommandResults(readable_output=doc.markdown(),))
         return
 
     # If no playbook is passed, we generate a platform as built.
