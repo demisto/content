@@ -1,0 +1,1514 @@
+id: CrowdStrike_FalconX_Test
+version: -1
+name: CrowdStrike_FalconX_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b44d60dd-0f6b-44ee-8144-9cb66aab296c
+    type: start
+    task:
+      id: b44d60dd-0f6b-44ee-8144-9cb66aab296c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b5c0b87a-ea6b-4159-8784-073ef5f8cb5e
+    type: regular
+    task:
+      id: b5c0b87a-ea6b-4159-8784-073ef5f8cb5e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1d8fdb38-11e7-4435-8404-99e6a8c56727
+    type: regular
+    task:
+      id: 1d8fdb38-11e7-4435-8404-99e6a8c56727
+      version: -1
+      name: cs-fx-submit-uploaded-file
+      script: CrowdStrike Falcon X|||cs-fx-submit-uploaded-file
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      action_script:
+        simple: default
+      command_line:
+        simple: command
+      document_password:
+        simple: password
+      enable_tor:
+        simple: "false"
+      environment_id:
+        simple: '160: Windows 10'
+      extended_data:
+        simple: "false"
+      polling:
+        simple: "false"
+      sha256:
+        simple: d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee
+      submit_name:
+        simple: malware_test_nightly
+      system_date:
+        simple: "2020-08-10"
+      system_time:
+        simple: "12:34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 3b389614-9b0d-437f-848b-9c13f3d5ec13
+    type: condition
+    task:
+      id: 3b389614-9b0d-437f-848b-9c13f3d5ec13
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.environment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.created_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.submitted_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2dbced4c-780f-4172-8413-cdf26a7de9eb
+    type: regular
+    task:
+      id: 2dbced4c-780f-4172-8413-cdf26a7de9eb
+      version: -1
+      name: cs-fx-get-full-report
+      script: CrowdStrike Falcon X|||cs-fx-get-full-report
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extended_data:
+        simple: "false"
+      ids:
+        simple: 20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c3566d0d-0881-4421-84e1-622896496162
+    type: condition
+    task:
+      id: c3566d0d-0881-4421-84e1-622896496162
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.sandbox.processes.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.sandbox.file_size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.sandbox.file_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.sandbox.file_type_short
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.created_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.environment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.threat_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.file_size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.architecture
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.classification
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.created_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.file_size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.file_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.file_type_short
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 816682e9-ea72-4020-85d0-eda939e44a64
+    type: regular
+    task:
+      id: 816682e9-ea72-4020-85d0-eda939e44a64
+      version: -1
+      name: cs-fx-get-report-summary
+      script: CrowdStrike Falcon X|||cs-fx-get-report-summary
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ids:
+        simple: 20879a8064904ecfbb62c118a6a19411_8cb7c75003264edfaf5a60c33d2846fc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d0bdfb65-5fff-4280-8ec5-cdd175c4de55
+    type: condition
+    task:
+      id: d0bdfb65-5fff-4280-8ec5-cdd175c4de55
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.created_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.environment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.environment_description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.submit_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.submission_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.ioc_report_strict_csv_artifact_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.ioc_report_broad_csv_artifact_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.ioc_report_strict_json_artifact_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.ioc_report_broad_json_artifact_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.ioc_report_strict_stix_artifact_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.ioc_report_broad_stix_artifact_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.ioc_report_strict_maec_artifact_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.ioc_report_broad_maec_artifact_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 23f4aa75-bcfc-4274-80f8-8a778d809bac
+    type: regular
+    task:
+      id: 23f4aa75-bcfc-4274-80f8-8a778d809bac
+      version: -1
+      name: cs-fx-get-analysis-status
+      script: CrowdStrike Falcon X|||cs-fx-get-analysis-status
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      ids:
+        simple: 20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 32ae567e-6b2b-40bf-83eb-2b2904a06e92
+    type: condition
+    task:
+      id: 32ae567e-6b2b-40bf-83eb-2b2904a06e92
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.created_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.environment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.state
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ee5e15ec-2fe5-4368-8068-1158852d0975
+    type: regular
+    task:
+      id: ee5e15ec-2fe5-4368-8068-1158852d0975
+      version: -1
+      name: cs-fx-check-quota
+      script: CrowdStrike Falcon X|||cs-fx-check-quota
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 37a04796-446a-46f5-820a-6e8174e79d28
+    type: condition
+    task:
+      id: 37a04796-446a-46f5-820a-6e8174e79d28
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.total
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.used
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.in_progress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b887b1ae-cca4-49ba-8d1a-65f9200e131b
+    type: regular
+    task:
+      id: b887b1ae-cca4-49ba-8d1a-65f9200e131b
+      version: -1
+      name: cs-fx-find-reports
+      script: CrowdStrike Falcon X|||cs-fx-find-reports
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      hashes:
+        simple: d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee
+      limit:
+        simple: "5"
+      offset:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4ea1c220-2f3e-4d99-8532-5e7c9e171584
+    type: condition
+    task:
+      id: 4ea1c220-2f3e-4d99-8532-5e7c9e171584
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.resources
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: csfalconx.resource.FindReport.[0].sha256
+            iscontext: true
+          right:
+            value:
+              simple: d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.FindReport.[0].reportIds.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7e5f6c7c-62dc-407b-8aac-ba06ed464f52
+    type: regular
+    task:
+      id: 7e5f6c7c-62dc-407b-8aac-ba06ed464f52
+      version: -1
+      name: cs-fx-find-submission-id
+      script: CrowdStrike Falcon X|||cs-fx-find-submission-id
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      limit:
+        simple: "5"
+      offset:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4da79cb4-beea-42cc-8933-f018f062b654
+    type: condition
+    task:
+      id: 4da79cb4-beea-42cc-8933-f018f062b654
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: csfalconx.resource.resources
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: baa25872-98db-4755-8276-74163e53c4a6
+    type: regular
+    task:
+      id: baa25872-98db-4755-8276-74163e53c4a6
+      version: -1
+      name: file
+      script: CrowdStrike Falcon X|||file
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      file:
+        simple: d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 324adce0-5d3a-40ce-89dc-a4e673a40185
+    type: condition
+    task:
+      id: 324adce0-5d3a-40ce-89dc-a4e673a40185
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.file_size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.threat_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.verdict
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 557492ac-eaed-4db1-8582-a2f4fe708332
+    type: regular
+    task:
+      id: 557492ac-eaed-4db1-8582-a2f4fe708332
+      version: -1
+      name: cs-fx-submit-url
+      script: CrowdStrike Falcon X|||cs-fx-submit-url
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      action_script:
+        simple: default
+      document_password:
+        simple: password
+      environment_id:
+        simple: '160: Windows 10'
+      submit_name:
+        simple: malware_test
+      system_date:
+        simple: "2020-08-10"
+      system_time:
+        simple: "12:48"
+      url:
+        simple: https://www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 84bfcead-9a3c-4c0b-8388-8a9ed7853be1
+    type: condition
+    task:
+      id: 84bfcead-9a3c-4c0b-8388-8a9ed7853be1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.submitted_id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.created_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.environment_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6acd33ed-6b3f-486e-806b-bc9422df82d4
+    type: regular
+    task:
+      id: 6acd33ed-6b3f-486e-806b-bc9422df82d4
+      version: -1
+      name: cs-fx-download-ioc
+      script: CrowdStrike Falcon X|||cs-fx-download-ioc
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon X
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      id:
+        simple: e968cf9ec879d33bd8050e4f7482787b1a5ae3411ed9856cadc4a4781948c19d
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 511b42a8-3cd4-4fb5-85e7-4d44f1c50375
+    type: title
+    task:
+      id: 511b42a8-3cd4-4fb5-85e7-4d44f1c50375
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: a8b49b1a-0138-4214-84e2-86639d3904ad
+    type: regular
+    task:
+      id: a8b49b1a-0138-4214-84e2-86639d3904ad
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: eca87b3f-dcbb-47c0-8a77-0131088888d1
+    type: regular
+    task:
+      id: eca87b3f-dcbb-47c0-8a77-0131088888d1
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 87c11859-a07d-462a-879c-9746d7eddd54
+    type: regular
+    task:
+      id: 87c11859-a07d-462a-879c-9746d7eddd54
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 24befdae-f67d-4ef7-8487-45d247f90953
+    type: regular
+    task:
+      id: 24befdae-f67d-4ef7-8487-45d247f90953
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 8f47a97c-39a0-4e11-875c-55623902ee34
+    type: regular
+    task:
+      id: 8f47a97c-39a0-4e11-875c-55623902ee34
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 60d5442e-0031-4957-8be3-7ae17f3991d8
+    type: regular
+    task:
+      id: 60d5442e-0031-4957-8be3-7ae17f3991d8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 675a3120-a69f-4c2d-834e-63f041cf9792
+    type: regular
+    task:
+      id: 675a3120-a69f-4c2d-834e-63f041cf9792
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: be50cbd3-f721-4f65-8795-9d272e4049bc
+    type: regular
+    task:
+      id: be50cbd3-f721-4f65-8795-9d272e4049bc
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a4039e2b-28d7-4b7f-88aa-66a07dda2c35
+    type: condition
+    task:
+      id: a4039e2b-28d7-4b7f-88aa-66a07dda2c35
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.[0].type
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.[0].source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: csfalconx.resource.[0].ioc
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 6db30c72-c554-48d7-8019-48a098c3952e
+    type: regular
+    task:
+      id: 6db30c72-c554-48d7-8019-48a098c3952e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_26_yes": 0.85,
+      "13_27_yes": 0.82,
+      "7_25_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4545,
+        "width": 390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

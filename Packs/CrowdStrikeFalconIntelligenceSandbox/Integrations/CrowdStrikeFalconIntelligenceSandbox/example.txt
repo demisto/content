@@ -1,0 +1,11 @@
+cs-fx-upload-file file=172@07031695-ae27-49f6-8bb2-41943c7cb80c file_name=test.pdf comment="example" is_confidential="true" submit_file=no
+cs-fx-submit-uploaded-file sha256="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee" environment_id="160: Windows 10" action_script="default" command_line="command" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"
+cs-fx-submit-url url="https://www.google.com" environment_id="160: Windows 10" action_script="default" document_password="password" enable_tor="false" submit_name="malware_test" system_date="2020-08-10" system_time="12:48"
+cs-fx-get-full-report ids="20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730"
+cs-fx-get-report-summary ids="20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730"
+cs-fx-get-analysis-status ids="20879a8064904ecfbb62c118a6a19411_a71f2c6e06a94e8495615803c66d8730"
+cs-fx-download-ioc id="e968cf9ec879d33bd8050e4f7482787b1a5ae3411ed9856cadc4a4781948c19d" name="test" accept_encoding="gzip"
+cs-fx-check-quota
+cs-fx-find-reports offset=1 limit=5
+cs-fx-find-submission-id offset=1 limit=5
+file using-brand="CrowdStrike Falcon X" file="d50d98dcc8b7043cb5c38c3de36a2ad62b293704e3cf23b0cd7450174df53fee,90f352c1fb7b21cc0216b2f0701a236db92b786e4301904d28f4ec4cb81f2a0b"
