@@ -724,6 +724,7 @@ def main():
                 fetch_limit = int(params.get('max_fetch'))
 
                 demisto.incidents(events[:fetch_limit])
+
                 demisto.setLastRun({'synced_users': True, 'events': events[fetch_limit:]})
 
     except Exception as e:
