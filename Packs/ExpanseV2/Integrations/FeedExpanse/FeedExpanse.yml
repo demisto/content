@@ -7,7 +7,7 @@ category: Data Enrichment & Threat Intelligence
 description: Use this feed to retrieve the discovered IPs/Domains/Certificates from Expanse Expander asset database.
 configuration:
 - defaultvalue: https://expander.expanse.co
-  display: Your server URL
+  display: Your  server URL
   name: url
   required: true
   type: 0
