@@ -18,24 +18,31 @@ def main() -> None:  # pragma: no cover
     # args = demisto.args()
     from uuid import uuid4
     
+    if demisto.command() == 'test-module':
+        return_results('ok')
+    
     try:
-        events = [
-            {
-                'test_event_id': str(uuid4()),
-                'foo': 'foo1',
-                'bar': 'bar1'
-            },
-            {
-                'test_event_id': str(uuid4()),
-                'foo': 'foo2',
-                'bar': 'bar2'
-            }
-        ]
-        send_events_to_xsiam(
-            events=events,
-            vendor='test-vendor-1',
-            product='test-product-1'
-        )
+        if demisto.command() == 'fetch-events':
+            
+            events = [
+                {
+                    'test_event_id': str(uuid4()),
+                    'foo': 'foo1',
+                    'bar': 'bar1'
+                },
+                {
+                    'test_event_id': str(uuid4()),
+                    'foo': 'foo2',
+                    'bar': 'bar2'
+                }
+            ]
+            send_events_to_xsiam(
+                events=events,
+                vendor='test-vendor-1',
+                product='test-product-1'
+            )
+        else:
+            return_error('command not exists')
     except Exception as e:
         raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
 
