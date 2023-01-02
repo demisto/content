@@ -17,7 +17,7 @@ args:
 - default: false
   description: Incident ID to upload the file to
   isArray: false
-  name: ID
+  name: incID
   required: true
   secret: false
 - default: false
