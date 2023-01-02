@@ -54,7 +54,7 @@ def test_protected_hostname_group_create_command(requests_mock, mock_client: Cli
     When:
      - fortiwebvm-protected-hostname-group-create called.
     Then:
-     - Ensure that protected hostname created.
+     - Ensure that Protected hostname created.
     """
     from FortinetFortiwebVM import protected_hostname_group_create_command
     json_response = load_mock_response(jsonpath)
