@@ -25,7 +25,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URL | URL to analyze | URL.Data.None | Optional |
+| URL | URL to analyze | URL.Data | Optional |
 
 ## Playbook Outputs
 ---

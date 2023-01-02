@@ -32,10 +32,6 @@
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
-        },
-        "D2": {
-            "mandatory": true,
-            "display_name": "D2 (Deprecated)"
         }
     },
     "marketplaces": [
@@ -46,7 +42,6 @@
         "DemistoRESTAPI",
         "CommonScripts",
         "GenericSQL",
-        "CommonTypes",
-        "D2"
+        "CommonTypes"
     ]
 }
