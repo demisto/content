@@ -15,7 +15,10 @@ def test_cidr_network_addresses_lower_from_const(cidr: str, max_num_addresses: s
 
 
 def test_main(mocker):
+    global RESULTS
     from LowerCidrNumAddresses import main
-    mocker = mocker.patch.object(demisto, 'args', return_value={'right': 257, 'left': ['192.168.0.0/24', '192.168.0.0/24']})
+    mocker_args = mocker.patch.object(demisto, 'args', return_value={'right': 257, 'left': ['192.168.0.0/24', '192.168.0.0/24']})
+    mocker.patch.object(demisto, 'results')
     main()
-    assert mocker.called
+    assert demisto.results.call_count == 2
+    assert mocker_args.call_count == 2
