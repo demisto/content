@@ -1,4 +1,4 @@
-[MODEL: dataset="zscaler_zpa_raw"]
+[MODEL: dataset="zscalerr_zpa_raw"]
 filter
     cat in ("ZPA User Status", "ZPA User Activity")
 | alter
