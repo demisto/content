@@ -1,9 +1,0 @@
-CommonServerPython.py
-CommonServerUserPython.py
-DemistoClassApiModule.py
-demistomock.py
-config
-__pycache__
-.demisto-sdk-report
-/TestPlaybooks/command_examples_v1.txt
-/TestPlaybooks/command_examples_v2.txt
