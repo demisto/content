@@ -19,6 +19,7 @@ filter
     xdm.source.location.country = ClientCountryCode,
     xdm.source.host.hostname = identHostName,
     xdm.source.agent.identifier = ConnectionID,
+    xdm.source.port=to_integer(dstPort),
     xdm.event.type = cat,
     xdm.network.tls.client_certificate.subject = CertificateCN,
     xdm.event.operation_sub_type = ApplicationSegment,
