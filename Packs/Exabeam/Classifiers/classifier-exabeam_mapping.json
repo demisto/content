@@ -1,0 +1,58 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Exabeam mapping",
+    "mapping": {
+        "Exabeam Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Close Time": {
+                    "simple": "baseFields.closedDate"
+                },
+                "Description": {
+                    "simple": "baseFields.description"
+                },
+                "Exabeam Id": {
+                    "simple": "incidentId"
+                },
+                "Exabeam Queue": {
+                    "simple": "baseFields.queue"
+                },
+                "Item Owner": {
+                    "simple": "baseFields.owner"
+                },
+                "Last Update Time": {
+                    "simple": "baseFields.updatedAt"
+                },
+                "Source Category": {
+                    "simple": "baseFields.incidentType"
+                },
+                "Source Create time": {
+                    "simple": "baseFields.createdAt"
+                },
+                "Source Created By": {
+                    "simple": "baseFields.createdBy"
+                },
+                "Source Priority": {
+                    "simple": "baseFields.priority"
+                },
+                "Source Status": {
+                    "simple": "baseFields.status"
+                },
+                "Source Updated by": {
+                    "simple": "baseFields.updatedBy"
+                },
+                "Start Time": {
+                    "simple": "baseFields.startedDate"
+                },
+                "Title": {
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "Exabeam mapping",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}
