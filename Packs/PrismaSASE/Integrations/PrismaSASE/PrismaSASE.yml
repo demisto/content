@@ -17,7 +17,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example:
+    1234567890.'
   display: Tenant Services Group ID
   name: tsg_id
   required: true
@@ -39,13 +40,22 @@ name: Prisma SASE
 script:
   commands:
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Prisma access folder location for the rule.
       isArray: false
       name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
       required: true
-      secret: false
-    - default: false
+      defaultValue: Shared
+    - auto: PREDEFINED
+      default: false
       description: Rule position.
       isArray: false
       name: position
@@ -53,127 +63,117 @@ script:
       - pre
       - post
       required: true
-      secret: false
+      defaultValue: pre
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     - default: false
       description: Friendly name of the rule.
       isArray: false
       name: name
       required: true
-      secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Rule action.
       isArray: false
       name: action
       required: true
-      secret: false
+      predefined:
+      - deny
+      - allow
+      - drop
+      - reset client
+      - reset server
+      - reset both client and server
     - default: false
       description: Rule description.
       isArray: false
       name: description
       required: false
-      secret: false
     - default: false
       description: Rule log setting.
       isArray: false
       name: log_setting
       required: false
-      secret: false
     - default: false
       description: A comma-separated list of applications.
-      isArray: false
+      isArray: true
       name: application
-      required: true
-      secret: false
+      required: false
+      defaultValue: any
     - default: false
       description: A comma-separated list of categories.
       isArray: true
       name: category
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of destination networks.
       isArray: false
       name: destination
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of destination HIPs.
       isArray: false
       name: destination_hip
       required: false
-      secret: false
     - default: false
       description: Security profiles to apply to the traffic.
       isArray: false
       name: profile_setting
       required: false
-      secret: false
     - default: false
       description: Services the rule applies to.
       isArray: false
       name: service
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of source networks.
       isArray: true
       name: source
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of source HIPs.
       isArray: false
       name: source_hip
       required: false
-      secret: false
     - default: false
       description: A semi-colon (;) separated list of source users or groups.
       isArray: true
       name: source_user
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of rule tags.
       isArray: true
       name: tag
       required: false
-      secret: false
     - default: false
       description: A comma-separated list of source zones.
       isArray: true
       name: from
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of destination zones.
       isArray: true
       name: to
       required: true
-      secret: false
     - default: false
       description: Whether the rule is disabled.
       isArray: false
       name: disabled
       required: false
-      secret: false
     - default: false
       description: Negate the source.
       isArray: false
       name: negate_source
       required: false
-      secret: false
     - default: false
       description: Negate the destination.
       isArray: false
       name: negate_destination
       required: false
-      secret: false
     deprecated: false
     description: Create a new security rule.
     execution: false
@@ -228,12 +228,20 @@ script:
       description: Security rule to field (destination zone(s)).
       type: String
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Prisma access folder location for the rule.
       isArray: false
       name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
       required: true
-      secret: false
+      defaultValue: Shared
     - auto: PREDEFINED
       default: false
       description: Security rule position.
@@ -243,13 +251,11 @@ script:
       - pre
       - post
       required: true
-      secret: false
     - default: false
       description: Name of the security rule.
       isArray: false
       name: name
       required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: '10'
@@ -257,19 +263,17 @@ script:
       isArray: false
       name: limit
       required: false
-      secret: false
     - default: false
       description: Results paging offset.
       isArray: false
       name: offset
       required: false
-      secret: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     deprecated: false
     description: List the security rules.
     execution: false
@@ -331,23 +335,22 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Comma-separated list of targets (Remote Networks, Mobile Users, Service Connections).
+      description: Comma-separated list of targets (Remote Networks, Mobile Users,
+        Service Connections).
       isArray: false
       name: folders
       required: true
-      secret: false
     - default: false
       description: Configuration push job description.
       isArray: false
       name: description
       required: false
-      secret: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     deprecated: false
     description: Push the candidate configuration.
     execution: false
@@ -371,127 +374,107 @@ script:
       isArray: false
       name: id
       required: true
-      secret: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     - default: false
       description: Friendly name of the rule.
       isArray: false
       name: name
       required: true
-      secret: false
     - default: false
       description: Rule action.
       isArray: false
       name: action
       required: true
-      secret: false
     - default: false
       description: Rule description.
       isArray: false
       name: description
       required: false
-      secret: false
     - default: false
       description: Rule log setting.
       isArray: false
       name: log_setting
       required: false
-      secret: false
     - default: false
       description: A comma-separated list of applications.
       isArray: false
       name: application
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of categories.
       isArray: true
       name: category
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of destination networks.
       isArray: false
       name: destination
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of destination HIPs.
       isArray: false
       name: destination_hip
       required: false
-      secret: false
     - default: false
       description: Security profiles to apply to the traffic.
       isArray: false
       name: profile_setting
       required: false
-      secret: false
     - default: false
       description: Services the rule applies to.
       isArray: false
       name: service
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of source networks.
       isArray: true
       name: source
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of source HIPs.
       isArray: false
       name: source_hip
       required: false
-      secret: false
     - default: false
       description: A semi-colon (;) separated list of source user(s).
       isArray: false
       name: source_user
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of rule tags.
       isArray: true
       name: tag
       required: false
-      secret: false
     - default: false
       description: A comma-separated list of source zones.
       isArray: true
       name: from
       required: true
-      secret: false
     - default: false
       description: A comma-separated list of destination zones.
       isArray: true
       name: to
       required: true
-      secret: false
     - default: false
       description: Whether the rule is disabled.
       isArray: false
       name: disabled
       required: false
-      secret: false
     - default: false
       description: Negate source
       isArray: false
       name: negate_source
       required: false
-      secret: false
     - default: false
       description: Negate the destination.
       isArray: false
       name: negate_destination
       required: false
-      secret: false
     deprecated: false
     description: Edit an existing security rule.
     execution: false
@@ -544,24 +527,97 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: ID of the address object to edit yyyy.
+      isArray: false
+      name: id
+      required: true
+    - default: false
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Folder Location for the Object.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+      defaultValue: Shared
+    - default: false
+      description: Address Object description
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the address
+      isArray: false
+      name: type
+      predefined:
+      - ip_netmask
+      - ip_range
+      - ip_wildcard
+      - fqdn
+      required: true
+    - default: false
+      description: The address value (should match the type)
+      isArray: false
+      name: value
+      required: true
+    - default: false
+      description: A comma-separated list of address object tags.
+      isArray: true
+      name: tag
+      required: false
+    deprecated: false
+    description: Edit address object
+    execution: false
+    name: prisma-sase-address-object-update
+    outputs:
+    - contextPath: PrismaAccess.EditedAddressObject
+      description: Edited address object.
+      type: Unknown
+    - contextPath: PrismaAccess.EditedAddress.description
+      description: Address description.
+      type: String
+    - contextPath: PrismaAccess.EditedAddress.folder
+      description: Address folder.
+      type: String
+    - contextPath: PrismaAccess.EditedAddress.id
+      description: Address ID.
+      type: String
+    - contextPath: PrismaAccess.EditedAddress.ip_netmask
+      description: Address IP netmask.
+      type: String
+    - contextPath: PrismaAccess.EditedAddress.name
+      description: Address name.
+      type: String
+  - arguments:
+    - default: false
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      isArray: false
+      name: tsg_id
+      required: false
     - default: false
       description: Query data
       isArray: false
       name: query_data
       required: false
-      secret: false
     - default: false
       description: 'Aggregate monitor URI to query (for example: mt/monitor/v1/agg/threats).'
       isArray: false
       name: uri
       required: true
-      secret: false
-    deprecated: false
+      deprecated: false
     description: Query the aggregate monitor API.
     execution: false
     name: prisma-sase-query-agg-monitor-api
@@ -578,13 +634,20 @@ script:
       isArray: false
       name: name
       required: true
-      secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Prisma access folder location for the rule.
       isArray: false
       name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
       required: true
-      secret: false
+      defaultValue: Shared
     - default: false
       description: Rule position.
       isArray: false
@@ -593,13 +656,12 @@ script:
       - pre
       - post
       required: true
-      secret: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     deprecated: false
     description: Get a security rule using the name.
     execution: false
@@ -659,13 +721,12 @@ script:
       isArray: true
       name: id
       required: true
-      secret: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     deprecated: false
     description: Get a specific configuration job by the job ID.
     execution: false
@@ -745,24 +806,22 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     - default: false
       defaultValue: '200'
       description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
-      secret: false
     - default: false
       description: Results paging offset.
       isArray: false
       name: offset
       required: false
-      secret: false
     deprecated: false
     description: List configuration jobs.
     execution: false
@@ -819,13 +878,12 @@ script:
       isArray: false
       name: rule_id
       required: true
-      secret: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     deprecated: false
     description: Delete a security rule.
     execution: false
@@ -890,28 +948,26 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-      secret: false
+      defaultValue: Shared
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     - default: false
       description: Friendly name of the address object.
       isArray: false
       name: name
       required: true
-      secret: false
     - default: false
       description: Address object description.
       isArray: false
       name: description
       required: false
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the address
+      description: The type of the address.
       isArray: false
       name: type
       predefined:
@@ -955,121 +1011,44 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the address object to edit.
-      isArray: false
-      name: id
-      required: true
-    - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
-    - default: false
-      description: Friendly name of the address object.
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: Address Object description
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The type of the address
-      isArray: false
-      name: type
-      predefined:
-      - ip_netmask
-      - ip_range
-      - ip_wildcard
-      - fqdn
-      required: true
-    - default: false
-      description: The address value (should match the type)
-      isArray: false
-      name: value
-      required: true
-    - default: false
-      description: A comma-separated list of address object tags.
-      isArray: true
-      name: tag
-      required: false
-      secret: false
-    deprecated: false
-    description: Edit address object
-    execution: false
-    name: prisma-sase-address-object-update
-    outputs:
-    - contextPath: PrismaAccess.EditedAddressObject
-      description: Edited address object.
-      type: Unknown
-    - contextPath: PrismaAccess.EditedAddress.description
-      description: Address description.
-      type: String
-    - contextPath: PrismaAccess.EditedAddress.folder
-      description: Address folder.
-      type: String
-    - contextPath: PrismaAccess.EditedAddress.id
-      description: Address ID.
-      type: String
-    - contextPath: PrismaAccess.EditedAddress.ip_netmask
-      description: Address IP netmask.
-      type: String
-    - contextPath: PrismaAccess.EditedAddress.name
-      description: Address name.
-      type: String
-  - arguments:
-    - default: false
       description: ID of the address object to delete.
       isArray: false
       name: id
       required: true
-      secret: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
     deprecated: false
     description: Delete address object
     execution: false
     name: prisma-sase-address-object-delete
-    outputs:
-    - contextPath: PrismaAccess.DeletedAddressObject
-      description: Deleted address object.
-      type: Unknown
-    - contextPath: PrismaAccess.DeletedAddress.description
-      description: Deleted address description.
-      type: String
-    - contextPath: PrismaAccess.DeletedAddress.folder
-      description: Deleted address folder.
-      type: String
-    - contextPath: PrismaAccess.DeletedAddress.id
-      description: Deleted address ID.
-      type: String
-    - contextPath: PrismaAccess.DeletedAddress.ip_netmask
-      description: Deleted address IP netmask.
-      type: String
-    - contextPath: PrismaAccess.DeletedAddress.name
-      description: Deleted address name.
-      type: String
   - arguments:
     - default: false
+      description: The specific address object to return. If not specified, all addresses will be returned.
+      name: object_id
+      required: false
+    - auto: PREDEFINED
+      default: false
       description: Prisma access folder location for the object.
       isArray: false
       name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
       required: true
-      secret: false
+      defaultValue: Shared
     - default: false
       description: Name of the security object.
       isArray: false
       name: name
       required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: '10'
@@ -1077,19 +1056,25 @@ script:
       isArray: false
       name: limit
       required: false
-      secret: false
     - default: false
       description: Results paging offset.
       isArray: false
       name: offset
       required: false
-      secret: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
       isArray: false
       name: tsg_id
       required: false
-      secret: false
+    - default: false
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      isArray: false
+      name: page_size
+      required: false
     deprecated: false
     description: List address objects.
     execution: false

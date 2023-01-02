@@ -37,6 +37,8 @@ SECURITYRULE_FIELDS = {
     "negate_destination": ""
 }
 
+ADDRESS_TYPES = ("ip_netmask", "ip_range", "ip_wildcard", "fqdn")
+
 
 class Client(BaseClient):
     """Client class to interact with the service API
@@ -83,33 +85,30 @@ class Client(BaseClient):
                         val = argToList(field_value, ';')
                         rule[key] = val
                     elif isinstance(SECURITYRULE_FIELDS.get(key), str):
-                        rule[key] = field_value   # type: ignore
+                        rule[key] = field_value  # type: ignore
                     elif isinstance(SECURITYRULE_FIELDS.get(key), list):
                         val = argToList(field_value)
-                        rule[key] = val   # type: ignore
+                        rule[key] = val  # type: ignore
 
         return rule
 
     def create_security_rule(self, rule: dict, folder: str, position: str, tsg_id: str):
-        """Command to create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
+        """Command to create new Prisma SASE security rule within the given Folder, Position, and Tenant/TSG
         Args:
             rule: Security rule dictionary
-            folder: Prisma Access Folder
-            position: Prisma access rule position
+            folder: Prisma SASE Folder
+            position: Prisma SASE rule position
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}security-rules'
-        access_token = self.get_access_token(tsg_id)
+        headers = self.access_token_to_headers(tsg_id)
 
         query_params = {
             'folder': encode_string_results(folder),
             'position': encode_string_results(position)
         }
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="POST",
@@ -120,7 +119,7 @@ class Client(BaseClient):
         )
 
     def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str):
-        """Edit existing Prisma Access security rule
+        """Edit existing Prisma SASE security rule
         Args:
             rule: Security rule dictionary
             rule_id: identifier of rule to be edited
@@ -129,10 +128,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
-        access_token = self.get_access_token(tsg_id)
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
             method="PUT",
@@ -142,7 +138,7 @@ class Client(BaseClient):
         )
 
     def delete_security_rule(self, rule_id: str, tsg_id: str):
-        """Delete Prisma Access security rule
+        """Delete Prisma SASE security rule
         Args:
             rule_id: Identifier of the existing rule to be deleted
             tsg_id: Target Prisma SASE tenant ID
@@ -150,9 +146,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
-        access_token = self.get_access_token(tsg_id)
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
             method="DELETE",
@@ -161,23 +155,19 @@ class Client(BaseClient):
         )
 
     def create_address_object(self, address: dict, folder: str, tsg_id: str):
-        """Create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
+        """Create new Prisma SASE security rule within the given Folder, Position, and Tenant/TSG
         Args:
             address: address object dictionary
-            folder: Prisma Access Folder
+            folder: Prisma SASE Folder
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}addresses'
-        access_token = self.get_access_token(tsg_id)
-
         query_params = {
             'folder': encode_string_results(folder)
         }
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
             method="POST",
@@ -197,10 +187,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
-        access_token = self.get_access_token(tsg_id)
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
             method="PUT",
@@ -218,9 +205,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
-        access_token = self.get_access_token(tsg_id)
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
             method="DELETE",
@@ -229,7 +214,7 @@ class Client(BaseClient):
         )
 
     def list_address_objects(self, query_params: dict, tsg_id: str):
-        """Return list of address objects from Prisma Access
+        """Return list of address objects from Prisma SASE
         Args:
             query_params: query parameters for the request
             tsg_id: Target Prisma SASE tenant ID
@@ -237,11 +222,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}addresses'
-
-        access_token = self.get_access_token(tsg_id)
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
             method="GET",
@@ -259,11 +240,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}security-rules'
-
-        access_token = self.get_access_token(tsg_id)
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
             method="GET",
@@ -285,10 +262,7 @@ class Client(BaseClient):
             'agg_by': "tenant"
         }
 
-        access_token = self.get_access_token(tsg_id)
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         if query is not None:
             return self._http_request(
@@ -309,21 +283,15 @@ class Client(BaseClient):
     def push_candidate_config(self, folders: str, description: str, tsg_id: str):
         """Push candidate configuration
         Args:
-            folders: Target Prisma Access Folders for the configuration commit
+            folders: Target Prisma SASE Folders for the configuration commit
             description: Description for the job
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}config-versions/candidate:push'
-
-        access_token = self.get_access_token(tsg_id)
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
-
+        headers = self.access_token_to_headers(tsg_id)
         body = {"folders": folders}
-
         if description:
             body['description'] = description
 
@@ -343,10 +311,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}jobs/{job_id}'
-        access_token = self.get_access_token(tsg_id)
-
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
             method="GET",
@@ -357,14 +322,33 @@ class Client(BaseClient):
     def list_config_jobs(self, tsg_id: str, query_params: dict):
         """List config jobs
         Args:
+            query_params:
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}jobs'
-        access_token = self.get_access_token(tsg_id)
-        headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers = self.access_token_to_headers(tsg_id)
+
+        return self._http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params,
+            headers=headers
+        )
+
+    def get_address_by_id(self, query_params, tsg_id, address_id):
+        """Edit existing address object
+        Args:
+            query_params: Address object dictionary
+            address_id: Identifier of existing address to be edited
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
+        headers = self.access_token_to_headers(tsg_id)
+
         return self._http_request(
             method="GET",
             url_suffix=uri,
@@ -440,8 +424,15 @@ class Client(BaseClient):
                 raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
                                        f' configuration.\n\n{e}')
 
+    def access_token_to_headers(self, tsg_id):
+        access_token = self.get_access_token(tsg_id)
 
-def test_module(client: Client, args: Dict[str, Any]) -> CommandResults:
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
+        return headers
+
+
+def test_module(client: Client) -> CommandResults:
     """Test command to determine if integration is working correctly.
     Args:
         client: Client object with request
@@ -502,24 +493,23 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
 
     address_object = {
         args.get('type'): args.get('value'),
-        "name": args.get('name')}
+        'name': args.get('name')}
 
     if args.get('description'):
         address_object["description"] = args.get('description')
 
     if args.get('tag'):
-        address_object["tag"] = args.get('tag')
+        address_object['tag'] = args.get('tag')
 
     tsg_id = args.get('tsg_id') or client.default_tsg_id
 
     raw_response = client.create_address_object(address_object, args.get('folder'), tsg_id)  # type: ignore
-    outputs = raw_response
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
-        outputs=outputs,
-        readable_output=tableToMarkdown('Address Object Created', outputs, headerTransform=string_to_table_header),
+        outputs=raw_response,
+        readable_output=tableToMarkdown('Address Object Created', raw_response, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -534,22 +524,28 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
         Outputs.
     """
 
-    address_object = {
-        args.get('type'): args.get('value'),
-        "name": args.get('name')}
-
-    if description := args.get('description'):
-        address_object["description"] = description
-    if tag := args.get('tag'):
-        address_object["tag"] = tag
-
     tsg_id = args.get('tsg_id') or client.default_tsg_id
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    original_address = client.get_address_by_id(query_params, args.get('id'), tsg_id)
+    for address_type in ADDRESS_TYPES:
+        if address_type in original_address:
+            original_address.pop(address_type)
+    original_address = {
+        args.get('type'): args.get('value')
+    }
+    if description := args.get('description'):
+        original_address['description'] = description
 
-    raw_response = client.edit_address_object(address_object, args.get('id'), tsg_id)  # type: ignore
+    if tag := args.get('tag'):
+        original_address['tag'] = tag
+
+    raw_response = client.edit_address_object(original_address, args.get('id'), tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}EditedAddress',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Object Edited', outputs, headerTransform=string_to_table_header),
@@ -570,13 +566,10 @@ def delete_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     tsg_id = args.get('tsg_id') or client.default_tsg_id
 
     raw_response = client.delete_address_object(args.get('id'), tsg_id)  # type: ignore
-    outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}DeletedAddress',
-        outputs_key_field='id',
-        outputs=outputs,
-        readable_output=tableToMarkdown('Address Object Deleted', outputs, headerTransform=string_to_table_header),
+        readable_output=f'Address object with id {raw_response.get("id", "")} '
+                        f'and name {raw_response.get("name", "")} was deleted successfully',
         raw_response=raw_response
     )
 
@@ -590,31 +583,34 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         Outputs.
     """
-
+    # TODO - add pagination support
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
-
     tsg_id = args.get('tsg_id') or client.default_tsg_id
+    if object_id := args.get('object_id'):
+        raw_response = client.get_address_by_id(query_params, tsg_id, object_id)
+        outputs = raw_response
+    else:
 
-    if name := args.get('name'):
-        query_params["name"] = encode_string_results(name)
+        if name := args.get('name'):
+            query_params["name"] = encode_string_results(name)
 
-    if limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
-        query_params["limit"] = limit
-    if offset := arg_to_number(args.get('offset', DEFAULT_OFFSET)):
-        query_params["offset"] = offset
+        if limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
+            query_params["limit"] = limit
+        if offset := arg_to_number(args.get('offset', DEFAULT_OFFSET)):
+            query_params["offset"] = offset
 
-    raw_response = client.list_address_objects(query_params, tsg_id)  # type: ignore
+        raw_response = client.list_address_objects(query_params, tsg_id)  # type: ignore
 
-    outputs = raw_response.get('data')
+        outputs = raw_response.get('data')
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}FoundAddressObjects',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Objects', outputs, headers=[
-                                        'name', 'description', 'ip_netmask', 'fqdn'],
+            'name', 'description', 'ip_netmask', 'fqdn'],
                                         headerTransform=string_to_table_header, removeNull=True),
         raw_response=raw_response
     )
@@ -676,7 +672,7 @@ def query_agg_monitor_api_command(client: Client, args: Dict[str, Any]) -> Comma
                                         headerTransform=string_to_table_header),
         raw_response=raw_response,
         outputs=raw_response,
-        outputs_prefix='PrismaSASE.AggregateQueryResponse'
+        outputs_prefix='PrismaSase.AggregateQueryResponse'
     )
 
 
@@ -741,6 +737,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
     Returns:
         Outputs.
     """
+    # TODO - add pagination support
     query_params = {
         'folder': encode_string_results(args.get('folder')),
         'position': encode_string_results(args.get('position'))
@@ -764,7 +761,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rules', outputs, headers=[
-                                        'id', 'name', 'description', 'action', 'destination', 'folder'],
+            'id', 'name', 'description', 'action', 'destination', 'folder'],
                                         headerTransform=string_to_table_header,
                                         removeNull=True),
         raw_response=raw_response
@@ -820,7 +817,6 @@ def get_config_jobs_by_id_command(client: Client, args: Dict[str, Any]) -> Comma
     raw_responses = []
 
     for job_id in job_ids:
-
         raw_response = client.get_config_jobs_by_id(tsg_id, job_id).get('data')[0]
         raw_responses.append(raw_response)
 
@@ -831,7 +827,7 @@ def get_config_jobs_by_id_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Config Jobs', outputs, headers=[
-                                        'id', 'type_str', 'description', 'summary'],
+            'id', 'type_str', 'description', 'summary'],
                                         headerTransform=string_to_table_header, removeNull=True),
         raw_response=raw_response
     )
@@ -900,11 +896,9 @@ def main():
         'prisma-sase-security-rule-list': list_security_rules_command,
         'prisma-sase-security-rule-delete': delete_security_rule_command,
         'prisma-sase-security-rule-update': edit_security_rule_command,
-        #'prisma-access-get-config-jobs-by-id': get_config_jobs_by_id_command,
         'prisma-sase-candidate-config-push': push_candidate_config_command,
         'prisma-sase-config-job-list': list_config_jobs_command,
         'prisma-sase-query-agg-monitor-api': query_agg_monitor_api_command,
-        #'prisma-access-get-security-rule-by-name': get_security_rule_by_name_command,
         'prisma-sase-address-object-create': create_address_object_command,
         'prisma-sase-address-object-update': edit_address_object_command,
         'prisma-sase-address-object-delete': delete_address_object_command,

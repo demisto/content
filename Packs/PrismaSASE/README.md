@@ -25,3 +25,16 @@ The integration includes commands to:
 
 
 The integration uses the Prisma SASE Multi-tenant API documented here: [Prisma SASE API](https://pan.dev).
+
+### Pack Contributors:
+
+---
+ - JD Plant
+
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
+### Pack Contributors:
+
+---
+ - JD Plant
+
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
