@@ -10,7 +10,7 @@ def upload_file(incident_id: str, entry_id: str, body: str = '', as_incident_att
 
 
 def upload_file_command(args: dict) -> Tuple[str, str]:
-    incident_id = args.get('incidentID', '')
+    incident_id = args.get('ID', '')
     entry_id = args.get('entryID', '')
     body = args.get('body', '')
     target = args.get('target', 'war room entry')
