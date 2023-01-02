@@ -1,4 +1,4 @@
-[MODEL: dataset="Juniper_SRX_Log"]
+[MODEL: dataset="juniper_srx_raw"]
 alter
     event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
 | filter

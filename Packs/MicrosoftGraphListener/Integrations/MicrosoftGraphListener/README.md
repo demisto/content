@@ -20,6 +20,12 @@ For more details about the authentication used in this integration, see [Microso
 
 Note: For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
 
+## Email Attachments Limitations
+* The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
+* The larger the attachment, the longer it would take for a command that supports adding attachments to run.
+* Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
+* When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
+
 ### Required Permissions
 The following permissions are required for all commands:
 - Mail.ReadWrite - Delegated
@@ -115,7 +121,10 @@ Creates a draft message in the specified user's mailbox.
 ***
 Replies to an email using Graph Mail Single User.
 
-
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 #### Base Command
 
 `reply-mail`
@@ -155,6 +164,10 @@ Replies to an email using Graph Mail Single User.
 ***
 Sends an email using Microsoft Graph.
 
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 #### Base Command
 
