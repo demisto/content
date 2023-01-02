@@ -1281,8 +1281,7 @@ class Client(BaseClient):
                                      server_pool: Optional[str], protected_hostnames: Optional[str],
                                      client_real_ip: Optional[str], syn_cookie: Optional[str],
                                      half_open_thresh: Optional[str], http_service: Optional[str],
-                                     https_service: Optional[str], multi_certificate: Optional[str],
-                                     certificate_group: Optional[str], proxy: Optional[str],
+                                     https_service: Optional[str],
                                      redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
                                      monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
                                      comments: Optional[str], mach_once: Optional[str], **kwards) -> Dict[str, Any]:
@@ -1294,8 +1293,7 @@ class Client(BaseClient):
                                      client_real_ip: Optional[str], syn_cookie: Optional[str],
                                      half_open_thresh: Optional[str], http_service: Optional[str],
                                      https_service: Optional[str], http2: Optional[str],
-                                     multi_certificate: Optional[str], certificate_group: Optional[str],
-                                     certificate: Optional[str], intergroup: Optional[str], proxy: Optional[str],
+                                     certificate: Optional[str], intergroup: Optional[str],
                                      redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
                                      monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
                                      comments: Optional[str], mach_once: Optional[str], **kwards) -> Dict[str, Any]:
@@ -2037,8 +2035,7 @@ class ClientV1(Client):
                                      server_pool: Optional[str], protected_hostnames: Optional[str],
                                      client_real_ip: Optional[str], syn_cookie: Optional[str],
                                      half_open_thresh: Optional[str], http_service: Optional[str],
-                                     https_service: Optional[str], multi_certificate: Optional[str],
-                                     certificate_group: Optional[str], proxy: Optional[str],
+                                     https_service: Optional[str],
                                      redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
                                      monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
                                      comments: Optional[str], mach_once: Optional[str], **kwards) -> Dict[str, Any]:
@@ -2093,8 +2090,7 @@ class ClientV1(Client):
                                      client_real_ip: Optional[str], syn_cookie: Optional[str],
                                      half_open_thresh: Optional[str], http_service: Optional[str],
                                      https_service: Optional[str], http2: Optional[str],
-                                     multi_certificate: Optional[str], certificate_group: Optional[str],
-                                     certificate: Optional[str], intergroup: Optional[str], proxy: Optional[str],
+                                     certificate: Optional[str], intergroup: Optional[str],
                                      redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
                                      monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
                                      comments: Optional[str], mach_once: Optional[str], **kwards) -> Dict[str, Any]:
@@ -3062,7 +3058,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='GET', url_suffix='cmdb/server-policy/http-content-routing-policy')
-    def handle_certificates(self, certificate_type : str,certificate : str, multi_certificate : str, lets_certificate : str) -> Dict[str, Any]:
+    def handle_certificates(self, certificate_type : str , certificate : str, multi_certificate : str, lets_certificate : str) -> Dict[str, Any]:
         """Hadle certificates for Fortiweb V2 server policy.
 
         Args:
@@ -3118,7 +3114,6 @@ class ClientV2(Client):
                                    https_service: Optional[str],
                                    protocol: Optional[str],
                                    multi_certificate: Optional[str],
-                                   certificate_group: Optional[str],
                                    proxy: Optional[str],
                                    redirect_to_https: Optional[str],
                                    inline_protection_profile: Optional[str],
@@ -3212,14 +3207,13 @@ class ClientV2(Client):
                 mach_once
             })
         }
-        data.update(self.handle_certificates(certificate_type,certificate,multi_certificate,lets_certificate))
+        data.update(self.handle_certificates(certificate_type , certificate,multi_certificate , lets_certificate))
         return data
     def server_policy_create_request(self, name: str, deployment_mode: str, virtual_server: str,
                                      server_pool: Optional[str], protected_hostnames: Optional[str],
                                      client_real_ip: Optional[str], syn_cookie: Optional[str],
                                      half_open_thresh: Optional[str], http_service: Optional[str],
-                                     https_service: Optional[str], multi_certificate: Optional[str],
-                                     certificate_group: Optional[str], proxy: Optional[str],
+                                     https_service: Optional[str],
                                      redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
                                      monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
                                      comments: Optional[str], mach_once: Optional[str], **kwards) -> Dict[str, Any]:
@@ -3275,7 +3269,7 @@ class ClientV2(Client):
             http_service=http_service,
             https_service=https_service,
             redirect_to_https=redirect_to_https,
-            proxy=proxy,
+            proxy=kwards.get('proxy'),
             retry_on=kwards.get('retry_on'),
             retry_on_cache_size=kwards.get('retry_on_cache_size'),
             retry_on_connect_failure=kwards.get('retry_on_connect_failure'),
@@ -3295,9 +3289,8 @@ class ClientV2(Client):
             comments=comments,
             mach_once=mach_once,
             certificate_type=kwards.get('certificate_type'),
-            certificate_group=multi_certificate,
             lets_certificate=kwards.get('lets_certificate'),
-            multi_certificate=multi_certificate,
+            multi_certificate=kwards.get('multi_certificate'),
         )
         return self._http_request(method='POST', url_suffix='cmdb/server-policy/policy', json_data=data)
 
@@ -3306,8 +3299,7 @@ class ClientV2(Client):
                                      client_real_ip: Optional[str], syn_cookie: Optional[str],
                                      half_open_thresh: Optional[str], http_service: Optional[str],
                                      https_service: Optional[str], http2: Optional[str],
-                                     multi_certificate: Optional[str], certificate_group: Optional[str],
-                                     certificate: Optional[str], intergroup: Optional[str], proxy: Optional[str],
+                                     certificate: Optional[str], intergroup: Optional[str],
                                      redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
                                      monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
                                      comments: Optional[str], mach_once: Optional[str], **kwards) -> Dict[str, Any]:
@@ -3367,7 +3359,7 @@ class ClientV2(Client):
             http2=http2,
             intergroup=intergroup,
             redirect_to_https=redirect_to_https,
-            proxy=proxy,
+            proxy=kwards.get('proxy'),
             retry_on=kwards.get('retry_on'),
             retry_on_cache_size=kwards.get('retry_on_cache_size'),
             retry_on_connect_failure=kwards.get('retry_on_connect_failure'),
@@ -3387,9 +3379,8 @@ class ClientV2(Client):
             comments=comments,
             mach_once=mach_once,
             certificate_type=kwards.get('certificate_type'),
-            certificate_group=multi_certificate,
             lets_certificate=kwards.get('lets_certificate'),
-            multi_certificate=multi_certificate,
+            multi_certificate=kwards.get('multi_certificate'),
             certificate=certificate,
         )
         response = self._http_request(method='PUT',
