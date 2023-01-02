@@ -149,10 +149,10 @@ Returns a list of all intel documents.
                 "AlertCount": 0,
                 "CreatedAt": "2021-09-26T20:42:12.761Z",
                 "ID": 538,
-                "IntrinsicId": "file.None",
+                "IntrinsicId": "file",
                 "IsSchemaValid": true,
                 "Md5": "45d4f6197504b0cf17ca4425b27c4123",
-                "Name": "file.None",
+                "Name": "file",
                 "RevisionId": 1,
                 "Size": 2211,
                 "SourceId": 1,
@@ -187,7 +187,7 @@ Returns a list of all intel documents.
 >### Intel docs
 >|ID|Name|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|Label Ids|
 >|---|---|---|---|---|---|---|---|
->| 538 | file.None | yara | 0 | 0 | 2021-09-26T20:42:12.761Z | 2021-09-26T20:42:12.761Z |  |
+>| 538 | file | yara | 0 | 0 | 2021-09-26T20:42:12.761Z | 2021-09-26T20:42:12.761Z |  |
 >| 537 | 111-72ad-40cc-abbf-90846fa4afec | openioc | 0 | 0 | 2021-09-26T15:40:18.967Z | 2021-09-26T20:47:53.586Z |  |
 >| 536 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-26T08:18:57.462Z | 2021-09-26T08:18:57.462Z |  |
 >| 535 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-26T08:11:30.717Z | 2021-09-26T08:11:30.717Z |  |
