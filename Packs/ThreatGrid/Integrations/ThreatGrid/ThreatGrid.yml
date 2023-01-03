@@ -5,6 +5,13 @@ name: Threat Grid
 display: Cisco Threat Grid
 category: Forensics & Malware Analysis
 description: Query and upload samples to Cisco threat grid.
+detaileddescription: |-
+  1. In your threat grid instance, click your user name at the right top corner.
+  2. Select my account.
+  3. Under the API Key section in the left you will see your API.
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/threat-grid)
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -1008,8 +1015,38 @@ script:
     - contextPath: Demisto.File
       description: File containing result
     description: Returns data regarding the analysis processes
+  - name: threat-grid-submit-urls
+    arguments:
+    - name: url
+      required: true
+      description: Url to be sumbitted
+    outputs:
+    - contextPath: ThreatGrid.URLs
+      description: Results of URL Submission
+    - contextPath: ThreatGrid.URLs.submission_id
+      description: ID of submitted URL
+    - contextPath: ThreatGrid.URLs.status
+      description: Status of submitted URL
+    - contextPath: ThreatGrid.URLs.filename
+      description: Filename of submitted URL
+    - contextPath: ThreatGrid.URLs.state
+      description: State of submitted URL
+    - contextPath: ThreatGrid.URLs.analyzing
+      description: True/False if submitted URL is analyzing
+    description: Submit urls for analysis.
+  - name: threat-grid-advanced-search
+    arguments:
+    - name: query
+      required: true
+      description: 'Search query '
+    outputs:
+    - contextPath: Threatgrid.SearchResult
+      description: Result for the searched query
+    description: Advanced search that allows searching URLS, Submissions, Samples
+      etc...
+  
   runonce: false
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
 tests:
 - ThreatGridTest
 fromversion: 5.0.0
