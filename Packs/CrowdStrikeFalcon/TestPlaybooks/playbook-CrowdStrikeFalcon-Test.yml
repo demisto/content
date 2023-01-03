@@ -739,7 +739,7 @@ tasks:
       type:
         simple: domain
       value:
-        simple: ynet.co.il
+        simple: google.com
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -774,14 +774,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: CrowdStrike.IOC.DeviceCount
-            iscontext: true
-          right:
-            value:
-              simple: "1"
       - - operator: isEqualString
           left:
             value:
@@ -789,7 +781,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: domain:ynet.co.il
+              simple: domain:google.com
       - - operator: isEqualString
           left:
             value:
@@ -805,7 +797,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: ynet.co.il
+              simple: google.com
     continueonerrortype: ""
     view: |-
       {
