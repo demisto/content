@@ -17,7 +17,7 @@ alter rt = to_string(rt)
     xdm.event.type = cefDeviceEventClassId,
     xdm.event.outcome_reason = reason,
     xdm.network.session_id = session_id_,
-    xdm.network.ip_protocol = if(proto=ENUM.ICMP, XDM_CONST.IP_PROTOCOL_ICMP, proto=ENUM.TCP, XDM_CONST.IP_PROTOCOL_TCP, proto=ENUM.UDP, XDM_CONST.IP_PROTOCOL_UDP, to_string(proto)),
+    xdm.network.ip_protocol = if(proto=1, XDM_CONST.IP_PROTOCOL_ICMP, proto=6, XDM_CONST.IP_PROTOCOL_TCP, proto=17, XDM_CONST.IP_PROTOCOL_UDP, to_string(proto)),
     xdm.network.application_protocol = application,
     xdm.network.rule = ruleName,
     xdm.event.duration = duration,

@@ -9,6 +9,6 @@ xdm.network.dns.dns_question.name=questionName,
 xdm.network.dns.dns_question.type=questionType,
 xdm.target.port=to_number(dstPort),
 xdm.network.dns.is_response=to_boolean(if(ResponseRequest="R",1,0)),
-xdm.network.ip_protocol=protocol,
+xdm.network.ip_protocol= if(protocol="ICMP", XDM_CONST.IP_PROTOCOL_ICMP, protocol="TCP", XDM_CONST.IP_PROTOCOL_TCP, protocol="UDP", XDM_CONST.IP_PROTOCOL_UDP, to_string(protocol)),
 xdm.session_context_id=Context,
 xdm.target.ipv4="";
