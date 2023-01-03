@@ -545,10 +545,14 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
 ##### Permitted Status Values
 
 * Active
+* Awaiting Action
 * Closed: Authorized Activity
+* Closed: Confirmed Security Incident
 * Closed: False Positive Alert
+* Closed: Inconclusive
 * Closed: Informational
 * Closed: Not Vulnerable
+* Closed: Threat Mitigated
 * Open
 * Suspended
 
