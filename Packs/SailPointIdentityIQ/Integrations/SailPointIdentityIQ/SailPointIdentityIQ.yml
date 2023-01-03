@@ -66,17 +66,6 @@ configuration:
   type: 19
   section: Collect
   advanced: true
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ''
-    fromServerVersion: ''
-    itemVersion: ''
-    packID: 511bbbd3-d3c6-401c-8b60-eb98a3e83a72
-    packName: SailPoint IdentityIQ FT Contribution Pack
-    prevname: ''
-    propagationLabels:
-    - all
-    toServerVersion: ''
 description: SailPoint IdentityIQ context pack enables XSOAR customers to utilize the deep, enriched contextual data in the SailPoint predictive identity platform to better drive identity-aware security practices.
 display: SailPoint IdentityIQ
 name: SailPointIdentityIQ
@@ -92,14 +81,10 @@ script:
       name: active
     - description: Numeric value of baseline risk score, users above this will be returned.
       name: risk
-    - auto: PREDEFINED
-      description: use custom filter to find user in IIQ
+    - description: Use custom filter to find user in IIQ. Filter should be like `userName co "ACTIVE_DIRECTORY_" and userName co "<USER-NAME>" and active eq true and userType eq "Service"`
+                   or `emails.value eq "example@example.com" and active eq true and userType eq "person"`.
+                   Note that if you use this argument to filter then the other argument filters will not be taken into account in the search filter.
       name: filter
-      predefined:
-      - userName co "ACTIVE_DIRECTORY_" and userName co "CorpComms-Asia" and active eq true and userType eq "Service"
-      - displayName co "srv_xsoar" and active eq true and userType eq "service"
-      - emails.value eq "vipul.kaneriya@franklintempleton.com" and active eq true and userType eq "person"
-      - emails.value eq "vipul.kaneriya@franklintempleton.com" and active eq true and userType eq "person" and emails.primary eq "true"
     description: Search identities by search/filter parameters (id, email, risk & active) using IdentityIQ SCIM API's.
     name: identityiq-search-identities
     outputs:
@@ -485,7 +470,7 @@ script:
     - contextPath: IdentityIQ.Alert.application
       description: List of applications that are related to this alert.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   runonce: false
   script: ''
