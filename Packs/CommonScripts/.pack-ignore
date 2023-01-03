@@ -96,3 +96,12 @@ ActiveDirectoryQuery
 GenericPolling
 VirusTotal
 keysToKeep
+ExportToXLSX
+xlsx
+CVSSCalculator
+HIPAA
+CVSS
+regex
+BreachConfirmationHTML
+SIG](https://www.first.org/cvss
+Docs](https://xsoar.pan.dev/docs
