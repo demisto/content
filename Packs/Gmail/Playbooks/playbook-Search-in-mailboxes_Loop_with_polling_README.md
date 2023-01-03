@@ -7,14 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Gmail
+Gmail
 
 ### Scripts
 * Set
 * DeleteContext
 
 ### Commands
-* gmail-search-all-mailboxes
+gmail-search-all-mailboxes
 
 ## Playbook Inputs
 ---
