@@ -18,7 +18,7 @@
 		"name": "Zerohack Incident",
 		"prevName": "Zerohack Incident",
 		"color": "#CFD0D0",
-		"playbookId": "Zerohack XDR_Sophos Firewall_Block IP",
+		"playbookId": "playbook0",
 		"hours": 0,
 		"days": 0,
 		"weeks": 0,
@@ -37,7 +37,7 @@
 		"layout": "",
 		"detached": false,
 		"extractSettings": {
-			"mode": "Specific",
+			"mode": "All",
 			"fieldCliNameToExtractSettings": {}
 		}
 	}
