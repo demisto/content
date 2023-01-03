@@ -1,7 +1,7 @@
 {
   "rule_id": "eyal_test",
   "layout_id": "test_layout_id_xsiam",
-  "description": "This trigger is responsible for handling Impossible Traveler alerts",
+  "description": "This trigge r is responsible for handling Impossible Traveler alerts",
   "layout_rule_name": "test rule name",
   "alerts_filter": {
     "filter": {
