@@ -827,7 +827,7 @@
         },
     "expected_ips_policy": {
         "ID": 17,
-       "Name": "IpsPolicy",
+        "Name": "IpsPolicy",
        "Description": "To test the IPS policy",
        "VisibleToChildren": true,
        "InboundRuleSet": "TestIPS",
@@ -892,10 +892,7 @@
                    "isAttackCustomized": false
                }
            ],
-       "AttackCategory":
-       {
 
-       },
        "OutboundAttackCategory":
        {
        },
@@ -1272,9 +1269,12 @@
                 "sqlInjection": null,
                 "callbackDetectors": null,
                 "exceededThreshold": null,
-                "communicationRuleMatch": null
+                "communicationRuleMatch": null,
+                "malwareFile": null
             },
             "description": {
+                "attackCategory": "Exploit",
+                "attackSubCategory": "Buffer Overflow",
                 "btp": "Low",
                 "rfSB": "Yes",
                 "protectionCategory": "[Server Protection/Name Servers]",
@@ -1287,7 +1287,8 @@
                     "bugtraqId": "123",
                     "certId": null,
                     "arachNidsId": "",
-                    "additionInfo": "http://www.website.com/"
+                    "additionInfo": "http://www.website.com/",
+                    "nspId": "0x00000000"
                 },
                 "signatures": [
                     {
@@ -1324,7 +1325,9 @@
                     "comments": "",
                     "availabeToChildDomains": true,
                     "parentDomainComments": null
-                }
+                },
+                "definition": "some description",
+                "protocols": "dns"
             }
         },
     "get_rule_object1": {

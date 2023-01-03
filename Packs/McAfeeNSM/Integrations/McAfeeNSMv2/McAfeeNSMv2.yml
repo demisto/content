@@ -1892,4 +1892,4 @@ script:
   dockerimage: demisto/python3:3.10.9.42476
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- Test_McAfeeNSMv2

@@ -462,7 +462,7 @@ def check_source_and_destination(source_rule_object_id: Optional[int], source_ru
             (not destination_rule_object_id and destination_rule_object_type):
         raise Exception('If you provide at least one of the destination fields, you must provide all of them.')
     if create_or_update == 'create':
-        if (not source_rule_object_id) and (not destination_rule_object_id):
+        if source_rule_object_id == -1 and destination_rule_object_id == -1:
             raise Exception('You must provide the source fields or destination fields or both.')
 
 
@@ -656,15 +656,18 @@ def update_attacks_list_entries(attacks_list: list[Dict]) -> list[Dict]:
         Returns:
             Returns the updated attack list.
     """
+    result_list = []
     for attack in attacks_list:
-        attack['ID'] = attack.get('attackId')
-        attack['Name'] = attack.get('name')
-        attack['Direction'] = attack.get('DosDirection')
-        attack['Category'] = attack.get('description', {}).get('attackCategory')
-        del attack['attackId']
-        del attack['name']
-        del attack['DosDirection']
-    return attacks_list
+        record = {
+            'ID': attack.get('attackId'),
+            'Name': attack.get('name'),
+            'Direction': attack.get('DosDirection'),
+            'Category': attack.get('description', {}).get('attackCategory'),
+            'Severity': attack.get('Severity'),
+            'description': attack.get('description')
+        }
+        result_list.append(record)
+    return result_list
 
 
 def update_policies_list_entries(policies_list: list[dict]) -> list[dict]:
@@ -674,16 +677,17 @@ def update_policies_list_entries(policies_list: list[dict]) -> list[dict]:
         Returns:
             Returns the updated ips policies list.
     """
+    result_list = []
     for policy in policies_list:
-        policy['ID'] = policy.get('policyId')
-        policy['Name'] = policy.get('name')
-        policy['DomainID'] = policy.get('DomainId')
-        policy['VisibleToChildren'] = policy.get('VisibleToChild')
-        del policy['policyId']
-        del policy['name']
-        del policy['DomainId']
-        del policy['VisibleToChild']
-    return policies_list
+        record = {
+            'ID': policy.get('policyId'),
+            'Name': policy.get('name'),
+            'DomainID': policy.get('DomainId'),
+            'VisibleToChildren': policy.get('VisibleToChild'),
+            'IsEditable': policy.get('IsEditable'),
+        }
+        result_list.append(record)
+    return result_list
 
 
 def update_ips_policy_entries(policy_details: Dict, policy_id: Optional[int]) -> Dict:
@@ -694,19 +698,22 @@ def update_ips_policy_entries(policy_details: Dict, policy_id: Optional[int]) ->
         Returns:
             Returns the updated ips policies list.
     """
-    policy_details['ID'] = policy_id
-    policy_details['Name'] = policy_details.get('PolicyName')
-    policy_details['CreatedTime'] = policy_details.get('Timestamp')
-    policy_details['VisibleToChildren'] = policy_details.get('IsVisibleToChildren')
-    policy_details['Version'] = policy_details.get('VersionNum')
-    policy_details['ExploitAttacks'] = policy_details.get('AttackCategory', {}).get('ExpolitAttackList')
-    del policy_details['PolicyName']
-    del policy_details['Timestamp']
-    del policy_details['IsVisibleToChildren']
-    del policy_details['VersionNum']
-    attack_category = policy_details.get('AttackCategory', {})
-    del attack_category['ExpolitAttackList']
-    return policy_details
+    return {
+        'ID': policy_id,
+        'Name': policy_details.get('PolicyName'),
+        'CreatedTime': policy_details.get('Timestamp'),
+        'VisibleToChildren': policy_details.get('IsVisibleToChildren'),
+        'Version': policy_details.get('VersionNum'),
+        'ExploitAttacks': policy_details.get('AttackCategory', {}).get('ExpolitAttackList'),
+        'Description': policy_details.get('Description'),
+        'InboundRuleSet': policy_details.get('InboundRuleSet'),
+        'OutboundRuleSet': policy_details.get('OutboundRuleSet'),
+        'OutboundAttackCategory': policy_details.get('OutboundAttackCategory'),
+        'DosPolicy': policy_details.get('DosPolicy'),
+        'DosResponseSensitivityLevel': policy_details.get('DosResponseSensitivityLevel'),
+        'IsEditable': policy_details.get('IsEditable'),
+        'IsLightWeightPolicy': policy_details.get('IsLightWeightPolicy')
+    }
 
 
 def h_r_get_domains(children: List[Dict], human_readable: List):
@@ -804,49 +811,41 @@ def update_filter(filter_arg: str) -> str:
 
 
 def update_alert_entries(alert_det: Dict) -> Dict:
-    """ Updates the entries to an alert object (the entries that we gwt here are different from get_alerts).
+    """ Updates the entries to an alert object (the entries that we get here are different from get_alerts).
         Args:
             alert_det: Dict - The dictionary with the alert details.
         Returns:
             The updated alert details dictionary.
     """
-    alert_det['ID'] = alert_det.get('summary', {}).get('event', {}).get('alertId')
-    alert_det['Name'] = alert_det.get('name')
-    alert_det['State'] = alert_det.get('alertState')
-    alert_det['CreatedTime'] = alert_det.get('summary', {}).get('event', {}).get('time')
-    alert_det['Assignee'] = alert_det.get('assignTo')
-    alert_det['Description'] = alert_det.get('description', {}).get('definition')
-    alert_det['EventResult'] = alert_det.get('summary', {}).get('event', {}).get('result')
-    alert_det['Attack'] = {
-        'attackCategory': alert_det.get('description', {}).get('attackCategory'),
-        'attackSubCategory': alert_det.get('description', {}).get('attackSubCategory'),
-        'nspId': alert_det.get('description', {}).get('reference', {}).get('nspId')
+    result = {
+        'ID': alert_det.get('summary', {}).get('event', {}).get('alertId'),
+        'Name': alert_det.get('name'),
+        'State': alert_det.get('alertState'),
+        'CreatedTime': alert_det.get('summary', {}).get('event', {}).get('time'),
+        'Assignee': alert_det.get('assignTo'),
+        'Description': alert_det.get('description', {}).get('definition'),
+        'EventResult': alert_det.get('summary', {}).get('event', {}).get('result'),
+        'Attack': {
+            'attackCategory': alert_det.get('description', {}).get('attackCategory'),
+            'attackSubCategory': alert_det.get('description', {}).get('attackSubCategory'),
+            'nspId': alert_det.get('description', {}).get('reference', {}).get('nspId')
+        },
+        'Protocols': alert_det.get('description', {}).get('protocols'),
+        'SensorID': alert_det.get('summary', {}).get('event', {}).get('deviceId'),
+        'Event': alert_det.get('summary', {}).get('event'),
+        'Attacker': alert_det.get('summary', {}).get('attacker'),
+        'Target': alert_det.get('summary', {}).get('target'),
+        'MalwareFile': alert_det.get('details', {}).get('malwareFile'),
+        'Details': alert_det.get('details'),
+        'uniqueAlertId': alert_det.get('uniqueAlertId'),
+        'summary': alert_det.get('summary'),
+        'description': alert_det.get('description')
     }
-    alert_det['Protocols'] = alert_det.get('description', {}).get('protocols')
-    alert_det['SensorID'] = alert_det.get('summary', {}).get('event', {}).get('deviceId')
-    alert_det['Event'] = alert_det.get('summary', {}).get('event')
-    alert_det['Attacker'] = alert_det.get('summary', {}).get('attacker')
-    alert_det['Target'] = alert_det.get('summary', {}).get('target')
-    alert_det['MalwareFile'] = alert_det.get('details', {}).get('malwareFile')
-    alert_det['Details'] = alert_det.get('details')
-    details_obj = alert_det.get('details', {})
-    summary_obj = alert_det.get('summary', {})
-    description_obj = alert_det.get('description', {})
-    reference_obj = alert_det.get('description', {}).get('reference', {})
-    del details_obj['malwareFile']
-    del summary_obj['target']
-    del summary_obj['attacker']
+    summary_obj = result.get('summary', {})
     del summary_obj['event']
-    del description_obj['protocols']
-    del description_obj['attackSubCategory']
-    del description_obj['attackCategory']
-    del description_obj['definition']
-    del alert_det['assignTo']
-    del alert_det['alertState']
-    del alert_det['name']
-    del alert_det['details']
-    del reference_obj['nspId']
-    return alert_det
+    del summary_obj['attacker']
+    del summary_obj['target']
+    return result
 
 
 def get_addresses_from_response(response: Dict) -> List:
@@ -897,7 +896,9 @@ def list_domain_firewall_policy_command(client: Client, args: Dict) -> CommandRe
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
-        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+        raise Exception('Please provide both page and page_size arguments.')
+    if args.get('limit') and page:
+        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.list_domain_firewall_policy_request(domain_id)
     result = sorted(response.get('FirewallPoliciesForDomainResponseList', []), key=lambda k: k['policyId'], reverse=True)
@@ -998,16 +999,14 @@ def create_firewall_policy_command(client: Client, args: Dict) -> CommandResults
     rule_enabled = argToBoolean(args.get('rule_enabled', True))
     response_param = response_cases(args.get('response', ''))
     direction = args.get('direction', '').upper()
-    source_rule_object_id = arg_to_number(args.get('source_rule_object_id', None))
+    source_rule_object_id = arg_to_number(args.get('source_rule_object_id', -1))
     source_rule_object_type = args.get('source_rule_object_type', None)
-    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', None))
+    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', -1))
     destination_rule_object_type = args.get('destination_rule_object_type', None)
 
     check_source_and_destination(source_rule_object_id, source_rule_object_type, destination_rule_object_id,
                                  destination_rule_object_type, 'create')
 
-    source_rule_object_id = arg_to_number(args.get('source_rule_object_id', -1))
-    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', -1))
     source_rule_object_type = rule_object_type_cases(source_rule_object_type, 'up') if source_rule_object_type else None
     destination_rule_object_type = rule_object_type_cases(destination_rule_object_type, 'up') if \
         destination_rule_object_type else None
@@ -1025,8 +1024,9 @@ def create_firewall_policy_command(client: Client, args: Dict) -> CommandResults
                                        destination_object)
 
     response = client.create_firewall_policy_request(body)
-    response['FirewallPolicyId'] = response.get('createdResourceId')
-    del response['createdResourceId']
+    response = {
+        'FirewallPolicyId': response.get('createdResourceId')
+    }
     new_firewall_policy_id = response.get('FirewallPolicyId')
     return CommandResults(readable_output=f'The firewall policy no.{new_firewall_policy_id} was created successfully',
                           outputs_prefix='NSM.Policy',
@@ -1138,7 +1138,9 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     page_size = arg_to_number(args.get('page_size'))
 
     if (page and not page_size) or (not page and page_size):
-        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+        raise Exception('Please provide both page and page_size arguments.')
+    if args.get('limit') and page:
+        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     if rule_type == 'All':
         rule_type = 'hostipv4,hostipv6,ipv4addressrange,ipv6addressrange,networkipv4,networkipv6'
@@ -1255,8 +1257,9 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
     rule_obj_def = body.get('RuleObjDef', {})
     rule_obj_def[d_name] = extra_body
     response = client.create_rule_object_request(body)
-    response['ruleobjId'] = response.get('createdResourceId')
-    del response['createdResourceId']
+    response = {
+        'ruleobjId': response.get('createdResourceId')
+    }
 
     return CommandResults(readable_output=f'The rule object no.{response.get("createdResourceId")} '
                                           f'was created successfully',
@@ -1439,12 +1442,13 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
         state = args.get('new_state')
 
     if (page and not page_size) or (not page and page_size):
-        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+        raise Exception('Please provide both page and page_size arguments.')
+    if args.get('limit') and page:
+        raise Exception('Please provide either limit argument or page and page_size arguments.')
     if (start_time and not end_time) or (not start_time and end_time):
         raise Exception('If you provide one of the time parameters, you must provide the other as well.')
-    if (start_time or end_time) and time_period != 'CUSTOM':
-        raise Exception('If you provided a start time or end time, you must assign the time_period parameter with the '
-                        'value "CUSTOM"')
+    if start_time and time_period != 'CUSTOM':
+        time_period = 'CUSTOM'
     if time_period == 'CUSTOM' and not start_time:
         raise Exception('If you enter "time_period=CUSTOM" please enter start_time and end_time as well.')
 
@@ -1598,17 +1602,20 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
-        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+        raise Exception('Please provide both page and page_size arguments.')
+    if args.get('limit') and page:
+        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.get_domains_request(domain_id)
     results = response.get('DomainDescriptor', {})
     human_readable = []
     if domain_id is not None:
         title = f'Domain no.{domain_id}'
-        results['ID'] = results.get('id')
-        del results['id']
-        results['Name'] = results.get('name')
-        del results['name']
+        results = {
+            'ID': results.get('id'),
+            'Name': results.get('name'),
+            'childdomains': results.get('childdomains')
+        }
         human_readable = [{
             'ID': results.get('ID'),
             'Name': results.get('Name')
@@ -1646,7 +1653,9 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
-        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+        raise Exception('Please provide both page and page_size arguments.')
+    if args.get('limit') and page:
+        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.get_sensors_request(domain_id)
     sensors_list = pagination(response.get('SensorDescriptor', [Dict]), limit, page, page_size)
@@ -1694,6 +1703,11 @@ def get_ips_policies_command(client: Client, args: Dict) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
+    if (page and not page_size) or (not page and page_size):
+        raise Exception('Please provide both page and page_size arguments.')
+    if args.get('limit') and page:
+        raise Exception('Please provide either limit argument or page and page_size arguments.')
+
     response = client.get_ips_policies_request(domain_id)
     policies_list = pagination(response.get('PolicyDescriptorDetailsList', [Dict]), limit, page, page_size)
     policies_list = update_policies_list_entries(policies_list)
@@ -1783,9 +1797,8 @@ def update_alerts_command(client: Client, args: Dict) -> CommandResults:
         raise Exception('Error! You must specify a new alert state or a new assignee')
     if (start_time and not end_time) or (not start_time and end_time):
         raise Exception('If you provide one of the time parameters, you must provide the other as well')
-    if (start_time or end_time) and time_period != 'CUSTOM':
-        raise Exception('If you provided a start time or end time, you must assign the time_period parameter with the '
-                        'value "CUSTOM"')
+    if start_time and time_period != 'CUSTOM':
+        time_period = 'CUSTOM'
 
     if filter_arg and 'name' in filter_arg:
         filter_arg = update_filter(filter_arg)
@@ -1815,7 +1828,9 @@ def list_pcap_file_command(client: Client, args: Dict) -> CommandResults:
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
-        raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
+        raise Exception('Please provide both page and page_size arguments.')
+    if args.get('limit') and page:
+        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.list_pcap_file_request(sensor_id)
     files_list = pagination(response.get('files', []), limit, page, page_size)
@@ -1860,11 +1875,6 @@ def export_pcap_file_command(client: Client, args: Dict) -> List:
 
 
 def main() -> None:  # pragma: no cover
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
 
     url = f"{demisto.params().get('url')}/sdkapi"
     user_name = demisto.params().get('credentials', {}).get('identifier', "")
