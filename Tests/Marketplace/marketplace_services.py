@@ -4344,8 +4344,9 @@ def remove_old_versions_from_changelog(changelog: dict):
     Returns:
         (list) last pack versions
     """
+    versions_to_keep: List[str] = []
     if not changelog:
-        return []
+        return versions_to_keep
 
     last_same_minor_versions = []
     last_year_versions = []
@@ -4371,11 +4372,11 @@ def remove_old_versions_from_changelog(changelog: dict):
         prev_version = version
 
     versions_to_keep = max([last_five_versions, last_year_versions, last_same_minor_versions], key=len)
-    # if len(versions_to_keep) > 10:
-    #     versions_to_keep = min([last_year_versions, last_same_minor_versions], key=len)
-    versions_to_keep = versions_to_keep[-10:]
+    if len(versions_to_keep) > 10:
+        versions_to_keep = min([last_year_versions, last_same_minor_versions], key=len)
+        versions_to_keep = max([last_five_versions, versions_to_keep], key=len)
+    # versions_to_keep = versions_to_keep[-10:]
 
     [changelog.pop(version) for version in list(changelog.keys()) if version not in versions_to_keep]
 
     return versions_to_keep
-
