@@ -8,7 +8,7 @@
     "email": "support@wiz.io",
     "created": "2021-12-15T7:49:32Z",
     "categories": [
-        "External Expsoure",
+        "External Exposure",
         "Cloud Entitlement Management",
         "Secure Configuration",
         "Secure Use of Secrets",
@@ -31,5 +31,5 @@
             "name": "Generic Webhook"
         }
     },
-    "githubUser": "solalraveh"
+    "githubUser": "ariel-wiz"
 }

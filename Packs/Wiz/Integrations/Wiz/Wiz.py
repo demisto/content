@@ -109,6 +109,13 @@ def checkAPIerrors(query, variables):
     try:
         result = requests.post(url=URL, json=data, headers=HEADERS)
 
+        if "errors" in result.json().keys():
+            demisto.error("An error has occurred using:\n"
+                          f"\tquery: {query}\n"
+                          f"\tvariables: {variables}\n"
+                          f"\nError information:\n"
+                          f"\t{str(result.json()['errors'])}")
+
     except Exception as e:
         if '502: Bad Gateway' not in str(e) and '503: Service Unavailable' not in str(e):
             demisto.error("<p>Wiz-API-Error: %s</p>" % str(e))
@@ -313,9 +320,21 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
     Retrieves Filtered Issues
     """
 
-    if issue_type and resource_id or (not issue_type and not resource_id):
-        demisto.info("You should (only) pass either issue_type or resource_id filters")
-        return "You should (only) pass either issue_type or resource_id filters"
+    demisto.debug(f"Issue type is {issue_type}\nResource ID is {resource_id}\nSeverity is {severity}")
+    error_msg = ''
+
+    if not severity and not issue_type and not resource_id:
+        error_msg = "You should pass (at least) one of the following parameters:\n\tissue_type\n\tresource_id" \
+                    "\n\tseverity\n"
+
+    if issue_type and resource_id:
+        error_msg = f"{error_msg}You cannot pass issue_type and resource_id together\n"
+
+    if error_msg:
+        demisto.error(error_msg)
+        return error_msg
+
+    issue_variables = {}
 
     query = (  # pragma: no cover
         """
@@ -420,7 +439,7 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
     """)
 
     if issue_type:
-        variables = {
+        issue_variables = {
             "first": limit,
             "filterBy": {
                 "status": [
@@ -477,7 +496,7 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                                                       get_resource_graph_id_helper_variables)
         if graph_resource_response_json['data']['graphSearch']['nodes'] != []:
             graph_resource_id = graph_resource_response_json['data']['graphSearch']['nodes'][0]['entities'][0]['id']
-            variables = \
+            issue_variables = \
                 {"first": limit,
                  "filterBy": {"status": ["OPEN", "IN_PROGRESS"],
                               "relatedEntity":
@@ -488,31 +507,37 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
             return "Resource not found."
 
     if severity:
+        if 'filterBy' not in issue_variables.keys():
+            issue_variables['filterBy'] = {"severity": []}
+            issue_variables['first'] = limit
         if severity.upper() == 'CRITICAL':
-            variables['filterBy']['severity'] = ['CRITICAL']
+            issue_variables['filterBy']['severity'] = ['CRITICAL']
         elif severity.upper() == 'HIGH':
-            variables['filterBy']['severity'] = ['CRITICAL', 'HIGH']
+            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH']
         elif severity.upper() == 'MEDIUM':
-            variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM']
+            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM']
         elif severity.upper() == 'LOW':
-            variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
+            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
         elif severity.upper() == 'INFORMATIONAL':
-            variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL']
+            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL']
         else:
             demisto.info("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL "
                          "in upper or lower case.")
             return ("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in "
                     "upper or lower case.")
 
-    response_json = checkAPIerrors(query, variables)
+    demisto.info(f"Query is {query}")
+    demisto.info(f"Issue variables is {issue_variables}")
+
+    response_json = checkAPIerrors(query, issue_variables)
 
     issues = dict()
     if response_json['data']['issues']['nodes'] != []:
         issues = response_json['data']['issues']['nodes']
     while (response_json['data']['issues']['pageInfo']['hasNextPage']):
 
-        variables['after'] = response_json['data']['issues']['pageInfo']['endCursor']
-        response_json = checkAPIerrors(query, variables)
+        issue_variables['after'] = response_json['data']['issues']['pageInfo']['endCursor']
+        response_json = checkAPIerrors(query, issue_variables)
         if response_json['data']['issues']['nodes'] != []:
             issues += (response_json['data']['issues']['nodes'])
 
@@ -643,9 +668,9 @@ def get_resource(resource_id):
     except DemistoException:
         demisto.debug(f"could not find resource with ID {resource_id}")
         return {}
-
-    if response_json['data']['graphSearch']['nodes'] is None:
-        return "Resource Not Found"
+    if response_json['data']['graphSearch']['nodes'] is None or not response_json['data']['graphSearch']['nodes']:
+        demisto.info("Resource Not Found")
+        return {}
     else:
         return response_json['data']['graphSearch']['nodes'][0]['entities'][0]
 
