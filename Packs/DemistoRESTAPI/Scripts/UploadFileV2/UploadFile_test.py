@@ -1,5 +1,5 @@
 import pytest
-from UploadFileV2 import upload_file_command
+from UploadFile import upload_file_command
 
 RAW_RESPONSE = [
     {
@@ -409,7 +409,7 @@ def test_demisto_upload_file_as_attachment(mocker, target, service):
     Then:
         - Validate the correct Uri was sent to the executeCommand
     """
-    import UploadFileV2
+    import UploadFile
     mocker.patch('UploadFileV2.demisto.executeCommand')
     upload_file_command({'target': target})
     assert f'{service}/upload/' in UploadFileV2.demisto.executeCommand.call_args[0][1]['uri']

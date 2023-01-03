@@ -1,8 +1,8 @@
 commonfields:
-  id: UploadFileV2
+  id: UploadFile
   version: -1
 enabled: true
-name: UploadFileV2
+name: UploadFile
 fromversion: 6.5.0
 script: '-'
 args:
