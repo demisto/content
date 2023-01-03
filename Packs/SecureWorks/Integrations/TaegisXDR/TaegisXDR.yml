@@ -238,7 +238,6 @@ script:
     - contextPath: TaegisXDR.CommentUpdate
       description: The comment update results
     description: Update an existing comment
-  dockerimage: demisto/python3:3.10.8.36650
   - name: taegis-fetch-users
     arguments:
     - name: id
@@ -268,6 +267,7 @@ script:
     outputs:
     - contextPath: Taegis.ArchivedInvestigation
     description: Archive or Unarchive an investigation
+  dockerimage: demisto/python3:3.10.9.42476
   runonce: false
   subtype: python3
   isfetch: true
