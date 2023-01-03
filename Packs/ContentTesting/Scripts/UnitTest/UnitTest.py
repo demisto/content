@@ -186,10 +186,7 @@ def RunSubplaybooks(buf, addAfter, incId):
 
     while line != "":
         words = line.split(",", 1)
-        inputs = json.loads(words[1].strip())
         playbooks.append(words[0].strip())
-        for key, val in inputs.items():
-            demisto.setContext(key, val)
         line = buf.readline()
 
     cmds, tasks, status = RunPlaybooks(playbooks, addAfter, incId)
