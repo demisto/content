@@ -1679,7 +1679,7 @@ script:
     - auto: PREDEFINED
       description: 'Match once enabled.Required when: deployment_mode = "HTTP Content Routing".'
       isArray: false
-      name: mach_once
+      name: match_once
       defaultValue: disable
       predefined:
       - enable
@@ -1902,7 +1902,7 @@ script:
     - auto: PREDEFINED
       description: 'Match once enabled.Required when: deployment_mode = "HTTP Content Routing".'
       isArray: false
-      name: mach_once
+      name: match_once
       defaultValue: disable
       predefined:
       - enable

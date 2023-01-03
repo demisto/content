@@ -2307,7 +2307,7 @@ class ClientV1(Client):
         monitor_mode: Optional[str],
         url_case_sensitivity: Optional[str],
         comments: Optional[str],
-        mach_once: Optional[str],
+        match_once: Optional[str],
         http2: Optional[str] = None,
         intergroup: Optional[str] = None,
         certificate: Optional[str] = None,
@@ -2346,7 +2346,7 @@ class ClientV1(Client):
                 "comments": comments,
                 # HTTP content routing deployment mode
                 "prefer_cur_session": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [mach_once]
+                    self.parser.boolean_user_to_api_mapper, [match_once]
                 ),
                 "intergroup": intergroup,
             }
@@ -2413,7 +2413,7 @@ class ClientV1(Client):
             monitor_mode=monitor_mode,
             url_case_sensitivity=url_case_sensitivity,
             comments=comments,
-            mach_once=match_once,
+            match_once=match_once,
         )
         return self._http_request(
             method="POST", url_suffix="Policy/ServerPolicy/ServerPolicy", json_data=data
@@ -2488,7 +2488,7 @@ class ClientV1(Client):
             monitor_mode=monitor_mode,
             url_case_sensitivity=url_case_sensitivity,
             comments=comments,
-            mach_once=match_once,
+            match_once=match_once,
             certificate=certificate,
             intergroup=intergroup,
         )
