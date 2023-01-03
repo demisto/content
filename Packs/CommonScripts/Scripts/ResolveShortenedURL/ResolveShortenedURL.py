@@ -118,7 +118,7 @@ class URLUnshortingService(BaseClient, metaclass=ABCMeta):
         return len(redirect_history) >= self.redirect_limit
 
     @abstractmethod
-    def resolve_url(self, url: str) -> URLUnshorteningData:
+    def resolve_url(self, url: str) -> URLUnshorteningData:  # pragma: no cover
         """
         Resolve a shortened URL.
 
@@ -147,7 +147,7 @@ class LongurlInService(URLUnshortingService):
             full_url=self.base_url,
             resp_type="json",
             data={"shortURL": url},
-            error_handler=lambda _: None,  # Disable exception raising if API returns a 404  # type: ignore
+            error_handler=lambda _: None,  # Disable exception raising if API returns a 404
         )
 
         raw_data: list[dict] = [response]
@@ -163,7 +163,7 @@ class LongurlInService(URLUnshortingService):
                 full_url=self.base_url,
                 resp_type="json",
                 data={"shortURL": url},
-                error_handler=lambda _: None,  # Disable exception raising for  # type: ignore
+                error_handler=lambda _: None,  # Disable exception raising if API returns a 404
             )
 
             raw_data.append(response)
@@ -247,7 +247,7 @@ class UnshortenMeSservice(URLUnshortingService):
 class BuiltInShortener(URLUnshortingService):
     """A class for unshortening URLs using Python requests."""
     base_url = ""
-    service_name = "Built-in"
+    service_name = "Built-In"
 
     def resolve_url(self, url: str) -> URLUnshorteningData:
         encountered_error: bool = False

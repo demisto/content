@@ -17,7 +17,7 @@ args:
   predefined:
   - "longurl.in"
   - "unshorten.me"
-  - "Built-in"
+  - "Built-In"
 - name: url
   required: true
   description: URL to resolve
