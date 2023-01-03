@@ -40,7 +40,7 @@
             "avg|duration"
         ],
         "groupBy": [
-            "rawName",
+            "name",
             "incidentType"
         ],
         "valuesFormat": "minutes",
