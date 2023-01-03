@@ -13,6 +13,23 @@ This pack contains all of the integrations, automations, and playbooks necessary
 - Supports validation rescanning to ensure that remediation efforts have been applied successfully.
 - Includes PDF reporting capabilities for preserving and communicating the investigation summary.
 
+### Automated Remediation requirements
+Automated remediation is only possible when the right conditions are met.  These are the current requirements:
+- One of the following attack surface rule IDs:
+  - Insecure OpenSSH
+  - RDP Server
+  - Telnet
+  - Unencrypted FTP
+  - OpenSSH
+  - SSH Server
+- Asset is an AWS EC2 Instance
+- Service owner information found through one of the following:
+  - AWS IAM
+  - ServiceNow CMDB
+  - Tenable.io Assets
+- Indicators of a non-production host:
+  - "dev" found in either the keys or values of tags associated with the asset (case insensitive)
+  
 ### Playbooks
 - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
 - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
