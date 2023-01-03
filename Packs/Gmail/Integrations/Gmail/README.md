@@ -1,10 +1,10 @@
-Use the Gmail integration to search and process emails in the organizational Gmail mailboxes.
+Use the Gmail integration to search and process emails in your organization's Gmail mailboxes.
 
 This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration. 
 
 ### Prerequisites
 
-There are several procedures you have to perform in Google before configuring the integration on Cortex XSOAR.
+You need to do the following in Google before configuring the integration in Cortex XSOAR.
 
 * [Get a New Private Key](#get-a-new-private-key)
 * [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
@@ -69,23 +69,23 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 | Send mails or reply to a mail | [https://www.googleapis.com/auth/gmail.compose](https://www.googleapis.com/auth/gmail.compose) and [https://www.googleapis.com/auth/gmail.send](https://www.googleapis.com/auth/gmail.send) |
 | Add the send as email ID | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing)  |
 | Add the forwarding address for the user | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
-## Configure Gmail on Cortex XSOAR
+## Configure Gmail in Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for Gmail.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | adminEmail | Email of user with admin privileges \(the Password refers to the content of the Service Account file\) | True |
-    | gappsID | Immutable Google Apps Id -  Only the Cxxxxxxxx, section is needed| False |
-    | query | Events search query \(e.g. "from:example@demisto.com"\) Used for searching emails in the inbox. The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
-    | queryUserKey | Events user key \(e.g. example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
-    | isFetch | Fetch incidents | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | incidentType | Incident type | False |
-    | fetch_time | First fetch timestamp, in days. | False |
+    | adminEmail | The email of the user with admin privileges \(the Password refers to the content of the Service Account file\). | True |
+    | gappsID | The immutable Google Apps ID -  Only the Cxxxxxxxx, section is needed. | False |
+    | query | The events search query \(for example, "from:example@demisto.com"\) Used for searching emails in the inbox. The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
+    | queryUserKey | Events user key \(for example, example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
+    | isFetch | Whether to fetch incidents. | False |
+    | insecure | Whether to trust any certificate. \(not secure\) | False |
+    | proxy | Whether to use system proxy settings. | False |
+    | incidentType | The incident type to map incoming events to. | False |
+    | fetch_time | The first fetch timestamp, in days. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -116,43 +116,43 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-- Delete a user: **gmail-delete-user**
-- Get tokens for a user: **gmail-get-tokens-for-user**
-- Get information for a Google user: **gmail-get-user**
-- Get all available Google roles: **gmail-get-user-roles**
-- Get Gmail message attachments: **gmail-get-attachments**
-- Get a Gmail message: **gmail-get-mail**
-- Search a user's Gmail records: **gmail-search**
-- Search in all Gmail mailboxes: **gmail-search-all-mailboxes**
-- List all Google users: **gmail-list-users**
-- List all Labels for a given user: **gmail-list-labels**
-- Revoke a Google user's role: **gmail-revoke-user-role**
-- Create a new user: **gmail-create-user**
-- Delete mail from a mailbox: **gmail-delete-mail**
-- Get message in an email thread: **gmail-get-thread**
-- Move mail to a different folder: **gmail-move-mail**
-- Move a mail to a different mailbox: **gmail-move-mail-to-mailbox**
-- Add a rule to delete an email: **gmail-add-delete-filter**
-- Add a new filter: **gmail-add-filter**
-- Get a list of filters in a mailbox: **gmail-list-filter**
-- Remove a filter from a mail: **gmail-remove-filter**
-- Hide a user's information: **gmail-hide-user-in-directory**
-- Set a password: **gmail-set-password**
-- Get an auto reply message for the user: **gmail-get-autoreply**
-- Set an auto-reply for the user: **gmail-set-autoreply**
-- Add a delete user to a mailbox: **gmail-delegate-user-mailbox**
-- Send an email using Gmail: **send-mail**
-- Reply an email using Gmail: **reply-mail**
-- Removers a delegate from a mailbox: **gmail-remove-delegated-mailbox**
-- Get details of a specific role: **gmail-get-role**
-- Creates a forwarding address: **gmail-forwarding-address-add**
-- Updates the disposition in a forwarding address: **gmail-forwarding-address-update**
-- Get a list of forwarding addresses: **gmail-forwarding-address-list**
-- Gets a forwarding address: **gmail-forwarding-address-get**
-- Removes a forwarding address: **gmail-forwarding-address-remove**
-- Create a custom "from" send-as alias: **gmail-send-as-add**
+- **gmail-delete-user**: Deletes a Gmail user.
+- **gmail-get-tokens-for-user**: Gets tokens for a user.
+- **gmail-get-user**: Gets information for a Google user.
+- **gmail-get-user-roles**: Gets all available Google roles.
+- **gmail-get-attachments**: Gets Gmail message attachments.
+- **gmail-get-mail**: Gets a Gmail message.
+- **gmail-search**: Searches a user's Gmail records.
+- **gmail-search-all-mailboxes**: Searches in all Gmail mailboxes.
+- **gmail-list-users**: Lists all Google users.
+- **gmail-list-labels**: Lists all labels for a given user.
+- **gmail-revoke-user-role**: Revokes a Google user's role.
+- **gmail-create-user**: Creates a new user.
+- **gmail-delete-mail**: Deletes mail from a mailbox. 
+- **gmail-get-thread**: Gets the message in an email thread. 
+- **gmail-move-mail**: Moves an email to a different folder. 
+- **gmail-move-mail-to-mailbox**: Moves an email to a different mailbox.
+- **gmail-add-delete-filter**: Adds a rule to delete an email. 
+- **gmail-add-filter**: Adds a new filter. 
+- **gmail-list-filter**: Gets a list of filters in a mailbox. 
+- **gmail-remove-filter**: Removes a filter from an email. 
+- **gmail-hide-user-in-directory**: Hides a user's information. 
+- **gmail-set-password**: Sets a password. 
+- **gmail-get-autoreply**: Gets an auto reply message for the user. 
+- **gmail-set-autoreply**: Sets an auto-reply for the user.
+- **gmail-delegate-user-mailbox**: Adds a delegate user to a mailbox. 
+- **send-mail**: Sends an email using Gmail. 
+- **reply-mail**: Replies to an email using Gmail.
+- **gmail-remove-delegated-mailbox**: Removes a delegate user from a mailbox. 
+- **gmail-get-role**: Gets details of a specific role. 
+- **gmail-forwarding-address-add**: Creates a forwarding address. 
+- **gmail-forwarding-address-update**: Updates the disposition in a forwarding address.
+- **gmail-forwarding-address-list**: Gets a list of forwarding addresses.
+- **gmail-forwarding-address-get**: Gets a forwarding address.
+- **gmail-forwarding-address-remove**: Removes a forwarding address.
+- **gmail-send-as-add**: Creates a custom "from" send-as alias. 
 
 
 ### gmail-delete-user
@@ -242,7 +242,7 @@ Gets information for a specified user.
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 | projection | The subset of fields to fetch for the user. Can be: "basic": Do not include any custom fields for the user (default), "custom": Includes custom fields from schemas requested in custom-field-mask, "full": Includes all fields associated with the user. Possible values are: basic, custom, full. Default is basic. | Optional | 
 | view-type-public-domain | Whether to fetch the administrator or public view of the user. Can be admin_view (default), which includes both administrator and domain-public fields; or "domain_public", which includes user fields that are publicly visible to other users in the domain. Possible values are: admin_view, domain_public. Default is admin_view. | Optional | 
-| custom-field-mask | A comma separated list of schema names. All fields from these schemas are fetched. This should only be set when projection=custom. | Optional | 
+| custom-field-mask | A comma-separated list of schema names. All fields from these schemas are fetched. This should only be set when projection=custom. | Optional | 
 
 
 #### Context Output
@@ -423,8 +423,8 @@ Retrieves the Gmail message sent to a specified user.
 | Gmail.Labels | string | The labels of the specific email. | 
 | Gmail.To | String | The email address of the receiver. | 
 | Gmail.From | String | The email address of the sender. | 
-| Gmail.Cc | string | Additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | Additional recipient email address \(BCC\). | 
+| Gmail.Cc | string | The additional recipient email address \(CC\). | 
+| Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
 | Gmail.Subject | string | The subject of the email. | 
 | Gmail.Body | string | The content of the email. | 
 | Gmail.Attachments | unknown | The attachments of the email. Attachments IDs are separated by commas. | 
@@ -432,8 +432,8 @@ Retrieves the Gmail message sent to a specified user.
 | Gmail.Mailbox | string | The email mailbox. | 
 | Email.To | String | The recipient of the email. | 
 | Email.From | String | The sender of the email. | 
-| Email.CC | String | Additional recipient email address \(CC\). | 
-| Email.BCC | String | Additional recipient email address \(BCC\). | 
+| Email.CC | String | The additional recipient email address \(CC\). | 
+| Email.BCC | String | The additional recipient email address \(BCC\). | 
 | Email.Format | String | The format of the email. | 
 | Email.Body/HTML | String | The HTML version of the email. | 
 | Email.Body/Text | String | The plain-text version of the email. | 
@@ -732,7 +732,7 @@ Searches for Gmail records for a specific Google user.
 | in | Messages in any folder, including Spam and Trash. For example: shopping. | Optional | 
 | after | Search for messages sent after a specific date. For example: 2018/05/06. | Optional | 
 | before | Search for messages sent before a specific date. for example: 2018/05/09. | Optional | 
-| has-attachments | Whether to search for messages sent with attachments (boolean value). Possible values are: True, False. | Optional | 
+| has-attachments | Whether to search for messages sent with attachments. Possible values are: True, False. | Optional | 
 
 
 #### Context Output
@@ -5047,8 +5047,8 @@ Creates a forwarding address. If ownership verification is required, a message w
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| forwarding_email | A comma-separated list of emails addresses to which messages can be forwarded. | Required | 
-| user_id | The user email address or the user id, use the !gmail-list-users command, in order to get the user id. | Required | 
+| forwarding_email | A comma-separated list of email addresses to which messages can be forwarded. | Required | 
+| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required | 
 
 
 #### Context Output
@@ -5143,7 +5143,7 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user email address or the user id, use the !gmail-list-users command, in order to get the user id. | Required | 
+| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required | 
 | forwarding_email | The forwarding address to be retrieved. | Required | 
 
 
@@ -5151,7 +5151,7 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gmail.ForwardingAddress.userId | String | The user email address or the user id, use the \!gmail-list-users command, in order to get the user id. | 
+| Gmail.ForwardingAddress.userId | String | The user email address or the user ID, use the \!gmail-list-users command, in order to get the user ID. | 
 | Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
 
 #### Command example
@@ -5189,7 +5189,7 @@ Deletes the specified forwarding address and revokes any verification that may h
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user email address or the user id, use the !gmail-list-users command, in order to get the user id. | Required | 
+| user_id | The user email address or the user ID, use the !gmail-list-users command, in order to get the user ID. | Required | 
 | forwarding_email | The forwarding address to be retrieved. | Required | 
 
 
