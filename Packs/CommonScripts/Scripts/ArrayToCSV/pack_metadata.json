@@ -1,10 +1,10 @@
 {
     "name": "ArrayToCSV",
     "description": "Converts a simple Array into a textual comma separated string",
-    "support": "community",
-    "currentVersion": "1.0.0",
-    "author": "Omar Salim Ahmed",
-    "url": "",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2021-12-25T22:05:53Z",
     "categories": [
@@ -13,9 +13,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-        "os-groot"
-    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
