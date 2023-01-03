@@ -90,7 +90,8 @@ tasks:
       - "2"
     scriptarguments:
       Hostname:
-        simple: ${inputs.Endpoint_hostname}
+        complex:
+          root: inputs.Endpoint_hostname
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -130,11 +131,14 @@ tasks:
       - "2"
     scriptarguments:
       endpoint_id:
-        simple: ${inputs.Endpoint_id}
+        complex:
+          root: inputs.Endpoint_id
       hostname:
-        simple: ${inputs.Endpoint_hostname}
+        complex:
+          root: inputs.Endpoint_hostname
       ip_list:
-        simple: ${inputs.Endpoint_ip}
+        complex:
+          root: inputs.Endpoint_ip
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -174,7 +178,8 @@ tasks:
       - "2"
     scriptarguments:
       Device_id:
-        simple: ${inputs.Endpoint_id}
+        complex:
+          root: inputs.Endpoint_id
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -214,9 +219,11 @@ tasks:
       - "2"
     scriptarguments:
       Endpoint_id:
-        simple: ${inputs.Endpoint_id}
+        complex:
+          simple: inputs.Endpoint_id
       Hostname:
-        simple: ${inputs.Endpoint_hostname}
+        complex:
+          simple: inputs.Endpoint_hostname
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -256,9 +263,11 @@ tasks:
       - "2"
     scriptarguments:
       Hostname:
-        simple: ${inputs.Endpoint_hostname}
+        complex:
+          root: inputs.Endpoint_hostname
       Sensor_id:
-        simple: ${inputs.Endpoint_id}
+        complex:
+          root: inputs.Endpoint_id
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -298,11 +307,14 @@ tasks:
       - "2"
     scriptarguments:
       Device_IP:
-        simple: ${inputs.Endpoint_ip}
+        complex:
+          root: inputs.Endpoint_ip
       Device_id:
-        simple: ${inputs.Endpoint_id}
+        complex:
+          root: inputs.Endpoint_id
       Hostname:
-        simple: ${inputs.Endpoint_hostname}
+        complex:
+          root: inputs.Endpoint_hostname
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -331,7 +343,7 @@ tasks:
     task:
       id: 6288e7cc-1f1c-4132-834c-02efaf383aee
       version: -1
-      name: Cortex XSIAM - Isolate Endpoint
+      name: Core - Isolate Endpoint
       description: Isolates the specified endpoint.
       script: '|||core-isolate-endpoint'
       type: regular
