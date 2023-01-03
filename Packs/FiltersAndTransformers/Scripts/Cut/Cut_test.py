@@ -4,29 +4,6 @@ import pytest
 import demistomock as demisto
 from Cut import main
 
-
-@pytest.mark.parametrize('args', [
-    {'value': 'A-B-C-D-E', 'delimiter': '-', 'fields': '1,5'},
-    {'value': 'a,ב,c', 'delimiter': ',', 'fields': '2,3'},
-])
-def test_cut_main(mocker, args):
-    """
-    Given:
-        Case 1: A-B-C-D-E to split by - from char 1 to 5
-        Case 2: a,ב,c to split by , from char 2 to 3
-    When:
-        Running Cut
-    Then:
-        Case 1: Ensure A-E is returned
-        Case 2: Ensure ב,c is returned
-        demisto.results called
-    """
-    mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch.object(demisto, 'results')
-    main()
-    assert demisto.results.call_count == 1
-
-
 @pytest.mark.parametrize('value,delimiter,fields,expected', [
     ('A-B-C-D-E', '-', '1,5', 'A-E'),
     ('a,ב,c', ',', '2,3', 'ב,c'),
