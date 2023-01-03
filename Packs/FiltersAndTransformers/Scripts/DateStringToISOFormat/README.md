@@ -23,3 +23,16 @@ This is a thin wrapper around the `dateutil.parser.parse` function. It will pars
 ## Outputs
 ---
 There are no outputs for this script.
+
+
+## Script Examples
+### Example command
+```!DateStringToISOFormat value="'05-11-2929'" dayfirst="true" yearfirst="true" fuzzy="true" add_utc_timezone="false"```
+### Context Example
+```json
+{}
+```
+
+### Human Readable Output
+
+>2929-11-05T00:00:00
