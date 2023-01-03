@@ -4,6 +4,7 @@ import pytest
 import demistomock as demisto
 from Cut import main
 
+
 @pytest.mark.parametrize('value,delimiter,fields,expected', [
     ('A-B-C-D-E', '-', '1,5', 'A-E'),
     ('a,ב,c', ',', '2,3', 'ב,c'),
