@@ -1,6 +1,6 @@
 {
   "rule_id": "eyal_test",
-  "layout_id": "test_layout_id",
+  "layout_id": "test_layout_id_xsiam",
   "description": "This trigger is responsible for handling Impossible Traveler alerts",
   "layout_rule_name": "test rule name",
   "alerts_filter": {
@@ -15,8 +15,5 @@
     }
   },
   "fromVersion": "6.10.0",
-  "toVersion": "6.11.9",
-  "marketplaces": [
-        "marketplacev2"
-    ]
+  "toVersion": "6.11.9"
 }
