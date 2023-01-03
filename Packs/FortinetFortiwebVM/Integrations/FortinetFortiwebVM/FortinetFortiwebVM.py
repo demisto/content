@@ -6330,27 +6330,6 @@ def parser_handler(data: List[Dict[str, Any]], data_parser: Callable) -> List[Di
     return parsed_data
 
 
-# def create__output_headers(version: str, common_headers: List[str], v1_only_headers: List[str],
-#                            v2_only_headers: List[str]) -> List[str]:
-#     """Create headers for xsoar output.
-
-#     Args:
-#         version (str): Client version.
-#         common_headers (List[str]): Common headers field for both versions.
-#         v1_only_headers (List[str]): Headers for V1 only.
-#         v2_only_headers (List[str]): Header for V2 only.
-
-#     Returns:
-#         List[str]: List of headers.
-#     """
-#     headers = common_headers
-#     if version == ClientV1.API_VER:
-#         headers = headers + v1_only_headers
-#     if version == ClientV2.API_VER:
-#         headers = headers + v2_only_headers
-#     return headers
-
-
 def paginate_results(version: str, response: Union[List, Dict[str, Any]], args: Dict[str, Any]) -> Tuple[list, str]:
     """Executing Manual paginate_results  (using the page and page size arguments)
         or Automatic paginate_results  (display a number of total results).
