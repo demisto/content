@@ -7248,8 +7248,8 @@ def list_response_handler(
         Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]: Filtered output to xsoar,
         pagination message and response output.
     """
-    if isinstance(client, ClientV2):
-        response = response["results"]  # type: ignore # V2 always returns a Dict.
+    if isinstance(client, ClientV2) and isinstance(response, dict):
+        response = response["results"]
     if internal_path:
         response = dict_safe_get(response, internal_path)
     elif not isinstance(response, list):
