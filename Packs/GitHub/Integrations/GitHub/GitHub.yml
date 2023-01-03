@@ -4168,7 +4168,7 @@ script:
       - contextPath: GitHub.Assignees.assignees.login
         description: login of assigned user
         type: String
-  dockerimage: demisto/pyjwt3:1.0.0.36533
+  dockerimage: demisto/pyjwt3:1.0.0.43045
   feed: false
   isfetch: true
   longRunning: false
