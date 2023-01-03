@@ -1,4 +1,7 @@
 category: Messaging
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: SecurityAndCompliance
   version: -1
@@ -8,16 +11,20 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Email / User Principal Name (Required)
   displaypassword: Password (Required for Basic authentication only)
   name: credentials
   defaultvalue: ""
   type: 9
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search
 name: SecurityAndCompliance
@@ -70,8 +77,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all.
       isArray: true
@@ -224,8 +231,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Comma-separated list of added mailboxes/distribution groups to include, or you can use the value "All" to include all mailboxes.
       isArray: true
@@ -404,7 +411,7 @@ script:
       required: true
       secret: false
     - default: false
-      description:  The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+      description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
       isArray: false
       name: limit
       required: false
@@ -419,8 +426,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Whether to export search results as json file to war-room.
       isArray: false
@@ -430,8 +437,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Show search statistics. Default is "false".
       isArray: false
@@ -441,8 +448,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     deprecated: false
     description: Gets compliance search by name from the Security & Compliance Center.
     execution: false
@@ -585,8 +592,8 @@ script:
       auto: PREDEFINED
       defaultValue: "Preview"
       predefined:
-        - "Preview"
-        - "Purge"
+      - "Preview"
+      - "Purge"
     - default: false
       description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
       isArray: false
@@ -596,8 +603,8 @@ script:
       auto: PREDEFINED
       defaultValue: "SoftDelete"
       predefined:
-        - SoftDelete
-        - HardDelete
+      - SoftDelete
+      - HardDelete
     deprecated: false
     description: After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
     execution: false
@@ -828,8 +835,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Whether to print the results in the War Room. Default is "false".
       isArray: false
@@ -839,8 +846,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     deprecated: false
     description: Gets compliance search action from the Security & Compliance Center.
     execution: false
