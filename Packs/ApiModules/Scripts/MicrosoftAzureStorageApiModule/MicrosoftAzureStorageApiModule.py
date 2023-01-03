@@ -47,6 +47,10 @@ class MicrosoftStorageClient(BaseClient):
             # The updated url_suffix after performing this logic will be:
             # url_suffix = 'container?sv=2020-08-04&ss=ay&spr=https&sig=s5&restype=directory&comp=list'
             params_query = self.params_dict_to_query_string(params, prefix='')
+            # if the url suffix was provided, and it does not contain / at the end we need to append it before adding
+            # query parameters, otherwise the URL will be invalid
+            if url_suffix and not url_suffix.endswith('/'):
+                url_suffix = f'{url_suffix}/'
             url_suffix = f'{url_suffix}?{self._account_sas_token}{params_query}'
             params = None
 
