@@ -20,8 +20,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Retrieve incident related events and incident lineage events from the EDR database
-  defaultvalue: 'true'
+- additionalinfo: Retrieve incident related events from EDR database
+  defaultvalue: 'false'
   display: Fetch incidents Events
   name: isIncidentsEvent
   required: false
@@ -31,33 +31,37 @@ configuration:
   name: isIncidentComment
   required: false
   type: 8
-- defaultvalue: New
-  display: Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., New,In-Progress
+- additionalinfo: If not selected, will fetch New Incidents.
+  defaultvalue: Open
+  display: Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open,In-Progress
   name: fetch_status
   options:
-  - New
+  - Open
   - In-Progress
   - Waiting
-  - Closed
+  - Close
   required: false
   type: 16
-- defaultvalue: Medium,High
-  display: Severity to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
-  name: fetch_severity
+- additionalinfo: If not selected, will fetch High and Medium Incidents.
+  defaultvalue: High,Medium
+  display: Priority to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
+  name: fetch_priority
   options:
   - Low
   - Medium
   - High
   required: false
   type: 16
-- defaultvalue: 10 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+- additionalinfo: First Fetch timestamp Default 3 days
+  defaultvalue: 60 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 15 minutes, 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '50'
+- additionalinfo: Max Fetch limit is 50
+  defaultvalue: '10'
   display: Maximum number of incidents to fetch
-  name: max_fetch
+  name: fetch_limit
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -1774,6 +1778,41 @@ script:
     - contextPath: SymantecEDR.Command.cancel.message
       description: 'Message explaining error code. Possible Values: -1 = Error  0 = Command cancel successfully requested  1 = Command cancel not supported for target command type  2 = Command cancel failed because the target command is already in terminal state  3 = Command cancel is already in progress for the target command'
       type: String
+  - arguments:
+    - name: polling
+      description: Whether the command should poll until the result is ready.
+      required: false
+      isArray: false
+      defaultValue: true
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+    - name: file
+      description: The file hash (MD5, SHA1, or SHA256).
+      required: true
+      isArray: false
+      defaultValue: ""
+    - name: hide_polling_output
+      deprecated: true
+      description: ''
+      required: false
+      isArray: false
+    - name: timeout_in_seconds
+      description: Timeout for polling. Default is 600 seconds.
+      required: false
+      isArray: false
+      defaultValue: ''
+    - name: interval_in_seconds
+      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
+      required: false
+      isArray: false
+      defaultValue: ''
+    deprecated: false
+    description: Issue Sandbox Command of specific SHA2
+    execution: false
+    name: file
+    polling: true
   dockerimage: demisto/python3:3.10.9.42008
   feed: false
   isfetch: true

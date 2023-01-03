@@ -3,18 +3,20 @@ Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec
 """
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+# from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
 import urllib3
+import time
+from typing import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DEFAULT_INTERVAL = 30
-DEFAULT_TIMEOUT = 180
+DEFAULT_INTERVAL = 10
+DEFAULT_TIMEOUT = 600
 XSOAR_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SYMANTEC_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 INTEGRATION_CONTEXT_NAME = 'SymantecEDR'
@@ -104,11 +106,9 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this implementation, no special attributes defined
     """
-    def __init__(self, base_url: str,
-                 verify: bool,
-                 proxy: bool,
-                 client_id: str,
-                 client_secret: str):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
+                 first_fetch: str = '3 days', fetch_limit: int = 50, is_incident_event: bool = False,
+                 is_fetch_attachment: bool = False, fetch_status: list = None, fetch_priority: list = None):
         super().__init__(
             base_url=base_url,
             verify=verify,
@@ -118,6 +118,12 @@ class Client(BaseClient):
         self.token_url = f'{base_url}{TOKEN_ENDPOINT}'
         self.client_key = client_id
         self.secret_key = client_secret
+        self.first_fetch = first_fetch
+        self.fetch_limit = fetch_limit
+        self.is_incident_event = is_incident_event
+        self.is_fetch_attachment = is_fetch_attachment
+        self.fetch_status = fetch_status
+        self.fetch_priority = fetch_priority
 
     def get_access_token(self):
         """
@@ -152,7 +158,7 @@ class Client(BaseClient):
         Call Symantec EDR On-prem POST and GET Request API
         Args:
             endpoint (str): Symantec EDR on-premise endpoint
-            params (dict): Request body data
+            params (dict): Request body data (payload)
             method (str): Request Method support POST and GET
         Returns:
             Return the raw api response from Symantec EDR on-premise API.
@@ -320,14 +326,12 @@ def get_command_title_string(context_name: str, page: int | None, page_size: int
     return f"{context_name} List"
 
 
-def process_sub_object(data: dict) -> dict:
-    data_dict = {}
+def parse_process_sub_object(data: dict) -> dict:
     ignore_key_list: list[str] = ['file', 'user']
-    data_dict = extract_raw_data(data, ignore_key_list)
-    return data_dict
+    return extract_raw_data(data, ignore_key_list)
 
 
-def attacks_sub_object(data: list[dict]) -> dict:
+def parse_attacks_sub_object(data: list[dict]) -> dict:
     ignore_key_list: list[str] = ['tactic_ids', 'tactic_uids']
     attacks_dict = extract_raw_data(data, ignore_key_list, prefix='attacks')
 
@@ -352,103 +356,68 @@ def attacks_sub_object(data: list[dict]) -> dict:
     return attacks_dict
 
 
-def event_data_sub_object(data: dict[str, Any]) -> dict:
-    ignore_key_list: list[str] = []
-    event_data_dict: dict[str, Any] = {}
-
-    sepm_server = data.get('sepm_server', {})
-    search_config = data.get('search_config', {})
-    atp_service = data.get('atp_service', {})
-
-    if sepm_server:
-        sepm_server_dict = extract_raw_data(sepm_server, ignore_key_list, 'event_data_sepm_server')
-        event_data_dict = {**event_data_dict, **sepm_server_dict}
-
-    if search_config:
-        search_conf_dict = extract_raw_data(search_config, ignore_key_list, 'event_data_search_config')
-        event_data_dict = {**event_data_dict, **search_conf_dict}
-
-    if atp_service:
-        atp_dict = extract_raw_data(atp_service, ignore_key_list, 'event_data_atp_service')
-        event_data_dict = {**event_data_dict, **atp_dict}
-
-    return event_data_dict
+def parse_event_data_sub_object(data: dict[str, Any]) -> dict:
+    result: dict = {}
+    for key, func in (
+        ('event_data_sepm_server', extract_raw_data),
+        ('event_data_search_config', extract_raw_data),
+        ('event_data_atp_service', extract_raw_data),
+    ):
+        if values := data.get(key):
+            result |= func(values, [], key)
+    return result
 
 
-def enriched_data_sub_object(data: dict[str, Any]) -> dict:
-    ignore_key_list: list[str] = []
-    enriched_dict = extract_raw_data(data, ignore_key_list, 'enriched_data')
-    return enriched_dict
+def parse_enriched_data_sub_object(data: dict[str, Any]) -> dict:
+    return extract_raw_data(data, [], 'enriched_data')
 
 
-def user_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
-    user_dict = {}
-    ignore_key: list[str] = []
+def parse_user_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
     prefix = f'{obj_prefix}_user' if obj_prefix else 'user'
-    user_dict = extract_raw_data(data, ignore_key, prefix)
-    return user_dict
+    return extract_raw_data(data, [], prefix )
 
 
-def xattributes_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
-    xattributes_dict = {}
-    ignore_key: list[str] = []
-    prefix = f'{obj_prefix}_user' if obj_prefix else 'xattributes'
-    xattributes_dict = extract_raw_data(data, ignore_key, prefix)
-    return xattributes_dict
+def parse_xattributes_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
+    prefix = f'{obj_prefix}_xattributes' if obj_prefix else 'xattributes'
+    return extract_raw_data(data, [], prefix)
 
 
-def event_actor_sub_object(data: dict[str, Any]) -> dict:
-    event_actor_dict = {}
-    # Sub Object will be fetch separately
+def parse_event_actor_sub_object(data: dict[str, Any]) -> dict:
+
+    # Sub Object will be fetched separately
     ignore_key: list[str] = ['file', 'user', 'xattributes']
-    event_actor_dict = extract_raw_data(data, ignore_key, 'event_actor')
 
-    # File Sub Object
-    if data.get('file'):
-        file_dict = file_sub_object(data.get('file', {}), 'event_actor')
-        event_actor_dict = {**event_actor_dict, **file_dict}
+    result = extract_raw_data(data, ignore_key, 'event_actor')
 
-    # User
-    if data.get('user'):
-        user_dict = user_sub_object(data.get('user', {}), 'event_actor')
-        event_actor_dict = {**event_actor_dict, **user_dict}
-
-    # xattributes
-    if data.get('xattributes'):
-        xattributes_dict = xattributes_sub_object(data.get('xattributes', {}), 'event_actor')
-        event_actor_dict = {**event_actor_dict, **xattributes_dict}
-
-    return event_actor_dict
+    for key, func in (
+        ('file', parse_file_sub_object),
+        ('user', parse_user_sub_object),
+        ('xattributes', parse_xattributes_sub_object),
+    ):
+        if values := data.get(key):
+            result |= func(values, key)
+    return result
 
 
-def file_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
-    file_dict = {}
-    ignore_key_list: list[str] = ['signature_value_ids']
+def parse_file_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
     prefix = f'{obj_prefix}_file' if obj_prefix else 'file'
-    file_dict = extract_raw_data(data, ignore_key_list, prefix)
-    return file_dict
+    return extract_raw_data(data, ['signature_value_ids'], prefix)
 
 
-def monitor_source_sub_object(data: dict[str, Any]) -> dict:
-    monitor_dict = extract_raw_data(data, prefix='monitor_source')
-    return monitor_dict
+def parse_monitor_source_sub_object(data: dict[str, Any]) -> dict:
+    return extract_raw_data(data, [], prefix='monitor_source')
 
 
-def connection_sub_object(data: dict[str, Any]) -> dict:
-    con_dict = extract_raw_data(data, prefix='connection')
-    return con_dict
+def parse_connection_sub_object(data: dict[str, Any]) -> dict:
+    return extract_raw_data(data, [], prefix='connection')
 
 
 def convert_list_to_str(data: list) -> str:
     seperator = ','
-    value_str = ""
-    if isinstance(data, list):
-        value_str = seperator.join(map(str, data))
-
-    return value_str
+    return seperator.join(map(str, data)) if isinstance(data, list) else None
 
 
-def event_object_data(data: dict[str, Any]) -> dict:
+def parse_event_object_data(data: dict[str, Any]) -> dict:
     """
     Retrieve event object data and return Event dict
     Args:
@@ -456,94 +425,40 @@ def event_object_data(data: dict[str, Any]) -> dict:
     Returns:
         event_dict: Event Json Data
     """
-    event_dict: dict[str, Any] = {}
+    # event_dict: dict[str, Any] = {}
     if not data:
         # Return empty dictionary
-        return event_dict
+        return {}
 
-    # Ignore to retrieve Sub Object which will be fetch based on command requirement
+    # Ignore to retrieve Sub Object which will be fetched subsequently based on command requirement
     ignore_list = [
         'attacks', 'av', 'bash', 'connection', 'data', 'directory', 'enriched_data', 'entity', 'entity_result',
         'event_actor', 'file', 'intrusion', 'kernel', 'link_following', 'receivers', 'process', 'reg_key', 'reg_value',
         'sandbox', 'scan', 'sender', 'service', 'session', 'monitor_source'
     ]
-    event_dict = extract_raw_data(data, ignore_list)
-    # Retrieve Sub Object Data
-    # attacks
-    attacks_data = data.get('attacks', [])
-    if attacks_data:
-        attacks_dict = attacks_sub_object(attacks_data)
-        event_dict = {**event_dict, **attacks_dict}
+    # event_dict = extract_raw_data(data, ignore_list)
+    result = extract_raw_data(data, ignore_list)
 
-    # event data
-    event_data = data.get('data', {})
-    if event_data:
-        event_data_dict = event_data_sub_object(event_data)
-        event_dict = {**event_dict, **event_data_dict}
+    for key, func in (
+        ('attacks', parse_attacks_sub_object),
+        ('data', parse_event_data_sub_object),
+        ('enriched_data', parse_enriched_data_sub_object),
+        ('event_actor', parse_event_actor_sub_object),
+        ('monitor_source', parse_monitor_source_sub_object),
+        ('process', parse_process_sub_object),
+        ('connection', parse_connection_sub_object),
+        ('edr_data_protocols', convert_list_to_str),
+    ):
+        if values := data.get(key):
+            result |= func(values)
 
-    # Enriched Data
-    enriched_data = data.get('enriched_data', {})
-    if enriched_data:
-        enriched_dict = enriched_data_sub_object(enriched_data)
-        event_dict = {**event_dict, **enriched_dict}
+    for item in ['edr_data_protocols', 'edr_files', 'source_port', 'target_port']:
+        if values := data.get(item):
+            result |= {f'{item}': values}
 
-    # Event_actor
-    event_actor = data.get('event_actor', {})
-    if event_actor:
-        event_actor_data = event_actor_sub_object(event_actor)
-        event_dict = {**event_dict, **event_actor_data}
+    # All these below event sub objects left from this implementation,
+    # Only can be implemented if required for future enhancement
 
-    # monitor source
-    monitor_source_data = data.get('monitor_source', {})
-    if monitor_source_data:
-        monitor_dict = monitor_source_sub_object(monitor_source_data)
-        event_dict = {**event_dict, **monitor_dict}
-
-    # Process
-    process = data.get('process', {})
-    if process:
-        process_data = process_sub_object(process)
-        event_dict = {**event_dict, **process_data}
-
-    # connection {}
-    connection = data.get('connection', {})
-    if connection:
-        connection_dict = connection_sub_object(connection)
-        event_dict = {**event_dict, **connection_dict}
-
-    # edr data protocols []
-    edr_data_protocols = data.get('edr_data_protocols', [])
-    if edr_data_protocols:
-        edr_data_dict = {
-            'edr_data_protocols': convert_list_to_str(edr_data_protocols)
-        }
-        event_dict = {**event_dict, **edr_data_dict}
-
-    # edr files []
-    edr_file = data.get('edr_files', [])
-    if edr_file:
-        edr_file_dict = {
-            'edr_files': convert_list_to_str(edr_file)
-        }
-        event_dict = {**event_dict, **edr_file_dict}
-
-    # source port []
-    source_port_list = data.get('source_port', [])
-    if source_port_list:
-        source_port_dict = {
-            'source_port': convert_list_to_str(source_port_list)
-        }
-        event_dict = {**event_dict, **source_port_dict}
-
-    # target port []
-    target_port_list = data.get('target_port', [])
-    if target_port_list:
-        target_port_dict = {
-            'target_port': convert_list_to_str(target_port_list)
-        }
-        event_dict = {**event_dict, **target_port_dict}
-
-    # All those Event Sub Object does not have data to present, Only can implemented in future enhancement if required
     # av # TODO
     # bash # TODO
     # Entity => AuditEntityData TODO
@@ -563,7 +478,7 @@ def event_object_data(data: dict[str, Any]) -> dict:
     # threat TODO
     # Entity_result , Duplicate with Entity can be Ignored
 
-    return event_dict
+    return result
 
 
 def domain_instance_readable_output(results: list[dict], title: str):
@@ -610,7 +525,7 @@ def system_activity_readable_output(results: list[dict], title: str):
     context_data = []
 
     for data in results:
-        event_data = event_object_data(data)
+        event_data = parse_event_object_data(data)
         event_data['severity_id'] = EVENT_SEVERITY.get(str(event_data.get('severity_id')))
         event_data['atp_node_role'] = EVENT_ATPNODE_ROLE.get(str(event_data.get('atp_node_role')))
         event_data['status_id'] = EVENT_STATUS.get(str(event_data.get('status_id')))
@@ -724,7 +639,7 @@ def audit_event_readable_output(results: list[dict], title: str):
     context_data: list[dict[str, Any]] = []
     summary_data: list[dict[str, Any]] = []
     for data in results:
-        event_dict = event_object_data(data)
+        event_dict = parse_event_object_data(data)
         event_dict['severity_id'] = EVENT_SEVERITY.get(str(event_dict.get('severity_id')))
         event_dict['status_id'] = EVENT_STATUS.get(str(event_dict.get('status_id')))
         # ---- Display Data ----
@@ -765,7 +680,7 @@ def incident_event_readable_output(results: list[dict], title: str):
     context_data: list[dict[str, Any]] = []
     summary_data: list[dict[str, Any]] = []
     for data in results:
-        event_dict = event_object_data(data)
+        event_dict = parse_event_object_data(data)
         severity_id = event_dict.get('severity_id', '')
         event_dict['severity_id'] = EVENT_SEVERITY.get(str(severity_id), '')
         # ---- Display Data ----
@@ -1990,7 +1905,372 @@ def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
+''' FETCHES INCIDENTS '''
+
+
+def fetch_incidents(client: Client) -> list:
+    """
+    Arguments Validation.
+    Args:
+        client: Client Object
+    Returns:
+        Incidents List
+    """
+
+    rev_incident_priority = {v: k for k, v in INCIDENT_PRIORITY_LEVEL.items()}
+    rev_incident_state = {v: k for k, v in INCIDENT_STATUS.items()}
+
+    seperator = ' OR '
+    priority_list: list[str] = [rev_incident_priority.get(i) for i in client.fetch_priority]
+    priority = priority_list[0] if len(priority_list) == 1 else seperator.join(map(str, priority_list))
+    state_list: list[str] = [rev_incident_state.get(i) for i in client.fetch_status]
+    state = state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
+
+    payload = {
+        "verb": "query",
+        "limit": client.fetch_limit,
+        "query": f'priority_level: ({priority}) AND state: ({state})'
+    }
+
+    # demisto.getLastRun() will returns an obj with the previous run in it.
+    last_run = demisto.getLastRun()
+
+    # set First Fetch starting time in case running first time or reset
+    start_time = iso_creation_date(client.first_fetch)
+
+    if last_run and 'start_time' in last_run:
+        start_time = last_run.get('start_time')
+
+    payload['start_time'] = start_time
+
+    response = client.query_request_api('/atpapi/v2/incidents', payload, 'POST')
+    datasets = response.get("result", [])
+
+    incidents = []  # type:List
+
+    # Map severity to Demisto severity for incident creation
+    xsoar_severity_map = {'1': 3, '2': 2, '3': 1}
+
+    if datasets:
+        for data in datasets:
+            incident_id = data.get('atp_incident_id')
+
+            comments: list = None
+            if client.is_fetch_attachment:
+                comments = get_incident_comments_command(client=client, args={
+                                 'incident_id': data.get('atp_incident_id'),
+                                 'start_time': start_time
+                            })
+
+            incidents.append({
+                # name is required field, must be set
+                'name': f'SEDR Incident {incident_id} - {data.get("summary")}',
+                # must be string of a format ISO8601
+                'occurred': data.get('device_time'),
+                # the ID of the incident in the third-party product
+                'dbotMirrorId': str(data.get('atp_incident_id')),
+                'details': json.dumps(data),
+                'severity': xsoar_severity_map.get(str(data.get('priority_level')), 0),
+                'rawJSON': json.dumps(data),
+                'attachment': comments.outputs if comments else None
+            })
+
+            # Fetch incident for event if set as true
+            if client.is_incident_event:
+                #    '1': 'Info', '2': 'Warning', '3': 'Minor', '4': 'Major', '5': 'Critical', '6': 'Fatal'
+                event_for_incident = get_event_for_incident_list_command(client=client, args={
+                                 'query': f'incident: {data.get("uuid")}',
+                                 'start_time': start_time})
+
+                if outputs := event_for_incident.outputs:
+                    for event in outputs:
+                        incidents.append({
+                            'name': f'SEDR Alert : Events Incident link {incident_id} - '
+                                    f'Type ID {event.get("type_id")} {event.get("event_actor_file_name","")}, '
+                                    f'logged: {event.get("enriched_data_rule_description", "")}',
+                            'occurred': event.get('device_time'),
+                            'dbotMirrorId': str(event.get('event_uuid')),
+                            'details': json.dumps(event),
+                            'rawJSON': json.dumps(event),
+                        })
+    now_iso = iso_creation_date('now')
+    demisto.setLastRun({'start_time': now_iso})
+    return incidents
+
+
 ''' POLLING CODE '''
+
+
+def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+     Get file Sandbox Verdict of specific SHA2
+     Args:
+         client: client object to use.
+         args: all command arguments, usually passed from ``demisto.args()``.
+     Returns:
+         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+             result.
+     """
+    sha2 = args.get('file')
+    endpoint = f'/atpapi/v2/sandbox/results/{sha2}/verdict'
+
+    sandbox_res = client.query_request_api(endpoint, {}, 'GET')
+    file_res = client.query_request_api(f'/atpapi/v2/entities/files/{sha2}', {}, 'GET')
+    response: Dict[str, Any] = {**sandbox_res, **file_res}
+    # Sandbox verdict
+    # datasets = response_data.get("status", [])
+    title = "Sandbox Verdict"
+    if response:
+        readable_output = generic_readable_output(argToList(response), title)
+    else:
+        readable_output = f'{title} does not have data to present. \n'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxVerdict',
+        outputs_key_field='',
+        outputs=response
+    )
+
+
+def check_sandbox_status(client: Client, args: Dict[str, Any]) -> str:
+    """
+     Query file Sandbox command status,
+     Args:
+         client: client object to use.
+         args: all command arguments, usually passed from ``demisto.args()``.
+     Returns:
+         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+             result.
+    """
+    command_id = args.get('command_id')
+    endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
+
+    response = client.query_request_api(endpoint, {}, 'GET')
+    # Query Sandbox Command Status
+    summary_data = {}
+    datasets = response.get("status", [])
+    if datasets:
+        for data in datasets:
+            new = {
+                'command_id': command_id,
+                'status': SANDBOX_STATE.get(str(data.get('state'))),
+                'message': data.get('message'),
+                'target': data.get('target'),
+                'error_code': data.get('error_code')
+            }
+            summary_data = {**summary_data, **new}
+
+    title = "File Sandbox Status"
+    if datasets:
+        readable_output = generic_readable_output(argToList(summary_data), title)
+    else:
+        readable_output = f'{title} does not have data to present. \n'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxStatus',
+        outputs_key_field='command_id',
+        outputs=summary_data,
+        raw_response=response
+    )
+
+
+def issue_sandbox_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+     Issue File Sandbox command,
+     Args:
+         client: client object to use.
+         args: all command arguments, usually passed from ``demisto.args()``.
+     Returns:
+         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+             result.
+     """
+
+    file_hash = args.get('file')
+    if not re.match(sha256Regex, file_hash):
+        raise ValueError(f'SHA256 value {file_hash} is invalid')
+
+    # or (not re.match(md5Regex, file_hash))
+
+    endpoint = '/atpapi/v2/sandbox/commands'
+    payload = {
+        'action': 'analyze',
+        'targets': argToList(file_hash)
+    }
+    response = client.query_request_api(endpoint, payload)
+    # return response.get('command_id', '')
+    # Get Issue Sandbox Command
+    title = "Issue Sandbox Command"
+    summary_data = {
+        'file_sha2': file_hash,
+        'command_id': response.get('command_id'),
+        'command_type': 'Issue Sandbox Command'
+    }
+    headers = list(summary_data.keys())
+    column_order = list(camelize_string(column) for column in headers)
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxIssue',
+        outputs_key_field='command_id',
+        outputs=summary_data,
+        readable_output=tableToMarkdown(title, camelize(summary_data, '_'), headers=column_order, removeNull=True),
+        raw_response=response
+    )
+
+
+def sandbox_issue_polling_command(client: Client, args: Dict[str, Any]):
+
+    if pre_cmd_id := demisto.getIntegrationContext().get('command_id'):
+        args['command_id'] = pre_cmd_id
+
+    if 'command_id' not in args:
+        command_results = issue_sandbox_command(client, args)
+        outputs = command_results.outputs
+        new_command_id = outputs.get('command_id')
+        demisto.setIntegrationContext({'command_id': new_command_id})
+        if new_command_id:
+            args['command_id'] = new_command_id
+
+    return file_polling_command(args, client)
+
+
+@polling_function('file',
+                  interval=arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL)),
+                  timeout=arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT)))
+def file_polling_command(args: Dict[str, Any], client: Client) -> PollResult:
+    """
+    Polling command will show the progress of the sandbox status command after the first issue sandbox command.
+    Once a file scanning is done the status will be shown as 'Completed' and return the file verdict
+
+    Args:
+        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request and a Client.
+        client: client object to use.
+
+    Returns:
+        PollResult: A result to return to the user which will be set as a CommandResults.
+            The result itself will depend on the stage of polling.
+    """
+
+    # time.sleep(90)
+    command_result = check_sandbox_status(client, args)
+    raw_response = command_result.outputs
+    status = dict_safe_get(raw_response, ['status']) if raw_response else None
+
+    if status == 'Completed':
+        command_result = get_sandbox_verdict(client, args)
+        demisto.setIntegrationContext({})
+        return PollResult(
+            response=command_result,
+            continue_to_poll=False
+        )
+    elif status == 'Error':
+        demisto.setIntegrationContext({})
+        return PollResult(
+            response=command_result,
+            continue_to_poll=False
+        )
+    else:
+        polling_args = {
+            **args
+        }
+        return PollResult(
+            response=command_result,
+            continue_to_poll=True,
+            args_for_next_run=polling_args,
+            partial_result=CommandResults(
+                readable_output=f'Waiting for Status ... with command id {args.get("command_id")}'
+            )
+        )
+
+
+# ScheduledCommand
+def run_polling_command(client: Client, args: dict, cmd: str, status_func: Callable, results_func: Callable):
+    """
+    This function can handle the polling flow.
+    After the first run, progress will be shown through the status command.
+    The run_polling_command function check the file scan status and will run till its status is  not 'Completed'
+    and returns a ScheduledCommand object that schedules the next 'results' function, until the polling is complete.
+    Args:
+        client: Symantec EDR cient object
+        args: the arguments required to the command being called, under cmd
+        cmd: the command to schedule by after the current command
+        status_func : The function that check the file scan status and return either completed or error status
+        results_func: the function that retrieves the verdict based on file sandbox status
+
+
+    Returns:
+
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL))
+    timeout_in_seconds = arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT))
+
+    # distinguish between the initial run, which is the Issue the file for scanning
+    if pre_cmd_id := demisto.getIntegrationContext().get('command_id'):
+        args['command_id'] = pre_cmd_id
+    # first run ...
+    if 'command_id' not in args:
+        command_results = issue_sandbox_command(client, args)
+        outputs = command_results.outputs
+        command_id = outputs.get('command_id')
+        if command_id is not None:
+            demisto.setIntegrationContext({'command_id': command_id})
+            args['command_id'] = command_id
+
+            polling_args = {
+                'interval_in_seconds': interval_in_secs,
+                'polling': True,
+                **args,
+            }
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=timeout_in_seconds
+            )
+
+            # result with scheduled_command only - no update to the war room
+            command_result = CommandResults(scheduled_command=scheduled_command,
+                                            readable_output=f'Waiting for the polling execution..'
+                                                            f'Command id {command_id}',
+                                            ignore_auto_extract=True
+                                            )
+            return command_result
+
+    # not a first run
+    command_result = status_func(client, args)
+    outputs = command_result.outputs
+    status = outputs.get('status')
+    if status == 'Completed':
+        # # action was completed
+        demisto.setIntegrationContext({})
+        return results_func(client, args)
+    elif status == 'Error':
+        demisto.setIntegrationContext({})
+        return command_result
+    else:
+        # in case of In progress
+        polling_args = {
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args,
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=timeout_in_seconds
+        )
+
+        # result with scheduled_command only - no update to the war room
+        command_result = CommandResults(scheduled_command=scheduled_command,
+                                        ignore_auto_extract=True
+                                        )
+        return command_result
+
+
+def file_scheduled_polling_command(client, args):
+    return run_polling_command(client, args, 'file', check_sandbox_status, get_sandbox_verdict)
 
 
 ''' MAIN FUNCTION '''
@@ -2002,24 +2282,29 @@ def main() -> None:
     """
     try:
         params = demisto.params()
-        server = params.get('url', '')
-        credentials = params.get('credentials', {})
-        username = credentials.get('identifier', '')
-        password = credentials.get('password', '')
+        args = demisto.args()
+        command = demisto.command()
+
+        # OAuth parameters
+        server_url = params.get('url', '')
+        client_id = params.get('credentials', {}).get('identifier', '')
+        client_secret = params.get('credentials', {}).get('password', '')
         verify_certificate = params.get('insecure', False)
         # not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        command = demisto.command()
 
-        client = Client(
-            base_url=server,
-            verify=verify_certificate,
-            proxy=proxy,
-            client_id=username,
-            client_secret=password
-        )
+        # Fetches Incident Parameters
+        first_fetch_time = params.get('first_fetch', '3 days').strip()
+        fetch_limit = int(params.get('fetch_limit', 10))
+        fetch_incident_event = params.get('isIncidentsEvent', False)
+        fetch_attachment = params.get('isIncidentComment', False)
+        fetch_status = argToList(params.get('fetch_status',  'New'))
+        fetch_priority = argToList(params.get('fetch_priority', 'High,Medium'))
 
-        args = demisto.args()
+        client = Client(base_url=server_url, verify=verify_certificate, proxy=proxy, client_id=client_id,
+                        client_secret=client_secret, first_fetch=first_fetch_time, fetch_limit=fetch_limit,
+                        is_incident_event=fetch_incident_event, is_fetch_attachment=fetch_attachment,
+                        fetch_status=fetch_status, fetch_priority=fetch_priority)
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
@@ -2084,10 +2369,18 @@ def main() -> None:
             # Events
             "symantec-edr-event-list": get_event_list_command,
 
+            # file Sandbox (Reputation command)
+            #"file": sandbox_issue_polling_command,
+            "file": file_scheduled_polling_command
+
         }
-        command_output: CommandResults | str
+        command_output: CommandResults | str = ""
         if command == "test-module":
             command_output = test_module(client)
+        elif command == 'fetch-incidents':
+            incidents = fetch_incidents(client)
+            demisto.incidents(incidents)
+            command_output = incidents
         elif command in commands:
             command_output = commands[command](client, args)
         else:
