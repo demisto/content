@@ -11,8 +11,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-EVENT_TYPES_V1 = ['application', 'audit', 'network']  # api version - v1
-EVENT_TYPES_V2 = ['alert', 'application', 'audit', 'network']  # api version v2
+EVENT_TYPES_V1 = ['application', 'audit', 'network', 'page']  # api version - v1
+EVENT_TYPES_V2 = ['alert', 'application', 'audit', 'network', 'page']  # api version v2
 
 
 ''' CLIENT CLASS '''
