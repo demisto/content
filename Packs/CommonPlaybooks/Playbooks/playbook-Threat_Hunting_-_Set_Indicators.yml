@@ -1,7 +1,7 @@
 id: Threat Hunting - Set Indicators
 version: -1
 name: Threat Hunting - Set Indicators
-description: "This playbook normalizes a variety of indicators to facilitate their use within threat hunting and detection playbooks, as well as reduce the possibility of task errors.\nUsing this playbook as a sub-playbook in threat hunting and detection playbooks is particularly useful if inputs are manually entered.\n\nThe playbook removes duplications, splits each input into an array of strings, and then stores the indicators under newly created context keys.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters e.g. 10.0.0.1,10.0.0.2). \n\nSupported IOCs for this playbook:\n- MD5\n- SHA1\n- SHA256\n- IP Address\n- URLDomain\n- Registry Value\n- Registry Key\n- Registry Hives\n- Command Line\n- File Name\n- Process Name\n- HTTP Request Methods\n- User Agent\n- Port Number\n- File Path\n- Geolocation\n- Email Address\n- CIDR\n- URI\n- Ja3\n- FileType"
+description: "This playbook normalizes a variety of indicators to facilitate their use within threat hunting and detection playbooks, as well as reduce the possibility of task errors.\nYou can use this playbook as a sub-playbook in threat hunting and detection playbooks. The playbook removes duplications, splits each input into an array of strings, and then stores the indicators under newly created context keys.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters e.g., 10.0.0.1,10.0.0.2). \n\nSupported IOCs for this playbook:\n- MD5\n- SHA1\n- SHA256\n- IP Address\n- URLDomain\n- Registry Value\n- Registry Key\n- Registry Hives\n- Command Line\n- File Name\n- Process Name\n- HTTP Request Methods\n- User Agent\n- Port Number\n- File Path\n- Geolocation\n- Email Address\n- CIDR\n- URI\n- Ja3\n- FileType"
 starttaskid: "0"
 tasks:
   "0":
@@ -77,7 +77,7 @@ tasks:
       id: bc8d8aba-b382-4c4a-8e4b-69b02da059b8
       version: -1
       name: MD5 input exists?
-      description: Checks whether MD5 input exists
+      description: Checks whether the MD5 input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -119,7 +119,7 @@ tasks:
       id: 4413a94c-a4b6-449b-8167-2d1fed5e8711
       version: -1
       name: SHA1 input exists?
-      description: Checks whether SHA1 input exists
+      description: Checks whether the SHA1 input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -161,7 +161,7 @@ tasks:
       id: 062a75e7-0b0b-420d-85dd-17f94ad17902
       version: -1
       name: SHA256 input exists?
-      description: Checks whether SHA256 input exists
+      description: Checks whether the SHA256 input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -203,7 +203,7 @@ tasks:
       id: 559ec1c2-e6f3-4bca-8030-0dc28057667a
       version: -1
       name: IPAddress input exists?
-      description: Checks whether IPAddress input exists
+      description: Checks whether the IPAddress input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -245,7 +245,7 @@ tasks:
       id: 6b18b306-c1c0-4b33-808e-a4df3ca611c5
       version: -1
       name: URLDomain input exists?
-      description: Checks whether URLDomain input exists
+      description: Checks whether the URLDomain input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -287,7 +287,7 @@ tasks:
       id: fc6ddb3b-9de9-48f5-84dd-06bd549cbd6d
       version: -1
       name: RegistryValue input exists?
-      description: Checks whether RegistryValue input exists
+      description: Checks whether the RegistryValue input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -329,7 +329,7 @@ tasks:
       id: 63a3ec89-d039-4df3-8a74-c4d29e7ec2a9
       version: -1
       name: RegistryKey input exists?
-      description: Checks whether RegistryKey input exists
+      description: Checks whether the RegistryKey input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -371,7 +371,7 @@ tasks:
       id: 4fd2bc36-11a6-4d69-8306-856e1a234422
       version: -1
       name: RegistryHives input exists?
-      description: Checks whether RegistryHives input exists
+      description: Checks whether the RegistryHives input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -413,7 +413,7 @@ tasks:
       id: 462f87d3-a207-43a7-8499-98a6ed592722
       version: -1
       name: CommandLine input exists?
-      description: Checks whether CommandLine input exists
+      description: Checks whether the CommandLine input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -455,7 +455,7 @@ tasks:
       id: 0d0f05f7-41f1-4711-819b-df18c5e69324
       version: -1
       name: FileName input exists?
-      description: Checks whether FileName input exists
+      description: Checks whether the FileName input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -497,7 +497,7 @@ tasks:
       id: 1e8b139c-417c-48e6-8be4-a49dca2f18e3
       version: -1
       name: ProcessName input exists?
-      description: Checks whether ProcessName input exists
+      description: Checks whether the ProcessName input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -539,7 +539,7 @@ tasks:
       id: b84b4bdd-86b9-4dd2-896c-5ed131c37b8e
       version: -1
       name: HTTPRequestMethods input exists?
-      description: Checks whether HTTPRequestMethods input exists
+      description: Checks whether the HTTPRequestMethods input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -581,7 +581,7 @@ tasks:
       id: 9e9cb0dc-4b87-406e-846c-0d2500564843
       version: -1
       name: UserAgent input exists?
-      description: Checks whether UserAgent input exists
+      description: Checks whether the UserAgent input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -623,7 +623,7 @@ tasks:
       id: 359771f0-560e-4555-856e-1f3f59e77c15
       version: -1
       name: PortNumber input exists?
-      description: Checks whether PortNumber input exists
+      description: Checks whether the PortNumber input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -667,7 +667,7 @@ tasks:
       id: 98388799-3b81-4dd5-82ec-d463d7a5c505
       version: -1
       name: FilePath input exists?
-      description: Checks whether FilePath input exists
+      description: Checks whether the FilePath input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -709,7 +709,7 @@ tasks:
       id: 7308de90-d536-42bc-81af-3a5088c4eac9
       version: -1
       name: Geolocation input exists?
-      description: Checks whether Geolocation input exists
+      description: Checks whether the Geolocation input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -751,7 +751,7 @@ tasks:
       id: 4b1ddb94-acd8-4cbe-80ef-865525a41b12
       version: -1
       name: EmailAddress input exists?
-      description: Checks whether EmailAddress input exists
+      description: Checks whether the EmailAddress input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -793,7 +793,7 @@ tasks:
       id: dffe8350-48ab-4848-8c8a-db259b2952d3
       version: -1
       name: CIDR input exists?
-      description: Checks whether CIDR input exists
+      description: Checks whether the CIDR input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -835,7 +835,7 @@ tasks:
       id: 1c914be1-4b1d-4d53-8e4e-710ca6feb86e
       version: -1
       name: URI input exists?
-      description: Checks whether URI input exists
+      description: Checks whether the URI input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -876,8 +876,8 @@ tasks:
     task:
       id: 32aff7b0-629e-42ca-8852-355a17729aa7
       version: -1
-      name: Ja3 input exists?
-      description: Checks whether Ja3 input exists
+      name: JA3 input exists?
+      description: Checks whether the JA3 input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -919,7 +919,7 @@ tasks:
       id: cbeb8bfa-9b61-446d-868d-4b825d747c6a
       version: -1
       name: FileType input exists?
-      description: Checks whether FileType input exists
+      description: Checks whether the FileType input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -1816,7 +1816,7 @@ tasks:
     task:
       id: d7b4cb01-4c47-4eff-89d4-d000a2666ec2
       version: -1
-      name: Set Ja3 search argument
+      name: Set JA3 search argument
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2326,7 +2326,7 @@ tasks:
       id: 6e4ccb51-ec09-4c04-87f5-86318e9757bc
       version: -1
       name: Application input exists?
-      description: Checks whether RegistryKey input exists
+      description: Checks whether the RegistryKey input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -2419,7 +2419,7 @@ tasks:
       id: f4fcc462-4a82-4a32-82cb-4b31bcaf2f20
       version: -1
       name: CVE ID input exists?
-      description: Checks whether CVE ID input exists
+      description: Checks whether the CVE ID input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -2641,7 +2641,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to parse and set for future use within hunting playbooks.
+    A single or multiple URLs and/or domains to parse and set for future use within hunting playbooks.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -2682,7 +2682,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file names to parse and set for future use within hunting playbooks.
+   A single or multiple file names to parse and set for future use within hunting playbooks.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -2698,7 +2698,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple HTTP requests methods to parse and set for future use within hunting playbooks.
+   A single or multiple HTTP requests methods to parse and set for future use within hunting playbooks.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -2763,7 +2763,7 @@ inputs:
   required: false
   description: |-
     JA3 is a method for creating SSL/TLS client fingerprints that should be easy to produce on any platform and can be easily shared for threat intelligence.
-    A single or multiple Ja3's to parse and set for future use within hunting playbooks.
+    A single or multiple JA3s to parse and set for future use within hunting playbooks.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -2812,7 +2812,7 @@ outputs:
   description: An array of parsed HTTP request methods indicators.
   type: string
 - contextPath: Ja3Parsed
-  description: An array of parsed Ja3 indicators.
+  description: An array of parsed JA3 indicators.
   type: string
 - contextPath: UserAgentParsed
   description: An array of parsed user agent indicators.
@@ -2833,13 +2833,13 @@ outputs:
   description: An array of parsed MD5 indicators.
   type: string
 - contextPath: FileNameParsed
-  description: An array of parsed file names indicators.
+  description: An array of parsed file name indicators.
   type: string
 - contextPath: FileTypeParsed
-  description: An array of parsed file types indicators.
+  description: An array of parsed file type indicators.
   type: string
 - contextPath: IPAddressParsed
-  description: An array of parsed IP addresses indicators.
+  description: An array of parsed IP address indicators.
   type: string
 - contextPath: URLDomainParsed
   description: An array of parsed URLDomain indicators.
@@ -2848,10 +2848,10 @@ outputs:
   description: An array of parsed CIDR indicators.
   type: string
 - contextPath: EmailAddressParsed
-  description: An array of parsed email addresses indicators.
+  description: An array of parsed email address indicators.
   type: string
 - contextPath: PortNumberParsed
-  description: An array of parsed port numbers indicators.
+  description: An array of parsed port number indicators.
   type: string
 - contextPath: GeolocationParsed
   description: An array of parsed geolocation indicators.
@@ -2860,7 +2860,7 @@ outputs:
   description: An array of parsed application indicators.
   type: string
 - contextPath: CVE_IDParsed
-  description: An array of parsed CVE IDs
+  description: An array of parsed CVE IDs.
   type: string
 tests:
 - No tests (auto formatted)
