@@ -3,7 +3,6 @@ on:
   pull_request:
   schedule:
     - cron: '00 11 * * *'
-    - cron: '00 13 * * *'
 
 permissions:
   pull-requests: write
@@ -22,3 +21,13 @@ jobs:
           echo "Approving and merging"
           gh pr review --approve "$PR_URL"
           gh pr merge --squash "$PR_URL"
+      - name: Post to a Slack channel
+        if: ${{ failure() }}
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'auto-merge-docker-action'
+          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.CORTEX_XSOAR_SLACK_TOKEN }}
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
