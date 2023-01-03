@@ -1,16 +1,16 @@
-This playbook searches Gmail records for all Google users, designed for large companies with over 2500 Google users.
+This playbook searches Gmail records for all Google users. It is intended for large companies with over 2500 Google users.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Search in mailboxes Gmail (Loop) with polling
+Search in mailboxes Gmail (Loop) with polling
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* DeleteContext
+DeleteContext
 
 ### Commands
 This playbook does not use any commands.
