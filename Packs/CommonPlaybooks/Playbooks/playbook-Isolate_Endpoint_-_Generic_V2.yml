@@ -326,17 +326,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 40a0e4a6-9cb9-4ab4-8b66-0311dca92456
+    taskid: 6288e7cc-1f1c-4132-834c-02efaf383aee
     type: regular
     task:
-      id: 40a0e4a6-9cb9-4ab4-8b66-0311dca92456
+      id: 6288e7cc-1f1c-4132-834c-02efaf383aee
       version: -1
       name: Cortex XSIAM - Isolate Endpoint
       description: Isolates the specified endpoint.
-      script: Cortex Core - IR|||core-isolate-endpoint
+      script: '|||core-isolate-endpoint'
       type: regular
       iscommand: true
-      brand: Cortex Core - IR
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
