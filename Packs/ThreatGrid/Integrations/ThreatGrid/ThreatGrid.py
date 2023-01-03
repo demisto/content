@@ -92,7 +92,7 @@ def req(method, path, params={'api_key': API_KEY}, body=None):
             'Content-Type': 'application/json'
         }
         r = requests.request(method, URL + path, headers=headers, params=params, data=body, verify=VALIDATE_CERT)
-        if r.status_code != (requests.codes.created or requests.codes.ok):
+        if r.status_code != (requests.codes['created'] or requests.codes['ok']):
             return_error('Error in API call to Threat Grid service %s - %s' % (path, r.text))
         return r
 
@@ -256,7 +256,7 @@ def upload_sample():
             args[k] = demisto.getArg(k)
     args['api_key'] = API_KEY
     fileData = demisto.getFilePath(demisto.getArg('file-id'))
-    filename = demisto.getArg('filename', '').replace('"', '').replace('\n', '')
+    filename = demisto.getArg('filename').replace('"', '').replace('\n', '')
     with open(fileData['path'], 'rb') as f:
         r = requests.request('POST', URL + SUB_API + 'samples',
                              files={'sample': (filename, f)},
@@ -948,11 +948,11 @@ def submit_urls(args):
     res = r.json()['data']
     markdown += tableToMarkdown('Threat Grid - URL Submission', res)
     results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix='Threatgrid.SearchResult',
-            outputs_key_field='Info',
-            outputs=res
-            )
+        readable_output=markdown,
+        outputs_prefix='Threatgrid.SearchResult',
+        outputs_key_field='Info',
+        outputs=res
+    )
     return results
 
 
@@ -973,7 +973,7 @@ def advanced_search(args):
             outputs_prefix='Threatgrid.SearchResult',
             outputs_key_field='Info',
             outputs=final_results
-            )
+        )
         return results
     else:
         return (CommandResults(readable_output='No results found'))

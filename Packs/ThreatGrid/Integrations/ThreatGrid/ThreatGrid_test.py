@@ -18,13 +18,13 @@ Submit_url_input = {
     'url': 'www.example.com'
 }
 
-Search_query_input = {
-    'query': '{\r\n\\\"query\\\": \\\"query get_sample($q_json:\r\nString) {sample(, q_json: $q_json,limit: 3) {submitted_at id submitted_file_type status threat_score state login url}}\\\",\\\"variables\\\": {\\\"q_json\\\": \\\"{\\\\\\\"op\\\\\\\": \\\\\\\"and\\\\\\\",\\\\\\\"clauses\\\\\\\": [{\\\\\\\"op\\\\\\\": \\\\\\\"attr\\\\\\\",\\\\\\\"attr\\\\\\\": \\\\\\\"submitted_file_name\\\\\\\",\\\\\\\"comp_op\\\\\\\": \\\\\\\"eq\\\\\\\",\\\\\\\"value\\\\\\\": \\\\\\\"www.example.com_.url\\\\\\\"}]}\\\"}}'
-}
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+Search_query_input = util_load_json('test_data/input_search_query.json')
 
 
 LIST_MOCK = [
@@ -71,7 +71,6 @@ DICT_MOCK = {
 }
 
 
-
 def test_get_with_limit_dict(mocker):
     """
     Given:
@@ -102,6 +101,7 @@ def test_submit_urls(mocker, requests_mock):
 
     res = submit_urls(args)
     assert res.outputs == expected_results
+
 
 def test_advanced_seach(mocker, requests_mock):
 
