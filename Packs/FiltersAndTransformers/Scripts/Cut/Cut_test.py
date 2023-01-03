@@ -39,6 +39,7 @@ def test_cut_main(mocker, args):
     Then:
         Case 1: Ensure A-E is returned
         Case 2: Ensure ב,c is returned
+        demisto.results called
     """
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'results')
