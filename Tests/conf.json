@@ -104,6 +104,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2",
+            "fromversion": "6.5.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
