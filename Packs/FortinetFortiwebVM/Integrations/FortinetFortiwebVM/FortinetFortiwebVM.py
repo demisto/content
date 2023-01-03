@@ -1625,7 +1625,7 @@ class ClientV1(Client):
         """Sends not exists errors in Fortiweb V1.
 
         Returns:
-            List[str]: Not exists errors in Fortiweb V1.
+            List[str]: Fortiweb V1 error messages when values do not exist in the system.
         """
         return ["Entry not found.", "Invalid length of value."]
 
@@ -1634,7 +1634,7 @@ class ClientV1(Client):
         """Sends exists errors in Fortiweb V1.
 
         Returns:
-            List[str]: Exists errors in Fortiweb V1.
+            List[str]: Fortiweb V1 error messages when values exist in the system.
         """
         return [
             "A duplicate entry already exists.",
@@ -1647,7 +1647,7 @@ class ClientV1(Client):
         """Sends wrong parameters errors in Fortiweb V1.
 
         Returns:
-            List[str]: Wrong parameters errors in Fortiweb V1.
+            List[str]: Fortiweb V1 error messages when parameter are wrong.
         """
         return ["Empty values are not allowed."]
 
@@ -2802,7 +2802,7 @@ class ClientV2(Client):
         """Sends not exists errors in Fortiweb V2.
 
         Returns:
-            List[int]: Not exists errors in Fortiweb V2.
+            List[int]: Fortiweb V2 error codes for when values do not exist in the system.
         """
         return [-3, 0, -1, -23]
 
@@ -2811,7 +2811,7 @@ class ClientV2(Client):
         """Sends exists errors in Fortiweb V2.
 
         Returns:
-            List[int]: Exists errors in Fortiweb V2.
+            List[int]: Fortiweb V2 error codes for when values exist in the system.
         """
         return [-5, -6014]
 
@@ -2820,7 +2820,7 @@ class ClientV2(Client):
         """Sends wrong parameters errors in Fortiweb V2.
 
         Returns:
-            List[int]: Wrong parameters errors in Fortiweb V2.
+            List[int]: Fortiweb V2 error codes for when parameter are wrong.
         """
         return [-651]
 
