@@ -24,7 +24,7 @@
  },
  "params": {
   "groupBy": [
-   "rawType"
+   "type"
   ],
   "tableColumns": [
    {
