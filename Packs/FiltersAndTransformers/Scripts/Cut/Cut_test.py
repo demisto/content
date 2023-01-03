@@ -1,7 +1,7 @@
 from Cut import cut
 
 import pytest
-
+import demistomock as demisto
 
 @pytest.mark.parametrize('value,delimiter,fields,expected', [
     ('A-B-C-D-E', '-', '1,5', 'A-E'),
