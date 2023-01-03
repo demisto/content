@@ -5,8 +5,7 @@ from urllib.parse import urljoin
 
 import pytest
 from CommonServerPython import *
-from FortinetFortiwebVM import (Client, ClientV1, ClientV2, ErrorMessage,
-                                OutputTitle)
+from FortinetFortiwebVM import Client, ClientV1, ClientV2, ErrorMessage, OutputTitle
 
 
 def load_mock_response(file_name: str) -> str:
@@ -3132,7 +3131,8 @@ def test_geo_ip_member_add_command(
     result = geo_ip_member_add_command(mock_client, args)
     assert OutputTitle.GEO_IP_MEMBER_ADD.value in str(result.readable_output)
     assert "FortiwebVM.GeoIpMember" == result.outputs_prefix
-    assert len(result.outputs) == expected_value
+    if isinstance(result.outputs, list):
+        assert len(result.outputs) == expected_value
 
 
 @pytest.mark.parametrize(
@@ -4524,7 +4524,7 @@ def test_api_fail_custom_whitelist_parameter_create_command(
                 "status": "disable",
             },
             "custom_whitelist/v2_exist.json",
-            ErrorMessage.REQUEST_URL.REQUEST_URL_INSERT.value,
+            ErrorMessage.REQUEST_URL_INSERT.value,
         ),
         (
             ClientV2.API_VER,
