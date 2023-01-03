@@ -1609,7 +1609,17 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def custom_predifined_whitelist_list_request(self) -> Dict[str, Any]:
+    def custom_predifined_whitelist_list_handler(
+        self,
+        response: Union[Dict[str, Any], List[Dict[str, Any]]],
+        object_type: Optional[str] = None,
+    ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+        pass
+
+    @abstractmethod
+    def custom_predifined_whitelist_list_request(
+        self,
+    ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
         pass
 
     @abstractmethod
@@ -2795,7 +2805,18 @@ class ClientV1(Client):
             method="GET", url_suffix="LogReport/LogPolicy/TriggerList"
         )
 
-    def custom_predifined_whitelist_list_request(self) -> Dict[str, Any]:
+    def custom_predifined_whitelist_list_handler(
+        self, response: List[Dict[str, Any]], object_type: Optional[str] = None
+    ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+        data = response
+        if object_type:
+            return dict_safe_get(
+                find_dict_in_array(data, "type", object_type), ["details"]
+            )
+        else:
+            return [member for object_type in data for member in object_type["details"]]
+
+    def custom_predifined_whitelist_list_request(self) -> List[Dict[str, Any]]:
         """List the Custom Predifined members.
 
         Returns:
@@ -4425,6 +4446,21 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         return self._http_request(method="GET", url_suffix="cmdb/log/trigger-policy")
+
+    def custom_predifined_whitelist_list_handler(
+        self, response: Dict[str, Any], object_type: Optional[str] = None
+    ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+        data = response["results"]
+        if object_type:
+            rel_data = dict_safe_get(
+                find_dict_in_array(data, "type", object_type), ["details"]
+            )
+            return {"results": rel_data}
+        else:
+            rel_data = [
+                member for object_type in data for member in object_type["details"]
+            ]
+            return {"results": rel_data}
 
     def custom_predifined_whitelist_list_request(self) -> Dict[str, Any]:
         """List the Custom Predifined members.
@@ -6605,10 +6641,6 @@ def validate_custom_whitelist(
     Raises:
         DemistoException: Errors.
     """
-    if args.get("type") and args["type"] != member_type:
-        raise ValueError(
-            f"You can't update {args['type']} member with {member_type} update command."
-        )
     if version == ClientV2.API_VER:
         if args.get("request_url_status") == "enable" and not args.get("request_url"):
             raise ValueError(ErrorMessage.REQUEST_URL_INSERT.value)
@@ -6616,6 +6648,10 @@ def validate_custom_whitelist(
             raise ValueError(ErrorMessage.DOMAIN_INSERT.value)
         if args.get("value_status") == "enable" and not args.get("value"):
             raise ValueError(ErrorMessage.VALUE_INSERT.value)
+    if args.get("type") and args["type"] != member_type:
+        raise ValueError(
+            f"You can't update {args['type']} member with {member_type} update command."
+        )
     if member_type == "URL":
         if (
             args.get("request_type") == "Simple String"
@@ -7109,20 +7145,11 @@ def custom_predifined_whitelist_list_command(
     id = args.get("id")
     object_type = args.get("type")
     response = client.custom_predifined_whitelist_list_request()
-    if object_type:
-        data = response if client.version == ClientV1.API_VER else response["results"]
-        rel_data = dict_safe_get(
-            find_dict_in_array(data, "type", object_type), ["details"]
-        )
-        response = (
-            rel_data if client.version == ClientV1.API_VER else {"results": rel_data}
-        )
-    else:
-        data = response if client.version == ClientV1.API_VER else response["results"]
-        rel_data = [member for object_type in data for member in object_type["details"]]
-        response = (
-            rel_data if client.version == ClientV1.API_VER else {"results": rel_data}
-        )
+
+    response = client.custom_predifined_whitelist_list_handler(
+        response=response, object_type=object_type
+    )
+
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
@@ -7164,7 +7191,7 @@ def custom_predifined_whitelist_update_command(
     rel_data = {}
     # Get exist data
     response = client.custom_predifined_whitelist_list_request()
-    data = response if client.version == ClientV1.API_VER else response["results"]
+    data = response["results"] if isinstance(client, ClientV2) else response  # type: ignore # V2 always returns a Dict.
     for type in data:
         for member in type["details"]:
             if member["value"]:
