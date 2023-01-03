@@ -5,8 +5,7 @@ from urllib.parse import urljoin
 
 import pytest
 from CommonServerPython import *
-from FortinetFortiwebVM import (Client, ClientV1, ClientV2, ErrorMessage,
-                                OutputTitle)
+from FortinetFortiwebVM import Client, ClientV1, ClientV2, ErrorMessage, OutputTitle
 
 
 def load_mock_response(file_name: str) -> str:
@@ -27,7 +26,7 @@ def mock_client(version: str) -> Client:
     """Create a test client for V1/V2.
 
     Args:
-        version (str): Version (V1/V2)
+        version (str): Version (V1/V2).
 
     Returns:
         Client: Fortieweb VM Client.
