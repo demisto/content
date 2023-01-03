@@ -276,7 +276,7 @@ def test_fetch_investigatons(requests_mock):
     client = mock_client(requests_mock, FETCH_INVESTIGATIONS)
     args = {
         "page": 0,
-        "page_sie": 1,
+        "page_size": 1,
     }
 
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
