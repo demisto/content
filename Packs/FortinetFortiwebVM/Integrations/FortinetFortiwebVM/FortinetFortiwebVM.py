@@ -787,9 +787,9 @@ class ParserV2(Parser):
         """
         group = {
             "id": protected_hostname_member["id"],
-            "action": dict_safe_get(
-                self.action_api_to_user_mapper, [protected_hostname_member["action"]]
-            ),
+            "action": self.action_api_to_user_mapper[
+                protected_hostname_member["action"]
+            ],
             "host": protected_hostname_member["host"],
             "ignore_port": protected_hostname_member["ignore-port"],
             "include_subdomains": protected_hostname_member["include-subdomains"],
