@@ -61,9 +61,7 @@ class TestLongurlInService:
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 
-        result = unshorten_url(service="longurl.in",
-                               url=args["url"],
-                               redirect_limit=args["redirect_limit"])
+        result = unshorten_url(service_name="longurl.in", url=args["url"], redirect_limit=args["redirect_limit"])
 
         assert (result.outputs["RedirectCount"] <= args["redirect_limit"] or args["redirect_limit"] == 0)
         assert result.outputs == expected_output
@@ -84,7 +82,7 @@ class TestLongurlInService:
         """
         mocker.patch.object(BaseClient, "_http_request", return_value=response_mock)
 
-        result = unshorten_url(service="longurl.in", url=args["url"], redirect_limit=args["redirect_limit"])
+        result = unshorten_url(service_name="longurl.in", url=args["url"], redirect_limit=args["redirect_limit"])
         assert result.outputs == expected_output
 
 
@@ -122,7 +120,7 @@ class TestUnshortenMeService:
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 
-        result = unshorten_url(service="unshorten.me", url=args["url"], redirect_limit=args["redirect_limit"])
+        result = unshorten_url(service_name="unshorten.me", url=args["url"], redirect_limit=args["redirect_limit"])
         assert (result.outputs["RedirectCount"] <= args["redirect_limit"] or args["redirect_limit"] == 0)
         assert result.outputs == expected_output
 
@@ -142,7 +140,7 @@ class TestUnshortenMeService:
         """
         mocker.patch.object(BaseClient, "_http_request", return_value=response_mock)
 
-        result = unshorten_url(service="unshorten.me", url=args["url"], redirect_limit=args["redirect_limit"])
+        result = unshorten_url(service_name="unshorten.me", url=args["url"], redirect_limit=args["redirect_limit"])
         assert result.outputs == expected_output
 
 
@@ -206,9 +204,7 @@ class TestBuiltInService:
 
         mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 
-        result = unshorten_url(service="Built-In",
-                               url=args["url"],
-                               redirect_limit=args["redirect_limit"])
+        result = unshorten_url(service_name="Built-In", url=args["url"], redirect_limit=args["redirect_limit"])
 
         assert (result.outputs["RedirectCount"] <= args["redirect_limit"] or args["redirect_limit"] == 0)
         assert result.outputs == expected_output
@@ -236,5 +232,5 @@ class TestBuiltInService:
         else:
             mocker.patch.object(BaseClient, "_http_request", return_value=response)
 
-        result = unshorten_url(service="Built-In", url=args["url"], redirect_limit=args["redirect_limit"])
+        result = unshorten_url(service_name="Built-In", url=args["url"], redirect_limit=args["redirect_limit"])
         assert result.outputs == expected_output

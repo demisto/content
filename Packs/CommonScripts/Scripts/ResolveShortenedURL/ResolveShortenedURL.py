@@ -1,6 +1,6 @@
 import urllib3
 from abc import ABCMeta
-from typing import NamedTuple
+from typing import NamedTuple, Type
 
 from requests import Response
 
@@ -11,40 +11,39 @@ urllib3.disable_warnings()  # Disable insecure warnings
 
 
 class URLUnshorteningData(NamedTuple):
-    """A tuple containing data for unshortend URLs."""
+    """
+    A tuple containing data for unshortend URLs.
+
+    Attributes:
+        original_url (str): The original URL.
+        resolved_url (str): The resolved URL.
+        service_name (str): The name of the service used to resolve the URL.
+        redirect_history (list): A list of URLs that were redirected to get to the resolved URL.
+        raw_data (dict | list[dict] | None, optional): The raw data returned by the service. None if not available.
+        encountered_error (bool, optional): Whether an error was encountered while resolving the URL. Defaults to False.
+        api_usage (int | None, optional): The API usage count for the current IP. None if not relevant to the service.
+        api_rate_limit (int | None, optional): The maximum number of API calls allowed by the service
+          for a defined period of time. None if not relevant to the service.
+    """
     original_url: str
-    """The original URL."""
-
     resolved_url: str
-    """The resolved URL."""
-
     service_name: str
-    """The name of the service used to unshorten the URL."""
-
     redirect_history: list[str]
-    """A list of redirection history of the URL."""
-
     raw_data: dict | list[dict] | None = None
-    """The raw data returned by the API / service. None if not available."""
-
     encountered_error: bool = False
-    """Whether an error was encountered during the unshortening process"""
-
-    # --- Service Specific Data ---
-
     api_usage: int | None = None
-    """The API usage count for the current IP. None if not relevant to the service."""
-
     api_rate_limit: int | None = None
-    """The maximum number of API calls allowed by the service for a defined period of time.
-       None if not relevant to the service."""
 
     def to_context_dict(self) -> dict:
         """
         Converts the data to a dictionary that will be used as the context data.
         Adds recursion data only if relevant.
 
-        Note: We subtract 1 from RedirectCount because the original URL is included in the recursion history.
+        Note:
+            We subtract 1 from RedirectCount because the original URL is included in the recursion history.
+
+        Returns:
+            dict: A dictionary containing the data in context format.
         """
         data = {
             "OriginalURL": self.original_url,
@@ -66,6 +65,9 @@ class URLUnshorteningData(NamedTuple):
     def to_hr_dict(self) -> dict:
         """
         Converts the data to a dictionary that will be used as the human-readable data.
+
+        Returns:
+            dict: A dictionary containing the data in human-readable format.
         """
         api_usage_hr: str | None = None
 
@@ -85,17 +87,21 @@ class URLUnshorteningData(NamedTuple):
 
 
 class URLUnshortingService(BaseClient, metaclass=ABCMeta):
-    """An abstract base class for URL unshorteners."""
-    @property
-    @abstractmethod
-    def base_url(self) -> str:  # pragma: no cover
-        pass
+    """
+    An abstract base class for URL unshorteners.
 
-    @property
-    @abstractmethod
-    def service_name(self) -> str:  # pragma: no cover
-        pass
+    Note:
+        To add a new service, create a new class that inherits from this class, and implements the `resolve_url` method.
+        The class attribute `service_name` must match the name used in the under `service` on the YAML file.
+        Once created new service should be automatically detected and used.
 
+    Attributes:
+        base_url (str): The base URL of the service that will be used for sending requests.
+        service_name (str): The name of the service.
+        redirect_limit (int | None): The maximum number of redirects to follow. None if no limit.
+    """
+    base_url: str
+    service_name: str
     service_rate_limit: int | None = None
 
     def __init__(self, redirect_limit: int | None = None, *args, **kwargs):
@@ -117,6 +123,23 @@ class URLUnshortingService(BaseClient, metaclass=ABCMeta):
 
         return len(redirect_history) >= self.redirect_limit
 
+    @staticmethod
+    def find_matching_service(service_name: str) -> Type["URLUnshortingService"]:
+        """
+        Finds a matching service class by name.
+
+        Args:
+            service_name (str): The service name to find (has to match the service_name class attribute).
+
+        Returns:
+            Type[URLUnshortingService]: A subclass of URLUnshortingService that matches the service name.
+        """
+        for service_class in URLUnshortingService.__subclasses__():
+            if service_class.service_name.casefold() == service_name.casefold():
+                return service_class
+
+        raise ValueError(f"No matching service was found for: \"{service_name}\".")
+
     @abstractmethod
     def resolve_url(self, url: str) -> URLUnshorteningData:  # pragma: no cover
         """
@@ -124,19 +147,24 @@ class URLUnshortingService(BaseClient, metaclass=ABCMeta):
 
         Args:
             url (str): The URL to resolve.
+
+        Returns:
+            URLUnshorteningData: A NamedTuple containing the data for the resolved URL.
         """
         pass
 
-
 # --- Abstract stuff end here ---
 
+
 class LongurlInService(URLUnshortingService):
-    """A class for unshortening URLs using longurl.in."""
+    """
+    A class for unshortening URLs using longurl.in.
+
+    Note:
+        If the URL is invalid, the API returns {"status": "Failed", "message": "url is invalid"} with a 404 status_code.
+    """
     base_url = "https://longurl.in/api/expand-url"
     service_name = "longurl.in"
-
-    # Notes:
-    # - If the URL is invalid, the API returns {"status": "Failed", "message": "url is invalid"} with a 404 status_code.
 
     def resolve_url(self, url: str) -> URLUnshorteningData:
         encountered_error: bool = False
@@ -293,12 +321,12 @@ class BuiltInShortener(URLUnshortingService):
         )
 
 
-def unshorten_url(service: str, url: str, redirect_limit: int, session_verify: bool = True) -> CommandResults:
+def unshorten_url(service_name: str, url: str, redirect_limit: int, session_verify: bool = True) -> CommandResults:
     """
     Unshorten a shortened URL.
 
     Args:
-        service (str): The service to use for unshortening.
+        service_name (str): The service to use for unshortening.
         url (str): The URL to un-shorten.
         session_verify (bool): Whether to verify the SSL certificate of the request.
         redirect_limit (int): A maximum number of recursions to run. Use 0 for unlimited.
@@ -306,18 +334,9 @@ def unshorten_url(service: str, url: str, redirect_limit: int, session_verify: b
     error_message: str = "There was an error while attempting to unshorten the final URL in the redirect chain.\n" \
                          "It is possible that the unshortening process was not fully completed.\n\n"
 
-    client: URLUnshortingService
-
-    if service.casefold() == LongurlInService.service_name.casefold():
-        client = LongurlInService(redirect_limit=redirect_limit, verify=session_verify)
-    elif service.casefold() == UnshortenMeSservice.service_name.casefold():
-        client = UnshortenMeSservice(redirect_limit=redirect_limit, verify=session_verify)
-    elif service.casefold() == BuiltInShortener.service_name.casefold():
-        client = BuiltInShortener(redirect_limit=redirect_limit, verify=session_verify)
-    else:
-        raise ValueError(f"Unknown service: {service}")
-
-    returned_data = client.resolve_url(url=url)
+    service_class = URLUnshortingService.find_matching_service(service_name=service_name)
+    service_instance = service_class(redirect_limit=redirect_limit, verify=session_verify)
+    returned_data = service_instance.resolve_url(url=url)
 
     readable_output = ""
 
@@ -362,7 +381,10 @@ def main():  # pragma: no cover
 
         session_verify = not argToBoolean(demisto.args().get("insecure", "False"))
 
-        result = unshorten_url(service=service, url=url, redirect_limit=redirect_limit, session_verify=session_verify)
+        result = unshorten_url(service_name=service,
+                               url=url,
+                               redirect_limit=redirect_limit,
+                               session_verify=session_verify)
         return_results(result)
 
     except Exception as e:
