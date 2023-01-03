@@ -7401,7 +7401,7 @@ def test_module(client: Client) -> str:
     try:
         client.protected_hostname_list_request()
     except DemistoException as error:
-        if error.res.status_code == HTTPStatus.UNAUTHORIZED:
+        if error.res and error.res.status_code and error.res.status_code == HTTPStatus.UNAUTHORIZED:
             return "Authorization Error: make sure API key is correctly set"
         raise error
     except Exception as error:
