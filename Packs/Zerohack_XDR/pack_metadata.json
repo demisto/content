@@ -34,5 +34,9 @@
     },
     "githubUser": [
         "lakshysharma"
-    ]    
+    ] 
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
