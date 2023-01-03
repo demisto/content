@@ -4364,13 +4364,15 @@ def remove_old_versions_from_changelog(changelog: dict):
 
         # get versions with same minor version
         if Version(version).minor == last_version.minor:
-            if prev_version:
-                last_same_minor_versions.append(prev_version)
             last_same_minor_versions.append(version)
+            if prev_version and prev_version not in last_same_minor_versions:
+                last_same_minor_versions.append(prev_version)
 
         prev_version = version
 
     versions_to_keep = max([last_five_versions, last_year_versions, last_same_minor_versions], key=len)
+    if len(versions_to_keep) > 10:
+        versions_to_keep = min([last_year_versions, last_same_minor_versions], key=len)
 
     [changelog.pop(version) for version in list(changelog.keys()) if version not in versions_to_keep]
 
