@@ -33,7 +33,8 @@ configuration:
   hidden: false
   name: fetch_parameters
   options:
-  - Unique ascending ID or unique timestamp
+  - Unique timestamp
+  - Unique ascending ID
   - ID and timestamp
   required: false
   type: 15
@@ -43,7 +44,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Fill here the exact column's name to fetch (id column or timestamp column).
-  display: Column name for fetching
+  display: Fetch Column
   name: column_name
   required: false
   type: 0
@@ -56,7 +57,7 @@ configuration:
   required: false
   type: 8
 - display: Incident Name
-  additionalinfo: Fill here the exact column's incident name (if empty - that's the Column name for fetching).
+  additionalinfo: Fill here the exact column's incident name (if empty - that's the Fetch Column).
   hidden: false
   name: incident_name
   required: false
@@ -76,33 +77,12 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- defaultvalue: Relative Time
-  display: Format Time
+- display: First fetch timestamp or First fetch ID
   hidden: false
-  name: format_time
-  options:
-  - Relative Time
-  - Timestamp
-  required: false
-  type: 15
-- defaultvalue: 24 hours
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 2 months or Timestamp)
-  hidden: false
-  name: start_timestamp
+  name: start_fetch
   required: false
   type: 0
   section: Collect
-- display: Offset
-  name: offset
-  required: false
-  type: 0
-  defaultvalue: 0
-  additionalinfo: Offset from UTC in hours.
-- display: First fetch ID - ID to start fetching
-  name: start_id
-  required: false
-  type: 0
-  defaultvalue: '-1'
 - display: Use an SSL connection
   hidden: false
   name: ssl_connect

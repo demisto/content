@@ -63,20 +63,23 @@ There are two options to use to bind variables:
 ## Fetch Incidents
 There are two options to fetch incidents, determined by 'Fetch by' configuration:
 1. **ID and timestamp** - when ID is unique but not necessarily ascending and timestamp is not unique.
-   Fill in 'Column name for fetching' with your exact timestamp column name, and fill in 'ID column name' with your exact ID column name.
-2. **Unique ascending ID or unique timestamp** - when fetching by either ID or timestamp.
-   Fill only the 'Column name for fetching' with the exact column name to fetch (ID column or timestamp column).
+   Fill in 'Fetch Column' with your exact timestamp column name, and fill in 'ID column name' with your exact ID column name.
+2. **Unique ascending ID or Unique timestamp** - when fetching by either ID or timestamp.
+   Fill only the 'Fetch Column' with the exact column name to fetch (ID column or timestamp column).
 
 #### Fetch events query
 The Generic SQL query or procedure to fetch according to.
-When using queries, only simple queries are supported, therefor, it is highly recommended to use procedures.
-1. **Queries examples**: 
-   Use only 'select' and 'from' keywords.
-   1. Supported:
-      1. select id, header_name from table_name -- ok when fetching by id and id is the exact column name.
-      2. select * from table_name -- all columns, should include timestamp or id column.
-   2. Unsupported:
-      1. select header_name from table_name -- no select id or timestamp column, can't execute the fetch
+When using queries, there are two requirements, and the third one depends on DB.
+   1. 'fetch column' > or >= :'fetch column'
+   2. order by (asc) 'fetch column'
+   3. (Optional) limit :limit (It's possible if the DB supports it)
+   4. **Queries examples**: 
+      1. Supported:
+         1. select id, header_name from table_name where id >:id order by id -- ok when fetching by id and id is the exact fetch column.
+         2. select * from table_name where timestamp >=:timestamp order by timestamp limit :limit -- ok when fetching by timestamp and timestamp is the exact fetch column and DB supports for limit.
+      2. Unsupported:
+         1. select header_name from table_name -- no select id or timestamp column, can't execute the fetch.
+         2. select alert_id from table_name -- missing condition 'where alert_id >:alert_id order by alert_id', can't execute the fetch.
 
 Procedure examples for different SQL DBs:
 2. **MySQL** 
@@ -107,42 +110,9 @@ END"
 3. Others SQL DBs are not supported by the fetch incidents currently.
 
 **Fetch Incidents query Notes**
-1. When 'Fetch by' is 'Unique sequence ID or unique timestamp', make sure to create the procedure with '>' and not '>=' in the condition on the timestamp field.
+1. When 'Fetch by' is 'Unique ascending ID' or 'Unique timestamp', make sure to create the procedure with '>' and not '>=' in the condition on the timestamp/id field.
 2. When 'Fetch by' is 'ID and timestamp', handling the ID occurs internally and has no reference in the query.
 
-**Format Time**
-
-You have two options:
-1. A Relative Time - number and time unit, e.g., 12 hours, 7 days etc. If you choose this option, 'Offset' must be filled in with your correct UTC offset in hours.
-2. A Timestamp - timestamp as a string, e.g, 2022-11-08 09:14:23.207 (note: SQL allows till 3 digits milliseconds). 
-
-#### Fetch events query
-The Generic SQL query/procedure.
-Only simple queries are supported, which means 'select * from table_name'.
-It's highly recommended to use procedures.
-Procedures (examples):
-1. MySQL - "CREATE PROCEDURE *PROCEDURE_NAME*(
-    IN ts DATETIME, IN l INT
-)
-BEGIN
-    SELECT * 
-     FROM TABLE_NAME
-    WHERE timestamp >= ts order by timestamp asc limit l;
-END"
-   (Notes: The procedure should contain conditions on the fetch parameter, ts here is the dynamic parameter for the fetch cycles.
-When using MySQL DB, the procedure should contain also the limit inside.
-After creating the procedure, we'll execute this query like this: 'call Procedure_name', 
-when both parameters, ts or id and l-limit, will be added by the fetch)
-2. MSSQL - "CREATE PROCEDURE *PROCEDURE_NAME* @timestamp DATETIME
-AS
-SELECT * FROM TABLE_NAME WHERE timestamp >= @timestamp order by timestamp"
-   (Notes: The procedure should contain conditions on the fetch parameter, timestamp here is the dynamic parameter for the fetch cycles.
-When using MSSQL DB: the parameter name should be the same as the column name,
-the limit is handled outside the query.
-After creating the procedure, we'll execute this query like this: 'EXEC Procedure_name', 
-when both parameters, timestamp or id and l-limit, will be added by the fetch)
-3. When 'Fetch parameters' == ID and timestamp, The handling of the ID occurs internally and has no reference in the query.
-4. When 'Fetch parameters' == Unique sequence ID or unique timestamp, create the procedure with '>' and not '>=' 
 
 ## Configure Generic SQL on Cortex XSOAR
 

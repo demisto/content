@@ -135,17 +135,19 @@ class Client:
                                               poolclass=sqlalchemy.pool.NullPool)
         return engine.connect()
 
-    def sql_query_execute_request(self, sql_query: str, bind_vars: Any) -> Tuple[Dict, List]:
+    def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0) -> Tuple[Dict, List]:
         """Execute query in DB via engine
         :param bind_vars: in case there are names and values - a bind_var dict, in case there are only values - list
         :param sql_query: the SQL query
+        :param fetch_limit: the size of the returned records can be controlled
         :return: results of query, table headers
         """
         if type(bind_vars) is dict:
             sql_query = text(sql_query)
 
         result = self.connection.execute(sql_query, bind_vars)
-        results = result.fetchall()
+        # For avoiding responses with lots of records
+        results = result.fetchmany(fetch_limit) if fetch_limit else result.fetchall()
         headers = []
         if results:
             # if the table isn't empty
@@ -207,27 +209,27 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
 
         if params.get('fetch_parameters') == 'ID and timestamp':
             if not (params.get('column_name') and params.get('id_column')):
-                msg += 'Missing Column name for fetching or ID Column name (when ID and timestamp are chosen,' \
+                msg += 'Missing Fetch Column or ID Column name (when ID and timestamp are chosen,' \
                        ' fill in both). '
 
-        if params.get('fetch_parameters') == 'Unique ascending ID or unique timestamp':
+        if params.get('fetch_parameters') in ['Unique ascending', 'Unique timestamp']:
             if not params.get('column_name'):
-                msg += 'Missing Column name for fetching (when Unique ascending ID or unique timestamp is chosen,' \
-                       ' Column name for fetching should be filled). '
+                msg += 'Missing Fetch Column (when Unique ascending ID or unique timestamp is chosen,' \
+                       ' Fetch Column should be filled). '
             if params.get('id_column'):
-                msg += 'In case of Unique ascending ID or unique timestamp,  fill only Column name for fetching,' \
+                msg += 'In case of Unique ascending ID or Unique timestamp, fill only Fetch Column,' \
                        ' ID Column name should be unfilled. '
 
-        if not (params.get('start_id') or params.get('start_timestamp')):
-            msg += 'A starting point for fetching is missing, please enter First fetch ID or First fetch timestamp. '
+        if not params.get('start_fetch'):
+            msg += 'A starting point for fetching is missing, please enter First fetch timestamp or First fetch ID. '
 
-        if params.get('start_timestamp') and params.get('start_id'):
-            msg += 'In case of ID and timestamp, fill only First fetch timestamp, First fetch ID should be unfilled. ' \
-                   'In case of Unique ascending ID or unique timestamp, fill only First fetch timestamp either ' \
-                   'First fetch ID, but not both. '
-
-        if params.get('format_time') == 'Relative Time' and params.get('start_timestamp') and not params.get('offset'):
-            msg += 'An Offset is missing where Relative Time is chosen, please enter Offset. '
+        # in case of query and not procedure
+        if not params.get('fetchQuery').lower().startswith(('call', 'exec', 'execute')):
+            first_condition_key_word, second_condition_key_word = 'where', 'order by'
+            query = params.get('fetchQuery').lower()
+            if not (first_condition_key_word in query and second_condition_key_word in query):
+                msg += f"Missing at least one of the query's conditions: where {params.get('column_name')} >:{params.get('column_name')}" \
+                       f" or order by (asc) {params.get('column_name')}. "
 
         # The request to the database is pointless if one of the validations failed - so returns informative message
         if msg:
@@ -237,11 +239,22 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
             params['fetch_limit'] = 1
             last_run = get_last_run(params)
             sql_query = create_sql_query(last_run, params)
-            client.sql_query_execute_request(sql_query, {})
+            bind_variables = generate_bind_variables_for_fetch(params, last_run)
+            result, headers = client.sql_query_execute_request(sql_query, bind_variables, 1)
         except Exception as e:
             raise e
 
-    return 'ok', {}, []
+        # Verifying the column names are right
+        if params.get('column_name') not in headers:
+            msg += f'Invalid Fetch Column, *{params.get("column_name")}* does not exist in the table. '
+
+        if params.get('id_column') and params.get('id_column') not in headers:
+            msg += f'Invalid ID Column name, *{params.get("id_column")}* does not exist in the table. '
+
+        if params.get('incident_name') and params.get('incident_name') not in headers:
+            msg += f'Invalid Incident Name, *{params.get("incident_name")}* does not exist in the table. '
+
+    return msg if msg else 'ok', {}, []
 
 
 def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -292,18 +305,11 @@ def get_last_run(params: dict):
     # for the first iteration
     if not last_run:
         # Fetch should be by timestamp or id
-        if start_interval := params.get('start_timestamp'):
-            if params.get('format_time') == 'Relative Time':
-                last_timestamp = dateparser.parse(start_interval, settings={'TIMEZONE': 'UTC'}) +\
-                                       timedelta(hours=arg_to_number(params.get('offset')))
-                last_timestamp = last_timestamp.strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                last_timestamp = start_interval
-
-            last_run = {'last_timestamp': last_timestamp, 'last_id': False}
+        if params.get('fetch_parameters') in ['Unique timestamp', 'ID and timestamp']:
+            last_run = {'last_timestamp': params.get('start_fetch'), 'last_id': False}
 
         else:
-            last_run = {'last_timestamp': False, 'last_id': params.get('start_id', '-1')}
+            last_run = {'last_timestamp': False, 'last_id': params.get('start_fetch', '-1')}
         # for the case when we get timestamp and id - need to maintain an id's list
         last_run['ids'] = list()
     return last_run
@@ -312,8 +318,6 @@ def get_last_run(params: dict):
 def create_sql_query(last_run: dict, params: dict):
     last_timestamp_or_id = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get(
         'last_id')
-
-    demisto.debug(f'{last_timestamp_or_id=}')
 
     # case of runStoreProcedure MSSQL
     if params.get('fetchQuery').lower().startswith('exec'):
@@ -325,14 +329,10 @@ def create_sql_query(last_run: dict, params: dict):
     elif params.get('fetchQuery').lower().startswith('call'):
         sql_query = f"{params.get('fetchQuery')}('{last_timestamp_or_id}', {params.get('fetch_limit')})"
 
-    # a simple query with ts and id, that means ts is not unique
-    elif params.get('fetch_parameters') == 'ID and timestamp':
-        sql_query = f"{params.get('fetchQuery')} where {params.get('column_name')} >= '{last_timestamp_or_id}'" \
-                    f" order by {params.get('column_name')}"
+    # case of queries
+    else:
+        sql_query = params.get('fetchQuery')
 
-    else:  # a simple query with unique id or unique ts
-        sql_query = f"{params.get('fetchQuery')} where {params.get('column_name')} > '{last_timestamp_or_id}'" \
-                    f" order by {params.get('column_name')}"
     return sql_query
 
 
@@ -403,11 +403,18 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
     return incidents
 
 
+def generate_bind_variables_for_fetch(params: dict, last_run: dict):
+    last_fetch = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get('last_id')
+    bind_variables = {params.get('column_name'): last_fetch, 'limit': arg_to_number(params.get('fetch_limit'))}
+    return bind_variables
+
+
 def fetch_incidents(client: Client, params: dict):
     last_run = get_last_run(params)
     sql_query = create_sql_query(last_run, params)
     limit_fetch = arg_to_number(params.get('fetch_limit', FETCH_DEFAULT_LIMIT))
-    result, headers = client.sql_query_execute_request(sql_query, {})
+    bind_variables = generate_bind_variables_for_fetch(params, last_run)
+    result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit_fetch)
     table = convert_sqlalchemy_to_readable_table(result)
     table = table[:limit_fetch]
 
