@@ -216,3 +216,6 @@ ESXi
 MT
 AWS
 MicrosoftAPIModule
+IAMApiModule
+Salesforce
+Atlassian
