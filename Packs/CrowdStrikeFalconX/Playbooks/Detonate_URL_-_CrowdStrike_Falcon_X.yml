@@ -311,13 +311,6 @@ inputs:
   required: false
   description: URL to detonate.
   playbookInputQuery:
-- key: EnvironmentID
-  value:
-    simple: "100"
-  required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
-    command.
-  playbookInputQuery:
 - key: Interval
   value:
     simple: "5"

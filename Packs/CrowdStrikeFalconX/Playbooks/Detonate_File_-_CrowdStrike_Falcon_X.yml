@@ -517,14 +517,6 @@ inputs:
   required: false
   description: How much time to wait before a timeout occurs (minutes)
   playbookInputQuery: null
-- key: EnableTor
-  value:
-    simple: "false"
-  required: false
-  description: Whether the sandbox analysis routes network traffic via TOR. If true,
-    sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter
-    is set to true.
-  playbookInputQuery: null
 - key: EnvironmentID
   value:
     simple: "160: Windows 10"
