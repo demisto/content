@@ -127,6 +127,8 @@ Checks the reputation of CVE in Threat Vault.
 | --- | --- | --- |
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | CVE.ID | String | The CVE ID. | 
 | CVE.Description | String | A description of the CVE. | 
 | CVE.CVSS.Score | String | The CVSS of the CVE. | 
