@@ -7410,6 +7410,14 @@ def test_module(client: Client) -> str:
 
 
 def reverse_dict(dict_: dict[str, Any]) -> dict[Any, str]:
+    """Reverse dictionary.
+
+    Args:
+        dict_ (dict[str, Any]): Dictionary to reverse.
+
+    Returns:
+        dict[Any, str]: Reversed dictionary.
+    """
     return {v: k for k, v in dict_.items()}
 
 
