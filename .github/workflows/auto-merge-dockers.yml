@@ -14,10 +14,10 @@ jobs:
     if: startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content' && contains(github.event.pull_request.labels.*.name, 'docker') && contains(github.event.pull_request.labels.*.name, 'docker-image-auto-update')
     steps:
       - name: Print out context
-          run: |
-            echo "$GITHUB_CONTEXT"
-          env:
-            GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
       - name: Approve and auto-merge for docker update PRs
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
