@@ -7295,38 +7295,6 @@ def find_dicts_in_array(
     return [obj for obj in container if obj[key] in value]
 
 
-# def get_object_id(
-#     client: Client,
-#     create_response: Dict[str, Any],
-#     by_key: str,
-#     value: str,
-#     get_request: Callable,
-#     object_id: Optional[str] = None,
-# ) -> str:
-#     """Get object / sub object id. After create sub (member)
-#         object we should get list of all members and get our id by some key.
-
-#     Args:
-#         client (Client): Fortiweb VM Client.
-#         create_response (Dict[str, Any]): Response from create request.
-#         by_key (str): Unique key to search the sub object.
-#         value (str): The sub object value to the key.
-#         get_request (Callable): Get request (for Fortiweb VM 1)
-#         object_id (Optional[str]): Object ID (not sub object)!
-
-#     Returns:
-#         str: Member ID
-#     """
-#     if client.version == ClientV2.API_VER:
-#         member_id = create_response["results"]["id"]
-#     else:
-#         member_data = get_object_data(
-#             client.version, by_key, value, get_request, object_id
-#         )
-#         member_id = member_data["_id"] if member_data else "Can not find the id"
-#     return member_id
-
-
 def get_object_data(
     version: str,
     by_key: str,
