@@ -6,7 +6,7 @@
 !nsm-get-ips-policies domain_id=0 limit=2
 !nsm-update-alerts state=Unacknowledged new_state=Acknowledged limit=2
 !nsm-list-domain-firewall-policy domain_id=0 limit=2
-!nsm-get-firewall-policy policy_id=147
+!nsm-get-firewall-policy policy_id=147 include_rule_objects=true
 !nsm-create-firewall-policy domain=0 name=policy visible_to_child=yes description="a new policy" is_editable=yes policy_type=Advanced response=Scan rule_description="Test Member Rule" direction=Inbound destination_rule_object_id=111 destination_rule_object_type="Range IP V.4"
 !nsm-update-firewall-policy policy_id=147 description="update policy"
 !nsm-delete-firewall-policy policy_id=101

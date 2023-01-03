@@ -1084,7 +1084,7 @@ script:
         - contextPath: NSM.Alerts.Event.deviceId
           description: The ID of the device related to the event.
           type: String
-        - contextPath: NSM.Alerts.event.interface
+        - contextPath: NSM.Alerts.Event.interface
           description: The event interface.
           type: String
         - contextPath: NSM.Alerts.Event.matchedPolicy
@@ -1102,7 +1102,7 @@ script:
         - contextPath: NSM.Alerts.CreatedTime
           description: The creation time of the event.
           type: Date
-        - contextPath: NSM.Alerts.event.direction
+        - contextPath: NSM.Alerts.Event.direction
           description: The event direction.
           type: String
         - contextPath: NSM.Alerts.EventResult
@@ -1425,10 +1425,10 @@ script:
           isArray: false
           description: The number of records in a page.
       outputs:
-        - contextPath: NSM.Domains.id
+        - contextPath: NSM.Domains.ID
           description: Domain ID.
           type: Number
-        - contextPath: NSM.Domains.name
+        - contextPath: NSM.Domains.Name
           description: Domain name.
           type: String
         - contextPath: NSM.Domains.childdomains
