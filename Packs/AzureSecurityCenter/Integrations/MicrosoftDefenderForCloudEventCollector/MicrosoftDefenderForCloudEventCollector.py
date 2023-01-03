@@ -35,8 +35,32 @@ class MsClient:
         self.subscription_id = subscription_id
 
     
-    def get_event_list():
+    def get_event_list(self, last_run, args: dict):
         
+        """Listing alerts
+        Args: 
+            filter_query (str): what to filter
+            select_query (str): what to select
+            expand_query (str): what to expand
+        Returns:
+            dict: contains response body
+        """
+        filter_query = args.get("filter")
+        select_query = args.get("select")
+        expand_query = args.get("expand")
+        
+        cmd_url = "/providers/Microsoft.Security/alerts"
+
+        params = {'api-version': API_VERSION}
+        if filter_query:
+            params['$filter'] = filter_query
+        if select_query:
+            params['$select'] = select_query
+        if expand_query:
+            params['$expand'] = expand_query
+
+        events = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+        return events
 
 
 def test_module(client: MsClient):
@@ -51,18 +75,49 @@ def test_module(client: MsClient):
     demisto.results('ok')
 
 
-def get_events(client, alert_status):
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status
+def get_events(client: MsClient, last_run, args:dict):
+    events = client.get_event_list(last_run, args)
+    events.get("value")
+    outputs = list()
+    for alert in events:
+        properties = alert.get("properties")
+        if properties:
+            outputs.append(
+                {
+                    "DisplayName": properties.get("alertDisplayName"),
+                    "CompromisedEntity": properties.get("compromisedEntity"),
+                    "DetectedTime": properties.get("detectedTimeUtc"),
+                    "ReportedSeverity": properties.get("reportedSeverity"),
+                    "State": properties.get("state"),
+                    "ActionTaken": properties.get("actionTaken"),
+                    "Description": properties.get("description"),
+                    "ID": alert.get("name"),
+                }
+            )
+
+    md = tableToMarkdown(
+        "Microsft Defender For Cloud - List Alerts",
+        outputs,
+        [
+            "DisplayName",
+            "CompromisedEntity",
+            "DetectedTime",
+            "ReportedSeverity",
+            "State",
+            "ActionTaken",
+            "Description",
+            "ID",
+        ],
+        removeNull=True,
     )
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
+    cr =  CommandResults(outputs_prefix="Microsoft-Defender-For-Cloud.Alerts", outputs=outputs, readable_output=md, raw_response=events)
+    return events, cr
+
+def find_next_run():
+    pass 
 
 
-def fetch_events(client: Client, last_run: Dict[str, int],
-                 first_fetch_time: Optional[int], alert_status: Optional[str]
-                 ):
+def fetch_events(client: MsClient, last_run):
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -74,21 +129,30 @@ def fetch_events(client: Client, last_run: Dict[str, int],
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = 0
+    search_filter = 'filter'
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status
-    )
+    events = client.get_event_list()
     demisto.info(f'Fetched event with id: {prev_id + 1}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
+    next_run = find_next_run()
     demisto.info(f'Setting next run {next_run}.')
     return next_run, events
 
+def handle_last_run(args: dict):
+    # How much time before the first fetch to retrieve events
+    first_fetch_time = arg_to_datetime(
+        arg=params.get('first_fetch', '3 days'),
+        arg_name='First fetch time',
+        required=True
+    )
+    last_run = demisto.getLastRun()
+    if not last_run:
+        # here we would convert the first fetch time to be compatible with the microsoft api
+        last_run = first_fetch_time
+    
+    demisto.info(f'Last run is set to be {last_run}')
+    return last_run
 
 ''' MAIN FUNCTION '''
 
@@ -101,51 +165,44 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
-    verify_certificate = not params.get('insecure', False)
-
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    assert isinstance(first_fetch_timestamp, int)
+    params: dict = demisto.params()
+    server = params.get('server_url', '').rstrip('/') + '/'
+    tenant = params.get('tenant_id')
+    auth_and_token_url = params.get('auth_id', '')
+    enc_key = params.get('enc_key')
+    use_ssl = not params.get('unsecure', False)
+    self_deployed: bool = params.get('self_deployed', False)
     proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status', None)
+    subscription_id = demisto.args().get("subscription_id") or params.get("default_sub_id")
+    ok_codes = (200, 201, 202, 204)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+    verify_certificate = not params.get('insecure', False)
 
     demisto.debug(f'Command being called is {command}')
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
+                          server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id,
+                          ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_timestamp)
-            return_results(result)
+            test_module(client)
 
-        elif command in ('hello-world-get-events', 'fetch-events'):
-            if command == 'hello-world-get-events':
+        elif command in ('ms-defender-for-cloud-get-events', 'fetch-events'):
+            
+            last_run = handle_last_run(args)
+
+            if command == 'ms-defender-for-cloud-get-events':
                 should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client, alert_status)
+                events, results = get_events(client, last_run, args)
                 return_results(results)
 
             else:  # command == 'fetch-events':
                 should_push_events = True
-                last_run = demisto.getLastRun()
                 next_run, events = fetch_events(
                     client=client,
-                    last_run=last_run,
-                    first_fetch_time=first_fetch_timestamp,
-                    alert_status=alert_status,
+                    last_run=last_run
                 )
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)
