@@ -200,7 +200,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Vulnerability.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Vulnerability.details
       description: Any additional details of the signature.
@@ -299,7 +299,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Vulnerability.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Vulnerability.details
       description: Any additional details of the signature.
@@ -341,7 +341,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Spyware.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Spyware.min_version
       description: The PAN-OS minimum version.
@@ -413,7 +413,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Fileformat.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Fileformat.details
       description: Any additional details of the signature.
@@ -491,7 +491,7 @@ script:
       description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.DNS.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.RTDNS.id
       description: The unique ID of the signature.
@@ -518,7 +518,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.RTDNS.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.SpywareC2.id
       description: The unique ID of the signature.
@@ -548,7 +548,7 @@ script:
       description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.SpywareC2.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
   - arguments:
     - default: false
@@ -684,7 +684,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Vulnerability.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Vulnerability.details
       description: Any additional details of the signature.
@@ -786,7 +786,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Spyware.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Spyware.min_version
       description: The PAN-OS minimum version.
@@ -825,7 +825,7 @@ script:
       description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.DNS.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.RTDNS.id
       description: The unique ID of the signature.
@@ -852,7 +852,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.RTDNS.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.SpywareC2.id
       description: The unique ID of the signature.
@@ -882,7 +882,7 @@ script:
       description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.SpywareC2.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
   - arguments:
     - default: false
@@ -1014,7 +1014,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Vulnerability.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Vulnerability.details
       description: Any additional details of the signature.
@@ -1056,7 +1056,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Spyware.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Spyware.min_version
       description: The PAN-OS minimum version.
@@ -1128,7 +1128,7 @@ script:
       description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.Fileformat.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.Fileformat.details
       description: Any additional details of the signature.
@@ -1173,7 +1173,7 @@ script:
       description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.DNS.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.RTDNS.id
       description: The unique ID of the signature.
@@ -1200,7 +1200,7 @@ script:
       description: The threat signature creation time.
       type: String
     - contextPath: ThreatVault.RTDNS.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
     - contextPath: ThreatVault.SpywareC2.id
       description: The unique ID of the signature.
@@ -1230,7 +1230,7 @@ script:
       description: Information about the signature release.
       type: String
     - contextPath: ThreatVault.SpywareC2.status
-      description: The status of the signature.
+      description: The status of the signature (e.g. `inactive`, `active`, `released`).
       type: String
   dockerimage: demisto/crypto:1.0.0.42817
   isfetch: true
