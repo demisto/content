@@ -1740,6 +1740,7 @@ class Pack(object):
             # Remove old entries from change log
             pack_versions_to_keep = remove_old_versions_from_changelog(changelog)
 
+            logging.debug(f'Versions to keep for pack: {self._pack_name} = {pack_versions_to_keep}')
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
                 json.dump(changelog, pack_changelog, indent=4)

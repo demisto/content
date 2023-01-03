@@ -160,6 +160,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
     task_status = False
 
     try:
+        logging.info(f"Starting to update index.zip for {pack_name}.")
         index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
                                        os.path.isdir(os.path.join(index_folder_path, d))]
         index_pack_path = os.path.join(index_folder_path, pack_name)
