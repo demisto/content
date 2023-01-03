@@ -274,6 +274,11 @@ class Parser:
 
     @property
     @abstractmethod
+    def sub_object_id_key(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
     def action_user_to_api_mapper(self) -> Dict[str, Any]:
         pass
 
@@ -620,6 +625,15 @@ class ParserV1(Parser):
             "path": custom_whitelist.get("path") or "",
         }
         return parsed_data
+
+    @property
+    def sub_object_id_key(self) -> str:
+        """Hold sub object id key in Fortiweb V1
+
+        Returns:
+            str: Sub object id key
+        """
+        return "_id"
 
     @property
     def action_user_to_api_mapper(self) -> Dict[str, Any]:
@@ -1051,6 +1065,15 @@ class ParserV2(Parser):
             "value": custom_whitelist["value"],
         }
         return parsed_data
+
+    @property
+    def sub_object_id_key(self) -> str:
+        """Hold sub object id key in Fortiweb V2
+
+        Returns:
+            str: Sub object id key
+        """
+        return "name"
 
     @property
     def action_user_to_api_mapper(self) -> Dict[str, Any]:
@@ -4552,7 +4575,7 @@ def protected_hostname_group_list_command(
         data_parser=client.parser.parse_protected_hostname_group,
         args=args,
         sub_object_id=protected_hostname,
-        sub_object_key="_id" if client == ClientV1.API_VER else "name",
+        sub_object_key=client.parser.sub_object_id_key,
     )
     headers = client.parser.create_output_headers(
         client.version,
@@ -4891,7 +4914,7 @@ def ip_list_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         data_parser=client.parser.parse_ip_list_group,
         args=args,
         sub_object_id=group_name,
-        sub_object_key="_id" if client == ClientV1.API_VER else "name",
+        sub_object_key=client.parser.sub_object_id_key,
     )
     headers = client.parser.create_output_headers(
         client.version,
@@ -5439,7 +5462,7 @@ def geo_ip_group_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
         data_parser=client.parser.parse_geo_ip_group,
         args=args,
         sub_object_id=name,
-        sub_object_key="_id" if client == ClientV1.API_VER else "name",
+        sub_object_key=client.parser.sub_object_id_key,
     )
     headers = client.parser.create_output_headers(
         client.version,
