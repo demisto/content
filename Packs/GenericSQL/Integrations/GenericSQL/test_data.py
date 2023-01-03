@@ -28,13 +28,12 @@ PARAMS_1 = {'column_name': 'incident_id', 'connect_parameters': None, 'credentia
             'identifier': 'admin', 'password': 'P809rxRbYU', 'passwordChanged': False},
             'dbname': 'Test_db', 'dialect': 'Microsoft SQL Server - MS ODBC Driver',
             'fetchQuery': 'select * from incidents', 'fetch_limit': '3',
-            'fetch_parameters': 'Unique sequence ID or unique timestamp',
+            'fetch_parameters': 'Unique sequence ID',
             'host': 'demistodev-microsoftsqlserver.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com',
             'id_column': None,
             'incidentFetchInterval': '1', 'incidentType': None,
             'incident_name': 'incident_name', 'isFetch': True,
-            'pool_ttl': '600', 'port': '1433', 'ssl_connect': False, 'start_id': '-1',
-            'start_timestamp': '', 'use_pool': False}
+            'pool_ttl': '600', 'port': '1433', 'ssl_connect': False, 'start_fetch': '-1', 'use_pool': False}
 TABLE_1 = [{'incident_id': '1000', 'timestamp': '2022-11-08 08:30:42.423000', 'incident_name': 'incident_1',
           'incident_data': 'incident data for incident 1'},
          {'incident_id': '1001', 'timestamp': '2022-11-08 08:32:53.177000',
@@ -72,13 +71,12 @@ PARAMS_2 = {'column_name': 'incident_id', 'connect_parameters': None, 'credentia
              'identifier': 'admin', 'password': 'P809rxRbYU', 'passwordChanged': False},
             'dbname': 'Test_db', 'dialect': 'Microsoft SQL Server - MS ODBC Driver',
             'fetchQuery': 'select * from incidents', 'fetch_limit': '3',
-            'fetch_parameters': 'Unique sequence ID or unique timestamp',
+            'fetch_parameters': 'Unique sequence ID',
             'host': 'demistodev-microsoftsqlserver.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com',
             'id_column': None,
             'incidentFetchInterval': '1', 'incidentType': None,
             'incident_name': 'incident_name', 'isFetch': True,
-            'pool_ttl': '600', 'port': '1433', 'ssl_connect': False, 'start_id': '1012',
-            'start_timestamp': '', 'use_pool': False}
+            'pool_ttl': '600', 'port': '1433', 'ssl_connect': False, 'start_fetch': '1012', 'use_pool': False}
 TABLE_2 = []
 
 # ------------------------------------ test_fetch_incident_avoiding_duplicates (3) -------------------------------
@@ -94,7 +92,7 @@ PARAMS_3 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials
             'fetch_limit': '2', 'fetch_parameters': 'ID and timestamp',
             'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': 'incident_id',
             'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
-            'pool_ttl': '600', 'port': '3306', 'ssl_connect': False, 'start_id': '', 'start_timestamp': '2 months',
+            'pool_ttl': '600', 'port': '3306', 'ssl_connect': False, 'start_fetch': '2 months',
             'use_pool': False}
 RESPONSE_3 = [{'incident_id': '1001', 'timestamp': '2022-11-24 13:10:12', 'incident_name': 'incident_2',
                'incident_data': 'incident data for incident 2'},
@@ -103,7 +101,7 @@ RESPONSE_3 = [{'incident_id': '1001', 'timestamp': '2022-11-24 13:10:12', 'incid
 LAST_RUN_BEFORE_SECOND_FETCH_3 = {'ids': ['1001'], 'last_id': False, 'last_timestamp': '2022-11-24 13:10:12'}
 EXPECTED_INCIDENTS_3 = [{'name': 'incident_3', 'occurred': '2022-11-24T13:10:31Z', 'rawJSON':
                         '{"incident_id": "1002", "timestamp": "2022-11-24 13:10:31", "incident_name": "incident_3",'
-                         ' "incident_data": "incident data for incident 3"}'}]
+                         ' "incident_data": "incident data for incident 3", "type": "GenericSQL Record"}'}]
 TABLE_3 = [{'incident_id': '1001', 'timestamp': '2022-11-24 13:10:12', 'incident_name': 'incident_2',
             'incident_data': 'incident data for incident 2'},
            {'incident_id': '1002', 'timestamp': '2022-11-24 13:10:31', 'incident_name': 'incident_3',
@@ -127,10 +125,10 @@ PARAMS_4 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials
                                                'version': 0, 'workgroup': ''},
              'identifier': 'admin', 'password': 'ICYq7L3S21', 'passwordChanged': False},
             'dbname': 'test_db_1', 'dialect': 'MySQL', 'feed': False, 'fetchQuery': 'call Test_MySQL_3',
-            'fetch_limit': '2', 'fetch_parameters': 'Unique ascending ID or unique timestamp',
+            'fetch_limit': '2', 'fetch_parameters': 'Unique timestamp',
             'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': '',
             'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
-            'pool_ttl': '600', 'port': '3306', 'ssl_connect': False, 'start_id': '', 'start_timestamp': '2 months',
+            'pool_ttl': '600', 'port': '3306', 'ssl_connect': False, 'start_fetch': '2 months',
             'use_pool': False}
 
 EXPECTED_LAST_RUN_4_1 = {'last_timestamp': '2022-11-24 13:10:12', 'last_id': False, 'ids': []}
