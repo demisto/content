@@ -1967,4 +1967,6 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- No tests - no instance
+- CrowdStrike_FalconX_Test
+- CrowdStrike_Falcon_X_-Test-Detonate_File
+- CrowdStrike_Falcon_X_-Test-Detonate_URL
