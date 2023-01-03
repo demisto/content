@@ -145,6 +145,12 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
     - contextPath: CVE.ID
       description: The CVE ID.
       type: String
