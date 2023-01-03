@@ -2392,7 +2392,7 @@ class ClientV1(Client):
             monitor_mode (Optional[str]): Monitor mode flag.
             url_case_sensitivity (Optional[str]): URL case sensitivity flag.
             comments (Optional[str]): Comments.
-            mach_once (Optional[str]): Match once flag.
+            match_once (Optional[str]): Match once flag.
 
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
@@ -2466,7 +2466,7 @@ class ClientV1(Client):
             monitor_mode (Optional[str]): Monitor mode flag.
             url_case_sensitivity (Optional[str]): URL case sensitivity flag.
             comments (Optional[str]): Comments.
-            mach_once (Optional[str]): Match once flag.
+            match_once (Optional[str]): Match once flag.
 
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
@@ -3775,7 +3775,7 @@ class ClientV2(Client):
             monitor_mode (Optional[str]): Monitor mode flag.
             url_case_sensitivity (Optional[str]): URL case sensitivity flag.
             comments (Optional[str]): Comments.
-            mach_once (Optional[str]): Match once flag.
+            match_once (Optional[str]): Match once flag.
             kwargs :
                 multi_certificate (Optional[str]): Enable Multi certificate.
                 certificate_group (Optional[str]): Certificate group name.
@@ -3883,7 +3883,7 @@ class ClientV2(Client):
             monitor_mode (Optional[str]): Monitor mode flag.
             url_case_sensitivity (Optional[str]): URL case sensitivity flag.
             comments (Optional[str]): Comments.
-            mach_once (Optional[str]): Match once flag.
+            match_once (Optional[str]): Match once flag.
             kwargs: retry_on (str): Retry on flag.
             kwargs: retry_on_cache_size (Optional[str]): Retry on chache size:
             kwargs : retry_on_connect_failure (Optional[str]): Retry on connect failure status.
@@ -5664,7 +5664,7 @@ def validate_geo_ip_member(args: Dict[str, Any]):
         "Zimbabwe",
     ]
     countries = argToList(args["countries"])
-    if not set(countries).issubset(set(data)):
+    if not set(countries).issubset(data):
         raise DemistoException(ErrorMessage.COUNTRIES.value)
 
 
@@ -6235,7 +6235,7 @@ def validate_server_policy(version: str, args: Dict[str, Any]):
             "disable",
         ]:
             raise ValueError(ErrorMessage.CLIENT_REAL_IP.value)
-        if args.get("mach_once") and args["mach_once"] not in ["enable", "disable"]:
+        if args.get("match_once") and args["match_once"] not in ["enable", "disable"]:
             raise ValueError(ErrorMessage.MATCH_ONCE.value)
         if args.get("monitor_mode") and args["monitor_mode"] not in [
             "enable",
@@ -6285,7 +6285,7 @@ def validate_server_policy(version: str, args: Dict[str, Any]):
             for code in argToList(args.get("retry_on_http_response_codes"))
         ]
         if not set(retry_on_http_response_codes).issubset(
-            set([404, 408, 500, 501, 502, 503, 504])
+            [404, 408, 500, 501, 502, 503, 504]
         ):
             raise ValueError(ErrorMessage.RETRY_ON_HTTP_RESPONSE_CODES.value)
 
@@ -6341,7 +6341,7 @@ def server_policy_create_command(
         monitor_mode=args.get("monitor_mode"),
         url_case_sensitivity=args.get("url_case_sensitivity"),
         comments=args.get("comments"),
-        match_once=args.get("mach_once"),
+        match_once=args.get("match_once"),
         allow_list=args.get("allow_list"),
         replace_msg=args.get("replace_msg"),
         scripting=args.get("scripting"),
@@ -6418,7 +6418,7 @@ def server_policy_update_command(
         monitor_mode=args.get("monitor_mode"),
         url_case_sensitivity=args.get("url_case_sensitivity"),
         comments=args.get("comments"),
-        match_once=args.get("mach_once"),
+        match_once=args.get("match_once"),
         allow_list=args.get("allow_list"),
         replace_msg=args.get("replace_msg"),
         scripting=args.get("scripting"),
