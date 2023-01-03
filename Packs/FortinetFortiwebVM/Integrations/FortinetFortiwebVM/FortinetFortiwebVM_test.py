@@ -3862,7 +3862,7 @@ def test_fail_server_policy_create_command(
                 "server_pool": "server1",
                 "virtual_server": "virtual1",
                 "http_service": "HTTP",
-                "mach_once": "wrong",
+                "match_once": "wrong",
             },
             "server_policy/v2_exist.json",
             ErrorMessage.MATCH_ONCE.value,
