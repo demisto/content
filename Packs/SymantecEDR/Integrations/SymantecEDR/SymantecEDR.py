@@ -211,7 +211,7 @@ class Client(BaseClient):
 
         if response.status_code >= 400:
             error_message = f'{response.json().get("error")}, {response.json().get("message")}'
-            raise DemistoException(error_message)
+            raise DemistoException(error_message, res=response)
 
         return result
 
@@ -228,7 +228,7 @@ def access_token_error_handler(response: requests.Response):
          DemistoException
     """
     if response.status_code == 401:
-        raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
+        raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG, res=response)
     elif response.status_code >= 400:
         raise DemistoException('Error: something went wrong, please try again.', res=response)
 
@@ -243,7 +243,7 @@ def http_request_error_handler(response: requests.Response):
     """
     if response.status_code >= 400:
         error_message = f'{response.json().get("error")},{response.json().get("message")}'
-        raise DemistoException(error_message)
+        raise DemistoException(error_message, res=response)
 
 
 def iso_creation_date(date: str):
@@ -1072,17 +1072,13 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str:
           CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
               result.
     """
-    endpoint = '/atpapi/v2/incidents'
-    # Get UUID based on incident_id
-    uuid = ''
-    data_list = get_incident_raw_response(endpoint, client, args, 1).get('result', [])
+    data_list = get_incident_raw_response('/atpapi/v2/incidents', client, args, 1).get('result', [])
     if len(data_list) >= 1:
-        uuid = data_list[0].get('uuid')
+        if uuid := data_list[0].get('uuid'):
+            return uuid
     else:
         raise DemistoException(f'Incident ID Not Found {args.get("incident_id")}.'
                                f'Provide time range arguments if incidents are older then 30 days')
-
-    return uuid
 
 
 def get_request_payload(args: dict[str, Any], query_type: str | None = 'default'):
