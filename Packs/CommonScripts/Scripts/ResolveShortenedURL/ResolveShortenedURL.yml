@@ -35,7 +35,7 @@ args:
   description: Trust any certificate (not secure)
 outputs:
 - contextPath: URL.Data
-  description: Resolved URL
+  description: Resolved URL.
   type: string
 - contextPath: ResolveShortenedURL.OriginalURL
   description: The original shortened URL.
