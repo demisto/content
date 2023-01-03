@@ -543,9 +543,6 @@
             "LastModTs": null,
             "sensorIPAddress": "3.3.3.3",
             "nsmVersion": "4.4.4.4",
-            "capacity": "",
-            "isStack": false,
-            "isStackMember": false,
             "MemberSensors": []
         }]},
     "expected_sensors_list": [{
@@ -567,9 +564,6 @@
             "LastModTs": null,
             "IP Address": "3.3.3.3",
             "nsmVersion": "4.4.4.4",
-            "capacity": "",
-            "isStack": false,
-            "isStackMember": false,
             "MemberSensors": []
         }],
     "get_attacks": [{

@@ -643,9 +643,6 @@ def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
             'ReconPolicyID': sensor.get('ReconPolicyID'),
             'LastModTs': sensor.get('LastModTs'),
             'nsmVersion': sensor.get('nsmVersion'),
-            'capacity': sensor.get('capacity'),
-            'isStack': sensor.get('isStack'),
-            'isStackMember': sensor.get('isStackMember'),
             'MemberSensors': sensor.get('MemberSensors')
         }
         result_list.append(record)
