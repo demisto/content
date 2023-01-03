@@ -397,9 +397,9 @@ class ParserV1(Parser):
         """
         group = {
             "id": protected_hostname_member["_id"],
-            "action": dict_safe_get(
-                self.action_api_to_user_mapper, [protected_hostname_member["action"]]
-            ),
+            "action": self.action_api_to_user_mapper[
+                protected_hostname_member["action"]
+            ],
             "host": protected_hostname_member["host"],
         }
         return group
@@ -433,12 +433,8 @@ class ParserV1(Parser):
         """
         parsed_data = {
             "id": ip_list_member["_id"],
-            "type": dict_safe_get(
-                self.type_api_to_user_mapper, [ip_list_member["type"]]
-            ),
-            "severity": dict_safe_get(
-                self.severity_api_to_user_mapper, [ip_list_member["severity"]]
-            ),
+            "type": self.type_api_to_user_mapper[ip_list_member["type"]],
+            "severity": self.severity_api_to_user_mapper[ip_list_member["severity"]],
             "trigger_policy": ip_list_member["triggerPolicy"],
             "ip": ip_list_member["iPv4IPv6"],
         }
@@ -481,14 +477,11 @@ class ParserV1(Parser):
         Returns:
             Dict[str, Any]: Parsed dictionary.
         """
-        severity = dict_safe_get(
-            self.severity_api_to_user_mapper, [geo_ip_group["severity"]]
-        )
         parsed_data = {
             "id": geo_ip_group["_id"],
             "count": geo_ip_group["count"],
             "trigger_policy": geo_ip_group["triggerPolicy"],
-            "severity": severity,
+            "severity": self.severity_api_to_user_mapper[geo_ip_group["severity"]],
             "except": geo_ip_group["except"],
             "can_delete": geo_ip_group["can_delete"],
         }
@@ -573,9 +566,9 @@ class ParserV1(Parser):
         """
         parsed_data = {
             "name": policy["_id"],
-            "deployment_mode": dict_safe_get(
-                self.deployment_mode_api_to_user_mapper, [policy["depInMode"]]
-            ),
+            "deployment_mode": self.deployment_mode_api_to_user_mapper[
+                policy["depInMode"]
+            ],
             "virtual_server": policy["virtualServer"],
             "protocol": ",".join(
                 remove_empty_elements(
@@ -614,9 +607,7 @@ class ParserV1(Parser):
         """
         parsed_data = {
             "id": custom_whitelist["_id"],
-            "type": dict_safe_get(
-                self.custom_whitelist_api_to_user_mapper, [custom_whitelist["type"]]
-            ),
+            "type": self.custom_whitelist_api_to_user_mapper[custom_whitelist["type"]],
             "name": custom_whitelist.get("itemName") or "",
             "status": custom_whitelist["enable"],
             "request_type": dict_safe_get(
@@ -832,9 +823,7 @@ class ParserV2(Parser):
         """
         parsed_data = {
             "id": ip_list_member["id"],
-            "type": dict_safe_get(
-                self.type_api_to_user_mapper, [ip_list_member["type"]]
-            ),
+            "type": self.type_api_to_user_mapper[ip_list_member["type"]],
             "ip": ip_list_member["ip"],
         }
         return parsed_data
@@ -875,7 +864,7 @@ class ParserV2(Parser):
         Returns:
             Dict[str, Any]: Parsed dictionary.
         """
-        action = dict_safe_get(self.action_api_to_user_mapper, [geo_ip_group["action"]])
+        action = self.action_api_to_user_mapper[geo_ip_group["action"]]
         parsed_data = {
             "id": geo_ip_group["name"],
             "count": geo_ip_group["sz_country-list"],
@@ -981,9 +970,9 @@ class ParserV2(Parser):
         """
         parsed_data = {
             "name": policy["name"],
-            "deployment_mode": dict_safe_get(
-                self.deployment_mode_api_to_user_mapper, [policy["deployment-mode"]]
-            ),
+            "deployment_mode": self.deployment_mode_api_to_user_mapper[
+                policy["deployment-mode"]
+            ],
             "virtual_server": policy["vserver"],
             "protocol": ",".join(
                 [
@@ -1035,37 +1024,28 @@ class ParserV2(Parser):
         """
         parsed_data = {
             "id": custom_whitelist["id"],
-            "type": dict_safe_get(
-                self.custom_whitelist_api_to_user_mapper, [custom_whitelist["type"]]
-            ),
+            "type": self.custom_whitelist_api_to_user_mapper[custom_whitelist["type"]],
             "name": custom_whitelist["name"],
             "status": custom_whitelist["status"],
-            "name_type": dict_safe_get(
-                self.request_type_user_to_api_mapper, [custom_whitelist["name-type"]]
+            "name_type": self.request_type_user_to_api_mapper.get(
+                custom_whitelist.get("name-type")
             )
             or "",
             "request_url_status": custom_whitelist["request-file-status"],
-            "request_type": dict_safe_get(
-                self.request_type_user_to_api_mapper, [custom_whitelist["request-type"]]
+            "request_type": self.request_type_user_to_api_mapper.get(
+                custom_whitelist.get("request-type")
             )
             or "",
             "request_url": custom_whitelist["request-file"],
             "domain_status": custom_whitelist["domain-status"],
-            "domain_type": dict_safe_get(
-                self.request_type_user_to_api_mapper, [custom_whitelist["domain-type"]]
-            )
-            or "",
+            "domain_type":
+                self.request_type_user_to_api_mapper.get(custom_whitelist.get("domain-type")) or "",
             "domain": custom_whitelist["domain"],
             "path": custom_whitelist["path"],
-            "header_name_type": dict_safe_get(
-                self.request_type_user_to_api_mapper, [custom_whitelist["header-type"]]
-            )
-            or "",
+            "header_name_type":
+                self.request_type_user_to_api_mapper.get(custom_whitelist.get("header-type")) or "",
             "value_status": custom_whitelist["value-status"],
-            "header_value_type": dict_safe_get(
-                self.request_type_user_to_api_mapper, [custom_whitelist["value-type"]]
-            )
-            or "",
+            "header_value_type": self.request_type_user_to_api_mapper.get(custom_whitelist.get("value-type")) or "",
             "value": custom_whitelist["value"],
         }
         return parsed_data
