@@ -7229,7 +7229,7 @@ def find_dict_in_array(
 
 def find_dicts_in_array(
     container: List[Dict[str, Any]], key: str, value: List[str]
-) -> Optional[List[Dict[str, Any]]]:
+) -> List[Dict[str, Any]]:
     """Gets dictionaries object in list of dictionaries.The search is by key that exist in each dictionary.
 
     Args:
@@ -7238,7 +7238,7 @@ def find_dicts_in_array(
         value (List[str]): The values for the key.
 
     Returns:
-        Optional[List[Dict[str, Any]]]: The dictionaries / None if there is no match.
+        List[Dict[str, Any]]: List of the dictionaries.
     """
 
     return [obj for obj in container if obj[key] in value]
