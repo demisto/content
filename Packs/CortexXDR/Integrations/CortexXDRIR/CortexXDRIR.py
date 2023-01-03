@@ -375,6 +375,18 @@ class Client(CoreClient):
 
         return reply.get('reply')
 
+    def get_tenant_info(self):
+        reply = self._http_request(
+            method='GET',
+            url_suffix='/system/get_tenant_info/',
+            timeout = self.timeout
+        )
+        return reply.get('reply')
+
+def get_tenant_info_command(client: Client):
+    client.get_tenant_info()
+    
+
 
 def get_incidents_command(client, args):
     """
@@ -1474,7 +1486,8 @@ def main():  # pragma: no cover
             return_results(add_tag_to_endpoints_command(client, args))
         elif command == 'xdr-endpoint-tag-remove':
             return_results(remove_tag_from_endpoints_command(client, args))
-
+        elif command == 'xdr-get-tenant-info':
+            return_results(get_tenant_info_command(client))
     except Exception as err:
         return_error(str(err))
 
