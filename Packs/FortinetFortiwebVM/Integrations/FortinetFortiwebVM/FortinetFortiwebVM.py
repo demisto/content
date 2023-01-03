@@ -2806,15 +2806,21 @@ class ClientV1(Client):
         )
 
     def custom_predifined_whitelist_list_handler(
-        self, response: List[Dict[str, Any]], object_type: Optional[str] = None
+        self,
+        response: Union[Dict[str, Any], List[Dict[str, Any]]],
+        object_type: Optional[str] = None,
     ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
-        data = response
-        if object_type:
-            return dict_safe_get(
-                find_dict_in_array(data, "type", object_type), ["details"]
-            )
-        else:
-            return [member for object_type in data for member in object_type["details"]]
+        if isinstance(response, list):
+            data = response
+            if object_type:
+                return dict_safe_get(
+                    find_dict_in_array(data, "type", object_type), ["details"]
+                )
+            else:
+                return [
+                    member for object_type in data for member in object_type["details"]
+                ]
+        return []
 
     def custom_predifined_whitelist_list_request(self) -> List[Dict[str, Any]]:
         """List the Custom Predifined members.
@@ -4448,19 +4454,23 @@ class ClientV2(Client):
         return self._http_request(method="GET", url_suffix="cmdb/log/trigger-policy")
 
     def custom_predifined_whitelist_list_handler(
-        self, response: Dict[str, Any], object_type: Optional[str] = None
+        self,
+        response: Union[Dict[str, Any], List[Dict[str, Any]]],
+        object_type: Optional[str] = None,
     ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
-        data = response["results"]
-        if object_type:
-            rel_data = dict_safe_get(
-                find_dict_in_array(data, "type", object_type), ["details"]
-            )
-            return {"results": rel_data}
-        else:
-            rel_data = [
-                member for object_type in data for member in object_type["details"]
-            ]
-            return {"results": rel_data}
+        if isinstance(response, dict):
+            data = response["results"]
+            if object_type:
+                rel_data = dict_safe_get(
+                    find_dict_in_array(data, "type", object_type), ["details"]
+                )
+                return {"results": rel_data}
+            else:
+                rel_data = [
+                    member for object_type in data for member in object_type["details"]
+                ]
+                return {"results": rel_data}
+        return {}
 
     def custom_predifined_whitelist_list_request(self) -> Dict[str, Any]:
         """List the Custom Predifined members.
