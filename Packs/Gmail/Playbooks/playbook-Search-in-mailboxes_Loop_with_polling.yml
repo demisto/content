@@ -553,7 +553,7 @@ outputs:
   description: The result of this output causes the loop to end.
   type: unknown
 - contextPath: SearchProcess
-  description: Needs rewrite.
+  description: Enables the search process to be followed.
 tests:
 - No tests
 fromversion: 6.5.0

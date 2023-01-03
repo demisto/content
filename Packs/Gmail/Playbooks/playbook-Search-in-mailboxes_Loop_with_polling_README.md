@@ -57,7 +57,7 @@ gmail-search-all-mailboxes
 | Email.Attachments.entryID | Email Attachments. IDs are separated by commas. | unknown |
 | NewPageToken | In the next iteration, additional accounts will be imported using this output. | unknown |
 | Stop | The result of this output causes the loop to end. | unknown |
-| SearchProcess | Needs rewrite. | unknown |
+| SearchProcess | Enables the search process to be followed. | unknown |
 
 ## Playbook Image
 ---
