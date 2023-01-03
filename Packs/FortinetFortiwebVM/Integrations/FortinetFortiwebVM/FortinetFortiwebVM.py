@@ -1028,31 +1028,26 @@ class ParserV2(Parser):
             "name": custom_whitelist["name"],
             "status": custom_whitelist["status"],
             "name_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("name-type")
-            )
-            or "",
+                custom_whitelist.get("name-type", ""), ""
+            ),
             "request_url_status": custom_whitelist["request-file-status"],
             "request_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("request-type")
-            )
-            or "",
+                custom_whitelist.get("request-type", ""), ""
+            ),
             "request_url": custom_whitelist["request-file"],
             "domain_status": custom_whitelist["domain-status"],
             "domain_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("domain-type")
-            )
-            or "",
+                custom_whitelist.get("domain-type", ""), ""
+            ),
             "domain": custom_whitelist["domain"],
             "path": custom_whitelist["path"],
             "header_name_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("header-type")
-            )
-            or "",
+                custom_whitelist.get("header-type", ""), ""
+            ),
             "value_status": custom_whitelist["value-status"],
             "header_value_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("value-type")
-            )
-            or "",
+                custom_whitelist.get("value-type", ""), ""
+            ),
             "value": custom_whitelist["value"],
         }
         return parsed_data
