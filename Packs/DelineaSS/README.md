@@ -1,5 +1,7 @@
 # Delinea Secret Server
 
+(Formly known as "Thycotic Software Secret Server")
+
 This pack includes XSIAM content.
 
 Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution. Palo Alto Networks and Delinea integrations allow you to manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process
@@ -49,5 +51,5 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
 2. Right-click and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
-   - vendor as vendor - delinea
-   - product as product - sercretserver
+   - vendor as vendor - thycotic_software
+   - product as product - secret_server
