@@ -1,6 +1,6 @@
 {
     "name": "ReplaceMatchGroup (Deprecated)",
-    "description": "Deprecated. A transformer that returns a string with all matches of a regex pattern groups replaced by a replacement",
+    "description": "Deprecated. Used the script from Common Scripts instead.",
     "support": "xsoar",
     "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",

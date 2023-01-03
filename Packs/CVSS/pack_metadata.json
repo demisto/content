@@ -1,6 +1,6 @@
 {
     "name": "CVSS  (Deprecated)“",
-    "description": "Deprecated. Tools associated with CVSS scores and calculations.",
+    "description": "Deprecated. Used the script from Common Scripts instead.",
     "support": "xsoar",
     "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
