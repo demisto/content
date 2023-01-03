@@ -26,16 +26,16 @@ name: McAfeeNSMv2
 script:
   commands:
     - name: nsm-list-domain-firewall-policy
-      description: Gets the list of Firewall Policies defined in a particular domain.
+      description: Gets the list of firewall policies defined in a particular domain.
       arguments:
         - name: domain_id
           required: true
-          description: The id of the domain. To get the domain_id, use the !nsm-get-domains command.
+          description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
           isArray: false
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default value is 50.
+          description: The maximum number of projects to return. 
           defaultValue: 50
         - name: page
           required: false
@@ -47,42 +47,42 @@ script:
           description: The number of records in a page.
       outputs:
         - contextPath: NSM.Policy.policyId
-          description: The id of the policy.
+          description: The ID of the policy.
           type: Number
         - contextPath: NSM.Policy.policyName
-          description: Name of the Firewall Policy.
+          description: Name of the firewall policy.
           type: String
         - contextPath: NSM.Policy.domainId
-          description: The id of the domain.
+          description: The ID of the domain.
           type: Number
         - contextPath: NSM.Policy.visibleToChild
-          description: Is Policy visible to child domains.
+          description: Whether the policy is visible to child domains.
           type: Boolean
         - contextPath: NSM.Policy.description
-          description: Policy Description.
+          description: Policy description.
           type: String
         - contextPath: NSM.Policy.isEditable
-          description: Is Policy editable or not.
+          description: Whether the policy is editable.
           type: Boolean
         - contextPath: NSM.Policy.policyType
-          description: Policy Type, can be "ADVANCED" or "CLASSIC".
+          description: Policy type. Can be "ADVANCED" or "CLASSIC".
           type: String
         - contextPath: NSM.Policy.policyVersion
           description: Policy version.
           type: Number
         - contextPath: NSM.Policy.lastModUser
-          description: Last User that modified the policy.
+          description: Last user who modified the policy.
           type: String
     - name: nsm-get-firewall-policy
-      description: Gets the Firewall Policy details.
+      description: Gets the firewall policy details.
       arguments:
         - name: policy_id
           required: true
-          description: The id of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command.
+          description: The ID of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command.
           isArray: false
         - name: include_rule_objects
           required: false
-          description: Whether to insert the rule object that are linked to the policy in the context. True- the rule object will bw inserted. False- not inserted. The default value is false.
+          description: Whether to insert the rule objects that are linked to the policy in the context. True- the rule object will be inserted. False- not inserted.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -91,116 +91,116 @@ script:
           defaultValue: 'false'
       outputs:
         - contextPath: NSM.Policy.FirewallPolicyId
-          description: Unique Firewall Policy ID.
+          description: Unique firewall policy ID.
           type: Number
         - contextPath: NSM.Policy.Name
-          description: Policy Name.
+          description: Policy name.
           type: String
         - contextPath: NSM.Policy.DomainId
-          description: Id of Domain to which this firewall policy belongs to.
+          description: ID of the domain to which this firewall policy belongs.
           type: Number
         - contextPath: NSM.Policy.VisibleToChild
-          description: Policy visible to Child Domain.
+          description: Whether the policy is visible to a child domain.
           type: Boolean
         - contextPath: NSM.Policy.Description
-          description: Firewall Policy Description.
+          description: Firewall policy description.
           type: String
         - contextPath: NSM.Policy.LastModifiedTime
-          description: Last Modified Time of the Firewall Policy.
+          description: Last modified time of the firewall Policy.
           type: Date
         - contextPath: NSM.Policy.IsEditable
-          description: Policy is editable or not.
+          description: Whether the policy is editable.
           type: Boolean
         - contextPath: NSM.Policy.PolicyType
-          description: Policy Type, can be "Advanced" / "Classic".
+          description: Policy type. Can be "Advanced" / "Classic".
           type: String
         - contextPath: NSM.Policy.PolicyVersion
-          description: Policy Version.
+          description: Policy version.
           type: Number
         - contextPath: NSM.Policy.LastModifiedUser
-          description: Last User that modified the policy.
+          description: Last user user modified the policy.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Description
-          description: Rule Description.
+          description: Rule description.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Enabled
-          description: Is Rule Enabled or not
+          description: Whether the rule is enabled.
           type: Boolean
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Response
           description: Action to be performed if the traffic matches this rule. Can be "Scan" / "Drop" / "Deny" / "Ignore" / "Stateless Ignore" / "Stateless Drop" / "Require Authentication".
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.IsLogging
-          description: Is Logging enabled for this rule.
+          description: Whether logging is enabled for this rule.
           type: Boolean
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Direction
-          description: Rule Direction, can be "Inbound" / "Outbound" / "Either".
+          description: Rule direction. Can be "Inbound" / "Outbound" / "Either".
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectId
-          description: Unique Rule Object ID.
+          description: Unique rule object ID.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.Name
-          description: Rule Object Name.
+          description: Rule object name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectType
-          description: Source or Destination Mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Network IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6".
+          description: Source or destination mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Network IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectId
-          description: Unique Rule Object ID.
+          description: Unique rule object ID.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.Name
-          description: Rule Object Name.
+          description: Rule object name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectType
-          description: Source or Destination Mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6".
+          description: Source or destination mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.RuleObjectId
-          description: Unique Rule Object ID.
+          description: Unique rule object ID.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.Name
-          description: Rule Object Name.
+          description: Rule object name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.RuleObjectType
-          description: Source User. Can be "USER" / "USER_GROUP".
+          description: Source user. Can be "USER" / "USER_GROUP".
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.RuleObjectId
-          description: Unique Service Rule Object ID.
+          description: Unique service rule object ID.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.Name
-          description: Rule Object Name.
+          description: Rule object name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.RuleObjectType
-          description: Service/ Application Mode. Can be "APPLICATION" / "APPLICATION_GROUP" / "APPLICATION_ON_CUSTOM_PORT" / "SERVICE" / "SERVICE_GROUP".
+          description: Service/ application mode. Can be "APPLICATION" / "APPLICATION_GROUP" / "APPLICATION_ON_CUSTOM_PORT" / "SERVICE" / "SERVICE_GROUP".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.ApplicationType
-          description: Application Type. Can be "DEFAULT" / "CUSTOM".
+          description: Application type. Can be "DEFAULT" / "CUSTOM".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ApplicationObjectList.RuleObjectId
-          description: Unique Service Rule Object ID.
+          description: Unique service rule object ID.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ApplicationObjectList.Name
-          description: Rule Object Name.
+          description: Rule object name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ApplicationObjectList.RuleObjectType
-          description: Service/ Application Mode. Can be "APPLICATION" / "APPLICATION_GROUP" / "APPLICATION_ON_CUSTOM_PORT" / "SERVICE" / "SERVICE_GROUP".
+          description: Service/ application mode. Can be "APPLICATION" / "APPLICATION_GROUP" / "APPLICATION_ON_CUSTOM_PORT" / "SERVICE" / "SERVICE_GROUP".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ApplicationObjectList.ApplicationType
-          description: Application Type. Can be "DEFAULT" / "CUSTOM".
+          description: Application type. Can be "DEFAULT" / "CUSTOM".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.RuleObjectId
-          description: Unique Service Rule Object ID.
+          description: Unique service rule object ID.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.Name
-          description: Rule Object Name.
+          description: Rule object name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.RuleObjectType
-          description: Time Mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP".
+          description: Time mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP".
           type: Unknown
     - name: nsm-create-firewall-policy
-      description: Adds a new Firewall Policy and Access Rules. You have to provide at lease one of the source/destination object. If you provide one of the source/destination fields, you must provide the other one as well.
+      description: Adds a new firewall policy and access rules. You have to provide at lease one of the source/destination objects. If you provide one of the source/destination fields, you must provide the other one as well.
       arguments:
         - name: domain
           required: true
-          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
           isArray: false
         - name: name
           required: true
@@ -208,7 +208,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the policy be visible to the child domain. The default is yes.
+          description: Whether the policy is visible to the child domain.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -221,7 +221,7 @@ script:
           isArray: false
         - name: is_editable
           required: false
-          description: If the policy is editable or not. The default is yes.
+          description: Whether the policy is editable.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -255,7 +255,7 @@ script:
           required: true
         - name: rule_enabled
           required: false
-          description: Is Rule Enabled or not. The default is yes.
+          description: Whether the rule is enabled.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -273,11 +273,11 @@ script:
           required: true
         - name: source_rule_object_id
           required: false
-          description: The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
+          description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
           isArray: false
         - name: source_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
+          description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -289,11 +289,11 @@ script:
           required: false
         - name: destination_rule_object_id
           required: false
-          description: The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
+          description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
           isArray: false
         - name: destination_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
+          description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -305,21 +305,21 @@ script:
           required: false
       outputs:
         - contextPath: NSM.Policy.FirewallPolicyId
-          description: The id of the newly created firewall policy.
+          description: The ID of the newly created firewall policy.
           type: Number
     - name: nsm-update-firewall-policy
-      description: Updates the Firewall Policy details. If the argument is_overwrite=true than the new values of the provided addresses will replace the existing values else the addresses will be added to them. 
-        If you want to delete a rule than enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before.
-        If is_overwrite=true than at least one of the rules (source or destination) must be provided.
+      description: Updates the firewall policy details. If the argument is_overwrite=true, the new values of the provided addresses will replace the existing values, otherwise the addresses will be added to them. 
+        If you want to delete a rule, enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination), their value will be as before.
+        If is_overwrite=true, at least one of the rules (source or destination) must be provided.
         If you provide one of the source/destination fields, you must provide the other one as well.
       arguments:
         - name: policy_id
           required: true
-          description: The id of the policy. To get the policy id, use the !nsm-list-domain-firewall-policy.
+          description: The ID of the policy. To get the policy ID, use the !nsm-list-domain-firewall-policy.
           isArray: false
         - name: domain
           required: false
-          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
           isArray: false
         - name: name
           required: false
@@ -327,7 +327,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the policy be visible to the child domain. The default is yes.
+          description: Whether the policy is visible to the child domain.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -340,7 +340,7 @@ script:
           isArray: false
         - name: is_editable
           required: false
-          description: If the policy is editable or not.
+          description: Whether the policy is editable.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -373,7 +373,7 @@ script:
           required: false
         - name: rule_enabled
           required: false
-          description: Is Rule Enabled or not. The default is yes.
+          description: Whether the rule is enabled. 
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -391,11 +391,11 @@ script:
           required: false
         - name: source_rule_object_id
           required: false
-          description: The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
+          description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
           isArray: false
         - name: source_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
+          description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -407,11 +407,11 @@ script:
           required: false
         - name: destination_rule_object_id
           required: false
-          description: The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
+          description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
           isArray: false
         - name: destination_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
+          description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -423,29 +423,29 @@ script:
           required: false
         - name: is_overwrite
           required: false
-          description: Will the new addresses that was provided in the update processes will override the current ones or will be added to them.
+          description: Whether the new addresses that were provided in the update processes will override the current ones or will be added to them.
           isArray: false
           auto: PREDEFINED
           predefined:
             - 'true'
             - 'false'
     - name: nsm-delete-firewall-policy
-      description: Deletes the specified Firewall Policy.
+      description: Deletes the specified firewall policy.
       arguments:
         - name: policy_id
           required: true
-          description: The id of the policy to delete. To get the policy id, use the !nsm-list-domain-firewall-policy.
+          description: The ID of the policy to delete. To get the policy ID, use the !nsm-list-domain-firewall-policy.
           isArray: false
     - name: nsm-list-domain-rule-object
-      description: Updates the Firewall Policy details.
+      description: Updates the firewall policy details.
       arguments:
         - name: domain_id
           required: true
-          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
           isArray: false
         - name: type
           auto: PREDEFINED
-          description: The type of the rule. The default is All.
+          description: The type of the rule.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -460,7 +460,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default is 50.
+          description: The maximum number of projects to return.
           defaultValue: 50
         - name: page
           required: false
@@ -472,7 +472,7 @@ script:
           description: The number of records in a page.
       outputs:
         - contextPath: NSM.Rule.ruleobjId
-          description: The id of the rule object.
+          description: The ID of the rule object.
           type: String
         - contextPath: NSM.Rule.ruleobjType
           description: The type of the rule object.
@@ -487,87 +487,87 @@ script:
           description: The name of the rule object.
           type: Number
         - contextPath: NSM.Rule.visibleToChild
-          description: Is Rule visible to child domains.
+          description: Whether the rule is visible to child domains.
           type: Boolean
         - contextPath: NSM.Rule.hostCriticality
           description: The critical level of the host.
           type: String
         - contextPath: NSM.Rule.ApplicationGroup
-          description: Application Group object, should be defined if ruleobjType is "APPLICATION_GROUP".
+          description: Application Group object. Should be defined if ruleobjType is "APPLICATION_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.ApplicationOnCustomPort
-          description: Application defined on Custom Port object, should be defined if ruleobjType is "APPLICATION_ON_CUSTOM_PORT".
+          description: Application defined on Custom Port object. Should be defined if ruleobjType is "APPLICATION_ON_CUSTOM_PORT".
           type: Unknown
         - contextPath: NSM.Rule.FiniteTimePeriod
-          description: Finite Time Period object, should be defined if ruleobjType is "FINITE_TIME_PERIOD".
+          description: Finite Time Period object. Should be defined if ruleobjType is "FINITE_TIME_PERIOD".
           type: Unknown
         - contextPath: NSM.Rule.HostIPv4
-          description: Host IPv4 Address object, should be defined if ruleobjType is "HOST_IPV_4".
+          description: Host IPv4 Address object. Should be defined if ruleobjType is "HOST_IPV_4".
           type: Unknown
         - contextPath: NSM.Rule.HostIPv6
-          description: Host IPv6 Address object, should be defined if ruleobjType is "HOST_IPV_6".
+          description: Host IPv6 Address object. Should be defined if ruleobjType is "HOST_IPV_6".
           type: Unknown
         - contextPath: NSM.Rule.HostDNSName
-          description: Host DNS Name object, should be defined if ruleobjType is "HOST_DNS_NAME".
+          description: Host DNS Name object. Should be defined if ruleobjType is "HOST_DNS_NAME".
           type: Unknown
         - contextPath: NSM.Rule.IPv4AddressRange
-          description: IPv4 Address Range object, should be defined if ruleobjType is "IPV_4_ADDRESS_RANGE".
+          description: IPv4 Address Range object. Should be defined if ruleobjType is "IPV_4_ADDRESS_RANGE".
           type: Unknown
         - contextPath: NSM.Rule.IPv6AddressRange
-          description: IPv6 Address Range object, should be defined if ruleobjType is "IPV_6_ADDRESS_RANGE".
+          description: IPv6 Address Range object. Should be defined if ruleobjType is "IPV_6_ADDRESS_RANGE".
           type: Unknown
         - contextPath: NSM.Rule.Network_IPV_4
-          description: IPv4 Network object, should be defined if ruleobjType is "NETWORK_IPV_4.
+          description: IPv4 Network object. Should be defined if ruleobjType is "NETWORK_IPV_4.
           type: Unknown
         - contextPath: NSM.Rule.Network_IPV_6
-          description: IPv6 Network object, should be defined if ruleobjType is "NETWORK_IPV_6".
+          description: IPv6 Network object. Should be defined if ruleobjType is "NETWORK_IPV_6".
           type: String
         - contextPath: NSM.Rule.NetworkGroup
-          description: Network Group object, should be defined if ruleobjType is "NETWORK_GROUP".
+          description: Network Group object. Should be defined if ruleobjType is "NETWORK_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.RecurringTimePeriod
-          description: Recurring Time Period object, should be defined if ruleobjType is "RECURRING_TIME_PERIOD".
+          description: Recurring Time Period object. Should be defined if ruleobjType is "RECURRING_TIME_PERIOD".
           type: Unknown
         - contextPath: NSM.Rule.RecurringTimePeriodGroup
-          description: Recurring Time Period Group object, should be defined if ruleobjType is "RECURRING_TIME_PERIOD_GROUP".
+          description: Recurring Time Period Group object. Should be defined if ruleobjType is "RECURRING_TIME_PERIOD_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.Service
-          description: Service object, should be defined if ruleobjType is "CUSTOM_SERVICE".
+          description: Service object. Should be defined if ruleobjType is "CUSTOM_SERVICE".
           type: Unknown
         - contextPath: NSM.Rule.ServiceGroup
-          description: Service Group object, should be defined if ruleobjType is "SERVICE_GROUP".
+          description: Service Group object. Should be defined if ruleobjType is "SERVICE_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.ServiceRange
-          description: Service Range object, should be defined if ruleobjType is "SERVICE_RANGE".
+          description: Service Range object. Should be defined if ruleobjType is "SERVICE_RANGE".
           type: Unknown
         - contextPath: NSM.Rule.IPv6AddressRange.IPV6RangeList
           description: List of IPv6 Address Range.
           type: String
         - contextPath: NSM.Rule.HostIPv6.hostIPv6AddressList
-          description: HostIPv6 address list.
+          description: Host IPv6 address list.
           type: String
         - contextPath: NSM.Rule.Network_IPV_4.networkIPV4List
-          description: NetworkIPV4 list.
+          description: Network IPV4 list.
           type: String
         - contextPath: NSM.Rule.IPv4AddressRange.IPV4RangeList
-          description: List of IPv4 Address Range.
+          description: List of IPv4 address range.
           type: String
         - contextPath: NSM.Rule.HostIPv4.hostIPv4AddressList
-          description: HostIPv4 address list.
+          description: Host IPv4 address list.
           type: String
         - contextPath: NSM.Rule.Network_IPV_6.networkIPV6List
-          description: NetworkIPV6 list.
+          description: Network IPV6 list.
           type: String
     - name: nsm-get-rule-object
-      description: Gets the details of a Rule Object.
+      description: Gets the details of a rule object.
       arguments:
         - name: rule_id
           required: true
-          description: The id of the rule object. To get the rule object id, use the !nsm-list-domain-rule-object.
+          description: The ID of the rule object. To get the rule object ID, use the !nsm-list-domain-rule-object.
           isArray: false
       outputs:
         - contextPath: NSM.Rule.ruleobjId
-          description: The id of the rule object.
+          description: The ID of the rule object.
           type: String
         - contextPath: NSM.Rule.ruleobjType
           description: The type of the rule object.
@@ -582,84 +582,84 @@ script:
           description: The name of the rule object.
           type: Number
         - contextPath: NSM.Rule.visibleToChild
-          description: Is Rule visible to child domains.
+          description: Whether the rule is visible to child domains.
           type: Boolean
         - contextPath: NSM.Rule.ApplicationGroup
-          description: Application Group object, should be defined if ruleobjType is "APPLICATION_GROUP".
+          description: Application Group object. Should be defined if ruleobjType is "APPLICATION_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.ApplicationOnCustomPort
-          description: Application defined on Custom Port object, should be defined if ruleobjType is "APPLICATION_ON_CUSTOM_PORT".
+          description: Application defined on Custom Port object. Should be defined if ruleobjType is "APPLICATION_ON_CUSTOM_PORT".
           type: Unknown
         - contextPath: NSM.Rule.FiniteTimePeriod
-          description: Finite Time Period object, should be defined if ruleobjType is "FINITE_TIME_PERIOD".
+          description: Finite Time Period object. Should be defined if ruleobjType is "FINITE_TIME_PERIOD".
           type: Unknown
         - contextPath: NSM.Rule.HostIPv4
-          description: Host IPv4 Address object, should be defined if ruleobjType is "HOST_IPV_4".
+          description: Host IPv4 Address object. Should be defined if ruleobjType is "HOST_IPV_4".
           type: Unknown
         - contextPath: NSM.Rule.HostIPv6
-          description: Host IPv6 Address object, should be defined if ruleobjType is "HOST_IPV_6".
+          description: Host IPv6 Address object. Should be defined if ruleobjType is "HOST_IPV_6".
           type: Unknown
         - contextPath: NSM.Rule.HostDNSName
-          description: Host DNS Name object, should be defined if ruleobjType is "HOST_DNS_NAME".
+          description: Host DNS Name object. Should be defined if ruleobjType is "HOST_DNS_NAME".
           type: Unknown
         - contextPath: NSM.Rule.IPv4AddressRange
-          description: IPv4 Address Range object, should be defined if ruleobjType is "IPV_4_ADDRESS_RANGE".
+          description: IPv4 Address Range object. Should be defined if ruleobjType is "IPV_4_ADDRESS_RANGE".
           type: Unknown
         - contextPath: NSM.Rule.IPv6AddressRange
-          description: IPv6 Address Range object, should be defined if ruleobjType is "IPV_6_ADDRESS_RANGE".
+          description: IPv6 Address Range object. Should be defined if ruleobjType is "IPV_6_ADDRESS_RANGE".
           type: Unknown
         - contextPath: NSM.Rule.Network_IPV_4
-          description: IPv4 Network object, should be defined if ruleobjType is "NETWORK_IPV_4.
+          description: IPv4 Network object. Should be defined if ruleobjType is "NETWORK_IPV_4.
           type: Unknown
         - contextPath: NSM.Rule.Network_IPV_6
-          description: IPv6 Network object, should be defined if ruleobjType is "NETWORK_IPV_6".
+          description: IPv6 Network object. Should be defined if ruleobjType is "NETWORK_IPV_6".
           type: String
         - contextPath: NSM.Rule.NetworkGroup
-          description: Network Group object, should be defined if ruleobjType is "NETWORK_GROUP".
+          description: Network Group object. Should be defined if ruleobjType is "NETWORK_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.RecurringTimePeriod
-          description: Recurring Time Period object, should be defined if ruleobjType is "RECURRING_TIME_PERIOD".
+          description: Recurring Time Period object. Should be defined if ruleobjType is "RECURRING_TIME_PERIOD".
           type: Unknown
         - contextPath: NSM.Rule.RecurringTimePeriodGroup
-          description: Recurring Time Period Group object, should be defined if ruleobjType is "RECURRING_TIME_PERIOD_GROUP".
+          description: Recurring Time Period Group object. Should be defined if ruleobjType is "RECURRING_TIME_PERIOD_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.Service
-          description: Service object, should be defined if ruleobjType is "CUSTOM_SERVICE".
+          description: Service object. Should be defined if ruleobjType is "CUSTOM_SERVICE".
           type: Unknown
         - contextPath: NSM.Rule.ServiceGroup
-          description: Service Group object, should be defined if ruleobjType is "SERVICE_GROUP".
+          description: Service Group object. Should be defined if ruleobjType is "SERVICE_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.ServiceRange
-          description: Service Range object, should be defined if ruleobjType is "SERVICE_RANGE".
+          description: Service Range object. Should be defined if ruleobjType is "SERVICE_RANGE".
           type: Unknown
         - contextPath: NSM.Rule.IPv6AddressRange.IPV6RangeList
           description: List of IPv6 Address Range.
           type: String
         - contextPath: NSM.Rule.HostIPv6.hostIPv6AddressList
-          description: HostIPv6 address list.
+          description: Host IPv6 address list.
           type: String
         - contextPath: NSM.Rule.Network_IPV_4.networkIPV4List
-          description: NetworkIPV4 list.
+          description: Network IPV4 list.
           type: String
         - contextPath: NSM.Rule.Network_IPV_6.networkIPV6List
-          description: NetworkIPV6 list.
+          description: Network IPV6 list.
           type: String
         - contextPath: NSM.Rule.IPv4AddressRange.IPV4RangeList
           description: List of IPv4 Address Range.
           type: String
         - contextPath: NSM.Rule.HostIPv4.hostIPv4AddressList
-          description: HostIPv4 address list.
+          description: Host IPv4 address list.
           type: String
     - name: nsm-create-rule-object
-      description: Adds a new Rule Object. If the type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
+      description: Adds a new rule object. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value where X is 4 or 6 respectively.
       arguments:
         - name: domain
           required: true
-          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
           isArray: false
         - name: rule_object_type
           auto: PREDEFINED
-          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
+          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value, where X is 4 or 6 respectively.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -675,7 +675,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the rule object be visible to the child domain. The default is yes.
+          description: Whether the rule object is visible to the child domain.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -688,41 +688,41 @@ script:
           isArray: false
         - name: address_ip_v.4
           required: false
-          description: List of IPv4 host Address, separated by comma.
+          description: List of IPv4 Host Address, separated by a comma.
           isArray: false
         - name: from_address_ip_v.4
           required: false
-          description: Start IPv4 Range.
+          description: Start of the IPv4 range.
           isArray: false
         - name: to_address_ip_v.4
           required: false
-          description: End IPv4 Range.
+          description: End of the IPv4 range.
           isArray: false
         - name: address_ip_v.6
           required: false
-          description: List of IPv6 host Address, separated by comma.
+          description: List of IPv6 host addresses, separated by a comma.
           isArray: false
         - name: from_address_ip_v.6
           required: false
-          description: Start IPv6 Range.
+          description: Start of the IPv6 range.
           isArray: false
         - name: to_address_ip_v.6
           required: false
-          description: End IPv6 Range.
+          description: End of the IPv6 range.
           isArray: false
       outputs:
         - contextPath: NSM.Rule.ruleobjId
-          description: The id of the newly created rule object.
+          description: The ID of the newly created rule object.
           type: Number
     - name: nsm-update-rule-object
-      description: Updates a Rule Object. If you want to update the addresses of the rule than, if the rule type is “Endpoint IP V.X” or “Network IP V.X” than only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X” than only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value. Where X is 4 or 6 respectively.
+      description: Updates a Rule object. If you want to update the addresses of the rule, if the rule type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, where X is 4 or 6 respectively.
       arguments:
         - name: domain
           required: true
-          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
           isArray: false
         - name: rule_id
-          description: The id of the rule. To get the rule object id, use the !nsm-list-domain-rule-object.
+          description: The ID of the rule. To get the rule object ID, use the !nsm-list-domain-rule-object.
           isArray: false
           required: true
         - name: name
@@ -731,7 +731,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the rule object be visible to the child domain. The default is yes.
+          description: Whether the rule object is visible to the child domain.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -744,42 +744,42 @@ script:
           isArray: false
         - name: address_ip_v.4
           required: false
-          description: List of IPv4 host Address, separated by comma.
+          description: List of IPv4 host addresses, separated by a comma.
           isArray: false
         - name: from_address_ip_v.4
           required: false
-          description: Start IPv4 Range.
+          description: Start of the IPv4 range.
           isArray: false
         - name: to_address_ip_v.4
           required: false
-          description: End IPv4 Range.
+          description: End of the IPv4 range.
           isArray: false
         - name: address_ip_v.6
           required: false
-          description: List of IPv6 host Address, separated by comma.
+          description: List of IPv6 host addresses, separated by a comma.
           isArray: false
         - name: from_address_ip_v.6
           required: false
-          description: Start IPv6 Range.
+          description: Start of the IPv6 range.
           isArray: false
         - name: to_address_ip_v.6
           required: false
-          description: End IPv6 Range.
+          description: End of the IPv6 range.
           isArray: false
         - name: is_overwrite
           required: false
-          description: Will the new addresses that was provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added.
+          description: Whether the new addresses that were provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added.
           isArray: false
           auto: PREDEFINED
           predefined:
             - 'true'
             - 'false'
     - name: nsm-delete-rule-object
-      description: Deletes a Rule Object.
+      description: Deletes a rule object.
       arguments:
         - name: rule_id
           required: true
-          description: The id of the rule object. To get the rule object id, use the !nsm-list-domain-rule-object.
+          description: The ID of the rule object. To get the rule object ID, use the !nsm-list-domain-rule-object.
           isArray: false
     - name: nsm-get-alerts
       description: Retrieves the alerts.
@@ -787,7 +787,7 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default is 50.
+          description: The maximum number of projects to return.
           defaultValue: 50
         - name: page
           required: false
@@ -808,18 +808,16 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period. The default is LAST_7_DAYS.
+          description: Time period.
           required: false
           isArray: false
           defaultValue: LAST_7_DAYS
         - name: start_time
-          description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-            only
+          description: Start time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
           required: false
           isArray: false
         - name: end_time
-          description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
-            only
+          description: End time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
           required: false
           isArray: false
         - name: state
@@ -828,21 +826,21 @@ script:
             - ANY
             - Acknowledged
             - Unacknowledged
-          description: Alert State. The default is Any.
+          description: Alert state.
           defaultValue: ANY
           required: false
           isArray: false
         - name: search
-          description: Search string in alert details
+          description: Search string in alert details.
           required: false
           isArray: false
         - name: filter
-          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". If you wish to use the "name" field in the filter, enter only one name in each command run. Filter on following column is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
+          description: 'Filter alert by fields. For example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". To use the "name" field in the filter, enter only one name in each command run. Filter on the following columns is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
           required: false
           isArray: false
         - name: domain_id
           required: false
-          description: The id of the domain. To get the domain_id, use the !nsm-get-domains command. The default is 0.
+          description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
           isArray: false
           defaultValue: 0
       outputs:
@@ -850,28 +848,28 @@ script:
           description: Alert ID.
           type: number
         - contextPath: NSM.Alerts.Name
-          description: Alert Name.
+          description: Alert name.
           type: String
         - contextPath: NSM.Alerts.uniqueAlertId
-          description: Unique alert id.
+          description: Unique alert ID.
           type: String
         - contextPath: NSM.Alerts.State
-          description: Alert State (Acknowledged,Unacknowledged).
+          description: Alert state (Acknowledged,Unacknowledged).
           type: String
         - contextPath: NSM.Alerts.Assignee
-          description: Alert Assignee.
+          description: Alert assignee.
           type: String
         - contextPath: NSM.Alerts.CreatedTime
-          description: Alert Creation Time.
+          description: Alert creation time.
           type: String
         - contextPath: NSM.Alerts.AttackSeverity
-          description: Alert Severity
+          description: Alert severity.
           type: String
         - contextPath: NSM.Alerts.Event.time
-          description: The creation time of the event who triggered the alert.
+          description: The creation time of the event that triggered the alert.
           type: Date
         - contextPath: NSM.Alerts.Event.direction
-          description: The direction of the event (Outbound, Inbound)
+          description: The direction of the event (Outbound, Inbound).
           type: String
         - contextPath: NSM.Alerts.Event.result
           description: The result of the event.
@@ -886,7 +884,7 @@ script:
           description: Alert ID.
           type: String
         - contextPath: NSM.Alerts.Event.domain
-          description: The domain.
+          description: The event's domain.
           type: String
         - contextPath: NSM.Alerts.Event.interface
           description: The event's interface.
@@ -895,10 +893,10 @@ script:
           description: The relevant device.
           type: String
         - contextPath: NSM.Alerts.Attack.nspId
-          description: nsp ID.
+          description: Network Security Platform (NSP) ID.
           type: String
         - contextPath: NSM.Alerts.Attack.btp
-          description: Benign Trigger Probability.
+          description: Benign Trigger Probability (BTP).
           type: String
         - contextPath: NSM.Alerts.Attack.attackCategory
           description: The attack category.
@@ -907,7 +905,7 @@ script:
           description: The attacker IP address.
           type: String
         - contextPath: NSM.Alerts.Attacker.port
-          description: The port.
+          description: The attacker port.
           type: Number
         - contextPath: NSM.Alerts.Attacker.hostName
           description: The attacker host name.
@@ -916,13 +914,13 @@ script:
           description: The attacker country.
           type: String
         - contextPath: NSM.Alerts.Attacker.os
-          description: The attacker os.
+          description: The attacker operating system.
           type: Unknown
         - contextPath: NSM.Alerts.Attacker.vmName
-          description: The attacker vm name.
+          description: The attacker VM name.
           type: Unknown
         - contextPath: NSM.Alerts.Attacker.proxyIP
-          description: The attacker proxyIP.
+          description: The attacker proxy IP.
           type: String
         - contextPath: NSM.Alerts.Attacker.user
           description: The user.
@@ -940,19 +938,19 @@ script:
           description: The target port.
           type: Number
         - contextPath: NSM.Alerts.Target.hostName
-          description: The target hostName.
+          description: The target host name.
           type: String
         - contextPath: NSM.Alerts.Target.country
           description: The target country.
           type: String
         - contextPath: NSM.Alerts.Target.os
-          description: The target os.
+          description: The target operating system.
           type: Unknown
         - contextPath: NSM.Alerts.Target.vmName
-          description: The target vm Name.
+          description: The target VM name.
           type: Unknown
         - contextPath: NSM.Alerts.Target.proxyIP
-          description: The target proxyIP.
+          description: The target proxy IP.
           type: String
         - contextPath: NSM.Alerts.Target.user
           description: The target user.
@@ -964,76 +962,76 @@ script:
           description: The target network object.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.fileName
-          description: The name of the MalwareFile.
+          description: The name of the malware file.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.fileHash
-          description: The file hash of the MalwareFile.
+          description: The file hash of the malware file.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.fileSHA1Hash
-          description: The MalwareFile SHA1Hash.
+          description: The malware file SHA1 hash.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.fileSHA256Hash
-          description: The fileSHA256Hash of the Malware file.
+          description: The file SHA256 hash of the malware file.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.malwareName
           description: The name of the malware.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.malwareConfidence
-          description: Malware Confidence
+          description: Malware confidence
           type: String
         - contextPath: NSM.Alerts.MalwareFile.engine
-          description: Malware File engine.
+          description: Malware file engine.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.engineId
-          description: Malware File engine ID.
+          description: Malware file engine ID.
           type: Number
         - contextPath: NSM.Alerts.MalwareFile.size
-          description: The Malware File size.
+          description: The malware file size.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.description
-          description: Malware File description.
+          description: Malware file description.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.additionalReference
-          description: Malware File additional Reference.
+          description: Malware file additional reference.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.cveId
-          description: Malware File CVE ID.
+          description: Malware file CVE ID.
           type: Unknown
         - contextPath: NSM.Alerts.endpointExcutable.name
-          description: Endpoint Excutable name.
+          description: Endpoint executable name.
           type: String
         - contextPath: NSM.Alerts.endpointExcutable.hash
-          description: Endpoint Excutable hash.
+          description: Endpoint executable hash.
           type: String
         - contextPath: NSM.Alerts.endpointExcutable.malwareConfidence
-          description: Endpoint Excutable malware Confidence.
+          description: Endpoint executable malware confidence.
           type: String
         - contextPath: NSM.Alerts.detection.managerId
-          description: manager Id.
+          description: manager ID.
           type: Number
         - contextPath: NSM.Alerts.detection.manager
           description: The detection manager.
           type: Unknown
         - contextPath: NSM.Alerts.detection.domain
-          description: detection domain.
+          description: Detection domain.
           type: String
         - contextPath: NSM.Alerts.detection.device
-          description: detection device.
+          description: Detection device.
           type: String
         - contextPath: NSM.Alerts.detection.deviceId
-          description: detection device ID.
+          description: Detection device ID.
           type: String
         - contextPath: NSM.Alerts.detection.interface
-          description: detection interface.
+          description: Detection interface.
           type: String
         - contextPath: NSM.Alerts.Application
-          description: The Application assosiated to the alert.
+          description: The application associated to the alert.
           type: String
         - contextPath: NSM.Alerts.layer7Data
-          description: Layer 7 information
+          description: Layer 7 information.
           type: String
         - contextPath: NSM.Alerts.EventResult
-          description: Event Result
+          description: Event result.
           type: String
         - contextPath: NSM.Alerts.SensorID
           description: Sensor ID.
@@ -1044,29 +1042,29 @@ script:
         - name: alert_id
           required: true
           isArray: false
-          description: Alert ID. In order to get the alert id, use the command '!nsm-get-alerts' and use the output field “ID”.
+          description: Alert ID. In order to get the alert ID, use the command '!nsm-get-alerts' and use the output field “ID”.
         - name: sensor_id
-          description: Sensor ID. In order to get the alert id, use the command '!nsm-get-alerts' and use the output field “SensorID”.
+          description: Sensor ID. In order to get the sensor ID, use the command '!nsm-get-alerts' and use the output field “SensorID”.
           required: true
           isArray: false
       outputs:
         - contextPath: NSM.Alerts.ID
-          description: Alet Id.
+          description: Alert ID.
           type: number
         - contextPath: NSM.Alerts.Name
-          description: Alert Name.
+          description: Alert name.
           type: String
         - contextPath: NSM.Alerts.CreatedTime
-          description: Alert Created Time.
+          description: Alert creation time.
           type: String
         - contextPath: NSM.Alerts.uniqueAlertId
-          description: Unique Alert Id.
+          description: Unique alert ID.
           type: String
         - contextPath: NSM.Alerts.State
           description: The state of the alert.
           type: String
         - contextPath: NSM.Alerts.Assignee
-          description: Alert Assignee.
+          description: Alert assignee.
           type: String
         - contextPath: NSM.Alerts.Event.application
           description: The event application.
@@ -1078,13 +1076,13 @@ script:
           description: The domain of the event.
           type: String
         - contextPath: NSM.Alerts.Event.manager
-          description: the event manager.
+          description: The event manager.
           type: Unknown
         - contextPath: NSM.Alerts.Event.device
           description: The event device.
           type: String
         - contextPath: NSM.Alerts.Event.deviceId
-          description: The id of the device that related to the event.
+          description: The ID of the device related to the event.
           type: String
         - contextPath: NSM.Alerts.event.interface
           description: The event interface.
@@ -1096,10 +1094,10 @@ script:
           description: The event zone.
           type: Unknown
         - contextPath: NSM.Alerts.Event.vlan
-          description: The event vlan.
+          description: The event VLAN.
           type: String
         - contextPath: NSM.Alerts.Event.detection
-          description: The vent detection.
+          description: The event detection.
           type: String
         - contextPath: NSM.Alerts.CreatedTime
           description: The creation time of the event.
@@ -1117,10 +1115,10 @@ script:
           description: The relevance of the event.
           type: String
         - contextPath: NSM.Alerts.Event.alertId
-          description: Alert Id.
+          description: Alert ID.
           type: String
         - contextPath: NSM.Alerts.Attacker.ipAddrs
-          description:  Attacker IP addresses.
+          description: Attacker IP addresses.
           type: Unknown
         - contextPath: NSM.Alerts.Attacker.port
           description: Attacker port.
@@ -1132,10 +1130,10 @@ script:
           description: Attacker country.
           type: Unknown
         - contextPath: NSM.Alerts.Attacker.os
-          description: Attacker os.
+          description: Attacker operating system.
           type: String
         - contextPath: NSM.Alerts.Attacker.vmName
-          description: Attacker vm name.
+          description: Attacker VM name.
           type: Unknown
         - contextPath: NSM.Alerts.Attacker.proxyIP
           description: Attacker proxy IP.
@@ -1162,10 +1160,10 @@ script:
           description: Target country.
           type: Unknown
         - contextPath: NSM.Alerts.Target.os
-          description: Target os.
+          description: Target operating system.
           type: String
         - contextPath: NSM.Alerts.Target.vmName
-          description: Target vm name.
+          description: Target VM name.
           type: Unknown
         - contextPath: NSM.Alerts.Target.proxyIP
           description: Target proxy IP.
@@ -1192,10 +1190,10 @@ script:
           description: The command and control server.
           type: Unknown
         - contextPath: NSM.Alerts.summary.fastFluxAgent
-          description: Fast Flux Agent.
+          description: Fast flux agent.
           type: Unknown
         - contextPath: NSM.Alerts.summary.attackedHIPEndpoint
-          description: attackedHIPEndpoint.
+          description: Attacked host intrusion prevention (HIP) endpoint.
           type: Unknown
         - contextPath: NSM.Alerts.summary.compromisedEndpoint
           description: Compromised endpoint.
@@ -1222,7 +1220,7 @@ script:
           description: SQL injection.
           type: Unknown
         - contextPath: NSM.Alerts.Details.callbackDetectors
-          description: Call back detectors.
+          description: Callback detectors.
           type: Unknown
         - contextPath: NSM.Alerts.Details.exceededThreshold
           description: Exceeded threshold.
@@ -1234,19 +1232,19 @@ script:
           description: Description.
           type: String
         - contextPath: NSM.Alerts.Description.btp
-          description: btp.
+          description: Benign Trigger Probability (BTP).
           type: String
         - contextPath: NSM.Alerts.Description.rfSB
-          description: rfSb.
+          description: Recommended For Smart Blocking (RFSB).
           type: String
         - contextPath: NSM.Alerts.Description.protectionCategory
-          description: Protection Category.
+          description: Protection category.
           type: String
         - contextPath: NSM.Alerts.Description.target
           description: The target.
           type: String
         - contextPath: NSM.Alerts.Description.httpResponseAttack
-          description: Http response attack.
+          description: HTTP response attack.
           type: String
         - contextPath: NSM.Alerts.Description.priority
           description: Priority.
@@ -1258,69 +1256,69 @@ script:
           description: Attack category.
           type: String
         - contextPath: NSM.Alerts.Attack.attackSubCategory
-          description: Attack sub category.
+          description: Attack sub-category.
           type: String
         - contextPath: NSM.Alerts.Description.snortEngine
           description: Snort engine.
           type: String
         - contextPath: NSM.Alerts.Description.versionAdded
-          description: When the version was added.
+          description: The date the version was added.
           type: String
         - contextPath: NSM.Alerts.Description.versionUpdated
-          description: When the version was updated.
+          description: The date the version was updated.
           type: Unknown
         - contextPath: NSM.Alerts.Attack.nspId
-          description: nspID.
+          description: Network Security Platform (NSP) ID.
           type: String
         - contextPath: NSM.Alerts.Description.reference.cveId
-          description: CVE ID.
+          description: Common Vulnerabilities and Exposures (CVE) ID.
           type: String
         - contextPath: NSM.Alerts.Description.reference.microsoftId
           description: Microsoft ID.
           type: String
         - contextPath: NSM.Alerts.Description.reference.bugtraqId
-          description: Bugtraq Id.
+          description: Bugtraq ID.
           type: String
         - contextPath: NSM.Alerts.Description.reference.certId
           description: Cert ID.
           type: Unknown
         - contextPath: NSM.Alerts.Description.reference.arachNidsId
-          description: arachNidsId
+          description: Arachnics ID.
           type: String
         - contextPath: NSM.Alerts.Description.reference.additionInfo
-          description: Additional info.
+          description: Additional information.
           type: String
         - contextPath: NSM.Alerts.Description.comments.comments
-          description: comments.
+          description: Comments.
           type: String
         - contextPath: NSM.Alerts.Description.comments.availabeToChildDomains
-          description: Is the alert available to child domains.
+          description: Whether the alert is available to child domains.
           type: Boolean
         - contextPath: NSM.Alerts.Description.comments.parentDomainComments
           description: Parent domain comments.
           type: Unknown
     - name: nsm-get-attacks
-      description: If an attack id is given The command returns the details for the specific attack. Else, gets all available attack definitions in the Manager UI. This command can take a few minutes. If you have a timeout error, then increase the timeout by using the parameter "execution-timeout".
+      description: If an attack is given, the command returns the details for the specific attack. Otherwise, gets all available attack definitions in the Manager UI. This command can take a few minutes. If you get a timeout error, increase the timeout by using the parameter "execution-timeout".
       arguments:
         - name: attack_id
           required: false
-          description: The id of the attack. To get the attack_id, use the !nsm-get-attacks command, without an attack id.
+          description: The ID of the attack. To get the attack_id, use the !nsm-get-attacks command, without an attack ID.
           isArray: false
       outputs:
         - contextPath: InfoFile.Name
-          description: FileName
+          description: File name.
           type: string
         - contextPath: InfoFile.EntryID
-          description: The EntryID of the report
+          description: The entry ID of the report.
           type: string
         - contextPath: InfoFile.Size
-          description: File Size
+          description: File size.
           type: number
         - contextPath: InfoFile.Type
-          description: File type e.g. "PE"
+          description: File type, e.g., "PE".
           type: string
         - contextPath: InfoFile.Info
-          description: Basic information of the file
+          description: Basic information about the file.
           type: string
         - contextPath: NSM.Attacks.Direction
           description: Attack direction.
@@ -1329,25 +1327,25 @@ script:
           description: Attack severity.
           type: Number
         - contextPath: NSM.Attacks.ID
-          description: Attack id.
+          description: Attack ID.
           type: String
         - contextPath: NSM.Attacks.Name
           description: Attack name.
           type: String
         - contextPath: NSM.Attacks.Category
-          description: Attack category
+          description: Attack category.
           type: String
         - contextPath: NSM.Attacks.description.definition
-          description: Attack Defination
+          description: Attack Definition
           type: String
         - contextPath: NSM.Attacks.description.btp
-          description: BTP.
+          description: Benign Trigger Probability (BTP).
           type: String
         - contextPath: NSM.Attacks.description.rfSB
-          description: RFSB.
+          description: Recommended For Smart Blocking (RFSB).
           type: String
         - contextPath: NSM.Attacks.description.protectionCategory
-          description: Protection Category.
+          description: Protection category.
           type: String
         - contextPath: NSM.Attacks.description.target
           description: Attack target.
@@ -1362,61 +1360,61 @@ script:
           description: Attack protocols.
           type: String
         - contextPath: NSM.Attacks.description.attackCategory
-          description: Attack Category.
+          description: Attack category.
           type: String
         - contextPath: NSM.Attacks.description.attackSubCategory
-          description: Attack Sub Category.
+          description: Attack sub-category.
           type: String
         - contextPath: NSM.Attacks.description.snortEngine
           description: Attack snort engine.
           type: String
         - contextPath: NSM.Attacks.description.versionAdded
-          description: When the attack version was added.
+          description: The date the attack version was added.
           type: String
         - contextPath: NSM.Attacks.description.versionUpdated
-          description: When the attack version was updated.
+          description: The date the attack version was updated.
           type: String
         - contextPath: NSM.Attacks.description.reference.nspId
-          description: Attack nsp Id.
+          description: Attack Network Security Platform (NSP) ID.
           type: String
         - contextPath: NSM.Attacks.description.reference.cveId
-          description: Attack CVE id.
+          description: Attack Common Vulnerabilities and Exposures (CVE) ID.
           type: String
         - contextPath: NSM.Attacks.description.reference.microsoftId
-          description: Attack microsoft Id.
+          description: Attack Microsoft ID.
           type: String
         - contextPath: NSM.Attacks.description.reference.bugtraqId
-          description: Attack bugtraq Id.
+          description: Attack bugtraq ID.
           type: String
         - contextPath: NSM.Attacks.description.reference.certId
-          description: Attack cert Id.
+          description: Attack cert ID.
           type: String
         - contextPath: NSM.Attacks.description.reference.arachNidsId
-          description: arachNidsId.
+          description: Arachnids ID.
           type: String
         - contextPath: NSM.Attacks.description.reference.additionInfo
-          description: Additional Info.
+          description: Additional information.
           type: Unknown
         - contextPath: NSM.Attacks.description.comments.comments
           description: Comments.
           type: String
         - contextPath: NSM.Attacks.description.comments.availabeToChildDomains
-          description: Is the attack availabe To Child Domains.
+          description: Whether the attack is available to child domains.
           type: Boolean
         - contextPath: NSM.Attacks.description.comments.parentDomainComments
-          description: Parent Domain Comments.
+          description: Parent domain comments.
           type: Unknown
     - name: nsm-get-domains
-      description: If a domain id is given The command returns the details of the specific domain. Else, gets all available domain.
+      description: If a domain ID is given, the command returns the details of the specific domain. Otherwise, gets all available domains.
       arguments:
         - name: domain_id
-          description: Specific domain id. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
+          description: Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
           required: false
           isArray: false
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default is 50.
+          description: The maximum number of projects to return.
           defaultValue: 50.
         - name: page
           required: false
@@ -1431,7 +1429,7 @@ script:
           description: Domain ID.
           type: Number
         - contextPath: NSM.Domains.name
-          description: Domain Name.
+          description: Domain name.
           type: String
         - contextPath: NSM.Domains.childdomains
           description: The children of the domain.
@@ -1440,13 +1438,13 @@ script:
       description: Gets the list of sensors available in the specified domain. If the domain is not specified, details of all the sensors in all ADs will be provided.
       arguments:
         - name: domain_id
-          description: Specific domain id. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
+          description: Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
           required: false
           isArray: false
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default is 50.
+          description: The maximum number of projects to return.
           defaultValue: 50
         - name: page
           required: false
@@ -1458,58 +1456,58 @@ script:
           description: The number of records in a page.
       outputs:
         - contextPath: NSM.Sensors.ID
-          description: Sensor Id.
+          description: Sensor ID.
           type: Number
         - contextPath: NSM.Sensors.Name
-          description: Name of the Sensor.
+          description: Name of the sensor.
           type: String
         - contextPath: NSM.Sensors.model
-          description: Sensor Model.
+          description: Sensor model.
           type: String
         - contextPath: NSM.Sensors.Description
-          description: Sensor Description.
+          description: Sensor description.
           type: String
         - contextPath: NSM.Sensors.DomainID
-          description: Id of Domain to which this sensor belongs to
+          description: ID of the domain to which this sensor belongs.
           type: Number
         - contextPath: NSM.Sensors.isFailOver
-          description: Is the sensor fail over
+          description: Whether the sensor is failover.
           type: Boolean
         - contextPath: NSM.Sensors.isNTBA
-          description: Is NTBA.
+          description: Whether there is Network Threat Behavior Analysis (NTBA).
           type: Boolean
         - contextPath: NSM.Sensors.isLoadBalancer
-          description: Is the sensor load balancer.
+          description: Whether the sensor is a load balancer.
           type: Boolean
         - contextPath: NSM.Sensors.SerialNumber
           description: The sensor serial number.
           type: Unknown
         - contextPath: NSM.Sensors.SigsetVersion
-          description: Signature set version number applied to the Sensor.
+          description: Signature set version number applied to the sensor.
           type: String
         - contextPath: NSM.Sensors.DATVersion
           description: DAT version of the sensor.
           type: String
         - contextPath: NSM.Sensors.SoftwareVersion
-          description: Sensor Software version.
+          description: Sensor software version.
           type: String
         - contextPath: NSM.Sensors.LastSignatureUpdateTs
-          description: Last Configuration download timestamp.
+          description: Last configuration download timestamp.
           type: Date
         - contextPath: NSM.Sensors.IPSPolicyID
-          description: IPS policy id applied to the sensor.
+          description: Intrusion prevent system (IPS) policy ID applied to the sensor.
           type: Number
         - contextPath: NSM.Sensors.ReconPolicyID
-          description: Recon policy id applied to the sensor.
+          description: Recon policy ID applied to the sensor.
           type: Number
         - contextPath: NSM.Sensors.LastModTs
           description: Last modified timestamp.
           type: Unknown
         - contextPath: NSM.Sensors.IP Address
-          description: Sensor IP Address.
+          description: Sensor IP address.
           type: String
         - contextPath: NSM.Sensors.nsmVersion
-          description: NSM Version.
+          description: Network Security Manager (NSM) version.
           type: String
         - contextPath: NSM.Sensors.capacity
           description: Sensor capacity.
@@ -1518,19 +1516,19 @@ script:
           description: Is stack.
           type: Boolean
         - contextPath: NSM.Sensorss.isStackMember
-          description: Is stack member.
+          description: Whether the sensor is a stack member.
           type: Boolean
     - name: nsm-get-ips-policies
-      description: Gets all the IPS Policies defined in the specific domain.
+      description: Gets all the IPS policies defined in the specific domain.
       arguments:
         - name: domain_id
-          description: Specific domain id. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
+          description: Specific domain ID. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
           required: true
           isArray: false
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default is 50.
+          description: The maximum number of projects to return.
           defaultValue: 50
         - name: page
           required: false
@@ -1542,57 +1540,57 @@ script:
           description: The number of records in a page.
       outputs:
         - contextPath: NSM.IPSPolicies.IsEditable
-          description: Is the ips policy editable.
+          description: Whether the IPS policy is editable.
           type: Boolean
         - contextPath: NSM.IPSPolicies.DomainID
-          description: Id of Domain to which this policy belongs to.
+          description: ID of the domain to which this policy belongs.
           type: Number
         - contextPath: NSM.IPSPolicies.VisibleToChildren
-          description: Policy visible to Child Domain.
+          description: Policy visible to child domain.
           type: Boolean
         - contextPath: NSM.IPSPolicies.ID
-          description: IPS policy id.
+          description: IPS policy ID.
           type: Number
         - contextPath: NSM.IPSPolicies.Name
           description: IPS policy name.
           type: String
     - name: nsm-get-ips-policy-details
-      description: Gets all the IPS Policies defined in the specific domain.
+      description: Gets all the IPS policies defined in the specific domain.
       arguments:
         - name: policy_id
-          description: Specific ips policy id. To get the policy_id use !nsm-get-ips-policies command.
+          description: Specific IPS policy ID. To get the policy_id use !nsm-get-ips-policies command.
           required: true
           isArray: false
       outputs:
         - contextPath: NSM.IPSPolicies.ID
-          description: IPS Policy ID
+          description: IPS policy ID.
           type: number
         - contextPath: NSM.IPSPolicies.Name
-          description: IPS Policy Name
+          description: IPS policy name.
           type: string
         - contextPath: NSM.IPSPolicies.Description
-          description: IPS Policy information
+          description: IPS policy information.
           type: string
         - contextPath: NSM.IPSPolicies.CreatedTime
-          description: Policy creation time
+          description: Policy creation time.
           type: string
         - contextPath: NSM.IPSPolicies.IsEditable
-          description: Whether the IPS policy is editable
+          description: Whether the IPS policy is editable.
           type: boolean
         - contextPath: NSM.IPSPolicies.VisibleToChildren
-          description: Whether the IPS Policy is visible to domain's children
+          description: Whether the IPS Policy is visible to the domain's children.
           type: boolean
         - contextPath: NSM.IPSPolicies.Version
-          description: IPS Policy Version
+          description: IPS policy version.
           type: number
         - contextPath: NSM.IPSPolicies.InboundRuleSet
-          description: Inbound Rule Set
+          description: Inbound rule set.
           type: string
         - contextPath: NSM.IPSPolicies.OutboundRuleSet
-          description: Outbound Rule Set
+          description: Outbound rule set.
           type: string
         - contextPath: NSM.IPSPolicies.ExploitAttacks
-          description: A list of exploit attacks related to the IPS Policy
+          description: A list of exploit attacks related to the IPS policy.
           type: Unknown
     - name: nsm-update-alerts
       description: Update state or assignee of alerts. It is required to provide at least one of them. If none of the alerts match the time_period they won't be updated.
@@ -1603,7 +1601,7 @@ script:
             - ANY
             - Acknowledged
             - Unacknowledged
-          description: Alert State. The default is Any.
+          description: Alert state.
           defaultValue: ANY
           required: false
           isArray: false
@@ -1618,16 +1616,16 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period. The default is LAST_7_DAYS.
+          description: Time period.
           required: false
           isArray: false
           defaultValue: LAST_7_DAYS
         - name: start_time
-          description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.
+          description: Start time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
           required: false
           isArray: false
         - name: end_time
-          description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.
+          description: End time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
           required: false
           isArray: false
         - name: new_state
@@ -1645,7 +1643,7 @@ script:
         - name: search
           description: Search string in alert details.
         - name: filter
-          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". If you wish to use the "name" field in the filter, enter only one name in each command run. Filter on following column is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
+          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". To use the "name" field in the filter, enter only one name in each command run. Filter on the following columns is allowed - name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
           required: false
           isArray: false
       outputs:
@@ -1653,28 +1651,28 @@ script:
           description: Alert ID.
           type: number
         - contextPath: NSM.Alerts.Name
-          description: Alert Name.
+          description: Alert name.
           type: String
         - contextPath: NSM.Alerts.uniqueAlertId
-          description: Unique alert id.
+          description: Unique alert ID.
           type: String
         - contextPath: NSM.Alerts.State
-          description: Alert State (Acknowledged,Unacknowledged).
+          description: Alert state (Acknowledged,Unacknowledged).
           type: String
         - contextPath: NSM.Alerts.Assignee
-          description: Alert Assignee.
+          description: Alert assignee.
           type: String
         - contextPath: NSM.Alerts.CreatedTime
-          description: Alert Creation Time.
+          description: Alert creation time.
           type: String
         - contextPath: NSM.Alerts.AttackSeverity
-          description: Alert Severity
+          description: Alert severity.
           type: String
         - contextPath: NSM.Alerts.Event.time
-          description: The creation time of the event who triggered the alert.
+          description: The creation time of the event that triggered the alert.
           type: Date
         - contextPath: NSM.Alerts.Event.direction
-          description: The direction of the event (Outbound, Inbound)
+          description: The direction of the event (Outbound, Inbound).
           type: String
         - contextPath: NSM.Alerts.Event.result
           description: The result of the event.
@@ -1698,10 +1696,10 @@ script:
           description: The relevant device.
           type: String
         - contextPath: NSM.Alerts.Attack.nspId
-          description: nsp ID.
+          description: Network Security Platform (NSP) ID. 
           type: String
         - contextPath: NSM.Alerts.Attack.btp
-          description: Benign Trigger Probability.
+          description: Benign Trigger Probability (BTP).
           type: String
         - contextPath: NSM.Alerts.Attack.attackCategory
           description: The attack category.
@@ -1719,13 +1717,13 @@ script:
           description: The attacker country.
           type: String
         - contextPath: NSM.Alerts.Attacker.os
-          description: The attacker os.
+          description: The attacker operating system.
           type: Unknown
         - contextPath: NSM.Alerts.Attacker.vmName
-          description: The attacker vm name.
+          description: The attacker VM name.
           type: Unknown
         - contextPath: NSM.Alerts.Attacker.proxyIP
-          description: The attacker proxyIP.
+          description: The attacker proxy IP.
           type: String
         - contextPath: NSM.Alerts.Attacker.user
           description: The user.
@@ -1743,19 +1741,19 @@ script:
           description: The target port.
           type: Number
         - contextPath: NSM.Alerts.Target.hostName
-          description: The target hostName.
+          description: The target host name.
           type: String
         - contextPath: NSM.Alerts.Target.country
           description: The target country.
           type: String
         - contextPath: NSM.Alerts.Target.os
-          description: The target os.
+          description: The target operating system.
           type: Unknown
         - contextPath: NSM.Alerts.Target.vmName
-          description: The target vm Name.
+          description: The target VM name.
           type: Unknown
         - contextPath: NSM.Alerts.Target.proxyIP
-          description: The target proxyIP.
+          description: The target proxy IP.
           type: String
         - contextPath: NSM.Alerts.Target.user
           description: The target user.
@@ -1767,76 +1765,76 @@ script:
           description: The target network object.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.fileName
-          description: The name of the MalwareFile.
+          description: The name of the malware file.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.fileHash
-          description: The file hash of the MalwareFile.
+          description: The file hash of the malware file.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.fileSHA1Hash
-          description: The MalwareFile SHA1Hash.
+          description: The malware file SHA1 hash.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.fileSHA256Hash
-          description: The fileSHA256Hash of the Malware file.
+          description: The file SHA256 hash of the malware file.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.malwareName
           description: The name of the malware.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.malwareConfidence
-          description: Malware Confidence
+          description: Malware confidence.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.engine
-          description: Malware File engine.
+          description: Malware file engine.
           type: String
         - contextPath: NSM.Alerts.MalwareFile.engineId
-          description: Malware File engine ID.
+          description: Malware file engine ID.
           type: Number
         - contextPath: NSM.Alerts.MalwareFile.size
-          description: The Malware File size.
+          description: The Malware file size.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.description
-          description: Malware File description.
+          description: Malware file description.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.additionalReference
-          description: Malware File additional Reference.
+          description: Malware file additional reference.
           type: Unknown
         - contextPath: NSM.Alerts.MalwareFile.cveId
           description: Malware File CVE ID.
           type: Unknown
         - contextPath: NSM.Alerts.endpointExcutable.name
-          description: Endpoint Excutable name.
+          description: Endpoint executable name.
           type: String
         - contextPath: NSM.Alerts.endpointExcutable.hash
-          description: Endpoint Excutable hash.
+          description: Endpoint executable hash.
           type: String
         - contextPath: NSM.Alerts.endpointExcutable.malwareConfidence
-          description: Endpoint Excutable malware Confidence.
+          description: Endpoint executable malware confidence.
           type: String
         - contextPath: NSM.Alerts.detection.managerId
-          description: manager Id.
+          description: Manager ID.
           type: Number
         - contextPath: NSM.Alerts.detection.manager
           description: The detection manager.
           type: Unknown
         - contextPath: NSM.Alerts.detection.domain
-          description: detection domain.
+          description: Detection domain.
           type: String
         - contextPath: NSM.Alerts.detection.device
-          description: detection device.
+          description: Detection device.
           type: String
         - contextPath: NSM.Alerts.detection.deviceId
-          description: detection device ID.
+          description: Detection device ID.
           type: String
         - contextPath: NSM.Alerts.detection.interface
-          description: detection interface.
+          description: Detection interface.
           type: String
         - contextPath: NSM.Alerts.Application
-          description: The Application assosiated to the alert.
+          description: The application associated with the alert.
           type: String
         - contextPath: NSM.Alerts.layer7Data
-          description: Layer 7 information
+          description: Layer 7 information.
           type: String
         - contextPath: NSM.Alerts.EventResult
-          description: Event Result
+          description: Event result.
           type: String
         - contextPath: NSM.Alerts.SensorID
           description: Sensor ID.
@@ -1846,12 +1844,12 @@ script:
       arguments:
         - name: sensor_id
           required: true
-          description: The id of the sensor. To get the sensor_id, use the !nsm-get-sensors command.
+          description: The ID of the sensor. To get the sensor_id, use the !nsm-get-sensors command.
           isArray: false
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default is 50.
+          description: The maximum number of projects to return.
           defaultValue: 50
         - name: page
           required: false
@@ -1863,14 +1861,14 @@ script:
           description: The number of records in a page.
       outputs:
         - contextPath: NSM.PcapFile
-          description: Pcap File Name.
+          description: PCAP file name.
           type: string
     - name: nsm-export-pcap-file
       description: Exports the captured PCAP file.
       arguments:
         - name: sensor_id
           required: true
-          description: The id of the sensor. To get the sensor_id, use the command !nsm-get-sensors.
+          description: The ID of the sensor. To get the sensor_id, use the command !nsm-get-sensors.
           isArray: false
         - name: file_name
           required: true
@@ -1878,19 +1876,19 @@ script:
           isArray: false
       outputs:
         - contextPath: InfoFile.Name
-          description: FileName
+          description: File name.
           type: string
         - contextPath: InfoFile.EntryID
-          description: The EntryID of the report
+          description: The entry ID of the report.
           type: string
         - contextPath: InfoFile.Size
-          description: File Size
+          description: File size.
           type: number
         - contextPath: InfoFile.Type
-          description: File type e.g. "PE"
+          description: File type, e.g., "PE".
           type: string
         - contextPath: InfoFile.Info
-          description: Basic information of the file
+          description: Basic information about the file.
           type: string
   isfetch: false
   runonce: false
