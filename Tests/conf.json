@@ -4537,17 +4537,6 @@
             ]
         },
         {
-            "playbookID": "playbook-feodoteackerhash_test",
-            "fromversion": "5.5.0",
-            "integrations": [
-                "Feodo Tracker IP Blocklist Feed"
-            ],
-            "instance_names": [
-                "feodo_tracker_ip_currently__active",
-                "feodo_tracker_ip_30_days"
-            ]
-        },
-        {
             "playbookID": "playbook-feodotrackeripblock_test",
             "fromversion": "5.5.0",
             "integrations": [
