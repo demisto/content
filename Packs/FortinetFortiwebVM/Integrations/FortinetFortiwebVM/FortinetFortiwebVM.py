@@ -1691,12 +1691,11 @@ class ClientV1(Client):
             "name": name,
             "defaultAction": self.parser.action_user_to_api_mapper[default_action],
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="ServerObjects/ProtectedHostnames/ProtectedHostnames",
             json_data=data,
         )
-        return response
 
     def protected_hostname_update_request(
         self, name: str, default_action: Optional[str]
@@ -1719,12 +1718,11 @@ class ClientV1(Client):
                 ),
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix=f"ServerObjects/ProtectedHostnames/ProtectedHostnames/{name}",
             json_data=data,
         )
-        return response
 
     def protected_hostname_delete_request(self, name: str) -> Dict[str, Any]:
         """Delete a protected hostname.
@@ -1735,11 +1733,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1.
         """
-        response = self._http_request(
+        return self._http_request(
             method="DELETE",
             url_suffix=f"ServerObjects/ProtectedHostnames/ProtectedHostnames/{name}",
         )
-        return response
 
     def protected_hostname_list_request(self, **kwargs) -> Dict[str, Any]:
         """Get protected hostnames.
@@ -1747,11 +1744,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1.
         """
-        response = self._http_request(
+        return self._http_request(
             method="GET",
             url_suffix="ServerObjects/ProtectedHostnames/ProtectedHostnames",
         )
-        return response
 
     def protected_hostname_member_create_request(
         self, name: str, host: str, action: str, **kwargs
@@ -1770,10 +1766,7 @@ class ClientV1(Client):
             "action": self.parser.action_user_to_api_mapper[action],
             "host": host,
         }
-        response = self._http_request(
-            method="POST", url_suffix=endpoint, json_data=data
-        )
-        return response
+        return self._http_request(method="POST", url_suffix=endpoint, json_data=data)
 
     def protected_hostname_member_update_request(
         self, group_name: str, member_id: str, host: Optional[str], **kwargs
@@ -1799,8 +1792,7 @@ class ClientV1(Client):
                 ),
             }
         )
-        response = self._http_request(method="PUT", url_suffix=edp, json_data=data)
-        return response
+        return self._http_request(method="PUT", url_suffix=edp, json_data=data)
 
     def protected_hostname_member_delete_request(
         self, group_name: str, member_id: str
@@ -1815,8 +1807,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         endpoint = f"ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name}/ProtectedHostnamesNewHost/{member_id}"
-        response = self._http_request(method="DELETE", url_suffix=endpoint)
-        return response
+        return self._http_request(method="DELETE", url_suffix=endpoint)
 
     def protected_hostname_member_list_request(
         self, group_name: str, **kwargs
@@ -1829,11 +1820,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        response = self._http_request(
+        return self._http_request(
             method="GET",
             url_suffix=f"ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name}/ProtectedHostnamesNewHost",
         )
-        return response
 
     def ip_list_group_create_request(self, group_name: str, **kwargs) -> Dict[str, Any]:
         """Create a new ip list group.
@@ -1848,10 +1838,9 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1.
         """
         data = {"name": group_name}
-        response = self._http_request(
+        return self._http_request(
             method="POST", url_suffix="WebProtection/Access/IPList", json_data=data
         )
-        return response
 
     def ip_list_group_delete_request(self, group_name: str) -> Dict[str, Any]:
         """Delete a ip list group.
@@ -1863,8 +1852,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         endpoint = f"WebProtection/Access/IPList/{group_name}"
-        response = self._http_request(method="DELETE", url_suffix=endpoint)
-        return response
+        return self._http_request(method="DELETE", url_suffix=endpoint)
 
     def ip_list_group_list_request(self, **kwargs) -> Dict[str, Any]:
         """List the IP list groups.
@@ -1872,10 +1860,9 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        response = self._http_request(
+        return self._http_request(
             method="GET", url_suffix="WebProtection/Access/IPList"
         )
-        return response
 
     def ip_list_member_create_request(
         self, group_name: str, member_type: str, ip_address: str, **kwargs
@@ -1908,12 +1895,11 @@ class ClientV1(Client):
                     }
                 )
             )
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix=f"WebProtection/Access/IPList/{group_name}/IPListCreateIPListPolicyMember",
             json_data=data,
         )
-        return response
 
     def ip_list_member_update_request(
         self,
@@ -1957,12 +1943,11 @@ class ClientV1(Client):
                     }
                 )
             )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix=f"WebProtection/Access/IPList/{group_name}/IPListCreateIPListPolicyMember/{member_id}",
             json_data=data,
         )
-        return response
 
     def ip_list_member_delete_request(
         self, group_name: str, member_id: str
@@ -1977,8 +1962,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         endpoint = f"WebProtection/Access/IPList/{group_name}/IPListCreateIPListPolicyMember/{member_id}"
-        response = self._http_request(method="DELETE", url_suffix=endpoint)
-        return response
+        return self._http_request(method="DELETE", url_suffix=endpoint)
 
     def ip_list_member_list_request(self, group_name: str, **kwargs) -> Dict[str, Any]:
         """List IP list members.
@@ -1989,11 +1973,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        response = self._http_request(
+        return self._http_request(
             method="GET",
             url_suffix=f"WebProtection/Access/IPList/{group_name}/IPListCreateIPListPolicyMember",
         )
-        return response
 
     def http_content_routing_member_add_request(
         self,
@@ -2028,12 +2011,11 @@ class ClientV1(Client):
                 "profile": kwargs.get("profile"),
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix=f"Policy/ServerPolicy/ServerPolicy/{policy_name}/EditContentRouting",
             json_data=data,
         )
-        return response
 
     def http_content_routing_member_update_request(
         self,
@@ -2071,12 +2053,11 @@ class ClientV1(Client):
                 "profile": kwargs.get("profile"),
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix=f"Policy/ServerPolicy/ServerPolicy/{policy_name}/EditContentRouting/{member_id}",
             json_data=data,
         )
-        return response
 
     def http_content_routing_member_delete_request(
         self, policy_name: str, member_id: str
@@ -2090,11 +2071,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        response = self._http_request(
+        return self._http_request(
             method="DELETE",
             url_suffix=f"Policy/ServerPolicy/ServerPolicy/{policy_name}/EditContentRouting/{member_id}",
         )
-        return response
 
     def http_content_routing_member_list_request(
         self, policy_name: str, **kwargs
@@ -2107,11 +2087,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        response = self._http_request(
+        return self._http_request(
             method="GET",
             url_suffix=f"Policy/ServerPolicy/ServerPolicy/{policy_name}/EditContentRouting",
         )
-        return response
 
     def geo_ip_group_create_request(
         self,
@@ -2142,10 +2121,9 @@ class ClientV1(Client):
                 "except": exception,
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="POST", url_suffix="WebProtection/Access/GeoIP", json_data=data
         )
-        return response
 
     def geo_ip_group_update_request(
         self,
@@ -2175,12 +2153,11 @@ class ClientV1(Client):
                 "except": exception,
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix=f"WebProtection/Access/GeoIP/{name}",
             json_data=data,
         )
-        return response
 
     def geo_ip_group_delete_request(self, name: str) -> Dict[str, Any]:
         """Delete Geo IP group.
@@ -2193,8 +2170,7 @@ class ClientV1(Client):
         """
 
         endpoint = f"WebProtection/Access/GeoIP/{name}"
-        response = self._http_request(method="DELETE", url_suffix=endpoint)
-        return response
+        return self._http_request(method="DELETE", url_suffix=endpoint)
 
     def geo_ip_group_list_request(self, **kwargs) -> Dict[str, Any]:
         """List the Geo IP groups.
@@ -2202,10 +2178,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        response = self._http_request(
-            method="GET", url_suffix="WebProtection/Access/GeoIP"
-        )
-        return response
+        return self._http_request(method="GET", url_suffix="WebProtection/Access/GeoIP")
 
     def geo_ip_member_add_request(
         self, group_name: str, countries_list: List[str]
@@ -2220,12 +2193,11 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         data = {"picker": countries_list}
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix=f"WebProtection/Access/GeoIP/{group_name}/AddCountry",
             json_data=data,
         )
-        return response
 
     def geo_ip_member_delete_request(
         self, group_name: str, member_id: str
@@ -2240,8 +2212,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         endpoint = f"WebProtection/Access/GeoIP/{group_name}/AddCountry/{member_id}"
-        response = self._http_request(method="DELETE", url_suffix=endpoint)
-        return response
+        return self._http_request(method="DELETE", url_suffix=endpoint)
 
     def geo_ip_member_list_request(self, group_name: str) -> List[Dict[str, Any]]:
         """List the Geo IP members.
@@ -2253,8 +2224,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         endpoint = f"WebProtection/Access/GeoIP/{group_name}/AddCountry"
-        response = self._http_request(method="GET", url_suffix=endpoint)
-        return response
+        return self._http_request(method="GET", url_suffix=endpoint)
 
     def operation_status_get_request(self) -> Dict[str, Any]:
         """Gets operation status.
@@ -2458,10 +2428,9 @@ class ClientV1(Client):
             comments=comments,
             mach_once=mach_once,
         )
-        response = self._http_request(
+        return self._http_request(
             method="POST", url_suffix="Policy/ServerPolicy/ServerPolicy", json_data=data
         )
-        return response
 
     def server_policy_update_request(
         self,
@@ -2536,12 +2505,11 @@ class ClientV1(Client):
             certificate=certificate,
             intergroup=intergroup,
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix=f"Policy/ServerPolicy/ServerPolicy/{name}",
             json_data=data,
         )
-        return response
 
     def server_policy_delete_request(self, policy_name: str) -> Dict[str, Any]:
         """Delete server policy.
@@ -2586,12 +2554,11 @@ class ClientV1(Client):
             "requestURL": request_url,
             "enable": True,
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="ServerObjects/Global/CustomGlobalWhiteList",
             json_data=data,
         )
-        return response
 
     def custom_whitelist_url_update_request(
         self,
@@ -2623,12 +2590,11 @@ class ClientV1(Client):
                 ),
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix=f"ServerObjects/Global/CustomGlobalWhiteList/{id}",
             json_data=data,
         )
-        return response
 
     def custom_whitelist_list_request(self, **kwargs) -> Dict[str, Any]:
         """List custom whitelist members.
@@ -2806,12 +2772,11 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix="ServerObjects/Global/CustomPredefinedGlobalWhiteList",
             json_data=data,
         )
-        return response
 
     def certificate_intermediate_group_list_request(self) -> Dict[str, Any]:
         """List the Certificate intermediate groups.
@@ -2907,10 +2872,9 @@ class ClientV2(Client):
                 "default-action": action_val,
             }
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST", url_suffix="cmdb/server-policy/allow-hosts", json_data=data
         )
-        return response
 
     def protected_hostname_update_request(
         self, name: str, default_action: Optional[str]
@@ -2935,14 +2899,13 @@ class ClientV2(Client):
                 }
             )
         }
-        response = self._http_request(
+
+        return self._http_request(
             method="PUT",
             url_suffix="cmdb/server-policy/allow-hosts",
             json_data=data,
             params=params,
         )
-
-        return response
 
     def protected_hostname_delete_request(self, name: str) -> Dict[str, Any]:
         """Delete a protected hostname.
@@ -2954,10 +2917,9 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {"mkey": name}
-        response = self._http_request(
+        return self._http_request(
             method="DELETE", url_suffix="cmdb/server-policy/allow-hosts", params=params
         )
-        return response
 
     def protected_hostname_list_request(self, **kwargs) -> Dict[str, Any]:
         """Get protected hostnames.
@@ -2966,10 +2928,9 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = remove_empty_elements({"mkey": kwargs.get("name")})
-        response = self._http_request(
+        return self._http_request(
             method="GET", url_suffix="cmdb/server-policy/allow-hosts", params=params
         )
-        return response
 
     def protected_hostname_member_create_request(
         self, name: str, host: str, action: str, **kwargs
@@ -2997,10 +2958,9 @@ class ClientV2(Client):
                 "host": host,
             }
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST", url_suffix=endpoint, json_data=data, params=params
         )
-        return response
 
     def protected_hostname_member_update_request(
         self, group_name: str, member_id: str, host: Optional[str], **kwargs
@@ -3034,10 +2994,9 @@ class ClientV2(Client):
                 }
             )
         }
-        response = self._http_request(
+        return self._http_request(
             method="PUT", url_suffix=endpoint, json_data=data, params=params
         )
-        return response
 
     def protected_hostname_member_delete_request(
         self, group_name: str, member_id: str
@@ -3056,10 +3015,7 @@ class ClientV2(Client):
             "mkey": group_name,
             "sub_mkey": member_id,
         }
-        response = self._http_request(
-            method="DELETE", url_suffix=endpoint, params=params
-        )
-        return response
+        return self._http_request(method="DELETE", url_suffix=endpoint, params=params)
 
     def protected_hostname_member_list_request(
         self, group_name: str, **kwargs
@@ -3076,12 +3032,11 @@ class ClientV2(Client):
         params = {"mkey": group_name}
         if member_id := kwargs.get("member_id"):
             params.update({"sub_mkey": member_id})
-        response = self._http_request(
+        return self._http_request(
             method="GET",
             url_suffix="cmdb/server-policy/allow-hosts/host-list",
             params=params,
         )
-        return response
 
     def ip_list_group_create_request(self, group_name: str, **kwargs) -> Dict[str, Any]:
         """Create a new IP list group.
@@ -3143,10 +3098,9 @@ class ClientV2(Client):
                 }
             )
         }
-        response = self._http_request(
+        return self._http_request(
             method="PUT", url_suffix="cmdb/waf/ip-list", json_data=data, params=params
         )
-        return response
 
     def ip_list_group_delete_request(self, group_name: str) -> Dict[str, Any]:
         """Delete an IP list group.
@@ -3158,10 +3112,9 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {"mkey": group_name}
-        response = self._http_request(
+        return self._http_request(
             method="DELETE", url_suffix="cmdb/waf/ip-list", params=params
         )
-        return response
 
     def ip_list_group_list_request(self, **kwargs) -> Dict[str, Any]:
         """List the IP list groups.
@@ -3174,10 +3127,9 @@ class ClientV2(Client):
         """
         group_name = kwargs.get("group_name")
         params = {"mkey": group_name} if group_name else {}
-        response = self._http_request(
+        return self._http_request(
             method="GET", url_suffix="cmdb/waf/ip-list", params=params
         )
-        return response
 
     def ip_list_member_create_request(
         self, group_name: str, member_type: str, ip_address: str, **kwargs
@@ -3200,13 +3152,12 @@ class ClientV2(Client):
                 "ip": ip_address,
             }
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="cmdb/waf/ip-list/members",
             json_data=data,
             params=params,
         )
-        return response
 
     def ip_list_member_update_request(
         self,
@@ -3238,13 +3189,12 @@ class ClientV2(Client):
                 }
             )
         }
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix="cmdb/waf/ip-list/members",
             json_data=data,
             params=params,
         )
-        return response
 
     def ip_list_member_delete_request(
         self, group_name: str, member_id: str
@@ -3260,10 +3210,7 @@ class ClientV2(Client):
         """
         endpoint = "cmdb/waf/ip-list/members"
         params = {"mkey": group_name, "sub_mkey": member_id}
-        response = self._http_request(
-            method="DELETE", url_suffix=endpoint, params=params
-        )
-        return response
+        return self._http_request(method="DELETE", url_suffix=endpoint, params=params)
 
     def ip_list_member_list_request(self, group_name: str, **kwargs) -> Dict[str, Any]:
         """List IP list members.
@@ -3277,10 +3224,9 @@ class ClientV2(Client):
         params = {"mkey": group_name}
         if member_id := kwargs.get("member_id"):
             params.update({"sub_mkey": member_id})
-        response = self._http_request(
+        return self._http_request(
             method="GET", url_suffix="cmdb/waf/ip-list/members", params=params
         )
-        return response
 
     def http_content_routing_member_add_request(
         self,
@@ -3316,13 +3262,12 @@ class ClientV2(Client):
                 }
             )
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="cmdb/server-policy/policy/http-content-routing-list",
             json_data=data,
             params=params,
         )
-        return response
 
     def http_content_routing_member_update_request(
         self,
@@ -3357,13 +3302,12 @@ class ClientV2(Client):
                 }
             )
         }
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix="cmdb/server-policy/policy/http-content-routing-list",
             json_data=data,
             params=params,
         )
-        return response
 
     def http_content_routing_member_delete_request(
         self, policy_name: str, member_id: str
@@ -3378,12 +3322,11 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {"mkey": policy_name, "sub_mkey": member_id}
-        response = self._http_request(
+        return self._http_request(
             method="DELETE",
             url_suffix="cmdb/server-policy/policy/http-content-routing-list",
             params=params,
         )
-        return response
 
     def http_content_routing_member_list_request(
         self, policy_name: str, **kwargs
@@ -3400,12 +3343,11 @@ class ClientV2(Client):
         params = {"mkey": policy_name}
         if member_id := kwargs.get("member_id"):
             params.update({"sub_mkey": member_id})
-        response = self._http_request(
+        return self._http_request(
             method="GET",
             url_suffix="cmdb/server-policy/policy/http-content-routing-list",
             params=params,
         )
-        return response
 
     def geo_ip_group_create_request(
         self,
@@ -3443,10 +3385,9 @@ class ClientV2(Client):
                 "ignore-x-forwarded-for": kwargs["ignore_x_forwarded_for"],
             }
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST", url_suffix="cmdb/waf/geo-block-list", json_data=data
         )
-        return response
 
     def geo_ip_group_update_request(
         self,
@@ -3504,10 +3445,9 @@ class ClientV2(Client):
         """
 
         params = {"mkey": name}
-        response = self._http_request(
+        return self._http_request(
             method="DELETE", url_suffix="cmdb/waf/geo-block-list", params=params
         )
-        return response
 
     def geo_ip_group_list_request(self, **kwargs) -> Dict[str, Any]:
         """List the Geo IP groups.
@@ -3521,10 +3461,9 @@ class ClientV2(Client):
 
         name = kwargs.get("name")
         params = {"mkey": name} if name else {}
-        response = self._http_request(
+        return self._http_request(
             method="GET", url_suffix="cmdb/waf/geo-block-list", params=params
         )
-        return response
 
     def geo_ip_member_add_request(
         self, group_name: str, countries_list: List[str]
@@ -3544,13 +3483,12 @@ class ClientV2(Client):
                 "add": countries_list,
             }
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="waf/geoip.setCountrys",
             json_data=data,
             params=params,
         )
-        return response
 
     def geo_ip_member_delete_request(
         self, group_name: str, member_id: str
@@ -3570,10 +3508,7 @@ class ClientV2(Client):
             "mkey": group_name,
             "sub_mkey": member_id,
         }
-        response = self._http_request(
-            method="DELETE", url_suffix=endpoint, params=params
-        )
-        return response
+        return self._http_request(method="DELETE", url_suffix=endpoint, params=params)
 
     def geo_ip_member_list_request(self, group_name: str) -> Dict[str, Any]:
         """List the Geo IP members.
@@ -3585,12 +3520,11 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {"mkey": group_name}
-        response = self._http_request(
+        return self._http_request(
             method="GET",
             url_suffix="cmdb/waf/geo-block-list/country-list",
             params=params,
         )
-        return response
 
     def operation_status_get_request(self) -> Dict[str, Any]:
         """Gets operation status.
@@ -4019,13 +3953,12 @@ class ClientV2(Client):
             multi_certificate=kwards.get("multi_certificate"),
             certificate=certificate,
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix="cmdb/server-policy/policy",
             json_data=data,
             params=params,
         )
-        return response
 
     def server_policy_delete_request(self, policy_name: str) -> Dict[str, Any]:
         """Delete a server policy.
@@ -4037,10 +3970,9 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {"mkey": policy_name}
-        response = self._http_request(
+        return self._http_request(
             method="DELETE", url_suffix="cmdb/server-policy/policy", params=params
         )
-        return response
 
     def server_policy_list_request(self, **kwargs) -> Dict[str, Any]:
         """List the server policies.
@@ -4050,10 +3982,9 @@ class ClientV2(Client):
         """
         name = kwargs.get("name")
         params = {"mkey": name} if name else {}
-        response = self._http_request(
+        return self._http_request(
             method="GET", url_suffix="cmdb/server-policy/policy", params=params
         )
-        return response
 
     def custom_whitelist_url_create_request(
         self, request_type: str, request_url: str
@@ -4077,12 +4008,11 @@ class ClientV2(Client):
                 "request-file": request_url,
             }
         }
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             json_data=data,
         )
-        return response
 
     def custom_whitelist_url_update_request(
         self,
@@ -4114,13 +4044,12 @@ class ClientV2(Client):
                 }
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             json_data=data,
             params=params,
         )
-        return response
 
     def custom_whitelist_list_request(self, **kwargs) -> Dict[str, Any]:
         """List custom whitelist members.
@@ -4130,12 +4059,11 @@ class ClientV2(Client):
         """
         name = kwargs.get("id")
         params = {"mkey": name} if name else {}
-        response = self._http_request(
+        return self._http_request(
             method="GET",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             params=params,
         )
-        return response
 
     def custom_whitelist_parameter_create_request(
         self, name: str, **kwargs
@@ -4180,12 +4108,11 @@ class ClientV2(Client):
                 }
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             json_data=data,
         )
-        return response
 
     def custom_whitelist_parameter_update_request(
         self, id: str, name: Optional[str], status: Optional[str], **kwargs
@@ -4233,13 +4160,12 @@ class ClientV2(Client):
                 }
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             json_data=data,
             params=params,
         )
-        return response
 
     def custom_whitelist_cookie_create_request(
         self, name: str, domain: Optional[str], path: Optional[str]
@@ -4265,12 +4191,11 @@ class ClientV2(Client):
                 }
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             json_data=data,
         )
-        return response
 
     def custom_whitelist_cookie_update_request(
         self,
@@ -4305,13 +4230,12 @@ class ClientV2(Client):
                 }
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             json_data=data,
             params=params,
         )
-        return response
 
     def custom_whitelist_header_field_create_request(
         self,
@@ -4350,12 +4274,11 @@ class ClientV2(Client):
                 }
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="POST",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             json_data=data,
         )
-        return response
 
     def custom_whitelist_header_field_update_request(
         self,
@@ -4399,13 +4322,12 @@ class ClientV2(Client):
                 }
             }
         )
-        response = self._http_request(
+        return self._http_request(
             method="PUT",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             json_data=data,
             params=params,
         )
-        return response
 
     def custom_whitelist_delete_request(self, id: str) -> Dict[str, Any]:
         """Delete a custom whitelist member.
@@ -4417,12 +4339,11 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         params = {"mkey": id}
-        response = self._http_request(
+        return self._http_request(
             method="DELETE",
             url_suffix="cmdb/server-policy/pattern.custom-global-white-list-group",
             params=params,
         )
-        return response
 
     def geo_exception_list_request(self) -> Dict[str, Any]:
         """List the Geo IP Exception.
