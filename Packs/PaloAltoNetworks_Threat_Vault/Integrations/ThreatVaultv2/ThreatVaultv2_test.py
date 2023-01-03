@@ -13,7 +13,7 @@ from ThreatVaultv2 import (
     parse_resp_by_type,
     resp_to_hr,
     parse_date,
-    convert_reputation_type_to_readable,
+    reputation_type_to_hr,
 )
 
 
@@ -1013,6 +1013,6 @@ def test_parse_date(date, expected_result):
         )
     ]
 )
-def test_convert_reputation_type_to_readable(reputation_type, expected_results):
+def test_reputation_type_to_hr(reputation_type, expected_results):
 
-    assert convert_reputation_type_to_readable(reputation_type) == expected_results
+    assert reputation_type_to_hr(reputation_type) == expected_results
