@@ -139,7 +139,7 @@ class ErrorMessage(Enum):
     DEPLOYMENT_MODE_INSERT = "Please insert deployment mode."
     VIRTUAL_SERVER = "Please insert virtual server."
     CLIENT_REAL_IP = "client_real_ip should be enable/disable"
-    MACH_ONCE = "mach_once should be enable/disable"
+    MATCH_ONCE = "match_once should be enable/disable"
     MONITOR_MODE = "monitor_mode should be enable/disable"
     REDIRECT_2_HTTPS = "redirect_to_https should be enable/disable"
     RETRY_ON = "retry_on should be enable/disable"
@@ -1038,14 +1038,21 @@ class ParserV2(Parser):
             or "",
             "request_url": custom_whitelist["request-file"],
             "domain_status": custom_whitelist["domain-status"],
-            "domain_type":
-                self.request_type_user_to_api_mapper.get(custom_whitelist.get("domain-type")) or "",
+            "domain_type": self.request_type_user_to_api_mapper.get(
+                custom_whitelist.get("domain-type")
+            )
+            or "",
             "domain": custom_whitelist["domain"],
             "path": custom_whitelist["path"],
-            "header_name_type":
-                self.request_type_user_to_api_mapper.get(custom_whitelist.get("header-type")) or "",
+            "header_name_type": self.request_type_user_to_api_mapper.get(
+                custom_whitelist.get("header-type")
+            )
+            or "",
             "value_status": custom_whitelist["value-status"],
-            "header_value_type": self.request_type_user_to_api_mapper.get(custom_whitelist.get("value-type")) or "",
+            "header_value_type": self.request_type_user_to_api_mapper.get(
+                custom_whitelist.get("value-type")
+            )
+            or "",
             "value": custom_whitelist["value"],
         }
         return parsed_data
@@ -1472,7 +1479,7 @@ class Client(BaseClient):
         monitor_mode: Optional[str],
         url_case_sensitivity: Optional[str],
         comments: Optional[str],
-        mach_once: Optional[str],
+        match_once: Optional[str],
         **kwards,
     ) -> Dict[str, Any]:
         pass
@@ -1498,7 +1505,7 @@ class Client(BaseClient):
         monitor_mode: Optional[str],
         url_case_sensitivity: Optional[str],
         comments: Optional[str],
-        mach_once: Optional[str],
+        match_once: Optional[str],
         **kwards,
     ) -> Dict[str, Any]:
         pass
@@ -2363,7 +2370,7 @@ class ClientV1(Client):
         monitor_mode: Optional[str],
         url_case_sensitivity: Optional[str],
         comments: Optional[str],
-        mach_once: Optional[str],
+        match_once: Optional[str],
         **kwards,
     ) -> Dict[str, Any]:
         """Create server policy.
@@ -2406,7 +2413,7 @@ class ClientV1(Client):
             monitor_mode=monitor_mode,
             url_case_sensitivity=url_case_sensitivity,
             comments=comments,
-            mach_once=mach_once,
+            mach_once=match_once,
         )
         return self._http_request(
             method="POST", url_suffix="Policy/ServerPolicy/ServerPolicy", json_data=data
@@ -2432,7 +2439,7 @@ class ClientV1(Client):
         monitor_mode: Optional[str],
         url_case_sensitivity: Optional[str],
         comments: Optional[str],
-        mach_once: Optional[str],
+        match_once: Optional[str],
         **kwards,
     ) -> Dict[str, Any]:
         """Create server policy.
@@ -2481,7 +2488,7 @@ class ClientV1(Client):
             monitor_mode=monitor_mode,
             url_case_sensitivity=url_case_sensitivity,
             comments=comments,
-            mach_once=mach_once,
+            mach_once=match_once,
             certificate=certificate,
             intergroup=intergroup,
         )
@@ -3658,7 +3665,7 @@ class ClientV2(Client):
         monitor_mode: Optional[str],
         url_case_sensitivity: Optional[str],
         comments: Optional[str],
-        mach_once: Optional[str],
+        match_once: Optional[str],
         ip_range: Optional[str],
         retry_on: Optional[str],
         retry_on_cache_size: Optional[str],
@@ -3718,7 +3725,7 @@ class ClientV2(Client):
                     "replacemsg": replace_msg,
                     "case-sensitive": url_case_sensitivity,
                     "comment": comments,
-                    "prefer-current-session": mach_once,
+                    "prefer-current-session": match_once,
                 }
             )
         }
@@ -3746,7 +3753,7 @@ class ClientV2(Client):
         monitor_mode: Optional[str],
         url_case_sensitivity: Optional[str],
         comments: Optional[str],
-        mach_once: Optional[str],
+        match_once: Optional[str],
         **kwards,
     ) -> Dict[str, Any]:
         """Create a new server policy.
@@ -3819,7 +3826,7 @@ class ClientV2(Client):
             replace_msg=kwards.get("replace_msg"),
             url_case_sensitivity=url_case_sensitivity,
             comments=comments,
-            mach_once=mach_once,
+            match_once=match_once,
             certificate_type=kwards["certificate_type"],
             lets_certificate=kwards.get("lets_certificate"),
             multi_certificate=kwards.get("multi_certificate"),
@@ -3848,7 +3855,7 @@ class ClientV2(Client):
         monitor_mode: Optional[str],
         url_case_sensitivity: Optional[str],
         comments: Optional[str],
-        mach_once: Optional[str],
+        match_once: Optional[str],
         **kwards,
     ) -> Dict[str, Any]:
         """Update a server policy.
@@ -3927,7 +3934,7 @@ class ClientV2(Client):
             replace_msg=kwards.get("replace_msg"),
             url_case_sensitivity=url_case_sensitivity,
             comments=comments,
-            mach_once=mach_once,
+            match_once=match_once,
             certificate_type=kwards["certificate_type"],
             lets_certificate=kwards.get("lets_certificate"),
             multi_certificate=kwards.get("multi_certificate"),
@@ -6229,7 +6236,7 @@ def validate_server_policy(version: str, args: Dict[str, Any]):
         ]:
             raise ValueError(ErrorMessage.CLIENT_REAL_IP.value)
         if args.get("mach_once") and args["mach_once"] not in ["enable", "disable"]:
-            raise ValueError(ErrorMessage.MACH_ONCE.value)
+            raise ValueError(ErrorMessage.MATCH_ONCE.value)
         if args.get("monitor_mode") and args["monitor_mode"] not in [
             "enable",
             "disable",
@@ -6334,7 +6341,7 @@ def server_policy_create_command(
         monitor_mode=args.get("monitor_mode"),
         url_case_sensitivity=args.get("url_case_sensitivity"),
         comments=args.get("comments"),
-        mach_once=args.get("mach_once"),
+        match_once=args.get("mach_once"),
         allow_list=args.get("allow_list"),
         replace_msg=args.get("replace_msg"),
         scripting=args.get("scripting"),
@@ -6411,7 +6418,7 @@ def server_policy_update_command(
         monitor_mode=args.get("monitor_mode"),
         url_case_sensitivity=args.get("url_case_sensitivity"),
         comments=args.get("comments"),
-        mach_once=args.get("mach_once"),
+        match_once=args.get("mach_once"),
         allow_list=args.get("allow_list"),
         replace_msg=args.get("replace_msg"),
         scripting=args.get("scripting"),
