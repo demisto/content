@@ -15,5 +15,8 @@
     }
   },
   "fromVersion": "6.10.0",
-  "toVersion": "6.11.9"
+  "toVersion": "6.11.9",
+  "marketplaces": [
+        "marketplacev2"
+    ]
 }
