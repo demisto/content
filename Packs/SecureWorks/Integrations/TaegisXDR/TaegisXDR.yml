@@ -147,6 +147,8 @@ script:
       description: An ticket or ID for to an external system for reference
     - name: service_desk_type
       description: The type of service desk id (e.g. XSOAR)
+    - name: assignee_id
+      description: The auth0 ID of a user
     outputs:
     - contextPath: TaegisXDR.InvestigationUpdate
       description: ID of the updated Taegis investigation

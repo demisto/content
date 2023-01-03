@@ -538,6 +538,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | service_desk_id | An ID or ticket # to relate to an Investigation | False |
 | service_desk_type | The type of id related to an investigation (e.g. Jira) | False |
 | status | The current status of the Investigation | False |
+| assignee_id | The id of a user to assign, in `auth0|12345` format | False |
 
 Note: At least 1 of the above inputs (in addition to id) must be defined
 

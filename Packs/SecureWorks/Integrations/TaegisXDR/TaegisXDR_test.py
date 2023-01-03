@@ -378,6 +378,7 @@ def test_update_investigation(requests_mock):
         "id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigation"]["id"],
         "description": "Test Investigation Updated",
         "priority": 2,
+        "status": "Active",
     }
     response = update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
@@ -396,6 +397,12 @@ def test_update_investigation(requests_mock):
     args["status"] = "BadStatus"
     bad_status = r"The provided status, BadStatus, is not valid for updating an investigation. Supported Status Values:.*"
     with pytest.raises(ValueError, match=bad_status):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Invalid Assignee ID Format
+    args["assignee_id"] = "BadAssigneeIDFormat"
+    invalid_fields = r"assignee_id MUST either be an 'auth0' user ID or '@secureworks'"
+    with pytest.raises(ValueError, match=invalid_fields):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     # No valid update fields set

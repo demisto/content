@@ -932,6 +932,10 @@ def update_investigation_command(client: Client, env: str, args=None):
     if not investigation_id:
         raise ValueError("Cannot fetch investigation without investigation_id defined")
 
+    if args.get("assignee_id"):
+        if not args["assignee_id"].startswith("auth0") and args["assignee_id"] != "@secureworks":
+            raise ValueError("assignee_id MUST either be an 'auth0' user ID or '@secureworks'")
+
     query = """
     mutation ($investigation_id: ID!, $investigation: UpdateInvestigationInput!) {
         updateInvestigation(investigation_id: $investigation_id, investigation: $investigation) {
