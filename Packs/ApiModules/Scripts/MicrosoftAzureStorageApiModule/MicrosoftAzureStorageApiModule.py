@@ -24,7 +24,6 @@ class MicrosoftStorageClient(BaseClient):
         Overrides Base client request function.
         Create and adds to the headers the Authorization Header component before sending the request.
         Parse Azure XML response.
-
         Args:
             url_suffix (str): Request URL suffix.
             params (dict): Request Params.
@@ -40,16 +39,20 @@ class MicrosoftStorageClient(BaseClient):
         if 'ok_codes' not in kwargs and not self._ok_codes:
             kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
 
-        if not params:
-            params = {}
+        if not full_url:
+            # This logic will chain the SAS token along with the params
+            # in order to create a valid URL for requests in Microsoft Azure Storage.
+            # For example:
+            # SAS token = '?sv=2020-08-04&ss=bt&spr=https&sig=t8'
+            # params = '{'restype': 'directory', 'comp': 'list'}'
+            # url_suffix = 'container'
+            # The updated url_suffix after performing this logic will be:
+            # url_suffix = 'container?sv=2020-08-04&ss=ay&spr=https&sig=s5&restype=directory&comp=list'
+            params_query = self.params_dict_to_query_string(params, prefix='')
+            url_suffix = f'{url_suffix}?{self._account_sas_token}{params_query}'
+            params = None
 
-        # sas token should be added into the url as a parameter
-        params['sig'] = self._account_sas_token
-
-        default_headers = {
-            'x-ms-version': self._api_version,
-            'x-ms-date': datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
-        }
+        default_headers = {'x-ms-version': self._api_version}
 
         if headers:
             default_headers.update(headers)
@@ -87,6 +90,25 @@ class MicrosoftStorageClient(BaseClient):
             return response
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
+
+    def params_dict_to_query_string(self, params: dict = None, prefix: str = "") -> str:
+        """
+        Convert request params to string query.
+        Args:
+            params (dict): Request Params.
+            prefix (str): String prefix.
+
+        Returns:
+            str: String query.
+
+        """
+        if not params:
+            return ""
+        query = prefix
+        for key, value in params.items():
+            query += f'&{key}={value}'
+
+        return query
 
 
 class NotFoundError(Exception):
