@@ -13,6 +13,7 @@ from TaegisXDR import (
     fetch_incidents,
     fetch_investigation_command,
     fetch_investigation_alerts_command,
+    fetch_users_command,
     fetch_playbook_execution_command,
     create_investigation_command,
     update_investigation_command,
@@ -401,3 +402,34 @@ def test_update_investigation(requests_mock):
     invalid_fields = r"No valid investigation fields provided. Supported Update Fields:.*"
     with pytest.raises(ValueError, match=invalid_fields):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_fetch_users(requests_mock):
+    client = mock_client(requests_mock, FETCH_USERS_RESPONSE)
+    args = {
+        "limit": 1,
+        "page_size": 0,
+    }
+
+    response = fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_USER
+    assert len(response.outputs) == len([TAEGIS_USER])
+
+    client = mock_client(requests_mock, FETCH_USERS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to fetch user information:"):
+        assert fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Test user search by email
+    client = mock_client(requests_mock, FETCH_USERS_RESPONSE)
+    args["email"] = TAEGIS_USER["email"]
+    response = fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_USER
+    assert len(response.outputs) == len([TAEGIS_USER])
+
+    # Test user search by auth0 user id
+    client = mock_client(requests_mock, FETCH_USER_RESPONSE)
+    args["id"] = TAEGIS_USER["user_id"]
+    args.pop("email")
+    response = fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_USER
+    assert len(response.outputs) == len([TAEGIS_USER])

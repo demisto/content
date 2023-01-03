@@ -419,6 +419,46 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-fetch-users
+
+#### Base Command
+`!taegis-fetch-users`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The id of the user, in `auth0` format | False |
+| email | The email of the user | False |
+| status | The users to find based on status | False |
+| page |  | False |
+| page_size | | False |
+
+#### Command Example
+
+```
+!taegis-fetch-users id="auth0|123456"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Users": [
+            {
+                "email": "myuser@email.com",
+                "family_name": "Smith",
+                "given_name": "John",
+                "status": "Registered",
+                "user_id": "auth0|123456"
+            }
+        ]
+    }
+}
+```
+
+
 ### taegis-update-comment
 
 #### Base Command

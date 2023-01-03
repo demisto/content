@@ -237,6 +237,24 @@ script:
       description: The comment update results
     description: Update an existing comment
   dockerimage: demisto/python3:3.10.8.36650
+  - name: taegis-fetch-users
+    arguments:
+    - name: id
+      description: The auth0 ID, beginning with 'auth0|'
+    - name: email
+      description: The email address to search for
+    - name: status
+      description: Search by user status
+    - name: page
+      description: Page for results
+      defaultValue: "0"
+    - name: page_size
+      description: Results to return per page
+      defaultValue: "10"
+    outputs:
+    - contextPath: TaegisXDR.Users
+      description: The located user(s)
+    description: Fetch a user by ID or email address
   runonce: false
   subtype: python3
   isfetch: true

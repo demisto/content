@@ -824,6 +824,66 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     return results
 
 
+def fetch_users_command(client: Client, env: str, args=None):
+    page = int(args.get("page", 0))
+    page_size = int(args.get("page_size", 10))
+
+    variables: Dict[str, Any] = {
+        "filters": {
+            "status": args.get("status", ""),
+            "perPage": page_size,
+            "pageOffset": page_size * page,
+        }
+    }
+    fields = "user_id email family_name given_name status"
+    if args.get("id"):
+        query = """
+        query ($ids: [String!]) {
+            tdrusersByIDs (userIDs: $ids) {
+                %s
+            }
+        }
+        """ % (fields)
+        variables = {"ids": [args["id"]]}
+    else:
+        query = """
+        query ($filters: TDRUsersSearchInput) {
+            tdrUsersSearch (filters: $filters) {
+                results {
+                    %s
+                }
+            }
+        }
+        """ % (fields)
+
+    if args.get("email"):
+        variables["filters"]["emails"] = args["email"]
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        if args.get("id"):
+            user = result["data"]["tdrusersByIDs"]
+        else:
+            user = result["data"]["tdrUsersSearch"]["results"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch user information: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Users",
+        outputs_key_field="user_id",
+        outputs=user,
+        readable_output=tableToMarkdown(
+            "Taegis Users",
+            user,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def update_comment_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot update comment, comment id cannot be empty")
@@ -956,6 +1016,7 @@ def main():
         "taegis-fetch-investigation": fetch_investigation_command,
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
+        "taegis-fetch-users": fetch_users_command,
         "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
         "test-module": test_module,
