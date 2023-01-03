@@ -47,7 +47,7 @@ class Client:
             try:
                 if request_order[0] == LogType.AUTHENTICATION:
                     response = self.admin_api.get_authentication_log(
-                        mintime=self.params.mintime[LogType.AUTHENTICATION])
+                        mintime=self.params.mintime[LogType.AUTHENTICATION], api_version=2, limit=1000)
                 elif request_order[0] == LogType.ADMINISTRATION:
                     response = self.admin_api.get_administrator_log(
                         mintime=self.params.mintime[LogType.ADMINISTRATION])
@@ -57,7 +57,7 @@ class Client:
                 return response
             except Exception as exc:
                 msg = f'something went wrong with the sdk call {exc}'
-                LOG(msg)
+                demisto.debug(msg)
                 if str(exc) == 'Received 429 Too Many Requests':
                     retries -= 1
         return {}
@@ -99,7 +99,7 @@ class GetEvents:
             try:
                 assert events
             except (IndexError, AssertionError):
-                LOG('empty list, breaking')
+                demisto.debug('empty list, breaking')
                 break
 
     def aggregated_results(self) -> List[dict]:  # pragma: no cover
@@ -109,6 +109,7 @@ class GetEvents:
 
         stored_events = []
         for events in self._iter_events():  # type: ignore
+            demisto.debug(f'Got {len(events)}, events for {self.request_order[0]} logs')
             stored_events.extend(events)
             if len(stored_events) >= int(self.client.params.limit) or not events:
                 return stored_events
@@ -192,7 +193,8 @@ def main():  # pragma: no cover
                 demisto.setLastRun(get_events.get_last_run())
                 demisto_params['push_events'] = True
             if demisto_params.get('push_events'):
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                pass
+                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
