@@ -13,9 +13,6 @@ integration_params = {
     'max_fetch': 5
 }
 
-integration_params_with_auth_url = copy.deepcopy(integration_params)
-integration_params_with_auth_url.update({"auth_endpoint": "https://auth.wiz.io/oauth/token"})
-
 TEST_TOKEN = '123456789'
 SIMILAR_COMMANDS = ['wiz-issue-in-progress', 'wiz-reopen-issue', 'wiz-reject-issue', 'wiz-get-issues',
                     'wiz-get-resource',
@@ -25,7 +22,7 @@ SIMILAR_COMMANDS = ['wiz-issue-in-progress', 'wiz-reopen-issue', 'wiz-reject-iss
 
 @pytest.fixture(autouse=True)
 def set_mocks(mocker):
-    mocker.patch.object(demisto, 'params', return_value=integration_params_with_auth_url)
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
 
 
 test_get_filtered_issues_response = {
@@ -521,15 +518,12 @@ def test_get_filtered_issues_good_severity_resource(mocker, capfd, severity):
         get_filtered_issues(issue_type='', resource_id='test_resource', severity=severity, limit=500)
 
 
-def test_get_filtered_issues_bad_arguments(mocker, capfd):
+def test_get_filtered_issues_bad_severity(mocker, capfd):
     from Wiz import get_filtered_issues
     with capfd.disabled():
         mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
         issue = get_filtered_issues(issue_type='virtualMachine', resource_id='test', severity='BAD', limit=500)
-        assert issue == 'You cannot pass issue_type and resource_id together\n'
-        issue = get_filtered_issues(issue_type='', resource_id='', severity='', limit=500)
-        assert issue == 'You should pass (at least) one of the following parameters:\n\tissue_type\n\tresource_id' \
-                        '\n\tseverity\n'
+        assert issue == 'You should (only) pass either issue_type or resource_id filters'
         issue = get_filtered_issues(issue_type='virtualMachine', resource_id='', severity='BAD', limit=500)
         assert issue == 'You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or ' \
                         'INFORMATIONAL in upper or lower case.'
@@ -887,12 +881,8 @@ def test_good_token(capfd, mocker):
         good_token = str(random.randint(1, 1000))
         mocker.patch('requests.post', return_value=mocked_requests_get({"access_token": good_token}, 200))
 
-        from Wiz import get_token, set_authentication_endpoint, generate_auth_urls, AUTH_DEFAULT
-        set_authentication_endpoint('https://auth.wiz.io/oauth/token')
-        res = get_token()
-        assert res == good_token
-
-        set_authentication_endpoint(generate_auth_urls(AUTH_DEFAULT)[1])
+        from Wiz import get_token, set_authentication_endpoint
+        set_authentication_endpoint('auth.app.wiz.io/oauth/token')
         res = get_token()
         assert res == good_token
 
