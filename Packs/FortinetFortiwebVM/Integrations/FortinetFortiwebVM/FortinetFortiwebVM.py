@@ -7222,7 +7222,7 @@ def find_dict_in_array(
     """
 
     for obj in container:
-        if obj.get(key) and str(obj[key]) == value:
+        if key in obj and str(obj[key]) == value:
             return obj
     return None
 
