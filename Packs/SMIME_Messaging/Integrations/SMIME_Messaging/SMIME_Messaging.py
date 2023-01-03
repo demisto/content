@@ -9,6 +9,7 @@ from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
 from charset_normalizer import from_bytes
+import quopri
 import warnings
 warnings.simplefilter("default")
 
@@ -41,18 +42,21 @@ def sign_email(client: Client, args: Dict):
     """
     send a S/MIME-signed message via SMTP.
     """
-    message_body = args.get('message_body', '')
-    buf = makebuf(message_body.encode())
+    message_body = (
+        b'Content-Type: text/plain;  charset="utf-8"\nContent-Transfer-Encoding: quoted-printable\n\n'
+        + quopri.encodestring(args.get('message_body', '').encode("utf-8"))
+    )
+    buf = makebuf(message_body)
 
     client.smime.load_key(client.private_key_file, client.public_key_file)
     p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
 
-    buf = makebuf(message_body.encode())
+    buf = makebuf(message_body)
 
     out = BIO.MemoryBuffer()
 
-    client.smime.write(out, p7, buf, SMIME.PKCS7_TEXT)
-    signed = out.read().decode('utf-8')
+    client.smime.write(out, p7, buf)
+    signed = out.read().decode("utf-8")
     signed_message = signed.split('\n\n')
     headers = signed_message[0].replace(': ', '=').replace('\n', ',')
     context = {
