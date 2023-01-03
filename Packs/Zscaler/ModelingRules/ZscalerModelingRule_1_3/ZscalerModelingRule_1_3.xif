@@ -27,7 +27,4 @@ alter
 	xdm.source.ipv4 = sourceTranslatedAddress,
 	xdm.target.ipv4=dst,
 	xdm.event.type = ZscalerNSSWeblogURLClass,
-	xdm.network.ip_protocol = if(proto=ENUM.ICMP, XDM_CONST.IP_PROTOCOL_ICMP, proto=ENUM.TCP, XDM_CONST.IP_PROTOCOL_TCP, proto=ENUM.UDP, XDM_CONST.IP_PROTOCOL_UDP, to_string(proto)),
-	xdm.target.port=to_integer(dpt),
-    xdm.source.port=to_integer(spt),
 	xdm.target.process.executable.file_type = fileType;
