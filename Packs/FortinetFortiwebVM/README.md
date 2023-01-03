@@ -1,11 +1,11 @@
 # Fortinet Fortiweb VM Pack
-Fortiweb VM integration allows to manage WAF policies and block cookies, URLs, and hostnames.
+Fortiweb VM integration enables you to manage WAF policies and block cookies, URLs, and hostnames.
 
 ## What does this pack do?
 
-- Create, update, delete, or retrieve Protected hostnames groups & members.
-- Create, update, delete, or retrieve IP Lists groups & members.
-- Create, update, delete, or retrieve Geo IP groups & members.
+- Create, update, delete, or retrieve Protected hostnames, groups, and members.
+- Create, update, delete, or retrieve IP Lists groups and members.
+- Create, update, delete, or retrieve Geo IP groups and members.
 - Create, update, delete, or retrieve Server Policies.
 - Create, update, delete, or retrieve Whitelist members.
 - Retrieve information and status of the systems.
