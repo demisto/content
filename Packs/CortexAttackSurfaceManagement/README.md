@@ -34,20 +34,15 @@ Automated remediation is only possible when the right conditions are met.  These
   - "dev" found in either the keys or values of tags associated with the asset (case insensitive)
   
 ### Playbooks
-- [What does this pack do?](#what-does-this-pack-do)
-  - [Automated Remediation requirements](#automated-remediation-requirements)
-  - [Playbooks](#playbooks)
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
-    - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
-    - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
-    - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
-    - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-    - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
-    - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
-    - [Cortex ASM - Remediation](#cortex-asm---remediation)
-    - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
-  - [Automation Scripts](#automation-scripts)
-    - [GenerateASMReport](#generateasmreport)
+  - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
+  - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
+  - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
+  - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+  - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
+  - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+  - [Cortex ASM - Remediation](#cortex-asm---remediation)
+  - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
 
 
 ### Cortex ASM - ASM Alert
