@@ -4603,7 +4603,7 @@ def protected_hostname_member_update_command(
         value=member_id,
         get_request=client.protected_hostname_member_list_request,
         args=args,
-        parser_command=client.parser.parse_protected_hostname_member,
+        _parser=client.parser.parse_protected_hostname_member,
         requested_version=ClientV1.API_VER,
         object_id=group_name,
     )
@@ -4963,7 +4963,7 @@ def ip_list_member_update_command(
         value=member_id,
         get_request=client.ip_list_member_list_request,
         args=args,
-        parser_command=client.parser.parse_ip_list_member,
+        _parser=client.parser.parse_ip_list_member,
         object_id=group_name,
         requested_version=ClientV1.API_VER,
     )
@@ -5133,7 +5133,7 @@ def http_content_routing_member_update_command(
         value=id,
         get_request=client.http_content_routing_member_list_request,
         args=args,
-        parser_command=client.parser.parse_http_content_routing_member,
+        _parser=client.parser.parse_http_content_routing_member,
         requested_version=ClientV1.API_VER,
         object_id=policy_name,
     )
@@ -5322,7 +5322,7 @@ def geo_ip_group_update_command(client: Client, args: Dict[str, Any]) -> Command
         value=name,
         get_request=client.geo_ip_group_list_request,
         args=args,
-        parser_command=client.parser.parse_geo_ip_group,
+        _parser=client.parser.parse_geo_ip_group,
         requested_version=ClientV1.API_VER,
     )
     block_period = arg_to_number(args.get("block_period"))
@@ -6396,7 +6396,7 @@ def server_policy_update_command(
         value=name,
         get_request=client.server_policy_list_request,
         args=args,
-        parser_command=client.parser.parse_server_policy,
+        _parser=client.parser.parse_server_policy,
         by_key="name" if client.version == ClientV2.API_VER else None,
     )
     validate_server_policy(client.version, args)
@@ -6650,7 +6650,7 @@ def custom_whitelist_url_update_command(
         value=id,
         get_request=client.custom_whitelist_list_request,
         args=args,
-        parser_command=client.parser.parse_custom_whitelist,
+        _parser=client.parser.parse_custom_whitelist,
     )
     validate_custom_whitelist(version=client.version, args=args, member_type="URL")
     response = client.custom_whitelist_url_update_request(
@@ -6716,7 +6716,7 @@ def get_object_data_before_update(
     value: str,
     get_request: Callable,
     args: Dict[str, Any],
-    parser_command: Callable,
+    _parser: Callable,
     requested_version: str = None,
     object_id: Optional[str] = None,
     by_key: str = None,
@@ -6751,7 +6751,7 @@ def get_object_data_before_update(
         )
         if not old_args:
             return args
-        parsed_data: Dict[str, Any] = parser_command(old_args)
+        parsed_data: Dict[str, Any] = _parser(old_args)
         parsed_data.update(args)
         return parsed_data
     return args
@@ -6776,7 +6776,7 @@ def custom_whitelist_parameter_update_command(
         value=id,
         get_request=client.custom_whitelist_list_request,
         args=args,
-        parser_command=client.parser.parse_custom_whitelist,
+        _parser=client.parser.parse_custom_whitelist,
     )
     validate_custom_whitelist(
         version=client.version, args=args, member_type="Parameter"
@@ -6854,7 +6854,7 @@ def custom_whitelist_cookie_update_command(
         value=id,
         get_request=client.custom_whitelist_list_request,
         args=args,
-        parser_command=client.parser.parse_custom_whitelist,
+        _parser=client.parser.parse_custom_whitelist,
     )
     validate_custom_whitelist(version=client.version, args=args, member_type="Cookie")
     response = client.custom_whitelist_cookie_update_request(
@@ -6936,7 +6936,7 @@ def custom_whitelist_header_field_update_command(
         value=id,
         get_request=client.custom_whitelist_list_request,
         args=args,
-        parser_command=client.parser.parse_custom_whitelist,
+        _parser=client.parser.parse_custom_whitelist,
     )
     validate_custom_whitelist(
         version=client.version, args=args, member_type="Header Field"
