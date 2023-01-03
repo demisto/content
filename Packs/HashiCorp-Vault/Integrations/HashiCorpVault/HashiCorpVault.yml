@@ -246,7 +246,7 @@ script:
     - contextPath: HashiCorp.Policy.Name
       description: Policy name.
       type: string
-    - contextPath: 'HashiCorp.Policy.Rule.Path '
+    - contextPath: HashiCorp.Policy.Rule.Path
       description: Policy rule path.
       type: string
     - contextPath: HashiCorp.Policy.Rule.Capabilities
