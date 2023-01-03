@@ -7200,7 +7200,11 @@ def custom_predifined_whitelist_update_command(
     rel_data = {}
     # Get exist data
     response = client.custom_predifined_whitelist_list_request()
-    data = response["results"] if isinstance(client, ClientV2) else response  # type: ignore # V2 always returns a Dict.
+    data = (
+        response["results"]  # type: ignore # [call-overload] response is dict if client is ClientV2.
+        if isinstance(client, ClientV2)
+        else response
+    )
     for type in data:
         for member in type["details"]:
             if member["value"]:
@@ -7306,7 +7310,7 @@ def paginate_results(
     if page and page_size:
         if page_size < len(response):
             first_item = page_size * (page - 1)
-            output = response[first_item: (first_item + page_size)]
+            output = response[first_item : (first_item + page_size)]
         else:
             output = response[:page_size]
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
