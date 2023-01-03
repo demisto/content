@@ -1,9 +1,7 @@
 This playbook normalizes a variety of indicators to facilitate their use within threat hunting and detection playbooks, as well as reduce the possibility of task errors.
-Using this playbook as a sub-playbook in threat hunting and detection playbooks is particularly useful if inputs are manually entered.
+You can use this playbook as a sub-playbook in threat hunting and detection playbooks. The playbook removes duplications, splits each input into an array of strings, and then stores the indicators under newly created context keys.
 
-The playbook removes duplications, splits each input into an array of strings, and then stores the indicators under newly created context keys.
-
-Note that multiple search values should be separated by commas only (without spaces or any special characters e.g. 10.0.0.1,10.0.0.2). 
+Note that multiple search values should be separated by commas only (without spaces or any special characters e.g., 10.0.0.1,10.0.0.2). 
 
 Supported IOCs for this playbook:
 - MD5
@@ -38,7 +36,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+Set
 
 ### Commands
 This playbook does not use any commands.
@@ -67,7 +65,7 @@ This playbook does not use any commands.
 | EmailAddress | A single or multiple email addresses to parse and set for future use within hunting playbooks. Used for both sender and recipient email addresses.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | CIDR | A single or multiple IP ranges to parse and set for future use within hunting playbooks.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | URI | A single or multiple URIs to parse and set for future use within hunting playbooks.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| Ja3 | JA3 is a method for creating SSL/TLS client fingerprints that should be easy to produce on any platform and can be easily shared for threat intelligence.<br/>A single or multiple Ja3's to parse and set for future use within hunting playbooks.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| Ja3 | JA3 is a method for creating SSL/TLS client fingerprints that should be easy to produce on any platform and can be easily shared for threat intelligence.<br/>A single or multiple JA3s to parse and set for future use within hunting playbooks.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | FileType | A single or multiple file types to parse and set for future use within hunting playbooks.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | Application | A single or multiple applications name to parse and set for future use within hunting playbooks.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | CVE_ID | Hunt for assets with a given CVE using available tools.<br/>A single or multiple CVE IDs to parse and set for future use within hunting playbooks.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
@@ -83,23 +81,23 @@ This playbook does not use any commands.
 | RegistryHivesParsed | An array of parsed registry hives indicators. | string |
 | RegistryValueParsed | An array of parsed registry value indicators. | string |
 | HTTPRequestMethodsParsed | An array of parsed HTTP request methods indicators. | string |
-| Ja3Parsed | An array of parsed Ja3 indicators. | string |
+| Ja3Parsed | An array of parsed JA3 indicators. | string |
 | UserAgentParsed | An array of parsed user agent indicators. | string |
 | URIParsed | An array of parsed URI indicators. | string |
-| FilePathParsed | An array of parsed file paths indicators. | string |
+| FilePathParsed | An array of parsed file path indicators. | string |
 | SHA1Parsed | An array of parsed SHA1 indicators. | string |
 | SHA256Parsed | An array of parsed SHA256 indicators. | string |
 | MD5Parsed | An array of parsed MD5 indicators. | string |
-| FileNameParsed | An array of parsed file names indicators. | string |
-| FileTypeParsed | An array of parsed file types indicators. | string |
-| IPAddressParsed | An array of parsed IP addresses indicators. | string |
+| FileNameParsed | An array of parsed file name indicators. | string |
+| FileTypeParsed | An array of parsed file type indicators. | string |
+| IPAddressParsed | An array of parsed IP address indicators. | string |
 | URLDomainParsed | An array of parsed URLDomain indicators. | string |
 | CIDRParsed | An array of parsed CIDR indicators. | string |
-| EmailAddressParsed | An array of parsed email addresses indicators. | string |
-| PortNumberParsed | An array of parsed port numbers indicators. | string |
+| EmailAddressParsed | An array of parsed email address indicators. | string |
+| PortNumberParsed | An array of parsed port number indicators. | string |
 | GeolocationParsed | An array of parsed geolocation indicators. | string |
 | ApplicationParsed | An array of parsed application indicators. | string |
-| CVE_IDParsed | An array of parsed CVE IDs | string |
+| CVE_IDParsed | An array of parsed CVE IDs. | string |
 
 ## Playbook Image
 ---
