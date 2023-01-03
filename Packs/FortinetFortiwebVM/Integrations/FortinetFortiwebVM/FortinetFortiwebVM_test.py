@@ -5,7 +5,8 @@ from urllib.parse import urljoin
 
 import pytest
 from CommonServerPython import *
-from FortinetFortiwebVM import Client, ClientV1, ClientV2, ErrorMessage, OutputTitle
+from FortinetFortiwebVM import (Client, ClientV1, ClientV2, ErrorMessage,
+                                OutputTitle)
 
 
 def load_mock_response(file_name: str) -> str:
@@ -23,7 +24,7 @@ def load_mock_response(file_name: str) -> str:
 
 @pytest.fixture(autouse=True)
 def mock_client(version: str) -> Client:
-    """Create a test client for v1/v2
+    """Create a test client for V1/V2.
 
     Args:
         version (str): Version (V1/V2)
