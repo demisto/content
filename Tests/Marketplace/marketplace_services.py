@@ -2401,7 +2401,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {f"marketplacev2:{PackTags.DATA_SOURCE}"} if self._is_data_source else set()
+        tags |= {PackTags.DATA_SOURCE} if self._is_data_source else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -4292,6 +4292,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
         res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
+        logging.debug(f'Content type for {display_name} is {content_type}, result is {bool(res)}')
         return bool(res)
 
 
@@ -4311,7 +4312,7 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
-        content_type = RN_HEADER_TO_ID_SET_KEYS[rn_header].capitalize()[:-1]
+        content_type = rn_header.replace(' ', '')[:-1]
         return is_content_item_in_graph(display_name=display_name,
                                         content_type=content_type,
                                         marketplace=marketplace)
