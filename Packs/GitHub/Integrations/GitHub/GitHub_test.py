@@ -418,14 +418,14 @@ def test_assignee(mocker, args, response_content, expected_result):
     """
     mocker.patch.object(demisto, 'args', return_value=args)
     GitHub.USER_SUFFIX = '/repos/user/repo'
-    mocker.patch('GitHub.http_request', side_effect=test_assignee_mock_http_request)
+    mocker.patch('GitHub.http_request', side_effect=mock_test_assignee_http_request)
     mocker_results = mocker.patch('GitHub.return_results')
     GitHub.github_add_assignee_command()
     mocker_results.assert_called_once()
     assert mocker_results.call_args_list[0].args[0].readable_output == expected_result
 
 
-def test_assignee_mock_http_request(method, url_suffix, params=None, data=None, headers=None, is_raw_response=False):
+def mock_test_assignee_http_request(method, url_suffix, params=None, data=None, headers=None, is_raw_response=False):
     if url_suffix == '/repos/user/repo/issues/1/assignees':
         return {"assignees": [{"login": "user1"}, {"login": "user2"}]}
     else:
