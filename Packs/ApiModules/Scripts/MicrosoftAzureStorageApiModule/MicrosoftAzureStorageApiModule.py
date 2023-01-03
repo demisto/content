@@ -1,4 +1,3 @@
-from datetime import datetime
 
 import demistomock as demisto
 from CommonServerPython import *
