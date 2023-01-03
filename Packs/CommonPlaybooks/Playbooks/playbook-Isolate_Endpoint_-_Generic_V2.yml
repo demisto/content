@@ -220,10 +220,10 @@ tasks:
     scriptarguments:
       Endpoint_id:
         complex:
-          simple: inputs.Endpoint_id
+          root: inputs.Endpoint_id
       Hostname:
         complex:
-          simple: inputs.Endpoint_hostname
+          root: inputs.Endpoint_hostname
     separatecontext: true
     continueonerrortype: ""
     loop:
