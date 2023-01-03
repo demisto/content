@@ -12,10 +12,6 @@
           "type": "string",
           "is_array": false
         },
-        "src": {
-          "type": "string",
-          "is_array": false
-        },
         "_vendor": {
           "type": "string",
           "is_array": false
