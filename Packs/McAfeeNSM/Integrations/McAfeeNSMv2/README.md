@@ -942,13 +942,11 @@ Retrieves the relevant alert details.
 | NSM.Alerts.Event.manager                               | Unknown  | The event manager.                                   | 
 | NSM.Alerts.Event.device                                | String   | The event device.                                    | 
 | NSM.Alerts.Event.deviceId                              | String   | The ID of the device related to the event.           | 
-| NSM.Alerts.event.interface                             | String   | The event interface.                                 | 
 | NSM.Alerts.Event.matchedPolicy                         | String   | The policy that matched the event.                   | 
 | NSM.Alerts.Event.zone                                  | Unknown  | The event zone.                                      | 
 | NSM.Alerts.Event.vlan                                  | String   | The event VLAN.                                      | 
 | NSM.Alerts.Event.detection                             | String   | The event detection.                                 | 
 | NSM.Alerts.CreatedTime                                 | Date     | The creation time of the event.                      | 
-| NSM.Alerts.event.direction                             | String   | The event direction.                                 | 
 | NSM.Alerts.EventResult                                 | String   | The event result.                                    | 
 | NSM.Alerts.Event.attackCount                           | Number   | Event attack count.                                  | 
 | NSM.Alerts.Event.relevance                             | String   | The relevance of the event.                          | 

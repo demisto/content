@@ -1093,6 +1093,9 @@ script:
     - contextPath: NSM.Alerts.Event.vlan
       description: The event VLAN.
       type: String
+    - contextPath: NSM.Alerts.Event.detection
+      description: The event detection.
+      type: String
     - contextPath: NSM.Alerts.Event.direction
       description: The event detection.
       type: String
