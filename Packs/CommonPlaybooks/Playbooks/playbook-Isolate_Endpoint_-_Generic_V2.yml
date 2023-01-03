@@ -326,48 +326,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 4583d598-ce1f-4705-8aad-87eb1f74a9e6
-    type: playbook
+    taskid: 40a0e4a6-9cb9-4ab4-8b66-0311dca92456
+    type: regular
     task:
-      id: 4583d598-ce1f-4705-8aad-87eb1f74a9e6
+      id: 40a0e4a6-9cb9-4ab4-8b66-0311dca92456
       version: -1
-      name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
-      playbookName: Containment Plan
-      type: playbook
-      iscommand: false
-      brand: ""
+      name: Cortex XSIAM - Isolate Endpoint
+      description: Isolates the specified endpoint.
+      script: Cortex Core - IR|||core-isolate-endpoint
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      AutoContainment:
-        complex:
-          root: inputs.autoContainment
-      BlockIndicators:
-        simple: "False"
-      ClearUserSessions:
-        simple: "False"
-      EndpointID:
+      endpoint_id:
         complex:
           root: inputs.Endpoint_id
-      FileContainment:
-        simple: "False"
-      FileRemediation:
-        simple: Quarantine
-      HostContainment:
-        simple: "True"
-      IAMUserDomain:
-        simple: '@demisto.com'
-      UserContainment:
-        simple: "False"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -414,12 +392,6 @@ inputs:
   value: {}
   required: false
   description: The ID of the endpoint to isolate.
-  playbookInputQuery:
-- key: autoContainment
-  value:
-    simple: "False"
-  required: false
-  description: Whether to execute the Cortex XSIAM isolation automatically.
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID

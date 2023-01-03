@@ -5,23 +5,21 @@ Make sure to provide valid playbook inputs for the integration you are using.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Cortex XDR - Isolate Endpoint
+* Block Endpoint - Carbon Black Response V2
+* Crowdstrike Falcon - Isolate Endpoint
 * FireEye HX - Isolate Endpoint
 * Microsoft Defender For Endpoint - Isolate Endpoint
-* Cortex XDR - Isolate Endpoint
-* Containment Plan
-* Block Endpoint - Carbon Black Response V2
 * Isolate Endpoint - Cybereason
-* Crowdstrike Falcon - Isolate Endpoint
-* Cortex XSIAM - Isolate Endpoint (Containment Plan)
 
 ### Integrations
-This playbook does not use any integrations.
+* Cortex Core - IR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-This playbook does not use any commands.
+* core-isolate-endpoint
 
 ## Playbook Inputs
 ---
@@ -32,7 +30,6 @@ This playbook does not use any commands.
 | ManualHunting.DetectedHosts | Hosts that were detected as infected during the manual hunting. |  | Optional |
 | Endpoint_ip | The IP of the endpoint to isolate. |  | Optional |
 | Endpoint_id | The ID of the endpoint to isolate. |  | Optional |
-| autoContainment | Whether to execute the Cortex XSIAM isolation automatically. | False | Optional |
 
 ## Playbook Outputs
 ---
