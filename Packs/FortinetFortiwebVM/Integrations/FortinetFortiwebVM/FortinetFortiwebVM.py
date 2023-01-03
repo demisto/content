@@ -4333,19 +4333,18 @@ class ClientV2(Client):
         self,
         header_name_type: str,
         name: str,
-        value_status: str,
-        header_value_type: str,
-        value: str,
+        value_status: Optional[str],
+        header_value_type: Optional[str],
+        value: Optional[str],
     ) -> Dict[str, Any]:
         """Create a custom whitelist header field.
 
         Args:
             header_name_type (str): Header name.
             name (str): Name.
-            value_status (str): Value status.
-            header_value_type (str): Header value type.
-            value (str): Value.
-            status (str): Status.
+            value_status (Optional[str]): Value status.
+            header_value_type (Optional[str]): Header value type.
+            value (Optional[str]): Value.
 
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2
@@ -4386,12 +4385,12 @@ class ClientV2(Client):
 
         Args:
             id (str) : Custom whitelist header field member ID.
-            header_name_type (str): Header name.
-            name (str): Name.
-            value_status (str): Value status.
-            header_value_type (str): Header value type.
-            value (str): Value.
-            status (str): Status.
+            header_name_type (Optional[str]): Header name.
+            name (Optional[str]): Name.
+            value_status (Optional[str]): Value status.
+            header_value_type (Optional[str]): Header value type.
+            value (Optional[str]): Value.
+            status (Optional[str]): Status.
 
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2
@@ -4909,7 +4908,7 @@ def ip_list_group_update_command(
         raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
     validate_ip_list_group(client, args)
     group_name = args["name"]
-    response = client.ip_list_group_update_request(  # type: ignore # client is ClientV2.
+    response = client.ip_list_group_update_request(
         group_name=group_name,
         action=args.get("action"),
         block_period=arg_to_number(args.get("block_period")),
@@ -7006,13 +7005,13 @@ def custom_whitelist_header_field_create_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    if client.version == ClientV1.API_VER:
+    if not isinstance(client, ClientV2):
         raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
     validate_custom_whitelist(
         version=client.version, args=args, member_type="Header Field"
     )
     name = args["name"]
-    response = client.custom_whitelist_header_field_create_request(  # type: ignore #client is ClientV2
+    response = client.custom_whitelist_header_field_create_request(
         header_name_type=args["header_name_type"],
         name=name,
         value_status=args.get("value_status"),
@@ -7061,7 +7060,7 @@ def custom_whitelist_header_field_update_command(
     validate_custom_whitelist(
         version=client.version, args=args, member_type="Header Field"
     )
-    response = client.custom_whitelist_header_field_update_request(  # type: ignore #client is ClientV2
+    response = client.custom_whitelist_header_field_update_request(
         id=id,
         header_name_type=args.get("header_name_type"),
         name=args.get("name"),
@@ -7249,7 +7248,7 @@ def list_response_handler(
         Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]: Filtered output to xsoar,
         pagination message and response output.
     """
-    if client.version == ClientV2.API_VER:
+    if isinstance(client, ClientV2):
         response = response["results"]  # type: ignore # V2 always returns a Dict.
     if internal_path:
         response = dict_safe_get(response, internal_path)
@@ -7307,7 +7306,7 @@ def paginate_results(
     if page and page_size:
         if page_size < len(response):
             first_item = page_size * (page - 1)
-            output = response[first_item : (first_item + page_size)]
+            output = response[first_item: (first_item + page_size)]
         else:
             output = response[:page_size]
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
