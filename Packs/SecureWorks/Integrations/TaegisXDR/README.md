@@ -20,6 +20,38 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
+### taegis-archive-investigation
+
+#### Base Command
+
+`!taegis-archive-investigation`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The investigation id to (un)archive | True |
+| unarchive | If unarchiving an investigation, set to `true` | False |
+
+#### Command Example
+
+```
+!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "InvestigationArchiving": {
+            "id": "c207ca4c-8a78-4408-a056-49f05d6eb77d"
+        }
+    }
+}
+```
+
+
 ### taegis-create-comment
 
 #### Base Command

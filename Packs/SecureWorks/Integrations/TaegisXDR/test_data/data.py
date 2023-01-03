@@ -274,3 +274,32 @@ FETCH_USERS_RESPONSE = {
         }
     }
 }
+
+INVESTIGATION_ARCHIVE_RESPONSE = {
+    "data": {
+        "archiveInvestigation": {
+            "id": TAEGIS_INVESTIGATION["id"],
+        }
+    }
+}
+
+INVESTIGATION_ARCHIVE_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "missing required input",
+            "path": [
+                "variables",
+                "id"
+            ]
+        }
+    ]
+}
+
+INVESTIGATION_UNARCHIVE_RESPONSE = {
+    "data": {
+        "unArchiveInvestigation": {
+            "id": TAEGIS_INVESTIGATION["id"],
+        }
+    }
+}

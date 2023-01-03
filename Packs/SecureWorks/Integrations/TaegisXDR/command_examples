@@ -1,3 +1,5 @@
+!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d unarchive=true
 !taegis-create-comment comment="This is a test comment" parent_id="c2e09554-833e-41a1-bc9d-8160aec0d70d"
 !taegis-create-investigation priority=1 description="XSOAR Created Investigation"
 !taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`

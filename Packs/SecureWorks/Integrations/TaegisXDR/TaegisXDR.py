@@ -31,7 +31,7 @@ INVESTIGATION_STATUSES = set((
     "Closed: Not Vulnerable",
     "Closed: Threat Mitigated",
 ))
-INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type"))
+INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type", "assignee_id"))
 
 
 """ CLIENT """
@@ -979,6 +979,46 @@ def update_investigation_command(client: Client, env: str, args=None):
     return results
 
 
+def update_investigation_archive_command(client: Client, env: str, args=None):
+    investigation_id = args.get("id")
+    if not investigation_id:
+        raise ValueError("Cannot archive or unarchive investigation, missing investigation id")
+
+    archive_investigation = (not args.get("unarchive") or args["unarchive"].lower() == "false")
+
+    mutation_key = "archiveInvestigation" if archive_investigation else "unArchiveInvestigation"
+    query = """
+    mutation ($investigation_id: ID!) {
+      %s(investigation_id: $investigation_id) {
+        id
+      }
+    }
+    """ % (mutation_key)
+
+    variables = {"investigation_id": investigation_id}
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"][mutation_key]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to archive or unarchive investigation: {result['errors'][0]['message']}")
+
+    archive_results = {"Results": f"Successfully {'Archived' if archive_investigation else 'Unarchived'} Investigation"}
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.InvestigationArchiving",
+        outputs_key_field="id",
+        outputs=investigation,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Archiving",
+            archive_results,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def test_module(client: Client) -> str:
     """
     Returns success if authentication was successful
@@ -1019,6 +1059,7 @@ def main():
         "taegis-fetch-users": fetch_users_command,
         "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
+        "taegis-archive-investigation": update_investigation_archive_command,
         "test-module": test_module,
     }
 

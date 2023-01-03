@@ -255,6 +255,17 @@ script:
     - contextPath: TaegisXDR.Users
       description: The located user(s)
     description: Fetch a user by ID or email address
+  - name: taegis-archive-investigation
+    arguments:
+    - name: id
+      required: true
+      description: ID of investigation to updated
+    - name: unarchive
+      description: Should we unarchive the investigation
+      defaultValue: "False"
+    outputs:
+    - contextPath: Taegis.ArchivedInvestigation
+    description: Archive or Unarchive an investigation
   runonce: false
   subtype: python3
   isfetch: true
