@@ -1,4 +1,4 @@
-[MODEL: dataset="delinea_sercretserver_raw"]
+[MODEL: dataset="thycotic_software_secret_server_raw"]
 alter
 xdm.target.file.directory=cs3,
 xdm.event.description=msg,
