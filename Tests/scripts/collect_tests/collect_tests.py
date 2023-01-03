@@ -952,7 +952,8 @@ class NightlyTestCollector(TestCollector, ABC):
         result: Optional[CollectionResult] = super().collect()
 
         logger.info('NightlyCollector drops packs to upload, as they don\'t need to be uploaded')
-        result.packs_to_upload = set()
+        if result:
+            result.packs_to_upload = set()
         return result
 
     def _id_set_tests_matching_marketplace_value(self) -> Optional[CollectionResult]:
