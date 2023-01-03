@@ -1,6 +1,6 @@
 {
-    "name": "ModulesManagement",
-    "description": "Manage your instances on demisto",
+    "name": "ModulesManagement (Deprecated)",
+    "description": "Deprecated. Manage your instances on demisto",
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",

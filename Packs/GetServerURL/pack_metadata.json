@@ -1,6 +1,6 @@
 {
-    "name": "GetServerURL",
-    "description": "Get the URL of the Cortex XSOAR server.",
+    "name": "GetServerURL (Deprecated)",
+    "description": "Deprecated. Get the URL of the Cortex XSOAR server.",
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",

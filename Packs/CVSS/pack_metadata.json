@@ -1,6 +1,6 @@
 {
-    "name": "CVSS",
-    "description": "Tools associated with CVSS scores and calculations.",
+    "name": "CVSS  (Deprecated)“",
+    "description": "Deprecated. Tools associated with CVSS scores and calculations.",
     "support": "xsoar",
     "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",

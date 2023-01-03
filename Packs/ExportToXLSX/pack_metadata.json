@@ -1,6 +1,6 @@
 {
-    "name": "ExportToXLSX",
-    "description": "Export context data to an xlsx file.",
+    "name": "ExportToXLSX (Deprecated)",
+    "description": "Deprecated. Export context data to an xlsx file.",
     "support": "xsoar",
     "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
