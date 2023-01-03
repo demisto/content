@@ -1271,6 +1271,17 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
+    def get_object_id(
+        self,
+        create_response: Dict[str, Any],
+        by_key: str,
+        value: str,
+        get_request: Callable,
+        object_id: Optional[str] = None,
+    ) -> str:
+        pass
+
+    @abstractmethod
     def protected_hostname_delete_request(self, name: str) -> Dict[str, Any]:
         pass
 
@@ -1656,6 +1667,32 @@ class ClientV1(Client):
             Union[int,str]: Error value.
         """
         return error["msg"]
+
+    def get_object_id(
+        self,
+        create_response: Dict[str, Any],
+        by_key: str,
+        value: str,
+        get_request: Callable,
+        object_id: Optional[str] = None,
+    ) -> str:
+        """Get object / sub object id for Fortiweb V1.
+
+        Args:
+            client (Client): Fortiweb VM Client. (For Fortiweb V1)
+            create_response (Dict[str, Any]): Response from create request. (For Fortiweb V2)
+            by_key (str): Unique key to search the sub object. (For Fortiweb V1)
+            value (str): The sub object value to the key. (For Fortiweb V1)
+            get_request (Callable): Get request (for Fortiweb VM 1)
+            object_id (Optional[str]): Object ID (not sub object)! (For Fortiweb V1)
+
+        Returns:
+            str: Member ID
+        """
+        member_data = get_object_data(
+            self.version, by_key, value, get_request, object_id
+        )
+        return member_data["_id"] if member_data else "Can not find the id"
 
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -2831,6 +2868,29 @@ class ClientV2(Client):
         return dict_safe_get(error, ["results", "errcode"]) or dict_safe_get(
             error, ["results", "pingResult"]
         )
+
+    def get_object_id(
+        self,
+        create_response: Dict[str, Any],
+        by_key: str,
+        value: str,
+        get_request: Callable,
+        object_id: Optional[str] = None,
+    ) -> str:
+        """Get object / sub object id for Fortiweb V2.
+
+        Args:
+            client (Client): Fortiweb VM Client. (For Fortiweb V1)
+            create_response (Dict[str, Any]): Response from create request. (For Fortiweb V2)
+            by_key (str): Unique key to search the sub object. (For Fortiweb V1)
+            value (str): The sub object value to the key. (For Fortiweb V1)
+            get_request (Callable): Get request (for Fortiweb VM 1)
+            object_id (Optional[str]): Object ID (not sub object)! (For Fortiweb V1)
+
+        Returns:
+            str: Member ID
+        """
+        return create_response["results"]["id"]
 
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -4559,8 +4619,7 @@ def protected_hostname_member_create_command(
         ignore_port=args.get("ignore_port"),
         include_subdomains=args.get("include_subdomains"),
     )
-    member_id = get_object_id(
-        client,
+    member_id = client.get_object_id(
         response,
         "host",
         host,
@@ -4918,8 +4977,7 @@ def ip_list_member_create_command(
         severity=args["severity"],
         trigger_policy=args.get("trigger_policy"),
     )
-    member_id = get_object_id(
-        client,
+    member_id = client.get_object_id(
         response,
         "iPv4IPv6",
         ip_address,
@@ -5089,8 +5147,7 @@ def http_content_routing_member_add_command(
         profile=args.get("profile"),
         status=args["status"],
     )
-    member_id = get_object_id(
-        client,
+    member_id = client.get_object_id(
         response,
         "http_content_routing_policy",
         http_content_routing_policy,
@@ -6606,8 +6663,7 @@ def custom_whitelist_url_create_command(
     response = client.custom_whitelist_url_create_request(
         request_type=args["request_type"], request_url=request_url
     )
-    member_id = get_object_id(
-        client,
+    member_id = client.get_object_id(
         response,
         "requestURL",
         request_url,
@@ -6691,8 +6747,8 @@ def custom_whitelist_parameter_create_command(
         domain_type=args.get("domain_type"),
         domain=args.get("domain"),
     )
-    member_id = get_object_id(
-        client, response, "itemName", name, client.custom_whitelist_list_request
+    member_id = client.get_object_id(
+        response, "itemName", name, client.custom_whitelist_list_request
     )
 
     command_results = generate_simple_context_data_command_results(
@@ -6815,8 +6871,8 @@ def custom_whitelist_cookie_create_command(
     response = client.custom_whitelist_cookie_create_request(
         name=name, domain=args.get("domain"), path=args.get("path")
     )
-    member_id = get_object_id(
-        client, response, "itemName", name, client.custom_whitelist_list_request
+    member_id = client.get_object_id(
+        response, "itemName", name, client.custom_whitelist_list_request
     )
 
     command_results = generate_simple_context_data_command_results(
@@ -6894,8 +6950,8 @@ def custom_whitelist_header_field_create_command(
         header_value_type=args.get("header_value_type"),
         value=args.get("value"),
     )
-    member_id = get_object_id(
-        client, response, "itemName", name, client.custom_whitelist_list_request
+    member_id = client.get_object_id(
+        response, "itemName", name, client.custom_whitelist_list_request
     )
 
     command_results = generate_simple_context_data_command_results(
@@ -7239,36 +7295,36 @@ def find_dicts_in_array(
     return [obj for obj in container if obj[key] in value]
 
 
-def get_object_id(
-    client: Client,
-    create_response: Dict[str, Any],
-    by_key: str,
-    value: str,
-    get_request: Callable,
-    object_id: Optional[str] = None,
-) -> str:
-    """Get object / sub object id. After create sub (member)
-        object we should get list of all members and get our id by some key.
+# def get_object_id(
+#     client: Client,
+#     create_response: Dict[str, Any],
+#     by_key: str,
+#     value: str,
+#     get_request: Callable,
+#     object_id: Optional[str] = None,
+# ) -> str:
+#     """Get object / sub object id. After create sub (member)
+#         object we should get list of all members and get our id by some key.
 
-    Args:
-        client (Client): Fortiweb VM Client.
-        create_response (Dict[str, Any]): Response from create request.
-        by_key (str): Unique key to search the sub object.
-        value (str): The sub object value to the key.
-        get_request (Callable): Get request (for Fortiweb VM 1)
-        object_id (Optional[str]): Object ID (not sub object)!
+#     Args:
+#         client (Client): Fortiweb VM Client.
+#         create_response (Dict[str, Any]): Response from create request.
+#         by_key (str): Unique key to search the sub object.
+#         value (str): The sub object value to the key.
+#         get_request (Callable): Get request (for Fortiweb VM 1)
+#         object_id (Optional[str]): Object ID (not sub object)!
 
-    Returns:
-        str: Member ID
-    """
-    if client.version == ClientV2.API_VER:
-        member_id = create_response["results"]["id"]
-    else:
-        member_data = get_object_data(
-            client.version, by_key, value, get_request, object_id
-        )
-        member_id = member_data["_id"] if member_data else "Can not find the id"
-    return member_id
+#     Returns:
+#         str: Member ID
+#     """
+#     if client.version == ClientV2.API_VER:
+#         member_id = create_response["results"]["id"]
+#     else:
+#         member_data = get_object_data(
+#             client.version, by_key, value, get_request, object_id
+#         )
+#         member_id = member_data["_id"] if member_data else "Can not find the id"
+#     return member_id
 
 
 def get_object_data(
