@@ -401,7 +401,9 @@ class URLCheck(object):
                 index += 1
 
         elif char in self.brackets:
+            # char is a type of bracket or quotation mark
             if char in self.bracket_pairs.keys():
+                # If the char is an opening bracket set `inside_brackets` flag to True
                 self.inside_brackets = True
                 self.opening_bracket = char
                 self.output += char
@@ -409,12 +411,14 @@ class URLCheck(object):
                 index += 1
 
             elif self.inside_brackets and char == self.bracket_pairs[self.opening_bracket]:
+                # If the char is a closing bracket check that it matches the opening one.
                 self.inside_brackets = False
                 self.output += char
                 part += char
                 index += 1
 
             else:
+                # The char is a closing bracket but there was no opening one.
                 return len(self.modified_url), part
 
         elif char == '\\':
