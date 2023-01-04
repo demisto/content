@@ -1,12 +1,12 @@
 Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-This integration was integrated and tested with version 2.0 of Palo Alto Networks Threat Vault v2
+This integration was integrated and tested with Palo Alto Networks Threat Vault v2.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---palo-alto-networks-threat-vault-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---palo-alto-networks-threat-vault-v2).
 
 ## Configure Palo Alto Networks Threat Vault v2 on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for Palo Alto Networks Threat Vault v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
