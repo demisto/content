@@ -528,6 +528,9 @@ tasks:
       entities:
         complex:
           root: inputs.Indicator
+      limit:
+        complex:
+          root: inputs.LimitResults
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -564,6 +567,9 @@ tasks:
       entities:
         complex:
           root: RelatedCampaign
+      limit:
+        complex:
+          root: inputs.LimitResults
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -893,6 +899,12 @@ inputs:
   value: {}
   required: false
   description: Input indicator to analyze his relationships
+  playbookInputQuery:
+- key: LimitResults
+  value:
+    simple: "200"
+  required: false
+  description: The number of results to return. Default is 20.
   playbookInputQuery:
 outputs:
 - contextPath: RelatedAttackPatterns

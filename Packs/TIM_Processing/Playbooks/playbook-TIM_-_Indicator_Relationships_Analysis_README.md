@@ -29,6 +29,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Indicator | Input indicator to analyze his relationships |  | Optional |
+| LimitResults | The number of results to return. Default is 20. | 200 | Optional |
 
 ## Playbook Outputs
 ---
