@@ -484,12 +484,17 @@ def fetch_comments_command(client: Client, env: str, args=None):
     return results
 
 
-def fetch_incidents(client: Client, max_fetch: int = 15):
+def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = True):
     """
     Fetch Taegis Investigations for the use with "Fetch Incidents"
     """
     if not 0 < int(max_fetch) < 201:
         raise ValueError("Max Fetch must be between 1 and 200")
+
+    asset_query = ""
+    if include_assets:
+        demisto.debug("include_assets=True, fetching assets with investigation")
+        asset_query = "assets {id hostnames {id hostname} tags {tag}}"
 
     query = """
     query investigations(
@@ -542,19 +547,10 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
             latest_activity
             priority
             status
-            assets {
-                id
-                hostnames {
-                    id
-                    hostname
-                }
-                tags {
-                    tag
-                }
-            }
+            %s
         }
     }
-    """
+    """ % (asset_query)
 
     variables = {
         "orderByField": "created_at",
@@ -1092,7 +1088,7 @@ def main():
             return_results(result)
 
         elif command == "fetch-incidents":
-            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"))
+            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"), include_assets=PARAMS.get("include_assets"))
         else:
             return_results(commands[command](client=client, env=environment, args=demisto.args()))
     except Exception as e:

@@ -59,6 +59,15 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Include Assets in Fetch
+  name: include_assets
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: An error can occur when the API is slow or there are a large numbers
+    of assets being added to a new incident/investigation. Disabling this will fetch
+    incidents without including asset information, allowing time for the investigation
+    creation to be completed.
 script:
   script: ''
   type: python
