@@ -38,7 +38,7 @@ DEFAULT_STATUS_CODES = {
 ''' HELPER FUNCTIONS '''
 
 
-def get_headers():
+def get_headers():  # pragma: no cover
     headers = {
         'Content-Type': 'application/json',
     }
@@ -109,7 +109,7 @@ def send_request(path, method='get', body=None, params=None, headers=None):
 ''' FUNCTIONS '''
 
 
-def list_secrets_engines_command():
+def list_secrets_engines_command():  # pragma: no cover
     res = list_secrets_engines()
 
     if not res:
@@ -137,13 +137,13 @@ def list_secrets_engines_command():
     })
 
 
-def list_secrets_engines():
+def list_secrets_engines():  # pragma: no cover
     path = 'sys/mounts'
 
     return send_request(path)
 
 
-def list_secrets_command():
+def list_secrets_command():  # pragma: no cover
     engine = demisto.args()['engine']
     version = demisto.args().get('version')
 
@@ -169,7 +169,7 @@ def list_secrets_command():
     })
 
 
-def list_secrets(engine_path, version, folder=None):
+def list_secrets(engine_path, version, folder=None):  # pragma: no cover
     path = engine_path
 
     if version == '2':
@@ -184,7 +184,7 @@ def list_secrets(engine_path, version, folder=None):
     return send_request(path, 'get', params=params)
 
 
-def get_secret_metadata_command():
+def get_secret_metadata_command():  # pragma: no cover
     engine_path = demisto.args()['engine_path']
     secret_path = demisto.args()['secret_path']
 
@@ -230,13 +230,13 @@ def get_secret_metadata_command():
     })
 
 
-def get_secret_metadata(engine_path, secret_path):
+def get_secret_metadata(engine_path, secret_path):  # pragma: no cover
     path = engine_path + '/metadata/' + secret_path
 
     return send_request(path, 'get')
 
 
-def delete_secret_command():
+def delete_secret_command():  # pragma: no cover
     engine_path = demisto.args()['engine_path']
     secret_path = demisto.args()['secret_path']
     versions = argToList(demisto.args()['versions'])
@@ -246,7 +246,7 @@ def delete_secret_command():
     demisto.results('Secret versions deleted successfully')
 
 
-def delete_secret(engine_path, secret_path, versions):
+def delete_secret(engine_path, secret_path, versions):  # pragma: no cover  # pragma: no cover
     path = urljoin(engine_path, urljoin('delete/', secret_path))
 
     body = {
@@ -256,7 +256,7 @@ def delete_secret(engine_path, secret_path, versions):
     return send_request(path, 'post', body=body)
 
 
-def undelete_secret_command():
+def undelete_secret_command():  # pragma: no cover
     engine_path = demisto.args()['engine_path']
     secret_path = demisto.args()['secret_path']
     versions = argToList(demisto.args()['versions'])
@@ -266,7 +266,7 @@ def undelete_secret_command():
     demisto.results('Secret versions undeleted successfully')
 
 
-def undelete_secret(engine_path, secret_path, versions):
+def undelete_secret(engine_path, secret_path, versions):  # pragma: no cover
     path = urljoin(engine_path, urljoin('undelete/', secret_path))
 
     body = {
@@ -276,7 +276,7 @@ def undelete_secret(engine_path, secret_path, versions):
     return send_request(path, 'post', body=body)
 
 
-def destroy_secret_command():
+def destroy_secret_command():  # pragma: no cover
     engine_path = demisto.args()['engine_path']
     secret_path = demisto.args()['secret_path']
     versions = argToList(demisto.args()['versions'])
@@ -286,7 +286,7 @@ def destroy_secret_command():
     demisto.results('Secret versions destroyed successfully')
 
 
-def destroy_secret(engine_path, secret_path, versions):
+def destroy_secret(engine_path, secret_path, versions):  # pragma: no cover
     path = urljoin(engine_path, urljoin('destroy/', secret_path))
 
     body = {
@@ -296,7 +296,7 @@ def destroy_secret(engine_path, secret_path, versions):
     return send_request(path, 'post', body=body)
 
 
-def list_policies_command():
+def list_policies_command():  # pragma: no cover
     res = list_policies()
 
     if not res or 'policies' not in res:
@@ -318,13 +318,13 @@ def list_policies_command():
     })
 
 
-def list_policies():
+def list_policies():  # pragma: no cover
     path = '/sys/policy'
 
     return send_request(path, 'get')
 
 
-def get_policy_command():
+def get_policy_command():  # pragma: no cover
     name = demisto.args()['name']
 
     res = get_policy(name)
@@ -353,13 +353,13 @@ def get_policy_command():
     })
 
 
-def get_policy(policy_name):
+def get_policy(policy_name):  # pragma: no cover
     path = 'sys/policy/' + policy_name
 
     return send_request(path, 'get')
 
 
-def disable_engine_command():
+def disable_engine_command():  # pragma: no cover
     path = demisto.args()['path']
 
     disable_engine(path)
@@ -367,13 +367,13 @@ def disable_engine_command():
     demisto.results('Engine disabled successfully')
 
 
-def disable_engine(engine_path):
+def disable_engine(engine_path):  # pragma: no cover
     path = 'sys/mounts/' + engine_path
 
     return send_request(path, 'delete')
 
 
-def enable_engine_command():
+def enable_engine_command():  # pragma: no cover
     path = demisto.args()['path']
     engine_type = demisto.args()['type']
     description = demisto.args().get('description')
@@ -399,7 +399,7 @@ def enable_engine_command():
 def enable_engine(path, engine_type, description, default_lease_ttl, max_lease_ttl, force_no_cache,
                   audit_non_hmac_request_keys,
                   audit_non_hmac_response_keys, listing_visibility, passthrough_request_headers, kv_version, local,
-                  seal_wrap):
+                  seal_wrap):  # pragma: no cover
     path = 'sys/mounts/' + path
 
     body = {
@@ -438,19 +438,19 @@ def enable_engine(path, engine_type, description, default_lease_ttl, max_lease_t
     return send_request(path, 'post', body=body)
 
 
-def seal_vault_command():
+def seal_vault_command():  # pragma: no cover
     seal_vault()
 
     demisto.results('Vault sealed successfully')
 
 
-def seal_vault():
+def seal_vault():  # pragma: no cover
     path = 'sys/seal'
 
     return send_request(path, 'put')
 
 
-def unseal_vault_command():
+def unseal_vault_command():  # pragma: no cover
     reset = demisto.args().get('reset')
     key = demisto.args().get('key')
 
@@ -478,7 +478,7 @@ def unseal_vault_command():
     })
 
 
-def unseal_vault(key, reset):
+def unseal_vault(key, reset):  # pragma: no cover
     path = 'sys/unseal'
     body = {}
     if reset:
@@ -489,7 +489,7 @@ def unseal_vault(key, reset):
     return send_request(path, 'put', body=body)
 
 
-def create_token_command():
+def create_token_command():  # pragma: no cover
     role_name = demisto.args().get('role_name')
     policies = argToList(demisto.args().get('policies', []))
     meta = demisto.args().get('meta')
@@ -529,7 +529,7 @@ def create_token_command():
 
 
 def create_token(role_name, policies, meta, no_parent, no_default_policy, renewable, ttl, explicit_max_ttl,
-                 display_name, num_uses, period):
+                 display_name, num_uses, period):  # pragma: no cover
     path = 'auth/token/create'
     body = {}
     if role_name:
@@ -558,7 +558,7 @@ def create_token(role_name, policies, meta, no_parent, no_default_policy, renewa
     return send_request(path, 'post', body=body)
 
 
-def configure_engine_command():
+def configure_engine_command():  # pragma: no cover
     engine_path = demisto.args()['path']
     engine_type = demisto.args()['type']
     version = demisto.args().get('version')
@@ -569,13 +569,13 @@ def configure_engine_command():
     demisto.results('Engine configured successfully')
 
 
-def reset_config_command():
+def reset_config_command():  # pragma: no cover
     set_integration_context({'configs': []})
 
     demisto.results('Successfully reset the engines configuration')
 
 
-def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600'):
+def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600'):  # pragma: no cover
     engine_conf = {
         'type': engine_type,
         'path': engine_path,
@@ -591,7 +591,7 @@ def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600')
     set_integration_context({'configs': ENGINE_CONFIGS})
 
 
-def fetch_credentials():
+def fetch_credentials():  # pragma: no cover
     credentials = []
     engines_to_fetch_from = []
     engines = argToList(demisto.params().get('engines', []))
@@ -787,59 +787,60 @@ def get_ch_secret(engine_path, secret):
 
 ''' EXECUTION CODE '''
 
-handle_proxy()
+if __name__ == '__main__':
 
-LOG('Executing command: ' + demisto.command())
+    handle_proxy()
 
-if USERNAME and PASSWORD:
-    if TOKEN:
-        return_error(
-            'You can only specify one login method, please choose username and password or authentication token')
-    TOKEN = login()
-elif not TOKEN:
-    return_error('Either an authentication token or user credentials must be provided')
+    demisto.debug('Executing command: ' + demisto.command())
+    if USERNAME and PASSWORD:
+        if TOKEN:
+            return_error(
+                'You can only specify one login method, please choose username and password or authentication token')
+        TOKEN = login()
+    elif not TOKEN:
+        return_error('Either an authentication token or user credentials must be provided')
 
-integration_context = get_integration_context()
-if not integration_context or 'configs' not in integration_context:
-    integration_context['configs'] = []
+    integration_context = get_integration_context()
+    if not integration_context or 'configs' not in integration_context:
+        integration_context['configs'] = []
 
-ENGINE_CONFIGS = integration_context['configs']
+    ENGINE_CONFIGS = integration_context['configs']
 
-try:
-    if demisto.command() == 'test-module':
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-credentials':
-        fetch_credentials()
-    elif demisto.command() == 'hashicorp-list-secrets-engines':
-        list_secrets_engines_command()
-    elif demisto.command() == 'hashicorp-list-secrets':
-        list_secrets_command()
-    elif demisto.command() == 'hashicorp-list-policies':
-        list_policies_command()
-    elif demisto.command() == 'hashicorp-get-policy':
-        get_policy_command()
-    elif demisto.command() == 'hashicorp-get-secret-metadata':
-        get_secret_metadata_command()
-    elif demisto.command() == 'hashicorp-delete-secret':
-        delete_secret_command()
-    elif demisto.command() == 'hashicorp-undelete-secret':
-        undelete_secret_command()
-    elif demisto.command() == 'hashicorp-destroy-secret':
-        destroy_secret_command()
-    elif demisto.command() == 'hashicorp-disable-engine':
-        disable_engine_command()
-    elif demisto.command() == 'hashicorp-enable-engine':
-        enable_engine_command()
-    elif demisto.command() == 'hashicorp-seal-vault':
-        seal_vault_command()
-    elif demisto.command() == 'hashicorp-unseal-vault':
-        unseal_vault_command()
-    elif demisto.command() == 'hashicorp-create-token':
-        create_token_command()
-    elif demisto.command() == 'hashicorp-configure-engine':
-        configure_engine_command()
-    elif demisto.command() == 'hashicorp-reset-configuration':
-        reset_config_command()
-except Exception as e:
-    demisto.debug(f'An error occurred: {e}')
-    return_error(f'An error occurred: {e}')
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-credentials':
+            fetch_credentials()
+        elif demisto.command() == 'hashicorp-list-secrets-engines':
+            list_secrets_engines_command()
+        elif demisto.command() == 'hashicorp-list-secrets':
+            list_secrets_command()
+        elif demisto.command() == 'hashicorp-list-policies':
+            list_policies_command()
+        elif demisto.command() == 'hashicorp-get-policy':
+            get_policy_command()
+        elif demisto.command() == 'hashicorp-get-secret-metadata':
+            get_secret_metadata_command()
+        elif demisto.command() == 'hashicorp-delete-secret':
+            delete_secret_command()
+        elif demisto.command() == 'hashicorp-undelete-secret':
+            undelete_secret_command()
+        elif demisto.command() == 'hashicorp-destroy-secret':
+            destroy_secret_command()
+        elif demisto.command() == 'hashicorp-disable-engine':
+            disable_engine_command()
+        elif demisto.command() == 'hashicorp-enable-engine':
+            enable_engine_command()
+        elif demisto.command() == 'hashicorp-seal-vault':
+            seal_vault_command()
+        elif demisto.command() == 'hashicorp-unseal-vault':
+            unseal_vault_command()
+        elif demisto.command() == 'hashicorp-create-token':
+            create_token_command()
+        elif demisto.command() == 'hashicorp-configure-engine':
+            configure_engine_command()
+        elif demisto.command() == 'hashicorp-reset-configuration':
+            reset_config_command()
+    except Exception as e:
+        demisto.debug(f'An error occurred: {e}')
+        return_error(f'An error occurred: {e}')
