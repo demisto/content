@@ -376,15 +376,18 @@ class Client(CoreClient):
         return reply.get('reply')
 
     def get_tenant_info(self):
+        request_data = {}
         reply = self._http_request(
-            method='GET',
+            method='POST',
             url_suffix='/system/get_tenant_info/',
-            timeout = self.timeout
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
-        return reply.get('reply')
+        return reply.get('reply',{})
 
 def get_tenant_info_command(client: Client):
-    client.get_tenant_info()
+    tenant_info = client.get_tenant_info()
+    return tenant_info
     
 
 
