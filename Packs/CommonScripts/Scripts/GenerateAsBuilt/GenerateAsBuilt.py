@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-import sys
 import jinja2
 
 """
@@ -432,7 +430,7 @@ class UseCaseDocument:
     given playbook ("use case") within a running XSOAR environment.
     """
 
-    def __init__(  
+    def __init__(
             self,
             playbook_name,
             dependencies,
@@ -470,7 +468,7 @@ class Document:
     instance and is not Specific t any given use case.
     """
 
-    def __init__(  
+    def __init__(
             self,
             template,
             integrations_table,
@@ -581,7 +579,7 @@ def get_api_request(url):
     """Get API request.
 
     Args:
-        url (_type_): request url path
+        url (str): request url path
 
     Returns:
         Dict: dictionary representation of the response
@@ -609,7 +607,7 @@ def get_all_incidents(days=7, size=1000):
         size (int): number of incidents. Defaults to 1000.
 
     Returns:
-        _type_: _description_
+        Dict: incidents returned from the API request
     """
     body = {
         "userFilter": False,
@@ -803,7 +801,7 @@ def get_playbook_stats(playbooks, days=7, size=1000):
         size (int, optional): max request size. Defaults to 1000.
 
     Returns:
-        _type_: _description_
+        Dict: Dictionary of playbook stats.
     """
     # incident_types = get_api_request(DEMISTO_INCIDENT_TYPE_PATH)
     incidents = get_all_incidents(days, size)
