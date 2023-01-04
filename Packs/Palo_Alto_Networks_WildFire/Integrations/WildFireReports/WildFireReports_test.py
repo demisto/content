@@ -1,5 +1,5 @@
 import base64
-
+import pytest
 import demistomock as demisto
 from WildFireReports import main
 import requests_mock
@@ -132,3 +132,27 @@ def test_user_secrets():
     client = Client(token='%%This_is_API_key%%', base_url='url')
     res = LOG(client.token)
     assert "%%This_is_API_key%%" not in res
+
+
+@pytest.mark.parametrize('platform_to_return,expected_agent', [
+    ('xsoar', 'xsoartim'),
+    ('ng', 'xsoartim'),
+    ('x2', 'xdr'),
+])
+def test_agent_config(mocker, platform_to_return, expected_agent):
+    from WildFireReports import Client
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={'platform': platform_to_return})
+    get_file_call = mocker.patch('CommonServerPython.BaseClient._http_request')
+    client = Client(token='%%This_is_API_key%%', base_url='url')
+
+    client.get_file_report(file_hash='hash')
+    get_file_call.assert_called_with('POST',
+                                     url_suffix='/get/report',
+                                     params={
+                                         'apikey': '%%This_is_API_key%%',
+                                         'agent': expected_agent,
+                                         'format': 'pdf',
+                                         'hash': 'hash',
+                                     },
+                                     resp_type='response',
+                                     ok_codes=(200, 401, 404), )

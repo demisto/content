@@ -11,8 +11,20 @@ class Client(BaseClient):
                  token: str = None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
+        self.agent = self.get_agent() # Agent is different based on the platform running this integration (XSOAR/XSIAM)
 
         add_sensitive_log_strs(token)
+
+    @staticmethod
+    def get_agent():
+        """
+        Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
+        within XSOAR (both on-prem and cloud).
+        """
+        platform = get_demisto_version().get('platform')
+        if platform == 'x2':
+            return 'xsoartim' if is_demisto_version_ge('8.0.0') else 'xdr'
+        return 'xsoartim'
 
     def get_file_report(self, file_hash: str):
         return self._http_request(
@@ -20,7 +32,7 @@ class Client(BaseClient):
             url_suffix='/get/report',
             params={
                 'apikey': self.token,
-                'agent': 'xsoartim',
+                'agent': self.agent,
                 'format': 'pdf',
                 'hash': file_hash,
             },
