@@ -4,21 +4,15 @@
             "id": "####bdd-ef2d-411c-90f0-####4b7200f",
             "name": "Address 1",
             "folder": "Shared",
-            "ip_netmask": "1.2.3.4/32"
+            "type": "ip_netmask",
+            "address_value": "1.2.3.4/32"
         },
         {
             "id": "####cf2f-6dfe-4d82-83fb-####190ab99a",
             "name": "another object",
             "folder": "Shared",
-            "ip_netmask": "1.1.1.1"
-        },
-
-        {
-            "id": "####f837-379e-4c48-a967-####7a52ec14",
-            "name": "TestXSOARAddress",
-            "folder": "Shared",
-            "ip_netmask": "2.2.2.2/24",
-            "description": "test address created by xsoar"
+            "type": "fqdn",
+            "address_value": "some.domain"
         }
     ],
     "offset": 0,
