@@ -432,13 +432,13 @@ class UseCaseDocument:
     given playbook ("use case") within a running XSOAR environment.
     """
 
-    def __init__(  # pragma: no cover
+    def __init__(  
             self,
             playbook_name,
             dependencies,
             author,
             customer
-    ):
+    ):  # pragma: no cover
         self.playbook_name = playbook_name
         self.automations = dependencies.get("automation", NoneTableData())
         self.integrations = dependencies.get("integration", NoneTableData())
@@ -470,7 +470,7 @@ class Document:
     instance and is not Specific t any given use case.
     """
 
-    def __init__(  # pragma: no cover
+    def __init__(  
             self,
             template,
             integrations_table,
@@ -485,7 +485,7 @@ class Document:
             dashboards,
             author,
             customer
-    ):
+    ):  # pragma: no cover
         self.template = template
         self.integrations_table = integrations_table
         self.installed_packs_table = installed_packs_table
