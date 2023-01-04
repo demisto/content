@@ -280,32 +280,32 @@ class Parser:
 
     @property
     @abstractmethod
-    def action_user_to_api_mapper(self) -> dict[str, int | str]:
+    def action_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def action_api_to_user_mapper(self) -> dict[str | int, str]:
+    def action_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def type_user_to_api_mapper(self) -> dict[str, int | str]:
+    def type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def type_api_to_user_mapper(self) -> dict[int | str, str]:
+    def type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def severity_user_to_api_mapper(self) -> dict[str, int | str]:
+    def severity_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def severity_api_to_user_mapper(self) -> dict[int | str, str]:
+    def severity_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
         pass
 
     @property
@@ -319,27 +319,27 @@ class Parser:
 
     @property
     @abstractmethod
-    def deployment_mode_api_to_user_mapper(self) -> dict[str, str]:
+    def deployment_mode_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def request_type_user_to_api_mapper(self) -> dict[str, int | str]:
+    def request_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def request_type_api_to_user_mapper(self) -> dict[int | str, str]:
+    def request_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def custom_whitelist_user_to_api_mapper(self) -> dict[str, int | str]:
+    def custom_whitelist_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
         pass
 
     @property
     @abstractmethod
-    def custom_whitelist_api_to_user_mapper(self) -> dict[int | str, str]:
+    def custom_whitelist_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
         pass
 
 
@@ -605,7 +605,6 @@ class ParserV1(Parser):
         """Parse for custom whitelist member dict.
 
         Args:
-            client (Client): Fortiweb VM client.
             custom_whitelist (Dict[str, Any]): A dictionary output from API.
 
         Returns:
@@ -640,7 +639,7 @@ class ParserV1(Parser):
     def action_user_to_api_mapper(self) -> dict[str, int]:
         """Mapping the user input for action to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, int]: Mapped dictionary.
         """
         return {"Allow": 1, "Deny": 6, "Deny (no log)": 4}
 
@@ -648,7 +647,7 @@ class ParserV1(Parser):
     def action_api_to_user_mapper(self) -> dict[int, str]:
         """Mapping the API output for action to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.action_user_to_api_mapper)
 
@@ -656,7 +655,7 @@ class ParserV1(Parser):
     def type_user_to_api_mapper(self) -> dict[str, int]:
         """Mapping the user input for type to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, int]: Mapped dictionary.
         """
         return {"Trust IP": 1, "Black IP": 2}
 
@@ -664,7 +663,7 @@ class ParserV1(Parser):
     def type_api_to_user_mapper(self) -> dict[int, str]:
         """Mapping the API output for type to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.type_user_to_api_mapper)
 
@@ -672,7 +671,7 @@ class ParserV1(Parser):
     def severity_user_to_api_mapper(self) -> dict[str, int]:
         """Mapping the user input for severity to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, int]: Mapped dictionary.
         """
         return {"High": 1, "Medium": 2, "Low": 3, "Informative": 4}
 
@@ -680,7 +679,7 @@ class ParserV1(Parser):
     def severity_api_to_user_mapper(self) -> dict[int, str]:
         """Mapping the API output for severity to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.severity_user_to_api_mapper)
 
@@ -688,7 +687,7 @@ class ParserV1(Parser):
     def deployment_mode_user_to_api_mapper(self) -> dict[str, str]:
         """Mapping the user input for deployment mode to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return {
             "Single Server/Server Balance": "server_pool",
@@ -699,7 +698,7 @@ class ParserV1(Parser):
     def deployment_mode_api_to_user_mapper(self) -> dict[str, str]:
         """Mapping the API output for deployment mode to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return reverse_dict(self.deployment_mode_user_to_api_mapper)
 
@@ -707,7 +706,7 @@ class ParserV1(Parser):
     def request_type_user_to_api_mapper(self) -> dict[str, int]:
         """Mapping the user input for request type to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, int]: Mapped dictionary.
         """
         return {"Simple String": 1, "Regular Expression": 2}
 
@@ -715,7 +714,7 @@ class ParserV1(Parser):
     def request_type_api_to_user_mapper(self) -> dict[int, str]:
         """Mapping the API output for request type to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.request_type_user_to_api_mapper)
 
@@ -723,7 +722,7 @@ class ParserV1(Parser):
     def custom_whitelist_user_to_api_mapper(self) -> dict[str, int]:
         """Mapping the user input for custom whitelist types to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, int]: Mapped dictionary.
         """
         return {"URL": 1, "Parameter": 2, "Cookie": 3}
 
@@ -731,7 +730,7 @@ class ParserV1(Parser):
     def custom_whitelist_api_to_user_mapper(self) -> dict[int, str]:
         """Mapping the API output for custom whitelist types to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.custom_whitelist_user_to_api_mapper)
 
@@ -1080,7 +1079,7 @@ class ParserV2(Parser):
     def action_user_to_api_mapper(self) -> dict[str, str]:
         """Mapping the user input for action to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return {
             "Allow": "allow",
@@ -1094,7 +1093,7 @@ class ParserV2(Parser):
     def action_api_to_user_mapper(self) -> dict[str, str]:
         """Mapping the API output for action to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return reverse_dict(self.action_user_to_api_mapper)
 
@@ -1102,7 +1101,7 @@ class ParserV2(Parser):
     def type_user_to_api_mapper(self) -> dict[str, str]:
         """Mapping the user input for type to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return {
             "Trust IP": "trust-ip",
@@ -1114,7 +1113,7 @@ class ParserV2(Parser):
     def type_api_to_user_mapper(self) -> dict[str, str]:
         """Mapping the API output for type to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return reverse_dict(self.type_user_to_api_mapper)
 
@@ -1122,7 +1121,7 @@ class ParserV2(Parser):
     def severity_user_to_api_mapper(self) -> dict[str, int]:
         """Mapping the user input for severity to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, int]: Mapped dictionary.
         """
         return {"High": 1, "Medium": 2, "Low": 3, "Informative": 4}
 
@@ -1130,7 +1129,7 @@ class ParserV2(Parser):
     def severity_api_to_user_mapper(self) -> dict[int, str]:
         """Mapping the API output for severity to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.severity_user_to_api_mapper)
 
@@ -1138,7 +1137,7 @@ class ParserV2(Parser):
     def deployment_mode_user_to_api_mapper(self) -> dict[str, Any]:
         """Mapping the user input for deployment mode to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, Any]: Mapped dictionary.
         """
         return {
             "Single Server/Server Balance": "server-pool",
@@ -1146,10 +1145,10 @@ class ParserV2(Parser):
         }
 
     @property
-    def deployment_mode_api_to_user_mapper(self) -> dict[str, Any]:
+    def deployment_mode_api_to_user_mapper(self) -> dict[str, str]:
         """Mapping the API output for deployment mode to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return reverse_dict(self.deployment_mode_user_to_api_mapper)
 
@@ -1157,23 +1156,23 @@ class ParserV2(Parser):
     def request_type_user_to_api_mapper(self) -> dict[str, Any]:
         """Mapping the user input for request type to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, Any]: Mapped dictionary.
         """
         return {"Simple String": "plain", "Regular Expression": "regular"}
 
     @property
-    def request_type_api_to_user_mapper(self) -> dict[str, Any]:
+    def request_type_api_to_user_mapper(self) -> dict[str, str]:
         """Mapping the API output for request type to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return reverse_dict(self.request_type_user_to_api_mapper)
 
     @property
-    def custom_whitelist_user_to_api_mapper(self) -> dict[str, Any]:
+    def custom_whitelist_user_to_api_mapper(self) -> dict[str, str]:
         """Mapping the user input for custom whitelist types to the API input
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return {
             "URL": "URL",
@@ -1183,10 +1182,10 @@ class ParserV2(Parser):
         }
 
     @property
-    def custom_whitelist_api_to_user_mapper(self) -> dict[str, Any]:
+    def custom_whitelist_api_to_user_mapper(self) -> dict[str, str]:
         """Mapping the API output for custom whitelist types to the user output
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            dict[str, str]: Mapped dictionary.
         """
         return reverse_dict(self.custom_whitelist_user_to_api_mapper)
 
@@ -7454,7 +7453,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def reverse_dict(dict_: dict[str, Any]) -> dict[Any, str]:
+def reverse_dict(dict_: dict[str, str] | dict[str, int]) -> dict:
     """Reverse dictionary.
 
     Args:
