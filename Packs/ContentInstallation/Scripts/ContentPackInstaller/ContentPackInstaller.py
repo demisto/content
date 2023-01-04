@@ -11,13 +11,14 @@ class ContentPackInstaller:
     """
     PACK_ID_VERSION_FORMAT = '{}::{}'
 
-    def __init__(self):
+    def __init__(self, instance_name: str = None):
         self.installed_packs: Dict[str, Union[Version, LegacyVersion]] = dict()
         self.newly_installed_packs: Dict[str, Version] = dict()
         self.already_on_machine_packs: Dict[str, Union[Version, LegacyVersion]] = dict()
         self.packs_data: Dict[str, Dict[str, str]] = dict()
         self.packs_dependencies: Dict[str, Dict[str, Dict[str, str]]] = dict()
         self.packs_failed: Dict[str, str] = dict()
+        self.instance_name: Optional[str] = instance_name
 
         self.get_installed_packs()
 
@@ -26,9 +27,14 @@ class ContentPackInstaller:
         """
         demisto.debug(f'{SCRIPT_NAME} - Fetching installed packs from marketplace.')
 
+        args = {'uri': '/contentpacks/metadata/installed'}
+
+        if self.instance_name:
+            args['using'] = self.instance_name
+
         status, res = execute_command(
             'demisto-api-get',
-            {'uri': '/contentpacks/metadata/installed'},
+            args,
             fail_on_error=False,
         )
 
@@ -61,9 +67,14 @@ class ContentPackInstaller:
 
         demisto.debug(f'{SCRIPT_NAME} - Fetching {pack_id} data from marketplace.')
 
+        args = {'uri': f'/contentpacks/marketplace/{pack_id}'}
+
+        if self.instance_name:
+            args['using'] = self.instance_name
+
         status, res = execute_command(
             'demisto-api-get',
-            {'uri': f'/contentpacks/marketplace/{pack_id}'},
+            args,
             fail_on_error=False,
         )
 
@@ -92,12 +103,16 @@ class ContentPackInstaller:
 
         demisto.debug(f'{SCRIPT_NAME} - Fetching {pack_key} dependencies data from marketplace.')
 
+        args = {'uri': '/contentpacks/marketplace/search/dependencies',
+                'body': [pack_data]
+                }
+
+        if self.instance_name:
+            args['using'] = self.instance_name
+
         status, res = execute_command(
             'demisto-api-post',
-            {
-                'uri': '/contentpacks/marketplace/search/dependencies',
-                'body': [pack_data]
-            },
+            args,
             fail_on_error=False,
         )
 
@@ -165,11 +180,14 @@ class ContentPackInstaller:
             pack_id = pack['id']
             pack_payload = json.dumps([{pack_id: pack['version']}])
 
+            args = {'packs_to_install': str(pack_payload)}
+
+            if self.instance_name:
+                args['using'] = self.instance_name
+
             status, res = execute_command(
                 'demisto-api-install-packs',
-                {
-                    'packs_to_install': str(pack_payload)
-                },
+                args,
                 fail_on_error=False,
             )
 
@@ -322,9 +340,9 @@ def create_context(packs_to_install: List[Dict[str, str]], content_packs_install
 
 def main():
     try:
-        installer = ContentPackInstaller()
-
         args = demisto.args()
+        instance_name = args.get('using')
+        installer = ContentPackInstaller(instance_name)
         packs_to_install = format_packs_data_for_installation(args)
         install_dependencies = argToBoolean(args.get('install_dependencies', 'true'))
 
