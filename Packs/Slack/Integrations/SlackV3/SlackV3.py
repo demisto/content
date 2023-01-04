@@ -1066,7 +1066,8 @@ async def start_listening():
     """
     try:
         executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-        loop = asyncio.get_running_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         loop.run_in_executor(executor, long_running_loop)
         await slack_loop()
     except Exception as e:
@@ -2610,7 +2611,8 @@ def init_globals(command_name: str = ''):
     CHANNEL_NOT_FOUND_ERROR_MSG = error_str
 
     if command_name != 'long-running-execution':
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         if not loop._default_executor:  # type: ignore[attr-defined]
             demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
             loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
@@ -2642,7 +2644,7 @@ def print_thread_dump():
 
 
 def loop_info():
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     info = f'loop: {loop}. id: {id(loop)}.'
     info += f'executor: {loop._default_executor} id: {id(loop._default_executor)}'  # type: ignore[attr-defined]
     if loop._default_executor:  # type: ignore[attr-defined]
