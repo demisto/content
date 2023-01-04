@@ -80,36 +80,29 @@ def test_parse_data_multiple_items_with_error():
     except ValueError as err:
         assert 'Number of sheet names should be equal to the number of data items.' in err.args[0]
 
-      
-ARGS_VERIFY = [
-    (None, None,
-     True),
-    (1, 1,
-     True)
 
+ARGS_VERIFY = [
+    (None, None),
+    (1, 1)
 ]
 
 
-@pytest.mark.parametrize('is_bold, is_border, is_none', ARGS_VERIFY)
-def test_prepare_bold_and_border(is_bold: bool, is_border: bool, is_none: bool, expected_results):
+@pytest.mark.parametrize('is_bold, is_border', ARGS_VERIFY)
+def test_prepare_bold_and_border(is_bold: bool, is_border: bool):
     """
     Given:
-        - optinal is_bold: bool, is_border: bool
+        - is_bold: bool, is_border: bool
     When:
         - running prepare_bold_and_border
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - Returns the right command result.
     """
     from ExportToXLSX import prepare_bold_and_border
     from xlsxwriter import Workbook
     expected_workbook = Workbook()
     bold_value = 1 if is_bold else 0
     border_value = 1 if is_border else 0
-    expected_bold = expected_workbook.add_format({"bold": bold_value, "border": border_value})
-    expected_border = expected_workbook.add_format({"border": border_value})
     result_bold, result_border = prepare_bold_and_border(expected_workbook, is_bold, is_border)
-    assert expected_bold == result_bold
-    assert expected_border == result_border   
-
- 
-# def test_write_data():
+    assert result_bold.bold == bold_value
+    assert result_bold.bottom == border_value
+    assert result_border.bottom == border_value

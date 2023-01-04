@@ -24,7 +24,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: Enter 'yes' (or any other value) if the ZIP file is last ZIP file in the War Room.
+  description: Enter 'yes' (or any other value) if the ZIP file is last ZIP file in
+    the War Room.
   isArray: false
   name: lastZipFileInWarroom
   required: false
@@ -40,8 +41,8 @@ args:
   - zipfile
   required: false
   secret: false
-comment: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
-commonfields:
+  comment: Unzip a file using fileName or entryID to specify a file. Unzipped files
+    will be loaded to the War Room and names will be put into the context.
   id: UnzipFile
   version: -1
 enabled: true
@@ -58,7 +59,7 @@ tags:
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/unzip:1.0.0.40261
+dockerimage: demisto/unzip:1.0.0.23423
 runonce: false
 tests:
 - ZipFile-Test
