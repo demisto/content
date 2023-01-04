@@ -1167,7 +1167,7 @@ script:
     - contextPath: AzureKeyVault.CertificatePolicy.attributes.updated
       description: Last updated time in UTC.
       type: Date
-  dockerimage: demisto/crypto:1.0.0.27590
+  dockerimage: demisto/crypto:1.0.0.42817
   feed: false
   isfetch: false
   longRunning: false
