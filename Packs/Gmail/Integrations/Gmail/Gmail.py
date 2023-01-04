@@ -839,9 +839,9 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
     return list_accounts, users_next_page_token
 
 
-def information_search_process(length_accounts: int, search_from: int, search_to: int) -> CommandResults:
+def information_search_process(length_accounts: int, search_from: int | None, search_to: int | None) -> CommandResults:
 
-    if search_from is None:
+    if search_from is None or search_to is None:
         readable_output = f'Searching the first {length_accounts} accounts'
         search_from = 0
         search_to = length_accounts

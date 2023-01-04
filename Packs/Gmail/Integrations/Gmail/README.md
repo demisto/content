@@ -1313,7 +1313,8 @@ Inspecting these messages should allow you to determine what percent the search 
 | has-attachments | Whether to search for messages sent with attachments. Possible values are: False, True. | Optional | 
 | show-only-mailboxes | Whether to return only mailboxes which contain the email. Default is "True". Possible values are: false, true. Default is True. | Optional | 
 | list_accounts | Accounts to search in. | Optional | 
-| searching_accounts | Used to track search progress. | Optional | 
+| search_from | Used to track search progress. | Optional | 
+| search_to | Used to track search progress. | Optional | 
 
 
 #### Context Output
@@ -1335,7 +1336,8 @@ Inspecting these messages should allow you to determine what percent the search 
 | Gmail.Mailboxes | String | The Gmail mailboxes in which emails matching the query were found. | 
 | Gmail.UnsearchedAcounts | String | A list of accounts that were not searched due to an error accessing them. | 
 | PageToken.NextPageToken | String | Fetches the next list of accounts that will be searched. | 
-| SearchProcess | String | Enables the search process to be followed. | 
+| SearchFromAccountIndex | String | A search is performed from an account index (Enables the search process to be followed). | 
+| SearchToAccountIndex | String | A search is performed to an account index (Enables the search process to be followed). | 
 | Email.To | String | The recipient of the email. | 
 | Email.From | String | The sender of the email. | 
 | Email.CC | String | The additional recipient email address \(CC\). | 
