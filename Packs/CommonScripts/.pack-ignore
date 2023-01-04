@@ -81,6 +81,7 @@ ignore=BA114
 
 [file:playbook-IsRFC1918_Test.yml]
 ignore=BA114
+
 [file:IsInCidrRanges.yml]
 ignore=BA114
 
