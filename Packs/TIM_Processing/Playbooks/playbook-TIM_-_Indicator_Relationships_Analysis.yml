@@ -676,6 +676,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "21"
       "yes":
       - "20"
     separatecontext: false
