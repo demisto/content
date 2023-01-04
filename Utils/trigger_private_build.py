@@ -26,27 +26,6 @@ GET_WORKFLOWS_MAX_RETRIES = 5
 GET_WORKFLOWS_TIMEOUT_THRESHOLD = int(60 * 60 * 1.5)  # 1h 30m
 
 
-def get_modified_files(branch_name: str = None) -> List[str]:
-    """ Gets modified files between master branch and the input branch_name, If the branch_name is empty the method
-        compare master branch with the commit sha1 from the environment variable CI_COMMIT_SHA.
-
-    Args:
-        branch_name: The branch name to compare with master.
-
-    Returns: A list of modified files.
-
-    """
-    if not branch_name:
-        branch_name = os.environ.get('CI_COMMIT_SHA')
-
-    files = []
-    files_string = tools.run_command(f'git diff --name-only origin/master...{branch_name}')
-    for line in files_string.split("\n"):
-        if line:
-            files.append(line)
-    return files
-
-
 def get_dispatch_workflows_ids(github_token: str, branch: str) -> List[int]:
     """ Gets private repo dispatch workflows on the given branch.
 
