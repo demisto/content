@@ -774,6 +774,10 @@ class CLOUDBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
+        logging.info(f'nstall_nightly_pack:  self.api_key: {self.api_key},'
+                     f' self.server_numeric_version: {self.server_numeric_version},'
+                     f' self.base_url: {self.base_url}, self.xdr_auth_id: {self.xdr_auth_id}')
+
         self.install_packs()
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_nightly_test_pack()
