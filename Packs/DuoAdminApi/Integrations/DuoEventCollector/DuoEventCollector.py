@@ -37,7 +37,7 @@ class Client:
 
     def __init__(self, params: Params):  # pragma: no cover type: ignore
         self.params = params.get('params')  # type: ignore[attr-defined]
-        self.admin_api = create_api_call(params.get('host'),   # type: ignore[attr-defined]
+        self.admin_api = create_api_call(params.get('host'),  # type: ignore[attr-defined]
                                          params.get('integration_key'),  # type: ignore[attr-defined]
                                          (params.get('secret_key')).get('password'))  # type: ignore[attr-defined]
 
@@ -91,6 +91,7 @@ class GetEvents:
         Function that responsible for the iteration over the events returned from the Duo api
         """
         events: list = self.make_sdk_call()
+        demisto.debug(f'got {len(events)} events from the API call on {self.request_order[0]}')
         while True:
             if events:
                 self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0])
@@ -193,8 +194,8 @@ def main():  # pragma: no cover
                 demisto.setLastRun(get_events.get_last_run())
                 demisto_params['push_events'] = True
             if demisto_params.get('push_events'):
-                pass
-                # send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug(f'Sending {len(events)} events to XSIAM')
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
