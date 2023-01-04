@@ -10,6 +10,6 @@ def test_arr_to_csv_command():
         Then -
             the fumction will return the strings comma seperated
     """
-    arr = ["ilan", "yehuda"]
+    arr = ["mock", "mocker"]
     command_result = arr_to_csv_command(arr)
-    assert command_result.readable_output == "ilan,yehuda"
+    assert command_result.readable_output == "mock,mocker"

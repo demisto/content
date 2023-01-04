@@ -25,8 +25,3 @@ def main():  # pragma: no cover
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
-
-def test():
-    arr = ["ilan", "yehuda"]
-    command_result = arr_to_csv_command(arr)
-    assert command_result.readable_output == "ilan,yehuda"
