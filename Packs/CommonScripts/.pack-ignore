@@ -73,27 +73,6 @@ ignore=BA119
 [file:HideFieldsOnNewIncident.yml]
 ignore=SC105
 
-[file:IsNotInCidrRanges.yml]
-ignore=BA114
-
-[file:IsRFC1918Address.yml]
-ignore=BA114
-
-[file:playbook-IsRFC1918_Test.yml]
-ignore=BA114
-
-[file:IsInCidrRanges.yml]
-ignore=BA114
-
-[file:LowerCidrNumAddresses.yml]
-ignore=BA114
-
-[file:playbook-StringContainsArray_test.yml]
-ignore=BA114
-
-[file:StringContainsArray.yml]
-ignore=BA114
-
 [known_words]
 UnzipFile
 ZipStrings
