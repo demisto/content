@@ -731,7 +731,7 @@ tasks:
         Python: .py
         Linux ELF executables
         Email files: MIME RFC 822 .eml, Outlook .msg.
-      playbookName: Detonate File - CrowdStrike Falcon X
+      playbookName: Detonate File - CrowdStrike Falcon Intelligence Sandbox
       type: playbook
       iscommand: false
       brand: ""

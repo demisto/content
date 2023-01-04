@@ -113,7 +113,7 @@ tasks:
       id: 584e68fb-7de6-4342-8cd6-557463729486
       version: -1
       name: Detonate File - CrowsStrike Falcon Intelligence Sandbox
-      playbookName: Detonate File - CrowdStrike Falcon X
+      playbookName: Detonate File - CrowdStrike Falcon Intelligence Sandbox
       type: playbook
       iscommand: false
       brand: ""

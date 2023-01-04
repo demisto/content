@@ -109,7 +109,7 @@ tasks:
       version: -1
       name: Detonate URL - CrowsStrike Falcon Intelligence Sandbox
       playbookName: Detonate URL - CrowsStrike Falcon X
-      playbookId: Detonate URL - CrowdStrike Falcon X
+      playbookId: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
       type: playbook
       iscommand: false
       brand: ""
