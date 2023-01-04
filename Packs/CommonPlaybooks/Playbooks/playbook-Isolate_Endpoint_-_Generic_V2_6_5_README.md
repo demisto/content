@@ -6,11 +6,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Isolate Endpoint - Cybereason
-* FireEye HX - Isolate Endpoint
-* Microsoft Defender For Endpoint - Isolate Endpoint
-* Cortex XDR - Isolate Endpoint
 * Crowdstrike Falcon - Isolate Endpoint
+* Cortex XDR - Isolate Endpoint
+* Microsoft Defender For Endpoint - Isolate Endpoint
 * Block Endpoint - Carbon Black Response V2
+* FireEye HX - Isolate Endpoint
 
 ### Integrations
 This playbook does not use any integrations.
@@ -19,7 +19,7 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-This playbook does not use any commands.
+* core-isolate-endpoint
 
 ## Playbook Inputs
 ---
@@ -56,7 +56,8 @@ This playbook does not use any commands.
 | MicrosoftATP.IncorrectIDs | Incorrect device IDs entered. | string |
 | MicrosoftATP.IncorrectHostnames | Incorrect device host names entered. | string |
 | MicrosoftATP.IncorrectIPs | Incorrect device IPs entered. | string |
+| Core.Isolation.endpoint_id | The ID of the isolated endpoint. | string |
 
 ## Playbook Image
 ---
-![Isolate Endpoint - Generic V2](../doc_files/Isolate_Endpoint_-_Generic_V2.png)
+![Isolate Endpoint - Generic V2](../doc_files/Isolate_Endpoint_-_Generic_V2_6_5.png)
