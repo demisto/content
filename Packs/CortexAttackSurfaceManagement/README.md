@@ -75,10 +75,10 @@ Playbook that pulls remediation guidance off of a list based on ASM RuleID to be
 
 #### Cortex ASM - Remediation	
 Playbook that is used as a container folder for all remediation of ASM alerts.	
-![Cortex ASM - Remediation]()	
+![Cortex ASM - Remediation](./docfiles/Cortex_ASM_-_Remediation.png)	
 #### Cortex ASM - GCP Enrichment	
 Playbook that given the IP address enriches GCP information relevant to ASM alerts.	
-![Cortex ASM - GCP Enrichment]()
+![Cortex ASM - GCP Enrichment](./docfiles/Cortex_ASM_-_GCP_Enrichment.png)
 
 ### Automation Scripts
 This content pack includes the [generateASMReport](#generateasmreport) script: 
