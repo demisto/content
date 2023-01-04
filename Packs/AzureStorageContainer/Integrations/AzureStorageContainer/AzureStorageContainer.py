@@ -144,7 +144,6 @@ class Client:
         try:
             with open(blob_name, 'rb') as file:
                 headers = {'x-ms-blob-type': 'BlockBlob', 'Content-Length': f'{os.path.getsize(file.name)}'}
-                demisto.info(f'{headers=}')
                 response = self.ms_client.http_request(method='PUT',
                                                        url_suffix=f'{container_name}/{blob_name}',
                                                        headers=headers,
