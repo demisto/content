@@ -36,9 +36,10 @@ class Client:
     """
 
     def __init__(self, params: Params):  # pragma: no cover type: ignore
-        self.params = params.get('params')
-        self.admin_api = create_api_call(params.get('host'), params.get('integration_key'),
-                                         (params.get('secret_key')).get('password'))
+        self.params = params.get('params')  # type: ignore[attr-defined]
+        self.admin_api = create_api_call(params.get('host'),   # type: ignore[attr-defined]
+                                         params.get('integration_key'),  # type: ignore[attr-defined]
+                                         (params.get('secret_key')).get('password'))  # type: ignore[attr-defined]
 
     def call(self, request_order: list) -> dict:  # pragma: no cover
         retries = int(self.params.retries)

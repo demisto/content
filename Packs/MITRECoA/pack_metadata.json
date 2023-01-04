@@ -7,24 +7,18 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2021-01-03T17:54:12Z",
+    "hidden": false,
     "itemPrefix": [
         "Mitre COA"
     ],
     "categories": [
-        "Network Security"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Attack",
-        "Network",
-        "Security",
-        "Threat Intelligence",
-        "MITRE ATT&CK",
-        "Courses of Action",
-        "Unit 42",
-        "Best Practices"
+        "Use Case"
     ],
     "useCases": [
-        "Network Security"
+        "Threat Intelligence Management"
     ],
     "keywords": [
         "MITRE ATT&CK",

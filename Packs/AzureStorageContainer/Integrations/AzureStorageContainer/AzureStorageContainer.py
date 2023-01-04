@@ -1,4 +1,5 @@
 import shutil
+import urllib3
 from typing import Callable
 
 from requests import Response
@@ -893,7 +894,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
                                 api_version)
 

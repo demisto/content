@@ -1,0 +1,965 @@
+id: URL extraction test
+version: -1
+name: URL extraction test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7d58553c-af3a-46a3-86fc-18550a743376
+    type: start
+    task:
+      id: 7d58553c-af3a-46a3-86fc-18550a743376
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0b1d7e00-29da-4d23-804c-05b7592e4b6e
+    type: regular
+    task:
+      id: 0b1d7e00-29da-4d23-804c-05b7592e4b6e
+      version: -1
+      name: Set valid URLs
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: valid_urls
+      value:
+        simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG", "https://Test.com/this-that" "http://_23_11.redacted.com./#redactedredactedredacted", "http://www.mock.com?gbdfs","http://test.com#fragment3","http://test.com#fragment3/","(http://www.foo.bar/taz?())", "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3", "(http://www.foo.bar/taz?())","http://öevil.tld/","http://öevil.tld:5000/","http://öevil.tld/anypath", "www.evilö.tld/evil.aspx","https://www.evöl.tld/","https://www.evöl.tld/anypath", "hxxps://www.xn--e1v2i3l4.tld","www.evil.tld:443/path/to/resource.html", "https://www.evil.tld:443/path/to/resource.html","1.2.3.4/path", "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path", "ftp://foo.bar/resource","ftp://foo.bar/"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7504e217-587f-4a23-8d0e-fb99de6a5723
+    type: regular
+    task:
+      id: 7504e217-587f-4a23-8d0e-fb99de6a5723
+      version: -1
+      name: Print valid URLs
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "13"
+      - "11"
+      - "9"
+      - "12"
+      - "10"
+      - "14"
+      - "15"
+      - "16"
+    scriptarguments:
+      value:
+        simple: ${valid_urls}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6b6ffd6c-5814-4825-80b3-66246e477793
+    type: condition
+    task:
+      id: 6b6ffd6c-5814-4825-80b3-66246e477793
+      version: -1
+      name: Check URL case
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://Test.com/this-that
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 82e06ed9-2854-4563-88a0-13361d4fe05f
+    type: regular
+    task:
+      id: 82e06ed9-2854-4563-88a0-13361d4fe05f
+      version: -1
+      name: Set invalid URLs
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: invalid_urls
+      value:
+        simple: '"http://3628126748", "http://.www.test.com/",, "http:// shouldfail.com", "http://test.t/foo(bar)baz","http://www.te[st.com/test?x=3())"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e628858e-2d27-4db7-8f42-5bbe6ff06b52
+    type: regular
+    task:
+      id: e628858e-2d27-4db7-8f42-5bbe6ff06b52
+      version: -1
+      name: Print invalid URLs
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "19"
+      - "18"
+      - "17"
+    scriptarguments:
+      value:
+        simple: ${invalid_urls}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d01a567d-1cbb-4911-806a-3ec825ae42e5
+    type: condition
+    task:
+      id: d01a567d-1cbb-4911-806a-3ec825ae42e5
+      version: -1
+      name: Check non extraction of invalid URLs - Numbers
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://3628126748
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 74d80b22-1758-4d59-8442-8975db8bef52
+    type: regular
+    task:
+      id: 74d80b22-1758-4d59-8442-8975db8bef52
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e66234b8-81a0-49ed-8de9-8da47bc09169
+    type: condition
+    task:
+      id: e66234b8-81a0-49ed-8de9-8da47bc09169
+      version: -1
+      name: Check URL with port
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://öevil.tld:5000/
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 92676c11-fd4d-48bd-80e9-5e2ffbd038bd
+    type: condition
+    task:
+      id: 92676c11-fd4d-48bd-80e9-5e2ffbd038bd
+      version: -1
+      name: URL with port and path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.evil.tld:443/path/to/resource.html
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1054c3b2-9e4f-4e88-8dd8-ba9c96e37e07
+    type: condition
+    task:
+      id: 1054c3b2-9e4f-4e88-8dd8-ba9c96e37e07
+      version: -1
+      name: Check URL with non ASCII
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://öevil.tld/
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 514ec6e5-68fd-4a16-8392-20b2406ad9c2
+    type: condition
+    task:
+      id: 514ec6e5-68fd-4a16-8392-20b2406ad9c2
+      version: -1
+      name: Check URL with path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://öevil.tld/anypath
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 86735273-4fc7-416c-8f3d-9930f49af923
+    type: condition
+    task:
+      id: 86735273-4fc7-416c-8f3d-9930f49af923
+      version: -1
+      name: IP as a URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4/path
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ed48c3c4-aef9-48fd-8e39-051b7884e106
+    type: condition
+    task:
+      id: ed48c3c4-aef9-48fd-8e39-051b7884e106
+      version: -1
+      name: Check URL Query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://www.mock.com?e=P6wGLG
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: beeda4c1-084b-41e0-8496-c6b53bf0f6d2
+    type: condition
+    task:
+      id: beeda4c1-084b-41e0-8496-c6b53bf0f6d2
+      version: -1
+      name: Check URL fragment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://test.com#fragment3
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: aa265836-09c8-4adf-84fd-d7de4481df99
+    type: condition
+    task:
+      id: aa265836-09c8-4adf-84fd-d7de4481df99
+      version: -1
+      name: Check auto-extract
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://öevil.tld/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://öevil.tld:5000/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://öevil.tld/anypath
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.evilö.tld/evil.aspx
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://www.evöl.tld/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://www.evöl.tld/anypath
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.evil.tld:443/path/to/resource.html
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://www.evil.tld:443/path/to/resource.html
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4/path
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: google.com/path
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: ftp://foo.bar/resource
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: ftp://foo.bar/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.ru.wikipedia.org/wiki/Елизавета_I
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.golang.org/pkg/regexp/syntax/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://www.mock.com?gbdfs
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://www.mock.com?e=P6wGLG
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://test.com#fragment3
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://test.com#fragment3/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://_23_11.redacted.com./#redactedredactedredacted
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://Test.com/this-that
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 44ff2572-54ca-4515-8b7c-b31bb3498622
+    type: condition
+    task:
+      id: 44ff2572-54ca-4515-8b7c-b31bb3498622
+      version: -1
+      name: Check non extraction of invalid URLs - invalid path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://test.t/foo(bar)baz quux
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 75196521-1dea-43f5-842c-4c88e63671e8
+    type: condition
+    task:
+      id: 75196521-1dea-43f5-842c-4c88e63671e8
+      version: -1
+      name: Check non extraction of invalid URLs - space in sub domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http:// shouldfail.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f7950349-a9d1-4d3f-8b5c-c0802359a9ea
+    type: condition
+    task:
+      id: f7950349-a9d1-4d3f-8b5c-c0802359a9ea
+      version: -1
+      name: Check non extraction of invalid URLs - invalid subdomain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://.www.test.test/
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2415,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e3162182-3c3a-4a07-89cd-5577b9d7fe3a
+    type: regular
+    task:
+      id: e3162182-3c3a-4a07-89cd-5577b9d7fe3a
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 3820,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: Test playbook for URL extraction flow
