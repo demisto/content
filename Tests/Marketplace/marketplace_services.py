@@ -1600,7 +1600,7 @@ class Pack(object):
 
         modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
         id_set = id_set if id_set else {}
-        pack_versions_to_keep = []
+        pack_versions_to_keep: List[str] = []
 
         try:
             version_to_prs = self.get_version_to_pr_numbers(release_notes_dir)
