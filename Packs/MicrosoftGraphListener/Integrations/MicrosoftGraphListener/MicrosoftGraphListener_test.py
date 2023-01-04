@@ -951,23 +951,23 @@ class TestCommandsWithLargeAttachments:
 
     @pytest.mark.parametrize('command_args, expected_http_params',
                              [(
-                                     {
-                                         "exclude_ids": [], "last_fetch": "2022-12-31T09:38:15Z", "folder_id": "XYZ",
-                                         "overwrite_rate_limit_retry": True, "fetch_mail_body_as_text": True
-                                     },
-                                     {
-                                         "method": 'GET',
-                                         "url_suffix":
-                                             f'/users/dummy@mailbox.com/mailFolders/XYZ/messages',
+                                 {
+                                     "exclude_ids": [], "last_fetch": "2022-12-31T09:38:15Z", "folder_id": "XYZ",
+                                     "overwrite_rate_limit_retry": True, "fetch_mail_body_as_text": True
+                                 },
+                                 {
+                                     "method": 'GET',
+                                     "url_suffix":
+                                     "/users/dummy@mailbox.com/mailFolders/XYZ/messages",
                                          "params": {
                                              "$filter": "receivedDateTime ge 2022-12-31T09:38:16Z",
                                              "$orderby": "receivedDateTime asc",
                                              "select": "*",
                                              "$top": 50,
                                          },
-                                         "headers": {"Prefer": "outlook.body-content-type='text'"},
-                                         "overwrite_rate_limit_retry": True,
-                                     }
+                                     "headers": {"Prefer": "outlook.body-content-type='text'"},
+                                     "overwrite_rate_limit_retry": True,
+                                 }
                              ),
                              ])
     def test_get_emails(self, mocker, command_args: dict, expected_http_params: dict):
