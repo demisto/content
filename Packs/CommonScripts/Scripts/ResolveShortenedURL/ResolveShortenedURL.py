@@ -104,8 +104,8 @@ class URLUnshortingService(BaseClient, metaclass=ABCMeta):
     service_name: str
     service_rate_limit: int | None = None
 
-    def __init__(self, redirect_limit: int | None = None, *args, **kwargs):
-        super().__init__(base_url=self.base_url, *args, **kwargs)
+    def __init__(self, redirect_limit: int | None = None, **kwargs):
+        super().__init__(base_url=self.base_url, **kwargs)
         self.redirect_limit = redirect_limit if redirect_limit is not None else 0
 
     def hit_redirect_limit(self, redirect_history: list) -> bool:
