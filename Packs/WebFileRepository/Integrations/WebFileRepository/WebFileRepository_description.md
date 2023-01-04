@@ -1,3 +1,5 @@
+Note: This integration is meant for testing purposes when developing playbooks or automations to download files from a web server. Do not use for public or production access.
+
 ### How to Access the File Management UI
 
 #### Access the File Management UI by URL and Port (HTTP)
