@@ -88,7 +88,7 @@ tasks:
       enrichment:
         simple: IPs
       filter:
-        simple: id between 1 and 2
+        simple: id between 1 and 10
     separatecontext: false
     view: |-
       {
@@ -145,7 +145,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
+              simple: '9'
       - - operator: containsGeneral
           left:
             value:
@@ -239,7 +239,7 @@ tasks:
       follow_up:
         simple: 'true'
       offense_id:
-        simple: '1'
+        simple: '9'
       protected:
         simple: 'true'
     separatecontext: false
@@ -316,7 +316,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '1'
+              simple: '9'
       - - operator: isTrue
           left:
             value:
@@ -361,7 +361,7 @@ tasks:
       note_text:
         simple: Note Regarding The Offense
       offense_id:
-        simple: '1'
+        simple: '9'
     separatecontext: false
     view: |-
       {
@@ -443,7 +443,7 @@ tasks:
       - '11'
     scriptarguments:
       offense_id:
-        simple: '1'
+        simple: '9'
       range:
         simple: 0-1
     separatecontext: false
