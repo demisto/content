@@ -3,7 +3,7 @@ from abc import abstractmethod
 from collections.abc import Callable
 from enum import Enum
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 from CommonServerPython import *
 from requests import Response
@@ -7352,7 +7352,7 @@ def paginate_results(
     if page and page_size:
         if page_size < len(response):
             first_item = page_size * (page - 1)
-            output = response[first_item : (first_item + page_size)]
+            output = response[first_item: (first_item + page_size)]
         else:
             output = response[:page_size]
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
