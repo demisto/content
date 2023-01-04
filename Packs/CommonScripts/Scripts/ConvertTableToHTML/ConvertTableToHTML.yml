@@ -15,7 +15,7 @@ args:
   description: The table to convert to HTML
   isArray: true
 - name: context_key
-  default: true
+  defaultValue: HTMLTable
   description: "The context key for the converted HTML table (default is: HTMLTable)."
 - name: title
   default: false
