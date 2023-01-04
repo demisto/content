@@ -17,25 +17,25 @@ CONFIG_URI_PREFIX = "/sse/config/v1/"
 
 
 SECURITYRULE_FIELDS = {
-    "name": "",
     "action": "",
-    "description": "",
-    "log_setting": "",
     "application": [],
     "category": [],
+    "description": "",
     "destination": [],
     "destination_hip": [],
+    "disabled": "",
+    "from": [],
+    "log_setting": "",
+    "name": "",
+    "negate_destination": "",
+    "negate_source": "",
     "profile_setting": {},
     "service": [],
     "source": [],
     "source_hip": [],
     "source_user": [],
     "tag": [],
-    "from": [],
     "to": [],
-    "disabled": "",
-    "negate_source": "",
-    "negate_destination": ""
 }
 
 ADDRESS_TYPES = ("ip_netmask", "ip_range", "ip_wildcard", "fqdn")
@@ -78,7 +78,7 @@ class Client(BaseClient):
         for key in SECURITYRULE_FIELDS:
             if key in keys:
                 field_value = args.get(key)
-                if field_value and field_value != "None":
+                if field_value:
                     if key == 'profile_setting':
                         val = argToList(field_value)
                         rule[key] = {'group': val}
@@ -303,7 +303,7 @@ class Client(BaseClient):
             json_data=body
         )
 
-    def get_config_jobs_by_id(self, tsg_id: str, job_id: str):
+    def get_config_job_by_id(self, tsg_id: str, job_id: str):
         """List config jobs filtered by ID
         Args:
             job_id: ID of the config job
@@ -339,7 +339,7 @@ class Client(BaseClient):
         )
 
     def get_address_by_id(self, query_params, tsg_id, address_id):
-        """Edit existing address object
+        """Get an existing address object
         Args:
             query_params: Address object dictionary
             address_id: Identifier of existing address to be edited
@@ -348,6 +348,25 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
+        headers = self.access_token_to_headers(tsg_id)
+
+        return self._http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params,
+            headers=headers
+        )
+
+    def get_security_rule_by_id(self, query_params, tsg_id, rule_id):
+        """GEt existing security rule
+        Args:
+            query_params: Address object dictionary
+            rule_id: Identifier of existing address to be edited
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
         headers = self.access_token_to_headers(tsg_id)
 
         return self._http_request(
@@ -433,6 +452,22 @@ class Client(BaseClient):
         return headers
 
 
+"""HELPER FUNCTIONS"""
+
+
+def modify_address(outputs):
+    for output in outputs:
+        for address_type in ADDRESS_TYPES:
+            if address_type in output:
+                output['type'] = address_type
+                output['address_value'] = output[address_type]
+                output.pop(address_type)
+    return outputs
+
+
+"""COMMANDS"""
+
+
 def test_module(client: Client) -> CommandResults:
     """Test command to determine if integration is working correctly.
     Args:
@@ -493,7 +528,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     """
 
     address_object = {
-        args.get('type'): args.get('value'),
+        args.get('type'): args.get('address_value'),
         'name': args.get('name')}
 
     if args.get('description'):
@@ -534,7 +569,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
         if address_type in original_address:
             original_address.pop(address_type)
     original_address = {
-        args.get('type'): args.get('value')
+        args.get('type'): args.get('address_value')
     }
     if description := args.get('description'):
         original_address['description'] = description
@@ -591,28 +626,30 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
     tsg_id = args.get('tsg_id') or client.default_tsg_id
     if object_id := args.get('object_id'):
         raw_response = client.get_address_by_id(query_params, tsg_id, object_id)
-        outputs = raw_response
+        outputs = [raw_response]
     else:
 
         if name := args.get('name'):
-            query_params["name"] = encode_string_results(name)
+            query_params['name'] = encode_string_results(name)
 
         if limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
-            query_params["limit"] = limit
+            query_params['limit'] = limit
         if offset := arg_to_number(args.get('offset', DEFAULT_OFFSET)):
-            query_params["offset"] = offset
+            query_params['offset'] = offset
 
         raw_response = client.list_address_objects(query_params, tsg_id)  # type: ignore
 
         outputs = raw_response.get('data')
 
+    outputs = modify_address(outputs)
+
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Address Objects', outputs, headers=[
-            'name', 'description', 'ip_netmask', 'fqdn'],
-                                        headerTransform=string_to_table_header, removeNull=True),
+        readable_output=tableToMarkdown('Address Objects', outputs,
+                                        headers=['id', 'name', 'description', 'type', 'address_value', 'tag'],
+                                        headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -684,10 +721,14 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
         Outputs.
     """
     rule = client.build_security_rule(args)
-
+    rule_id = args.get('id')
     tsg_id = args.get('tsg_id') or client.default_tsg_id
-
-    raw_response = client.edit_security_rule(rule, args.get('id'), tsg_id)  # type: ignore
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    original_rule = client.get_security_rule_by_id(query_params, tsg_id, rule_id)
+    original_rule.update(rule)
+    raw_response = client.edit_security_rule(original_rule, rule_id, tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
@@ -742,24 +783,28 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
     }
 
     tsg_id = args.get('tsg_id') or client.default_tsg_id
+    if object_id := args.get('rule_id'):
+        raw_response = client.get_address_by_id(query_params, tsg_id, object_id)
+        outputs = raw_response
+    else:
+        if name := args.get('name'):
+            query_params["name"] = encode_string_results(name)
+        if limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
+            query_params["limit"] = limit
+        if offset := arg_to_number(args.get('offset', DEFAULT_OFFSET)):
+            query_params["offset"] = offset
 
-    if name := args.get('name'):
-        query_params["name"] = encode_string_results(name)
-    if limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
-        query_params["limit"] = limit
-    if offset := arg_to_number(args.get('offset', DEFAULT_OFFSET)):
-        query_params["offset"] = offset
-
-    raw_response = client.list_security_rules(query_params, tsg_id)  # type: ignore
-
-    outputs = raw_response.get('data')
+        raw_response = client.list_security_rules(query_params, tsg_id)  # type: ignore
+        outputs = raw_response.get('data')
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Security Rules', outputs, headers=[
-            'id', 'name', 'description', 'action', 'destination', 'folder', 'disabled'],
+        readable_output=tableToMarkdown('Security Rules', outputs,
+                                        headers=[
+                                            'id', 'name', 'description', 'action', 'destination', 'folder', 'disabled'
+                                        ],
                                         headerTransform=string_to_table_header,
                                         removeNull=True),
         raw_response=raw_response
@@ -824,9 +869,10 @@ def get_config_jobs_by_id_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigJob',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Config Jobs', outputs, headers=[
-            'id', 'type_str', 'description', 'summary'],
-                                        headerTransform=string_to_table_header, removeNull=True),
+        readable_output=tableToMarkdown('Config Jobs', outputs,
+                                        headers=['id', 'type_str', 'description', 'summary'],
+                                        headerTransform=string_to_table_header,
+                                        removeNull=True),
         raw_response=raw_response
     )
 
@@ -840,17 +886,20 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
     Returns:
         Outputs.
     """
+    # TODO - add pagination
     tsg_id = args.get('tsg_id') or client.default_tsg_id
 
     query_params = {}
+    if job_id := args.get('job_id'):
+        raw_response = client.get_config_job_by_id(tsg_id, job_id)
+    else:
+        if limit := arg_to_number(args.get('limit', SEARCH_LIMIT)):
+            query_params['limit'] = limit
 
-    if limit := arg_to_number(args.get('limit', SEARCH_LIMIT)):
-        query_params["limit"] = limit
+        if offset := arg_to_number(args.get('offset', 0)):
+            query_params['offset'] = offset
 
-    if offset := arg_to_number(args.get('offset', 0)):
-        query_params["offset"] = offset
-
-    raw_response = client.list_config_jobs(tsg_id, query_params)  # type: ignore
+        raw_response = client.list_config_jobs(tsg_id, query_params)  # type: ignore
 
     outputs = raw_response.get('data')
 
@@ -858,7 +907,9 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigJob',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Config Job', outputs, headers=['id', 'type_str', 'description', 'summary'],
+        readable_output=tableToMarkdown('Config Job',
+                                        outputs,
+                                        headers=['id', 'type_str', 'status_str', 'result_str', 'start_ts', 'end_ts'],
                                         headerTransform=string_to_table_header),
         raw_response=raw_response
     )
@@ -894,9 +945,11 @@ def main():
         'prisma-sase-security-rule-list': list_security_rules_command,
         'prisma-sase-security-rule-delete': delete_security_rule_command,
         'prisma-sase-security-rule-update': edit_security_rule_command,
+
         'prisma-sase-candidate-config-push': push_candidate_config_command,
         'prisma-sase-config-job-list': list_config_jobs_command,
         'prisma-sase-query-agg-monitor-api': query_agg_monitor_api_command,
+
         'prisma-sase-address-object-create': create_address_object_command,
         'prisma-sase-address-object-update': edit_address_object_command,
         'prisma-sase-address-object-delete': delete_address_object_command,

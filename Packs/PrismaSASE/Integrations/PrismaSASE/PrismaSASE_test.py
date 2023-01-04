@@ -23,6 +23,20 @@ def load_mock_response(file_name: str) -> str:
         return mock_file.read()
 
 
+def create_mocked_client():
+    return Client(base_url='http://base_url',
+                  client_id='clientid',
+                  client_secret='clientsecret',
+                  oauth_url='oauthurl',
+                  tsg_id='tsg_id',
+                  verify=False,
+                  proxy=False,
+                  headers={
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                  })
+
+
 @pytest.mark.parametrize(
     # Write and define the expected
     "args, default_tsg_id",
@@ -47,28 +61,16 @@ def load_mock_response(file_name: str) -> str:
     ]
 )
 def test_create_security_rule_command(mocker, requests_mock, args, default_tsg_id):
-
     from PrismaSASE import create_security_rule_command
     mock_response = json.loads(load_mock_response('security-rule.json'))
     requests_mock.post('http://base_url/sse/config/v1/security-rules', json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                    )
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
 
     result = create_security_rule_command(client, args)
 
-    assert result.outputs_prefix == 'PrismaAccess.CreatedSecurityRule'
+    assert result.outputs_prefix == 'PrismaSase.SecurityRule'
     assert result.outputs == mock_response
 
 
@@ -81,25 +83,15 @@ def test_create_security_rule_command(mocker, requests_mock, args, default_tsg_i
      ]
 )
 def test_list_security_rules_command(mocker, requests_mock, args):
-
+    # TODO add parameter for one
     from PrismaSASE import list_security_rules_command
     mock_response = json.loads(load_mock_response('list-security-rules.json'))
     requests_mock.get('http://base_url/sse/config/v1/security-rules?folder=Shared&position=pre', json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = list_security_rules_command(client, args)
-    assert result.outputs_prefix == 'PrismaAccess.FoundSecurityRule'
+    assert result.outputs_prefix == 'PrismaSase.SecurityRule'
     assert result.outputs == mock_response.get('data')
 
 
@@ -113,25 +105,14 @@ def test_list_security_rules_command(mocker, requests_mock, args):
     ]
 )
 def test_push_candidate_config_command(mocker, requests_mock, args):
-
     from PrismaSASE import push_candidate_config_command
     mock_response = json.loads(load_mock_response('push-candidate-config.json'))
     requests_mock.post('http://base_url/sse/config/v1/config-versions/candidate:push', json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = push_candidate_config_command(client, args)
-    assert result.outputs_prefix == 'PrismaAccess.ConfigPush'
+    assert result.outputs_prefix == 'PrismaSase.CandidateConfig'
     assert result.outputs == mock_response
 
 
@@ -160,27 +141,17 @@ def test_push_candidate_config_command(mocker, requests_mock, args):
     ]
 )
 def test_edit_security_rule_command(mocker, requests_mock, args):
-
+    # TODO failed
     from PrismaSASE import edit_security_rule_command
     mock_response = json.loads(load_mock_response('edit-security-rule.json'))
     mock_url = f'http://base_url/sse/config/v1/security-rules/{args.get("id")}?folder=Shared&position=pre'
 
     requests_mock.put(mock_url, json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = edit_security_rule_command(client, args)
-    assert result.outputs_prefix == 'PrismaAccess.EditedSecurityRule'
+    assert result.outputs_prefix == 'PrismaSase.SecurityRule'
     assert result.outputs == mock_response
 
 
@@ -227,27 +198,16 @@ def test_edit_security_rule_command(mocker, requests_mock, args):
     ]
 )
 def test_query_agg_monitor_api_command(mocker, requests_mock, args):
-
     from PrismaSASE import query_agg_monitor_api_command
     mock_response = json.loads(load_mock_response('query-agg-monitor-api.json'))
     mock_url = 'http://base_url/mt/monitor/v1/agg/alerts/list?agg_by=tenant'
 
     requests_mock.post(mock_url, json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = query_agg_monitor_api_command(client, args)
-    assert result.outputs_prefix == 'PrismaSASE.AggregateQueryResponse'
+    assert result.outputs_prefix == 'PrismaSase.AggregateQueryResponse'
     assert result.outputs == mock_response
 
 
@@ -262,28 +222,18 @@ def test_query_agg_monitor_api_command(mocker, requests_mock, args):
     ]
 )
 def test_get_security_rule_by_name_command(mocker, requests_mock, args):
-
+    # TODO failed
     from PrismaSASE import get_security_rule_by_name_command
     mock_response = json.loads(load_mock_response('get-security-rule-by-name.json'))
     mock_url = f'http://base_url/sse/config/v1/security-rules?folder=' \
                f'Shared&position=pre&name={args.get("name")}&limit=1&offset=0'
 
     requests_mock.get(mock_url, json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = get_security_rule_by_name_command(client, args)
-    assert result.outputs_prefix == 'PrismaAccess.FoundSecurityRule'
+    assert result.outputs_prefix == 'PrismaSase.SecurityRule'
     assert result.outputs == mock_response.get('data')
 
 
@@ -296,27 +246,17 @@ def test_get_security_rule_by_name_command(mocker, requests_mock, args):
     ]
 )
 def test_get_config_jobs_by_id_command(mocker, requests_mock, args):
-
+    # TODO failed
     from PrismaSASE import get_config_jobs_by_id_command
     mock_response = json.loads(load_mock_response('get-config-jobs-by-id.json'))
     mock_url = f'http://base_url/sse/config/v1/jobs/{args.get("id")}'
 
     requests_mock.get(mock_url, json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = get_config_jobs_by_id_command(client, args)
-    assert result.outputs_prefix == 'PrismaAccess.ConfigJob'
+    assert result.outputs_prefix == 'PrismaSase.ConfigJob'
     assert result.outputs == mock_response.get('data')[0]
 
 
@@ -329,27 +269,17 @@ def test_get_config_jobs_by_id_command(mocker, requests_mock, args):
     ]
 )
 def test_list_config_jobs_command(mocker, requests_mock, args):
-
+    # TODO add parameter for one
     from PrismaSASE import list_config_jobs_command
     mock_response = json.loads(load_mock_response('list-config-jobs.json'))
     mock_url = 'http://base_url/sse/config/v1/jobs?limit=2'
 
     requests_mock.get(mock_url, json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = list_config_jobs_command(client, args)
-    assert result.outputs_prefix == 'PrismaAccess.ConfigJob'
+    assert result.outputs_prefix == 'PrismaSase.ConfigJob'
     assert result.outputs == mock_response.get('data')
 
 
@@ -362,27 +292,17 @@ def test_list_config_jobs_command(mocker, requests_mock, args):
     ]
 )
 def test_delete_security_rule_command(mocker, requests_mock, args):
-
+    # TODO failed
     from PrismaSASE import delete_security_rule_command
     mock_response = json.loads(load_mock_response('security-rule.json'))
     mock_url = f'http://base_url/sse/config/v1/security-rules/{args.get("rule_id")}'
 
     requests_mock.delete(mock_url, json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = delete_security_rule_command(client, args)
-    assert result.outputs_prefix == 'PrismaAccess.DeletedSecurityRule'
+    assert result.outputs_prefix == 'PrismaSase.SecurityRule'
     assert result.outputs == mock_response
 
 
@@ -398,7 +318,6 @@ def test_delete_security_rule_command(mocker, requests_mock, args):
     ]
 )
 def test_create_address_object_command(mocker, requests_mock, args):
-
     from PrismaSASE import create_address_object_command
     mock_response = {
         "description": "Test address created by xsoar",
@@ -408,23 +327,13 @@ def test_create_address_object_command(mocker, requests_mock, args):
         "name": "TestXSOARAddress"}
 
     requests_mock.post('http://base_url/sse/config/v1/addresses', json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
 
     result = create_address_object_command(client, args)
 
-    assert result.outputs_prefix == 'PrismaAccess.CreatedAddress'
+    assert result.outputs_prefix == 'PrismaSase.Address'
     assert result.outputs == mock_response
 
 
@@ -441,7 +350,7 @@ def test_create_address_object_command(mocker, requests_mock, args):
     ]
 )
 def test_edit_address_object_command(mocker, requests_mock, args):
-
+    # TODO failed
     from PrismaSASE import edit_address_object_command
     mock_response = {
         "description": "Test address created by xsoar changed",
@@ -454,23 +363,13 @@ def test_edit_address_object_command(mocker, requests_mock, args):
 
     requests_mock.put(mock_url, json=mock_response)
 
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
 
     result = edit_address_object_command(client, args)
 
-    assert result.outputs_prefix == 'PrismaAccess.EditedAddress'
+    assert result.outputs_prefix == 'PrismaSase.Address'
     assert result.outputs == mock_response
 
 
@@ -483,7 +382,7 @@ def test_edit_address_object_command(mocker, requests_mock, args):
     ]
 )
 def test_delete_address_object_command(mocker, requests_mock, args):
-
+    # TODO failed
     from PrismaSASE import delete_address_object_command
     mock_response = {
         "description": "Test address created by xsoar changed",
@@ -496,23 +395,13 @@ def test_delete_address_object_command(mocker, requests_mock, args):
 
     requests_mock.delete(mock_url, json=mock_response)
 
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
 
     result = delete_address_object_command(client, args)
 
-    assert result.outputs_prefix == 'PrismaAccess.DeletedAddress'
+    assert result.outputs_prefix == 'PrismaSase.Address'
     assert result.outputs == mock_response
 
 
@@ -526,23 +415,13 @@ def test_delete_address_object_command(mocker, requests_mock, args):
     ]
 )
 def test_list_address_objects_command(mocker, requests_mock, args):
-
+    # TODO failed
     from PrismaSASE import list_address_objects_command
     mock_response = json.loads(load_mock_response('list-address-objects.json'))
     requests_mock.get('http://base_url/sse/config/v1/addresses?folder=Shared&limit=20', json=mock_response)
-    client = Client(base_url='http://base_url',
-                    client_id='clientid',
-                    client_secret='clientsecret',
-                    oauth_url='oauthurl',
-                    tsg_id='tsg_id',
-                    verify='false',
-                    proxy='false',
-                    headers={
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    })
+    client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = list_address_objects_command(client, args)
-    assert result.outputs_prefix == 'PrismaAccess.FoundAddressObjects'
+    assert result.outputs_prefix == 'PrismaSase.Address'
     assert result.outputs == mock_response.get('data')

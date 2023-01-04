@@ -2,38 +2,50 @@ category: Network Security
 commonfields:
   id: Prisma SASE
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
   display: API Gateway URL
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Client ID
   name: credentials
   required: true
   type: 9
+  section: Connect
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example:
     1234567890.'
   display: Tenant Services Group ID
   name: tsg_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: URL used to obtain the OAUTH2 access token.
   defaultvalue: https://auth.apps.paloaltonetworks.com/am/oauth2/access_token
   display: Prisma API OAUTH URL
   name: oauth_url
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Provides commands for interaction with Prisma SASE API.
 display: Prisma SASE
 name: Prisma SASE
@@ -105,15 +117,17 @@ script:
       required: false
       defaultValue: any
     - default: false
-      description: A comma-separated list of categories.
+      description: A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
       isArray: true
       name: category
-      required: true
+      required: false
+      defaultValue: any
     - default: false
       description: A comma-separated list of destination networks.
       isArray: false
       name: destination
-      required: true
+      required: false
+      defaultValue: any
     - default: false
       description: A comma-separated list of destination HIPs.
       isArray: false
@@ -127,13 +141,14 @@ script:
     - default: false
       description: Services the rule applies to.
       isArray: false
-      name: service
-      required: true
+      required: false
+      defaultValue: any
     - default: false
       description: A comma-separated list of source networks.
       isArray: true
       name: source
-      required: true
+      required: false
+      defaultValue: any
     - default: false
       description: A comma-separated list of source HIPs.
       isArray: false
@@ -143,7 +158,8 @@ script:
       description: A semi-colon (;) separated list of source users or groups.
       isArray: true
       name: source_user
-      required: true
+      required: false
+      defaultValue: any
     - default: false
       description: A comma-separated list of rule tags.
       isArray: true
@@ -153,12 +169,14 @@ script:
       description: A comma-separated list of source zones.
       isArray: true
       name: from
-      required: true
+      required: false
+      defaultValue: any
     - default: false
       description: A comma-separated list of destination zones.
       isArray: true
       name: to
-      required: true
+      required: false
+      defaultValue: any
     - default: false
       description: Whether the rule is disabled.
       isArray: false
@@ -179,52 +197,52 @@ script:
     execution: false
     name: prisma-sase-security-rule-create
     outputs:
-    - contextPath: PrismaAccess.CreatedSecurityRule
+    - contextPath: PrismaSase.SecurityRule
       description: Created security rule.
       type: Unknown
-    - contextPath: PrismaAccess.CreatedSecurityRule.action
+    - contextPath: PrismaSase.SecurityRule.action
       description: Security rule action.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.application
+    - contextPath: PrismaSase.SecurityRule.application
       description: Security rule application.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.category
+    - contextPath: PrismaSase.SecurityRule.category
       description: Security rule category.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.description
+    - contextPath: PrismaSase.SecurityRule.description
       description: Security rule description.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.destination
+    - contextPath: PrismaSase.SecurityRule.destination
       description: Security rule destination.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.folder
+    - contextPath: PrismaSase.SecurityRule.folder
       description: Security rule folder.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.from
+    - contextPath: PrismaSase.SecurityRule.from
       description: Security rule from field (source zone(s)).
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.id
+    - contextPath: PrismaSase.SecurityRule.id
       description: Security rule ID.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.name
+    - contextPath: PrismaSase.SecurityRule.name
       description: Security rule name.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.position
+    - contextPath: PrismaSase.SecurityRule.position
       description: Security rule position.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.profile_setting.group
+    - contextPath: PrismaSase.SecurityRule.profile_setting.group
       description: Security rule group.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.service
+    - contextPath: PrismaSase.SecurityRule.service
       description: Security rule service.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.source
+    - contextPath: PrismaSase.SecurityRule.source
       description: Security rule source.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.source_user
+    - contextPath: PrismaSase.SecurityRule.source_user
       description: Security rule source user.
       type: String
-    - contextPath: PrismaAccess.CreatedSecurityRule.to
+    - contextPath: PrismaSase.SecurityRule.to
       description: Security rule to field (destination zone(s)).
       type: String
   - arguments:
@@ -275,63 +293,67 @@ script:
       isArray: false
       name: tsg_id
       required: false
+    - default: false
+      description: A specific security rule to return. If not specified, all security rules will be returned.
+      name: rule_id
+      required: false
     deprecated: false
     description: List the security rules.
     execution: false
     name: prisma-sase-security-rule-list
     outputs:
-    - contextPath: PrismaAccess.FoundSecurityRule
+    - contextPath: PrismaSase.SecurityRule
       description: Found security rule.
       type: Unknown
-    - contextPath: PrismaAccess.FoundSecurityRule.action
+    - contextPath: PrismaSase.SecurityRule.action
       description: Security rule action.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.application
+    - contextPath: PrismaSase.SecurityRule.application
       description: Security rule application.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.category
+    - contextPath: PrismaSase.SecurityRule.category
       description: Security rule category.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.description
+    - contextPath: PrismaSase.SecurityRule.description
       description: Security rule description.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.destination
+    - contextPath: PrismaSase.SecurityRule.destination
       description: Security rule destination.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.folder
+    - contextPath: PrismaSase.SecurityRule.folder
       description: Security rule folder.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.from
+    - contextPath: PrismaSase.SecurityRule.from
       description: Security rule from field (source zone(s)).
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.id
+    - contextPath: PrismaSase.SecurityRule.id
       description: Security rule ID.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.log_setting
+    - contextPath: PrismaSase.SecurityRule.log_setting
       description: Security rule log setting.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.name
+    - contextPath: PrismaSase.SecurityRule.name
       description: Security rule name.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.position
+    - contextPath: PrismaSase.SecurityRule.position
       description: Security rule position.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.service
+    - contextPath: PrismaSase.SecurityRule.service
       description: Security rule service.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.source
+    - contextPath: PrismaSase.SecurityRule.source
       description: Security rule source.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.source_user
+    - contextPath: PrismaSase.SecurityRule.source_user
       description: Security rule source user.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.tag
+    - contextPath: PrismaSase.SecurityRule.tag
       description: Security rule tag.
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.to
+    - contextPath: PrismaSase.SecurityRule.to
       description: Security rule to field (destination zone(s)).
       type: String
-    - contextPath: PrismaAccess.FoundSecurityRule.negate_destination
+    - contextPath: PrismaSase.SecurityRule.negate_destination
       description: Security rule negate destination.
       type: Boolean
   - arguments:
@@ -357,16 +379,16 @@ script:
     execution: false
     name: prisma-sase-candidate-config-push
     outputs:
-    - contextPath: PrismaAccess.ConfigPush
+    - contextPath: PrismaSase.CandidateConfig
       description: Configuration job information.
       type: Unknown
-    - contextPath: PrismaAccess.ConfigPush.job_id
+    - contextPath: PrismaSase.CandidateConfig.job_id
       description: Configuration job ID.
       type: String
-    - contextPath: PrismaAccess.ConfigPush.message
+    - contextPath: PrismaSase.CandidateConfig.message
       description: Configuration job message.
       type: String
-    - contextPath: PrismaAccess.ConfigPush.success
+    - contextPath: PrismaSase.CandidateConfig.success
       description: Whether the configuration job was successful.
       type: Boolean
   - arguments:
@@ -381,16 +403,33 @@ script:
       isArray: false
       name: tsg_id
       required: false
-    - default: false
-      description: Friendly name of the rule.
+    - auto: PREDEFINED
+      default: false
+      description: Folder Location for the Object.
       isArray: false
-      name: name
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
       required: true
-    - default: false
+      defaultValue: Shared
+    - auto: PREDEFINED
+      default: false
       description: Rule action.
       isArray: false
       name: action
       required: true
+      predefined:
+      - deny
+      - allow
+      - drop
+      - reset client
+      - reset server
+      - reset both client and server
     - default: false
       description: Rule description.
       isArray: false
@@ -405,17 +444,17 @@ script:
       description: A comma-separated list of applications.
       isArray: false
       name: application
-      required: true
+      required: false
     - default: false
       description: A comma-separated list of categories.
       isArray: true
       name: category
-      required: true
+      required: false
     - default: false
       description: A comma-separated list of destination networks.
       isArray: false
       name: destination
-      required: true
+      required: false
     - default: false
       description: A comma-separated list of destination HIPs.
       isArray: false
@@ -430,12 +469,12 @@ script:
       description: Services the rule applies to.
       isArray: false
       name: service
-      required: true
+      required: false
     - default: false
       description: A comma-separated list of source networks.
       isArray: true
       name: source
-      required: true
+      required: false
     - default: false
       description: A comma-separated list of source HIPs.
       isArray: false
@@ -445,7 +484,7 @@ script:
       description: A semi-colon (;) separated list of source user(s).
       isArray: false
       name: source_user
-      required: true
+      required: false
     - default: false
       description: A comma-separated list of rule tags.
       isArray: true
@@ -455,12 +494,12 @@ script:
       description: A comma-separated list of source zones.
       isArray: true
       name: from
-      required: true
+      required: false
     - default: false
       description: A comma-separated list of destination zones.
       isArray: true
       name: to
-      required: true
+      required: false
     - default: false
       description: Whether the rule is disabled.
       isArray: false
@@ -481,49 +520,49 @@ script:
     execution: false
     name: prisma-sase-security-rule-update
     outputs:
-    - contextPath: PrismaAccess.EditedSecurityRule
+    - contextPath: PrismaSase.SecurityRule
       description: Edited security rule.
       type: Unknown
-    - contextPath: PrismaAccess.UpdatedSecurityRule.action
+    - contextPath: PrismaSase.SecurityRule.action
       description: Security rule action.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.application
+    - contextPath: PrismaSase.SecurityRule.application
       description: Security rule application.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.category
+    - contextPath: PrismaSase.SecurityRule.category
       description: Security rule category.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.description
+    - contextPath: PrismaSase.SecurityRule.description
       description: Security rule description.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.destination
+    - contextPath: PrismaSase.SecurityRule.destination
       description: Security rule destination.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.folder
+    - contextPath: PrismaSase.SecurityRule.folder
       description: Security rule folder.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.from
+    - contextPath: PrismaSase.SecurityRule.from
       description: Security rule from field (source zone(s)).
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.id
+    - contextPath: PrismaSase.SecurityRule.id
       description: Security rule ID.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.name
+    - contextPath: PrismaSase.SecurityRule.name
       description: Security rule name.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.profile_setting.group
+    - contextPath: PrismaSase.SecurityRule.profile_setting.group
       description: Security rule profile setting.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.service
+    - contextPath: PrismaSase.SecurityRule.service
       description: Security rule service.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.source
+    - contextPath: PrismaSase.SecurityRule.source
       description: Security rule source.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.source_user
+    - contextPath: PrismaSase.SecurityRule.source_user
       description: Security rule source user.
       type: String
-    - contextPath: PrismaAccess.UpdatedSecurityRule.to
+    - contextPath: PrismaSase.SecurityRule.to
       description: Security rule to field (destination zone(s)).
       type: String
   - arguments:
@@ -571,7 +610,7 @@ script:
     - default: false
       description: The address value (should match the type)
       isArray: false
-      name: value
+      name: address_value
       required: true
     - default: false
       description: A comma-separated list of address object tags.
@@ -583,22 +622,22 @@ script:
     execution: false
     name: prisma-sase-address-object-update
     outputs:
-    - contextPath: PrismaAccess.EditedAddressObject
+    - contextPath: PrismaSase.Address
       description: Edited address object.
       type: Unknown
-    - contextPath: PrismaAccess.EditedAddress.description
+    - contextPath: PrismaSase.Address.description
       description: Address description.
       type: String
-    - contextPath: PrismaAccess.EditedAddress.folder
+    - contextPath: PrismaSase.Address.folder
       description: Address folder.
       type: String
-    - contextPath: PrismaAccess.EditedAddress.id
+    - contextPath: PrismaSase.Address.id
       description: Address ID.
       type: String
-    - contextPath: PrismaAccess.EditedAddress.ip_netmask
+    - contextPath: PrismaSase.Address.ip_netmask
       description: Address IP netmask.
       type: String
-    - contextPath: PrismaAccess.EditedAddress.name
+    - contextPath: PrismaSase.Address.name
       description: Address name.
       type: String
   - arguments:
@@ -631,6 +670,10 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: A specific config job to return. If not specified, all config jobs will be returned.
+      name: job_id
+      required: false
+    - default: false
       description: Tenant services group ID. If not provided, the tsg_id integration
         parameter will be used as the default.
       isArray: false
@@ -652,49 +695,49 @@ script:
     execution: false
     name: prisma-sase-config-job-list
     outputs:
-    - contextPath: PrismaAccess.ConfigJob
+    - contextPath: PrismaSase.ConfigJob
       description: Configuration job details.
       type: Unknown
-    - contextPath: PrismaAccess.ConfigJob.description
+    - contextPath: PrismaSase.ConfigJob.description
       description: Configuration job description.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.end_ts
+    - contextPath: PrismaSase.ConfigJob.end_ts
       description: Configuration job end timestamp.
       type: Date
-    - contextPath: PrismaAccess.ConfigJob.id
+    - contextPath: PrismaSase.ConfigJob.id
       description: Configuration job ID.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.job_result
+    - contextPath: PrismaSase.ConfigJob.job_result
       description: Configuration job result.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.job_status
+    - contextPath: PrismaSase.ConfigJob.job_status
       description: Configuration job status.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.job_type
+    - contextPath: PrismaSase.ConfigJob.job_type
       description: Configuration job type.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.parent_id
+    - contextPath: PrismaSase.ConfigJob.parent_id
       description: Configuration job parent ID.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.percent
+    - contextPath: PrismaSase.ConfigJob.percent
       description: Configuration job percent.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.result_str
+    - contextPath: PrismaSase.ConfigJob.result_str
       description: Configuration job result string.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.start_ts
+    - contextPath: PrismaSase.ConfigJob.start_ts
       description: Configuration job start timestamp.
       type: Date
-    - contextPath: PrismaAccess.ConfigJob.status_str
+    - contextPath: PrismaSase.ConfigJob.status_str
       description: Configuration job status string.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.summary
+    - contextPath: PrismaSase.ConfigJob.summary
       description: Configuration job summary.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.type_str
+    - contextPath: PrismaSase.ConfigJob.type_str
       description: Configuration job type string.
       type: String
-    - contextPath: PrismaAccess.ConfigJob.uname
+    - contextPath: PrismaSase.ConfigJob.uname
       description: Configuration job uname.
       type: String
   - arguments:
@@ -763,7 +806,7 @@ script:
     - default: false
       description: The address value (should match the type)
       isArray: false
-      name: value
+      name: address_value
       required: true
     deprecated: false
     description: Create a new address object
@@ -859,25 +902,25 @@ script:
     execution: false
     name: prisma-sase-address-object-list
     outputs:
-    - contextPath: PrismaAccess.FoundSecurityRule
+    - contextPath: PrismaSase.Address
       description: Found security rule.
       type: Unknown
-    - contextPath: PrismaAccess.FoundAddressObjects.description
+    - contextPath: PrismaSase.Address.description
       description: Address description.
       type: String
-    - contextPath: PrismaAccess.FoundAddressObjects.folder
+    - contextPath: PrismaSase.Address.folder
       description: Address folder.
       type: String
-    - contextPath: PrismaAccess.FoundAddressObjects.fqdn
+    - contextPath: PrismaSase.Address.fqdn
       description: Address FQDN.
       type: String
-    - contextPath: PrismaAccess.FoundAddressObjects.id
+    - contextPath: PrismaSase.Address.id
       description: Address ID.
       type: String
-    - contextPath: PrismaAccess.FoundAddressObjects.name
+    - contextPath: PrismaSase.Address.name
       description: Address name.
       type: String
-    - contextPath: PrismaAccess.FoundAddressObjects.ip_netmask
+    - contextPath: PrismaSase.Address.ip_netmask
       description: Address IP netmask.
       type: String
   dockerimage: demisto/python3:3.10.9.42476
