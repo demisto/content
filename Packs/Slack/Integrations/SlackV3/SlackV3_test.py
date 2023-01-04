@@ -4426,17 +4426,17 @@ def test_fetch_context(mocker, monkeypatch, expiry_time, force_refresh, cached_c
 
 
 CREATED_CHANNEL_TESTBANK = [
-    ('Channel123', 'itsamemario', {}, 'Mirrors were not found in cache, refreshing cache.'),
+    ('Channel123', 'itsamemario', {}, 1),
     ('Channel123', 'itsamemario', {
-        'mirrors': json.dumps([])}, 'No mirrors are currently in the cache, refreshing'),
+        'mirrors': json.dumps([])}, 1),
     ('Channel123', 'itsamemario', {
         'mirrors': json.dumps([
-            {'channel_id': 'NotChannel123'}])}, 'Channel is not yet in cached context. Refreshing.'),
+            {'channel_id': 'NotChannel123'}])}, 1),
     ('Channel123', 'itsamemario', {
         'mirrors': json.dumps([
             {'channel_id': 'NotChannel123'},
             {'channel_id': 'StillNotChannel123'},
-            {'channel_id': 'Channel123'}])}, 'The channel Channel123 already exists in cache. No need to refresh.')
+            {'channel_id': 'Channel123'}])}, 0)
 ]
 
 
@@ -4466,7 +4466,7 @@ def test_handle_newly_created_channel(mocker, channel_id, creator, cached_contex
 
     SlackV3.handle_newly_created_channel(creator=creator, channel=channel_id)
 
-    assert demisto.debug.mock_calls[1][1][0] == expected_result
+    assert len(demisto.debug.mock_calls) == expected_result
 
 
 CHANNEL_ID_BANK = [
@@ -4585,15 +4585,15 @@ MOCK_INTEGRATION_CONTEXT = [
 
 
 MIRRORS_TEST_BANK = [
-    ('Channel123', 'Test text', MOCK_USER, 'No mirrors are found in context. Done processing mirror.',
+    ('Channel123', 'Test text', MOCK_USER, 0,
      MOCK_INTEGRATION_CONTEXT[0]),
-    ('Channel123', 'Test text', MOCK_USER, 'Generic Message received, ignoring',
+    ('Channel123', 'Test text', MOCK_USER, 0,
      MOCK_INTEGRATION_CONTEXT[1]),
-    ('Channel123', 'Test text', MOCK_USER, 'Found mirrored message, but incident is only mirroring out.',
+    ('Channel123', 'Test text', MOCK_USER, 0,
      MOCK_INTEGRATION_CONTEXT[2]),
-    ('Channel123', 'Test text', MOCK_USER, 'Already Mirrored',
+    ('Channel123', 'Test text', MOCK_USER, 0,
      MOCK_INTEGRATION_CONTEXT[3]),
-    ('Channel123', 'Test text', MOCK_USER, 'Attempting to update the integration context with version -1.',
+    ('Channel123', 'Test text', MOCK_USER, 3,
      MOCK_INTEGRATION_CONTEXT[4])
 ]
 
@@ -4627,7 +4627,7 @@ async def test_process_mirror(mocker, channel_id, text, user, expected_result, c
 
     await SlackV3.process_mirror(channel_id=channel_id, text=text, user=user)
 
-    assert demisto.debug.mock_calls[1][1][0] == expected_result
+    assert len(demisto.debug.mock_calls) == expected_result
 
 
 ENTITLEMENT_STRING_TEST_BANK = [

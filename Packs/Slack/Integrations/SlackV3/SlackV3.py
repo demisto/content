@@ -787,13 +787,12 @@ def mirror_investigation():
 
 
 def long_running_loop():
-    tts = 60
+    tts = 15 if MIRRORING_ENABLED else 60
     while True:
         error = ''
         try:
             if MIRRORING_ENABLED:
                 check_for_mirrors()
-                tts = 15
             check_for_unanswered_questions()
             if EXTENSIVE_LOGGING:
                 demisto.debug(f'Number of threads currently - {threading.active_count()}')
