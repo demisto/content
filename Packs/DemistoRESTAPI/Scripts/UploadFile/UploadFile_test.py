@@ -193,7 +193,7 @@ def test_upload_file(mocker):
     - run the upload_file
     Validate the content of the HumanReadable.
     """
-    mocker.patch('UploadFileV2.upload_file', return_value=RAW_RESPONSE)
+    mocker.patch('UploadFile.upload_file', return_value=RAW_RESPONSE)
     readable, _ = upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
     assert "test_bark" in readable
 
@@ -391,7 +391,7 @@ def test_demisto_upload_file_error(mocker):
     - run the upload_file
     Validate that the correct error was raised
     """
-    mocker.patch('UploadFileV2.upload_file', return_value=RAW_RESPONSE_ERROR)
+    mocker.patch('UploadFile.upload_file', return_value=RAW_RESPONSE_ERROR)
 
     with pytest.raises(Exception,
                        match="There was an issue uploading the file. Check your API key and input argument."):
@@ -410,6 +410,6 @@ def test_demisto_upload_file_as_attachment(mocker, target, service):
         - Validate the correct Uri was sent to the executeCommand
     """
     import UploadFile
-    mocker.patch('UploadFileV2.demisto.executeCommand')
+    mocker.patch('UploadFile.demisto.executeCommand')
     upload_file_command({'target': target})
-    assert f'{service}/upload/' in UploadFileV2.demisto.executeCommand.call_args[0][1]['uri']
+    assert f'{service}/upload/' in UploadFile.demisto.executeCommand.call_args[0][1]['uri']
