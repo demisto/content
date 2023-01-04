@@ -1,8 +1,7 @@
 import asyncio
 import concurrent
-import logging, logging.handlers
+import logging.handlers
 import ssl
-import sys
 import threading
 from distutils.util import strtobool
 from typing import Tuple
