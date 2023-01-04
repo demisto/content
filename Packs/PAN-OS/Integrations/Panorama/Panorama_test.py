@@ -12,6 +12,7 @@ from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
 import test_data.fetch_incidents_input as fetch_incidents_input
+from freezegun import freeze_time
 
 
 integration_firewall_params = {
@@ -5954,6 +5955,7 @@ class TestFetchIncidentsHelperFunctions:
 
     @pytest.mark.parametrize('last_fetch_dict, first_fetch, queries_dict, expected_result',
                              fetch_incidents_input.test_get_fetch_start_datetime_dict_args)
+    @freeze_time("2022-01-02 11:00:00 UTC")
     def test_get_fetch_start_datetime_dict(self, last_fetch_dict, first_fetch, queries_dict, expected_result):
         """
         Given:

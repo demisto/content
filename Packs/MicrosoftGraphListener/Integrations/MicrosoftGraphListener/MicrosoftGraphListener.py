@@ -774,7 +774,7 @@ class MsGraphClient:
             method='GET',
             url_suffix=f'/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages',
             params={
-                '$filter': f'receivedDateTime ge {last_fetch}',
+                '$filter': f'receivedDateTime ge {add_second_to_str_date(last_fetch)}',  # workaround to Graph API bug
                 '$orderby': 'receivedDateTime asc',
                 'select': '*',
                 '$top': len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
