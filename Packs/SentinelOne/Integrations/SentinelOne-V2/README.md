@@ -1566,6 +1566,15 @@ Returns all Deep Visibility events that match the query.
 | SentinelOne.Event.EventType | String | Event type. Can be "events", "file", "ip", "url", "dns", "process", "registry", "scheduled_task", or "logins". | 
 | SentinelOne.Event.ProcessName | String | The name of the process. | 
 | SentinelOne.Event.MD5 | String | MD5 hash of the file. | 
+| SentinelOne.Event.SourceIP | String | The source ip. | 
+| SentinelOne.Event.SourcePort | String | The source port. | 
+| SentinelOne.Event.DestinationIP | String | The destination IP. | 
+| SentinelOne.Event.DestinationPort | String | The destination port. | 
+| SentinelOne.Event.SourceProcessUser | String | The source process user. | 
+| SentinelOne.Event.SourceProcessCommandLine | String | The source process command line. | 
+| SentinelOne.Event.DNSRequest | String | The DNS Request. | 
+| SentinelOne.Event.FileFullName | String | The file full name. | 
+| SentinelOne.Event.EventTime | String | The event time. | 
 | Event.ID | String | Event process ID. | 
 | Event.Name | String | Event name. | 
 | Event.Type | String | Event type. | 

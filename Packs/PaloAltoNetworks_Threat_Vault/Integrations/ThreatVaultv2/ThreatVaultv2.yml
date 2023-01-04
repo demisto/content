@@ -145,6 +145,12 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
     - contextPath: CVE.ID
       description: The CVE ID.
       type: String
@@ -869,7 +875,7 @@ script:
     - contextPath: ThreatVault.Fileformat.latest_release_time
       description: The latest release time of the signature.
       type: String
-  dockerimage: demisto/crypto:1.0.0.40696
+  dockerimage: demisto/crypto:1.0.0.42817
   isfetch: true
   longRunning: false
   longRunningPort: false
