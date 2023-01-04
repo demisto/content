@@ -37,8 +37,9 @@ fi
 
 if [[ -d ./modelingrules ]]; then
     echo "Copying modeling rule testdata files to their respective directories"
+    ls -RlAh ./modelingrules
     # Copy testdata files from 'modelingrules' directory that was extracted to root directory into their respective pack destinations
-    testdata_files=($(find ./modelingrules -type file -name '*.json'))
+    mapfile -t testdata_files < <(find ./modelingrules -name '*.json')
     for testdata_file in "${testdata_files[@]}"; do
         # strip './' prefix
         dest_without_curdir="${testdata_file#*/}"
