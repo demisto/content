@@ -580,7 +580,7 @@ def get_rate_limit_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     login = args["login"]
-    entity_type = args.get("entity_type")
+    entity_type = args["entity_type"]
     response = client.get_rate_limit_request(login)
 
     entity_data = response["data"][entity_type]

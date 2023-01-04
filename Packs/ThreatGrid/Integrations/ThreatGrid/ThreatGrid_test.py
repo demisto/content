@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+from unittest import mock
 import pytest
 from ThreatGrid import Client
 from datetime import datetime
@@ -25,6 +26,9 @@ def load_mock_response(file_name: str) -> str:
 
     with open(os.path.join('test_data', file_name), mode='r', encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
+
+
+FILE_ENTRY = {'filename': 'sample_id-report.html', 'data': load_mock_response('sample_get.json')}
 
 
 @pytest.fixture(autouse=True)
@@ -53,6 +57,7 @@ def mock_client():
         'command_name': 'threat-grid-sample-list'
     }, 'ThreatGrid.Sample'),
 ])
+@mock.patch('ThreatGrid.fileResult', lambda filename, data: FILE_ENTRY)
 def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
     """
     Scenario: Retrieves the Sample Info record of a submission by sample ID.
@@ -76,7 +81,7 @@ def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
     result = get_sample_command(mock_client, args)
 
     if isinstance(result, dict):
-        assert result.get('File') == f'sample_id-{args["artifact"]}'
+        assert result.get('filename') == f'sample_id-{args["artifact"]}'
     else:
         assert result.outputs_prefix == outputs
         assert result.outputs['id'] == 'data_id'  # type: ignore[assignment]
