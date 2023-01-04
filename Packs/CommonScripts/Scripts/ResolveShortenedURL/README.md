@@ -1,8 +1,8 @@
-Resolve the original URL from the given shortened URL and place it in both as output and in the context of a playbook.
+This script resolves the original URL from a given shortened URL and places the resolved URL in the playbook context and output.
 
 **Disclaimer:**  
-Using online services for unshortening exposes the IP address of the server to these services.  
-Using the `Built-In` service will visit the URL and follow redirects on the server, which will expose the IP address of the server to the redirecting & redirected URLs
+- Using online services for resolving URLs exposes the server IP address to these services.  
+- The `Built-In` service visits the URL and follows redirects on the server, which exposes the server IP address to the redirect URLs.
 ## Script Data
 ---
 
@@ -17,20 +17,20 @@ Using the `Built-In` service will visit the URL and follow redirects on the serv
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| service | Service to use for resolving the URL. If not set, a default service will be used. |
-| url | URL to resolve |
+| service | The service to use for resolving the URL. If not set, a default service is used. |
+| url | The URL to resolve. |
 | redirect_limit | A maximum number of recursions to run in case of nested shortened-URLs. Use 0 for unlimited \(not recommended\). |
-| insecure | Trust any certificate \(not secure\) |
+| insecure | Trust any certificate \(not secure\). |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| URL.Data | Resolved URL. | string |
+| URL.Data | The resolved URL data. | string |
 | ResolveShortenedURL.OriginalURL | The original shortened URL. | string |
 | ResolveShortenedURL.ResolvedURL | The resolved URL. | string |
-| ResolveShortenedURL.ServiceName | The name of the service that was used to resolve the URL. | string |
-| ResolveShortenedURL.UsageCount | The usage count for the current IP. If the count exceeds 10 in an hour, an error will be returned. Relevant only if unshorten.me service is used. | int |
-| ResolveShortenedURL.RedirectCount | The number of redirects that were followed to resolve the URL. | int |
-| ResolveShortenedURL.RedirectHistory | The history of redirects that were followed to resolve the URL. | list |
+| ResolveShortenedURL.ServiceName | The name of the service used to resolve the URL. | string |
+| ResolveShortenedURL.UsageCount | The usage count for the current IP. If the count exceeds 10 in an hour, an error is returned. Relevant only if the unshorten.me service is used. | int |
+| ResolveShortenedURL.RedirectCount | The number of redirects followed to resolve the URL. | int |
+| ResolveShortenedURL.RedirectHistory | The history of redirects followed to resolve the URL. | list |
