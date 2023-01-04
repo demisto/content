@@ -2,7 +2,7 @@ import os
 
 import pytest
 import sqlalchemy
-import test_data as td
+import testdata as td
 
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
 

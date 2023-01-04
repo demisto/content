@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Generic SQL - Dev
+  id: Generic SQL
   version: -1
 configuration:
 - defaultvalue: MySQL
@@ -79,7 +79,7 @@ configuration:
   type: 0
 - display: First fetch timestamp or First fetch ID
   hidden: false
-  name: start_fetch
+  name: first_fetch
   required: false
   type: 0
   section: Collect
@@ -101,8 +101,8 @@ configuration:
   required: false
   type: 0
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
-display: Generic SQL - Dev
-name: Generic SQL - Dev
+display: Generic SQL
+name: Generic SQL
 script:
   commands:
   - arguments:
@@ -216,7 +216,7 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.41601
+  dockerimage: 1.1.0.43339
   feed: false
   isfetch: true
   longRunning: false

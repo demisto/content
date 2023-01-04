@@ -219,7 +219,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
                 msg += 'In case of Unique ascending ID or Unique timestamp, fill only Fetch Column,' \
                        ' ID Column name should be unfilled. '
 
-        if not params.get('start_fetch'):
+        if not params.get('first_fetch'):
             msg += 'A starting point for fetching is missing, please enter First fetch timestamp or First fetch ID. '
 
         # in case of query and not procedure
@@ -306,10 +306,10 @@ def get_last_run(params: dict):
     if not last_run:
         # Fetch should be by timestamp or id
         if params.get('fetch_parameters') in ['Unique timestamp', 'ID and timestamp']:
-            last_run = {'last_timestamp': params.get('start_fetch'), 'last_id': False}
+            last_run = {'last_timestamp': params.get('first_fetch'), 'last_id': False}
 
         else:
-            last_run = {'last_timestamp': False, 'last_id': params.get('start_fetch', '-1')}
+            last_run = {'last_timestamp': False, 'last_id': params.get('first_fetch', '-1')}
         # for the case when we get timestamp and id - need to maintain an id's list
         last_run['ids'] = list()
     return last_run
