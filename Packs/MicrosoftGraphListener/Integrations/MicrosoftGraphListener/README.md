@@ -50,6 +50,8 @@ The following permissions are required for all commands:
     | Use system proxy settings |  | False |
     | Use a self-deployed Azure application |  | False |
     | Incident type |  | False |
+    | Display full email body | If not active, only a preview of the email will be fetched. |  |
+    | Mark fetched emails as read | Relevant only if fetch incidents is active. |  |
     | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -350,6 +352,7 @@ Lists all of the attachments of given email
 | --- | --- | --- |
 | message_id | The email message ID. | Required | 
 | folder_id | The ID of the folder. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -374,7 +377,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The unique ID of the mail. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
+| message_id | The unique ID of the email. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 
 
 #### Context Output
@@ -392,3 +395,24 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 | File.Type | String | The file type. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The extension of the file. | 
+
+### msgraph-update-email-status
+***
+Update the status of an email to read / unread.
+
+
+#### Base Command
+
+`msgraph-update-email-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_ids | Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. Can be a list of comma-separated values. | Required | 
+| folder_id | The folder ID. | Optional | 
+| status | Status to set the email to. Possible values are: Read, Unread. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
