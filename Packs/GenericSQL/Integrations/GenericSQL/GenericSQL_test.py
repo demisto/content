@@ -381,4 +381,3 @@ def test_fetch_incident_update_last_run(table_first_cycle, table_second_cycle, p
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     incidents, last_run = fetch_incidents(client, params)
     assert expected_last_run_4_2 == last_run
-

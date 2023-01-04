@@ -244,15 +244,16 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         except Exception as e:
             raise e
 
-        # Verifying the column names are right
-        if params.get('column_name') not in headers:
-            msg += f'Invalid Fetch Column, *{params.get("column_name")}* does not exist in the table. '
+        if headers:
+            # Verifying the column names are right
+            if params.get('column_name') not in headers:
+                msg += f'Invalid Fetch Column, *{params.get("column_name")}* does not exist in the table. '
 
-        if params.get('id_column') and params.get('id_column') not in headers:
-            msg += f'Invalid ID Column name, *{params.get("id_column")}* does not exist in the table. '
+            if params.get('id_column') and params.get('id_column') not in headers:
+                msg += f'Invalid ID Column name, *{params.get("id_column")}* does not exist in the table. '
 
-        if params.get('incident_name') and params.get('incident_name') not in headers:
-            msg += f'Invalid Incident Name, *{params.get("incident_name")}* does not exist in the table. '
+            if params.get('incident_name') and params.get('incident_name') not in headers:
+                msg += f'Invalid Incident Name, *{params.get("incident_name")}* does not exist in the table. '
 
     return msg if msg else 'ok', {}, []
 
