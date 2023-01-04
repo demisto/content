@@ -24,7 +24,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def list_alerts_request(self, request_data: Dict) -> Dict[str, Any]:
-        """Get a list of all asm alerts '/alerts/get_alerts_multi_events/' endpoint.
+        """Get a list of all asm alerts '/alerts/get_alerts/' endpoint.
 
         Args:
             request_data (dict): dict of parameters for API call.
@@ -34,7 +34,7 @@ class Client(BaseClient):
         """
         headers = self._headers
 
-        response = self._http_request('POST', '/alerts/get_alerts_multi_events/',
+        response = self._http_request('POST', '/alerts/get_alerts/',
                                       json_data=request_data, headers=headers)
 
         return response

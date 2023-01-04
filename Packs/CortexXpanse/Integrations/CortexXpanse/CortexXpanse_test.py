@@ -272,7 +272,7 @@ def test_list_alerts_command(requests_mock):
 
     from test_data.raw_response import LIST_ALERTS_RESPONSE
     from test_data.expected_results import LIST_ALERTS_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts_multi_events/',
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts/',
                        json=LIST_ALERTS_RESPONSE)
 
     client = Client(
@@ -313,7 +313,7 @@ def test_fetch_incidents(requests_mock, mocker):
     import json
 
     from test_data.raw_response import LIST_ALERTS_RESPONSE
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts_multi_events/',
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts/',
                        json=LIST_ALERTS_RESPONSE)
 
     client = Client(
