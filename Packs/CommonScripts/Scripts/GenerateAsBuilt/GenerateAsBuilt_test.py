@@ -98,17 +98,15 @@ def test_get_enabled_integrations(mocker):
 @pytest.mark.parametrize('get_api_request_returned_value', [None, [{'enabled': True, 'name': 'test'}]])
 def test_get_installed_packs(mocker, get_api_request_returned_value):
     import GenerateAsBuilt
-    from GenerateAsBuilt import get_installed_packs, SortedTableData, NoneTableData
+    from GenerateAsBuilt import get_installed_packs, SortedTableData
     mocker.patch.object(GenerateAsBuilt, 'get_api_request', return_value=get_api_request_returned_value)
-    
+
     res = get_installed_packs()
     if res:
         expected = SortedTableData([{'enabled': True, 'name': 'test'}], "Installed Content Packs", "name")
         assert res.name == expected.name
         assert res.data == expected.data
-    else:
-        assert isinstance(res, NoneTableData)
-        
+
 
 def test_get_custom_playbooks(mocker):
     import GenerateAsBuilt
@@ -119,3 +117,58 @@ def test_get_custom_playbooks(mocker):
     res = get_custom_playbooks()
     assert res.name == expected.name
     assert res.data == expected.data
+
+
+def test_get_custom_reports(mocker):
+    import GenerateAsBuilt
+    from GenerateAsBuilt import get_custom_reports, TableData
+    mocker.patch.object(GenerateAsBuilt, 'get_api_request', return_value=[{'name': 'test'}])
+    expected = TableData([{'name': 'test'}], 'Custom Reports')
+    res = get_custom_reports()
+    assert res.name == expected.name
+    assert res.data == expected.data
+
+
+def test_get_custom_dashboards(mocker):
+    import GenerateAsBuilt
+    from GenerateAsBuilt import get_custom_dashboards, TableData
+    mocker.patch.object(GenerateAsBuilt, 'get_api_request', return_value={'dashboard': {'name': 'test'}})
+    expected = TableData([{'name': 'test'}], 'Custom dashboards')
+    res = get_custom_dashboards()
+    assert res.name == expected.name
+    assert res.data == expected.data
+
+
+def test_get_all_playbooks(mocker):
+    import GenerateAsBuilt
+    from GenerateAsBuilt import get_all_playbooks, TableData
+    mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'playbooks': [{'name': 'test'}]})
+    expected = TableData([{'name': 'test', 'TotalTasks': 0}], 'All Playbooks')
+    res = get_all_playbooks()
+    assert res.name == expected.name
+    assert res.data == expected.data
+
+
+def test_get_playbook_dependencies(mocker):
+    import GenerateAsBuilt
+    from GenerateAsBuilt import get_playbook_dependencies, TableData
+    mocker.patch.object(GenerateAsBuilt, 'get_all_playbooks', return_value=TableData(
+        [{'name': 'test', 'TotalTasks': 0, 'id': '000001'}], 'All Playbooks'))
+    mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'existing': {
+                        'playbook': {'000001': [{'ok': 'ok', 'type': 'type', 'name': 'name'}]}}})
+
+    res = get_playbook_dependencies('test')
+    assert res.get('type').name == 'types'
+    assert res.get('type').data == [{'type': 'type', 'name': 'name', 'pack': 'Custom'}]
+
+
+def test_get_custom_automations(mocker):
+    import GenerateAsBuilt
+    from GenerateAsBuilt import get_custom_automations, TableData
+    mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'scripts': [{'name': 'test'}]})
+    expected = TableData([{'name': 'test'}], 'Custom Automatons')
+    res = get_custom_automations()
+    assert res.name == expected.name
+    assert res.data == expected.data
+    
+

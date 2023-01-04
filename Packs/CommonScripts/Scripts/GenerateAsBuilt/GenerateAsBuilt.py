@@ -847,7 +847,6 @@ def get_playbook_dependencies(playbook_name):
     playbook = playbooks.search("name", playbook_name)
     if not playbook:
         return_error(f"Playbook {playbook_name} not found.")
-        sys.exit()
     playbook_id = playbook.get("id")
     body = {
         "items": [
@@ -899,26 +898,35 @@ def get_system_config():
     return rd
 
 
-def main():
-    args = demisto.args()
-    if playbook := args.get("playbook"):
-        # If we get a playbook, we generate a use case document, instead of teh platform as build
-        r = get_playbook_dependencies(playbook)
-        doc = UseCaseDocument(
-            playbook_name=playbook,
-            dependencies=r,
-            author=args.get("author"),
-            customer=args.get("customer"),
-        )
-        fr = fileResult("usecase.html", doc.html(), file_type=EntryType.ENTRY_INFO_FILE)
-        return_results(fr)
-        return_results(CommandResults(readable_output=doc.markdown(),))
-        return
+def playbook_use_case(playbook: str, author: str, customer: str):
+    """Given a playbook, generate a use case document.
 
-    # If no playbook is passed, we generate a platform as built.
-    max_request_size = args.get("size", 1000)
-    max_days = args.get("days", 7)
-    
+    Args:
+        playbook (str): playbook name
+        author (str): author name
+        customer (str): company name
+    """
+    r = get_playbook_dependencies(playbook)
+    doc = UseCaseDocument(
+        playbook_name=playbook,
+        dependencies=r,
+        author=author,
+        customer=customer,
+    )
+    fr = fileResult("usecase.html", doc.html(), file_type=EntryType.ENTRY_INFO_FILE)
+    return_results(fr)
+    return_results(CommandResults(readable_output=doc.markdown(),))
+
+
+def platform_as_built_use_case(max_request_size: int, max_days: int, author: str, customer: str):
+    """Generate a platform as built use case document.
+
+    Args:
+        max_request_size (int): max request size
+        max_days (int): max number of days
+        author (str): author name
+        customer (str): company name
+    """
     open_incidents = get_open_incidents(max_days, max_request_size)
     closed_incidents = get_closed_incidents(max_days, max_request_size)
 
@@ -944,8 +952,8 @@ def main():
         playbook_stats=playbook_stats,
         reports=reports,
         dashboards=dashboards,
-        author=args.get("author"),
-        customer=args.get("customer")
+        author=author,
+        customer=customer
 
     )
     fr = fileResult("asbuilt.html", d.html(), file_type=EntryType.ENTRY_INFO_FILE)
@@ -953,6 +961,24 @@ def main():
         readable_output=d.markdown(),
     ))
     return_results(fr)
+
+
+def main():  # pragma: no cover
+    args = demisto.args()
+    author = args.get("author")
+    customer = args.get("customer")
+
+    # Given a playbook is passed, we generate a use case document, instead of the platform as build.
+    if playbook := args.get("playbook"):
+        playbook_use_case(playbook, author, customer)
+        return
+
+    else:
+        # If no playbook is passed, we generate a platform as built.
+        max_request_size = args.get("size", 1000)
+        max_days = args.get("days", 7)
+        platform_as_built_use_case(max_request_size, max_days, author, customer)
+        return
 
 
 if __name__ in ('__builtin__', 'builtins'):
