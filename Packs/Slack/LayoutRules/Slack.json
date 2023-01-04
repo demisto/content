@@ -2,16 +2,9 @@
   "rule_id": "eyal_test",
   "layout_id": "test_layout_id_xsiam",
   "description": "This trigge r is responsible for handling Impossible Traveler alerts",
-  "layout_rule_name": "test rule name",
+  "rule_name": "test rule name",
   "alerts_filter": {
     "filter": {
-      "AND": [
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Impossible traveler"
-        }
-      ]
     }
   },
   "fromVersion": "6.10.0",
