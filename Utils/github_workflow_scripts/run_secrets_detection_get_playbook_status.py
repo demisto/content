@@ -4,7 +4,6 @@ import argparse
 import ast
 import sys
 import time
-import os
 
 import demisto_client
 

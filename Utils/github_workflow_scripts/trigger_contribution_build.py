@@ -5,7 +5,6 @@ import sys
 
 import requests
 import urllib3
-import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
