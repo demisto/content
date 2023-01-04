@@ -15,7 +15,6 @@ DEFAULT_OFFSET = 0
 PA_OUTPUT_PREFIX = "PrismaSase."
 CONFIG_URI_PREFIX = "/sse/config/v1/"
 
-
 SECURITYRULE_FIELDS = {
     "action": "",
     "application": [],
@@ -923,6 +922,36 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to create new Prisma Sase tag
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    tag = {
+        'name': args.get('name')}
+
+    if color := args.get('color'):
+        tag['color'] = color
+
+    if comments := args.get('comments'):
+        tag['comments'] = comments
+
+    raw_response = client.create_tag(tag, args.get('folder'), tsg_id)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
+        outputs_key_field='id',
+        outputs=raw_response,
+        readable_output=tableToMarkdown('Address Object Created', raw_response, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -964,6 +993,8 @@ def main():
         'prisma-sase-address-object-list': list_address_objects_command,
 
         'prisma-sase-tag-list': list_tags_command,
+        'prisma-sase-tag-create': create_tag_command,
+
     }
 
     client = Client(
