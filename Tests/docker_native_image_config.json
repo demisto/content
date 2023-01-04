@@ -31,7 +31,7 @@
          ],
          "docker_ref": "demisto/py3-native:8.1.0.40949"
       },
-      "native:latest":{
+      "native:dev":{
          "supported_docker_images":[
             "python3",
             "python3-deb",
@@ -70,5 +70,10 @@
             "native:8.1"
          ]
       }
-   ]
+   ],
+   "flags_versions_mapping": {
+      "native:dev" : "native:dev",
+      "native:ga" : "native:8.1",
+      "native:maintenance" : ""
+   }
 }
