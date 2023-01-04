@@ -239,7 +239,9 @@ def main() -> None:  # pragma: no cover
                 'alert': first_fetch,
                 'application': first_fetch,
                 'audit': first_fetch,
-                'network': first_fetch
+                'network': first_fetch,
+                'page': first_fetch,
+                'infrastructure': first_fetch,
             }
 
         if demisto.command() == 'test-module':
