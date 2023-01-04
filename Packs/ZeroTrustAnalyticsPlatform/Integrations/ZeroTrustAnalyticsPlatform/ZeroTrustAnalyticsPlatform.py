@@ -73,6 +73,9 @@ class Client(BaseClient):
         super().__init__(
             base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
+        # Download links already include headers including a request signature,
+        # The client cannot have any default headers
+        self.download_client = BaseClient(base_url=None, verify=verify_certificate, proxy=proxy)
         self.comment_tag = comment_tag
         self.escalate_tag = escalate_tag
         self.max_match = max_match
@@ -167,7 +170,7 @@ class Client(BaseClient):
         )
 
     def download_attachment(self, link):
-        return self._http_request(method="GET", full_url=link, resp_type="content")
+        return self.download_client._http_request(method="GET", full_url=link, resp_type="content")
 
     def reopen_alert(self, alert_id, group_id, description):
         return self.reassign_alert_to_group(alert_id, group_id, description)
@@ -413,7 +416,7 @@ def get_notes_for_alert(
 
     # Remove sort field from entries now that they are sorted correctly
     for entry in entries:
-        entry.pop("sort")
+        entry.pop("sort", None)
 
     # Times for syncing
     local_last_closed = get_last_closed(investigation)
