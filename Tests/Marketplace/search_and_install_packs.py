@@ -183,7 +183,9 @@ def search_pack(client: demisto_client,
     Returns:
         (dict): Returns the pack data if found, or empty dict otherwise.
     """
-
+    logging.info(f'search_pack:    client.api_key: {client.api_key}, client.server_numeric_version: {client.server_numeric_version},'
+                  f' client.base_url: {client.base_url}, client.xdr_auth_id: {client.xdr_auth_id}, '
+                  f'client.xsiam_machine: {client.xsiam_machine}')
     try:
         # make the search request
         response_data, status_code, _ = demisto_client.generic_request_func(client,
