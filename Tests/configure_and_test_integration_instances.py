@@ -17,6 +17,7 @@ from threading import Thread
 from time import sleep
 from typing import List, Tuple, Union, Set
 
+
 from urllib.parse import quote_plus
 import demisto_client
 
