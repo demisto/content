@@ -40,7 +40,7 @@ configuration:
   type: 15
 - additionalinfo: The Generic SQL query/procedure.
   display: Fetch events query
-  name: fetchQuery
+  name: query
   required: false
   type: 0
 - additionalinfo: Fill here the exact column's name to fetch (id column or timestamp column).

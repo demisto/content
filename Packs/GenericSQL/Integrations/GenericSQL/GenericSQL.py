@@ -199,7 +199,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
 
     if params.get('isFetch'):
 
-        if not params.get('fetchQuery'):
+        if not params.get('query'):
             msg += 'Missing parameter Fetch events query. '
 
         if limit := params.get('fetch_limit'):
@@ -224,9 +224,9 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
             msg += 'A starting point for fetching is missing, please enter First fetch timestamp or First fetch ID. '
 
         # in case of query and not procedure
-        if not params.get('fetchQuery').lower().startswith(('call', 'exec', 'execute')):
+        if not params.get('query').lower().startswith(('call', 'exec', 'execute')):
             first_condition_key_word, second_condition_key_word = 'where', 'order by'
-            query = params.get('fetchQuery').lower()
+            query = params.get('query').lower()
             if not (first_condition_key_word in query and second_condition_key_word in query):
                 msg += f"Missing at least one of the query's conditions: where {params.get('column_name')} >:{params.get('column_name')}" \
                        f" or order by (asc) {params.get('column_name')}. "
@@ -320,18 +320,18 @@ def create_sql_query(last_run: dict, params: dict):
         'last_id')
 
     # case of runStoreProcedure MSSQL
-    if params.get('fetchQuery').lower().startswith('exec'):
+    if params.get('query').lower().startswith('exec'):
         sql_query = f"SET ROWCOUNT {params.get('fetch_limit')};" \
-                    f"{params.get('fetchQuery')} @{params.get('column_name')} = '{last_timestamp_or_id}';" \
+                    f"{params.get('query')} @{params.get('column_name')} = '{last_timestamp_or_id}';" \
                     f"SET ROWCOUNT 0"
 
     # case of runStoreProcedure MySQL
-    elif params.get('fetchQuery').lower().startswith('call'):
-        sql_query = f"{params.get('fetchQuery')}('{last_timestamp_or_id}', {params.get('fetch_limit')})"
+    elif params.get('query').lower().startswith('call'):
+        sql_query = f"{params.get('query')}('{last_timestamp_or_id}', {params.get('fetch_limit')})"
 
     # case of queries
     else:
-        sql_query = params.get('fetchQuery')
+        sql_query = params.get('query')
 
     return sql_query
 
@@ -357,6 +357,7 @@ def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict)
     if last_run.get('last_timestamp'):
         last_record_timestamp = table[-1].get(params.get('column_name'))
 
+        # keep the id's for the next fetch cycle for avoiding duplicates
         if is_timestamp_and_id:
             new_ids_list = list()
             for record in table:
@@ -486,7 +487,7 @@ def main():
         else:
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
     except Exception as err:
-        return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
+        return_error(f'Unexpected error: {str(err)}')
     finally:
         try:
             if client.connection:
