@@ -3486,5 +3486,4 @@ def test_remove_old_versions_from_changelog(changelog, expected_result):
         7. Last 5 versions.
 
     """
-    res = remove_old_versions_from_changelog(changelog)
-    assert res == expected_result
+    assert remove_old_versions_from_changelog(changelog) == expected_result
