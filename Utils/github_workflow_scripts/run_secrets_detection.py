@@ -9,8 +9,6 @@ import os
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 gold_server_url = os.getenv('GOLD_SERVER_URL')
-print('*************')
-print(gold_server_url)
 SECRETS_INSTANCE_URL = f"{gold_server_url}/instance/execute/GenericWebhook_Secrets"
 
 
