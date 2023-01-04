@@ -432,7 +432,7 @@ class UseCaseDocument:
     given playbook ("use case") within a running XSOAR environment.
     """
 
-    def __init__(
+    def __init__(  # pragma: no cover
             self,
             playbook_name,
             dependencies,
@@ -470,7 +470,7 @@ class Document:
     instance and is not Specific t any given use case.
     """
 
-    def __init__(
+    def __init__(  # pragma: no cover
             self,
             template,
             integrations_table,
