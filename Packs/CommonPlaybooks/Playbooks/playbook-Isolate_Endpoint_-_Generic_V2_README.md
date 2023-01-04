@@ -5,12 +5,12 @@ Make sure to provide valid playbook inputs for the integration you are using.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Isolate Endpoint - Cybereason
+* Block Endpoint - Carbon Black Response V2
 * FireEye HX - Isolate Endpoint
-* Microsoft Defender For Endpoint - Isolate Endpoint
 * Cortex XDR - Isolate Endpoint
 * Crowdstrike Falcon - Isolate Endpoint
-* Block Endpoint - Carbon Black Response V2
+* Isolate Endpoint - Cybereason
+* Microsoft Defender For Endpoint - Isolate Endpoint
 
 ### Integrations
 This playbook does not use any integrations.
