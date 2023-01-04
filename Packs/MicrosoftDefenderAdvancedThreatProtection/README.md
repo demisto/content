@@ -19,3 +19,6 @@ Microsoft Defender for Endpoint delivers continuous asset visibility, intelligen
 
 ## Authentication
 For more details about the authentication used for components in this content pack, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
+
+## Licence information
+Available for E3, E5, and standalone licenses.
