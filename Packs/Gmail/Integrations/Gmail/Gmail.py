@@ -768,8 +768,7 @@ def cutting_for_batches(list_accounts: list) -> List[list]:
         rest_accounts = list_accounts[-rest:]
         list_accounts = list_accounts[:-rest]
 
-    for b in batch(list_accounts, batch_size):
-        accounts.append(b)
+    accounts.extend(batch(list_accounts, batch_size))
 
     if rest_accounts:
         accounts[0].extend(rest_accounts)
