@@ -1,5 +1,7 @@
 id: Microsoft 365 Defender - Emails Indicators Hunt
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Microsoft 365 Defender - Emails Indicators Hunt
 description: |-
   This playbook retrieves email data based on the "URLDomain", "SHA256" and "IPAddress" inputs.
@@ -23,6 +25,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -45,8 +48,7 @@ tasks:
       id: 4c477a33-925d-4946-83e3-e237dfa465a2
       version: -1
       name: Check if Microsoft 365 Defender is enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -64,6 +66,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -105,6 +108,7 @@ tasks:
               complex:
                 root: inputs.URLDomain
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -146,6 +150,7 @@ tasks:
               complex:
                 root: inputs.SHA256
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -173,6 +178,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -189,15 +195,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ae5e09eb-23c0-4887-89f4-df0f8074d286
+    taskid: 7ef19685-5d03-44e8-8718-bdcaa1891658
     type: regular
     task:
-      id: ae5e09eb-23c0-4887-89f4-df0f8074d286
+      id: 7ef19685-5d03-44e8-8718-bdcaa1891658
       version: -1
       name: Retrieve emails data (URLDomain)
-      description: 'Advanced hunting is a threat-hunting tool that uses specially
-        constructed queries to examine the past 30 days of event data in Microsoft
-        365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
       type: regular
       iscommand: true
@@ -210,15 +214,11 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailUrlInfo | where
-          Url has_any ("${URLDomainParsed}") or UrlDomain has_any ("${URLDomainParsed}")
-          | join EmailEvents on NetworkMessageId | project-away AdditionalFields,
-          EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy,
-          UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction,
-          SenderObjectId, NetworkMessageId1
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailUrlInfo | where Timestamp >= _start | where Url has_any ("${URLDomainParsed}") or UrlDomain has_any ("${URLDomainParsed}") | join EmailEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -235,15 +235,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2f15a108-855c-44de-8e48-086eff267cac
+    taskid: 1386f67d-0a38-438e-8a03-7435ffe62954
     type: regular
     task:
-      id: 2f15a108-855c-44de-8e48-086eff267cac
+      id: 1386f67d-0a38-438e-8a03-7435ffe62954
       version: -1
       name: Retrieve emails data (SHA256)
-      description: 'Advanced hunting is a threat-hunting tool that uses specially
-        constructed queries to examine the past 30 days of event data in Microsoft
-        365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
       type: regular
       iscommand: true
@@ -256,16 +254,11 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailAttachmentInfo
-          | where SHA256 has_any ("${SHA256Parsed}") | join EmailEvents on NetworkMessageId
-          | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid,
-          OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1,
-          RecipientEmailAddress1, SenderDisplayName1, NetworkMessageId1, DetectionMethods1,
-          SenderFromAddress1, RecipientObjectId1, ThreatNames1, ThreatTypes1, SenderObjectId1,
-          OrgLevelAction, SenderObjectId
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailAttachmentInfo | where Timestamp >= _start |where SHA256 has_any ("${SHA256Parsed}") | join EmailEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, RecipientEmailAddress1, SenderDisplayName1, NetworkMessageId1, DetectionMethods1, SenderFromAddress1, RecipientObjectId1, ThreatNames1, ThreatTypes1, SenderObjectId1, OrgLevelAction, SenderObjectId${inputs.ListenerMailbox}
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -293,7 +286,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -319,6 +312,7 @@ tasks:
                   simple: Microsoft365Defender.Hunt.results.Url
                 iscontext: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -371,6 +365,7 @@ tasks:
                 value:
                   simple: ', '
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -423,6 +418,7 @@ tasks:
                 value:
                   simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -466,6 +462,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -519,6 +516,7 @@ tasks:
                 value:
                   simple: ', '
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -535,15 +533,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6323c0a2-b979-4320-85be-3193ad8ee226
+    taskid: 61724f65-0d28-434d-8dac-c8d1d70a7ce7
     type: regular
     task:
-      id: 6323c0a2-b979-4320-85be-3193ad8ee226
+      id: 61724f65-0d28-434d-8dac-c8d1d70a7ce7
       version: -1
       name: Retrieve emails data (IPAddress)
-      description: 'Advanced hunting is a threat-hunting tool that uses specially
-        constructed queries to examine the past 30 days of event data in Microsoft
-        365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
       type: regular
       iscommand: true
@@ -556,14 +552,11 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where
-          SenderIPv4 has_any ("${IPAddressParsed}") or SenderIPv6 in ("${IPAddressParsed}")
-          | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid,
-          OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, OrgLevelAction,
-          SenderObjectId
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | where SenderIPv4 has_any ("${IPAddressParsed}") or SenderIPv6 in ("${IPAddressParsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, OrgLevelAction, SenderObjectId
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -591,7 +584,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html.
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -616,6 +609,7 @@ tasks:
                   simple: Microsoft365Defender.RetrievedEmails.NetworkMessageId
                 iscontext: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -643,7 +637,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html.
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -660,6 +654,7 @@ tasks:
         complex:
           root: RetrievedEmails2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -676,15 +671,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c8aa199c-424b-4fd1-8e9a-b3d440450759
+    taskid: 42a24672-f182-4b50-83b7-b08a6b79c4c6
     type: regular
     task:
-      id: c8aa199c-424b-4fd1-8e9a-b3d440450759
+      id: 42a24672-f182-4b50-83b7-b08a6b79c4c6
       version: -1
       name: Retrieve emails data (IPAddress)
-      description: 'Advanced hunting is a threat-hunting tool that uses specially
-        constructed queries to examine the past 30 days of event data in Microsoft
-        365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
       type: regular
       iscommand: true
@@ -697,14 +690,11 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailUrlInfo | where
-          UrlDomain has_any ("${IPAddressParsed}") | join EmailEvents on NetworkMessageId
-          | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid,
-          OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1,
-          OrgLevelAction, SenderObjectId, NetworkMessageId1
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailUrlInfo | where Timestamp >= _start | where UrlDomain has_any ("${IPAddressParsed}") | join EmailEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -719,6 +709,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -742,9 +733,7 @@ inputs:
 - key: URLDomain
   value: {}
   required: false
-  description: Domain or URL to search within emails. Can be a single domain or URL
-    or an array of domains or URLs to search. The search looks for the exact Domain
-    or URL.
+  description: Domain or URL to search within emails. Can be a single domain or URL or an array of domains or URLs to search. The search looks for the exact Domain or URL.
   playbookInputQuery:
 - key: SHA256
   value: {}
@@ -754,8 +743,7 @@ inputs:
 - key: IPAddress
   value: {}
   required: false
-  description: The source or destination IP address to search. Can be a single address
-    or an array of IP addresses.
+  description: The source or destination IP address to search. Can be a single address or an array of IP addresses.
   playbookInputQuery:
 - key: Timeout
   value:
@@ -773,8 +761,12 @@ inputs:
   value:
     simple: "50"
   required: false
-  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the
-    default.
+  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the default.
+  playbookInputQuery:
+- key: ListenerMailbox
+  value: {}
+  required: false
+  description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
   playbookInputQuery:
 outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails
