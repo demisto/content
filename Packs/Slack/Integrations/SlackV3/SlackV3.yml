@@ -219,8 +219,8 @@ script:
       isArray: false
       name: private
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
     deprecated: false
     description: Mirrors the investigation between Slack and the Cortex XSOAR War Room.
@@ -587,7 +587,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.36868
+  dockerimage: demisto/slackv3:1.0.0.42960
   feed: false
   isfetch: false
   longRunning: true
