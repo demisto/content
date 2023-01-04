@@ -35,7 +35,7 @@ class MsClient:
         self.subscription_id = subscription_id
 
     
-    def get_event_list(self, last_run, args: dict):
+    def get_event_list(self, last_run):
         
         """Listing alerts
         Args: 
@@ -45,19 +45,21 @@ class MsClient:
         Returns:
             dict: contains response body
         """
-        filter_query = args.get("filter")
-        select_query = args.get("select")
-        expand_query = args.get("expand")
+        # filter_query = args.get("filter")
+        # select_query = args.get("select")
+        # expand_query = args.get("expand")
         
         cmd_url = "/providers/Microsoft.Security/alerts"
+
+        filter_query = f'ReportedTimeUtc ge {last_run}'
 
         params = {'api-version': API_VERSION}
         if filter_query:
             params['$filter'] = filter_query
-        if select_query:
-            params['$select'] = select_query
-        if expand_query:
-            params['$expand'] = expand_query
+        # if select_query:
+        #     params['$select'] = select_query
+        # if expand_query:
+        #     params['$expand'] = expand_query
 
         events = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
         return events
@@ -76,7 +78,7 @@ def test_module(client: MsClient):
 
 
 def get_events(client: MsClient, last_run, args:dict):
-    events = client.get_event_list(last_run, args)
+    events = client.get_event_list(last_run)
     events.get("value")
     outputs = list()
     for alert in events:
@@ -114,7 +116,7 @@ def get_events(client: MsClient, last_run, args:dict):
     return events, cr
 
 def find_next_run():
-    pass 
+    return 0 
 
 
 def fetch_events(client: MsClient, last_run, args: dict):
@@ -131,8 +133,8 @@ def fetch_events(client: MsClient, last_run, args: dict):
     """
     search_filter = 'filter'
 
-    events = client.get_event_list(last_run, args)
-    demisto.info(f'Fetched event with id: {prev_id + 1}.')
+    events = client.get_event_list(last_run)
+    demisto.info(f'Fetched {len(events.get("value"))} events.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = find_next_run()
