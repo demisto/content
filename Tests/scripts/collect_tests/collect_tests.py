@@ -147,6 +147,10 @@ class CollectionResult:
 
         if pack:
             if only_to_upload == only_to_install:
+
+                if only_to_upload and only_to_install:
+                    raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
+
                 self.packs_to_install = {pack}
                 self.packs_to_upload = {pack}
                 logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
