@@ -135,8 +135,6 @@ class Client:
         xsoar_system_file_path = xsoar_file_data['path']
         blob_name = file_name if file_name else xsoar_file_data['name']
 
-        headers = {'x-ms-blob-type': 'BlockBlob'}
-
         try:
             shutil.copy(xsoar_system_file_path, blob_name)
         except FileNotFoundError:
@@ -145,6 +143,8 @@ class Client:
 
         try:
             with open(blob_name, 'rb') as file:
+                headers = {'x-ms-blob-type': 'BlockBlob', 'Content-Length': f'{os.path.getsize(file.name)}'}
+                demisto.info(f'{headers=}')
                 response = self.ms_client.http_request(method='PUT',
                                                        url_suffix=f'{container_name}/{blob_name}',
                                                        headers=headers,
