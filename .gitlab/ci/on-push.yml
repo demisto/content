@@ -45,7 +45,10 @@ run-unittests-and-lint:
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-validations:

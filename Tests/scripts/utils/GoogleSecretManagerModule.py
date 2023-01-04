@@ -27,6 +27,7 @@ class GoogleSecreteManagerModule:
             if with_secret:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
+                    assert secret_value.get('name'), f'error with {secret.name}'
                     secrets.append(secret_value)
                 except Exception as e:
                     logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
