@@ -22,7 +22,8 @@ NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',
                            'Tests/Marketplace/Tests/validate_landing_page_sections_test.py']
 
 TRIGGER_BUILD_URL_ON_MASTER = 'https://api.github.com/repos/demisto/content-private/dispatches'
-TRIGGER_BUILD_URL_ON_CUSTOM_BRANCH = 'https://api.github.com/repos/demisto/content-private/actions/workflows/config.yml/dispatches'
+TRIGGER_BUILD_URL_ON_CUSTOM_BRANCH = \
+    'https://api.github.com/repos/demisto/content-private/actions/workflows/config.yml/dispatches'
 GET_DISPATCH_WORKFLOWS_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs'
 WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
 GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs/{:s}/jobs'
@@ -157,7 +158,7 @@ def main():
 
         if res.status_code != 204:
             logging.critical(f'Failed to trigger private repo build, request to '
-                             f'{TRIGGER_BUILD_URL} failed with error: {str(res.content)}')
+                             f'{trigger_build_url} failed with error: {str(res.content)}')
             sys.exit(1)
 
         workflow_ids_diff = []
