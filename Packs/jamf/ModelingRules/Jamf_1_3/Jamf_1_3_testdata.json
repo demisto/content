@@ -13,8 +13,9 @@
                     "username": "fakeo",
                     "osVersion": "fake-OS"
                 },
-                "Webhook": {
-                    "id": "some-webhook-id"
+                "webhook": {
+                    "id": "some-webhook-id",
+                    "eventTimestamp": "1672659432173"
                 }
             },
             "expected_values": {
@@ -48,8 +49,9 @@
                     "username": "fakeo2",
                     "osVersion": "fake-OS2"
                 },
-                "Webhook": {
-                    "id": "some-webhook-id2"
+                "webhook": {
+                    "id": "some-webhook-id2",
+                    "eventTimestamp": "1672659441333"
                 }
             },
             "expected_values": {

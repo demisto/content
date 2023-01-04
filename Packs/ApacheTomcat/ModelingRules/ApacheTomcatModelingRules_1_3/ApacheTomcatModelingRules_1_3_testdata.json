@@ -6,7 +6,7 @@
             "product": "tomcat",
             "dataset": "apache_tomcat_raw",
             "event_data": {
-                "_raw_log": "12.123.123.12 - - [09/Jan/2015:19:12:06 +0000] 808840 \"GET /inventoryService/inventory/purchaseItem?userId=22222&itemId=33333 HTTP/1.1\" 500 17 \"-\" \"Apache-HttpClient/4.2.6 (java 1.5)\""
+                "_raw_log": "12.123.123.12 - - [02/Jan/2023:19:12:06 +0000] 808840 \"GET /inventoryService/inventory/purchaseItem?userId=22222&itemId=33333 HTTP/1.1\" 500 17 \"-\" \"Apache-HttpClient/4.2.6 (java 1.5)\""
             },
             "expected_values": {
                 "xdm.network.http.response_code": "500",
