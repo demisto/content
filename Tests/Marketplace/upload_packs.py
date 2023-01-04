@@ -160,7 +160,6 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
     task_status = False
 
     try:
-        logging.info(f"Starting to update index.zip for {pack_name}.")
         index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
                                        os.path.isdir(os.path.join(index_folder_path, d))]
         index_pack_path = os.path.join(index_folder_path, pack_name)
@@ -180,7 +179,6 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
                 elif (metadata_version := re.findall('metadata\-([\d\.]+)\.json', d.name)) and pack_versions_to_keep:
                     if metadata_version[0] not in pack_versions_to_keep:
                         os.remove(d.path)
-                        logging.info(f"DELETED FILE: {d.path} in {pack_name=}")
 
         # skipping index update in case hidden is set to True
         if hidden_pack:
@@ -1200,7 +1198,6 @@ def main():
             modified_rn_files_paths,
             marketplace, id_set
         )
-        logging.info(f"FILTERING CHANGELOG VERSIONS:{pack.name=} {pack_versions_to_keep=} ")
 
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
@@ -1240,7 +1237,6 @@ def main():
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
             pack.cleanup()
             continue
-        # todo: here metadata files will be deleted
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
                                           pack_version=pack.latest_version, hidden_pack=pack.hidden,
                                           pack_versions_to_keep=pack_versions_to_keep)
