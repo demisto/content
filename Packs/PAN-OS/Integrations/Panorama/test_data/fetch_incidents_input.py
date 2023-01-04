@@ -1,6 +1,16 @@
 from datetime import datetime
 import dateparser
 
+
+""" Last Run Dict Structure Example
+lastRun =
+{
+    'last_fetch_dict': {'Traffic': '2022-1-1T12:00:00', 'Threat': '2022-1-1T13:00:00'},
+    'last_id_dict': {'Traffic': '111111', 'Threat': '222222'}
+}
+"""
+
+
 """ Fetch Incidents Inputs """
 
 # GLOBALS
@@ -70,20 +80,20 @@ case_first_fetch = (
     {},
     first_fetch,
     {'X_log_type': '(X_log_type query)', 'Y_log_type': '(Y_log_type query)'},
-    {'X_log_type': dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}),
-     'Y_log_type': dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})})
+    {'X_log_type': dateparser.parse('2022-01-01 11:00:00 UTC', settings={'TIMEZONE': 'UTC'}),
+     'Y_log_type': dateparser.parse('2022-01-01 11:00:00 UTC', settings={'TIMEZONE': 'UTC'})})
 
 case_one_incident_type_previously_fetched_fetch = (
     {'X_log_type': '2022-1-1T11:00:00'},
     first_fetch, {'X_log_type': '(X_log_type query)', 'Y_log_type': '(Y_log_type query)'},
-    {'X_log_type': dateparser.parse('2022-1-1T11:00:00', settings={'TIMEZONE': 'UTC'}),
-     'Y_log_type': dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})})
+    {'X_log_type': dateparser.parse('2022-01-01 11:00:00 UTC', settings={'TIMEZONE': 'UTC'}),
+     'Y_log_type': dateparser.parse('2022-01-01 11:00:00 UTC', settings={'TIMEZONE': 'UTC'})})
 
 case_two_incidents_types_previously_fetched_fetch = (
     {'X_log_type': '2022-1-1T11:00:00', 'Y_log_type': '2022-1-1T13:00:00'},
     first_fetch, {'X_log_type': '(X_log_type query)', 'Y_log_type': '(Y_log_type query)'},
-    {'X_log_type': dateparser.parse('2022-1-1T11:00:00', settings={'TIMEZONE': 'UTC'}),
-     'Y_log_type': dateparser.parse('2022-1-1T13:00:00', settings={'TIMEZONE': 'UTC'})})
+    {'X_log_type': dateparser.parse('2022-01-01 11:00:00 UTC', settings={'TIMEZONE': 'UTC'}),
+     'Y_log_type': dateparser.parse('2022-01-01 13:00:00 UTC', settings={'TIMEZONE': 'UTC'})})
 
 test_get_fetch_start_datetime_dict_args = [case_first_fetch,
                                            case_one_incident_type_previously_fetched_fetch,
