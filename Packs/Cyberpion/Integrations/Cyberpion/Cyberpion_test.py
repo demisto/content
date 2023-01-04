@@ -9,12 +9,10 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_get_domain_state(requests_mock):
+def test_get_domain_state(mocker):
     from Cyberpion import Client
     mock_response = util_load_json('test_data/domain_state.json')
-    requests_mock.get(
-        f'{MOCKED_BASE_URL}domainstate/?verbosity=details&domain=$anon100-2.com',
-        json=mock_response)
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
     client = Client(
         base_url=MOCKED_BASE_URL,
         verify=False,
@@ -28,18 +26,17 @@ def test_get_domain_state(requests_mock):
     response.pop('domain_types')
     response.pop('ips')
     mocked = mock_response['results'][0]
-    mocked.pop('domain_types')
-    mocked.pop('ips')
     assert response == mocked
 
 
-def test_get_domain_state_command(requests_mock):
+def test_get_domain_state_command(mocker):
     from Cyberpion import Client, get_domain_state_command
 
     mock_response = util_load_json('test_data/domain_state.json')
-    requests_mock.get(
-        f'{MOCKED_BASE_URL}domainstate/?verbosity=details&domain=$anon100-2.com',
-        json=mock_response)
+    # requests_mock.get(
+    #     f'{MOCKED_BASE_URL}domainstate/?verbosity=details&domain=$anon100-2.com',
+    #     json=mock_response)
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
     client = Client(
         base_url=f'{MOCKED_BASE_URL}',
         verify=False,
@@ -49,12 +46,13 @@ def test_get_domain_state_command(requests_mock):
     )
     domain = '$anon100-2.com'
     response = get_domain_state_command(client, {'domain': domain})
+    mocker.patch.object(Client, '_http_request', return_value=util_load_json('test_data/domain_state.json'))
     assert response.outputs['DomainState'] == client.get_domain_state(domain)
     assert response.outputs_prefix == 'Cyberpion'
     assert response.outputs_key_field == 'id'
 
 
-def test_fetch_incidents(requests_mock):
+def test_fetch_incidents(mocker):
     """Tests the fetch-incidents command function.
 
     Configures requests_mock instance to generate the appropriate
@@ -64,9 +62,7 @@ def test_fetch_incidents(requests_mock):
     from Cyberpion import Client, fetch_incidents
 
     mock_response = util_load_json('test_data/new_incidents.json')
-    requests_mock.get(
-        f'{MOCKED_BASE_URL}actionitems/?verbosity=details&page_size=2',
-        json=mock_response)
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
 
     client = Client(
         base_url=f'{MOCKED_BASE_URL}',
