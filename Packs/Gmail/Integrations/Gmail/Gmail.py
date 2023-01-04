@@ -770,6 +770,8 @@ def cutting_for_batches(list_accounts: list) -> List[list]:
 
     accounts.extend(batch(list_accounts, batch_size))
 
+    # When the number of accounts is not exactly divisible by BATCH_DIVIDER,
+    # We add the remaining accounts to the first batch to avoid running another polling command.
     if rest_accounts:
         accounts[0].extend(rest_accounts)
 
