@@ -1,0 +1,119 @@
+category: Analytics & SIEM
+commonfields:
+  id: Microsoft Defender for Cloud Event Collector
+  version: -1
+configuration:
+- defaultvalue: https://management.azure.com/
+  display: Microsoft Azure Management URL
+  name: server_url
+  required: false
+  type: 0
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+  name: tenant_id
+  required: true
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
+- display: Default subscription ID to use
+  name: default_sub_id
+  required: false
+  type: 4
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: XSIAM collector for Microsoft Defender for Cloud alerts. 
+display: Microsoft Defender for Cloud Event Collector
+name: Microsoft Defender for Cloud Event Collector
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: OData filter
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: OData select
+      isArray: false
+      name: select
+      required: false
+      secret: false
+    - default: false
+      description: OData expand
+      isArray: false
+      name: expand
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      isArray: false
+      name: subscription_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True to create events, otherwise the command will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    deprecated: false
+    description: Lists alerts for the subscription according to the specified filters.
+    execution: false
+    name: ms-defender-for-cloud-get-events
+    outputs:
+    - contextPath: AzureSecurityCenter.Alert.AlertDisplayName
+      description: The display name of the alert.
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.CompromisedEntity
+      description: The entity on which the incident occurred.
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.DetectedTimeUtc
+      description: The time the vendor detected the incident.
+      type: date
+    - contextPath: AzureSecurityCenter.Alert.ReportedSeverity
+      description: The estimated severity of this alert.
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.State
+      description: The alert state (Active, Dismissed, etc.).
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.ID
+      description: The alert ID.
+      type: string
+dockerimage: demisto/crypto:1.0.0.36225
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+fromversion: 8.0.0

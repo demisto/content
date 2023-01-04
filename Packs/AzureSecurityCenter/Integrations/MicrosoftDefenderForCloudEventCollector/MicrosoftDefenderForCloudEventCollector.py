@@ -117,7 +117,7 @@ def find_next_run():
     pass 
 
 
-def fetch_events(client: MsClient, last_run):
+def fetch_events(client: MsClient, last_run, args: dict):
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -131,7 +131,7 @@ def fetch_events(client: MsClient, last_run):
     """
     search_filter = 'filter'
 
-    events = client.get_event_list()
+    events = client.get_event_list(last_run, args)
     demisto.info(f'Fetched event with id: {prev_id + 1}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
@@ -139,7 +139,8 @@ def fetch_events(client: MsClient, last_run):
     demisto.info(f'Setting next run {next_run}.')
     return next_run, events
 
-def handle_last_run(args: dict):
+
+def handle_last_run(params: dict):
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
         arg=params.get('first_fetch', '3 days'),
@@ -179,6 +180,11 @@ def main() -> None:
     private_key = params.get('private_key')
     verify_certificate = not params.get('insecure', False)
 
+    if not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.'
+                               'For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+
     demisto.debug(f'Command being called is {command}')
     try:
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
@@ -191,7 +197,7 @@ def main() -> None:
 
         elif command in ('ms-defender-for-cloud-get-events', 'fetch-events'):
             
-            last_run = handle_last_run(args)
+            last_run = handle_last_run(params)
 
             if command == 'ms-defender-for-cloud-get-events':
                 should_push_events = argToBoolean(args.pop('should_push_events'))
@@ -202,7 +208,8 @@ def main() -> None:
                 should_push_events = True
                 next_run, events = fetch_events(
                     client=client,
-                    last_run=last_run
+                    last_run=last_run,
+                    args=args
                 )
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)
