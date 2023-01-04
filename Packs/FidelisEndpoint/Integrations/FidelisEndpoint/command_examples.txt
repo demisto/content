@@ -1,0 +1,25 @@
+!fidelis-endpoint-query-dns-by-source-ip start_time="2020-01-01T00:00:00.842Z" end_time="2020-03-08T15:50:05.552Z" logic="or" source_ip="10.128.0.4" domain="logging.googleapis.com" limit=5
+!fidelis-endpoint-list-alerts limit="5"
+!fidelis-endpoint-host-info ip_address="10.128.0.2"
+!fidelis-endpoint-file-search host="10.128.0.5" md5="098f6bcd4621d373cade4e832627b4f6" file_extension=".txt" file_size="0"
+!fidelis-endpoint-file-search-status job_id=a345056b-b290-4746-b953-0822dab381ae job_result_id=0b7161ed-ffe9-4b87-b009-ab8a02034e0e
+!fidelis-endpoint-file-search-result-metadata job_id=a345056b-b290-4746-b953-0822dab381ae job_result_id=0b7161ed-ffe9-4b87-b009-ab8a02034e0e
+!fidelis-endpoint-get-file file_id=eyJOYW1lIjoidGVzdC50eHQiLCJQYXRoIjoiL3Jlc3VsdHMvMGI3MTYxZWQtZmZlOS00Yjg3LWIwMDktYWI4YTAyMDM0ZTBlL2IyUnZPVFl5YjFSUGNqRnZSRTkwYlU1aWQxQnJUemRUZDJkTUwzUmFNbUZWY21wMlJrRjFhRXRwTUQwPSJ90 file_name=test.txt
+!fidelis-endpoint-delete-file-search-job job_id=a345056b-b290-4746-b953-0822dab381ae
+!fidelis-endpoint-list-scripts
+!fidelis-endpoint-get-script-manifest script_id="2d32a530-0716-4542-afdc-8da3bd47d8bf"
+!fidelis-endpoint-list-processes operating_system=Windows endpoint_ip=10.128.0.5
+!fidelis-endpoint-get-script-result job_id=fc94568c-9a15-4fa2-af08-ab8a01f5e86c
+!fidelis-endpoint-kill-process operating_system=Windows pid=516 endpoint_ip=10.128.0.5
+!fidelis-endpoint-delete-file file_path=c:\\Users\\admin\\Documents\\test.txt operating_system=Windows endpoint_ip=10.128.0.5
+!fidelis-endpoint-isolate-network operating_system=Windows allowed_server=2.2.2.2 endpoint_ip=10.128.0.1
+!fidelis-endpoint-remove-network-isolation operating_system=Windows endpoint_ip=10.128.0.1
+!fidelis-endpoint-script-job-status job_result_id=fc94568c-9a15-4fa2-af08-ab8a01f5e86c
+!fidelis-endpoint-execute-script script_id="2d32a530-0716-4542-afdc-8da3bd47d8bf" time_out="300" endpoint_ip="10.128.0.5" answer="true"
+!fidelis-endpoint-query-file logic="and" file_hash="8a0a29438052faed8a2532da50455756"
+!fidelis-endpoint-query-process logic="and" process_name="svchost.exe"
+!fidelis-endpoint-query-connection-by-remote-ip logic=and remote_ip=10.128.0.1 limit=5
+!fidelis-endpoint-query-by-dns start_time="2019-10-02T00:00:00.842Z" end_time="2020-03-08T15:50:05.552Z" logic="and" url="login.live.com"
+!fidelis-endpoint-query-dns-by-server-ip logic="or" remote_ip="10.128.0.1"
+!fidelis-endpoint-query-events column=name entity_type=process logic=or value=cmd.exe additional_filter="pid = 3276" operator="="
+
