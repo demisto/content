@@ -1282,6 +1282,484 @@ class Client(BaseClient):
                 res=res,
             )
 
+    def validate_protected_hostname_group(self, args: dict[str, Any]):
+        """Protected hostname group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            DemistoException: Errors.
+        """
+        if args.get("default_action") and args["default_action"] not in [
+            "Allow",
+            "Deny",
+            "Deny (no log)",
+        ]:
+            raise ValueError(ErrorMessage.DEFAULT_ACTION.value)
+
+    def validate_protected_hostname_member(self, args: dict[str, Any]):
+        """Protected hostname member args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            DemistoException: Errors.
+        """
+        if args.get("action") and args["action"] not in [
+            "Allow",
+            "Deny",
+            "Deny (no log)",
+        ]:
+            raise ValueError(ErrorMessage.ACTION.value)
+        if args.get("ignore_port") and args["ignore_port"] not in ["enable", "disable"]:
+            raise ValueError(ErrorMessage.IGNORE_PORT.value)
+        if args.get("include_subdomains") and args["include_subdomains"] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.INCLUDE_SUBDOMAINS.value)
+
+    def validate_ip_list_group(self, args: dict[str, Any]):
+        """IP list group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+
+        block_period = arg_to_number(args.get("block_period"))
+        if isinstance(self, ClientV2) and block_period and not 1 <= block_period <= 600:
+            raise ValueError(ErrorMessage.BLOCK_PERIOD.value)
+
+        if args.get("action") and args["action"] not in [
+            "Alert deny",
+            "Block period",
+            "Deny (no log)",
+        ]:
+            raise ValueError(ErrorMessage.IP_ACTION.value)
+        if args.get("severity") and args["severity"] not in [
+            "High",
+            "Medium",
+            "Low",
+            "Info",
+        ]:
+            raise ValueError(ErrorMessage.SEVERITY.value)
+        if args.get("ignore_x_forwarded_for") and args[
+            "ignore_x_forwarded_for"
+        ] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
+
+    def validate_ip_list_member(self, args: dict[str, Any]):
+        """IP list member args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+        if args.get("type") and args["type"] not in [
+            "Allow Only Ip",
+            "Black IP",
+            "Trust IP",
+        ]:
+            raise ValueError(ErrorMessage.TYPE.value)
+        if args.get("severity") and args["severity"] not in [
+            "High",
+            "Medium",
+            "Low",
+            "Info",
+        ]:
+            raise ValueError(ErrorMessage.SEVERITY.value)
+        if (
+            (ip := args.get("ip_address"))
+            and not re.match(ipv4Regex, ip)
+            and not re.match(ipv6Regex, ip)
+            and not re.match(ipv4Regex + "-" + ipv4Regex, ip)
+            and not re.match(ipv6Regex + "-" + ipv6Regex, ip)
+        ):
+            raise ValueError(f"{ip} {ErrorMessage.IP.value}")
+
+    def validate_http_content_routing_member(self, args: dict[str, Any]):
+        """HTTP content routing member args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            DemistoException: Errors.
+        """
+        if args.get("is_default") and args["is_default"] not in ["yes", "no"]:
+            raise ValueError(ErrorMessage.IS_DEFAULT.value)
+        if args.get("inherit_web_protection_profile") and args[
+            "inherit_web_protection_profile"
+        ] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.INHERIT_WEB_PROTECTION_PROFILE.value)
+        if args.get("status") and args["status"] not in ["enable", "disable"]:
+            raise ValueError(ErrorMessage.STATUS.value)
+
+    def validate_geo_ip_group(self, args: dict[str, Any]):
+        """Geo IP Group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+        if args.get("action") and args["action"] not in [
+            "Alert deny",
+            "Block period",
+            "Deny (no log)",
+        ]:
+            raise ValueError(ErrorMessage.IP_ACTION.value)
+        if args.get("severity") and args["severity"] not in [
+            "High",
+            "Medium",
+            "Low",
+            "Info",
+        ]:
+            raise ValueError(ErrorMessage.SEVERITY.value)
+        if args.get("ignore_x_forwarded_for") and args[
+            "ignore_x_forwarded_for"
+        ] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
+
+    def validate_geo_ip_member(self, args: dict[str, Any]):
+        """Geo IP Group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            DemistoException: Errors.
+        """
+        data = [
+            "Afghanistan",
+            "Aland Islands",
+            "Albania",
+            "Algeria",
+            "American Samoa",
+            "Andorra",
+            "Angola",
+            "Anguilla",
+            "Antarctica",
+            "Antigua And Barbuda",
+            "Argentina",
+            "Armenia",
+            "Aruba",
+            "Australia",
+            "Austria",
+            "Azerbaijan",
+            "Bahamas",
+            "Bahrain",
+            "Bangladesh",
+            "Barbados",
+            "Belarus",
+            "Belgium",
+            "Belize",
+            "Benin",
+            "Bermuda",
+            "Bhutan",
+            "Bolivia",
+            "Bonaire Saint Eustatius And Saba",
+            "Bosnia And Herzegovina",
+            "Botswana",
+            "Brazil",
+            "British Indian Ocean Territory",
+            "British Virgin Islands",
+            "Brunei Darussalam",
+            "Bulgaria",
+            "Burkina Faso",
+            "Burundi",
+            "Cambodia",
+            "Cameroon",
+            "Canada",
+            "Cape Verde",
+            "Cayman Islands",
+            "Central African Republic",
+            "Chad",
+            "Chile",
+            "China",
+            "Colombia",
+            "Comoros",
+            "Congo",
+            "Cook Islands",
+            "Costa Rica",
+            "Cote D Ivoire",
+            "Croatia",
+            "Cuba",
+            "Curacao",
+            "Cyprus",
+            "Czech Republic",
+            "Democratic People S Republic Of Korea",
+            "Democratic Republic Of The Congo",
+            "Denmark",
+            "Djibouti",
+            "Dominica",
+            "Dominican Republic",
+            "Ecuador",
+            "Egypt",
+            "El Salvador",
+            "Equatorial Guinea",
+            "Eritrea",
+            "Estonia",
+            "Ethiopia",
+            "Falkland Islands  Malvinas",
+            "Faroe Islands",
+            "Federated States Of Micronesia",
+            "Fiji",
+            "Finland",
+            "France",
+            "French Guiana",
+            "French Polynesia",
+            "Gabon",
+            "Gambia",
+            "Georgia",
+            "Germany",
+            "Ghana",
+            "Gibraltar",
+            "Greece",
+            "Greenland",
+            "Grenada",
+            "Guadeloupe",
+            "Guam",
+            "Guatemala",
+            "Guernsey",
+            "Guinea",
+            "Guinea'issau",
+            "Guyana",
+            "Haiti",
+            "Honduras",
+            "Hong Kong",
+            "Hungary",
+            "Iceland",
+            "India",
+            "Indonesia",
+            "Iran",
+            "Iraq",
+            "Ireland",
+            "Isle Of Man",
+            "Israel",
+            "Italy",
+            "Jamaica",
+            "Japan",
+            "Jersey",
+            "Jordan",
+            "Kazakhstan",
+            "Kenya",
+            "Kiribati",
+            "Kosovo",
+            "Kuwait",
+            "Kyrgyzstan",
+            "Lao People S Democratic Republic",
+            "Latvia",
+            "Lebanon",
+            "Lesotho",
+            "Liberia",
+            "Libya",
+            "Liechtenstein",
+            "Lithuania",
+            "Luxembourg",
+            "Macao",
+            "Macedonia",
+            "Madagascar",
+            "Malawi",
+            "Malaysia",
+            "Maldives",
+            "Mali",
+            "Malta",
+            "Marshall Islands",
+            "Martinique",
+            "Mauritania",
+            "Mauritius",
+            "Mayotte",
+            "Mexico",
+            "Moldova",
+            "Monaco",
+            "Mongolia",
+            "Montenegro",
+            "Montserrat",
+            "Morocco",
+            "Mozambique",
+            "Myanmar",
+            "Namibia",
+            "Nauru",
+            "Nepal",
+            "Netherlands",
+            "New Caledonia",
+            "New Zealand",
+            "Nicaragua",
+            "Niger",
+            "Nigeria",
+            "Niue",
+            "Norfolk Island",
+            "Northern Mariana Islands",
+            "Norway",
+            "Oman",
+            "Pakistan",
+            "Palau",
+            "Palestine",
+            "Panama",
+            "Papua New Guinea",
+            "Paraguay",
+            "Peru",
+            "Philippines",
+            "Poland",
+            "Portugal",
+            "Puerto Rico",
+            "Qatar",
+            "Republic Of Korea",
+            "Reunion",
+            "Romania",
+            "Russian Federation",
+            "Rwanda",
+            "Saint Bartelemey",
+            "Saint Kitts And Nevis",
+            "Saint Lucia",
+            "Saint Martin",
+            "Saint Pierre And Miquelon",
+            "Saint Vincent And The Grenadines",
+            "Samoa",
+            "San Marino",
+            "Sao Tome And Principe",
+            "Saudi Arabia",
+            "Senegal",
+            "Serbia",
+            "Seychelles",
+            "Sierra Leone",
+            "Singapore",
+            "Sint Maarten",
+            "Slovakia",
+            "Slovenia",
+            "Solomon Islands",
+            "Somalia",
+            "South Africa",
+            "South Georgia And The South Sandwich Islands",
+            "South Sudan",
+            "Spain",
+            "Sri Lanka",
+            "Sudan",
+            "Suriname",
+            "Swaziland",
+            "Sweden",
+            "Switzerland",
+            "Syria",
+            "Taiwan",
+            "Tajikistan",
+            "Tanzania",
+            "Thailand",
+            "Timor'este",
+            "Togo",
+            "Tokelau",
+            "Tonga",
+            "Trinidad And Tobago",
+            "Tunisia",
+            "Turkey",
+            "Turkmenistan",
+            "Turks And Caicos Islands",
+            "Tuvalu",
+            "Uganda",
+            "Ukraine",
+            "United Arab Emirates",
+            "United Kingdom",
+            "United States",
+            "Uruguay",
+            "U S  Virgin Islands",
+            "Uzbekistan",
+            "Vanuatu",
+            "Vatican",
+            "Venezuela",
+            "Vietnam",
+            "Wallis And Futuna",
+            "Yemen",
+            "Zambia",
+            "Zimbabwe",
+        ]
+        countries = argToList(args["countries"])
+        if not set(countries).issubset(data):
+            raise DemistoException(ErrorMessage.COUNTRIES.value)
+
+    def validate_server_policy(self, args: dict[str, Any]):
+        """Validate argument for server policy.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Returns:
+            CommandResults: outputs, readable outputs and raw response for XSOAR.
+        """
+        if not args.get("name"):
+            raise ValueError(ErrorMessage.NAME_INSERT.value)
+        if not args.get("deployment_mode"):
+            raise ValueError(ErrorMessage.DEPLOYMENT_MODE_INSERT.value)
+        if not args.get("virtual_server"):
+            raise ValueError(ErrorMessage.VIRTUAL_SERVER.value)
+
+        http_service = args.get("http_service")
+        https_service = args.get("https_service")
+        if not (http_service or https_service):
+            raise ValueError(ErrorMessage.PROTOCOL.value)
+        if args.get("deployment_mode") and args["deployment_mode"] not in [
+            "HTTP Content Routing",
+            "Single Server/Server Balance",
+        ]:
+            raise ValueError(ErrorMessage.DEPLOYMENT_MODE.value)
+        if args["deployment_mode"] == "Single Server/Server Balance" and not args.get(
+            "server_pool"
+        ):
+            raise ValueError(ErrorMessage.SERVER_POOL.value)
+
+    def validate_custom_whitelist(
+        self, args: dict[str, Any], member_type: str | None = None
+    ):
+        """Custom whitelist member args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            DemistoException: Errors.
+        """
+        if args.get("type") and args["type"] != member_type:
+            raise ValueError(
+                f"You can't update {args['type']} member with {member_type} update command."
+            )
+        if member_type == "URL":
+            if (
+                args.get("request_type") == "Simple String"
+                and args.get("request_url")
+                and args["request_url"][0] != "/"
+            ):
+                raise ValueError(ErrorMessage.REQUEST_URL.value)
+            if args.get("request_type") and args["request_type"] not in [
+                "Simple String",
+                "Regular Expression",
+            ]:
+                raise ValueError(ErrorMessage.REQUEST_TYPE.value)
+
+    def validate_block_period(self, block_period: int | None):
+        """Validate the block period argument.
+
+        Args:
+            block_period (Optional[int]): Block period input value.
+        """
+        if block_period and not 1 <= block_period <= 600:
+            raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
+
     @abstractmethod
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -1701,6 +2179,19 @@ class ClientV1(Client):
             Union[int,str]: Error value.
         """
         return error["msg"]
+
+    def validate_ip_list_member(self, args: dict[str, Any]):
+        """IP list member args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+        super().validate_ip_list_member(args)
+        if args.get("type") and args["type"] == "Allow Only Ip":
+            raise ValueError(ErrorMessage.ALLOW_IP_V1.value)
 
     def get_object_id(
         self,
@@ -2942,6 +3433,163 @@ class ClientV2(Client):
             str: Member ID
         """
         return create_response["results"]["id"]
+
+    def validate_geo_ip_group(self, args: dict[str, Any]):
+        """Geo IP Group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+        super().validate_geo_ip_group(args)
+        block_period = arg_to_number(args.get("block_period"))
+        if block_period and not 1 <= block_period <= 600:
+            raise ValueError(ErrorMessage.BLOCK_PERIOD.value)
+
+    def validate_server_policy(self, args: dict[str, Any]):
+        """Validate argument for server policy.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Returns:
+            CommandResults: outputs, readable outputs and raw response for XSOAR.
+        """
+        super().validate_server_policy(args)
+        scripting = args.get("scripting")
+        if args.get("scripting") and args["scripting"] not in ["enable", "disable"]:
+            raise ValueError(ErrorMessage.SCRIPTING.value)
+        scripting_list = args.get("scripting_list")
+        if scripting == "enable" and not scripting_list:
+            raise ValueError(ErrorMessage.SCRIPTING_LIST.value)
+        if args.get("certificate_type") and args["certificate_type"] not in [
+            "Local",
+            "Multi Certificate",
+            "Letsencrypt",
+        ]:
+            raise ValueError(ErrorMessage.CERTIFICATE_TYPE.value)
+        if args.get("client_real_ip") and args["client_real_ip"] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.CLIENT_REAL_IP.value)
+        if args.get("match_once") and args["match_once"] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.MATCH_ONCE.value)
+        if args.get("monitor_mode") and args["monitor_mode"] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.MONITOR_MODE.value)
+        if args.get("redirect_to_https") and args["redirect_to_https"] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.REDIRECT_2_HTTPS.value)
+        if args.get("retry_on") and args["retry_on"] not in ["enable", "disable"]:
+            raise ValueError(ErrorMessage.RETRY_ON.value)
+        if args.get("retry_on_http_layer") and args["retry_on_http_layer"] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.RETRY_ON_HTTP_LAYER.value)
+        if args.get("retry_on_connect_failure") and args[
+            "retry_on_connect_failure"
+        ] not in ["enable", "disable"]:
+            raise ValueError(ErrorMessage.RETRY_ON_CONNECT_FAILURE.value)
+        if args.get("syn_cookie") and args["syn_cookie"] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.SYN_COOKIE.value)
+        if args.get("url_case_sensitivity") and args["url_case_sensitivity"] not in [
+            "enable",
+            "disable",
+        ]:
+            raise ValueError(ErrorMessage.URL_CASE_SENSITIVITY.value)
+        half_open_thresh = arg_to_number(args.get("half_open_thresh"))
+        if half_open_thresh and not 10 <= half_open_thresh <= 10000:
+            raise ValueError(ErrorMessage.HALF_OPEN_THRESH.value)
+        arg_to_number(args.get("retry_on_cache_size"))
+        retry_times_on_connect_failure = arg_to_number(
+            args.get("retry_times_on_connect_failure")
+        )
+        if (
+            retry_times_on_connect_failure
+            and not 1 <= retry_times_on_connect_failure <= 5
+        ):
+            raise ValueError(ErrorMessage.RETRY_TIMES_ON_CONNECT.value)
+        retry_times_on_http_layer = arg_to_number(args.get("retry_times_on_http_layer"))
+        if retry_times_on_http_layer and not 1 <= retry_times_on_http_layer <= 5:
+            raise ValueError(ErrorMessage.RETRY_TIMES_ON_HTTP.value)
+        retry_on_http_response_codes = [
+            arg_to_number(code)
+            for code in argToList(args.get("retry_on_http_response_codes"))
+        ]
+        if not set(retry_on_http_response_codes).issubset(
+            [404, 408, 500, 501, 502, 503, 504]
+        ):
+            raise ValueError(ErrorMessage.RETRY_ON_HTTP_RESPONSE_CODES.value)
+
+    def validate_custom_whitelist(
+        self, args: dict[str, Any], member_type: str | None = None
+    ):
+        """Custom whitelist member args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            DemistoException: Errors.
+        """
+        super().validate_custom_whitelist(args, member_type)
+        if args.get("request_url_status") == "enable" and not args.get("request_url"):
+            raise ValueError(ErrorMessage.REQUEST_URL_INSERT.value)
+        if args.get("domain_status") == "enable" and not args.get("domain"):
+            raise ValueError(ErrorMessage.DOMAIN_INSERT.value)
+        if args.get("value_status") == "enable" and not args.get("value"):
+            raise ValueError(ErrorMessage.VALUE_INSERT.value)
+
+        if member_type == "Parameter":
+            if args.get("name_type") and args["name_type"] not in [
+                "Simple String",
+                "Regular Expression",
+            ]:
+                raise ValueError(ErrorMessage.NAME_TYPE.value)
+            if args.get("request_status") and args["request_status"] == "enable":
+                if args.get("request_type") and args["request_type"] not in [
+                    "Simple String",
+                    "Regular Expression",
+                ]:
+                    raise ValueError(ErrorMessage.REQUEST_TYPE.value)
+                if (
+                    args.get("request_type") == "Simple String"
+                    and args.get("request_url")
+                    and args["request_url"][0] != "/"
+                ):
+                    raise ValueError(ErrorMessage.REQUEST_URL.value)
+            if args.get("domain_status") and args["domain_status"] == "enable":
+                if args.get("domain_type") and args["domain_type"] not in [
+                    "Simple String",
+                    "Regular Expression",
+                ]:
+                    raise ValueError(ErrorMessage.DOMAIN_TYPE.value)
+        if member_type == "Header Field":
+            if args.get("header_name_type") and args["header_name_type"] not in [
+                "Simple String",
+                "Regular Expression",
+            ]:
+                raise ValueError(ErrorMessage.HEADER_NAME_TYPE.value)
+            if args.get("value_status") and args["value_status"] == "enable":
+                if args.get("header_value_type") and args["header_value_type"] not in [
+                    "Simple String",
+                    "Regular Expression",
+                ]:
+                    raise ValueError(ErrorMessage.HEADER_VALUE_TYPE.value)
 
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -4509,23 +5157,6 @@ class ClientV2(Client):
         )
 
 
-def validate_protected_hostname_group(args: dict[str, Any]):
-    """Protected hostname group args validator.
-
-    Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Raises:
-        DemistoException: Errors.
-    """
-    if args.get("default_action") and args["default_action"] not in [
-        "Allow",
-        "Deny",
-        "Deny (no log)",
-    ]:
-        raise ValueError(ErrorMessage.DEFAULT_ACTION.value)
-
-
 def protected_hostname_group_create_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -4538,7 +5169,7 @@ def protected_hostname_group_create_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_protected_hostname_group(args=args)
+    client.validate_protected_hostname_group(args=args)
     name = args["name"]
     response = client.protected_hostname_create_request(
         name=name, default_action=args["default_action"]
@@ -4564,7 +5195,7 @@ def protected_hostname_group_update_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_protected_hostname_group(args=args)
+    client.validate_protected_hostname_group(args=args)
     name = args["name"]
     response = client.protected_hostname_update_request(
         name=name, default_action=args.get("default_action")
@@ -4646,26 +5277,6 @@ def protected_hostname_group_list_command(
     return command_results
 
 
-def validate_protected_hostname_member(args: dict[str, Any]):
-    """Protected hostname member args validator.
-
-    Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Raises:
-        DemistoException: Errors.
-    """
-    if args.get("action") and args["action"] not in ["Allow", "Deny", "Deny (no log)"]:
-        raise ValueError(ErrorMessage.ACTION.value)
-    if args.get("ignore_port") and args["ignore_port"] not in ["enable", "disable"]:
-        raise ValueError(ErrorMessage.IGNORE_PORT.value)
-    if args.get("include_subdomains") and args["include_subdomains"] not in [
-        "enable",
-        "disable",
-    ]:
-        raise ValueError(ErrorMessage.INCLUDE_SUBDOMAINS.value)
-
-
 def protected_hostname_member_create_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -4678,7 +5289,7 @@ def protected_hostname_member_create_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_protected_hostname_member(args=args)
+    client.validate_protected_hostname_member(args=args)
     name = args["group_name"]
     host = args["host"]
     response = client.protected_hostname_member_create_request(
@@ -4717,7 +5328,7 @@ def protected_hostname_member_update_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_protected_hostname_member(args=args)
+    client.validate_protected_hostname_member(args=args)
     group_name = args["group_name"]
     member_id = args["member_id"]
     # Get exist settings from API version 1
@@ -4825,41 +5436,6 @@ def protected_hostname_member_list_command(
     return command_results
 
 
-def validate_ip_list_group(client: Client, args: dict[str, Any]):
-    """IP list group args validator.
-
-    Args:
-        client (Client): FortiwebVM API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Raises:
-        ValueError: Errors.
-    """
-
-    block_period = arg_to_number(args.get("block_period"))
-    if isinstance(client, ClientV2) and block_period and not 1 <= block_period <= 600:
-        raise ValueError(ErrorMessage.BLOCK_PERIOD.value)
-
-    if args.get("action") and args["action"] not in [
-        "Alert deny",
-        "Block period",
-        "Deny (no log)",
-    ]:
-        raise ValueError(ErrorMessage.IP_ACTION.value)
-    if args.get("severity") and args["severity"] not in [
-        "High",
-        "Medium",
-        "Low",
-        "Info",
-    ]:
-        raise ValueError(ErrorMessage.SEVERITY.value)
-    if args.get("ignore_x_forwarded_for") and args["ignore_x_forwarded_for"] not in [
-        "enable",
-        "disable",
-    ]:
-        raise ValueError(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
-
-
 def ip_list_group_create_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -4872,7 +5448,7 @@ def ip_list_group_create_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_ip_list_group(client, args)
+    client.validate_ip_list_group(args)
     group_name = args["name"]
     response = client.ip_list_group_create_request(
         group_name=group_name,
@@ -4907,7 +5483,7 @@ def ip_list_group_update_command(
     """
     if not isinstance(client, ClientV2):
         raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
-    validate_ip_list_group(client, args)
+    client.validate_ip_list_group(args)
     group_name = args["name"]
     response = client.ip_list_group_update_request(
         group_name=group_name,
@@ -4985,45 +5561,6 @@ def ip_list_group_list_command(client: Client, args: dict[str, Any]) -> CommandR
     return command_results
 
 
-def validate_ip_list_member(client: Client, args: dict[str, Any]):
-    """IP list member args validator.
-
-    Args:
-        client (Client): FortiwebVM API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Raises:
-        ValueError: Errors.
-    """
-    if (
-        client.version == ClientV1.API_VER
-        and args.get("type")
-        and args["type"] == "Allow Only Ip"
-    ):
-        raise ValueError(ErrorMessage.ALLOW_IP_V1.value)
-    if args.get("type") and args["type"] not in [
-        "Allow Only Ip",
-        "Black IP",
-        "Trust IP",
-    ]:
-        raise ValueError(ErrorMessage.TYPE.value)
-    if args.get("severity") and args["severity"] not in [
-        "High",
-        "Medium",
-        "Low",
-        "Info",
-    ]:
-        raise ValueError(ErrorMessage.SEVERITY.value)
-    if (
-        (ip := args.get("ip_address"))
-        and not re.match(ipv4Regex, ip)
-        and not re.match(ipv6Regex, ip)
-        and not re.match(ipv4Regex + "-" + ipv4Regex, ip)
-        and not re.match(ipv6Regex + "-" + ipv6Regex, ip)
-    ):
-        raise ValueError(f"{ip} {ErrorMessage.IP.value}")
-
-
 def ip_list_member_create_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -5036,7 +5573,7 @@ def ip_list_member_create_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_ip_list_member(client, args)
+    client.validate_ip_list_member(args)
     group_name = args["group_name"]
     ip_address = args["ip_address"]
     response = client.ip_list_member_create_request(
@@ -5076,7 +5613,7 @@ def ip_list_member_update_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    validate_ip_list_member(client, args)
+    client.validate_ip_list_member(args)
     group_name = args["group_name"]
     member_id = args["member_id"]
     # Get exist settings from API version 1
@@ -5171,28 +5708,6 @@ def ip_list_member_list_command(client: Client, args: dict[str, Any]) -> Command
     return command_results
 
 
-def validate_http_content_routing_member(args: dict[str, Any]):
-    """HTTP content routing member args validator.
-
-    Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Raises:
-        DemistoException: Errors.
-    """
-    if args.get("is_default") and args["is_default"] not in ["yes", "no"]:
-        raise ValueError(ErrorMessage.IS_DEFAULT.value)
-    if args.get("inherit_web_protection_profile") and args[
-        "inherit_web_protection_profile"
-    ] not in [
-        "enable",
-        "disable",
-    ]:
-        raise ValueError(ErrorMessage.INHERIT_WEB_PROTECTION_PROFILE.value)
-    if args.get("status") and args["status"] not in ["enable", "disable"]:
-        raise ValueError(ErrorMessage.STATUS.value)
-
-
 def http_content_routing_member_add_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -5205,7 +5720,7 @@ def http_content_routing_member_add_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_http_content_routing_member(args=args)
+    client.validate_http_content_routing_member(args=args)
     policy_name = args["policy_name"]
     http_content_routing_policy = args["http_content_routing_policy"]
     response = client.http_content_routing_member_add_request(
@@ -5245,7 +5760,7 @@ def http_content_routing_member_update_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_http_content_routing_member(args=args)
+    client.validate_http_content_routing_member(args=args)
     policy_name = args["policy_name"]
     id = args["id"]
     # Get exist settings from API version 1
@@ -5354,39 +5869,6 @@ def http_content_routing_member_list_command(
     return command_results
 
 
-def validate_geo_ip_group(client: Client, args: dict[str, Any]):
-    """Geo IP Group args validator.
-
-    Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
-        client (Client): FortiwebVM API client.
-
-    Raises:
-        ValueError: Errors.
-    """
-    block_period = arg_to_number(args.get("block_period"))
-    if isinstance(client, ClientV2) and block_period and not 1 <= block_period <= 600:
-        raise ValueError(ErrorMessage.BLOCK_PERIOD.value)
-    if args.get("action") and args["action"] not in [
-        "Alert deny",
-        "Block period",
-        "Deny (no log)",
-    ]:
-        raise ValueError(ErrorMessage.IP_ACTION.value)
-    if args.get("severity") and args["severity"] not in [
-        "High",
-        "Medium",
-        "Low",
-        "Info",
-    ]:
-        raise ValueError(ErrorMessage.SEVERITY.value)
-    if args.get("ignore_x_forwarded_for") and args["ignore_x_forwarded_for"] not in [
-        "enable",
-        "disable",
-    ]:
-        raise ValueError(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
-
-
 def geo_ip_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a Geo IP group.
 
@@ -5398,7 +5880,7 @@ def geo_ip_group_create_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    validate_geo_ip_group(client, args)
+    client.validate_geo_ip_group(args)
     name = args["name"]
     trigger_policy = args.get("trigger_policy")
     severity = args.get("severity", "Low")
@@ -5435,7 +5917,7 @@ def geo_ip_group_update_command(client: Client, args: dict[str, Any]) -> Command
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_geo_ip_group(client, args)
+    client.validate_geo_ip_group(args)
     name = args["name"]
     # Get exist settings from API version 1
     args = get_object_data_before_update(
@@ -5447,7 +5929,7 @@ def geo_ip_group_update_command(client: Client, args: dict[str, Any]) -> Command
         requested_version=ClientV1.API_VER,
     )
     block_period = arg_to_number(args.get("block_period"))
-    validate_block_period(client.version, block_period)
+    client.validate_block_period(block_period)
     response = client.geo_ip_group_update_request(
         name=name,
         trigger_policy=args.get("trigger_policy"),
@@ -5533,262 +6015,6 @@ def geo_ip_group_list_command(client: Client, args: dict[str, Any]) -> CommandRe
     return command_results
 
 
-def validate_geo_ip_member(args: dict[str, Any]):
-    """Geo IP Group args validator.
-
-    Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Raises:
-        DemistoException: Errors.
-    """
-    data = [
-        "Afghanistan",
-        "Aland Islands",
-        "Albania",
-        "Algeria",
-        "American Samoa",
-        "Andorra",
-        "Angola",
-        "Anguilla",
-        "Antarctica",
-        "Antigua And Barbuda",
-        "Argentina",
-        "Armenia",
-        "Aruba",
-        "Australia",
-        "Austria",
-        "Azerbaijan",
-        "Bahamas",
-        "Bahrain",
-        "Bangladesh",
-        "Barbados",
-        "Belarus",
-        "Belgium",
-        "Belize",
-        "Benin",
-        "Bermuda",
-        "Bhutan",
-        "Bolivia",
-        "Bonaire Saint Eustatius And Saba",
-        "Bosnia And Herzegovina",
-        "Botswana",
-        "Brazil",
-        "British Indian Ocean Territory",
-        "British Virgin Islands",
-        "Brunei Darussalam",
-        "Bulgaria",
-        "Burkina Faso",
-        "Burundi",
-        "Cambodia",
-        "Cameroon",
-        "Canada",
-        "Cape Verde",
-        "Cayman Islands",
-        "Central African Republic",
-        "Chad",
-        "Chile",
-        "China",
-        "Colombia",
-        "Comoros",
-        "Congo",
-        "Cook Islands",
-        "Costa Rica",
-        "Cote D Ivoire",
-        "Croatia",
-        "Cuba",
-        "Curacao",
-        "Cyprus",
-        "Czech Republic",
-        "Democratic People S Republic Of Korea",
-        "Democratic Republic Of The Congo",
-        "Denmark",
-        "Djibouti",
-        "Dominica",
-        "Dominican Republic",
-        "Ecuador",
-        "Egypt",
-        "El Salvador",
-        "Equatorial Guinea",
-        "Eritrea",
-        "Estonia",
-        "Ethiopia",
-        "Falkland Islands  Malvinas",
-        "Faroe Islands",
-        "Federated States Of Micronesia",
-        "Fiji",
-        "Finland",
-        "France",
-        "French Guiana",
-        "French Polynesia",
-        "Gabon",
-        "Gambia",
-        "Georgia",
-        "Germany",
-        "Ghana",
-        "Gibraltar",
-        "Greece",
-        "Greenland",
-        "Grenada",
-        "Guadeloupe",
-        "Guam",
-        "Guatemala",
-        "Guernsey",
-        "Guinea",
-        "Guinea'issau",
-        "Guyana",
-        "Haiti",
-        "Honduras",
-        "Hong Kong",
-        "Hungary",
-        "Iceland",
-        "India",
-        "Indonesia",
-        "Iran",
-        "Iraq",
-        "Ireland",
-        "Isle Of Man",
-        "Israel",
-        "Italy",
-        "Jamaica",
-        "Japan",
-        "Jersey",
-        "Jordan",
-        "Kazakhstan",
-        "Kenya",
-        "Kiribati",
-        "Kosovo",
-        "Kuwait",
-        "Kyrgyzstan",
-        "Lao People S Democratic Republic",
-        "Latvia",
-        "Lebanon",
-        "Lesotho",
-        "Liberia",
-        "Libya",
-        "Liechtenstein",
-        "Lithuania",
-        "Luxembourg",
-        "Macao",
-        "Macedonia",
-        "Madagascar",
-        "Malawi",
-        "Malaysia",
-        "Maldives",
-        "Mali",
-        "Malta",
-        "Marshall Islands",
-        "Martinique",
-        "Mauritania",
-        "Mauritius",
-        "Mayotte",
-        "Mexico",
-        "Moldova",
-        "Monaco",
-        "Mongolia",
-        "Montenegro",
-        "Montserrat",
-        "Morocco",
-        "Mozambique",
-        "Myanmar",
-        "Namibia",
-        "Nauru",
-        "Nepal",
-        "Netherlands",
-        "New Caledonia",
-        "New Zealand",
-        "Nicaragua",
-        "Niger",
-        "Nigeria",
-        "Niue",
-        "Norfolk Island",
-        "Northern Mariana Islands",
-        "Norway",
-        "Oman",
-        "Pakistan",
-        "Palau",
-        "Palestine",
-        "Panama",
-        "Papua New Guinea",
-        "Paraguay",
-        "Peru",
-        "Philippines",
-        "Poland",
-        "Portugal",
-        "Puerto Rico",
-        "Qatar",
-        "Republic Of Korea",
-        "Reunion",
-        "Romania",
-        "Russian Federation",
-        "Rwanda",
-        "Saint Bartelemey",
-        "Saint Kitts And Nevis",
-        "Saint Lucia",
-        "Saint Martin",
-        "Saint Pierre And Miquelon",
-        "Saint Vincent And The Grenadines",
-        "Samoa",
-        "San Marino",
-        "Sao Tome And Principe",
-        "Saudi Arabia",
-        "Senegal",
-        "Serbia",
-        "Seychelles",
-        "Sierra Leone",
-        "Singapore",
-        "Sint Maarten",
-        "Slovakia",
-        "Slovenia",
-        "Solomon Islands",
-        "Somalia",
-        "South Africa",
-        "South Georgia And The South Sandwich Islands",
-        "South Sudan",
-        "Spain",
-        "Sri Lanka",
-        "Sudan",
-        "Suriname",
-        "Swaziland",
-        "Sweden",
-        "Switzerland",
-        "Syria",
-        "Taiwan",
-        "Tajikistan",
-        "Tanzania",
-        "Thailand",
-        "Timor'este",
-        "Togo",
-        "Tokelau",
-        "Tonga",
-        "Trinidad And Tobago",
-        "Tunisia",
-        "Turkey",
-        "Turkmenistan",
-        "Turks And Caicos Islands",
-        "Tuvalu",
-        "Uganda",
-        "Ukraine",
-        "United Arab Emirates",
-        "United Kingdom",
-        "United States",
-        "Uruguay",
-        "U S  Virgin Islands",
-        "Uzbekistan",
-        "Vanuatu",
-        "Vatican",
-        "Venezuela",
-        "Vietnam",
-        "Wallis And Futuna",
-        "Yemen",
-        "Zambia",
-        "Zimbabwe",
-    ]
-    countries = argToList(args["countries"])
-    if not set(countries).issubset(data):
-        raise DemistoException(ErrorMessage.COUNTRIES.value)
-
-
 def geo_ip_member_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Add a Geo IP member.
 
@@ -5799,7 +6025,7 @@ def geo_ip_member_add_command(client: Client, args: dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_geo_ip_member(args=args)
+    client.validate_geo_ip_member(args=args)
     group_name = args["group_name"]
     countries = argToList(args["countries"])
     all_countries = countries
@@ -6309,108 +6535,6 @@ def certificate_intermediate_group_list_command(
     return command_results
 
 
-def validate_server_policy(version: str, args: dict[str, Any]):
-    """Validate argument for server policy.
-
-    Args:
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
-    """
-    if not args.get("name"):
-        raise ValueError(ErrorMessage.NAME_INSERT.value)
-    if not args.get("deployment_mode"):
-        raise ValueError(ErrorMessage.DEPLOYMENT_MODE_INSERT.value)
-    if not args.get("virtual_server"):
-        raise ValueError(ErrorMessage.VIRTUAL_SERVER.value)
-
-    http_service = args.get("http_service")
-    https_service = args.get("https_service")
-    if not (http_service or https_service):
-        raise ValueError(ErrorMessage.PROTOCOL.value)
-    if args.get("deployment_mode") and args["deployment_mode"] not in [
-        "HTTP Content Routing",
-        "Single Server/Server Balance",
-    ]:
-        raise ValueError(ErrorMessage.DEPLOYMENT_MODE.value)
-    if args["deployment_mode"] == "Single Server/Server Balance" and not args.get(
-        "server_pool"
-    ):
-        raise ValueError(ErrorMessage.SERVER_POOL.value)
-    if version == ClientV2.API_VER:
-        scripting = args.get("scripting")
-        if args.get("scripting") and args["scripting"] not in ["enable", "disable"]:
-            raise ValueError(ErrorMessage.SCRIPTING.value)
-        scripting_list = args.get("scripting_list")
-        if scripting == "enable" and not scripting_list:
-            raise ValueError(ErrorMessage.SCRIPTING_LIST.value)
-        if args.get("certificate_type") and args["certificate_type"] not in [
-            "Local",
-            "Multi Certificate",
-            "Letsencrypt",
-        ]:
-            raise ValueError(ErrorMessage.CERTIFICATE_TYPE.value)
-        if args.get("client_real_ip") and args["client_real_ip"] not in [
-            "enable",
-            "disable",
-        ]:
-            raise ValueError(ErrorMessage.CLIENT_REAL_IP.value)
-        if args.get("match_once") and args["match_once"] not in ["enable", "disable"]:
-            raise ValueError(ErrorMessage.MATCH_ONCE.value)
-        if args.get("monitor_mode") and args["monitor_mode"] not in [
-            "enable",
-            "disable",
-        ]:
-            raise ValueError(ErrorMessage.MONITOR_MODE.value)
-        if args.get("redirect_to_https") and args["redirect_to_https"] not in [
-            "enable",
-            "disable",
-        ]:
-            raise ValueError(ErrorMessage.REDIRECT_2_HTTPS.value)
-        if args.get("retry_on") and args["retry_on"] not in ["enable", "disable"]:
-            raise ValueError(ErrorMessage.RETRY_ON.value)
-        if args.get("retry_on_http_layer") and args["retry_on_http_layer"] not in [
-            "enable",
-            "disable",
-        ]:
-            raise ValueError(ErrorMessage.RETRY_ON_HTTP_LAYER.value)
-        if args.get("retry_on_connect_failure") and args[
-            "retry_on_connect_failure"
-        ] not in ["enable", "disable"]:
-            raise ValueError(ErrorMessage.RETRY_ON_CONNECT_FAILURE.value)
-        if args.get("syn_cookie") and args["syn_cookie"] not in ["enable", "disable"]:
-            raise ValueError(ErrorMessage.SYN_COOKIE.value)
-        if args.get("url_case_sensitivity") and args["url_case_sensitivity"] not in [
-            "enable",
-            "disable",
-        ]:
-            raise ValueError(ErrorMessage.URL_CASE_SENSITIVITY.value)
-        half_open_thresh = arg_to_number(args.get("half_open_thresh"))
-        if half_open_thresh and not 10 <= half_open_thresh <= 10000:
-            raise ValueError(ErrorMessage.HALF_OPEN_THRESH.value)
-        arg_to_number(args.get("retry_on_cache_size"))
-        retry_times_on_connect_failure = arg_to_number(
-            args.get("retry_times_on_connect_failure")
-        )
-        if (
-            retry_times_on_connect_failure
-            and not 1 <= retry_times_on_connect_failure <= 5
-        ):
-            raise ValueError(ErrorMessage.RETRY_TIMES_ON_CONNECT.value)
-        retry_times_on_http_layer = arg_to_number(args.get("retry_times_on_http_layer"))
-        if retry_times_on_http_layer and not 1 <= retry_times_on_http_layer <= 5:
-            raise ValueError(ErrorMessage.RETRY_TIMES_ON_HTTP.value)
-        retry_on_http_response_codes = [
-            arg_to_number(code)
-            for code in argToList(args.get("retry_on_http_response_codes"))
-        ]
-        if not set(retry_on_http_response_codes).issubset(
-            [404, 408, 500, 501, 502, 503, 504]
-        ):
-            raise ValueError(ErrorMessage.RETRY_ON_HTTP_RESPONSE_CODES.value)
-
-
 def read_json_policy(json_template_id: str, name: str) -> dict[str, Any]:
     """Read JSON file by json id.
 
@@ -6443,7 +6567,7 @@ def server_policy_create_command(
     name = args["name"]
     if json_template_id := args.get("json_template_id"):
         args.update(read_json_policy(json_template_id, name))
-    validate_server_policy(client.version, args)
+    client.validate_server_policy(args)
     response = client.server_policy_create_request(
         name=args["name"],
         deployment_mode=args["deployment_mode"],
@@ -6520,7 +6644,7 @@ def server_policy_update_command(
         _parser=client.parser.parse_server_policy,
         by_key="name" if client.version == ClientV2.API_VER else None,
     )
-    validate_server_policy(client.version, args)
+    client.validate_server_policy(args)
     response = client.server_policy_update_request(
         name=args["name"],
         deployment_mode=args.get("deployment_mode"),
@@ -6639,81 +6763,6 @@ def server_policy_list_command(client: Client, args: dict[str, Any]) -> CommandR
     return command_results
 
 
-def validate_custom_whitelist(
-    version: str, args: dict[str, Any], member_type: str | None = None
-):
-    """Custom whitelist member args validator.
-
-    Args:
-        client (Client): FortiwebVM API client.
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Raises:
-        DemistoException: Errors.
-    """
-    if version == ClientV2.API_VER:
-        if args.get("request_url_status") == "enable" and not args.get("request_url"):
-            raise ValueError(ErrorMessage.REQUEST_URL_INSERT.value)
-        if args.get("domain_status") == "enable" and not args.get("domain"):
-            raise ValueError(ErrorMessage.DOMAIN_INSERT.value)
-        if args.get("value_status") == "enable" and not args.get("value"):
-            raise ValueError(ErrorMessage.VALUE_INSERT.value)
-    if args.get("type") and args["type"] != member_type:
-        raise ValueError(
-            f"You can't update {args['type']} member with {member_type} update command."
-        )
-    if member_type == "URL":
-        if (
-            args.get("request_type") == "Simple String"
-            and args.get("request_url")
-            and args["request_url"][0] != "/"
-        ):
-            raise ValueError(ErrorMessage.REQUEST_URL.value)
-        if args.get("request_type") and args["request_type"] not in [
-            "Simple String",
-            "Regular Expression",
-        ]:
-            raise ValueError(ErrorMessage.REQUEST_TYPE.value)
-    if member_type == "Parameter" and version == ClientV2.API_VER:
-        if args.get("name_type") and args["name_type"] not in [
-            "Simple String",
-            "Regular Expression",
-        ]:
-            raise ValueError(ErrorMessage.NAME_TYPE.value)
-        if args.get("request_status") and args["request_status"] == "enable":
-            if args.get("request_type") and args["request_type"] not in [
-                "Simple String",
-                "Regular Expression",
-            ]:
-                raise ValueError(ErrorMessage.REQUEST_TYPE.value)
-            if (
-                args.get("request_type") == "Simple String"
-                and args.get("request_url")
-                and args["request_url"][0] != "/"
-            ):
-                raise ValueError(ErrorMessage.REQUEST_URL.value)
-        if args.get("domain_status") and args["domain_status"] == "enable":
-            if args.get("domain_type") and args["domain_type"] not in [
-                "Simple String",
-                "Regular Expression",
-            ]:
-                raise ValueError(ErrorMessage.DOMAIN_TYPE.value)
-    if member_type == "Header Field" and version == ClientV2.API_VER:
-        if version == ClientV1.API_VER:
-            raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
-        if args.get("header_name_type") and args["header_name_type"] not in [
-            "Simple String",
-            "Regular Expression",
-        ]:
-            raise ValueError(ErrorMessage.HEADER_NAME_TYPE.value)
-        if args.get("value_status") and args["value_status"] == "enable":
-            if args.get("header_value_type") and args["header_value_type"] not in [
-                "Simple String",
-                "Regular Expression",
-            ]:
-                raise ValueError(ErrorMessage.HEADER_VALUE_TYPE.value)
-
-
 def custom_whitelist_url_create_command(
     client: Client, args: dict[str, Any]
 ) -> CommandResults:
@@ -6727,7 +6776,7 @@ def custom_whitelist_url_create_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    validate_custom_whitelist(version=client.version, args=args, member_type="URL")
+    client.validate_custom_whitelist(args=args, member_type="URL")
     request_url = args["request_url"]
     response = client.custom_whitelist_url_create_request(
         request_type=args["request_type"], request_url=request_url
@@ -6772,7 +6821,7 @@ def custom_whitelist_url_update_command(
         args=args,
         _parser=client.parser.parse_custom_whitelist,
     )
-    validate_custom_whitelist(version=client.version, args=args, member_type="URL")
+    client.validate_custom_whitelist(args=args, member_type="URL")
     response = client.custom_whitelist_url_update_request(
         id=id,
         request_type=args.get("request_type"),
@@ -6802,9 +6851,7 @@ def custom_whitelist_parameter_create_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    validate_custom_whitelist(
-        version=client.version, args=args, member_type="Parameter"
-    )
+    client.validate_custom_whitelist(args=args, member_type="Parameter")
     name = args["name"]
     response = client.custom_whitelist_parameter_create_request(
         name=name,
@@ -6898,9 +6945,7 @@ def custom_whitelist_parameter_update_command(
         args=args,
         _parser=client.parser.parse_custom_whitelist,
     )
-    validate_custom_whitelist(
-        version=client.version, args=args, member_type="Parameter"
-    )
+    client.validate_custom_whitelist(args=args, member_type="Parameter")
     response = client.custom_whitelist_parameter_update_request(
         id=id,
         name=args.get("name"),
@@ -6935,7 +6980,7 @@ def custom_whitelist_cookie_create_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    validate_custom_whitelist(version=client.version, args=args, member_type="Cookie")
+    client.validate_custom_whitelist(args=args, member_type="Cookie")
     name = args["name"]
     response = client.custom_whitelist_cookie_create_request(
         name=name, domain=args.get("domain"), path=args.get("path")
@@ -6976,7 +7021,7 @@ def custom_whitelist_cookie_update_command(
         args=args,
         _parser=client.parser.parse_custom_whitelist,
     )
-    validate_custom_whitelist(version=client.version, args=args, member_type="Cookie")
+    client.validate_custom_whitelist(args=args, member_type="Cookie")
     response = client.custom_whitelist_cookie_update_request(
         id=id,
         name=args.get("name"),
@@ -7008,9 +7053,7 @@ def custom_whitelist_header_field_create_command(
     """
     if not isinstance(client, ClientV2):
         raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
-    validate_custom_whitelist(
-        version=client.version, args=args, member_type="Header Field"
-    )
+    client.validate_custom_whitelist(args=args, member_type="Header Field")
     name = args["name"]
     response = client.custom_whitelist_header_field_create_request(
         header_name_type=args["header_name_type"],
@@ -7058,9 +7101,7 @@ def custom_whitelist_header_field_update_command(
         args=args,
         _parser=client.parser.parse_custom_whitelist,
     )
-    validate_custom_whitelist(
-        version=client.version, args=args, member_type="Header Field"
-    )
+    client.validate_custom_whitelist(args=args, member_type="Header Field")
     response = client.custom_whitelist_header_field_update_request(
         id=id,
         header_name_type=args.get("header_name_type"),
@@ -7311,7 +7352,7 @@ def paginate_results(
     if page and page_size:
         if page_size < len(response):
             first_item = page_size * (page - 1)
-            output = response[first_item: (first_item + page_size)]
+            output = response[first_item : (first_item + page_size)]
         else:
             output = response[:page_size]
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
@@ -7401,7 +7442,11 @@ def test_module(client: Client) -> str:
     try:
         client.protected_hostname_list_request()
     except DemistoException as error:
-        if error.res and error.res.status_code and error.res.status_code == HTTPStatus.UNAUTHORIZED:
+        if (
+            error.res
+            and error.res.status_code
+            and error.res.status_code == HTTPStatus.UNAUTHORIZED
+        ):
             return "Authorization Error: make sure API key is correctly set"
         raise error
     except Exception as error:
@@ -7468,17 +7513,6 @@ def generate_simple_context_data_command_results(
     )
 
     return command_results
-
-
-def validate_block_period(version: str, block_period: int | None):
-    """Validate the block period argument.
-
-    Args:
-        version (str): Client version.
-        block_period (Optional[int]): Block period input value.
-    """
-    if version == ClientV2.API_VER and block_period and not 1 <= block_period <= 600:
-        raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
 
 
 def main() -> None:
