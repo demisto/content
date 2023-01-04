@@ -930,10 +930,11 @@ def test_search_command_with_query_dsl(mocker):
     """
     import Elasticsearch_v2
     Elasticsearch_v2.FETCH_INDEX = 'index from parameter'
+    index_from_arg = 'index from arg'
     mocker.patch.object(
-        demisto, 'args', return_value={'index': 'index from arg', 'query_dsl': 'test', 'size': '5', 'page': '0'}
+        demisto, 'args', return_value={'index': index_from_arg, 'query_dsl': 'test', 'size': '5', 'page': '0'}
     )
     search_mock = mocker.patch.object(Elasticsearch_v2.Elasticsearch, 'search', return_value=ES_V7_RESPONSE)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
     Elasticsearch_v2.search_command({})
-    assert search_mock.call_args.kwargs['index'] == 'index from arg'
+    assert search_mock.call_args.kwargs['index'] == index_from_arg
