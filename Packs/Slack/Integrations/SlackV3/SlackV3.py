@@ -2727,7 +2727,7 @@ def main() -> None:
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(f'{command_name} completed. loop: {loop_info()}')  # type: ignore
+        demisto.info(f'{command_name} completed.')  # type: ignore
         if EXTENSIVE_LOGGING:
             print_thread_dump()
 
