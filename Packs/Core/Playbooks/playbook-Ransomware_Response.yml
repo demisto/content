@@ -919,20 +919,37 @@ tasks:
       id: d7257ff3-fcc8-4128-8482-3a7e19bcf935
       version: -1
       name: Enrichment for Verdict
-      description: This playbook checks prior alert closing reasons and performs enrichment
-        and prevalence checks on different IOC types. It then  returns the information
-        needed to establish the alert's verdict.
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
       brand: ""
+      description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert''s verdict.'
     nexttasks:
       '#none#':
       - "134"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
     scriptarguments:
       CloseReason:
-        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
-          Known Issue
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
       Domain:
         complex:
           root: alert
@@ -954,37 +971,16 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (initiatorsha256:${alert.initiatorsha256} or hostip:${alert.hostip})
-          and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        simple: (initiatorsha256:${alert.initiatorsha256} or hostip:${alert.hostip}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
         simple: "2"
-    separatecontext: true
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 360,
-          "y": 2490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: 909fea80-f6ff-4b07-820c-642e7aea6404
+    taskid: 447d8826-9ad3-4882-831b-27f329ef7f6e
     type: condition
     task:
-      id: 909fea80-f6ff-4b07-820c-642e7aea6404
+      id: 447d8826-9ad3-4882-831b-27f329ef7f6e
       version: -1
       name: Got possible verdict?
       description: Checks the verdict received from the Enrichment for Verdict sub-playbook.
@@ -1036,6 +1032,16 @@ tasks:
           right:
             value:
               simple: unTrusted
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     - label: False Positive
       condition:
       - - operator: isEqualString

@@ -557,11 +557,12 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
                 root: DBotScore
+                accessor: Score
             iscontext: true
           right:
             value:
