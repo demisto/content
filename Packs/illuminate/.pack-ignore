@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:Analyst1_image.png]
 ignore=IM111
+
+[file:illuminate_image.png]
+ignore=IM111
