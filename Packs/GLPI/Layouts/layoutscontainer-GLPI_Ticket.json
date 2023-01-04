@@ -809,5 +809,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.2.0",
-    "description": "GLPI Ticket Layout"
+    "description": "GLPI Ticket Layout",
+    "marketplaces": [
+        "marketplacev2"
+    ]
 }

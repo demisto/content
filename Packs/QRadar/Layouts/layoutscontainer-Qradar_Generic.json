@@ -1096,5 +1096,8 @@
   "system": false,
   "fromVersion": "6.0.0",
   "version": -1,
-  "description": ""
+  "description": "",
+  "marketplaces": [
+        "marketplacev2"
+  ]
 }
