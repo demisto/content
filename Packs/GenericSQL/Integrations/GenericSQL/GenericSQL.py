@@ -389,7 +389,7 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
 
         # for avoiding duplicate incidents
         if is_timestamp_and_id and record.get(params.get('column_name'), '').startswith(last_run.get('last_timestamp')):
-            if record.get(params.get('id_column'), '') in last_run.get('ids'):
+            if record.get(params.get('id_column'), '') in last_run.get('ids', []):
                 continue
 
         record['type'] = 'GenericSQL Record'
