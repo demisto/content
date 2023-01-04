@@ -86,7 +86,7 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
+      description: When     true, indicates that the employee's status is active in the
         3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand

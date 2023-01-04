@@ -951,6 +951,11 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             logging.debug("&&&&&&&&&&&&&&&& handling genericSQL")
         if pack_name == 'DeveloperTools':
             logging.debug("&&&&&&&&&&&&&&&& handling DeveloperTools")
+        if pack_name == 'DeprecatedContent':
+            logging.debug("&&&&&&&&&&&&&&&& handling DeprecatedContent")
+        else:
+            logging.debug(f"-------------- handling {pack_name}")
+
         try:
             logging.debug(f"^^^^^^^^^^^ pack status: {pack.status}")
             if (pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]) or pack.hidden:
@@ -958,7 +963,15 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 continue
             pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in
                                          pack.all_levels_dependencies] + [pack]
-            logging.debug(f"^^^^^^^^^^^ pack_and_its_dependencies: {pack_and_its_dependencies}")
+
+            pack_and_its_dependencies_names = []
+            for dep_name in pack.all_levels_dependencies:
+                try:
+                    pack_and_its_dependencies_names = packs_for_current_marketplace_dict.get(dep_name).name
+                except Exception:
+                    pass
+
+            logging.debug(f"^^^^^^^^^^^ pack_and_its_dependencies: {pack_and_its_dependencies_names}")
 
             pack_or_dependency_was_uploaded = any(dep_pack.status == PackStatus.SUCCESS.name for dep_pack in
                                                   pack_and_its_dependencies)
