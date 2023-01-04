@@ -37,4 +37,4 @@ xdm.event.type=coalesce(requestTypeAlter,requestType),
 xdm.source.cloud.region=ProtoLocation,
 xdm.target.resource.id=resourceID,
 xdm.target.resource.type=resourceType,
-xdm.intermediate.cloud.provider=if(_collector_type contains "GCP", XDM_CONST.CLOUD_PROVIDER_GCP,to_string(arrayindex(regextract(_collector_type,"(\w+)\s"),0)));
+xdm.source.cloud.provider=if(_collector_type contains "GCP", XDM_CONST.CLOUD_PROVIDER_GCP,to_string(arrayindex(regextract(_collector_type,"(\w+)\s"),0)));
