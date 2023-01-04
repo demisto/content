@@ -923,6 +923,65 @@ script:
     - contextPath: PrismaSase.Address.ip_netmask
       description: Address IP netmask.
       type: String
+  - arguments:
+    - default: false
+      description: A specific tag to return. If not specified, all tags will be returned.
+      name: tag_id
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: Prisma sase folder location for the tag.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+      defaultValue: Shared
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '10'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Results paging offset.
+      isArray: false
+      name: offset
+      required: false
+    - default: false
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      isArray: false
+      name: page_size
+      required: false
+    deprecated: false
+    description: List address objects.
+    execution: false
+    name: prisma-sase-tag-list
+    outputs:
+    - contextPath: PrismaSase.Tag
+      description: Found security rule.
+      type: Unknown
+    - contextPath: PrismaSase.Tag.id
+      description: Address description.
+      type: String
+    - contextPath: PrismaSase.Tag.name
+      description: Address folder.
+      type: String
+    - contextPath: PrismaSase.Tag.folder
+      description: Address FQDN.
+      type: String
+    - contextPath: PrismaSase.Tag.comments
+      description: Address ID.
+      type: String
   dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: false

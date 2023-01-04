@@ -358,7 +358,7 @@ class Client(BaseClient):
         )
 
     def get_security_rule_by_id(self, query_params, tsg_id, rule_id):
-        """GEt existing security rule
+        """Get existing security rule
         Args:
             query_params: Address object dictionary
             rule_id: Identifier of existing address to be edited
@@ -368,6 +368,41 @@ class Client(BaseClient):
         """
         uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
         headers = self.access_token_to_headers(tsg_id)
+
+        return self._http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params,
+            headers=headers
+        )
+
+    def get_tag_by_id(self, query_params, tag_id):
+        """Get existing tag
+        Args:
+            query_params: Address object dictionary
+            tag_id: Identifier of existing tag to be edited
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}tags/{tag_id}'
+        headers = self.access_token_to_headers(self.default_tsg_id)
+
+        return self._http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params,
+            headers=headers
+        )
+
+    def list_tags(self, query_params):
+        """Get existing tag
+        Args:
+            query_params: Address object dictionary
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}tags'
+        headers = self.access_token_to_headers(self.default_tsg_id)
 
         return self._http_request(
             method="GET",
@@ -492,7 +527,7 @@ def test_module(client: Client) -> CommandResults:
 
 
 def create_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
+    """Command to create new Prisma Sase security rule within the given Folder, Position, and Tenant/TSG
     Args:
         client: Client object with request
         args: demisto.args()
@@ -518,7 +553,7 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def create_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new Prisma Access address object
+    """Command to create new Prisma Sase address object
     Args:
         client: Client object with request
         args: demisto.args()
@@ -551,7 +586,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def edit_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new Prisma Access address object
+    """Command to create new Prisma Sase address object
     Args:
         client: Client object with request
         args: demisto.args()
@@ -590,7 +625,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def delete_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete Prisma Access address object
+    """Command to delete Prisma Sase address object
     Args:
         client: Client object with request
         args: demisto.args()
@@ -611,7 +646,7 @@ def delete_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def list_address_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get address objects for a given Prisma Access Folder / Position
+    """Command to get address objects for a given Prisma Sase Folder / Position
     Args:
         client: Client object with request
         args: demisto.args()
@@ -655,7 +690,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete the specified security rule within the targeted Prisma Access tenant / TSG
+    """Command to delete the specified security rule within the targeted Prisma Sase tenant / TSG
     Args:
         client: Client object with request
         args: demisto.args()
@@ -712,7 +747,7 @@ def query_agg_monitor_api_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to Update / Edit an existing Prisma Access security rule
+    """Command to Update / Edit an existing Prisma Sase security rule
     Args:
         client: Client object with request
         args: demisto.args()
@@ -768,7 +803,7 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def list_security_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to Get all security rules for a given Prisma Access Folder / Position
+    """Command to Get all security rules for a given Prisma Sase Folder / Position
     Args:
         client: Client object with request
         args: demisto.args()
@@ -812,7 +847,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to list config jobs from Prisma Access
+    """Command to list config jobs from Prisma Sase
     Args:
         client: Client object with request
         args: demisto.args()
@@ -844,6 +879,45 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
         readable_output=tableToMarkdown('Config Job',
                                         outputs,
                                         headers=['id', 'type_str', 'status_str', 'result_str', 'start_ts', 'end_ts'],
+                                        headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to list config jobs from Prisma Sase
+        Args:
+            client: Client object with request
+            args: demisto.args()
+
+        Returns:
+            Outputs.
+        """
+    # TODO - add pagination
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    if tag_id := args.get('tag_id'):
+        raw_response = client.get_tag_by_id(query_params, tag_id)
+        outputs = raw_response
+    else:
+        if limit := arg_to_number(args.get('limit', SEARCH_LIMIT)):
+            query_params['limit'] = limit
+
+        if offset := arg_to_number(args.get('offset', 0)):
+            query_params['offset'] = offset
+
+        raw_response = client.list_tags(query_params)  # type: ignore
+        outputs = raw_response.get('data')
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Tags',
+                                        outputs,
+                                        headers=['id', 'name', 'folder', 'color', 'comments'],
                                         headerTransform=string_to_table_header),
         raw_response=raw_response
     )
@@ -887,7 +961,9 @@ def main():
         'prisma-sase-address-object-create': create_address_object_command,
         'prisma-sase-address-object-update': edit_address_object_command,
         'prisma-sase-address-object-delete': delete_address_object_command,
-        'prisma-sase-address-object-list': list_address_objects_command
+        'prisma-sase-address-object-list': list_address_objects_command,
+
+        'prisma-sase-tag-list': list_tags_command,
     }
 
     client = Client(
