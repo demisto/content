@@ -577,8 +577,8 @@ class Client(BaseClient):
     def get_field_value_list(self, field_id, args):
         cache = get_integration_context()
 
-        if cache['fieldValueList'].get(field_id):
-            return cache.get('fieldValueList').get(field_id)
+        # if cache['fieldValueList'].get(field_id):
+        #     return cache.get('fieldValueList').get(field_id)
 
         res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
 
@@ -596,7 +596,7 @@ class Client(BaseClient):
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
                 values_list: List[Dict[str, Any]] = []
                 for value in values_list_res['RequestedObject'].get('Children'):
-                    self.get_field_value_list_helper(value, values_list, args.get('depth'))
+                    self.get_field_value_list_helper(value, values_list, arg_to_number(args.get('depth')))
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
 
                 cache['fieldValueList'][field_id] = field_data
