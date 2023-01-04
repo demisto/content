@@ -6,9 +6,9 @@ import json
 import os
 from datetime import datetime, timedelta
 import collections
+import urllib3
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params().get('serverURL', '').strip('/')
