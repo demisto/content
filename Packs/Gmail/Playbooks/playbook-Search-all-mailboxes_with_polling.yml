@@ -154,9 +154,12 @@ tasks:
       query:
         complex:
           root: inputs.query
-      searching_accounts:
+      search_from:
         complex:
-          root: SearchProcess
+          root: SearchFromAccountIndex
+      search_to:
+        complex:
+          root: SearchToAccountIndex
       subject:
         complex:
           root: inputs.subject

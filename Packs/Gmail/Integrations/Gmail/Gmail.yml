@@ -638,7 +638,12 @@ script:
       secret: false
     - default: false
       description: Used to track search progress.
-      name: searching_accounts
+      name: search_from
+      required: false
+      secret: false
+    - default: false
+      description: Used to track search progress.
+      name: search_to
       required: false
       secret: false
     deprecated: false
@@ -692,8 +697,11 @@ script:
     - contextPath: PageToken.NextPageToken
       description: Fetches the next list of accounts that will be searched.
       type: String
-    - contextPath: SearchProcess
-      description: Enables the search process to be followed.
+    - contextPath: SearchFromAccountIndex
+      description: A search is performed from an account index (Enables the search process to be followed).
+      type: String
+    - contextPath: SearchToAccountIndex
+      description: A search is performed to an account index (Enables the search process to be followed).
       type: String
     - contextPath: Email.To
       description: The recipient of the email.

@@ -839,22 +839,20 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
     return list_accounts, users_next_page_token
 
 
-def information_search_process(length_accounts: int, searching_accounts: str) -> CommandResults:
+def information_search_process(length_accounts: int, search_from: int, search_to: int) -> CommandResults:
 
-    if not searching_accounts:
+    if search_from is None:
         readable_output = f'Searching the first {length_accounts} accounts'
+        search_from = 0
+        search_to = length_accounts
     else:
-        try:
-            last_account_number_searched = int(searching_accounts.split(' ')[4])
-        except Exception:
-            last_account_number_searched = int(searching_accounts.split(' ')[3])
-
-        readable_output = f'Searching accounts {int(last_account_number_searched) + 1} to' \
-                          f' {int(last_account_number_searched) + length_accounts}'
+        search_from = search_to + 1
+        search_to = search_to + length_accounts
+        readable_output = f'Searching accounts {search_from} to {search_to}'
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={'SearchProcess': readable_output},
+        outputs={'SearchFromAccountIndex': search_from, 'SearchToAccountIndex': search_to},
     )
 
 
@@ -1300,13 +1298,23 @@ def search_all_mailboxes():
         if len(all_accounts) > MAX_WITHOUT_POLLING:
             command_results: List[CommandResults] = scheduled_commands_for_more_users(all_accounts, next_page_token)
             if next_page_token:
-                command_results.append(information_search_process(len(all_accounts), args.get('searching_accounts')))
+                command_results.append(
+                    information_search_process(
+                        len(all_accounts),
+                        arg_to_number(args.get('search_from')),
+                        arg_to_number(args.get('search_to'))
+                    )
+                )
             return_results(command_results)
 
         # In case that the number of accounts less than MAX_WITHOUT_POLLING the searching run as usual.
         elif all_accounts:
-            if args.get('searching_accounts'):
-                return_results(information_search_process(len(all_accounts), args.get('searching_accounts')))
+            if args.get('search_from'):
+                return_results(information_search_process(
+                    len(all_accounts),
+                    arg_to_number(args.get('search_from')),
+                    arg_to_number(args.get('search_to'))
+                ))
             args['list_accounts'] = all_accounts
             search_all_mailboxes()
 
@@ -2660,7 +2668,7 @@ def main():
 
         else:
             if command == 'gmail-search-all-mailboxes':
-                cmd_func()  # type: ignore
+                cmd_func()  # type: ignore[operator]
             else:
                 return_results(cmd_func())  # type: ignore
     except Exception as e:

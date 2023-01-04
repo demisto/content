@@ -87,7 +87,7 @@ tasks:
       all:
         simple: "yes"
       keysToKeep:
-        simple: Gmail,NewPageToken,Stop,SearchProcess
+        simple: Gmail,NewPageToken,Stop,SearchFromAccountIndex,SearchToAccountIndex
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -348,14 +348,23 @@ tasks:
                 value:
                   simple: inputs.query
                 iscontext: true
-      searching_accounts:
+      search_to:
         complex:
-          root: inputs.searching_accounts
+          root: inputs.search_to
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.searching_accounts
+                  simple: inputs.search_to
+                iscontext: true
+      search_from:
+        complex:
+          root: inputs.search_from
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.search_from
                 iscontext: true
       show-only-mailboxes:
         simple: "true"
@@ -400,7 +409,7 @@ tasks:
     task:
       id: 3c4418eb-a8d8-446a-874a-1f9ec2c6607c
       version: -1
-      name: Delete SearchingAccounts key previous
+      name: Delete SearchFromAccountIndex and SearchToAccountIndex keys previous
       description: |-
         Delete field from context.
 
@@ -416,7 +425,7 @@ tasks:
       - "32"
     scriptarguments:
       key:
-        simple: SearchProcess
+        simple: SearchFromAccountIndex,SearchToAccountIndex
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -513,7 +522,12 @@ inputs:
   required: false
   description: Words in the subject line. For example, "alert"
   playbookInputQuery:
-- key: searching_accounts
+- key: search_to
+  value: {}
+  required: false
+  description: Used to track a search's progress
+  playbookInputQuery:
+- key: search_from
   value: {}
   required: false
   description: Used to track a search's progress
@@ -552,8 +566,12 @@ outputs:
 - contextPath: Stop
   description: The result of this output causes the loop to end.
   type: unknown
-- contextPath: SearchProcess
-  description: Enables the search process to be followed.
+- contextPath: SearchFromAccountIndex
+  description: A search is performed from an account index (Enables the search process to be followed).
+  type: String
+- contextPath: SearchToAccountIndex
+  description: A search is performed to an account index (Enables the search process to be followed).
+  type: String
 tests:
 - No tests
 fromversion: 6.5.0
