@@ -82,16 +82,17 @@ configuration:
   name: credentials
   required: false
   type: 9
+- display: Certificate File as Text
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Key File as Text
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: cert_text
   required: false
   type: 12
-- name: cert_key_text
-  required: false
-  type: 9
-  displaypassword: Key File as Text
-  hiddenusername: true
+  hidden: true
 - additionalinfo: Add a key file as text to connect to the TAXII server
   display: Key File as Text
   name: key_text
@@ -99,28 +100,28 @@ configuration:
   type: 4
   hidden: true
 - additionalinfo: Time (in seconds) before HTTP requests timeout.
-  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: false
   type: 0
+  defaultvalue: '20'
 - additionalinfo: Used by a TAXII Client to request information from a TAXII Server.
   display: Poll Service
   name: poll_service
   required: false
   type: 0
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12 hours, 7 days.
-  defaultvalue: 1 day
   display: First Fetch Time
-  hidden: false
   name: initial_interval
   required: false
   type: 0
-- additionalinfo: Supports CSV values.
-  display: Tags
+  defaultvalue: 1 day
+  hidden: false
+- display: Tags
   name: feedTags
   required: false
   type: 0
+  additionalinfo: Supports CSV values.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -193,7 +194,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.43029
+  dockerimage: demisto/taxii:1.0.0.43208
   feed: true
   isfetch: false
   longRunning: false

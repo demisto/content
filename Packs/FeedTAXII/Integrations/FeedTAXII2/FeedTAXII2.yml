@@ -145,16 +145,17 @@ configuration:
   - identity
   - location
   - vulnerability
+- display: Certificate File as Text
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Key File as Text
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: certificate
   required: false
   type: 12
-- name: certificate_key
-  required: false
-  type: 9
-  displaypassword: Key File as Text
-  hiddenusername: true
+  hidden: true
 - additionalinfo: Add a key file as text to connect to the TAXII server
   display: Key File as Text
   name: key

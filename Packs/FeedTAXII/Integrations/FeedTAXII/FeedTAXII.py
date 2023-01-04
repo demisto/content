@@ -508,7 +508,7 @@ class Taxii11(object):
 class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
-                 credentials: dict = None, cert_text: str = None, cert_key_text: dict = {}, key_text: str = None,
+                 credentials: dict = None, creds_certificate: dict = {}, cert_text: str = None, key_text: str = None,
                  feedTags: str = None, tlp_color: Optional[str] = None, **kwargs):
         """
         TAXII Client
@@ -562,7 +562,8 @@ class TAXIIClient(object):
                 self.username = credentials.get('identifier', None)
                 self.password = credentials.get('password', None)
 
-        key_text = cert_key_text.get('password') or key_text
+        cert_text = creds_certificate.get('identifier') or cert_text
+        key_text = creds_certificate.get('password') or key_text
         if (cert_text and not key_text) or (not cert_text and key_text):
             raise Exception('You can not configure either certificate text or key, both are required.')
         if cert_text and key_text:
