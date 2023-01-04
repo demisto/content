@@ -36,7 +36,7 @@ from googleapiclient.errors import HttpError
 
 ''' GLOBAL VARS '''
 
-ADMIN_EMAIL = ''
+ADMIN_EMAIL = ''  # set from params later on
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
@@ -409,7 +409,7 @@ def create_incident_labels(parsed_msg, headers):
     return labels
 
 
-def mailboxes_to_entry(mailboxes: list) -> list[CommandResults]:
+def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
     result = []
     unsearched_accounts = []
@@ -1256,12 +1256,14 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_in_mailboxes(list_accounts: list[str], receive_only_accounts: bool) -> None:
+def search_in_mailboxes(accounts: list[str], receive_only_accounts: bool) -> None:
+    '''
 
+    '''
     futures: list = []
     entries: list = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        for user in list_accounts:
+        for user in accounts:
             futures.append(executor.submit(search_command, mailbox=user,
                                            receive_only_accounts=receive_only_accounts))
         for account in concurrent.futures.as_completed(futures):
