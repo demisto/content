@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 from typing import Any, Tuple, Dict, List, Callable, Optional
 import sqlalchemy
 import pymysql
-import traceback
 import hashlib
 import logging
 from sqlalchemy.sql import text
@@ -228,8 +227,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
             first_condition_key_word, second_condition_key_word = 'where', 'order by'
             query = params.get('query').lower()
             if not (first_condition_key_word in query and second_condition_key_word in query):
-                msg += f"Missing at least one of the query's conditions: where {params.get('column_name')} >:{params.get('column_name')}" \
-                       f" or order by (asc) {params.get('column_name')}. "
+                msg += f"Missing at least one of the query's conditions: where {params.get('column_name')}" \
+                       f" >:{params.get('column_name')} or order by (asc) {params.get('column_name')}. "
 
         # The request to the database is pointless if one of the validations failed - so returns informative message
         if msg:
@@ -321,18 +320,18 @@ def create_sql_query(last_run: dict, params: dict):
         'last_id')
 
     # case of runStoreProcedure MSSQL
-    if params.get('query').lower().startswith('exec'):
+    if params.get('query', '').lower().startswith('exec'):
         sql_query = f"SET ROWCOUNT {params.get('fetch_limit')};" \
                     f"{params.get('query')} @{params.get('column_name')} = '{last_timestamp_or_id}';" \
                     f"SET ROWCOUNT 0"
 
     # case of runStoreProcedure MySQL
-    elif params.get('query').lower().startswith('call'):
+    elif params.get('query', '').lower().startswith('call'):
         sql_query = f"{params.get('query')}('{last_timestamp_or_id}', {params.get('fetch_limit')})"
 
     # case of queries
     else:
-        sql_query = params.get('query')
+        sql_query = params.get('query')  # type:ignore[assignment]
 
     return sql_query
 
@@ -356,7 +355,7 @@ def convert_sqlalchemy_to_readable_table(result: dict):
 def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict):
     is_timestamp_and_id = True if params.get('fetch_parameters') == 'ID and timestamp' else False
     if last_run.get('last_timestamp'):
-        last_record_timestamp = table[-1].get(params.get('column_name'))
+        last_record_timestamp = table[-1].get(params.get('column_name'), '')
 
         # keep the id's for the next fetch cycle for avoiding duplicates
         if is_timestamp_and_id:
@@ -389,15 +388,15 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
         date_time = dateparser.parse(timestamp) if timestamp else datetime.now()
 
         # for avoiding duplicate incidents
-        if is_timestamp_and_id and record.get(params.get('column_name')).startswith(last_run.get('last_timestamp')):
-            if record.get(params.get('id_column')) in last_run.get('ids'):
+        if is_timestamp_and_id and record.get(params.get('column_name'), '').startswith(last_run.get('last_timestamp')):
+            if record.get(params.get('id_column'), '') in last_run.get('ids'):
                 continue
 
         record['type'] = 'GenericSQL Record'
         incident_context = {
             'name': record.get(params.get('incident_name')) if record.get(params.get('incident_name'))
             else record.get(params.get('column_name')),
-            'occurred': date_time.strftime(DATE_FORMAT),
+            'occurred': date_time.strftime(DATE_FORMAT),  # type:ignore[union-attr]
             'rawJSON': json.dumps(record),
         }
         incidents.append(incident_context)

@@ -22,8 +22,9 @@ EXPECTED_INCIDENTS_1 = [{'name': 'incident_1', 'occurred': '2023-01-04T12:57:05Z
 EXPECTED_LAST_RUN_1 = {'last_timestamp': False, 'last_id': '1002', 'ids': []}
 PARAMS_1 = {'column_name': 'incident_id', 'connect_parameters': None,
             'credentials': {'credential': '', 'credentials': {'cacheVersn': 0, 'id': '', 'locked': False, 'modified':
-                '0001-01-01T00:00:00Z', 'name': '', 'password': '', 'sshkey': '', 'sshkeyPass': '', 'user': '',
-                                                              'vaultInstanceId': '', 'version': 0, 'workgroup': ''},
+                            '0001-01-01T00:00:00Z', 'name': '', 'password': '', 'sshkey': '', 'sshkeyPass': '',
+                                                              'user': '', 'vaultInstanceId': '', 'version': 0,
+                                                              'workgroup': ''},
                             'identifier': 'admin', 'password': 'P809rxRbYU', 'passwordChanged': False},
             'dbname': 'Test_db', 'dialect': 'Microsoft SQL Server', 'fetch_limit': '3',
             'fetch_parameters': 'Unique ascending ID',
