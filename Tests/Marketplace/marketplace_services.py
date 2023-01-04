@@ -4354,6 +4354,7 @@ def remove_old_versions_from_changelog(changelog: dict):
 
     year_ago_datetime_obj = datetime.utcnow() - timedelta(days=365)
     last_version = Version(list(changelog.keys())[-1])
+    save_last_minor_versions = not (last_version.minor == 0 and last_version.major == 1)
 
     prev_version = None
     for version, info in changelog.items():
@@ -4364,7 +4365,8 @@ def remove_old_versions_from_changelog(changelog: dict):
                 last_year_versions.append(version)
 
         # get versions with same minor version
-        if Version(version).minor == last_version.minor:
+        if save_last_minor_versions and Version(version).minor == last_version.minor \
+                and Version(version).major == last_version.major:
             last_same_minor_versions.append(version)
             if prev_version and prev_version not in last_same_minor_versions:
                 last_same_minor_versions.append(prev_version)
