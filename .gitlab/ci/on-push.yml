@@ -13,7 +13,15 @@ trigger-private-build:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+      changes: 
+      - Tests/scripts/validate_premium_packs.sh
+      - Tests/scripts/validate_premium_packs.py
+      - Tests/scripts/validate_index.py
+      - Tests/configure_and_test_integration_instances.py
+      - Tests/private_build
+      - Tests/Marketplace
+
     - if: '$NIGHTLY'
   script:
     - echo "====Trigger Private Build===="
