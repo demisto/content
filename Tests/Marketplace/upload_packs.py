@@ -967,7 +967,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             pack_and_its_dependencies_names = []
             for dep_name in pack.all_levels_dependencies:
                 try:
-                    pack_and_its_dependencies_names = packs_for_current_marketplace_dict.get(dep_name).name
+                    pack_and_its_dependencies_names.append(packs_for_current_marketplace_dict.get(dep_name).name)
                 except Exception:
                     pass
 
