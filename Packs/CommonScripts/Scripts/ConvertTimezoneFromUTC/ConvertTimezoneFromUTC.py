@@ -1,30 +1,23 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-''' IMPORTS '''
-
 import pytz
-
-''' GLOBAL VARIABLES '''
-args = demisto.args()
-
-''' Helper Code '''
+from traceback import format_exc
 
 
-def determine_correct_format(time, fmt):
+def determine_correct_format(time: str, fmt: str) -> datetime:
     time = datetime.strptime(time, fmt)
-
     return time
 
 
-def convert_UTC_Timezone(time, convert_to_timezone, fmt):
+def convert_UTC_Timezone_command(time: datetime, timezone: str, fmt: str) -> CommandResults:
     # set two timezones we want to work with
-    desired_timezone = pytz.timezone(f'{convert_to_timezone}')
+    desired_timezone = pytz.timezone(timezone)
 
     # convert me to desired timezone
     desired_time = time.astimezone(desired_timezone).strftime(fmt)
-
-    return desired_time
+    return CommandResults(
+        readable_output=desired_time
+    )
 
 
 ''' MAIN '''
@@ -33,22 +26,23 @@ def convert_UTC_Timezone(time, convert_to_timezone, fmt):
 def main():
     try:
         # Get Args
+        args = demisto.args()
         time = args.get('value')
-        convert_to_timezone = args.get('timezone')
+        timezone = args.get('timezone')
         fmt = args.get('format')
 
         # Convert UTC to correct format
-        utc_time = determine_correct_format(time, fmt)
+        utc_time = determine_correct_format(time=time, fmt=fmt)
 
-        # Convert to desired Timezone from UTC
-        desired_time = convert_UTC_Timezone(utc_time, convert_to_timezone, fmt)
+        # Convert to desired Timezone and format
+        results = convert_UTC_Timezone_command(time=utc_time, timezone=timezone, fmt=fmt)
 
-        return_results(str(desired_time))
+        return_results(results)
 
     except Exception as e:
-        return_error(f'Error: {e}')
+        demisto.error(format_exc())
+        return_error(f'ConvertTimezone command failed. Error: {e}')
 
 
-''' Script Starts Here'''
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
