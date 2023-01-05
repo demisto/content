@@ -261,7 +261,7 @@ def test_get_non_edr_malop_data(mocker):
     args = {
         "lastUpdateTime": 1672848355574
     }
-    raw_response = json.loads(load_mock_response('poll_malops.json'))
+    raw_response = json.loads(load_mock_response('malop_detection_data.json'))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = get_non_edr_malop_data(client, args)
     try:
