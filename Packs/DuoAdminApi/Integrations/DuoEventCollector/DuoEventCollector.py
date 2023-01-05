@@ -47,7 +47,7 @@ class Client:
             try:
                 if request_order[0] == LogType.AUTHENTICATION:
                     response = self.admin_api.get_authentication_log(
-                        mintime=self.params.mintime[LogType.AUTHENTICATION], api_version=2, limit='1000')
+                        mintime=self.params.mintime[LogType.AUTHENTICATION])
                 elif request_order[0] == LogType.ADMINISTRATION:
                     response = self.admin_api.get_administrator_log(
                         mintime=self.params.mintime[LogType.ADMINISTRATION])
