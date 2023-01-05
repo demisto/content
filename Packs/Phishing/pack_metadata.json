@@ -232,6 +232,10 @@
         "Oletools": {
             "mandatory": false,
             "display_name": "Oletools"
+        },
+        "Microsoft365Defender": {
+            "mandatory": false,
+            "display_name": "Microsoft 365 Defender"
         }
     },
     "marketplaces": [
