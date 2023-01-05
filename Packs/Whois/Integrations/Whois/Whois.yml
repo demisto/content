@@ -88,13 +88,13 @@ script:
       description: The name servers.
       type: string
     - contextPath: Domain.Whois.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: date
     - contextPath: Domain.Whois.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: date
     - contextPath: Domain.Whois.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: date
     - contextPath: Domain.Whois.Registrar.Name
       description: The name of the registrar.
@@ -244,13 +244,13 @@ script:
       description: The name servers.
       type: string
     - contextPath: Domain.Whois.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: date
     - contextPath: Domain.Whois.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: date
     - contextPath: Domain.Whois.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: date
     - contextPath: Domain.Whois.Registrar.Name
       description: The name of the registrar.
@@ -373,13 +373,13 @@ script:
       description: The state of domain administrator.
       type: String
     - contextPath: Domain.CreationDate
-      description: The date that the domain was created.
+      description: The date that the domain was created (UTC).
       type: Date
     - contextPath: Domain.DomainStatus
       description: The domain status.
       type: String
     - contextPath: Domain.ExpirationDate
-      description: The date that the domain expires.
+      description: The date that the domain expires (UTC).
       type: Date
     - contextPath: Domain.FeedRelatedIndicators.type
       description: Indicators that are associated with the Domain.
@@ -424,7 +424,7 @@ script:
       description: The organization of the tech administrator.
       type: String
     - contextPath: Domain.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date that the domain was last updated (UTC).
       type: Date
   - arguments:
     - default: true
@@ -549,7 +549,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.40624
+  dockerimage: demisto/ippysocks-py3:1.0.0.42746
   feed: false
   isfetch: false
   longRunning: false
