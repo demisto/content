@@ -6856,12 +6856,14 @@ class CommandResults:
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
-            'Tags': tags,
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': bool(ignore_auto_extract),
             'Note': mark_as_note,
             'Relationships': relationships
         }
+        if tags:
+            # This is for backward compatibility reasons
+            return_entry['Tags'] = tags
         if self.scheduled_command:
             return_entry.update(self.scheduled_command.to_results())
 
