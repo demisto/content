@@ -24,6 +24,7 @@ RUN VERSION="os-provided" bash /features/src/git/install.sh
 RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
 RUN bash /features/src/sshd/install.sh
+RUN bash /features/src/github-cli/install.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
 RUN python -m pip install --user pipx \
