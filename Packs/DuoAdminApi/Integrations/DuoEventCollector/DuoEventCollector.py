@@ -60,6 +60,8 @@ class Client:
                 demisto.debug(msg)
                 if str(exc) == 'Received 429 Too Many Requests':
                     retries -= 1
+                else:
+                    retries = 0
         return {}
 
     def set_next_run_filter(self, mintime: int, log_type: LogType):  # pragma: no cover
