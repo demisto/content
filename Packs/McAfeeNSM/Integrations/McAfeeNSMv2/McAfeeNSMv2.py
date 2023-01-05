@@ -33,20 +33,20 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def list_domain_firewall_policy_request(self, domain_id: Optional[int]) -> Dict:
+    def list_domain_firewall_policy_request(self, domain_id: int) -> Dict:
         """ Gets the list of Firewall Policies defined in a particular domain.
             Args:
-                domain_id: Optional[int] - The id of the domain.
+                domain_id: int - The id of the domain.
             Returns:
                 A dictionary with the firewall policy list.
         """
         url_suffix = f'/domain/{domain_id}/firewallpolicy'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_firewall_policy_request(self, policy_id: Optional[int]) -> Dict:
+    def get_firewall_policy_request(self, policy_id: int) -> Dict:
         """ Gets the Firewall Policy details.
             Args:
-                policy_id: Optional[int] - The id of the policy.
+                policy_id: int - The id of the policy.
             Returns:
                 A dictionary with the policy details.
         """
@@ -63,21 +63,21 @@ class Client(BaseClient):
         url_suffix = '/firewallpolicy'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def update_firewall_policy_request(self, body: Dict, policy_id: Optional[int]) -> Dict:
+    def update_firewall_policy_request(self, body: Dict, policy_id: int) -> Dict:
         """ Updates an existing Firewall Policy and Access Rules.
             Args:
                 body: Dict - The params to the API call.
-                policy_id: Optional[int] - The id of the updated policy.
+                policy_id: int - The id of the updated policy.
             Returns:
                 A dictionary with the request status, if it succeeded or not.
         """
         url_suffix = f'/firewallpolicy/{policy_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
-    def delete_firewall_policy_request(self, policy_id: Optional[int]) -> Dict:
+    def delete_firewall_policy_request(self, policy_id: int) -> Dict:
         """ Updates an existing Firewall Policy and Access Rules.
             Args:
-                policy_id: Optional[int] - The id of the updated policy.
+                policy_id: int - The id of the updated policy.
             Returns:
                 A dictionary with the request status, if it succeeded or not.
         """
@@ -95,10 +95,10 @@ class Client(BaseClient):
         url_suffix = f'/domain/{domain_id}/ruleobject?type={rule_type}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_rule_object_request(self, rule_id: Optional[int]) -> Dict:
+    def get_rule_object_request(self, rule_id: int) -> Dict:
         """ Gets the list of rule objects defined in a particular domain.
             Args:
-                rule_id: Optional[int] - The id of the rule.
+                rule_id: int - The id of the rule.
             Returns:
                 A dictionary with the rule object information.
         """
@@ -115,21 +115,21 @@ class Client(BaseClient):
         url_suffix = '/ruleobject'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def update_rule_object_request(self, body: Dict, rule_id: Optional[int]) -> Dict:
+    def update_rule_object_request(self, body: Dict, rule_id: int) -> Dict:
         """ Updates a Rule Object.
             Args:
                 body: Dict - The params to the API call.
-                rule_id: Optional[int] - The rule id.
+                rule_id: int - The rule id.
             Returns:
                 A dictionary with the status of the request.
         """
         url_suffix = f'/ruleobject/{rule_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
-    def delete_rule_object_request(self, rule_id: Optional[int]) -> Dict:
+    def delete_rule_object_request(self, rule_id: int) -> Dict:
         """ Updates a Rule Object.
             Args:
-                rule_id: Optional[int] - The rule id.
+                rule_id: int - The rule id.
             Returns:
                 A dictionary with the status of the request.
         """
@@ -170,11 +170,11 @@ class Client(BaseClient):
         url_suffix = '/alerts'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def get_alert_details_request(self, alert_id: Optional[int], sensor_id: Optional[int]) -> Dict:
+    def get_alert_details_request(self, alert_id: int, sensor_id: int) -> Dict:
         """ Retrieves the alert details.
             Args:
-                alert_id: Optional[int] - The id of the relevant alert.
-                sensor_id: Optional[int] - The id of the relevant sensor.
+                alert_id: int - The id of the relevant alert.
+                sensor_id: int - The id of the relevant sensor.
             Returns:
                 A dictionary with the alert details.
         """
@@ -236,10 +236,10 @@ class Client(BaseClient):
         url_suffix = f'/domain/{domain_id}/ipspolicies'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_ips_policy_details_request(self, policy_id: Optional[int]) -> Dict:
+    def get_ips_policy_details_request(self, policy_id: int) -> Dict:
         """ Gets the policy details for the specific IPS policy.
             Args:
-                policy_id: Optional[int] - The id of the relevant ips policy.
+                policy_id: int - The id of the relevant ips policy.
             Returns:
                 A dictionary with the ips policy details.
         """
@@ -275,20 +275,20 @@ class Client(BaseClient):
         url_suffix = '/alerts'
         return self._http_request(method='PUT', url_suffix=url_suffix, params=params, json_data=body)
 
-    def list_pcap_file_request(self, sensor_id: Optional[int]) -> Dict:
+    def list_pcap_file_request(self, sensor_id: int) -> Dict:
         """ Retrieves the list of captured PCAP files.
             Args:
-                sensor_id: Optional[int] - the relevant sensor id.
+                sensor_id: int - the relevant sensor id.
             Returns:
                 A dictionary with a list of PCAP file names.
         """
         url_suffix = f'/sensor/{sensor_id}/packetcapturepcapfiles'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def export_pcap_file_request(self, sensor_id: Optional[int], body: Dict) -> Response:
+    def export_pcap_file_request(self, sensor_id: int, body: Dict) -> Response:
         """ Retrieves the list of captured PCAP files.
             Args:
-                sensor_id: Optional[int] - The relevant sensor id.
+                sensor_id: int - The relevant sensor id.
                 body: Dict - The parameter for the http request (file name).
             Returns:
                 A dictionary with a list of PCAP file names.
@@ -398,6 +398,14 @@ def response_cases(response_str: str) -> str:
         response_str: str - The response string.
     Returns:
         The correct response string.
+    Example:
+        Scan -> SCAN
+        Drop -> DROP
+        Deny -> DENY
+        Ignore -> IGNORE
+        Stateless Ignore -> STATELESS_IGNORE
+        Stateless Drop -> STATELESS_DROP
+        Require Authentication-> REQUIRE_AUTHENTICATION
     """
     split_str = response_str.upper().split()
     if len(split_str) == 1:
@@ -413,6 +421,21 @@ def rule_object_type_cases(str_type: str, case: str) -> str:
         case: str - In what case should the letters be, upper or lower case.
     Returns:
         The correct rule_object_type string.
+    Examples:
+        - In list_domain_rule_objects_command the arguments should be in lower case and in this form:
+            Endpoint IP V.4 -> hostipv4
+            Range IP V.4 -> ipv4addressrange
+            Network IP V.4 -> networkipv4
+            Endpoint IP V.6 -> hostipv6
+            Range IP V.6 -> ipv6addressrange
+            Network IP V.6 -> networkipv6
+        - In all the other commands that use this function, the arguments should be in upper case and in this form:
+            Endpoint IP V.4 -> HOST_IPV_4
+            Range IP V.4 -> IPV_4_ADDRESS_RANGE
+            Network IP V.4 -> NETWORK_IPV_4
+            Endpoint IP V.6 -> HOST_IPV_6
+            Range IP V.6 -> IPV_6_ADDRESS_RANGE
+            Network IP V.6 -> NETWORK_IPV_6
     """
     type_split = str_type.upper().replace('.', ' ').split()
     if 'ENDPOINT' in type_split[0]:
@@ -427,11 +450,18 @@ def rule_object_type_cases(str_type: str, case: str) -> str:
 
 
 def reverse_rule_object_type_cases(rule_type: str) -> str:
-    """ Checks the rule_object_type params that return from the API call and returns the matching string.
+    """ Checks the rule_object_type params that return from the API call and returns the matching string in the UI.
     Args:
         rule_type: str - The type string.
     Returns:
         The matching string.
+    Example:
+        HOST_IPV_4 -> Endpoint IP V.4
+        IPV_4_ADDRESS_RANGE -> Range IP V.4
+        NETWORK_IPV_4 -> Network IP V.4
+        HOST_IPV_6 -> Endpoint IP V.6
+        IPV_6_ADDRESS_RANGE -> Range IP V.6
+        NETWORK_IPV_6 -> Network IP V.6
     """
     number = '4' if ('4' in rule_type) else '6'
     if 'HOST' in rule_type:
@@ -457,10 +487,10 @@ def check_source_and_destination(source_rule_object_id: Optional[int], source_ru
     """
     if (source_rule_object_id and not source_rule_object_type and source_rule_object_id != -1) or (
             not source_rule_object_id and source_rule_object_type):
-        raise Exception('If you provide at least one of the source fields, you must provide all of them.')
+        raise Exception('Please provide both source_rule_object_id and source_rule_object_type.')
     if (destination_rule_object_id and not destination_rule_object_type and destination_rule_object_id != -1) or \
             (not destination_rule_object_id and destination_rule_object_type):
-        raise Exception('If you provide at least one of the destination fields, you must provide all of them.')
+        raise Exception('Please provide both destination_rule_object_id and destination_rule_object_type.')
     if create_or_update == 'create':
         if source_rule_object_id == -1 and destination_rule_object_id == -1:
             raise Exception('You must provide the source fields or destination fields or both.')
@@ -565,6 +595,8 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
             to_address: str - The to address, if relevant.
             number: int - The number of the addresses IP V.
     """
+    if not address and not from_address and not to_address:
+        raise Exception('Please enter a matching address.')
     if ('4' in rule_type and number == 6) or ('6' in rule_type and number == 4):
         raise Exception('The version of the IP in "rule_object_type" should match the addresses version.')
     if ('HOST' in rule_type or 'NETWORK' in rule_type) and (not address or from_address or to_address):
@@ -575,145 +607,6 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
         raise Exception(f'If the "rule_object_type" is “Range IP V.{number}” than only the arguments '
                         f'“from_address_ip_v.{number}” and “to_address_ip_v.{number}” must contain a value, the other'
                         f' address arguments should be empty.')
-
-
-def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
-    """ Add entries to the alert_list and update what is needed in order not to break backward.
-        Args:
-            alert_list: List[Dict] - a list of the alerts that returned from the API.
-        Returns:
-            Returns the updated alert list.
-    """
-    result_list = []
-    for alert in alert_list:
-        record = {
-            'ID': alert.get('event', {}).get('alertId'),
-            'Name': alert.get('name'),
-            'State': alert.get('alertState'),
-            'CreatedTime': alert.get('event', {}).get('time'),
-            'Assignee': alert.get('assignTo'),
-            'AttackSeverity': alert.get('attackSeverity'),
-            'Application': alert.get('application'),
-            'EventResult': alert.get('event', {}).get('result'),
-            'SensorID': alert.get('detection', {}).get('deviceId'),
-            'uniqueAlertId': alert.get('uniqueAlertId'),
-
-            'Event': alert.get('event'),
-            'Attack': alert.get('attack'),
-            'Attacker': alert.get('attacker'),
-            'Target': alert.get('target'),
-            'MalwareFile': alert.get('malwareFile'),
-            'endpointExcutable': alert.get('endpointExcutable'),
-            'detection': alert.get('detection'),
-            'layer7Data': alert.get('layer7Data')
-        }
-        event_obj = record.get('Event', {})
-        event_obj['domain'] = alert.get('detection', {}).get('domain')
-        event_obj['interface'] = alert.get('detection', {}).get('interface')
-        event_obj['device'] = alert.get('detection', {}).get('device')
-        result_list.append(record)
-    return result_list
-
-
-def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
-    """ Add entries to the sensors_list and update it in order not to break backward.
-        Args:
-            sensors_list: List[Dict] - a list of the sensors that returned from the API.
-        Returns:
-            Returns the updated sensors list.
-    """
-    result_list = []
-    for sensor in sensors_list:
-        record = {
-            'ID': sensor.get('sensorId'),
-            'Name': sensor.get('name'),
-            'Description': sensor.get('Description'),
-            'DomainID': sensor.get('DomainID'),
-            'IPSPolicyID': sensor.get('IPSPolicyID'),
-            'IP Address': sensor.get('sensorIPAddress'),
-            'model': sensor.get('model'),
-            'isFailOver': sensor.get('isFailOver'),
-            'isNTBA': sensor.get('isNTBA'),
-            'isLoadBalancer': sensor.get('isLoadBalancer'),
-            'SerialNumber': sensor.get('SerialNumber'),
-            'SigsetVersion': sensor.get('SigsetVersion'),
-            'DATVersion': sensor.get('DATVersion'),
-            'SoftwareVersion': sensor.get('SoftwareVersion'),
-            'LastSignatureUpdateTs': sensor.get('LastSignatureUpdateTs'),
-            'ReconPolicyID': sensor.get('ReconPolicyID'),
-            'LastModTs': sensor.get('LastModTs'),
-            'nsmVersion': sensor.get('nsmVersion'),
-            'MemberSensors': sensor.get('MemberSensors')
-        }
-        result_list.append(record)
-    return result_list
-
-
-def update_attacks_list_entries(attacks_list: list[Dict]) -> list[Dict]:
-    """ Add entries to the attacks_list and update it in order not to break backward.
-        Args:
-            attacks_list: List[Dict] - a list of the attacks that returned from the API.
-        Returns:
-            Returns the updated attack list.
-    """
-    result_list = []
-    for attack in attacks_list:
-        record = {
-            'ID': attack.get('attackId'),
-            'Name': attack.get('name'),
-            'Direction': attack.get('DosDirection'),
-            'Category': attack.get('description', {}).get('attackCategory'),
-            'Severity': attack.get('Severity'),
-            'description': attack.get('description')
-        }
-        result_list.append(record)
-    return result_list
-
-
-def update_policies_list_entries(policies_list: list[dict]) -> list[dict]:
-    """ Add entries to the policies_list and update it in order not to break backward.
-        Args:
-            policies_list: List[Dict] - a list of the ips policies that returned from the API.
-        Returns:
-            Returns the updated ips policies list.
-    """
-    result_list = []
-    for policy in policies_list:
-        record = {
-            'ID': policy.get('policyId'),
-            'Name': policy.get('name'),
-            'DomainID': policy.get('DomainId'),
-            'VisibleToChildren': policy.get('VisibleToChild'),
-            'IsEditable': policy.get('IsEditable'),
-        }
-        result_list.append(record)
-    return result_list
-
-
-def update_ips_policy_entries(policy_details: Dict, policy_id: Optional[int]) -> Dict:
-    """ update the entries to the policy_details in order not to break backward.
-        Args:
-            policy_details: Dict - the details of the specific ips policy.
-            policy_id: Optional[int] - The id of the current policy.
-        Returns:
-            Returns the updated ips policies list.
-    """
-    return {
-        'ID': policy_id,
-        'Name': policy_details.get('PolicyName'),
-        'CreatedTime': policy_details.get('Timestamp'),
-        'VisibleToChildren': policy_details.get('IsVisibleToChildren'),
-        'Version': policy_details.get('VersionNum'),
-        'ExploitAttacks': policy_details.get('AttackCategory', {}).get('ExpolitAttackList'),
-        'Description': policy_details.get('Description'),
-        'InboundRuleSet': policy_details.get('InboundRuleSet'),
-        'OutboundRuleSet': policy_details.get('OutboundRuleSet'),
-        'OutboundAttackCategory': policy_details.get('OutboundAttackCategory'),
-        'DosPolicy': policy_details.get('DosPolicy'),
-        'DosResponseSensitivityLevel': policy_details.get('DosResponseSensitivityLevel'),
-        'IsEditable': policy_details.get('IsEditable'),
-        'IsLightWeightPolicy': policy_details.get('IsLightWeightPolicy')
-    }
 
 
 def h_r_get_domains(children: List[Dict], human_readable: List):
@@ -738,12 +631,12 @@ def h_r_get_domains(children: List[Dict], human_readable: List):
             h_r_get_domains(child.get('childdomains', []), human_readable)
 
 
-def update_source_destination_object(obj: List[Dict], rule_object_id: int | None, rule_object_type: Optional[str]) -> \
+def update_source_destination_object(obj: List[Dict], rule_object_id: Optional[int], rule_object_type: Optional[str]) -> \
         List[Dict]:
     """ Updates the source and destination objects in the command update_firewall_policy.
         Args:
             obj: List[Dict] - The relevant object.
-            rule_object_id: int | None - The id of the rule.
+            rule_object_id: Optional[int] - The id of the rule.
             rule_object_type: Optional[str] - The type of the rule
         Returns:
             The updated object.
@@ -793,11 +686,14 @@ def overwrite_source_destination_object(rule_object_id: int | None, rule_object_
 
 
 def update_filter(filter_arg: str) -> str:
-    """ Removes the special characters from the name argument in filter.
+    """ Removes the special characters from the name argument in filter, because tha api do not work with special
+        characters.
         Args:
             filter_arg: str - The original filter
         Returns:
             The updated filter, without special chars.
+        Example:
+            - name:HTTP: IIS 6.0 (CVE-0000-0000) -> name:HTTP  IIS 6 0  CVE 0000 0000
     """
     split_filter = filter_arg.split(';')
     for index, s in enumerate(split_filter):
@@ -808,44 +704,6 @@ def update_filter(filter_arg: str) -> str:
             split_filter[index] = s
             break
     return ';'.join(split_filter)
-
-
-def update_alert_entries(alert_det: Dict) -> Dict:
-    """ Updates the entries to an alert object (the entries that we get here are different from get_alerts).
-        Args:
-            alert_det: Dict - The dictionary with the alert details.
-        Returns:
-            The updated alert details dictionary.
-    """
-    result = {
-        'ID': alert_det.get('summary', {}).get('event', {}).get('alertId'),
-        'Name': alert_det.get('name'),
-        'State': alert_det.get('alertState'),
-        'CreatedTime': alert_det.get('summary', {}).get('event', {}).get('time'),
-        'Assignee': alert_det.get('assignTo'),
-        'Description': alert_det.get('description', {}).get('definition'),
-        'EventResult': alert_det.get('summary', {}).get('event', {}).get('result'),
-        'Attack': {
-            'attackCategory': alert_det.get('description', {}).get('attackCategory'),
-            'attackSubCategory': alert_det.get('description', {}).get('attackSubCategory'),
-            'nspId': alert_det.get('description', {}).get('reference', {}).get('nspId')
-        },
-        'Protocols': alert_det.get('description', {}).get('protocols'),
-        'SensorID': alert_det.get('summary', {}).get('event', {}).get('deviceId'),
-        'Event': alert_det.get('summary', {}).get('event'),
-        'Attacker': alert_det.get('summary', {}).get('attacker'),
-        'Target': alert_det.get('summary', {}).get('target'),
-        'MalwareFile': alert_det.get('details', {}).get('malwareFile'),
-        'Details': alert_det.get('details'),
-        'uniqueAlertId': alert_det.get('uniqueAlertId'),
-        'summary': alert_det.get('summary'),
-        'description': alert_det.get('description')
-    }
-    summary_obj = result.get('summary', {})
-    del summary_obj['event']
-    del summary_obj['attacker']
-    del summary_obj['target']
-    return result
 
 
 def get_addresses_from_response(response: Dict) -> List:
@@ -891,7 +749,7 @@ def list_domain_firewall_policy_command(client: Client, args: Dict) -> CommandRe
     Returns:
         A CommandResult object with the list of Firewall Policies defined in a particular domain.
     """
-    domain_id = arg_to_number(args.get('domain_id', None))
+    domain_id = int(args.get('domain_id', None))
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
@@ -943,7 +801,7 @@ def get_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with the Firewall Policy details.
     """
-    policy_id = args.get('policy_id', '')
+    policy_id = int(args.get('policy_id', ''))
     include_rule_objects = argToBoolean(args.get('include_rule_objects', False))
     response = client.get_firewall_policy_request(policy_id)
     if not include_rule_objects:
@@ -1044,7 +902,7 @@ def update_firewall_policy_command(client: Client, args: Dict) -> CommandResults
         Returns:
             A CommandResult object with a success message.
     """
-    policy_id = arg_to_number(args.get('policy_id'))
+    policy_id = int(args.get('policy_id', ''))
     domain = args.get('domain')
     name = args.get('name')
     visible_to_child = args.get('visible_to_child')
@@ -1118,7 +976,7 @@ def delete_firewall_policy_command(client: Client, args: Dict) -> CommandResults
         Returns:
             A CommandResult object with a success message.
     """
-    policy_id = arg_to_number(args.get('policy_id'))
+    policy_id = int(args.get('policy_id', ''))
     client.delete_firewall_policy_request(policy_id)
     return CommandResults(readable_output=f'The firewall policy no.{policy_id} was deleted successfully')
 
@@ -1181,7 +1039,7 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
         Returns:
             A CommandResult object with information about the rule object.
     """
-    rule_id = arg_to_number(args.get('rule_id'))
+    rule_id = int(args.get('rule_id', ''))
     response = client.get_rule_object_request(rule_id)
     response = response.get('RuleObjDef', {})
     addresses = get_addresses_from_response(response)
@@ -1261,12 +1119,12 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
         'ruleobjId': response.get('createdResourceId')
     }
 
-    return CommandResults(readable_output=f'The rule object no.{response.get("createdResourceId")} '
+    return CommandResults(readable_output=f'The rule object no.{response.get("ruleobjId")} '
                                           f'was created successfully',
                           outputs_prefix='NSM.Rule',
                           outputs=response,
                           raw_response=response,
-                          outputs_key_field='createdResourceId'
+                          outputs_key_field='ruleobjId'
                           )
 
 
@@ -1279,7 +1137,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with a success message.
     """
     domain = arg_to_number(args.get('domain', 0)) or 0
-    rule_id = arg_to_number(args.get('rule_id'))
+    rule_id = int(args.get('rule_id', ''))
     name = args.get('name')
     visible_to_child = args.get('visible_to_child')
     description = args.get('description')
@@ -1415,7 +1273,7 @@ def delete_rule_object_command(client: Client, args: Dict) -> CommandResults:
         Returns:
             A CommandResult object with a success message.
     """
-    rule_id = arg_to_number(args.get('rule_id'))
+    rule_id = int(args.get('rule_id', ''))
     client.delete_rule_object_request(rule_id)
     return CommandResults(readable_output=f'The rule object no.{rule_id} was deleted successfully')
 
@@ -1459,7 +1317,34 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
     total_alerts_count = response.get('totalAlertsCount', 0)
     alerts_list = alerts_list_pagination(response.get('alertsList', []), limit, page, page_size, time_period,
                                          start_time, end_time, state, search, filter_arg, client, domain_id)
-    alerts_list = add_entries_to_alert_list(alerts_list)
+    result_list = []
+    for alert in alerts_list:
+        record = {
+            'ID': alert.get('event', {}).get('alertId'),
+            'Name': alert.get('name'),
+            'State': alert.get('alertState'),
+            'CreatedTime': alert.get('event', {}).get('time'),
+            'Assignee': alert.get('assignTo'),
+            'AttackSeverity': alert.get('attackSeverity'),
+            'Application': alert.get('application'),
+            'EventResult': alert.get('event', {}).get('result'),
+            'SensorID': alert.get('detection', {}).get('deviceId'),
+            'uniqueAlertId': alert.get('uniqueAlertId'),
+            'Event': alert.get('event'),
+            'Attack': alert.get('attack'),
+            'Attacker': alert.get('attacker'),
+            'Target': alert.get('target'),
+            'MalwareFile': alert.get('malwareFile'),
+            'endpointExcutable': alert.get('endpointExcutable'),
+            'detection': alert.get('detection'),
+            'layer7Data': alert.get('layer7Data')
+        }
+        event_obj = record.get('Event', {})
+        event_obj['domain'] = alert.get('detection', {}).get('domain')
+        event_obj['interface'] = alert.get('detection', {}).get('interface')
+        event_obj['device'] = alert.get('detection', {}).get('device')
+        result_list.append(record)
+    alerts_list = result_list
     human_readable = []
     for alert_info in alerts_list:
         d = {'ID': alert_info.get('ID'),
@@ -1503,10 +1388,37 @@ def get_alert_details_command(client: Client, args: Dict) -> CommandResults:
         Returns:
             A CommandResult object with the alert details.
     """
-    alert_id = arg_to_number(args.get('alert_id'))
-    sensor_id = arg_to_number(args.get('sensor_id'))
+    alert_id = int(args.get('alert_id', ''))
+    sensor_id = int(args.get('sensor_id', ''))
     response = client.get_alert_details_request(alert_id, sensor_id)
-    response = update_alert_entries(response)
+    response = {
+        'ID': response.get('summary', {}).get('event', {}).get('alertId'),
+        'Name': response.get('name'),
+        'State': response.get('alertState'),
+        'CreatedTime': response.get('summary', {}).get('event', {}).get('time'),
+        'Assignee': response.get('assignTo'),
+        'Description': response.get('description', {}).get('definition'),
+        'EventResult': response.get('summary', {}).get('event', {}).get('result'),
+        'Attack': {
+            'attackCategory': response.get('description', {}).get('attackCategory'),
+            'attackSubCategory': response.get('description', {}).get('attackSubCategory'),
+            'nspId': response.get('description', {}).get('reference', {}).get('nspId')
+        },
+        'Protocols': response.get('description', {}).get('protocols'),
+        'SensorID': response.get('summary', {}).get('event', {}).get('deviceId'),
+        'Event': response.get('summary', {}).get('event'),
+        'Attacker': response.get('summary', {}).get('attacker'),
+        'Target': response.get('summary', {}).get('target'),
+        'MalwareFile': response.get('details', {}).get('malwareFile'),
+        'Details': response.get('details'),
+        'uniqueAlertId': response.get('uniqueAlertId'),
+        'summary': response.get('summary'),
+        'description': response.get('description')
+    }
+    summary_obj = response.get('summary', {})
+    del summary_obj['event']
+    del summary_obj['attacker']
+    del summary_obj['target']
     human_readable = {
         'ID': response.get('ID'),
         'Name': response.get('Name'),
@@ -1556,8 +1468,19 @@ def get_attacks_command(client: Client, args: Dict) -> List:
     else:
         title = f'Attack no.{attack_id}'
         attacks_list = [response.get('AttackDescriptor', {})]
+    result_list = []
+    for attack in attacks_list:
+        record = {
+            'ID': attack.get('attackId'),
+            'Name': attack.get('name'),
+            'Direction': attack.get('DosDirection'),
+            'Category': attack.get('description', {}).get('attackCategory'),
+            'Severity': attack.get('Severity'),
+            'description': attack.get('description')
+        }
+        result_list.append(record)
+    attacks_list = result_list
     human_readable = []
-    attacks_list = update_attacks_list_entries(attacks_list)
     for attack in attacks_list:
         d = {
             'ID': attack.get('ID'),
@@ -1659,7 +1582,31 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
 
     response = client.get_sensors_request(domain_id)
     sensors_list = pagination(response.get('SensorDescriptor', [Dict]), limit, page, page_size)
-    sensors_list = update_sensors_list(sensors_list)
+    result_list = []
+    for sensor in sensors_list:
+        record = {
+            'ID': sensor.get('sensorId'),
+            'Name': sensor.get('name'),
+            'Description': sensor.get('Description'),
+            'DomainID': sensor.get('DomainID'),
+            'IPSPolicyID': sensor.get('IPSPolicyID'),
+            'IP Address': sensor.get('sensorIPAddress'),
+            'model': sensor.get('model'),
+            'isFailOver': sensor.get('isFailOver'),
+            'isNTBA': sensor.get('isNTBA'),
+            'isLoadBalancer': sensor.get('isLoadBalancer'),
+            'SerialNumber': sensor.get('SerialNumber'),
+            'SigsetVersion': sensor.get('SigsetVersion'),
+            'DATVersion': sensor.get('DATVersion'),
+            'SoftwareVersion': sensor.get('SoftwareVersion'),
+            'LastSignatureUpdateTs': sensor.get('LastSignatureUpdateTs'),
+            'ReconPolicyID': sensor.get('ReconPolicyID'),
+            'LastModTs': sensor.get('LastModTs'),
+            'nsmVersion': sensor.get('nsmVersion'),
+            'MemberSensors': sensor.get('MemberSensors')
+        }
+        result_list.append(record)
+    sensors_list = result_list
     human_readable = []
     for sensor in sensors_list:
         d = {
@@ -1710,7 +1657,17 @@ def get_ips_policies_command(client: Client, args: Dict) -> CommandResults:
 
     response = client.get_ips_policies_request(domain_id)
     policies_list = pagination(response.get('PolicyDescriptorDetailsList', [Dict]), limit, page, page_size)
-    policies_list = update_policies_list_entries(policies_list)
+    result_list = []
+    for policy in policies_list:
+        record = {
+            'ID': policy.get('policyId'),
+            'Name': policy.get('name'),
+            'DomainID': policy.get('DomainId'),
+            'VisibleToChildren': policy.get('VisibleToChild'),
+            'IsEditable': policy.get('IsEditable'),
+        }
+        result_list.append(record)
+    policies_list = result_list
     human_readable = []
     for policy in policies_list:
         d = {
@@ -1745,9 +1702,25 @@ def get_ips_policy_details_command(client: Client, args: Dict) -> CommandResults
         Returns:
             A CommandResult object with The relevant ips policy details.
     """
-    policy_id = arg_to_number(args.get('policy_id'))
+    policy_id = int(args.get('policy_id', ''))
     response = client.get_ips_policy_details_request(policy_id)
-    policy_details = update_ips_policy_entries(response.get('PolicyDescriptor', {}), policy_id)
+    policy_details = response.get('PolicyDescriptor', {})
+    policy_details = {
+        'ID': policy_id,
+        'Name': policy_details.get('PolicyName'),
+        'CreatedTime': policy_details.get('Timestamp'),
+        'VisibleToChildren': policy_details.get('IsVisibleToChildren'),
+        'Version': policy_details.get('VersionNum'),
+        'ExploitAttacks': policy_details.get('AttackCategory', {}).get('ExpolitAttackList'),
+        'Description': policy_details.get('Description'),
+        'InboundRuleSet': policy_details.get('InboundRuleSet'),
+        'OutboundRuleSet': policy_details.get('OutboundRuleSet'),
+        'OutboundAttackCategory': policy_details.get('OutboundAttackCategory'),
+        'DosPolicy': policy_details.get('DosPolicy'),
+        'DosResponseSensitivityLevel': policy_details.get('DosResponseSensitivityLevel'),
+        'IsEditable': policy_details.get('IsEditable'),
+        'IsLightWeightPolicy': policy_details.get('IsLightWeightPolicy')
+    }
     human_readable = {
         'ID': policy_details.get('ID'),
         'Name': policy_details.get('Name'),
@@ -1823,7 +1796,7 @@ def list_pcap_file_command(client: Client, args: Dict) -> CommandResults:
         Returns:
             A CommandResult object with a list of captured PCAP files.
     """
-    sensor_id = arg_to_number(args.get('sensor_id'))
+    sensor_id = int(args.get('sensor_id', ''))
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
@@ -1861,7 +1834,7 @@ def export_pcap_file_command(client: Client, args: Dict) -> List:
         Returns:
             A CommandResult object with a list of captured PCAP files.
     """
-    sensor_id = arg_to_number(args.get('sensor_id'))
+    sensor_id = int(args.get('sensor_id', ''))
     file_name = args.get('file_name')
     body = {
         'fileName': file_name

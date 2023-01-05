@@ -1,14 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
 
 import json
 import io
@@ -63,11 +52,11 @@ def test_get_session(mocker, mcafeensmv2_client):
     assert expected_session_id == result
 
 
-records_list1 = util_load_json('test_data/commands_test_data.json').get('get_list_firewall_policy')[:2]
-records_list2 = util_load_json('test_data/commands_test_data.json').get('get_list_firewall_policy')[2:]
-records_list2 = records_list2[:2]
-test_pagination_params = [(records_list1, 50, 1, 2),
-                          (records_list2, 50, 2, 2)]
+records_list = util_load_json('test_data/commands_test_data.json').get('get_list_firewall_policy')
+records_list2 = records_list[2:]
+test_pagination_params = [(records_list[:2], 50, 1, 2),
+                          (records_list2[:2], 50, 2, 2),
+                          (records_list[:3], 3, None, None)]
 
 
 @pytest.mark.parametrize('expected_records_list, limit, page, page_size', test_pagination_params)
@@ -81,7 +70,6 @@ def test_pagination(expected_records_list, limit, page, page_size):
             - Returns the wanted records.
     """
     from McAfeeNSMv2 import pagination
-    records_list = util_load_json('test_data/commands_test_data.json').get('get_list_firewall_policy')
     wanted_records_list = pagination(records_list, limit, page, page_size)
     assert wanted_records_list == expected_records_list
 
@@ -265,70 +253,6 @@ def test_check_args_create_rule(rule_type, address, from_address, to_address, nu
         assert expected_error == str(e.value)
 
 
-def test_add_entries_to_alert_list():
-    """
-        Given:
-            - A list of alerts.
-        When:
-            - In get_alerts command.
-        Then:
-            - Returns the alerts list with the updated entries.
-    """
-    from McAfeeNSMv2 import add_entries_to_alert_list
-    records_list = util_load_json('test_data/commands_test_data.json').get('get_alerts_output', {}).get('alertsList')
-    expected_records_list = util_load_json('test_data/commands_test_data.json').get('updated_get_alert_list')
-    result_list = add_entries_to_alert_list(records_list)
-    assert expected_records_list == result_list
-
-
-def test_update_sensors_list():
-    """
-        Given:
-            - A list of sensors.
-        When:
-            - In get_sensors command.
-        Then:
-            - Returns the sensors list with the updated entries.
-    """
-    from McAfeeNSMv2 import update_sensors_list
-    records_list = util_load_json('test_data/commands_test_data.json').get('get_sensors', {}).get('SensorDescriptor')
-    expected_records_list = util_load_json('test_data/commands_test_data.json').get('expected_sensors_list')
-    result_list = update_sensors_list(records_list)
-    assert expected_records_list == result_list
-
-
-def test_update_attacks_list_entries():
-    """
-        Given:
-            - A list of attacks.
-        When:
-            - In get_attacks command.
-        Then:
-            - Returns the attacks list with the updated entries.
-    """
-    from McAfeeNSMv2 import update_attacks_list_entries
-    records_list = util_load_json('test_data/commands_test_data.json').get('get_attacks')
-    expected_records_list = util_load_json('test_data/commands_test_data.json').get('expected_get_attacks_list')
-    result_list = update_attacks_list_entries(records_list)
-    assert expected_records_list == result_list
-
-
-def test_update_ips_policy_entries():
-    """
-        Given:
-            - A Dictionary with ips policy details.
-        When:
-            - In get_ips_policy_details command.
-        Then:
-            - Returns the ips policy details with the updated entries.
-    """
-    from McAfeeNSMv2 import update_ips_policy_entries
-    ips_details = util_load_json('test_data/commands_test_data.json').get('get_ips_policy_details')
-    expected_ips_details = util_load_json('test_data/commands_test_data.json').get('expected_ips_policy')
-    result = update_ips_policy_entries(ips_details, 17)
-    assert expected_ips_details == result
-
-
 update_source_destination_object_params = [
     (
         [
@@ -417,22 +341,6 @@ def test_update_filter():
     expected_filter_arg = 'name:HTTP  IIS 6 0'
     result = update_filter(filter_arg)
     assert expected_filter_arg == result
-
-
-def test_update_alert_entries():
-    """
-        Given:
-            - A dictionary with the alert details.
-        When:
-            - In get_alert_details command.
-        Then:
-            - Returns the updated dictionary with the alert details.
-    """
-    from McAfeeNSMv2 import update_alert_entries
-    get_alert_details = util_load_json('test_data/commands_test_data.json').get('get_alert_details')
-    expected_get_alert_details = util_load_json('test_data/commands_test_data.json').get('expected_get_alert_details')
-    result = update_alert_entries(get_alert_details)
-    assert expected_get_alert_details == result
 
 
 def test_get_addresses_from_response():
@@ -592,6 +500,14 @@ def test_create_firewall_policy_command(mocker, mcafeensmv2_client):
 
 def test_update_firewall_policy_command(mocker, mcafeensmv2_client):
     """
+    There are three use cases that are being checked in this test.
+    1. is_overwrite = false. In this case we want to add the new source rule to the existing one. The result is a list
+        of 2 rule object in SourceAddressObjectList.
+    2. is_overwrite = true. In this case we want to delete the existing rule object from the firewall policy, and
+        replace it with the new one. The result is a list of one rule object in SourceAddressObjectList.
+    3. There are no rules before. In this case there is only a source rule, without a destination rule. We want to
+        check that when we want to add a new rule to an "empty" rule list, in the list will remain only the new rule,
+        without the dummy rule.
     Given:
         - A domain id, name, visible_to_child, description, is_editable, policy_type, rule_description, rule_enabled,
             response_param, direction, source_rule_object_id, source_rule_object_type, destination_rule_object_id,
@@ -727,6 +643,74 @@ def test_update_firewall_policy_command(mocker, mcafeensmv2_client):
             ]
         }
     }
+
+    args3 = {
+        'policy_id': '147',
+        'domain': '0',
+        'destination_rule_object_id': '12',
+        'destination_rule_object_type': 'Range IP V.4'
+    }
+    expected_body3 = {
+        "Name": "n",
+        "DomainId": "0",
+        "VisibleToChild": True,
+        "Description": "update policy",
+        "IsEditable": True,
+        "PolicyType": "ADVANCED",
+        "MemberDetails": {
+            "MemberRuleList": [
+                {
+                    "Description": "r",
+                    "Enabled": True,
+                    "Response": "SCAN",
+                    "Direction": "EITHER",
+                    "SourceAddressObjectList": [
+                        {
+                            "Name": "Range V6 Test",
+                            "RuleObjectId": "117",
+                            "RuleObjectType": "IPV_6_ADDRESS_RANGE",
+                        },
+                        {  # this rule obj is here because in case of overwrite = false, the command
+                            # update_firewall_policy_command updates the actual response object (happens in the first
+                            # check), and it will be used again in the third check. But in the case of
+                            # is_overwrite = false, the command creates a new address object and send it to the api
+                            # request.
+                            "RuleObjectId": 12,
+                            "RuleObjectType": "IPV_4_ADDRESS_RANGE"
+                        }
+                    ],
+                    "DestinationAddressObjectList": [
+                        {
+                            "RuleObjectId": 12,
+                            "RuleObjectType": "IPV_4_ADDRESS_RANGE"
+                        }
+                    ],
+                    "SourceUserObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Any",
+                            "RuleObjectType": "USER"}
+                    ],
+                    "ServiceObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Any",
+                            "RuleObjectType": None,
+                            "ApplicationType": None,
+                        }
+                    ],
+                    "ApplicationObjectList": [],
+                    "TimeObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Always",
+                            "RuleObjectType": None}
+                    ],
+                }
+            ]
+        }
+    }
+
     mocker.patch.object(mcafeensmv2_client, 'get_firewall_policy_request', return_value=get_response)
     update_firewall_policy_command(mcafeensmv2_client, args1)
     http_request.assert_called_with(method='PUT',
@@ -736,6 +720,10 @@ def test_update_firewall_policy_command(mocker, mcafeensmv2_client):
     http_request.assert_called_with(method='PUT',
                                     url_suffix='/firewallpolicy/147',
                                     json_data=expected_body2)
+    update_firewall_policy_command(mcafeensmv2_client, args3)
+    http_request.assert_called_with(method='PUT',
+                                    url_suffix='/firewallpolicy/147',
+                                    json_data=expected_body3)
 
 
 def test_delete_firewall_policy_command(mocker, mcafeensmv2_client):
@@ -844,6 +832,11 @@ def test_create_rule_object_command(mocker, mcafeensmv2_client):
 
 def test_update_rule_object_command(mocker, mcafeensmv2_client):
     """
+    There are two use cases that are being tested here.
+    1. is_overwrite = false. In this case we want to add a new ip address to the existing list. The result is a list
+        of 3 addresses in networkIPV4List. Two that was there before and the new address.
+    2. is_overwrite = true. In this case we want to delete the existing addresses from the rule object, and
+        replace them with the new one. The result is a list of one address in networkIPV4List.
     Given:
         - A domain id, rule_id, description, address_ip_v.4.
     When:

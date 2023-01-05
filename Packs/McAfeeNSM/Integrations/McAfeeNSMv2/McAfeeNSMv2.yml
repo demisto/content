@@ -82,7 +82,7 @@ script:
       isArray: false
     - name: include_rule_objects
       required: false
-      description: Whether to insert the rule objects that are linked to the policy in the context. True- the rule object will be inserted. False- not inserted.
+      description: Whether to insert the rule objects that are linked to the policy in the context.
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -308,7 +308,7 @@ script:
       description: The ID of the newly created firewall policy.
       type: Number
   - name: nsm-update-firewall-policy
-    description: Updates the firewall policy details. If the argument is_overwrite=true, the new values of the provided addresses will replace the existing values, otherwise the addresses will be added to them. If you want to delete a rule, enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination), their value will be as before. If is_overwrite=true, at least one of the rules (source or destination) must be provided. If you provide one of the source/destination fields, you must provide the other one as well.
+    description: Updates the firewall policy details. If the argument is_overwrite=true, the new values of the provided addresses will replace the existing values, otherwise the addresses will be added to them. If you want to delete a rule, enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=false and there is no value in one of the rules (source or destination), their value will be as before. If is_overwrite=true, at least one of the rules (source or destination) must be provided. If you provide one of the source/destination fields, you must provide the other one as well.
     arguments:
     - name: policy_id
       required: true
@@ -648,7 +648,7 @@ script:
       description: Host IPv4 address list.
       type: String
   - name: nsm-create-rule-object
-    description: Adds a new rule object. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value where X is 4 or 6 respectively.
+    description: Adds a new rule object. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
     arguments:
     - name: domain
       required: true
@@ -712,7 +712,7 @@ script:
       description: The ID of the newly created rule object.
       type: Number
   - name: nsm-update-rule-object
-    description: Updates a Rule object. If you want to update the addresses of the rule, if the rule type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, where X is 4 or 6 respectively.
+    description: Updates a Rule object. In case of address rule update, if the rule type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, where X is 4 or 6 respectively.
     arguments:
     - name: domain
       required: true
