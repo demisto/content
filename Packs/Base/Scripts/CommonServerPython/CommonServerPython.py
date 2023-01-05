@@ -32,7 +32,6 @@ from inspect import currentframe
 import demistomock as demisto
 import warnings
 
-# todo: delete this line
 
 def __line__():
     cf = currentframe()
