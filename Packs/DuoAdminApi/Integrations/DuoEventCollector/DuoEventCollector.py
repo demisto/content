@@ -37,7 +37,7 @@ class Client:
 
     def __init__(self, params: Params):  # pragma: no cover type: ignore
         self.params = params.get('params')  # type: ignore[attr-defined]
-        self.admin_api = create_api_call(params.get('host'),   # type: ignore[attr-defined]
+        self.admin_api = create_api_call(params.get('host'),  # type: ignore[attr-defined]
                                          params.get('integration_key'),  # type: ignore[attr-defined]
                                          (params.get('secret_key')).get('password'))  # type: ignore[attr-defined]
 
@@ -47,7 +47,7 @@ class Client:
             try:
                 if request_order[0] == LogType.AUTHENTICATION:
                     response = self.admin_api.get_authentication_log(
-                        mintime=self.params.mintime[LogType.AUTHENTICATION])
+                        mintime=self.params.mintime[LogType.AUTHENTICATION], api_version=2, limit='1000')
                 elif request_order[0] == LogType.ADMINISTRATION:
                     response = self.admin_api.get_administrator_log(
                         mintime=self.params.mintime[LogType.ADMINISTRATION])
@@ -57,7 +57,7 @@ class Client:
                 return response
             except Exception as exc:
                 msg = f'something went wrong with the sdk call {exc}'
-                LOG(msg)
+                demisto.debug(msg)
                 if str(exc) == 'Received 429 Too Many Requests':
                     retries -= 1
         return {}
@@ -91,6 +91,7 @@ class GetEvents:
         Function that responsible for the iteration over the events returned from the Duo api
         """
         events: list = self.make_sdk_call()
+        demisto.debug(f'got {len(events)} events from the API call on {self.request_order[0]}')
         while True:
             if events:
                 self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0])
@@ -99,7 +100,7 @@ class GetEvents:
             try:
                 assert events
             except (IndexError, AssertionError):
-                LOG('empty list, breaking')
+                demisto.debug('empty list, breaking')
                 break
 
     def aggregated_results(self) -> List[dict]:  # pragma: no cover
@@ -109,6 +110,7 @@ class GetEvents:
 
         stored_events = []
         for events in self._iter_events():  # type: ignore
+            demisto.debug(f'Got {len(events)}, events for {self.request_order[0]} logs')
             stored_events.extend(events)
             if len(stored_events) >= int(self.client.params.limit) or not events:
                 return stored_events
@@ -192,6 +194,7 @@ def main():  # pragma: no cover
                 demisto.setLastRun(get_events.get_last_run())
                 demisto_params['push_events'] = True
             if demisto_params.get('push_events'):
+                demisto.debug(f'Sending {len(events)} events to XSIAM')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
