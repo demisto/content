@@ -5,6 +5,13 @@
   "rule_name": "test rule name",
   "alerts_filter": {
     "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "test"
+        }
+      ]
     }
   },
   "fromVersion": "6.10.0",
