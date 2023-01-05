@@ -13,7 +13,7 @@ Converts a simple Array into a textual comma separated string
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value |  |
+| value |  An array of stringsfor example: `["abc","def"]` |
 
 ## Outputs
 ---

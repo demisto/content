@@ -1,10 +1,9 @@
-from typing import Iterable
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
 
 
-def arr_to_csv_command(array: Iterable) -> CommandResults:
+def arr_to_csv_command(array: str) -> CommandResults:
     csv = ','.join(array)
     return CommandResults(
         readable_output=csv

@@ -6,9 +6,9 @@ def test_arr_to_csv_command():
         Given -
            an array
         When -
-            array contains a list of two objects
+            array contains a list of two str objects
         Then -
-            the fumction will return the strings comma seperated
+            the function will return the strings comma seperated
     """
     arr = ["mock", "mocker"]
     command_result = arr_to_csv_command(arr)
