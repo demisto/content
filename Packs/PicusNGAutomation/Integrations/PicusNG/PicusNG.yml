@@ -247,7 +247,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Threat IDs
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
       isArray: false
       name: threat_ids
       required: true
@@ -275,7 +275,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Simulation IDs
+      description: Simulation ID list ("111,222,333,...") or single simulation ID
+        can be given.
       isArray: false
       name: ids
       required: false
@@ -294,7 +295,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Action ID List
+      description: Action ID list ("111,222,333,...") or single action ID can be given.
       isArray: false
       name: action_ids
       required: true
