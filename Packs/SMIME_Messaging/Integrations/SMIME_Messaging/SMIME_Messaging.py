@@ -203,8 +203,6 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
 
 
 def sign_and_encrypt(client: Client, args: Dict):
-    # sys.stderr.write("fatal error\n")
-    # from M2Crypto import BIO, SMIME, X509, m2
 
     message = args.get('message', '').encode('utf-8')
     msg_bio = BIO.MemoryBuffer(message)
