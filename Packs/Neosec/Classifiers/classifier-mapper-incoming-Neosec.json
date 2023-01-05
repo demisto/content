@@ -38,6 +38,15 @@
                 "Endpoint": {
                     "simple": "endpoint"
                 },
+                "Neosec Endpoints": {
+                    "simple": "endpoints"
+                },
+                "Neosec Entities": {
+                    "simple": "entities"
+                },
+                "Neosec Labels": {
+                    "simple": "labels"
+                },
                 "Neosec Recommendations": {
                     "simple": "recommendations"
                 },

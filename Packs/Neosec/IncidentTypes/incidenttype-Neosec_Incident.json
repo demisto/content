@@ -17,13 +17,24 @@
     "default": false,
     "autorun": false,
     "disabled": false,
-    "reputationCalc": 0,
+    "reputationCalc": 2,
     "onChangeRepAlg": 0,
     "layout": "Neosec Incident Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
-        "fieldCliNameToExtractSettings": {}
+        "fieldCliNameToExtractSettings": {
+            "neosecendpoints": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "neosecentities": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
     },
     "fromVersion": "6.5.0"
 }
