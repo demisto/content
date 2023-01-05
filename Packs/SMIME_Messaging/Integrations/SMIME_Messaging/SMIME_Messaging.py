@@ -13,7 +13,7 @@ from tempfile import NamedTemporaryFile
 
 from charset_normalizer import from_bytes
 import warnings
-warnings.simplefilter("default")
+warnings.simplefilter("ignore")
 
 ''' HELPER FUNCTIONS '''
 
