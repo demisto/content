@@ -266,7 +266,7 @@ This command returns simulation result based on action list using threat ID, sim
 | --- | --- | --- |
 | id | Simulation ID. | Required | 
 | run_id | Simulation Run ID. | Required | 
-| threat_ids | Threat IDs. | Required | 
+| threat_ids | Threat ID list ("111,222,333,...") or single threat ID can be given. | Required | 
 | limit | Pagination value. | Optional | 
 | offset | Pagination value. | Optional | 
 
@@ -289,7 +289,7 @@ This command returns mitigation device information as obtained under Picus platf
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Simulation IDs. | Optional | 
+| ids | Simulation ID list ("111,222,333,...") or single simulation ID can be given. | Optional | 
 
 
 #### Context Output
@@ -308,7 +308,7 @@ This command returns action based signature suggestions.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | Mitigation Device ID. | Required | 
-| action_ids | Action ID List. | Required | 
+| action_ids | Action ID list ("111,222,333,...") or single action ID can be given. | Required | 
 
 
 #### Context Output
