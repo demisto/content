@@ -4449,7 +4449,7 @@
                 "Rasterize"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
+                "ewso365_sec_eng_team",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
@@ -4473,7 +4473,6 @@
             "toversion": "6.4.9",
             "timeout": 7000,
             "integrations": [
-                "EWSO365",
                 "Demisto REST API",
                 "EWSO365",
                 "Rasterize",
@@ -4481,7 +4480,6 @@
                 "VirusTotal (API v3)"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
                 "virus_total_v3",
                 "ewso365_sec_eng_team"
             ],
