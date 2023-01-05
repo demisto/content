@@ -182,7 +182,7 @@ script:
   - arguments:
     - default: false
       description: Sample's unique identifier, can be found using the query samples command
-      isArray: false
+      isArray: true
       name: sample_id
       required: true
       secret: false
