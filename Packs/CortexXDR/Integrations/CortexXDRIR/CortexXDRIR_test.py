@@ -375,9 +375,7 @@ def test_get_tenant_info(requests_mock):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1/', headers={}
     )
-    expected_output = {
-        tenant_info_response.get('reply')
-    }
+    expected_output = tenant_info_response.get('reply')
     outputs = get_tenant_info_command(client)
     assert expected_output == outputs
 
