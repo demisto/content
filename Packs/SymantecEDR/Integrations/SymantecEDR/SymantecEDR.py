@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 import dateparser
 import requests
 import urllib3
-import time
 from typing import Callable
 
 # Disable insecure warnings
@@ -374,7 +373,7 @@ def parse_enriched_data_sub_object(data: dict[str, Any]) -> dict:
 
 def parse_user_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
     prefix = f'{obj_prefix}_user' if obj_prefix else 'user'
-    return extract_raw_data(data, [], prefix )
+    return extract_raw_data(data, [], prefix)
 
 
 def parse_xattributes_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
@@ -1950,13 +1949,20 @@ def fetch_incidents(client: Client) -> list:
     if datasets:
         for data in datasets:
             incident_id = data.get('atp_incident_id')
-
-            comments: list = None
+            # incident_uuid = data.get("uuid")
+            file_entries = []
+            file_names = []
             if client.is_fetch_attachment:
-                comments = get_incident_comments_command(client=client, args={
-                                 'incident_id': data.get('atp_incident_id'),
-                                 'start_time': start_time
-                            })
+                comments = get_incident_comments_command(client, args={'incident_id': incident_id, 'start_time': start_time})
+                if comments := comments.outputs:
+                    file_entries.append(fileResult(f'comment_{incident_id}', str(comments)))
+
+                for file_result in file_entries:
+                    if file_result['Type'] != entryTypes['error']:
+                        file_names.append({
+                            'path': file_result.get('FileID', ''),
+                            'name': file_result.get('File', '')
+                        })
 
             incidents.append({
                 # name is required field, must be set
@@ -1968,27 +1974,30 @@ def fetch_incidents(client: Client) -> list:
                 'details': json.dumps(data),
                 'severity': xsoar_severity_map.get(str(data.get('priority_level')), 0),
                 'rawJSON': json.dumps(data),
-                'attachment': comments.outputs if comments else None
+                'attachment': file_names
             })
 
             # Fetch incident for event if set as true
             if client.is_incident_event:
                 #    '1': 'Info', '2': 'Warning', '3': 'Minor', '4': 'Major', '5': 'Critical', '6': 'Fatal'
-                event_for_incident = get_event_for_incident_list_command(client=client, args={
-                                 'query': f'incident: {data.get("uuid")}',
-                                 'start_time': start_time})
+                payload = {
+                    "verb": "query",
+                    "query": f'incident: {data.get("uuid")}',
+                    "start_time": start_time
+                }
+                response = client.query_request_api('/atpapi/v2/incidentevents', payload)
+                results = response.get('result')
 
-                if outputs := event_for_incident.outputs:
-                    for event in outputs:
+                if len(results) > 1:
+                    for event in results:
                         incidents.append({
-                            'name': f'SEDR Alert : Events Incident link {incident_id} - '
-                                    f'Type ID {event.get("type_id")} {event.get("event_actor_file_name","")}, '
-                                    f'logged: {event.get("enriched_data_rule_description", "")}',
+                            'name': f'SEDR Event {incident_id}, {event.get("event_uuid")} - {event.get("type_id")}',
                             'occurred': event.get('device_time'),
                             'dbotMirrorId': str(event.get('event_uuid')),
                             'details': json.dumps(event),
                             'rawJSON': json.dumps(event),
                         })
+
     now_iso = iso_creation_date('now')
     demisto.setLastRun({'start_time': now_iso})
     return incidents
@@ -2294,7 +2303,7 @@ def main() -> None:
         fetch_limit = int(params.get('fetch_limit', 10))
         fetch_incident_event = params.get('isIncidentsEvent', False)
         fetch_attachment = params.get('isIncidentComment', False)
-        fetch_status = argToList(params.get('fetch_status',  'New'))
+        fetch_status = argToList(params.get('fetch_status', 'New'))
         fetch_priority = argToList(params.get('fetch_priority', 'High,Medium'))
 
         client = Client(base_url=server_url, verify=verify_certificate, proxy=proxy, client_id=client_id,
@@ -2366,9 +2375,8 @@ def main() -> None:
             "symantec-edr-event-list": get_event_list_command,
 
             # file Sandbox (Reputation command)
-            #"file": sandbox_issue_polling_command,
+            # "file": sandbox_issue_polling_command,
             "file": file_scheduled_polling_command
-
         }
         command_output: CommandResults | str = ""
         if command == "test-module":
@@ -2376,7 +2384,7 @@ def main() -> None:
         elif command == 'fetch-incidents':
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
-            command_output = incidents
+            command_output = "OK"
         elif command in commands:
             command_output = commands[command](client, args)
         else:

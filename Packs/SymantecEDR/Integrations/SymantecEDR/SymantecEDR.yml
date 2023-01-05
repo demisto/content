@@ -21,7 +21,6 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Retrieve incident related events from EDR database
-  defaultvalue: 'false'
   display: Fetch incidents Events
   name: isIncidentsEvent
   required: false
@@ -33,13 +32,13 @@ configuration:
   type: 8
 - additionalinfo: If not selected, will fetch New Incidents.
   defaultvalue: Open
-  display: Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open,In-Progress
+  display: Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., New,In-Progress
   name: fetch_status
   options:
   - Open
   - In-Progress
   - Waiting
-  - Close
+  - Closed
   required: false
   type: 16
 - additionalinfo: If not selected, will fetch High and Medium Incidents.
@@ -52,16 +51,15 @@ configuration:
   - High
   required: false
   type: 16
-- additionalinfo: First Fetch timestamp Default 3 days
-  defaultvalue: 60 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 15 minutes, 12 hours, 7 days)
+- additionalinfo: First Fetch timestamp Default 3 days. The maximum time range is 30 days. Example, If configure as 60 days based on current datetime, then data will be fetch specify the time range using start_time=60 days and end_time=30 days
+  defaultvalue: '3 days'
+  display: First fetch timestamp (<number> <time unit>, e.g., 10 minutes, 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Max Fetch limit is 50
-  defaultvalue: '10'
+- defaultvalue: '50'
   display: Maximum number of incidents to fetch
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -1786,13 +1784,14 @@ script:
       defaultValue: true
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     - name: file
-      description: The file hash (MD5, SHA1, or SHA256).
+      description: The file hash SHA256.
       required: true
       isArray: false
       defaultValue: ""
+      default: true
     - name: hide_polling_output
       deprecated: true
       description: ''
@@ -1813,7 +1812,7 @@ script:
     execution: false
     name: file
     polling: true
-  dockerimage: demisto/python3:3.10.9.42008
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: true
   longRunning: false
