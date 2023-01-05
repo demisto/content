@@ -145,22 +145,6 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-                        "isVisible": true,
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Linked Incidents",
-                        "static": false,
-                        "type": "linkedIncidents",
-                        "w": 1,
-                        "x": 1,
-                        "y": 6
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
                         "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "maxH": null,
                         "maxW": 3,
@@ -294,7 +278,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "closenotes",
-                                "height": 22,
+                                "height": 44,
                                 "id": "incident-closeNotes-field",
                                 "index": 2,
                                 "sectionItemType": "field",
@@ -318,11 +302,22 @@
                         "isVisible": true,
                         "items": [
                             {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 53,
+                                "id": "dd0bebb0-6e6d-11ed-9401-c3964ea4225e",
+                                "index": 0,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "details",
                                 "height": 106,
                                 "id": "incident-details-field",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -332,17 +327,8 @@
                                 "fieldId": "neosecrecommendations",
                                 "height": 106,
                                 "id": "55b9d830-5f62-11ed-a981-49b13658a962",
-                                "index": 1,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "description",
-                                "height": 22,
-                                "id": "dd0bebb0-6e6d-11ed-9401-c3964ea4225e",
                                 "index": 2,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -356,6 +342,49 @@
                         "w": 1,
                         "x": 1,
                         "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-03f48e40-8d12-11ed-bc39-19a1b4673094",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "neosecentities",
+                                "height": 106,
+                                "id": "1609c460-8d12-11ed-bc39-19a1b4673094",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "neosecendpoints",
+                                "height": 106,
+                                "id": "14140ee0-8d12-11ed-bc39-19a1b4673094",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "neoseclabels",
+                                "height": 22,
+                                "id": "182ccb70-8d12-11ed-bc39-19a1b4673094",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Neosec Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
                     }
                 ],
                 "type": "custom"
