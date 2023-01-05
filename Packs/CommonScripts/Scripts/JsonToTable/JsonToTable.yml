@@ -27,7 +27,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.4.29342
 runas: DBotWeakRole
 tests:
 - JsonToTable - Test Playbook
