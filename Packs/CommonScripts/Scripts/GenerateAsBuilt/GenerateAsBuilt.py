@@ -886,7 +886,7 @@ def get_playbook_dependencies(playbook_name):
 
 def get_custom_automations():
     r = post_api_request(DEMISTO_AUTOMATIONS_PATH, {"query": "system:F AND hidden:F"}).get("scripts")
-    rd = SortedTableData(r, "Custom Automatons", "name")
+    rd = SortedTableData(r, "Custom Automations", "name")
     return rd
 
 
@@ -969,14 +969,12 @@ def main():  # pragma: no cover
     # Given a playbook is passed, we generate a use case document, instead of the platform as build.
     if playbook := args.get("playbook"):
         playbook_use_case(playbook, author, customer)
-        return
 
     else:
         # If no playbook is passed, we generate a platform as built.
         max_request_size = args.get("size", 1000)
         max_days = args.get("days", 7)
         platform_as_built_use_case(max_request_size, max_days, author, customer)
-        return
 
 
 if __name__ in ('__builtin__', 'builtins'):
