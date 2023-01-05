@@ -6702,6 +6702,9 @@ class CommandResults:
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
+    :type tags: ``list``
+    :param tags:  must be a list, default value is None. Used to tag war room entries.
+
     :type entry_type: ``int`` code of EntryType
     :param entry_type: type of return value, see EntryType
 
@@ -6725,6 +6728,7 @@ class CommandResults:
                  indicator=None,
                  ignore_auto_extract=False,
                  mark_as_note=False,
+                 tags=None,
                  scheduled_command=None,
                  relationships=None,
                  entry_type=None,
@@ -6765,6 +6769,7 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
+        self.tags = tags
         self.scheduled_command = scheduled_command
         self.relationships = relationships
         self.execution_metrics = execution_metrics
@@ -6776,6 +6781,7 @@ class CommandResults:
     def to_context(self):
         outputs = {}  # type: dict
         relationships = []  # type: list
+        tags = []  # type: list
         if self.readable_output:
             human_readable = self.readable_output
         else:
@@ -6800,6 +6806,9 @@ class CommandResults:
 
         if self.raw_response:
             raw_response = self.raw_response
+
+        if self.tags:
+            tags = self.tags
 
         if self.ignore_auto_extract:
             ignore_auto_extract = True
@@ -6847,6 +6856,7 @@ class CommandResults:
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
+            'Tags': tags,
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': bool(ignore_auto_extract),
             'Note': mark_as_note,
