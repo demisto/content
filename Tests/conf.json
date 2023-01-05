@@ -606,6 +606,7 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
+            "timeout": 600,
             "instance_names": "ms_graph_mail_dev"
         },
         {
