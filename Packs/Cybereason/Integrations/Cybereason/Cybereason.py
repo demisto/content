@@ -26,7 +26,7 @@ FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
 FETCH_BY = demisto.params().get('fetch_by', 'MALOP CREATION TIME')
-IS_EPP_ENABLED = demisto.params().get('enable_epp_poll', False)
+IS_EPP_ENABLED = argToBoolean(demisto.params().get('enable_epp_poll', False))
 
 STATUS_MAP = {
     'To Review': 'TODO',
@@ -553,7 +553,7 @@ def get_non_edr_malop_data(client, start_time):
     malop_data = poll_malops(client, start_time)
     non_edr_malop_data = list()
     for malops in malop_data['malops']:
-        if malops.get('edr') is False:
+        if not malops.get('edr'):
             non_edr_malop_data.append(malops)
 
     malop_data.clear()
@@ -1471,7 +1471,7 @@ def malop_to_incident(malop: str) -> dict:
         raise ValueError("Cybereason raw response is not valid, malop is not dict")
 
     guid_string = malop.get('guidString', '')
-    if guid_string == "":
+    if not guid_string:
         guid_string = malop.get('guid', '')
     incident = {
         'rawJSON': json.dumps(malop),
