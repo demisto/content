@@ -376,11 +376,10 @@ class Client(CoreClient):
         return reply.get('reply')
 
     def get_tenant_info(self):
-        request_data: Dict[str, Any] = {}
         reply = self._http_request(
             method='POST',
             url_suffix='/system/get_tenant_info/',
-            json_data={'request_data': request_data},
+            json_data={'request_data': {}},
             timeout=self.timeout
         )
         return reply.get('reply',{})
