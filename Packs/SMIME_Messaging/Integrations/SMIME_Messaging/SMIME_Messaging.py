@@ -3,11 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from contextlib import redirect_stderr
 
-with redirect_stderr(None):  # redirects Stderr: <frozen importlib._bootstrap> ImportWarning
-    from M2Crypto import BIO, SMIME, X509, m2
-
+from M2Crypto import BIO, SMIME, X509, m2
 from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
