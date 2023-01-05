@@ -249,6 +249,27 @@ def test_unisolate_machine_command(mocker):
     assert command_output[0].outputs_prefix == "Cybereason"
 
 
+def test_get_non_edr_malop_data(mocker):
+    from Cybereason import get_non_edr_malop_data
+    from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://integration.cybereason.net:8443",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {
+        "lastUpdateTime": 1672848355574
+    }
+    raw_response = json.loads(load_mock_response('poll_malops.json'))
+    mocker.patch("Cybereason.poll_malops", return_value=raw_response)
+    command_output = get_non_edr_malop_data(client, args)
+    try:
+        assert command_output[0]['guid'] == 'AAAA0yUlnvXGQODT'
+    except Exception as e:
+        raise Exception(f'{str(e)} test {command_output}')
+
+
 def test_query_malops_command(mocker):
     from Cybereason import query_malops_command
     from Cybereason import Client
