@@ -1,6 +1,5 @@
-id: c6dc783f-2e2f-4ca7-803c-9cd5a0c69b4c
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+id: IPv4 extraction test
+version: -1
 name: IPv4 extraction test
 description: Test extraction flow of IPv4 in XSOAR
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -459,3 +459,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0

@@ -1,6 +1,5 @@
-id: 05044b2b-5b95-41a0-8a4e-f8cab8e2d3c2
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+id: IPv4 CIDR extraction test
+version: -1
 name: IPv4 CIDR extraction test
 description: Test the extraction flow of an IPv4 CIDR in XSOAR
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -80,6 +80,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -458,3 +459,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0

@@ -1,6 +1,5 @@
-id: e8f914c6-91b1-40f4-8f2a-c917822a91a6
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+id: IPv6 extraction test
+version: -1
 name: IPv6 extraction test
 description: Test the flow of IPv6 extraction in XSOAR
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -80,6 +80,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -416,3 +417,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0

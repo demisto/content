@@ -1,6 +1,5 @@
-id: 8bf7bd3e-2819-40d5-8d27-6cfbb1e672a3
-version: 8
-vcShouldKeepItemLegacyProdMachine: false
+id: File extraction test
+version: -1
 name: File extraction test
 description: Test extraction flow of file indicator in XSOAR
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -45,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "67"
@@ -119,8 +120,7 @@ tasks:
       key:
         simple: valid_file
       value:
-        simple: '"2AA7B11DA27EB0B8F9B9716CB0E0DA167328FDA58598FDC39040822EAA32484E09E5AF656B991B9EACCA6F3FB10481076527D2FFC2167932034688F3CF7EE7D4",
-          "FC9E8936926E587F97C1E8AA191C60443DB78930AF9C91CCB0F5ED6584A0D09D","5B02904C698856A333BBEDDFE7AC091AD792F134","fa9c00b7992b357d24c31058e5f70fdc","384:ILlcFY0kXphtLAyKYYIqvtdwb3qLLKPVc+vclRgEKsNLOcK0a1KyKJYyKiKEK6Kj:kl8Y0k5hRAyKvDtd03WLKNPvW/K4XKv9"'
+        simple: '"2AA7B11DA27EB0B8F9B9716CB0E0DA167328FDA58598FDC39040822EAA32484E09E5AF656B991B9EACCA6F3FB10481076527D2FFC2167932034688F3CF7EE7D4", "FC9E8936926E587F97C1E8AA191C60443DB78930AF9C91CCB0F5ED6584A0D09D","5B02904C698856A333BBEDDFE7AC091AD792F134","fa9c00b7992b357d24c31058e5f70fdc","384:ILlcFY0kXphtLAyKYYIqvtdwb3qLLKPVc+vclRgEKsNLOcK0a1KyKJYyKiKEK6Kj:kl8Y0k5hRAyKvDtd03WLKNPvW/K4XKv9"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -425,3 +425,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0

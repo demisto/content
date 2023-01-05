@@ -1,6 +1,5 @@
-id: 149447ef-1586-4d53-887c-0f4379ddc248
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: Domain extraction test
+version: -1
 name: Domain extraction test
 description: Test extraction flow of domain indicator in XSOAR
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -80,6 +80,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -119,8 +120,7 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: "\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\",
-          \n\"defang[.]com\",  \n\"見.香港\""
+        simple: "\"www.test.com\", \n\"test.com\", \n\"www.xn--t1e2s3t4.com\", \n\"ötest.com\", \n\"defang[.]com\",  \n\"見.香港\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -671,3 +671,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0
