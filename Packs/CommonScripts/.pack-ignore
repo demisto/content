@@ -107,3 +107,12 @@ SIG](https://www.first.org/cvss
 Docs](https://xsoar.pan.dev/docs
 DPO
 GDPR
+DPIA
+PII
+CISO
+CIDRBiggerThanPrefix
+FiltersAndTransformers
+GreaterCidrNumAddresses
+InRange
+AfterRelativeDate
+CheckIfSubdomain
