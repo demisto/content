@@ -41,8 +41,9 @@ args:
   - zipfile
   required: false
   secret: false
-  comment: Unzip a file using fileName or entryID to specify a file. Unzipped files
-    will be loaded to the War Room and names will be put into the context.
+comment: Unzip a file using fileName or entryID to specify a file. Unzipped files
+  will be loaded to the War Room and names will be put into the context.
+commonfields:
   id: UnzipFile
   version: -1
 enabled: true
