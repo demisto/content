@@ -9,7 +9,7 @@ import urllib3
 from typing import Dict
 
 # Disable insecure warnings
-urllib3.disable_warnings() # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ CONSTANTS """
 
