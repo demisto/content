@@ -2014,7 +2014,7 @@ def github_add_assignee_command():
     if not_assigned_users:
         message += f'\nThe following users were not assigned to #{pr_number}: \n{not_assigned_users} \n' \
                    f'Verify that the users exist and that you have the right permissions.'
-    return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=response,
+    return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=assignees_response,
                                   raw_response=response, readable_output=message))
 
 

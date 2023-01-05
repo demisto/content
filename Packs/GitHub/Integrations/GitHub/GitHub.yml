@@ -4163,10 +4163,61 @@ script:
     name: GitHub-add-assignee
     outputs:
       - contextPath: GitHub.Assignees.assignees
-        description: assignees to the issue
+        description: Assignees to the issue
         type: String
       - contextPath: GitHub.Assignees.assignees.login
-        description: login of assigned user
+        description: Login of assigned user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.gists_url
+        description: Gists URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.following_url
+        description: Following URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.followers_url
+        description: Followers URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.subscriptions_url
+        description: Subscriptions URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.received_events_url
+        description: Received event URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.events_url
+        description: Events URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.avatar_url
+        description: Avatar URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.url
+        description: URL for user for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.starred_url
+        description: Starred URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.organizations_url
+        description: Organizations URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.repos_url
+        description: Repos URL for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.gravatar_id
+        description: Gravatar_id for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.site_admin
+        description: Is user site admin
+        type: String
+      - contextPath: GitHub.Assignees.assignees.node_id
+        description: Node ID for user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.type
+        description: Type of user
+        type: String
+      - contextPath: GitHub.Assignees.assignees.id
+        description: User ID
+        type: String
+      - contextPath: GitHub.Assignees.assignees.html_url
+        description: HTML URL for user
         type: String
   dockerimage: demisto/pyjwt3:1.0.0.43045
   feed: false
