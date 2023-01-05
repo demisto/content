@@ -1261,8 +1261,9 @@ def get_user_tokens(user_id):
 def search_in_mailboxes(accounts: list[str], only_return_account_names: bool) -> None:
     '''
     Searching for email messages within accounts based on a query,
+    Results are returned only if messages matching the query are found.
     Returns only the names of the accounts where the messages were found
-    if the only_return_account_names parameter is true,
+    if the only_return_account_names argument is true,
     Otherwise, returns all the information about the message, including its content.
     '''
     futures: list = []
