@@ -15,7 +15,8 @@ filter _raw_log contains "[info]" or _raw_log contains "[alert]" or _raw_log con
     xdm.source.ipv4 = sourceip,
     xdm.source.user.identifier = error_status_code,
     xdm.target.resource.id = Source_code_file_line,
-    xdm.alert.description = message;
+    xdm.alert.description = message
+    xdm.event.type = "Error Logs";
 filter _raw_log contains "\"ACL" or _raw_log contains "\"BASELINE_CONTROL" or _raw_log contains "\"BIND" or _raw_log contains "\"CHECKIN" or _raw_log contains "\"CHECKOUT" or _raw_log contains "\"CONNECT" or _raw_log contains "\"COPY" or _raw_log contains "\"DELETE" or _raw_log contains "\"GET" or _raw_log contains "\"HEAD" or _raw_log contains "\"LABEL" or _raw_log contains "\"LINK" or _raw_log contains "\"LOCK" or _raw_log contains "\"MERGE" or _raw_log contains "\"MKACTIVITY" or _raw_log contains "\"MKCALENDAR" or _raw_log contains "\"MKCOL" or _raw_log contains "\"MKREDIRECTREF" or _raw_log contains "\"MKWORKSPACE" or _raw_log contains "\"MOVE" or _raw_log contains "\"OPTIONS" or _raw_log contains "\"ORDERPATCH" or _raw_log contains "\"PATCH" or _raw_log contains "\"POST" or _raw_log contains "\"PRI" or _raw_log contains "\"PROPFIND" or _raw_log contains "\"PROPPATCH" or _raw_log contains "\"PUT" or _raw_log contains "\"REBIND" or _raw_log contains "\"REPORT" or _raw_log contains "\"SEARCH" or _raw_log contains "\"TRACE" or _raw_log contains "\"UNBIND" or _raw_log contains "\"UNCHECKOUT" or _raw_log contains "\"UNLINK" or _raw_log contains "\"UNLOCK" or _raw_log contains "\"UPDATE" or _raw_log contains "\"UPDATEREDIRECTREF" or _raw_log contains "\"VERSION_CONTROL"
 // Extract fields
 | alter Username = arrayindex(regextract(_raw_log,"(\S+)\s\[\d+\/"),0),
