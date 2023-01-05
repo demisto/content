@@ -31,7 +31,7 @@ def main():
         timezone = args.get('timezone')
         fmt = args.get('format')
 
-        # Convert UTC to correct format
+        # Convert UTC to correct format and datetime type
         utc_time = determine_correct_format(time=time, fmt=fmt)
 
         # Convert to desired Timezone and format
