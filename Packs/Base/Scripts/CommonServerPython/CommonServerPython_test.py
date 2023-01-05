@@ -1747,6 +1747,12 @@ class TestCommandResults:
         with pytest.raises(ValueError, match='outputs_prefix'):
             CommandResults(outputs=[])
 
+    def test_with_tags(self):
+        from CommonServerPython import CommandResults
+        command_results = CommandResults(tags=['tag1', 'tag2'])
+        assert command_results.tags == ['tag1', 'tag2']
+        assert command_results.to_context()['Tags'] == ['tag1', 'tag2']
+
     def test_dbot_score_is_in_to_context_ip(self):
         """
         Given
@@ -2124,7 +2130,6 @@ class TestCommandResults:
             'IndicatorTimeline': [],
             'Relationships': [],
             'IgnoreAutoExtract': False,
-            'Tags': [],
             'Note': False
         }
 
@@ -2211,7 +2216,6 @@ class TestCommandResults:
             },
             'IndicatorTimeline': [],
             'Relationships': [],
-            'Tags': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -2244,7 +2248,6 @@ class TestCommandResults:
             },
             'IndicatorTimeline': [],
             'Relationships': [],
-            'Tags': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -2279,7 +2282,6 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'Tags': [],
             'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
@@ -5210,7 +5212,6 @@ class TestCommonTypes:
             'IgnoreAutoExtract': False,
             'Note': False,
             'Relationships': [],
-            'Tags': []
         }
 
     def test_create_domain(self):
@@ -5365,7 +5366,6 @@ class TestCommonTypes:
             'IgnoreAutoExtract': False,
             'Note': False,
             'Relationships': [],
-            'Tags': []
         }
 
     def test_create_url(self):
@@ -5475,7 +5475,6 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Tags': [],
             'Relationships': []
         }
 
@@ -5598,7 +5597,6 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Tags': [],
             'Relationships': []
         }
 
@@ -5673,7 +5671,6 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Tags': [],
             'Relationships': []
         }
 
@@ -5775,7 +5772,6 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Tags': [],
             'Relationships': []
         }
 
@@ -6180,7 +6176,6 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'Relationships': [],
             'IgnoreAutoExtract': False,
-            'Tags': [],
             'Note': False
         }
 
@@ -6278,7 +6273,6 @@ class TestCommonTypes:
             },
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
-            'Tags': [],
             'Note': False,
             'Relationships': []
         }
