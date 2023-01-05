@@ -20,9 +20,6 @@ def convert_UTC_Timezone_command(time: datetime, timezone: str, fmt: str) -> Com
     )
 
 
-''' MAIN '''
-
-
 def main():
     try:
         # Get Args

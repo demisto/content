@@ -32,5 +32,4 @@ def test_determine_correct_format():
     value = "2023-01-04 18:14:18"
     format = "%Y-%m-%d %H:%M:%S"
     time_as_datetime_type = determine_correct_format(time=value, fmt=format)
-    assert time_as_datetime_type.day== 4
-        
+    assert time_as_datetime_type.day == 4
