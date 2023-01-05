@@ -1,14 +1,13 @@
 id: TIM - Indicator Relationships Analysis
 version: -1
 name: TIM - Indicator Relationships Analysis
-description: |+
-  This playbooks allows you to analyze indicator relationships for investigation purposes. the playbook will provide the following relationships:
-  - Related IOCs
-  - Related Attack Patterns
-  - Related Campaign
-  - IOC's related to the campaign
-  - Report that contains the campaign
-
+description: |-
+  This playbook is designed to assist with investigation by providing analysis of indicator relationships. The following information is included:
+  - Indicators of compromise (IOCs) related to the investigation
+  - Attack patterns related to the investigation
+  - Campaigns related to the investigation
+  - IOCs associated with the identified campaigns
+  - Reports containing details on the identified campaigns
 starttaskid: "0"
 tasks:
   "0":
@@ -440,7 +439,7 @@ tasks:
     task:
       id: 8aa12485-1f21-42c5-8e89-0c1d13322335
       version: -1
-      name: Is there a IP type indicators??
+      name: Is there a IP type indicators?
       description: check if IP type indicators exists.
       type: condition
       iscommand: false

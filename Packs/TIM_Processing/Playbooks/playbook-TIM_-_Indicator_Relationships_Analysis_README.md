@@ -1,11 +1,9 @@
-This playbooks allows you to analyze indicator relationships for investigation purposes. the playbook will provide the following relationships:
-- Related IOCs
-- Related Attack Patterns
-- Related Campaign
-- IOC's related to the campaign
-- Report that contains the campaign
-
-
+This playbook is designed to assist with investigation by providing analysis of indicator relationships. The following information is included:
+- Indicators of compromise (IOCs) related to the investigation
+- Attack patterns related to the investigation
+- Campaigns related to the investigation
+- IOCs associated with the identified campaigns
+- Reports containing details on the identified campaigns
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
