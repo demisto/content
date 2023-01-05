@@ -9,6 +9,8 @@ from CommonServerPython import *
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
+DEFAULT_SERVICE = "unshorten.me"  # Default service to use if `redirect_limit` is not specified.
+DEFAULT_REDIRECT_LIMIT = "0"  # Default limit to use if `redirect_limit` is not specified.
 
 class URLUnshorteningData(NamedTuple):
     """
@@ -278,8 +280,8 @@ class BuiltInShortener(URLUnshortingService):
     service_name = "Built-In"
 
     def resolve_url(self, url: str) -> URLUnshorteningData:
-        encountered_error: bool = False
-        original_url: str = url
+        encountered_error = False
+        original_url = url
 
         try:
             response: Response = self._http_request(
@@ -331,7 +333,7 @@ def unshorten_url(service_name: str, url: str, redirect_limit: int, session_veri
         session_verify (bool): Whether to verify the SSL certificate of the request.
         redirect_limit (int): A maximum number of recursions to run. Use 0 for unlimited.
     """
-    error_message: str = "There was an error while attempting to unshorten the final URL in the redirect chain.\n" \
+    error_message = "There was an error while attempting to unshorten the final URL in the redirect chain.\n" \
                          "It is possible that the unshortening process was not fully completed.\n\n"
 
     service_class = URLUnshortingService.find_matching_service(service_name=service_name)
@@ -365,21 +367,18 @@ def unshorten_url(service_name: str, url: str, redirect_limit: int, session_veri
 
 
 def main():  # pragma: no cover
-    default_service = "unshorten.me"
-    default_redirect_limit: int = 0  # Default value to use if `redirect_limit` is None
-
     args = demisto.args()
 
     try:
         url: str = args["url"]
-        service: str = args.get("service", default_service)
-        redirect_limit = arg_to_number(args.get("redirect_limit", str(default_redirect_limit)))
+        service: str = args.get("service", DEFAULT_SERVICE)
+        redirect_limit = arg_to_number(args.get("redirect_limit", DEFAULT_REDIRECT_LIMIT))
 
         # `arg_to_number` returns `None` if int conversion was unsuccessful.
         if redirect_limit is None:
             raise ValueError("'redirect_limit' must be a natural number.")
 
-        session_verify = not argToBoolean(demisto.args().get("insecure", "False"))
+        session_verify = not argToBoolean(args.get("insecure", "False"))
 
         result = unshorten_url(service_name=service,
                                url=url,
