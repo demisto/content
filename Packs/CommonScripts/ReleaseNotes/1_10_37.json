@@ -1,1 +1,1 @@
-{"breakingChanges":true,"breakingChangesNotes":"The script: GenerateAsBuilt moved to *CommonScripts* pack. Make sure to update the *CommonScripts* pack to the latest version in order to use this script."}
+{"breakingChanges":true,"breakingChangesNotes":"The scripts: IsInCidrRanges, IsNotInCidrRanges, IsRFC1918Address, LowerCidrNumAddresses, ContainsArray moved to *FiltersAndTransformers* pack. Make sure to update the *FiltersAndTransformers* pack to the latest version in order to use these scripts."}
