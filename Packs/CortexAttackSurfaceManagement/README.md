@@ -18,8 +18,8 @@ Automated remediation is only possible when the right conditions are met.  These
 - One of the following attack surface rule IDs:
   - Insecure OpenSSH
   - RDP Server
-  - Telnet
-  - Unencrypted FTP
+  - Telnet Server
+  - Unencrypted FTP Server
   - OpenSSH
   - SSH Server
 - Asset is a cloud compute instance:	
