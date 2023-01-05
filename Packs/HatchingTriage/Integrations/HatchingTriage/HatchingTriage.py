@@ -62,7 +62,10 @@ def query_samples(client, **args) -> CommandResults:
 
 
 def submit_sample(client: Client, **args) -> CommandResults:
-    data = {"kind": args.get("kind"), "interactive": False}
+    data = {
+        "kind": args.get("kind"),
+        "interactive": argToBoolean(args.get("interactive", False))
+    }
 
     if args.get("profiles", []):
         profiles_data = []
@@ -152,7 +155,7 @@ def set_sample_profile(client: Client, **args) -> str:
 
 def get_static_report(client: Client, **args) -> CommandResults:
     """
-    Get's the static analysis report from a given sample
+    Gets the static analysis report for a given sample id
     """
     sample_id = args.get("sample_id")
 
