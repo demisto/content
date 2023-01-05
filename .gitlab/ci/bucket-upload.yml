@@ -41,6 +41,7 @@
     - |
       if [[ $TEST_UPLOAD == "true" ]]; then
         section_start "Upload packs_dependencies.json to GCP" --collapsed
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
         gsutil cp $ARTIFACTS_FOLDER/packs_dependencies.json "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json"
         section_end "Upload packs_dependencies.json to GCP"
       fi
