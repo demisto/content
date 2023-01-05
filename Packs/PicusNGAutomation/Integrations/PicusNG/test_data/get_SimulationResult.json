@@ -1,0 +1,26 @@
+{
+  "simulation_id": 5195,
+  "simulation_run_id": 19892,
+  "template_id": 4641,
+  "started_at": 1653656664933,
+  "completed_at": 1653658289564,
+  "status": "COMPLETED",
+  "results": {
+    "prevention": {
+      "security_score": 35,
+      "threat": {
+        "total_count": 43,
+        "blocked_count": 15,
+        "not_blocked_count": 28,
+        "not_tested_count": 0
+      },
+      "attacker_objectives": {
+        "total_count": 43,
+        "unachived_count": 15,
+        "achived_count": 28,
+        "not_tested_count": 0
+      }
+    },
+    "has_detection_analysis": false
+  }
+}
