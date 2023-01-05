@@ -105,12 +105,21 @@ def get_sample(client: Client, **args) -> CommandResults:
 
 
 def get_sample_summary(client: Client, **args) -> CommandResults:
-    sample_id = args.get("sample_id")
-    r = client._http_request("GET", f"samples/{sample_id}/summary")
+    outputs = []
+    for sample_id in argToList(args.get("sample_id", "")):
+        try:
+            res = client._http_request(
+                "GET", f"samples/{sample_id}/summary", ok_codes=(200,)
+            )
+        except DemistoException as e:
+            e.message += f" - Sample ID: {sample_id}"
+            raise
+
+        outputs.append(res)
 
     return CommandResults(
         outputs_prefix="Triage.sample-summaries", outputs_key_field="sample",
-        outputs=r
+        outputs=outputs
     )
 
 
