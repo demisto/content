@@ -77,12 +77,6 @@ script:
       required: true
       defaultValue: pre
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
-    - default: false
       description: Friendly name of the rule.
       isArray: false
       name: name
@@ -277,22 +271,21 @@ script:
       required: false
     - auto: PREDEFINED
       default: false
-      defaultValue: '10'
-      description: The maximum number of results to return.
+      defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
     - default: false
-      description: Results paging offset.
       isArray: false
-      name: offset
+      name: page
       required: false
+      description: The maximum number of results to return.
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
       isArray: false
-      name: tsg_id
+      name: page_size
       required: false
+      description: The maximum number of results to return.
     - default: false
       description: A specific security rule to return. If not specified, all security rules will be returned.
       name: rule_id
@@ -368,12 +361,6 @@ script:
       isArray: false
       name: description
       required: false
-    - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
     deprecated: false
     description: Push the candidate configuration.
     execution: false
@@ -397,12 +384,6 @@ script:
       isArray: false
       name: id
       required: true
-    - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
     - auto: PREDEFINED
       default: false
       description: Folder Location for the Object.
@@ -515,6 +496,12 @@ script:
       isArray: false
       name: negate_destination
       required: false
+    - default: false
+      description: This argument specifies rather to append or overwrite the....
+      isArray: false
+      name: overwrite
+      required: false
+      defaultValue: false
     deprecated: false
     description: Edit an existing security rule.
     execution: false
@@ -571,12 +558,6 @@ script:
       isArray: false
       name: id
       required: true
-    - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
     - auto: PREDEFINED
       default: false
       description: Folder Location for the Object.
@@ -642,12 +623,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
-    - default: false
       description: Query data
       isArray: false
       name: query_data
@@ -674,21 +649,10 @@ script:
       name: job_id
       required: false
     - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
-    - default: false
       defaultValue: '200'
       description: The maximum number of results to return.
       isArray: false
       name: limit
-      required: false
-    - default: false
-      description: Results paging offset.
-      isArray: false
-      name: offset
       required: false
     deprecated: false
     description: List configuration jobs.
@@ -746,12 +710,6 @@ script:
       isArray: false
       name: rule_id
       required: true
-    - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
     deprecated: false
     description: Delete a security rule.
     execution: false
@@ -771,12 +729,6 @@ script:
       - Mobile Users Explicit Proxy
       required: true
       defaultValue: Shared
-    - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
     - default: false
       description: Friendly name of the address object.
       isArray: false
@@ -837,12 +789,6 @@ script:
       isArray: false
       name: id
       required: true
-    - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
-      required: false
     deprecated: false
     description: Delete address object
     execution: false
@@ -866,37 +812,23 @@ script:
       - Mobile Users Explicit Proxy
       required: true
       defaultValue: Shared
-    - default: false
-      description: Name of the security object.
-      isArray: false
-      name: name
-      required: false
     - auto: PREDEFINED
       default: false
-      defaultValue: '10'
-      description: The maximum number of results to return.
+      defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
-      required: false
-    - default: false
-      description: Results paging offset.
-      isArray: false
-      name: offset
-      required: false
-    - default: false
-      description: Tenant services group ID. If not provided, the tsg_id integration
-        parameter will be used as the default.
-      isArray: false
-      name: tsg_id
       required: false
     - default: false
       isArray: false
       name: page
       required: false
+      description: The maximum number of results to return.
     - default: false
       isArray: false
       name: page_size
       required: false
+      description: The maximum number of results to return.
     deprecated: false
     description: List address objects.
     execution: false
