@@ -38,4 +38,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Phishing - Search Related Incidents (Defender 365)](../doc_files/Phishing_-_Search_Related_Incidents_(Defender_365).png)
+![Phishing - Search Related Incidents (Defender 365)](../doc_files/Phishing_-_Search_Related_Incidents_Defender_365.png)
