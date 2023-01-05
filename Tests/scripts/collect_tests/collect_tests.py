@@ -499,6 +499,9 @@ class TestCollector(ABC):
             raise NothingToCollectException(path, 'file under test_data, samples or documentation folder,'
                                                   ' (not triggering sanity tests)')
 
+        if path.name.casefold().endswith('_testdata.json') and 'ModelingRules' in path.parts:
+            raise NothingToCollectException(path, 'modeling rule testdata file does not yet support test collection')
+
     @staticmethod
     def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
         # intended to only be called from __validate_compatibility

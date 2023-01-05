@@ -4,11 +4,11 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import csv
 import os
-
+import urllib3
 import requests
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 VERBOSE = True

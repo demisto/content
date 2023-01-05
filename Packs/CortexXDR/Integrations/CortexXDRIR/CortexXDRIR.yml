@@ -2829,7 +2829,55 @@ script:
     - description: Remote IP address for the connection.
       isArray: true
       name: action_remote_ip
-    - description: The local IP address for the connection.
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert action status
+      isArray: false
+      name: alert_action_status
+      required: false
+      secret: false
+      predefined:
+      - detected
+      - detected (allowed the session)
+      - detected (download)
+      - detected (forward)
+      - detected (post detected)
+      - detected (prompt allow)
+      - detected (raised an alert)
+      - detected (reported)
+      - detected (on write)
+      - detected (scanned)
+      - detected (sinkhole)
+      - detected (syncookie sent)
+      - detected (wildfire upload failure)
+      - detected (wildfire upload success)
+      - detected (wildfire upload skip)
+      - detected (xdr managed threat hunting)
+      - prevented (block)
+      - prevented (blocked)
+      - prevented (block-override)
+      - prevented (blocked the url)
+      - prevented (blocked the ip)
+      - prevented (continue)
+      - prevented (denied the session)
+      - prevented (dropped all packets)
+      - prevented (dropped the session)
+      - prevented (dropped the session and sent a tcp reset)
+      - prevented (dropped the packet)
+      - prevented (override)
+      - prevented (override-lockout)
+      - prevented (post detected)
+      - prevented (prompt block)
+      - prevented (random-drop)
+      - prevented (silently dropped the session with an icmp unreachable message to the host or application)
+      - prevented (terminated the session and sent a tcp reset to both sides of the connection)
+      - prevented (terminated the session and sent a tcp reset to the client)
+      - prevented (terminated the session and sent a tcp reset to the server)
+      - prevented (on write)
+    - default: false
+      description: The local IP address for the connection.
       isArray: true
       name: action_local_port
     - description: The remote port for the connection.
@@ -2888,6 +2936,49 @@ script:
       description: The category of the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.alert_action_status
+      description: |
+        The alert action. Possible values.
+
+        DETECTED: detected
+        DETECTED_0: detected (allowed the session)
+        DOWNLOAD: detected (download)
+        DETECTED_19: detected (forward)
+        POST_DETECTED: detected (post detected)
+        PROMPT_ALLOW: detected (prompt allow)
+        DETECTED_4: detected (raised an alert)
+        REPORTED: detected (reported)
+        REPORTED_TRIGGER_4: detected (on write)
+        SCANNED: detected (scanned)
+        DETECTED_23: detected (sinkhole)
+        DETECTED_18: detected (syncookie sent)
+        DETECTED_21: detected (wildfire upload failure)
+        DETECTED_20: detected (wildfire upload success)
+        DETECTED_22: detected (wildfire upload skip)
+        DETECTED_MTH: detected (xdr managed threat hunting)
+        BLOCKED_25: prevented (block)
+        BLOCKED: prevented (blocked)
+        BLOCKED_14: prevented (block-override)
+        BLOCKED_5: prevented (blocked the url)
+        BLOCKED_6: prevented (blocked the ip)
+        BLOCKED_13: prevented (continue)
+        BLOCKED_1: prevented (denied the session)
+        BLOCKED_8: prevented (dropped all packets)
+        BLOCKED_2: prevented (dropped the session)
+        BLOCKED_3: prevented (dropped the session and sent a tcp reset)
+        BLOCKED_7: prevented (dropped the packet)
+        BLOCKED_16: prevented (override)
+        BLOCKED_15: prevented (override-lockout)
+        BLOCKED_26: prevented (post detected)
+        PROMPT_BLOCK: prevented (prompt block)
+        BLOCKED_17: prevented (random-drop)
+        BLOCKED_24: prevented (silently dropped the session with an icmp unreachable message to the host or application)
+        BLOCKED_9: prevented (terminated the session and sent a tcp reset to both sides of the connection)
+        BLOCKED_10: prevented (terminated the session and sent a tcp reset to the client)
+        BLOCKED_11: prevented (terminated the session and sent a tcp reset to the server)
+        BLOCKED_TRIGGER_4: prevented (on write)
+
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.alert_action_status_readable
       description: The alert action.
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.alert_name
@@ -3017,7 +3108,7 @@ script:
       required: true
     description: Removes a tag from specified endpoint_ids.
     name: xdr-endpoint-tag-remove
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
   runonce: false
   script: ''
