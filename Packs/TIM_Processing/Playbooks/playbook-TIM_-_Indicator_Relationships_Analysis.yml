@@ -49,7 +49,7 @@ tasks:
       id: 408729ca-ca33-4d44-8528-ba22c6afb08d
       version: -1
       name: Has related  campaign?
-      description: check if the indicator related to campaign
+      description: check if the indicator related to a campaign.
       type: condition
       iscommand: false
       brand: ""
@@ -299,8 +299,8 @@ tasks:
     task:
       id: 7a6cd9f0-7aed-43fb-8e6c-25e11dc4e1e2
       version: -1
-      name: Has Files?
-      description: check if FILE type indicators exist
+      name: Is there a File type indicators?
+      description: check if FILE type indicators exists.
       type: condition
       iscommand: false
       brand: ""
@@ -346,8 +346,8 @@ tasks:
     task:
       id: 81ba69cf-145c-4836-8fb7-ab3d856fd02b
       version: -1
-      name: Has URLs?
-      description: check if URL type indicators exist
+      name: Is there a URL type indicators?
+      description: check if URL type indicators exists.
       type: condition
       iscommand: false
       brand: ""
@@ -393,8 +393,8 @@ tasks:
     task:
       id: 08c5c837-a41e-4914-8236-58cf78a1a728
       version: -1
-      name: Has Domains?
-      description: check if Domain type indicators exist
+      name: Is there a Domain type indicators?
+      description: check if Domain type indicators exists.
       type: condition
       iscommand: false
       brand: ""
@@ -440,8 +440,8 @@ tasks:
     task:
       id: 8aa12485-1f21-42c5-8e89-0c1d13322335
       version: -1
-      name: Has IPs?
-      description: check if IP type indicators exist
+      name: Is there a IP type indicators??
+      description: check if IP type indicators exists.
       type: condition
       iscommand: false
       brand: ""
@@ -781,7 +781,7 @@ tasks:
       id: bad25040-e60a-4fa3-8f35-9a20a19be6c4
       version: -1
       name: Has Related Attack Patterns?
-      description: check if the indicator related to attack patterns
+      description: check if the indicator related to attack patterns.
       type: condition
       iscommand: false
       brand: ""
@@ -940,4 +940,4 @@ outputs:
   type: unknown
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0
