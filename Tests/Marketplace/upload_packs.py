@@ -947,35 +947,14 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
     """
     logging.info("Starting to collect pack with dependencies zips")
     for pack_name, pack in packs_for_current_marketplace_dict.items():
-        if pack_name == 'GenericSQL':
-            logging.debug("&&&&&&&&&&&&&&&& handling genericSQL")
-        if pack_name == 'DeveloperTools':
-            logging.debug("&&&&&&&&&&&&&&&& handling DeveloperTools")
-        if pack_name == 'DeprecatedContent':
-            logging.debug("&&&&&&&&&&&&&&&& handling DeprecatedContent")
-        else:
-            logging.debug(f"-------------- handling {pack_name}")
-
         try:
-            logging.debug(f"^^^^^^^^^^^ pack status: {pack.status}")
             if (pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]) or pack.hidden:
                 # avoid trying to upload dependencies zip for failed or hidden packs
                 continue
             pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in
                                          pack.all_levels_dependencies] + [pack]
-
-            pack_and_its_dependencies_names = []
-            for dep_name in pack.all_levels_dependencies:
-                try:
-                    pack_and_its_dependencies_names.append(packs_for_current_marketplace_dict.get(dep_name).name)
-                except Exception:
-                    pass
-
-            logging.debug(f"^^^^^^^^^^^ pack_and_its_dependencies: {pack_and_its_dependencies_names}")
-
             pack_or_dependency_was_uploaded = any(dep_pack.status == PackStatus.SUCCESS.name for dep_pack in
                                                   pack_and_its_dependencies)
-            logging.debug(f"^^^^^^^^^^^ pack_or_dependency_was_uploaded: {pack_or_dependency_was_uploaded}")
             if pack_or_dependency_was_uploaded:
                 pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
                 zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
@@ -984,25 +963,19 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 for current_pack in pack_and_its_dependencies:
                     if current_pack.hidden:
                         continue
-                    logging.debug(f"^^^^^^^^^^^ Starting to collect zip of pack {current_pack.name}")
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
                     if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
-                        logging.debug(f"^^^^^^^^^^^ 1")
-
                         # the zip does not exist yet, zip the current pack
                         task_status = sign_and_zip_pack(current_pack, signature_key)
-                        logging.debug(f"^^^^^^^^^^^ sign_and_zip_pack task_status: {task_status}")
                         if not task_status:
                             # modify the pack's status to indicate the failure was in the dependencies zip step
                             pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
                             logging.debug(f"Skipping uploading {pack.name} since failed zipping {current_pack.name}.")
                             break
                     shutil.copy(current_pack.zip_path, os.path.join(pack_with_dep_path, current_pack.name + ".zip"))
-                logging.debug(f"^^^^^^^^^^^ after first pack.status: {pack.status}")
                 if pack.status == PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name:
                     break
                 else:
-                    logging.debug(f"&&&&& in else")
                     logging.info(f"Zipping {pack_name} with its dependencies")
                     Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
                     shutil.rmtree(pack_with_dep_path)
@@ -1015,12 +988,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
                 else:
-                    logging.debug(f"********************** in final else")
-                    logging.debug(f"********************** pack.status {pack.status}")
                     if pack.status != PackStatus.SUCCESS.name:
                         pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
-                    logging.debug(f"********************** pack.status {pack.status}")
-
         except Exception as e:
             logging.error(traceback.format_exc())
             logging.error(f"Failed uploading packs with dependencies: {e}")
@@ -1281,14 +1250,9 @@ def main():
             pack.cleanup()
             continue
 
-        logging.info(f"**** {pack.name} finished and giving success status")
         pack.status = PackStatus.SUCCESS.name
 
-    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
-    logging.info(f"****1 successful_packs list: {successful_packs}")
-    logging.info(f"****1 successful_uploaded_dependencies_zip_packs list: {successful_uploaded_dependencies_zip_packs}")
-    logging.info(f"****1 skipped_packs list: {skipped_packs}")
-    logging.info(f"****1 failed_packs list: {failed_packs}")
+    logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
 
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
@@ -1333,10 +1297,7 @@ def main():
 
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
-    logging.info(f"****2 successful_packs list: {successful_packs}")
-    logging.info(f"****2 successful_uploaded_dependencies_zip_packs list: {successful_uploaded_dependencies_zip_packs}")
-    logging.info(f"****2 skipped_packs list: {skipped_packs}")
-    logging.info(f"****2 failed_packs list: {failed_packs}")
+
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
