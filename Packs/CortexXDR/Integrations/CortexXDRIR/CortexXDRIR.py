@@ -388,8 +388,8 @@ class Client(CoreClient):
 def get_tenant_info_command(client: Client):
     tenant_info = client.get_tenant_info()
     return tenant_info
-    
-    
+
+
 def get_incidents_command(client, args):
     """
     Retrieve a list of incidents from XDR, filtered by some filters.
