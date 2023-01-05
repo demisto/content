@@ -262,7 +262,7 @@ def test_get_non_edr_malop_data(mocker):
         "lastUpdateTime": 1672848355574
     }
     raw_response = json.loads(load_mock_response('poll_malops.json'))
-    mocker.patch("Cybereason.poll_malops", return_value=raw_response)
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = get_non_edr_malop_data(client, args)
     try:
         assert command_output[0]['guid'] == 'AAAA0yUlnvXGQODT'
