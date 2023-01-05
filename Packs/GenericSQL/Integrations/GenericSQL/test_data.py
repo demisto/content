@@ -32,7 +32,7 @@ PARAMS_1 = {'column_name': 'incident_id', 'connect_parameters': None,
             'id_column': '', 'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name',
             'isFetch': True, 'pool_ttl': '600', 'port': '1433',
             'query': 'select * from incidents where incident_id >:incident_id order by incident_id',
-            'ssl_connect': False, 'start_fetch': '-1', 'use_pool': False}
+            'ssl_connect': False, 'first_fetch': '-1', 'use_pool': False}
 TABLE_1 = [{'incident_id': '1000', 'timestamp': '2022-11-08 08:30:42.423000', 'incident_name': 'incident_1',
             'incident_data': 'incident data for incident 1'},
            {'incident_id': '1001', 'timestamp': '2022-11-08 08:32:53.177000', 'incident_name': 'incident_2',
@@ -58,7 +58,7 @@ PARAMS_2 = {'column_name': 'incident_id', 'connect_parameters': None, 'credentia
                     'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
                     'pool_ttl': '600', 'port': '1433',
                     'query': 'select * from incidents where incident_id >:incident_id order by incident_id',
-                    'ssl_connect': False, 'start_fetch': '1012', 'use_pool': False}
+                    'ssl_connect': False, 'first_fetch': '1012', 'use_pool': False}
 TABLE_2 = []
 
 # ------------------------------------ test_fetch_incident_avoiding_duplicates (3) -------------------------------
@@ -73,7 +73,7 @@ PARAMS_3 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials
             'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': 'incident_id',
             'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
             'pool_ttl': '600', 'port': '3306', 'query': 'call Test_MySQL_6', 'ssl_connect': False,
-            'start_fetch': '2020-01-01 01:01:01', 'use_pool': False}
+            'first_fetch': '2020-01-01 01:01:01', 'use_pool': False}
 RESPONSE_3 = [(1000, datetime.datetime(2022, 11, 24, 13, 9, 56), 'incident_1', 'incident data for incident 1'),
               (1001, datetime.datetime(2022, 11, 24, 13, 10, 12), 'incident_2', 'incident data for incident 2')]
 LAST_RUN_BEFORE_SECOND_FETCH_3 = {'last_timestamp': '2020-01-01 01:01:01', 'last_id': False, 'ids': []}
@@ -115,7 +115,7 @@ PARAMS_4 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials
             'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': '',
             'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
             'pool_ttl': '600', 'port': '3306', 'query': 'call Test_MySQL_3', 'ssl_connect': False,
-            'start_fetch': '2020-01-01 01:01:01', 'use_pool': False}
+            'first_fetch': '2020-01-01 01:01:01', 'use_pool': False}
 
 EXPECTED_LAST_RUN_4_1 = {'last_timestamp': '2022-11-24 13:10:12', 'last_id': False, 'ids': []}
 EXPECTED_LAST_RUN_4_2 = {'ids': [], 'last_id': False, 'last_timestamp': '2022-11-24 13:10:43'}
