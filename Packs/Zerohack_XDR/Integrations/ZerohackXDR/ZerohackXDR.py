@@ -6,7 +6,7 @@ import urllib3
 import json
 from datetime import datetime
 import math
-register_module_line('Zerohack XDR', 'start', __line__())
+# register_module_line('Zerohack XDR', 'start', __line__())
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -40,7 +40,8 @@ class Client(BaseClient):
         if self.api_key:
             self._headers = {'Key': self.api_key}
 
-    def get_alerts(self, severity_level: Optional[str] = None, max_results: Optional[int] = None, offset: Optional[int] = None, start_time: Optional[str] = None) -> List[Dict[str,Any]]:
+    def get_alerts(self, severity_level: Optional[str] = None, max_results: Optional[int] = None,
+                   offset: Optional[int] = None, start_time: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         This function is responsible for fetching all the alerts from the zerohack XDR between given timestamps.
         it takes various inputs and formats the request parameters for macthing the XDR api format.
@@ -64,7 +65,8 @@ class Client(BaseClient):
         # Querying the alerts and appending them to a list.
         return self._http_request(method='GET', url_suffix='/xdr-api', params=request_params)
 
-    def get_alert(self, severity_level: Optional[str] = None, max_results: Optional[int] = None, offset: Optional[int] = None, start_time: Optional[str] = None):
+    def get_alert(self, severity_level: Optional[str] = None, max_results: Optional[int] = None,
+                  offset: Optional[int] = None, start_time: Optional[str] = None):
         """
         This function can be used to retrieve a singular incident for a severity level.
 
@@ -109,7 +111,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def convert_to_demisto_severity(severity: str) -> int:
+def convert_to_demisto_severity(severity: str) -> float:
     """
     This function is designed to convert the Zerohack XDR severity to Cortex severity levels.
 
@@ -149,7 +151,9 @@ def test_module(client: Client) -> str:
 
     return 'ok'
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch_time: Optional[int], min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
+
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
+                    first_fetch_time: Optional[int], min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
     """
     This function continously fetches incidents from the Zerohack XDR api.
 
@@ -198,10 +202,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
         last_incident_time = cast(int, last_fetch)
         last_fetch_timestamp = str(datetime.fromtimestamp(last_fetch))
         # Calculate the required results from this severity level.
-        required_results = math.floor(max_results/len(severity_levels))
+        required_results = math.floor(max_results / len(severity_levels))
 
         # Fetch the response from the API.
-        response = client.get_alerts(max_results = required_results, severity_level = severity, start_time = last_fetch_timestamp)
+        response = client.get_alerts(max_results=required_results, severity_level=severity, start_time=last_fetch_timestamp)
         if response["message_type"] != "d_not_f":
             for alert in response["data"]:
                 attack_time = datetime.strptime(alert.get('attack_timestamp', '0'), DATE_FORMAT)
@@ -232,9 +236,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
 
     return next_run, incidents
 
+
 def get_latest_incident(client: Client, severity_level: str):
     """
-    This function is responsible for fetching a single sample incident for study/inspection purposes by the analyser or the SOAR handler.
+    This function is responsible for fetching a single sample incident for study/inspection
+    purposes by the analyser or the SOAR handler.
     It can be run in playground and it gives output in readable format so you can evaluate the incident format.
 
     :param client: The client object to use for connection.
@@ -273,7 +279,8 @@ def main() -> None:
     """
     This function is the main control function.
     It is responsible for handling the core control logic of the XDR integration.
-    This component handles the command input and fetching control. Apart from command control it alkso handles the inputs from the integration settings.
+    This component handles the command input and fetching control.
+    Apart from command control it alkso handles the inputs from the integration settings.
     """
 
     # Collecting details for initializing the connection.
@@ -343,4 +350,4 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
-register_module_line('Zerohack XDR', 'end', __line__())
+# register_module_line('Zerohack XDR', 'end', __line__())
