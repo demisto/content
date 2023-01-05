@@ -382,3 +382,128 @@ SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE = {
     "daysUntilExpiration": "null",
     "hasLauncher": "false"
 }
+
+SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
+        'id': 4,
+        'name': 'g1-machine',
+        'secretTemplateId': 6007,
+        'folderId': -1,
+        'active': True,
+        'items': [
+            {
+                'itemId': 14,
+                'fileAttachmentId': None,
+                'filename': None,
+                'itemValue': 'andy',
+                'fieldId': 111,
+                'fieldName': 'Username',
+                'slug': 'username',
+                'fieldDescription': 'The Unix Machine Username.',
+                'isFile': False,
+                'isNotes': False,
+                'isPassword': False
+            },
+            {
+                'itemId': 15,
+                'fileAttachmentId': None,
+                'filename': None,
+                'itemValue': 'test00111',
+                'fieldId': 110,
+                'fieldName': 'Password',
+                'slug': 'password',
+                'fieldDescription': 'The password of the Unix Machine.',
+                'isFile': False,
+                'isNotes': False,
+                'isPassword': True
+            }
+        ],
+        'launcherConnectAsSecretId': -1,
+        'checkOutMinutesRemaining': 0,
+        'checkedOut': False,
+        'checkOutUserDisplayName': '',
+        'checkOutUserId': -1,
+        'isRestricted': False,
+        'isOutOfSync': False,
+        'outOfSyncReason': '',
+        'autoChangeEnabled': False,
+        'autoChangeNextPassword': 'Test000',
+        'requiresApprovalForAccess': False,
+        'requiresComment': False,
+        'checkOutEnabled': False,
+        'checkOutIntervalMinutes': -1,
+        'checkOutChangePasswordEnabled': False,
+        'accessRequestWorkflowMapId': -1,
+        'proxyEnabled': False,
+        'sessionRecordingEnabled': False,
+        'restrictSshCommands': False,
+        'allowOwnersUnrestrictedSshCommands': False,
+        'isDoubleLock': False,
+        'doubleLockId': -1,
+        'enableInheritPermissions': False,
+        'passwordTypeWebScriptId': -1,
+        'siteId': 1,
+        'enableInheritSecretPolicy': False,
+        'secretPolicyId': -1,
+        'lastHeartBeatStatus': 'Success',
+        'lastHeartBeatCheck': '2020-11-03T16:20:34.917',
+        'failedPasswordChangeAttempts': 160,
+        'lastPasswordChangeAttempt': '2020-11-10T10:32:59.217',
+        'secretTemplateName': 'Unix Account (SSH)',
+        'responseCodes': []
+}
+
+SECRET_SEARCH_NAME_RAW_RESPONSE = {
+    'filter': {
+        'searchText': 'Sayali',
+        'searchField': None,
+        'searchFieldSlug': None,
+        'includeInactive': False,
+        'includeActive': None,
+        'includeRestricted': False,
+        'secretTemplateId': None,
+        'folderId': None,
+        'includeSubFolders': False,
+        'heartbeatStatus': None,
+        'siteId': None,
+        'scope': None,
+        'recentMinDateTime': None,
+        'recentMaxDateTime': None,
+        'onlySharedWithMe': None,
+        'extendedFields': None,
+        'permissionRequired': None,
+        'extendedTypeId': None,
+        'passwordTypeIds': None,
+        'onlyRPCEnabled': None,
+        'doubleLockId': None,
+        'isExactMatch': None,
+        'allowDoubleLocks': None,
+        'doNotCalculateTotal': None
+    },
+    'skip': 0,
+    'take': 10,
+    'total': 3,
+    'pageCount': 1,
+    'currentPage': 1,
+    'batchCount': 1,
+    'prevSkip': 0,
+    'nextSkip': 10,
+    'hasPrev': False,
+    'hasNext': False,
+    'records': [
+        {
+            'id': 3564,
+            'value': '-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali'
+        },
+        {
+            'id': 3566,
+            'value': '-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali2'
+        },
+        {
+            'id': 4241,
+            'value': '241 - 9 - xsoartest1'
+        }
+    ],
+    'sortBy': [],
+    'success': True,
+    'severity': 'None'
+}
