@@ -20,7 +20,7 @@ def convert_UTC_Timezone_command(time: datetime, timezone: str, fmt: str) -> Com
     )
 
 
-def main():
+def main(): # pragma: no cover
     try:
         # Get Args
         args = demisto.args()
