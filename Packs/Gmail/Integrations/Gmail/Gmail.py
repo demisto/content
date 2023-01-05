@@ -36,7 +36,7 @@ from googleapiclient.errors import HttpError
 
 ''' GLOBAL VARS '''
 
-ADMIN_EMAIL = ''
+ADMIN_EMAIL = ''  # set from params later on
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
@@ -409,7 +409,7 @@ def create_incident_labels(parsed_msg, headers):
     return labels
 
 
-def mailboxes_to_entry(mailboxes: list) -> list[CommandResults]:
+def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
     found_accounts = []
     errored_accounts = []  # accounts not searched, due to an error accessing them
@@ -777,6 +777,8 @@ def cutting_for_batches(list_accounts: list) -> List[list]:
 
     accounts.extend(batch(list_accounts, batch_size))
 
+    # When the number of accounts is not exactly divisible by BATCH_DIVIDER,
+    # We add the remaining accounts to the first batch to avoid running another polling command.
     if rest_accounts:
         accounts[0].extend(rest_accounts)
 
@@ -819,8 +821,8 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
     '''
     Used to fetch the list of accounts for the search-all-mailboxes command
     '''
-    list_accounts: list[str] = []
-    counter = 0
+    accounts: list[str] = []
+    accounts_counter = 0
     users_next_page_token = users_next_page_token
     service = get_service('admin', 'directory_v1')
 
@@ -832,17 +834,17 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
         }
 
         result = service.users().list(**command_args).execute()
-        counter += len(result['users'])
-        list_accounts.extend([account['primaryEmail'] for account in result['users']])
+        accounts_counter += len(result['users'])
+        accounts.extend([account['primaryEmail'] for account in result['users']])
         users_next_page_token = result.get('nextPageToken')
 
-        if counter >= max_results:
-            list_accounts = list_accounts[:max_results]
+        if accounts_counter >= max_results:
+            accounts = accounts[:max_results]
             break
         if users_next_page_token is None:
             break
 
-    return list_accounts, users_next_page_token
+    return accounts, users_next_page_token
 
 
 def information_search_process(length_accounts: int, search_from: int | None, search_to: int | None) -> CommandResults:
@@ -1263,35 +1265,40 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_in_mailboxes(list_accounts: list[str], receive_only_accounts: bool) -> None:
-
+def search_in_mailboxes(accounts: list[str], only_return_account_names: bool) -> None:
+    '''
+    Searching for email messages within accounts based on a query,
+    Results are returned only if messages matching the query are found.
+    Returns only the names of the accounts where the messages were found
+    if the only_return_account_names argument is true,
+    Otherwise, returns all the information about the message, including its content.
+    '''
     futures: list = []
     entries: list = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        for user in list_accounts:
+        for user in accounts:
             futures.append(executor.submit(search_command, mailbox=user,
-                                           receive_only_accounts=receive_only_accounts))
+                                           only_return_account_names=only_return_account_names))
         for account in concurrent.futures.as_completed(futures):
             if found := account.result():
                 entries.append(found)
 
         if entries:
-            if receive_only_accounts:
+            if only_return_account_names:
                 entries = [mailboxes_to_entry(entries)]
             return_results(entries)
-            entries = []
 
 
 def search_all_mailboxes():
 
     args = demisto.args()
-    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'true'))
+    only_return_account_names = argToBoolean(args.get('show-only-mailboxes', 'true'))
     list_accounts = argToList(args.get('list_accounts', ''))
     next_page_token = args.get('page-token', '')
 
     if list_accounts:
         support_multithreading()
-        search_in_mailboxes(list_accounts, receive_only_accounts)
+        search_in_mailboxes(list_accounts, only_return_account_names)
     else:
         # check if there is next_page_token and remove it from the args (To avoid using this argument in search command)
         if next_page_token:
@@ -1325,7 +1332,7 @@ def search_all_mailboxes():
             search_all_mailboxes()
 
 
-def search_command(mailbox: str = None, receive_only_accounts: bool = False) -> dict[str, Any] | None:
+def search_command(mailbox: str = None, only_return_account_names: bool = False) -> dict[str, Any] | None:
     """
     Searches for Gmail records of a specified Google user.
     """
@@ -1358,15 +1365,15 @@ def search_command(mailbox: str = None, receive_only_accounts: bool = False) -> 
         mails, q = search(user_id, subject, _from, to,
                           before, after, filename, _in, query,
                           fields, label_ids, max_results, page_token,
-                          include_spam_trash, has_attachments, receive_only_accounts,
+                          include_spam_trash, has_attachments, only_return_account_names,
                           )
     except HttpError as err:
-        if receive_only_accounts and err.status_code == 429:
+        if only_return_account_names and err.status_code == 429:
             return {'Mailbox': mailbox, 'Error': {'message': str(err.error_details), 'status_code': err.status_code}}
         raise
 
     # In case the user wants only account list without content.
-    if receive_only_accounts:
+    if only_return_account_names:
         if mails:
             return {'Mailbox': mailbox, 'q': q}
         return None
@@ -1378,7 +1385,7 @@ def search_command(mailbox: str = None, receive_only_accounts: bool = False) -> 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
            fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
-           has_attachments=None, receive_only_accounts=None):
+           has_attachments=None, only_return_account_names=None):
     query_values = {
         'subject': subject,
         'from': _from,
@@ -1417,7 +1424,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
             raise
 
     # In case the user wants only account list without content.
-    if receive_only_accounts and result.get('sizeEstimate', 0) > 0:
+    if only_return_account_names and result.get('sizeEstimate', 0) > 0:
         return True, q
 
     entries = [get_mail(user_id=user_id,
