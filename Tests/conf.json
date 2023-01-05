@@ -4449,7 +4449,7 @@
                 "Rasterize"
             ],
             "instance_names": [
-                "ewso365_sec_eng_team",
+                "ewso365_dev_team",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
@@ -4481,7 +4481,7 @@
             ],
             "instance_names": [
                 "virus_total_v3",
-                "ewso365_sec_eng_team"
+                "ewso365_dev_team"
             ],
             "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
