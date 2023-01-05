@@ -7,7 +7,7 @@ def test_convert_UTC_Timezone_command():
         Given -
            UTC time, timezone, format
         When -
-
+            using the converting function
         Then -
             the function will return the converted time, from UTC to local timezone
     """
@@ -18,3 +18,19 @@ def test_convert_UTC_Timezone_command():
 
     command_result = convert_UTC_Timezone_command(time=time_as_datetime_type, timezone=timezone, fmt=format)
     assert command_result.readable_output == "2023-01-04 11:14:18"
+
+
+def test_determine_correct_format():
+    """
+        Given -
+           time as string
+        When -
+            using the determine function
+        Then -
+            the function will return the time as a datetime type
+    """
+    value = "2023-01-04 18:14:18"
+    format = "%Y-%m-%d %H:%M:%S"
+    time_as_datetime_type = determine_correct_format(time=value, fmt=format)
+    assert time_as_datetime_type.day== 4
+        
