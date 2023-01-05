@@ -1,0 +1,21 @@
+{
+    "reply": {
+        "pro_per_endpoint_expiration": "Dec 13th 2023 07:59:59",
+        "purchased_pro_per_endpoint": {"agents": 500},
+        "data_enabled_pro_per_endpoint": 437,
+        "prevent_expiration": 0,
+        "purchased_prevent": 0,
+        "installed_prevent": 438,
+        "pro_tb_expiration": "Dec 30th 2022 07:59:59",
+        "purchased_pro_tb": {"tb": 5},
+        "installed_pro_tb": 0,
+        "compute_unit_expiration": "Dec 30th 2022 07:59:59",
+        "purchased_compute_unit": 10,
+        "compute_unit_is_trial": true,
+        "host_insights_expiration": "Dec 13th 2023 07:59:59",
+        "enabled_host_insights": 437,
+        "purchased_host_insights": 500,
+        "forensics_expiration": "Dec 13th 2023 07:59:59",
+        "purchased_forensics": 50
+    }
+}

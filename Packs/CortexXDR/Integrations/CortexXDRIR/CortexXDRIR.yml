@@ -3108,6 +3108,9 @@ script:
       required: true
     description: Removes a tag from specified endpoint_ids.
     name: xdr-endpoint-tag-remove
+  - name: xdr-get-tenant-info
+    arguments: []
+    description: 'Provides information about the tenant. '    
   dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
   runonce: false

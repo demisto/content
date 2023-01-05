@@ -382,11 +382,13 @@ class Client(CoreClient):
             json_data={'request_data': {}},
             timeout=self.timeout
         )
-        return reply.get('reply',{})
+        return reply.get('reply', {})
+
 
 def get_tenant_info_command(client: Client):
     tenant_info = client.get_tenant_info()
     return tenant_info
+    
     
 def get_incidents_command(client, args):
     """
