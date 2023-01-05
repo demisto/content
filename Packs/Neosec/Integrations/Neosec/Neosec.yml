@@ -13,16 +13,24 @@ configuration:
   hiddenusername: true
 - name: url
   display: URL
-  required: false
+  required: true
   defaultvalue: https://neograph.neosec.com
   type: 0
   additionalinfo: ""
 - name: tenant_key
   display: Tenant Key
-  required: false
+  required: true
   defaultvalue:
   type: 0
   additionalinfo: ""
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 - name: alert_status
   display: Fetch alerts with status
   required: false
@@ -65,14 +73,8 @@ configuration:
   defaultvalue: 3 days
   type: 0
   additionalinfo:
-- name: is_tokenized
-  display: De-tokenize alerts
-  required: false
-  defaultvalue: "true"
-  type: 8
-  additionalinfo: ""
 - name: neosec_node_url
-  display: Neosec Node URL
+  display: Neosec Node Url (Optional)
   required: false
   defaultvalue:
   type: 0
@@ -107,6 +109,7 @@ script:
       required: true
       isArray: false
       defaultValue: ""
+      auto: PREDEFINED
       predefined:
       - Open
       - Closed

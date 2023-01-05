@@ -338,20 +338,10 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {command}")
     try:
-        is_tokenized = params.get("is_tokenized", False)
         neosec_node_url = params.get("neosec_node_url")
-        if (is_tokenized and not neosec_node_url) or (
-                not is_tokenized and neosec_node_url
-        ):
-            raise DemistoException(
-                f"Invalid input: De-Tokenized Alerts(is_tokenized={is_tokenized}) "
-                f"and Neosec Node URL({neosec_node_url}) is not matched"
-            )
-
         neosec_node_client = (
-            NeosecNodeClient(base_url=neosec_node_url, verify=False, proxy=params.get("proxy", False))
-            if is_tokenized and neosec_node_url
-            else None
+            NeosecNodeClient(base_url=neosec_node_url, verify=False, proxy=False)
+            if neosec_node_url else None
         )
         client = NeosecClient(
             base_url=base_url,
