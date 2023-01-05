@@ -37,7 +37,8 @@
   "AWS Guard Duty IAM Finding",
   "AWS Guard Duty Kubernetes Finding",
   "AWS Guard Duty Malware Protection Finding",
-  "AWS Guard Duty S3 Finding"
+  "AWS Guard Duty S3 Finding",
+  "Exabeam Incident"
  ],
  "associatedToAll": false,
  "unmapped": false,
