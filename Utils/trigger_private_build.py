@@ -116,7 +116,11 @@ def main():
     # get github token parameter
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
-    arg_parser.add_argument('--private-branch-name', help='Name of the branch in the private repository', default='master')
+    arg_parser.add_argument(
+        '--private-branch-name',
+        help='Name of the branch in the private repository, if not provided the default will be master.',
+        default='master'
+    )
     args = arg_parser.parse_args()
 
     private_branch_name = args.private_branch_name
