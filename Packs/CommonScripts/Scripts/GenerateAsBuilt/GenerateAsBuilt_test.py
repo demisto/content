@@ -301,7 +301,7 @@ def test_get_custom_automations(mocker):
     import GenerateAsBuilt
     from GenerateAsBuilt import get_custom_automations, TableData
     mocker.patch.object(GenerateAsBuilt, 'post_api_request', return_value={'scripts': [{'name': 'test'}]})
-    expected = TableData([{'name': 'test'}], 'Custom Automatons')
+    expected = TableData([{'name': 'test'}], 'Custom Automations')
     res = get_custom_automations()
     assert res.name == expected.name
     assert res.data == expected.data
