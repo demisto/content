@@ -2,8 +2,7 @@ import os
 
 import pytest
 import sqlalchemy
-import test_data as td
-
+from test_data import input_data
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
 
 
@@ -257,7 +256,8 @@ def test_parse_connect_parameters(connect_parameters, dialect, expected_response
 
 
 @pytest.mark.parametrize('table, params, response, headers, expected_incidents, expected_last_run', [
-    (td.TABLE_1, td.PARAMS_1, td.RESPONSE_1, td.HEADERS_1, td.EXPECTED_INCIDENTS_1, td.EXPECTED_LAST_RUN_1)])
+    (input_data.TABLE_1, input_data.PARAMS_1, input_data.RESPONSE_1, input_data.HEADERS_1,
+     input_data.EXPECTED_INCIDENTS_1, input_data.EXPECTED_LAST_RUN_1)])
 def test_fetch_incident_by_id_simple_query(table, params, response, headers, expected_incidents, expected_last_run,
                                            mocker):
     """
@@ -287,7 +287,8 @@ def test_fetch_incident_by_id_simple_query(table, params, response, headers, exp
 
 
 @pytest.mark.parametrize('table, params, response, headers, last_run_before_fetch', [
-    (td.TABLE_2, td.PARAMS_2, td.RESPONSE_2, td.HEADERS_2, td.LAST_RUN_BEFORE_FETCH_2)])
+    (input_data.TABLE_2, input_data.PARAMS_2, input_data.RESPONSE_2, input_data.HEADERS_2,
+     input_data.LAST_RUN_BEFORE_FETCH_2)])
 def test_fetch_incident_without_incidents(table, params, response, headers, last_run_before_fetch, mocker):
     """
     Given
@@ -313,7 +314,8 @@ def test_fetch_incident_without_incidents(table, params, response, headers, last
 
 
 @pytest.mark.parametrize('table, params, response, headers, last_run_before_second_fetch, expected_incidents', [
-    (td.TABLE_3, td.PARAMS_3, td.RESPONSE_3, td.HEADERS_3, td.LAST_RUN_BEFORE_SECOND_FETCH_3, td.EXPECTED_INCIDENTS_3)])
+    (input_data.TABLE_3, input_data.PARAMS_3, input_data.RESPONSE_3, input_data.HEADERS_3,
+     input_data.LAST_RUN_BEFORE_SECOND_FETCH_3, input_data.EXPECTED_INCIDENTS_3)])
 def test_fetch_incident_avoiding_duplicates(table, params, response, headers, last_run_before_second_fetch,
                                             expected_incidents, mocker):
     """
@@ -344,8 +346,9 @@ def test_fetch_incident_avoiding_duplicates(table, params, response, headers, la
 
 @pytest.mark.parametrize('table_first_cycle, table_second_cycle, params, response_first_cycle, response_second_cycle, '
                          'headers, expected_last_run_4_1, expected_last_run_4_2',
-                         [(td.TABLE_4_1, td.TABLE_4_2, td.PARAMS_4, td.RESPONSE_4_1, td.RESPONSE_4_2, td.HEADERS_4,
-                           td.EXPECTED_LAST_RUN_4_1, td.EXPECTED_LAST_RUN_4_2)])
+                         [(input_data.TABLE_4_1, input_data.TABLE_4_2, input_data.PARAMS_4, input_data.RESPONSE_4_1,
+                           input_data.RESPONSE_4_2, input_data.HEADERS_4, input_data.EXPECTED_LAST_RUN_4_1,
+                           input_data.EXPECTED_LAST_RUN_4_2)])
 def test_fetch_incident_update_last_run(table_first_cycle, table_second_cycle, params, response_first_cycle,
                                         response_second_cycle, headers, expected_last_run_4_1, expected_last_run_4_2,
                                         mocker):
