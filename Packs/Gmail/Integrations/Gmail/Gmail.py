@@ -411,25 +411,32 @@ def create_incident_labels(parsed_msg, headers):
 
 def mailboxes_to_entry(mailboxes: list) -> list[CommandResults]:
     query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
-    result = []
-    unsearched_accounts = []
-    command_results = []
-    for user in mailboxes:
-        if user.get('Error'):
-            unsearched_accounts.append({"Mailbox": user['Mailbox'], 'Error': user['Error']})
-        elif user.get('Mailbox'):
-            result.append(user['Mailbox'])
+    found_accounts = []
+    errored_accounts = []  # accounts not searched, due to an error accessing them
 
-    table_for_md = [{'Mailbox': user['Mailbox']} for user in mailboxes if user.get('Mailbox') and not user.get('Error')]
-    command_results.append(CommandResults(
+    for user in mailboxes:
+        mailbox = user.get('Mailbox')
+        if (error := user.get('Error')):
+            errored_accounts.append({"Mailbox": mailbox, "Error": error})
+        elif mailbox:
+            found_accounts.append(mailbox)
+        else:
+            demisto.debug(f"unexpected value: neither user['Mailbox'] nor user['Error']: {user=}")
+
+    command_results = [CommandResults(
         outputs_prefix='Gmail.Mailboxes',
-        readable_output=tableToMarkdown(query, table_for_md, headers=['Mailbox'], removeNull=True),
-        outputs=result
-    ))
-    if unsearched_accounts:
+        readable_output=tableToMarkdown(
+            query,
+            [{'Mailbox': mailbox} for mailbox in found_accounts],
+            headers=['Mailbox'],
+            removeNull=True),
+        outputs=found_accounts
+    )]
+
+    if errored_accounts:
         command_results.append(CommandResults(
             outputs_prefix='Gmail.UnsearchedAcounts',
-            outputs=unsearched_accounts,
+            outputs=errored_accounts,
         ))
     return command_results
 
