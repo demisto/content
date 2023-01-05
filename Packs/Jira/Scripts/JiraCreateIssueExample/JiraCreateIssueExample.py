@@ -43,7 +43,7 @@ def parse_custom_fields(custom_fields: List[str]) -> Dict[str, Any]:
     """
 
     result: Dict[str, Any] = {}
-    regex = r'(\w+)={1}(\w+)'
+    regex = r'(customfield_\d{5,})={1}(\w+)'
 
     for custom_field in custom_fields:
 
