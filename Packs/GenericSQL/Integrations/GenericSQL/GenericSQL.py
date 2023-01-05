@@ -201,7 +201,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         if not params.get('query'):
             msg += 'Missing parameter Fetch events query. '
 
-        if limit := params.get('fetch_limit'):
+        if limit := params.get('max_fetch'):
             limit = arg_to_number(limit)
             if limit < 1 or limit > 50:
                 msg += 'Fetch Limit value should be between 1 and 50. '
@@ -235,7 +235,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
             return msg, {}, []
         # Verify the correctness of the query / procedure
         try:
-            params['fetch_limit'] = 1
+            params['max_fetch'] = 1
             last_run = get_last_run(params)
             sql_query = create_sql_query(last_run, params)
             bind_variables = generate_bind_variables_for_fetch(params, last_run)
@@ -321,13 +321,13 @@ def create_sql_query(last_run: dict, params: dict):
 
     # case of runStoreProcedure MSSQL
     if params.get('query', '').lower().startswith('exec'):
-        sql_query = f"SET ROWCOUNT {params.get('fetch_limit')};" \
+        sql_query = f"SET ROWCOUNT {params.get('max_fetch')};" \
                     f"{params.get('query')} @{params.get('column_name')} = '{last_timestamp_or_id}';" \
                     f"SET ROWCOUNT 0"
 
     # case of runStoreProcedure MySQL
     elif params.get('query', '').lower().startswith('call'):
-        sql_query = f"{params.get('query')}('{last_timestamp_or_id}', {params.get('fetch_limit')})"
+        sql_query = f"{params.get('query')}('{last_timestamp_or_id}', {params.get('max_fetch')})"
 
     # case of queries
     else:
@@ -406,14 +406,14 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
 
 def generate_bind_variables_for_fetch(params: dict, last_run: dict):
     last_fetch = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get('last_id')
-    bind_variables = {params.get('column_name'): last_fetch, 'limit': arg_to_number(params.get('fetch_limit'))}
+    bind_variables = {params.get('column_name'): last_fetch, 'limit': arg_to_number(params.get('max_fetch'))}
     return bind_variables
 
 
 def fetch_incidents(client: Client, params: dict):
     last_run = get_last_run(params)
     sql_query = create_sql_query(last_run, params)
-    limit_fetch = arg_to_number(params.get('fetch_limit', FETCH_DEFAULT_LIMIT))
+    limit_fetch = arg_to_number(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
     bind_variables = generate_bind_variables_for_fetch(params, last_run)
     result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit_fetch)
     table = convert_sqlalchemy_to_readable_table(result)
