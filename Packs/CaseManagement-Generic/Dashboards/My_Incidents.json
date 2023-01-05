@@ -360,7 +360,7 @@
                 },
                 "params": {
                     "groupBy": [
-                        "type"
+                        "rawType"
                     ],
                     "tableColumns": [
                         {
