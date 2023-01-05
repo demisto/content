@@ -4443,7 +4443,7 @@
             "fromversion": "6.2.0",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
+                "EWSO365",
                 "Demisto REST API",
                 "CreateIncidents",
                 "Rasterize"
@@ -4473,7 +4473,7 @@
             "toversion": "6.4.9",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
+                "EWSO365",
                 "Demisto REST API",
                 "EWSO365",
                 "Rasterize",
