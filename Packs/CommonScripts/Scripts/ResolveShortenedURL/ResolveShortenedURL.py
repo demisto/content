@@ -9,8 +9,9 @@ from CommonServerPython import *
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
-DEFAULT_SERVICE = "unshorten.me"  # Default service to use if `redirect_limit` is not specified.
-DEFAULT_REDIRECT_LIMIT = "0"  # Default limit to use if `redirect_limit` is not specified.
+DEFAULT_SERVICE = "unshorten.me"
+DEFAULT_REDIRECT_LIMIT = "0"
+
 
 class URLUnshorteningData(NamedTuple):
     """
@@ -334,7 +335,7 @@ def unshorten_url(service_name: str, url: str, redirect_limit: int, session_veri
         redirect_limit (int): A maximum number of recursions to run. Use 0 for unlimited.
     """
     error_message = "There was an error while attempting to unshorten the final URL in the redirect chain.\n" \
-                         "It is possible that the unshortening process was not fully completed.\n\n"
+                    "It is possible that the unshortening process was not fully completed.\n\n"
 
     service_class = URLUnshortingService.find_matching_service(service_name=service_name)
     service_instance = service_class(redirect_limit=redirect_limit, verify=session_verify)
