@@ -47,7 +47,7 @@ class Client:
             try:
                 if request_order[0] == LogType.AUTHENTICATION:
                     response = self.admin_api.get_authentication_log(
-                        mintime=self.params.mintime[LogType.AUTHENTICATION], api_version=2, limit='1000')
+                        mintime=self.params.mintime[LogType.AUTHENTICATION])
                 elif request_order[0] == LogType.ADMINISTRATION:
                     response = self.admin_api.get_administrator_log(
                         mintime=self.params.mintime[LogType.ADMINISTRATION])
@@ -60,6 +60,8 @@ class Client:
                 demisto.debug(msg)
                 if str(exc) == 'Received 429 Too Many Requests':
                     retries -= 1
+                else:
+                    retries = 0
         return {}
 
     def set_next_run_filter(self, mintime: int, log_type: LogType):  # pragma: no cover
