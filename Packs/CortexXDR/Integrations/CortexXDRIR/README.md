@@ -1077,6 +1077,16 @@ Gets the code of a specific script in the script library.
 Retrieves the status of the requested actions according to the action ID.
 
 
+### xdr-get-tenant-info
+***
+This command provides info about tenant
+
+
+#### Base Command
+
+`xdr-get-tenant-info`
+
+
 #### Base Command
 
 `xdr-action-status-get`

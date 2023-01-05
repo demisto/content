@@ -3110,8 +3110,8 @@ script:
     name: xdr-endpoint-tag-remove
   - name: xdr-get-tenant-info
     arguments: []
-    description: 'Provides information about the tenant. '    
-  dockerimage: demisto/python3:3.10.9.40422
+    description: 'Provides information about the tenant. '
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   runonce: false
   script: ''
