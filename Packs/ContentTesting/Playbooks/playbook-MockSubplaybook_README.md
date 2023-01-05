@@ -26,7 +26,3 @@ This playbook does not use any commands.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![MockSubplaybook](../doc_files/MockSubplaybook.png)

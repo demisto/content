@@ -22,7 +22,3 @@ There are no inputs for this playbook.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![UnitTestTopLevel](../doc_files/UnitTestTopLevel.png)

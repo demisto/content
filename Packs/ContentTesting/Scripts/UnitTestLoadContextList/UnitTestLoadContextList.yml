@@ -10,6 +10,7 @@ contentitemexportablefields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.9.42476
 enabled: true
+comment: ""
 name: UnitTestLoadContextList
 runas: DBotWeakRole
 runonce: false

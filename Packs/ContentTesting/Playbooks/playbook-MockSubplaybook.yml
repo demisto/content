@@ -3,6 +3,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
 id: MockSubplaybook
+description: ""
 inputs:
 - description: ""
   key: one
