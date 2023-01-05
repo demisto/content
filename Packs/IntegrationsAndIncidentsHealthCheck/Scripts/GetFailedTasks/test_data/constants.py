@@ -241,73 +241,216 @@ INCIDENTS_RESULT = [
                   'contentsSize': 0, 'brand': 'Builtin', 'instance': 'Builtin', 'IndicatorTimeline': None,
                   'mirrored': False}, 'IndicatorTimeline': None}]
 
-TASKS_RESULT = [
-    {'ModuleName': 'Demisto REST API_instance_1', 'Brand': 'Demisto REST API', 'Category': 'Utilities', 'ID': '',
-     'Version': 0, 'Type': 1, 'Contents': {'response': [{'ancestors': ['AutoFocusPolling'],
-                                                         'arguments': {'additionalPollingCommandArgNames': '',
-                                                                       'additionalPollingCommandArgValues': '',
-                                                                       'ids': '', 'pollingCommand': '',
-                                                                       'pollingCommandArgName': 'ids'},
-                                                         'comments': False, 'completedBy': 'DBot',
-                                                         'completedDate': '2020-09-29T16:48:30.427891714Z',
-                                                         'doNotSaveTaskHistory': True,
-                                                         'dueDate': '0001-01-01T00:00:00Z', 'dueDateDuration': 0,
-                                                         'entries': ['4@7', '5@7'],
-                                                         'evidenceData': {'description': None, 'occurred': None,
-                                                                          'tags': None}, 'forEachIndex': 0,
-                                                         'forEachInputs': None, 'id': '3', 'indent': 0,
-                                                         'nextTasks': {'#none#': ['1']}, 'note': False, 'outputs': {},
-                                                         'playbookInputs': None, 'previousTasks': {'#none#': ['0']},
-                                                         'quietMode': 2, 'reputationCalc': 0,
-                                                         'restrictedCompletion': False, 'scriptArguments': {
-            'additionalPollingCommandArgNames': {'complex': None,
-                                                 'simple': '${inputs.AdditionalPollingCommandArgNames}'},
-            'additionalPollingCommandArgValues': {'complex': None,
-                                                  'simple': '${inputs.AdditionalPollingCommandArgValues}'},
-            'ids': {'complex': None, 'simple': '${inputs.Ids}'},
-            'pollingCommand': {'complex': None, 'simple': '${inputs.PollingCommandName}'},
-            'pollingCommandArgName': {'complex': None, 'simple': '${inputs.PollingCommandArgName}'}},
-                                                         'separateContext': False,
-                                                         'startDate': '2020-09-29T16:48:30.324811804Z',
-                                                         'state': 'Error', 'task': {
-            'brand': '', 'conditions': None,
-            'description': 'RunPollingCommand',
-            'id': 'c6a3af0a-cc78-4323-80c1-93d686010d86',
-            'isCommand': False,
-            'isLocked': False,
-            'modified': '2020-09-29T08:23:25.596407031Z',
-            'name': 'RunPollingCommand',
-            'playbookName': '',
-            'scriptId': 'RunPollingCommand',
-            'sortValues': None,
-            'type': 'regular', 'version': 1},
-                                                         'taskCompleteData': [],
-                                                         'taskId': 'c6a3af0a-cc78-4323-80c1-93d686010d86',
-                                                         'type': 'regular',
-                                                         'view': {'position': {'x': 50, 'y': 195}}}]},
-     'HumanReadable': None, 'ImportantEntryContext': None, 'EntryContext': None, 'IgnoreAutoExtract': False,
-     'ReadableContentsFormat': '', 'ContentsFormat': 'json', 'File': '', 'FileID': '', 'FileMetadata': None,
-     'System': '', 'Note': False, 'Evidence': False, 'EvidenceID': '', 'Tags': None,
-     'Metadata': {
-         'id': '', 'version': 0, 'modified': '0001-01-01T00:00:00Z', 'sortValues': None, 'roles': None,
-         'allRead': False, 'allReadWrite': False, 'previousRoles': None, 'previousAllRead': False,
-         'previousAllReadWrite': False, 'hasRole': False, 'dbotCreatedBy': '', 'ShardID': 0, 'type': 1,
-         'created': '2020-10-03T12:43:23.006018275Z', 'retryTime': '0001-01-01T00:00:00Z', 'user': '',
-         'errorSource': '', 'contents': '', 'format': 'json', 'investigationId': '51', 'file': '',
-         'fileID': '', 'parentId': '158@51', 'pinned': False, 'fileMetadata': None,
-         'parentContent': '!demisto-api-post uri="investigation/7/workplan/tasks" body='
-                          '"{\\"states\\":[\\"Error\\"],\\"types\\":[\\"regular\\",\\"condition\\",\\"collection\\"]}"',
-         'parentEntryTruncated': False, 'system': '', 'reputations': None, 'category': '', 'note': False,
-         'isTodo': False, 'tags': None, 'tagsRaw': None, 'startDate': '0001-01-01T00:00:00Z', 'times': 0,
-         'recurrent': False, 'endingDate': '0001-01-01T00:00:00Z', 'timezoneOffset': 0, 'cronView': False,
-         'scheduled': False, 'entryTask': None, 'taskId': '', 'playbookId': '', 'reputationSize': 0,
-         'contentsSize': 0, 'brand': 'Demisto REST API', 'instance': 'Demisto REST API_instance_1',
-         'IndicatorTimeline': None, 'mirrored': False}, 'IndicatorTimeline': None}]
+RESTAPI_TAS_RESULT = [
+    {
+        "ModuleName": "Demisto REST API_instance_1",
+        "Brand": "Demisto REST API",
+        "Category": "Utilities",
+        "ID": "",
+        "Version": 0,
+        "Type": 1,
+        "Contents": {
+            "response": [
+                {
+                    "ancestors": [
+                        "AutoFocusPolling"
+                    ],
+                    "arguments": {
+                        "additionalPollingCommandArgNames": "",
+                        "additionalPollingCommandArgValues": "",
+                        "ids": "",
+                        "pollingCommand": "",
+                        "pollingCommandArgName": "ids"
+                    },
+                    "comments": False,
+                    "completedBy": "DBot",
+                    "completedDate": "2020-09-29T16:48:30.427891714Z",
+                    "doNotSaveTaskHistory": True,
+                    "dueDate": "0001-01-01T00:00:00Z",
+                    "dueDateDuration": 0,
+                    "entries": [
+                        "8@3",
+                        "9@3"
+                    ],
+                    "evidenceData": {
+                        "description": None,
+                        "occurred": None,
+                        "tags": None
+                    },
+                    "forEachIndex": 0,
+                    "forEachInputs": None,
+                    "id": "3",
+                    "indent": 0,
+                    "nextTasks": {
+                        "#none#": [
+                            "1"
+                        ]
+                    },
+                    "note": False,
+                    "outputs": {},
+                    "playbookInputs": None,
+                    "previousTasks": {
+                        "#none#": [
+                            "0"
+                        ]
+                    },
+                    "quietMode": 2,
+                    "reputationCalc": 0,
+                    "restrictedCompletion": False,
+                    "scriptArguments": {
+                        "additionalPollingCommandArgNames": {
+                            "complex": None,
+                            "simple": "${inputs.AdditionalPollingCommandArgNames}"
+                        },
+                        "additionalPollingCommandArgValues": {
+                            "complex": None,
+                            "simple": "${inputs.AdditionalPollingCommandArgValues}"
+                        },
+                        "ids": {
+                            "complex": None,
+                            "simple": "${inputs.Ids}"
+                        },
+                        "pollingCommand": {
+                            "complex": None,
+                            "simple": "${inputs.PollingCommandName}"
+                        },
+                        "pollingCommandArgName": {
+                            "complex": None,
+                            "simple": "${inputs.PollingCommandArgName}"
+                        }
+                    },
+                    "separateContext": False,
+                    "startDate": "2020-09-29T16:48:30.324811804Z",
+                    "state": "Error",
+                    "task": {
+                        "brand": "",
+                        "conditions": None,
+                        "description": "command desc",
+                        "id": "3",
+                        "isCommand": False,
+                        "isLocked": False,
+                        "modified": "2020-09-29T08:23:25.596407031Z",
+                        "name": "Fail",
+                        "playbookName": "",
+                        "scriptId": "",
+                        "sortValues": None,
+                        "type": "regular",
+                        "version": 1
+                    },
+                    "taskCompleteData": [],
+                    "taskId": "c6a3af0a-cc78-4323-80c1-93d686010d86",
+                    "type": "regular",
+                    "view": {
+                        "position": {
+                            "x": 50,
+                            "y": 195
+                        }
+                    }
+                }
+            ]
+        },
+        "HumanReadable": None,
+        "ImportantEntryContext": None,
+        "EntryContext": None,
+        "IgnoreAutoExtract": False,
+        "ReadableContentsFormat": "",
+        "ContentsFormat": "json",
+        "File": "",
+        "FileID": "",
+        "FileMetadata": None,
+        "System": "",
+        "Note": False,
+        "Evidence": False,
+        "EvidenceID": "",
+        "Tags": None,
+        "Metadata": {
+            "id": "",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": None,
+            "roles": None,
+            "allRead": False,
+            "allReadWrite": False,
+            "previousRoles": None,
+            "previousAllRead": False,
+            "previousAllReadWrite": False,
+            "hasRole": False,
+            "dbotCreatedBy": "",
+            "ShardID": 0,
+            "type": 1,
+            "created": "2020-10-03T12:43:23.006018275Z",
+            "retryTime": "0001-01-01T00:00:00Z",
+            "user": "",
+            "errorSource": "",
+            "contents": "",
+            "format": "json",
+            "investigationId": "51",
+            "file": "",
+            "fileID": "",
+            "parentId": "158@51",
+            "pinned": False,
+            "fileMetadata": None,
+            "parentContent": "!demisto-api-post uri=\"investigation/7/workplan/tasks\" body=\"{\\\"states\\\":[\\\"Error\\\"],\\\"types\\\":[\\\"regular\\\",\\\"condition\\\",\\\"collection\\\"]}\"",
+            "parentEntryTruncated": False,
+            "system": "",
+            "reputations": None,
+            "category": "",
+            "note": False,
+            "isTodo": False,
+            "tags": None,
+            "tagsRaw": None,
+            "startDate": "0001-01-01T00:00:00Z",
+            "times": 0,
+            "recurrent": False,
+            "endingDate": "0001-01-01T00:00:00Z",
+            "timezoneOffset": 0,
+            "cronView": False,
+            "scheduled": False,
+            "entryTask": None,
+            "taskId": "",
+            "playbookId": "",
+            "reputationSize": 0,
+            "contentsSize": 0,
+            "brand": "Demisto REST API",
+            "instance": "Demisto REST API_instance_1",
+            "IndicatorTimeline": None,
+            "mirrored": False
+        },
+        "IndicatorTimeline": None
+    }
+]
 
-SERVER_URL = [{'ModuleName': 'CustomScripts',
-               'Brand': 'Scripts',
-               'Category': 'automation',
-               'ID': '', 'Version': 0,
-               'Type': 1,
-               'Contents': 'https://ec2-11-123-11-22.eu-west-1.compute.amazonaws.com//acc_test',
-               'HumanReadable': 'https://ec2-11-123-11-22.eu-west-1.compute.amazonaws.com//acc_test'}]
+INTERNAL_TASKS_RESULT = {
+    "body": "[{\"Reopen\":false,\"ancestors\":[\"AutoFocusPolling\"],\"completedBy\":\"DBot\",\"completedDate\":\"2022-10-06T09:09:08.762414928Z\",\"conditions\":[{\"condition\":[[{\"left\":{\"isContext\":true,\"value\":{\"simple\":\"1\"}},\"operator\":\"isEqualString\",\"right\":{\"value\":{\"simple\":\"2\"}}}]],\"label\":\"yes\"}],\"doNotSaveTaskHistory\":true,\"dueDate\":\"0001-01-01T00:00:00Z\",\"entries\":[\"8@3\",\"9@3\"],\"evidenceData\":{},\"id\":\"3\",\"nextTasks\":{\"yes\":[\"2\"]},\"previousTasks\":{\"#none#\":[\"0\"]},\"quietMode\":2,\"startDate\":\"2022-10-06T09:09:08.744744147Z\",\"state\":\"Error\",\"task\":{\"cacheVersn\":0,\"id\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"modified\":\"2022-10-06T09:09:02.998455781Z\",\"name\":\"Fail\",\"type\":\"condition\",\"version\":1,\"description\":\"command desc\"},\"taskId\":\"e58af05d-f8b0-402c-8ebd-62e1dcf67584\",\"taskSize\":37,\"type\":\"condition\",\"view\":{\"position\":{\"x\":450,\"y\":230}}}]",
+    "headers": {
+        "Content-Length": [
+            "807"
+        ],
+        "Content-Type": [
+            "text/plain; charset=utf-8"
+        ],
+        "Date": [
+            "Thu, 06 Oct 2022 09:25:39 GMT"
+        ],
+        "Server-Timing": [
+            "0"
+        ],
+        "Strict-Transport-Security": [
+            "max-age=10886400000000000; includeSubDomains"
+        ],
+        "Vary": [
+            "Accept-Encoding"
+        ],
+        "X-Content-Type-Options": [
+            "nosniff"
+        ],
+        "X-Frame-Options": [
+            "DENY"
+        ],
+        "X-Xss-Protection": [
+            "1; mode=block"
+        ]
+    },
+    "status": "200 OK",
+    "statusCode": 200
+}

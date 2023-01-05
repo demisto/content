@@ -1,0 +1,69 @@
+[
+  {
+    "severe_issues": 1,
+    "domains": [],
+    "dynamically_resolved": "no",
+    "tags": [],
+    "id": "ip/127.0.0.1",
+    "organizations": [
+      "ACME Ticketing",
+      "ACME Cleantech Solutions",
+      "Acme Holdings"
+    ],
+    "first_seen": "2021-06-30T12:32:27.000Z",
+    "open_ports": [
+      {
+        "status": "open",
+        "port": 443,
+        "protocol": "tcp"
+      },
+      {
+        "status": "open",
+        "port": 80,
+        "protocol": "tcp"
+      }
+    ],
+    "security_grade": "F",
+    "investigation_status": "investigated",
+    "locations": [
+      "USA"
+    ],
+    "ip": "127.0.0.1",
+    "last_seen": "2022-03-24T04:26:03.296Z",
+    "type": "ip",
+    "closed_ports": [],
+    "hosting_type": "cloud",
+    "status": "normal",
+    "alive": true,
+    "comment": null,
+    "issues_count": 1,
+    "discoverability": "Extreme"
+  },
+  {
+    "severe_issues": 1,
+    "domains": [],
+    "dynamically_resolved": "no",
+    "tags": [],
+    "id": "ip/127.0.0.2",
+    "organizations": [
+      "Acme Interior Design"
+    ],
+    "first_seen": "2021-07-22T03:07:29.400Z",
+    "open_ports": [],
+    "security_grade": "D",
+    "investigation_status": "investigated",
+    "locations": [
+      "IND"
+    ],
+    "ip": "127.0.0.2",
+    "last_seen": "2022-03-24T04:26:03.296Z",
+    "type": "ip",
+    "closed_ports": [],
+    "hosting_type": "owned",
+    "status": "normal",
+    "alive": true,
+    "comment": null,
+    "issues_count": 3,
+    "discoverability": "High"
+  }
+]

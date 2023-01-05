@@ -20,7 +20,6 @@ configuration:
   type: 8
   defaultvalue: 'true'
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
-  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -73,9 +72,7 @@ configuration:
   required: false
   type: 15
 - name: first_fetch
-  additionalinfo: First fetch query e.g., 12 hours, 7 days.
-    SecurityScorecard provides a maximum of 7 days back. To ensure
-    no alerts are missed, it's recommended to use a value less than 2 days.
+  additionalinfo: First fetch query e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
   display: First fetch
   hidden: false
   defaultvalue: 2 days
@@ -123,7 +120,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.7.33922
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

@@ -1,0 +1,474 @@
+{
+  "data": {
+    "resultIdToElementDataMap": {
+      "11.-4319097116418812958": {
+        "simpleValues": {
+          "hasRansomwareSuspendedProcesses": {
+            "totalValues": 1,
+            "values": [
+              "False"
+            ]
+          },
+          "decisionFeatureSet": {
+            "totalValues": 2,
+            "values": [
+              "Process.blackListedFileHash(Malop decision)",
+              "Process.maliciousByDualExtensionByFileRootCause(Malop decision)"
+            ]
+          },
+          "rootCauseElementCompanyProduct": {
+            "totalValues": 1,
+            "values": [
+              "Microsoft Corporation : Microsoft® Windows® Operating System"
+            ]
+          },
+          "decisionFeature": {
+            "totalValues": 1,
+            "values": [
+              "Process.blackListedFileHash(Malop decision)"
+            ]
+          },
+          "detectionType": {
+            "totalValues": 1,
+            "values": [
+              "BLACKLIST"
+            ]
+          },
+          "malopActivityTypes": {
+            "totalValues": 1,
+            "values": [
+              "MALICIOUS_INFECTION"
+            ]
+          },
+          "creationTime": {
+            "totalValues": 1,
+            "values": [
+              "1659517940167"
+            ]
+          },
+          "isBlocked": {
+            "totalValues": 1,
+            "values": [
+              "False"
+            ]
+          },
+          "rootCauseElementTypes": {
+            "totalValues": 1,
+            "values": [
+              "File"
+            ]
+          },
+          "malopStartTime": {
+            "totalValues": 1,
+            "values": [
+              "1658400026119"
+            ]
+          },
+          "rootCauseElementNames": {
+            "totalValues": 1,
+            "values": [
+              "userinit.pdf.exe"
+            ]
+          },
+          "malopLastUpdateTime": {
+            "totalValues": 1,
+            "values": [
+              "1659518441475"
+            ]
+          },
+          "allRansomwareProcessesSuspended": {
+            "totalValues": 1,
+            "values": [
+              "False"
+            ]
+          },
+          "rootCauseElementHashes": {
+            "totalValues": 1,
+            "values": [
+              "b648b376e1066c67fbfeba99ef6171eb36aef188"
+            ]
+          },
+          "managementStatus": {
+            "totalValues": 1,
+            "values": [
+              "TODO"
+            ]
+          },
+          "closeTime": {
+            "totalValues": 1,
+            "values": [
+              "None"
+            ]
+          },
+          "closerName": {
+            "totalValues": 1,
+            "values": [
+              "None"
+            ]
+          },
+          "customClassification": {
+            "totalValues": 1,
+            "values": [
+              "None"
+            ]
+          },
+          "comments": {
+            "totalValues": 17,
+            "values": [
+              {
+                "commentId": "8df68b3f-0b2e-43ff-bd50-2c74416aae81",
+                "username": "<test_email>",
+                "message": "ServiceNow Ticket ID: INC0041660",
+                "timestamp": 1659518031807
+              },
+              {
+                "commentId": "bc5c27f3-c9d6-4cda-85f8-737dc4c9883f",
+                "username": "<test_email>",
+                "message": "Quarantine File Remediation Action Succeeded",
+                "timestamp": 1659607764565
+              },
+              {
+                "commentId": "83a01f84-64aa-4283-a7f5-a4f260678749",
+                "username": "<test_email>",
+                "message": "Unquarantine File Remediation Action Succeded",
+                "timestamp": 1659607913246
+              },
+              {
+                "commentId": "5ccea954-8895-4366-be85-881ac1e5038a",
+                "username": "<test_email>",
+                "message": "soar commet testing",
+                "timestamp": 1659939416243
+              },
+              {
+                "commentId": "40665d4f-ed19-490f-89c2-7b491fec27bd",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660197328358
+              },
+              {
+                "commentId": "2ecfc71f-721f-4131-bd76-60cc16dbc5db",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660280629035
+              },
+              {
+                "commentId": "c15163bc-3be2-453c-8a18-51bcba273a58",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660289740476
+              },
+              {
+                "commentId": "ca4f69ec-2100-483a-9553-0c11933e99c3",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660290054398
+              },
+              {
+                "commentId": "22211ba7-b072-4682-bce6-59dcf435d782",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660295306314
+              },
+              {
+                "commentId": "ec95841a-00a3-4eb4-8619-62a402c49561",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660303465427
+              },
+              {
+                "commentId": "53923c22-f234-4043-9c84-c4982a86e8f3",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660306630648
+              },
+              {
+                "commentId": "e947f04f-e9c4-4bd6-806b-687718992c5f",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660306884389
+              },
+              {
+                "commentId": "10dd9732-9fce-4c64-aff6-b64cb37d21b6",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660646763064
+              },
+              {
+                "commentId": "e981c544-6f48-4674-8925-87b49e6e1160",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660647057107
+              },
+              {
+                "commentId": "8821d699-b903-4677-afec-cc6eee47bbd8",
+                "username": "<test_email>",
+                "message": "Resilient ID: 2114",
+                "timestamp": 1660647815281
+              },
+              {
+                "commentId": "a88e5aaf-1466-47fb-a97b-68a194a314e5",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660647877977
+              },
+              {
+                "commentId": "5d66ab80-31fe-42cc-8cb4-ddeb1a041619",
+                "username": "<test_email>",
+                "message": "Could not download the file userinit.pdf.exe from source machine, even after waiting for 60 seconds.",
+                "timestamp": 1660647898294
+              }
+            ]
+          }
+        },
+        "elementValues": {
+          "suspects": {
+            "totalValues": 8,
+            "elementValues": [
+              {
+                "elementType": "Process",
+                "guid": "-1826875736.-3068369950345623259",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "true"
+              },
+              {
+                "elementType": "Process",
+                "guid": "-1826875736.5581160908838661365",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "true"
+              },
+              {
+                "elementType": "Process",
+                "guid": "-1826875736.3936004120149450240",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "true"
+              },
+              {
+                "elementType": "Process",
+                "guid": "-1826875736.-5182414738852073863",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "true"
+              },
+              {
+                "elementType": "Process",
+                "guid": "-1826875736.-8966699940267182877",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "true"
+              },
+              {
+                "elementType": "Process",
+                "guid": "-1826875736.-3512625279668709503",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "true"
+              },
+              {
+                "elementType": "Process",
+                "guid": "-1826875736.-1487332606736145306",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "true"
+              },
+              {
+                "elementType": "Process",
+                "guid": "-1826875736.3813603568488118540",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "true"
+              }
+            ],
+            "totalSuspicious": 8,
+            "totalMalicious": 8,
+            "guessedTotal": 0
+          },
+          "filesToRemediate": {
+            "totalValues": 8,
+            "elementValues": [
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              },
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              },
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              },
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              },
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              },
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              },
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              },
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              }
+            ],
+            "totalSuspicious": 8,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "primaryRootCauseElements": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "affectedUsers": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "User",
+                "guid": "0.923977340742223688",
+                "name": "desktop-j60ivd0\\1997c",
+                "hasSuspicions": "False",
+                "hasMalops": "False"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "rootCauseElements": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "File",
+                "guid": "-1826875736.-1037616946123737508",
+                "name": "userinit.pdf.exe",
+                "hasSuspicions": "true",
+                "hasMalops": "False"
+              }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          },
+          "affectedMachines": {
+            "totalValues": 1,
+            "elementValues": [
+              {
+                "elementType": "Machine",
+                "guid": "-1826875736.1198775089551518743",
+                "name": "desktop-j60ivd0",
+                "hasSuspicions": "False",
+                "hasMalops": "False"
+              }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+          }
+        },
+        "suspicions": {},
+        "filterData": {
+          "sortInGroupValue": "11.-4319097116418812958",
+          "groupByValue": "MalopProcessRuntime:11.-4319097116418812958 "
+        },
+        "isMalicious": "False",
+        "suspicionCount": 0,
+        "guidString": "11.-4319097116418812958",
+        "labelsIds": [],
+        "malopPriority": "None",
+        "malicious": "False",
+        "suspect": "False"
+      }
+    },
+    "suspicionsMap": {},
+    "evidenceMap": {},
+    "totalPossibleResults": 1,
+    "guessedPossibleResults": 0,
+    "queryLimits": {
+      "totalResultLimit": 10000,
+      "perGroupLimit": 10000,
+      "perFeatureLimit": 100,
+      "groupingFeature": {
+        "elementInstanceType": "MalopProcess",
+        "featureName": "self"
+      },
+      "sortInGroupFeature": "None"
+    },
+    "queryTerminated": "False",
+    "pathResultCounts": [
+      {
+        "featureDescriptor": {
+          "elementInstanceType": "MalopProcess",
+          "featureName": "None"
+        },
+        "count": 1
+      }
+    ],
+    "guids": [],
+    "paginationToken": "None",
+    "executionUUID": "None",
+    "quapiMeasurementData": {
+      "timeToGetGuids": [],
+      "timeToGetData": [],
+      "timeToGetAdditionalData": [],
+      "totalQuapiQueryTime": [],
+      "startTime": [],
+      "endTime": []
+    }
+  },
+  "status": "SUCCESS",
+  "hidePartialSuccess": "False",
+  "message": "",
+  "expectedResults": 1,
+  "failures": 0,
+  "failedServersInfo": {
+    "onlineFailedServers": [],
+    "offlineServers": [],
+    "onlineFailedServersPercentage": 0.0,
+    "totalFailedServersPercentage": 0.0
+  }
+}

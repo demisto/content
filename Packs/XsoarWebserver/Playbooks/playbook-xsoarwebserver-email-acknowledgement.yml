@@ -1,0 +1,271 @@
+id: xsoarwebserver-email-acknowledgement
+version: -1
+name: xsoarwebserver-email-acknowledgement
+description: |
+  Playbook to demonstrate the features of XSOAR-Web-Server. It sends an html email to a set of users up to 2 times. The email can contain multiple html links, that the users can click and the response will be available in the context. This playbook sets up the webserver to handle http get requests
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1c5cb449-cde3-4ee1-8a81-0dd24e63ebb2
+    type: start
+    task:
+      id: 1c5cb449-cde3-4ee1-8a81-0dd24e63ebb2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 248ef8ca-113b-42b5-8bb7-81c7d87480da
+    type: regular
+    task:
+      id: 248ef8ca-113b-42b5-8bb7-81c7d87480da
+      version: -1
+      name: Initializing Email Send Counter
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      emailsendcounter:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 22c64a9d-1c37-42a5-8224-5ac88f696258
+    type: regular
+    task:
+      id: 22c64a9d-1c37-42a5-8224-5ac88f696258
+      version: -1
+      name: Setup WS Actions
+      description: setup the web server to handle URL clicks for each action specified from single or multiple recipients
+      script: '|||xsoar-ws-setup-simple-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      actions:
+        simple: ${inputs.useractions}
+      emailaddresses:
+        simple: ${inputs.useremails}
+      htmltemplate:
+        simple: ${inputs.htmltemplate}
+      userstring:
+        simple: simplegetrequestxsoarfeedback
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 102fb6e8-b681-4cb6-8881-77b2b728f98d
+    type: title
+    task:
+      id: 102fb6e8-b681-4cb6-8881-77b2b728f98d
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 79833017-77f4-4cd0-80a6-823b06e76c23
+    type: playbook
+    task:
+      id: 79833017-77f4-4cd0-80a6-823b06e76c23
+      version: -1
+      name: xsoar-data-collection-response-tracking
+      description: This playbook tracks the user responses and  resends the emails to recipients who have not responded
+      playbookName: xsoar-data-collection-response-tracking
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      EmailSubject:
+        simple: Do you like XSOAR ?
+      FileAttachments:
+        simple: ${InfoFile.EntryID}
+      Jobuuid:
+        simple: ${WS-ActionDetails.job_uuid}
+      PollingTimebetweenRuns:
+        simple: "30"
+    separatecontext: true
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: WS-ActionStatus
+                accessor: completed
+            iscontext: true
+          right:
+            value: {}
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.emailsendcounter
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ae779448-1c5f-4f10-8b58-176137118fdd
+    type: regular
+    task:
+      id: ae779448-1c5f-4f10-8b58-176137118fdd
+      version: -1
+      name: Stopping SLA timer
+      description: commands.local.cmd.stop.timer
+      script: Builtin|||stopTimer
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      timerField:
+        simple: EmailUserSLA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 380,
+        "x": 530,
+        "y": -140
+      }
+    }
+  }
+inputs:
+- key: useremails
+  value:
+    simple: Replace with comma separated user emails
+  required: true
+  description: The emails to send the data collection links to.
+  playbookInputQuery:
+- key: htmltemplate
+  value:
+    complex:
+      root: lists
+      accessor: AcknowledgementEmailHTML
+  required: true
+  description: The template for the acknowledgement email is an HTML string with multiple hyper links with each hyper link has a place holder like "$action{number}" with number varying across number of actions
+  playbookInputQuery:
+- key: useractions
+  value:
+    simple: happy,angry
+  required: true
+  description: Comma separated list of actions that get registered when the corresponding links are clicked. Make sure that your template has an equal number of placeholders
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

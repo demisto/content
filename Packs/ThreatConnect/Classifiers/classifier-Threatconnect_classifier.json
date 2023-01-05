@@ -1,0 +1,23 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Threatconnect classifier",
+    "keyTypeMap": {
+        "Event": "ThreatConnect",
+        "Incident": "ThreatConnect"
+    },
+    "name": "Threatconnect classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "type",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

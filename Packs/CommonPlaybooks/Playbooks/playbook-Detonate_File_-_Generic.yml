@@ -31,6 +31,7 @@ tasks:
       - "20"
       - "21"
       - "22"
+      - "23"
     separatecontext: false
     view: |-
       {
@@ -758,6 +759,39 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 424a0a83-0985-4401-8d3a-8040b957c728
+    type: playbook
+    task:
+      id: 424a0a83-0985-4401-8d3a-8040b957c728
+      version: -1
+      name: Detonate File - SecneurX Analysis
+      description: Detonates a file using the SecneurX Analysis Integration. Returns relevant reports to the War Room and file reputations to the context data.
+      playbookName: Detonate File - SecneurX Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 5660,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -765,7 +799,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 5980,
+        "width": 6420,
         "x": -380,
         "y": 50
       }
@@ -1407,6 +1441,21 @@ outputs:
 - contextPath: VMRay.ThreatIndicator.Operation
   description: The operation that caused the indicators.
   type: string
+- contextPath: SecneurXAnalysis.Report.SHA256
+  description: SHA256 value of the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.Verdict
+  description: Summary result of the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.Tags
+  description: More details of the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.IOC
+  description: List of IOC's observed in the analyzed sample
+  type: string
+- contextPath: SecneurXAnalysis.Report.Status
+  description: Analysis queued sample state
+  type: String
 fromversion: 5.0.0
 tests:
 - Detonate File - Generic Test

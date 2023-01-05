@@ -6,6 +6,9 @@
         "name": "myIntegration",
         "file_path": "Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml",
         "pack": "myXSIAMOnlyPack",
+        "marketplaces": [
+          "marketplacev2"
+        ],
         "tests": [
           "myOtherTestPlaybook"
         ]
@@ -20,6 +23,15 @@
         "pack": "myXSIAMOnlyPack",
         "marketplaces": [
           "marketplacev2"
+        ]
+      },
+      "Sanity Test - Playbook with Unmockable Whois Integration": {
+        "name": "Sanity Test - Playbook with Unmockable Whois Integration",
+        "file_path": "Packs/Whois/TestPlaybooks/Sanity Test - Playbook with Unmockable Whois Integration.yml",
+        "pack": "Whois",
+        "marketplaces": [
+          "marketplacev2",
+          "xsoar"
         ]
       },
       "myOtherTestPlaybook": {

@@ -20,7 +20,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "RecordedFutureLayout",
+    "layout": "Recorded Future Incident",
     "detached": false,
     "extractSettings": {
         "mode": "All",

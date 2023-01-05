@@ -2,6 +2,20 @@
 xlsm
 Mimecast
 subplaybook
+Zscaler
+Symantec
+Proofpoint
+Stealthwatch
+Sophos
+Forcepoint
+Netcraft
+SailPoint
+PingOne
+Clarizen
+ExceedLMS
+Okta
+SecneurX
+VirusTotal
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
@@ -40,7 +54,7 @@ ignore=BA101
 ignore=BA101
 
 [file:playbook-Search_And_Delete_Emails_-_Generic_-_v2.yml]
-ignore=BA101
+ignore=BA101,PB121
 
 [file:playbook-Send_Investigation_Summary_Reports_Job.yml]
 ignore=PB105
@@ -72,5 +86,17 @@ ignore=PB110
 [file:playbook-File_Enrichment_-_Generic_v2.yml]
 ignore=PB110
 
+[file:playbook-IP_Enrichment_-_Internal_-_Generic_v2.yml]
+ignore=PB121
+
+[file:playbook-URL_Enrichment_-_Generic_v2.yml]
+ignore=PB121
+
+[file:playbook-IP_Enrichment_-_External_-_Generic_v2.yml]
+ignore=PB121
+
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:playbook-Block_Indicators_-_Generic_v2.yml]
+ignore=PB118

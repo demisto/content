@@ -1,5 +1,3 @@
-import json
-
 import requests
 from CommonServerPython import *
 
@@ -78,7 +76,7 @@ def check_id(id_to_check):
     Returns:
         bool: True if is a number, else returns error
     """
-    if isinstance(id_to_check, int) or isinstance(id_to_check, (str, unicode)) and id_to_check.isdigit():
+    if isinstance(id_to_check, int) or isinstance(id_to_check, str) and id_to_check.isdigit():
         return True
     return_error(ERROR_FORMAT.format(404, 'No such element'))
 
@@ -92,7 +90,7 @@ def build_errors_string(errors):
     Returns:
         str: error message
     """
-    if isinstance(errors, unicode):
+    if isinstance(errors, str):
         return str(errors)
     elif isinstance(errors, list):
         err_str = str()
@@ -156,7 +154,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
             raise ValueError
         response = r.json() if not get_raw else r.text
         if r.status_code not in {200, 201, 202, 204} and not ignore_errors:
-            if get_raw and isinstance(response, (str, unicode)):
+            if get_raw and isinstance(response, str):
                 # this might be json even if get_raw is True because the API will return errors as json
                 try:
                     response = json.loads(response)
@@ -307,7 +305,7 @@ def build_upload_params():
     params['shareable'] = shareable == 'true'
 
     if max_jobs:
-        if isinstance(max_jobs, (str, unicode)) and max_jobs.isdigit() or isinstance(max_jobs, int):
+        if isinstance(max_jobs, str) and max_jobs.isdigit() or isinstance(max_jobs, int):
             params['max_jobs'] = int(max_jobs)
         else:
             return_error('max_jobs arguments isn\'t a number')
@@ -421,7 +419,8 @@ def encode_file_name(file_name):
         file_name (str): name of the file
     Returns: encoded file name
     """
-    return file_name.encode('ascii', 'ignore').replace('\\', '')
+    file_name = file_name.replace('\\', '')
+    return file_name.encode('ascii', 'ignore')
 
 
 def upload_sample_command():
@@ -452,7 +451,7 @@ def upload_url_command():
     args = demisto.args()
     url = args.get('url')
 
-    if isinstance(url, unicode):
+    if isinstance(url, str):
         url = str(url)
 
     params = build_upload_params()

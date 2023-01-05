@@ -27,7 +27,7 @@ This playbook does not use any commands.
 | Nexpose.Scan.Status | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | string |
 | Nexpose.Scan.Assets | The number of assets found in the scan | number |
 | Nexpose.Scan.Vulnerabilities.Total | The total number of vulnerabilities. | number |
-| XMCyber.Entity.isAsset | Is Entity a Critical Asset | boolean |
+| XMCyber.Entity.isAsset | Entity is a critical asset | boolean |
 | XMCyber.Entity.averageComplexityLevel | Level of the average complexity to compromise this entity | string |
 | XMCyber.Entity.criticalAssetsAtRisk | Number of unique critical assets at risk from this entity | number |
 

@@ -1,0 +1,9 @@
+{
+    ".mp4a": "audio/mp4",
+    ".m4a": "audio/mp4",
+    ".jpeg": "image/jpeg",
+    ".jpe": "image/jpeg",
+    ".jpg": "image/jpeg",
+    ".html": "text/html",
+    ".ico": "image/x-icon"
+}

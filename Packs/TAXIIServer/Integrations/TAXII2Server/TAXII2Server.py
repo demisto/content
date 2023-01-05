@@ -34,6 +34,7 @@ TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+UTC_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
 TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
@@ -682,13 +683,21 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
     object_type = stix_object['type']
     stix_type = 'indicator'
 
+    pattern = ''
+    if object_type == 'file':
+        hash_type = get_hash_type(indicator_value)
+        pattern = f"[file:hash.'{hash_type}' = '{indicator_pattern_value}']"
+    else:
+        pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
+
     stix_domain_object: Dict[str, Any] = assign_params(
         type=stix_type,
         id=create_sdo_stix_uuid(xsoar_indicator, stix_type),
-        pattern=f"[{object_type}:value = '{indicator_pattern_value}']",
+        pattern=pattern,
         valid_from=stix_object['created'],
         valid_until=expiration_parsed,
-        description=xsoar_indicator.get('CustomFields', {}).get('description', '')
+        description=xsoar_indicator.get('CustomFields', {}).get('description', ''),
+        pattern_type='stix'
     )
     return dict({k: v for k, v in stix_object.items()
                  if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
@@ -838,9 +847,12 @@ def parse_manifest_and_object_args() -> tuple:
 
     try:
         if added_after:
+            datetime.strptime(added_after, UTC_DATE_FORMAT)
+    except ValueError:
+        try:
             datetime.strptime(added_after, STIX_DATE_FORMAT)
-    except Exception as e:
-        raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
+        except Exception as e:
+            raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 
     if SERVER.version == TAXII_VER_2_0:
         if content_range := request.headers.get('Content-Range'):

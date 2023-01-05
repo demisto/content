@@ -21,7 +21,7 @@ Configure Prisma Cloud Compute to send alerts to Demisto by creating an alert pr
 1. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Demisto.
 1. Click **Save** to save the alert profile
 
-## Configure Demisto
+## Configure Cortex XSOAR
 
 1. Navigate to **Settings > Integrations > Servers & Services**.
 1. Search for **Prisma Cloud Compute**.

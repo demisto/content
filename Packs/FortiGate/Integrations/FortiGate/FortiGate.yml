@@ -700,14 +700,14 @@ script:
     - contextPath: Fortigate.Address.Deleted
       description: The address deletion status.
       type: String
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - Fortigate Test

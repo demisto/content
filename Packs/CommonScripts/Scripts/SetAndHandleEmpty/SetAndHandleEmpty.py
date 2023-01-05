@@ -5,6 +5,8 @@ from typing import Text
 
 def get_value(value, stringify=False):
     if stringify:
+        if value is None:
+            return ''
         return str(value)
     elif not value or not isinstance(value, (Text, bytes, bytearray)):
         return value

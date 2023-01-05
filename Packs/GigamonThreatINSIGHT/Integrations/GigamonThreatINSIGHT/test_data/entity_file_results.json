@@ -1,0 +1,37 @@
+{
+  "hash_type": "md5",
+  "file": {
+    "entity": "725d4b987107aa0f797f2aad4daaf8cd",
+    "first_seen": "2021-12-20T09:04:20.458Z",
+    "last_seen": "2022-07-11T08:09:09.366Z",
+    "customer_id": "test",
+    "bytes": 503808,
+    "pe": {
+      "pe_compile_timestamp": "2019-10-31T15:07:08.000Z",
+      "pe_os": "Windows 2000",
+      "pe_subsystem": "WINDOWS_GUI",
+      "pe_section_names": [
+        ".text",
+        ".rdata",
+        ".data",
+        ".rsrc",
+        ".reloc"
+      ],
+      "pe_is_exe": true,
+      "pe_is64_bit": false,
+      "pe_uses_aslr": true,
+      "pe_uses_dep": true,
+      "pe_uses_code_integrity": false,
+      "pe_uses_seh": true,
+      "pe_has_import_table": true,
+      "pe_has_export_table": true,
+      "pe_has_cert_table": false,
+      "pe_has_debug_data": false
+    },
+    "names": [],
+    "mime_type": [
+      "application/x-dosexec"
+    ]
+  },
+  "query_type": "file"
+}

@@ -1,0 +1,35 @@
+[
+    {
+        "value": "10.0.0.0/20",
+        "indicator_type": "CIDR",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "10.0.0.0/20",
+            "type": "CIDR",
+            "indicator_ref": "example:Observable-1c798262-a4cd-434d-a958-884d6980c459",
+            "value": "10.0.0.0/20"
+        }
+    },
+    {
+        "value": "10.0.0.1",
+        "indicator_type": "IP",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "10.0.0.1",
+            "type": "IP",
+            "indicator_ref": "example:Observable-1c798262-a4cd-434d-a958-884d6980c459",
+            "value": "10.0.0.1"
+        }
+    },
+    {
+        "value": "10.0.0.2",
+        "indicator_type": "IP",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "10.0.0.2",
+            "type": "IP",
+            "indicator_ref": "example:Observable-1c798262-a4cd-434d-a958-884d6980c459",
+            "value": "10.0.0.2"
+        }
+    }
+]

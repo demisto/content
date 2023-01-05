@@ -3,3 +3,6 @@ ignore=auto-test
 
 [file:MicrosoftGraphDeviceManagement.yml]
 ignore=DS107,IN145
+
+[known_words]
+Intune

@@ -20,6 +20,37 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
+### taegis-create-comment
+
+#### Base Command
+
+`!taegis-create-comment`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| comment | The comment string to add to the investigation | True |
+| parent_id | The investigation ID to add the comment to | True |
+
+#### Command Example
+
+```
+!taegis-create-comment comment="This is a test comment" parent_id="219da0ee-8642-4363-827c-8a6fbd479082"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "CommentCreate": {
+            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4"
+        }
+    }
+}
+```
+
 
 ### taegis-create-investigation
 
@@ -45,50 +76,12 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 {
     "TaegisXDR": {
-        "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4"
+        "Investigation": {
+            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4"
+        }
     }
 }
 ```
-
-
-### taegis-fetch-alerts
-
-#### Base Command
-
-`!taegis-fetch-alerts`
-
-#### Input
-
-| **Argument Name** | **Description** | Default | **Required** |
-| --- | --- | --- | --- |
-| ids | A list of alerts by IDs | `936c1cc1-db8f-430c-837c-1c914fcca35a` | False |
-| limit | Number of results to when `ids` is not defined | `10` | False |
-| offset | The result to start from when `ids` is not defined | `0` | False |
-| cql_query | The query to utilize when searching for Alerts | `from alert severity >= 0.6 and status='OPEN'` | False |
-
-#### Command Examples
-
-```
-!taegis-fetch-alerts ids=`["6594e97f-a898-5b28-82b2-ea03293cdaa1"]`
-```
-
-#### Context Example
-
-```
-{
-    "TaegisXDR": [
-        {
-            "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
-            "metadata": {
-                "title": "Test Alert",
-                "description": "This is a test alert",
-                "severity": 0.5,
-            }
-        }
-    ]
-}
-```
-
 
 
 ### taegis-execute-playbook
@@ -119,6 +112,150 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-fetch-alerts
+
+#### Base Command
+
+`!taegis-fetch-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | Default | **Required** |
+| --- | --- | --- | --- |
+| ids | A list of alerts by IDs | `936c1cc1-db8f-430c-837c-1c914fcca35a` | False |
+| limit | Number of results to when `ids` is not defined | `10` | False |
+| offset | The result to start from when `ids` is not defined | `0` | False |
+| cql_query | The query to utilize when searching for Alerts | `from alert severity >= 0.6 and status='OPEN'` | False |
+
+#### Command Examples
+
+```
+!taegis-fetch-alerts ids=`["6594e97f-a898-5b28-82b2-ea03293cdaa1"]`
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Alerts": [
+            {
+                "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
+                "metadata": {
+                    "title": "Test Alert",
+                    "description": "This is a test alert",
+                    "severity": 0.5,
+                }
+            }
+        ]
+    }
+}
+```
+
+
+### taegis-fetch-comment
+
+#### Base Command
+
+`!taegis-create-comment`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the comment to fetch | True |
+
+#### Command Example
+
+```
+!taegis-fetch-comment id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Comment": {
+            "author_user": {
+                "email_normalized": "myuser@email.com",
+                "given_name": "John",
+                "family_name": "Smith",
+                "id": "auth0|000000000000000000000001",
+            },
+            "id": "ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f",
+            "comment": "This is a comment in an investigation",
+            "created_at": "2022-01-01T13:04:57.17234Z",
+            "deleted_at": None,
+            "modified_at": None,
+            "parent_id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
+            "parent_type": "investigation",
+        }
+    }
+}
+```
+
+
+### taegis-fetch-comments
+
+#### Base Command
+
+`!taegis-create-comments`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent_id | The investigation ID to fetch comments for | True |
+
+#### Command Example
+
+```
+!taegis-fetch-comments parent_id=c2e09554-833e-41a1-bc9d-8160aec0d70d
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Comments": [
+            {
+                "author_user": {
+                    "email_normalized": "myuser@email.com",
+                    "given_name": "John",
+                    "family_name": "Smith",
+                    "id": "auth0|000000000000000000000001",
+                },
+                "id": "ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f",
+                "comment": "This is a comment in an investigation",
+                "created_at": "2022-01-01T13:04:57.17234Z",
+                "deleted_at": None,
+                "modified_at": None,
+                "parent_id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
+                "parent_type": "investigation",
+            },
+            {
+                "author_user": {
+                    "email_normalized": "myuser@email.com",
+                    "given_name": "John",
+                    "family_name": "Smith",
+                    "id": "auth0|000000000000000000000001",
+                },
+                "id": "ff9ca818-4749-4ccb-883a-2ccc6f6c1234",
+                "comment": "This is another comment",
+                "created_at": "2022-01-02T13:04:57.17234Z",
+                "deleted_at": None,
+                "modified_at": None,
+                "parent_id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
+                "parent_type": "investigation",
+            }
+        ]
+    }
+}
+```
+
+
 ### taegis-fetch-investigation
 
 #### Base Command
@@ -134,6 +271,30 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 !taegis-fetch-investigation id=936c1cc1-db8f-430c-837c-1c914fcca35a
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Investigations": [
+            {
+                "archived_at": None,
+                "created_at": "2022-02-02T13:53:35Z",
+                "description": "Test Investigation",
+                "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
+                "key_findings": "",
+                "priority": 2,
+                "service_desk_id": "",
+                "service_desk_type": "",
+                "status": "Open",
+                "alerts2": [],
+                "url": "https://ctpx.secureworks.com/investigations/c2e09554-833e-41a1-bc9d-8160aec0d70d",
+            }
+        ]
+    }
+}
 ```
 
 
@@ -158,14 +319,16 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 {
-    "TaegisXDR": [
-        {
-            "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
-            "description": "Test Alert",
-            "message": "This is a test alert",
-            "severity": 0.5,
-        }
-    ]
+    "TaegisXDR": {
+        "InvestigationAlerts": [
+            {
+                "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
+                "description": "Test Alert",
+                "message": "This is a test alert",
+                "severity": 0.5,
+            }
+        ]
+    }
 }
 ```
 
@@ -193,17 +356,19 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 {
-    "TaegisXDR": [
-        {
-            "description": "Test Investigation",
-            "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
-            "key_findings": "",
-            "priority": 2,
-            "service_desk_id": "",
-            "service_desk_type": "",
-            "status": "Open"
-        }
-    ]
+    "TaegisXDR": {
+        "Investigations": [
+            {
+                "description": "Test Investigation",
+                "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
+                "key_findings": "",
+                "priority": 2,
+                "service_desk_id": "",
+                "service_desk_type": "",
+                "status": "Open"
+            }
+        ]
+    }
 }
 ```
 
@@ -229,6 +394,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ```
 {
+    "TaegisXDR": {
+        "PlaybookExecution": {
             "createdAt": "2022-01-01T13:51:24Z",
             "executionTime": 1442,
             "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4",
@@ -247,6 +414,40 @@ After you successfully execute a command, a DBot message appears in the War Room
             "state": "Completed",
             "updatedAt": "2022-01-01T13:51:31Z"
         }
+    }
+}
+```
+
+
+### taegis-update-comment
+
+#### Base Command
+
+`!taegis-update-comment`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| comment | The comment string to add to the investigation | True |
+| id | The comment ID to update | True |
+
+#### Command Example
+
+```
+!taegis-update-comment id="ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f" comment="Newly updated comment"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "CommentUpdate": {
+            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4"
+        }
+    }
+}
 ```
 
 
@@ -289,7 +490,9 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
 ```
 {
     "TaegisXDR": {
-        "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d"
+        "InvestigationUpdate": {
+            "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d"
+        }
     }
 }
 ```

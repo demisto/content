@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2810,
-          "y": 1410
+          "x": -2510,
+          "y": 1400
         }
       }
     note: false
@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3fdcb924-95fb-4c80-813a-3b5bf700c0d0
+    taskid: 03a27030-e908-4a4d-8765-33813272434c
     type: condition
     task:
-      id: 3fdcb924-95fb-4c80-813a-3b5bf700c0d0
+      id: 03a27030-e908-4a4d-8765-33813272434c
       version: -1
       name: Add the file to the allowed list automatically?
       description: Should the playbook add the file to the allowed list automatically?
@@ -111,16 +111,16 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      Manual Alert Exception:
-      - "4"
       "Yes":
       - "14"
+      '#default#':
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -690,
-          "y": 1100
+          "x": -870,
+          "y": 1080
         }
       }
     note: false
@@ -130,6 +130,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldHandleFPautomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
   "4":
     id: "4"
     taskid: 49b07556-1ae6-477c-8833-dfed9369e9c7
@@ -149,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": 1270
+          "x": -870,
+          "y": 1465
         }
       }
     note: false
@@ -162,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: efcbcb8a-07f7-491d-8da6-d235296ff517
+    taskid: 95c483a3-09d5-4c66-8fad-fac5d3faa190
     type: condition
     task:
-      id: efcbcb8a-07f7-491d-8da6-d235296ff517
+      id: 95c483a3-09d5-4c66-8fad-fac5d3faa190
       version: -1
       name: Check the alert source
       description: "Check the alert source - XDR Analytics or XDR Agent alerts."
@@ -174,11 +187,13 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+      - "7"
       Analytics:
       - "12"
       XDR Agent:
       - "2"
+      IOC Alert:
+      - "20"
     separatecontext: false
     conditions:
     - label: Analytics
@@ -225,11 +240,22 @@ tasks:
           right:
             value:
               simple: TRAPS
+    - label: IOC Alert
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: IOC
+          ignorecase: true
     view: |-
       {
         "position": {
           "x": -1330,
-          "y": 930
+          "y": 910
         }
       }
     note: false
@@ -258,8 +284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1620,
-          "y": 1580
+          "x": -1330,
+          "y": 1650
         }
       }
     note: false
@@ -334,8 +360,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1620,
-          "y": 1740
+          "x": -1330,
+          "y": 1790
         }
       }
     note: false
@@ -370,8 +396,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1820,
-          "y": 1910
+          "x": -1560,
+          "y": 1960
         }
       }
     note: false
@@ -398,7 +424,7 @@ tasks:
       {
         "position": {
           "x": -1330,
-          "y": 2080
+          "y": 2140
         }
       }
     note: false
@@ -460,8 +486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2030,
-          "y": 1100
+          "x": -2070,
+          "y": 1080
         }
       }
     note: false
@@ -490,7 +516,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2810,
+          "x": -2510,
           "y": 1270
         }
       }
@@ -509,8 +535,7 @@ tasks:
       id: dd742739-f827-441e-8270-761550d10287
       version: -1
       name: Add file hash to allowed list
-      description: Adds requested files to allow list if they are not already on block
-        list or allow list.
+      description: Adds requested files to allow list if they are not already on block list or allow list.
       script: '|||core-allowlist-files'
       type: regular
       iscommand: true
@@ -528,7 +553,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1050,
+          "x": -1100,
           "y": 1270
         }
       }
@@ -558,7 +583,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2180,
+          "x": -2070,
           "y": 1270
         }
       }
@@ -571,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 55f04aa2-8ca8-4069-8c10-fe377a4ff6a9
+    taskid: a0d0846a-c59b-4cd7-85f0-136513252d42
     type: regular
     task:
-      id: 55f04aa2-8ca8-4069-8c10-fe377a4ff6a9
+      id: a0d0846a-c59b-4cd7-85f0-136513252d42
       version: -1
       name: Add the host IP and username to Alert Exclusion list
       description: Add the host IP and username to Alert Exclusion list.
@@ -595,7 +620,7 @@ tasks:
                     {
                       "SEARCH_FIELD": "agent_ip_addresses",
                       "SEARCH_TYPE": "CONTAINS",
-                      "SEARCH_VALUE": "${inputs.HostIP}"
+                      "SEARCH_VALUE": "${inputs.sourceIP}"
                     },
                     {
                       "SEARCH_FIELD": "actor_effective_username",
@@ -618,8 +643,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2180,
-          "y": 1410
+          "x": -2070,
+          "y": 1400
         }
       }
     note: false
@@ -714,18 +739,130 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9430502f-4161-4a76-8bb1-fb60491828e8
+    type: regular
+    task:
+      id: 9430502f-4161-4a76-8bb1-fb60491828e8
+      version: -1
+      name: Disable IOC rule automatically
+      description: Disables IOCs in the Cortex server.
+      script: '|||core-iocs-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      indicator:
+        complex:
+          root: inputs.IOC
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 9fb1c47e-05b9-4e27-8981-fe3e98064f7d
+    type: condition
+    task:
+      id: 9fb1c47e-05b9-4e27-8981-fe3e98064f7d
+      version: -1
+      name: Whether to disable indicator IOC rule automatically?
+      description: "A condition to check whether to disable IOC automatically in Cortex Server."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "Yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldHandleFPautomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 550959b8-9daa-460c-8a6f-53b7c884767b
+    type: regular
+    task:
+      id: 550959b8-9daa-460c-8a6f-53b7c884767b
+      version: -1
+      name: Disable IOC rules
+      description: Disable or remove the IOC ${inputs.IOC} from the IOC rules list.
+      type: regular
+      iscommand: false
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "5_11_#default#": 0.32,
+      "5_7_#default#": 0.26,
       "9_10_yes": 0.42,
       "9_11_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 1505,
-        "width": 2790,
-        "x": -2810,
+        "height": 1565,
+        "width": 2890,
+        "x": -2510,
         "y": 640
       }
     }
@@ -734,7 +871,7 @@ inputs:
 - key: ShouldCloseAutomatically
   value: {}
   required: false
-  description: Should we automatically close false positive alerts? Specify true/false.
+  description: Whether to automatically close false positive alerts? Specify true/false.
   playbookInputQuery:
 - key: sourceIP
   value:
@@ -742,7 +879,7 @@ inputs:
       root: alert
       accessor: hostip
   required: false
-  description: The host IP from the alert.
+  description: The host IP address from the alert.
   playbookInputQuery:
 - key: username
   value:
@@ -768,7 +905,19 @@ inputs:
   required: false
   description: The file SHA256 from the alert.
   playbookInputQuery:
+- key: IOC
+  value: {}
+  required: false
+  description: The IOC to disable from IOC alerts.
+  playbookInputQuery:
+- key: ShouldHandleFPautomatically
+  value: {}
+  required: false
+  description: Whether to automatically handle false positive alerts? Specify true/false.
+  playbookInputQuery:
 outputs: []
 tests:
-- No tests.
+- No tests (auto formatted)
 fromversion: 6.6.0
+contentitemexportablefields:
+  contentitemfields: {}

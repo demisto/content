@@ -1,0 +1,170 @@
+{
+    "resources": [
+        {
+            "added": "2018-05-16",
+            "categories": [
+                "7-Zip"
+            ],
+            "cves": [
+                "CVE-2008-6536"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "L",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "C",
+                    "confidentialityImpact": "C",
+                    "exploitScore": 9.9968,
+                    "impactScore": 10.0008,
+                    "integrityImpact": "C",
+                    "score": 10.0,
+                    "vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Unspecified vulnerability in 7-zip before 4.5.7 has unknown impact and remote attack vectors, as demonstrated by the PROTOS GENOME test suite for Archive Formats (c10).</p>",
+                "text": "Unspecified vulnerability in 7-zip before 4.5.7 has unknown impact and remote attack vectors, as demonstrated by the PROTOS GENOME test suite for Archive Formats (c10)."
+            },
+            "exploits": 0,
+            "id": "7-zip-cve-2008-6536",
+            "malwareKits": 0,
+            "modified": "2018-06-08",
+            "pci": {
+                "adjustedCVSSScore": 10,
+                "adjustedSeverityScore": 5,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2009-03-29",
+            "riskScore": 898.52,
+            "severity": "Critical",
+            "severityScore": 10,
+            "title": "7-Zip: CVE-2008-6536: Unspecified vulnerability in 7-zip before 4.5.7"
+        },
+        {
+            "added": "2018-05-16",
+            "categories": [
+                "7-Zip",
+                "Remote Execution"
+            ],
+            "cves": [
+                "CVE-2016-2334"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "M",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "C",
+                    "confidentialityImpact": "C",
+                    "exploitScore": 8.5888,
+                    "impactScore": 10.0008,
+                    "integrityImpact": "C",
+                    "score": 9.3,
+                    "vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "L",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 1.8346,
+                    "impactScore": 5.8731,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 7.8,
+                    "userInteraction": "R",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Heap-based buffer overflow in the NArchive::NHfs::CHandler::ExtractZlibFile method in 7zip before 16.00 and p7zip allows remote attackers to execute arbitrary code via a crafted HFS+ image.</p>",
+                "text": "Heap-based buffer overflow in the NArchive::NHfs::CHandler::ExtractZlibFile method in 7zip before 16.00 and p7zip allows remote attackers to execute arbitrary code via a crafted HFS+ image."
+            },
+            "exploits": 0,
+            "id": "7-zip-cve-2016-2334",
+            "malwareKits": 0,
+            "modified": "2018-06-08",
+            "pci": {
+                "adjustedCVSSScore": 9,
+                "adjustedSeverityScore": 5,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2016-12-13",
+            "riskScore": 716.46,
+            "severity": "Critical",
+            "severityScore": 9,
+            "title": "7-Zip: CVE-2016-2334: Heap-based buffer overflow vulnerability"
+        },
+        {
+            "added": "2018-05-16",
+            "categories": [
+                "7-Zip",
+                "Trojan"
+            ],
+            "cves": [
+                "CVE-2016-7804"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "M",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "P",
+                    "confidentialityImpact": "P",
+                    "exploitScore": 8.5888,
+                    "impactScore": 6.443,
+                    "integrityImpact": "P",
+                    "score": 6.8,
+                    "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "L",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 1.8346,
+                    "impactScore": 5.8731,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 7.8,
+                    "userInteraction": "R",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Untrusted search path vulnerability in 7 Zip for Windows 16.02 and earlier allows remote attackers to gain privileges via a Trojan horse DLL in an unspecified directory.</p>",
+                "text": "Untrusted search path vulnerability in 7 Zip for Windows 16.02 and earlier allows remote attackers to gain privileges via a Trojan horse DLL in an unspecified directory."
+            },
+            "exploits": 0,
+            "id": "7-zip-cve-2016-7804",
+            "malwareKits": 0,
+            "modified": "2018-06-08",
+            "pci": {
+                "adjustedCVSSScore": 6,
+                "adjustedSeverityScore": 4,
+                "fail": true,
+                "specialNotes": "The presence of malware, including rootkits, backdoors, or trojan horse programs are a violation of PCI DSS, and result in an automatic failure. ",
+                "status": "Fail"
+            },
+            "published": "2017-05-22",
+            "riskScore": 577.92,
+            "severity": "Severe",
+            "severityScore": 7,
+            "title": "7-Zip: CVE-2016-7804: Untrusted search path vulnerability"
+        }
+    ],
+    "page": {
+        "number": 0,
+        "size": 3,
+        "totalResources": 189102,
+        "totalPages": 63034
+    }
+}

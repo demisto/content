@@ -1,0 +1,97 @@
+commonfields:
+  id: malwr
+  version: -1
+name: malwr
+display: malwr (Deprecated)
+fromversion: 5.0.0
+category: Forensics & Malware Analysis
+description: Deprecated. The site at malwr.com is no longer available. No available replacement.
+configuration:
+- display: URL
+  name: server
+  defaultvalue: https://malwr.com
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: malwr-submit
+    arguments:
+    - name: fileId
+      required: true
+      description: The file ID to submit
+    description: Submit a sample to be analyzed
+    outputs:
+    - contextPath: Malwr.Submissions.Id
+      description: The ID of the submission
+    - contextPath: Malwr.Submissions.Md5
+      description: The md5 hash of the tested file
+    - contextPath: Malwr.Submissions.Status
+      description: The status of the scan
+  - name: malwr-status
+    arguments:
+    - name: analysisId
+      required: true
+      description: The ID of the analysis, as returned from "malwr-submit"
+    description: Query the status of an analysis
+    outputs:
+    - contextPath: Malwr.Submissions.Id
+      description: The ID of the submission
+    - contextPath: Malwr.Submissions.Status
+      description: The status of the scan
+  - name: malwr-result
+    arguments:
+    - name: analysisId
+      required: true
+      description: The ID of the analysis, as returned from "malwr-submit"
+    description: Get the result of an analysis
+    outputs:
+    - contextPath: Malwr.Submissions.Id
+      description: The ID of the submission
+    - contextPath: Malwr.Submissions.Md5
+      description: The md5 hash of the tested file
+    - contextPath: Malwr.Submissions.Status
+      description: The status of the scan
+    - contextPath: Malwr.Submissions.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+  - name: malwr-detonate
+    arguments:
+    - name: fileId
+      required: true
+      description: The file ID to detonate
+    - name: timeout
+      defaultValue: "7200"
+      description: The timeout of the command
+    description: Detonate of file and return the result
+    outputs:
+    - contextPath: Malwr.Submissions.Id
+      description: The ID of the submission
+    - contextPath: Malwr.Submissions.Md5
+      description: The md5 hash of the tested file
+    - contextPath: Malwr.Submissions.Status
+      description: The status of the scan
+    - contextPath: Malwr.Submissions.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+  dockerimage: demisto/bs4-py3:1.0.0.32198
+deprecated: true
+tests:
+- No tests

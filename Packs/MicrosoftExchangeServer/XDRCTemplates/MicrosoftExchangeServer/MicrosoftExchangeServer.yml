@@ -1,0 +1,49 @@
+filebeat.inputs:
+  - type: filestream
+    enabled: true
+    paths:
+      - "C:\\Program Files\\Microsoft\\Exchange Server\\V15\\TransportRoles\\Logs\\MessageTracking\\*.LOG"
+    processors:
+      - add_fields:
+          fields:
+            vendor: msft
+            product: exchange
+      - drop_event.when.not.regexp.message: "^[0-9]+.*"
+      - add_locale: ~
+      - decode_csv_fields:
+          fields:
+            message: decoded.csv
+          separator: ","
+      - extract_array:
+          field: decoded.csv
+          mappings:
+            dissect.date_time: 0
+            dissect.client_ip: 1
+            dissect.client_hostname: 2
+            dissect.server_ip: 3
+            dissect.server_hostname: 4
+            dissect.source_context: 5
+            dissect.connector_id: 6
+            dissect.source: 7
+            dissect.event_id: 8
+            dissect.internal_message_id: 9
+            dissect.message_id: 10
+            dissect.network_message_id: 11
+            dissect.recipient_address: 12
+            dissect.recipient_status: 13
+            dissect.total_bytes: 14
+            dissect.recipient_count: 15
+            dissect.related_recipient_address: 16
+            dissect.reference: 17
+            dissect.message_subject: 18
+            dissect.sender_address: 19
+            dissect.return_path: 20
+            dissect.message_info: 21
+            directionality: 22
+            dissect.tenant_id: 23
+            dissect.original_client_ip: 24
+            dissect.original_server_ip: 25
+            dissect.custom_data: 26
+            dissect.transport_traffic_type: 27
+            dissect.log_id: 28
+            dissect.schema_version: 29

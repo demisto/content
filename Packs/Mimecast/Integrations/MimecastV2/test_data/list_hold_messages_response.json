@@ -1,0 +1,254 @@
+{
+    "meta": {
+        "status": 200,
+        "pagination": {
+            "pageSize": 10,
+            "totalCount": 479,
+            "next": "1234",
+            "previous": "1234"
+        }
+    },
+    "data": [
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "e-mail_"
+            },
+            "subject": "# Dec 24, 2001",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "e-mail_"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "e-mail_"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "e-mail_"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "e-mail_"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "e-mail_"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "_e-mail"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "e-mail_"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "e-mail_"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        },
+        {
+            "id": "1234",
+            "reason": "Message Hold Applied - Spam Signature policy",
+            "reasonId": "MESSAGE_HOLD_APPLIED_SPAM_SIGNATURE_POLICY",
+            "reasonCode": "message_hold_applied_spam_signature_policy",
+            "from": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "fromHeader": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": ""
+            },
+            "to": {
+                "emailAddress": "test@gmail.com",
+                "displayableName": "_e-mail"
+            },
+            "subject": "Test",
+            "route": "INBOUND",
+            "hasAttachments": false,
+            "size": 7543,
+            "dateReceived": "2022-08-01T13:10:54+0000",
+            "policyInfo": "Relaxed Spam Detection"
+        }
+    ],
+    "fail": []
+}

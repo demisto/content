@@ -429,7 +429,8 @@ tlds = {
     "aws": {
         "_group": "amazonregistry",
         "_type": "newgtld",
-        "adapter": "none"
+        "adapter": "none",
+        "host": "whois.nic.aws"
     },
     "ax": {
         "host": "whois.ax"
@@ -7246,8 +7247,8 @@ def get_root_server(domain):
                              outputs=context)
             else:
                 return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
-                               exit=True, outputs=context)
-
+                               outputs=context)
+                raise WhoisWarnningException('The domain - {} - is not supported by the Whois service'.format(domain))
         return host
 
     else:
@@ -7314,6 +7315,8 @@ states_ca = {}  # type: dict
 class WhoisException(Exception):
     pass
 
+class WhoisWarnningException(Exception):
+    pass
 
 def precompile_regexes(source, flags=0):
     return [re.compile(regex, flags) for regex in source]
@@ -7614,11 +7617,11 @@ nic_contact_regexes = [
     # nic.ir, individual  - this is a nasty one.
     "nic-hdl:\s+(?P<handle>.+)\norg:\s+(?P<organization>.+)\n(?:e-mail:\s+(?P<email>.+)\n)?(?:address:\s+(?P<street1>.+?)(?:,+ (?P<street2>.+?)(?:,+ (?P<street3>.+?)(?:,+ (?P<street4>.+?)(?:,+ (?P<street5>.+?)(?:,+ (?P<street6>.+?)(?:,+ (?P<street7>.+?))?)?)?)?)?)?, (?P<city>.+), (?P<state>.+), (?P<country>.+)\n)?(?:phone:\s+(?P<phone>.+)\n)?(?:fax-no:\s+(?P<fax>.+)\n)?",
     # nic.ir, organization
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\naddress:\s*(?P<street2>.+)\naddress:\s*(?P<street3>.+)\naddress:\s*(?P<country>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
+    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\naddress:\s*(?P<street2>.+)\naddress:\s*(?P<street3>.+)\naddress:\s*(?P<country>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>.*}).*\n",
     # AFNIC madness without country field
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
+    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>.*).*\n",
     # AFNIC madness any country -at all-
-    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:address:\s*(?P<street4>.+)\n)?country:\s*(?P<country>.+)\n(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>[0-9]{2}\/[0-9]{2}\/[0-9]{4}).*\n",
+    "nic-hdl:\s*(?P<handle>.+)\ntype:\s*(?P<type>.+)\ncontact:\s*(?P<name>.+)\n(?:.+\n)*?(?:address:\s*(?P<street1>.+)\n)?(?:address:\s*(?P<street2>.+)\n)?(?:address:\s*(?P<street3>.+)\n)?(?:address:\s*(?P<street4>.+)\n)?country:\s*(?P<country>.+)\n(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:.+\n)*?(?:e-mail:\s*(?P<email>.+)\n)?(?:.+\n)*?changed:\s*(?P<changedate>.+).*\n",
     # AFNIC madness with country field
 ]
 
@@ -7674,6 +7677,23 @@ else:
     def is_string(data):
         """Test for string with support for python 3."""
         return isinstance(data, str)
+
+
+class InvalidDateHandler:
+    """
+        A class to represent an anparseble date by the datetime module.
+        mainly for dates containing day, year, or month with an unvalid value of 0.
+        """
+
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month 
+        self.day = day
+
+    def strftime(self, *args):
+        if self.year == 2000:
+            return f'{self.day}-{self.month}-{0}'
+        return f'{self.day}-{self.month}-{self.year}'
 
 
 def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_server=""):
@@ -7997,7 +8017,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
 
 def parse_dates(dates):
     global grammar
-    parsed_dates = []
+    parsed_dates: List[datetime | InvalidDateHandler] = []
 
     for date in dates:
         for rule in grammar['_dateformats']:  # type: ignore
@@ -8059,12 +8079,13 @@ def parse_dates(dates):
                     demisto.debug(e)
         try:
             if year > 0:
-                try:
+                if month > 12:
+                    # We might have gotten the day and month the wrong way around, let's try it the other way around.
+                    month, day = day, month
+                if 0 in [year, month, day]:
+                    parsed_dates.append(InvalidDateHandler(year=year, month=month, day=day))
+                else:
                     parsed_dates.append(datetime(year, month, day, hour, minute, second))
-                except ValueError as e:
-                    # We might have gotten the day and month the wrong way around, let's try it the other way around
-                    # If you're not using an ISO-standard date format, you're an evil registrar!
-                    parsed_dates.append(datetime(year, day, month, hour, minute, second))
         except UnboundLocalError as e:
             pass
 
@@ -8409,7 +8430,10 @@ def domain_command(reliability):
     domains = demisto.args().get('domain', [])
     is_recursive = argToBoolean(demisto.args().get('recursive'))
     for domain in argToList(domains):
-        whois_result = get_whois(domain, is_recursive=is_recursive)
+        try:
+            whois_result = get_whois(domain, is_recursive=is_recursive)
+        except WhoisWarnningException:
+            continue
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
         dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
         demisto.results({
@@ -8476,19 +8500,31 @@ def ip_command(ips, reliability):
 
 
 def whois_command(reliability):
-    query = demisto.args().get('query')
-    is_recursive = argToBoolean(demisto.args().get('recursive'))
+    args = demisto.args()
+    query = args.get('query')
+    is_recursive = argToBoolean(args.get('recursive', 'false'))
+    verbose = argToBoolean(args.get('verbose', 'false'))
+    demisto.info(f'whois command is called with the query {query}')
     for query in argToList(query):
         domain = get_domain_from_query(query)
         whois_result = get_whois(domain, is_recursive=is_recursive)
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
-        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
+        context_res = {}
+        context_res.update(dbot_score)
+        context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
+
+        if verbose: 
+            demisto.info('Verbose response')
+            whois_result['query'] = query
+            json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
+            context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': str(whois_result),
             'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': dbot_score,
+            'EntryContext': context_res,
         })
 
 

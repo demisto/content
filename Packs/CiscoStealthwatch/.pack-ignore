@@ -1,2 +1,5 @@
 [file:cisco_stealthwatch.yml]
 ignore=BA109
+
+[known_words]
+Stealthwatch
