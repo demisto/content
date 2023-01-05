@@ -528,6 +528,8 @@ tasks:
       entities:
         complex:
           root: inputs.Indicator
+          transformers:
+          - operator: uniq
       limit:
         complex:
           root: inputs.LimitResults
@@ -567,6 +569,8 @@ tasks:
       entities:
         complex:
           root: RelatedCampaign
+          transformers:
+          - operator: uniq
       limit:
         complex:
           root: inputs.LimitResults
@@ -619,6 +623,8 @@ tasks:
                   simple: campaign
               ignorecase: true
           accessor: EntityB
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -749,6 +755,8 @@ tasks:
                   simple: report
               ignorecase: true
           accessor: EntityB
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -864,6 +872,8 @@ tasks:
                   simple: inputs.Indicator
                 iscontext: true
           accessor: EntityB
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -904,7 +914,7 @@ inputs:
   value:
     simple: "200"
   required: false
-  description: The number of results to return. Default is 20.
+  description: The number of results to return. if the input is empty than the limit will be 20
   playbookInputQuery:
 outputs:
 - contextPath: RelatedAttackPatterns
