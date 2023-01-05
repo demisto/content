@@ -73,6 +73,9 @@ ignore=BA119
 [file:HideFieldsOnNewIncident.yml]
 ignore=SC105
 
+[file:1_10_40.md]
+ignore=RN114
+
 [known_words]
 UnzipFile
 ZipStrings
