@@ -1,6 +1,8 @@
 {
     "name": "ConvertTimezoneFromUTC",
     "description": "Transformer (Date) to Convert UTC to another Timezone",
+    "name": "ConvertTimezoneFromUTC (Deprecated)",
+    "description": "Deprecated. Use Filters And Transformers instead.",
     "support": "community",
     "currentVersion": "1.0.2",
     "author": "Synthanee Humbert",
