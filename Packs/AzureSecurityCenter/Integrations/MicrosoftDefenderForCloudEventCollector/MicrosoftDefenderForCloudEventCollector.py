@@ -4,7 +4,7 @@ from CommonServerPython import *
 import urllib3
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 from MicrosoftApiModule import *  # noqa: E402
-
+from datetime import datetime
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -13,7 +13,8 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Micrsoft'
 PRODUCT = 'Microsoft_defender_for_cloud'
-API_VERSION = '2022-01-01'
+API_VERSION = '2019-01-01'
+APP_NAME = "ms-azure-sc"
 
 ''' CLIENT CLASS '''
 
@@ -50,16 +51,10 @@ class MsClient:
         # expand_query = args.get("expand")
         
         cmd_url = "/providers/Microsoft.Security/alerts"
-
-        filter_query = f'ReportedTimeUtc ge {last_run}'
-
         params = {'api-version': API_VERSION}
-        if filter_query:
-            params['$filter'] = filter_query
-        # if select_query:
-        #     params['$select'] = select_query
-        # if expand_query:
-        #     params['$expand'] = expand_query
+        example = f'Properties/reportedTimeUtc ge 2023-01-01T15:36:50.6288854Z'
+        filter_query = f'Properties/reportedTimeUtc ge {last_run}'
+        params['$filter'] = filter_query
 
         events = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
         return events
@@ -141,7 +136,6 @@ def fetch_events(client: MsClient, last_run, args: dict):
     demisto.info(f'Setting next run {next_run}.')
     return next_run, events
 
-
 def handle_last_run(params: dict):
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
@@ -152,7 +146,7 @@ def handle_last_run(params: dict):
     last_run = demisto.getLastRun()
     if not last_run:
         # here we would convert the first fetch time to be compatible with the microsoft api
-        last_run = first_fetch_time
+        last_run = first_fetch_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     
     demisto.info(f'Last run is set to be {last_run}')
     return last_run
@@ -174,9 +168,8 @@ def main() -> None:
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key')
     use_ssl = not params.get('unsecure', False)
-    self_deployed: bool = params.get('self_deployed', False)
     proxy = params.get('proxy', False)
-    subscription_id = demisto.args().get("subscription_id") or params.get("default_sub_id")
+    subscription_id = params.get("sub_id")
     ok_codes = (200, 201, 202, 204)
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
@@ -189,8 +182,9 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
+        # @TODO: change the self_deploted 
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
-                          server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id,
+                          server=server, verify=use_ssl, self_deployed=False, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
         if command == 'test-module':

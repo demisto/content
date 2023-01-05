@@ -30,10 +30,15 @@ configuration:
   name: private_key
   required: false
   type: 14
-- display: Default subscription ID to use
-  name: default_sub_id
+- display: Subscription ID to use
+  name: sub_id
   required: false
   type: 4
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
