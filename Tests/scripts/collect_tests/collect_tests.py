@@ -929,7 +929,7 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
             new_pack = find_pack_folder(new_path).name
         except NotUnderPackException:
             new_pack = None
-            logger.warning('')
+            logger.warning(f'Could not find the new pack of the file that was moved from {old_path}')
 
         if old_pack != new_pack:  # file moved between packs
             logger.info(f'file {old_path.name} was moved '

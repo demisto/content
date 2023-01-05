@@ -546,7 +546,7 @@ class Build(ABC):
 
         for server in self.servers:
             upload_zipped_packs(client=server.client,
-                                host=server.name if server.name else server.internal_ip,
+                                host=server.name or server.internal_ip,
                                 pack_path=f'{Build.test_pack_target}/test_pack.zip')
 
 
@@ -1528,12 +1528,14 @@ def get_json_file(path):
         return json.loads(json_file.read())
 
 
-def create_test_pack(packs: list = []):
+def create_test_pack(packs: list = None):
+    packs = packs or []
     test_pack_zip(Build.content_path, Build.test_pack_target, packs)
 
 
-def test_files(content_path, packs_to_install: list = []):
+def test_files(content_path, packs_to_install: list = None):
     packs_root = f'{content_path}/Packs'
+    packs_to_install = packs_to_install or []
 
     # if is given a list of packs to install then collect the test playbook only for those packs (in commit/push build)
     if packs_to_install:
