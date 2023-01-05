@@ -152,7 +152,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         pack_path (str): pack folder full path.
         pack_version (str): pack latest version.
         hidden_pack (bool): whether pack is hidden/internal or regular pack.
-        pack_versions_to_keep (list): pack versions to keep its metadata.
+        pack_versions_to_keep (list): pack versions to keep its metadata. If empty, do not remove any versions.
 
     Returns:
         bool: whether the operation succeeded.
