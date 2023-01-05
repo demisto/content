@@ -15,7 +15,6 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from pathlib import Path
-from freezegun import freeze_time
 
 # pylint: disable=no-member
 
