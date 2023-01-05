@@ -231,7 +231,7 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     search_params = [{"field": "alert_source", "operator": "in", "value": ["ASM"]}]
     if alert_id_list:
         alert_id_ints = [int(i) for i in alert_id_list]
-        search_params.append({"field": "alert_id_list", "operator": "in", "value": alert_id_ints})
+        search_params.append({"field": "alert_id_list", "operator": "in", "value": alert_id_ints})  # type: ignore
     if severity:
         search_params.append({"field": "severity", "operator": "in", "value": severity})
     if lte_creation_time:
