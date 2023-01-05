@@ -264,10 +264,7 @@ def test_get_non_edr_malop_data(mocker):
     raw_response = json.loads(load_mock_response('malop_detection_data.json'))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = get_non_edr_malop_data(client, args)
-    try:
-        assert command_output[0]['guid'] == 'AAAA0yUlnvXGQODT'
-    except Exception as e:
-        raise Exception(f'{str(e)} test {command_output}')
+    assert command_output[0]['guid'] == 'AAAA0yUlnvXGQODT'
 
 
 def test_query_malops_command(mocker):
