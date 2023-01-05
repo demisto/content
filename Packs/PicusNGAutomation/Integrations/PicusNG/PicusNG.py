@@ -5,7 +5,6 @@ from CommonServerUserPython import *  # noqa
 import urllib3
 import json
 from typing import Dict, Any
-import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -35,7 +34,7 @@ def test_module() -> str:
     """
 
     message: str = ''
-    picus_accessToken: str = None
+    picus_accessToken: str = ''
 
     try:
         picus_server = str(demisto.params().get("picus_server"))
@@ -89,7 +88,7 @@ def getAgentList():
     picus_endpoint_response = requests.get(picus_req_url, headers=picus_headers,verify=verify_certificate)
     picus_agents = json.loads(picus_endpoint_response.text)["agents"]
     for agent in picus_agents:
-        agent["created_at"] = str(datetime.datetime.fromtimestamp(agent["created_at"] / 1000))
+        agent["created_at"] = str(datetime.fromtimestamp(agent["created_at"] / 1000))
 
     table_name = "Picus Agent List"
     table_headers = ['id','name','status','type','version','created_at','platform_name','platform_architecture']
@@ -100,7 +99,7 @@ def getAgentList():
 def getAgentDetail():
     picus_endpoint = "/v1/agents/"
     agent_id = demisto.args().get('id')
-    tmp_attack_modules: Dict[Any] = {}
+    tmp_attack_modules: Dict = {}
     picus_endpoint = picus_endpoint + agent_id
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
 
@@ -127,8 +126,8 @@ def getIntegrationAgentList():
     picus_endpoint_response = requests.get(picus_req_url, headers=picus_headers,verify=verify_certificate)
     picus_integration_agents = json.loads(picus_endpoint_response.text)["integration_agents"]
     for agent in picus_integration_agents:
-        agent["created_at"] = str(datetime.datetime.fromtimestamp(agent["created_at"] / 1000))
-        agent["updated_at"] = str(datetime.datetime.fromtimestamp(agent["updated_at"] / 1000))
+        agent["created_at"] = str(datetime.fromtimestamp(agent["created_at"] / 1000))
+        agent["updated_at"] = str(datetime.fromtimestamp(agent["updated_at"] / 1000))
 
     table_name = "Picus Integration Agent List"
     table_headers = ['id','name','status','created_at','updated_at','installed','token_expired']
@@ -165,7 +164,7 @@ def getTemplateList():
 def createSimulation():
     picus_endpoint = "/v1/simulations"
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
-    picus_simulation_creation_results: Dict[Any] = {}
+    picus_simulation_creation_results: Dict = {}
 
     agent_id = int(demisto.args().get('agent_id'))
     simulation_description = demisto.args().get('description')
@@ -173,9 +172,11 @@ def createSimulation():
     schedule_now = bool(demisto.args().get('schedule_now'))
     template_id = int(demisto.args().get('template_id'))
 
-
     picus_post_data_simulation = {"agent_id":agent_id,"description":simulation_description,"name":simulation_name,"schedule_now":schedule_now,"template_id":template_id}
     picus_endpoint_response = requests.post(picus_req_url,headers=picus_headers, verify=verify_certificate,json=picus_post_data_simulation)
+    if picus_endpoint_response.status_code == 400:
+        return json.loads(picus_endpoint_response.text)
+
     picus_endpoint_response_all = json.loads(picus_endpoint_response.text)
     picus_created_simulation = json.loads(picus_endpoint_response.text)["simulation"]
     picus_simulation_run_info = json.loads(picus_endpoint_response.text)["run_info"]
@@ -242,8 +243,8 @@ def getSimulationDetail():
     picus_endpoint_response = requests.get(picus_req_url, headers=picus_headers, verify=verify_certificate)
     picus_simulationDetail = json.loads(picus_endpoint_response.text)["simulation_run"]
     for sRun in picus_simulationDetail:
-        sRun["started_at"] = str(datetime.datetime.fromtimestamp(sRun["started_at"]/1000))
-        sRun["completed_at"] = str(datetime.datetime.fromtimestamp(sRun["completed_at"]/1000))
+        sRun["started_at"] = str(datetime.fromtimestamp(sRun["started_at"]/1000))
+        sRun["completed_at"] = str(datetime.fromtimestamp(sRun["completed_at"]/1000))
 
     table_name = "Picus Simulation Detail"
     table_headers = ['id','started_at','completed_at','status']
@@ -261,8 +262,8 @@ def getLatestSimulationResult():
     picus_latestSimulation = json.loads(picus_endpoint_response.text)
 
     if picus_latestSimulation["status"] == "COMPLETED":
-        picus_latestSimulation["started_at"] = str(datetime.datetime.fromtimestamp(picus_latestSimulation["started_at"]/1000))
-        picus_latestSimulation["completed_at"] = str(datetime.datetime.fromtimestamp(picus_latestSimulation["completed_at"]/1000))
+        picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"]/1000))
+        picus_latestSimulation["completed_at"] = str(datetime.fromtimestamp(picus_latestSimulation["completed_at"]/1000))
         picus_latestSimulation["prevention_security_score"] = picus_latestSimulation["results"]["prevention"]["security_score"]
         picus_latestSimulation["prevention_total_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["total_count"]
         picus_latestSimulation["prevention_blocked_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["blocked_count"]
@@ -274,7 +275,7 @@ def getLatestSimulationResult():
         picus_latestSimulation["prevention_not_tested_objectives"] = picus_latestSimulation["results"]["prevention"]["attacker_objectives"]["not_tested_count"]
         picus_latestSimulation["has_detection_analysis"] = picus_latestSimulation["results"]["has_detection_analysis"]
     else:
-        picus_latestSimulation["started_at"] = str(datetime.datetime.fromtimestamp(picus_latestSimulation["started_at"] / 1000))
+        picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"] / 1000))
 
     table_name = "Picus Latest Simulation Result"
     table_headers = ['started_at','completed_at','simulation_id','simulation_run_id','template_id','status','prevention_security_score','prevention_total_threat','prevention_blocked_threat','prevention_not_blocked_threat','prevention_not_tested_threat','prevention_total_attacker_objectives','prevention_achieved_objectives','prevention_unachieved_objectives','prevention_not_tested_objectives','has_detection_analysis']
@@ -291,8 +292,8 @@ def getSimulationResult():
 
     picus_endpoint_response = requests.get(picus_req_url, headers=picus_headers, verify=verify_certificate)
     picus_latestSimulation = json.loads(picus_endpoint_response.text)
-    picus_latestSimulation["started_at"] = str(datetime.datetime.fromtimestamp(picus_latestSimulation["started_at"]/1000))
-    picus_latestSimulation["completed_at"] = str(datetime.datetime.fromtimestamp(picus_latestSimulation["completed_at"]/1000))
+    picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"]/1000))
+    picus_latestSimulation["completed_at"] = str(datetime.fromtimestamp(picus_latestSimulation["completed_at"]/1000))
     picus_latestSimulation["prevention_security_score"] = picus_latestSimulation["results"]["prevention"]["security_score"]
     picus_latestSimulation["prevention_total_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["total_count"]
     picus_latestSimulation["prevention_blocked_threat"] = picus_latestSimulation["results"]["prevention"]["threat"]["blocked_count"]
