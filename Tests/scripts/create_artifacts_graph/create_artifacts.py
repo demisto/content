@@ -28,7 +28,7 @@ def create_dependencies(content_dto: ContentDTO, output: Path):
             if dependency.mandatorily:
                 all_level_dependencies[dependency.content_item.object_id] = {
                     "display_name": dependency.content_item.name,
-                    "mandatory": dependency.mandatorily,
+                    "mandatory": True,
                 }
             if dependency.is_direct:
                 first_level_dependencies[dependency.content_item.object_id] = {
