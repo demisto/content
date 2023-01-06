@@ -377,7 +377,7 @@ def test_get_tenant_info(requests_mock):
     )
     expected_output = tenant_info_response.get('reply')
     response = get_tenant_info_command(client)
-    assert response.outputs == expected_output 
+    assert response.outputs == expected_output
 
 
 def test_insert_parsed_alert(requests_mock):
