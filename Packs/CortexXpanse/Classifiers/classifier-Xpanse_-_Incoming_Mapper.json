@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Xpanse - Incoming Mapper",
     "mapping": {
-        "Xpanse Issue": {
+        "Xpanse Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Xpanse Category": {
@@ -18,7 +18,7 @@
                 "Xpanse IP": {
                     "simple": "action_remote_ip"
                 },
-                "Xpanse Issue ID": {
+                "Xpanse Alert ID": {
                     "simple": "alert_id"
                 },
                 "Xpanse Port": {

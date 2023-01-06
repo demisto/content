@@ -394,7 +394,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "xpanseissueid",
+                                "fieldId": "xpansealertid",
                                 "height": 22,
                                 "id": "6e0b88f0-8d3b-11ed-85cc-7d8bd2391c98",
                                 "index": 0,
@@ -468,7 +468,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Xpanse Issue Details",
+                        "name": "Xpanse Alert Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -597,7 +597,7 @@
                     }
                 ],
                 "isVisible": true,
-                "name": "Expanse Issue",
+                "name": "Expanse Alert",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,
@@ -833,8 +833,8 @@
         ]
     },
     "group": "incident",
-    "id": "Xpanse Issue Layout",
-    "name": "Xpanse Issue Layout",
+    "id": "Xpanse Alert Layout",
+    "name": "Xpanse Alert Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",

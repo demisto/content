@@ -1,13 +1,13 @@
 {
-    "defaultIncidentType": "Xpanse Issue",
+    "defaultIncidentType": "Xpanse Alert",
     "description": "",
     "feed": false,
     "id": "Xpanse - Classifier",
     "keyTypeMap": {
-        "Critical": "Expanse Issue",
-        "High": "Expanse Issue",
-        "Low": "Expanse Issue",
-        "Medium": "Expanse Issue"
+        "Critical": "Expanse Alert",
+        "High": "Expanse Alert",
+        "Low": "Expanse Alert",
+        "Medium": "Expanse Alert"
     },
     "name": "Xpanse - Classifier",
     "transformer": {},
