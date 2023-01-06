@@ -109,11 +109,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Data to submit for analysis. For URLs give the URL. For files, give the entry-id of the file
+      description: Data to submit for analysis. For URLs and fetch, give the URL. For files, give the entry-id of the file
       isArray: false
       name: data
       required: true
       secret: false
+    - name: password
+      description: A password that may be used to decrypt the provided file, usually an archive
+      isArray: false
+    - name: timeout
+      description: The timeout in seconds of the behavioral analysis
+      isArray: false
+    - name: network
+      description: 'The type of network routing to use: internet, drop, tor, sim200, or sim404'
+      isArray: false
     deprecated: false
     description: Submits a file or url for analysis
     execution: false

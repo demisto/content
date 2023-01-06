@@ -67,6 +67,17 @@ def submit_sample(client: Client, **args) -> CommandResults:
         "interactive": argToBoolean(args.get("interactive", False))
     }
 
+    if args.get("password"):
+        data["password"] = args["password"]
+
+    if args.get("timeout"):
+        data.setdefault("defaults", {})["timeout"] = arg_to_number(
+            args["timeout"]
+        )
+
+    if args.get("network"):
+        data.setdefault("defaults", {})["network"] = args["network"]
+
     if args.get("profiles", []):
         profiles_data = []
         for i in args.get("profiles", "").split(","):
@@ -89,8 +100,8 @@ def submit_sample(client: Client, **args) -> CommandResults:
             )
     else:
         raise IncorrectUsageError(
-            f'Type of sample needs to be selected, either "file" or "url", '
-            f'the selected type was: {data["kind"]}'
+            f'Type of submission needs to be selected, either "file", "url", '
+            f'or fetch. The selected type was: {data["kind"]}'
         )
 
     return CommandResults(
