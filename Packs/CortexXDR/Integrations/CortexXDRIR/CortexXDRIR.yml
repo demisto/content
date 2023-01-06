@@ -3109,6 +3109,58 @@ script:
     description: Removes a tag from specified endpoint_ids.
     name: xdr-endpoint-tag-remove
   - name: xdr-get-tenant-info
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.pro_per_endpoint_expiration
+      description: 'Expiration time pro per endpoint.'
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_pro_per_endpoint.agents
+      description: 'Number of endpoints agent purchased.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.data_enabled_pro_per_endpoint
+      description: 'Enabled data per pro endpoint.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.prevent_expiration
+      description: 'Number of prevent expiration.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_prevent
+      description: 'Number of purchased prevent.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.installed_prevent
+      description: 'Number of installed prevent.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.pro_tb_expiration
+      description: 'pro_tb license expiration time.'
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_pro_tb.tb
+      description: 'Number of pro_tb purchased.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.installed_pro_tb
+      description: 'Number of pro_tb installed.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.compute_unit_expiration
+      description: 'Compute Unit expiration time.'
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_compute_unit
+      description: 'Number of Compute Unit purchased.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.compute_unit_is_trial
+      description: 'Compute Unit is trial (True or False).'
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.host_insights_expiration
+      description: 'Host Insight expiration time.'
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.enabled_host_insights
+      description: 'Number of Host Insight enabled.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_host_insights
+      description: 'Number of purchased Host Insight.'
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.forensics_expiration
+      description: 'Forensic Expiration time.'
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_forensics
+      description: 'Number of Forensic purchased.'
+      type: Number
     arguments: []
     description: 'Provides information about the tenant. '
   dockerimage: demisto/python3:3.10.9.42476

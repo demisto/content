@@ -387,7 +387,15 @@ class Client(CoreClient):
 
 def get_tenant_info_command(client: Client):
     tenant_info = client.get_tenant_info()
-    return tenant_info
+    readable_output = tableToMarkdown(
+        'Tenant Information', tenant_info, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.TenantInformation',
+        outputs=tenant_info,
+        raw_response=tenant_info
+    )
 
 
 def get_incidents_command(client, args):
