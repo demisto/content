@@ -18,6 +18,9 @@
         "Xpanse",
         "Palo Alto Networks"
     ],
+    "itemPrefix": [
+        "Xpanse"
+    ],
     "marketplaces": [
         "xsoar"
     ]
