@@ -376,8 +376,8 @@ def test_get_tenant_info(requests_mock):
         base_url=f'{XDR_URL}/public_api/v1/', headers={}
     )
     expected_output = tenant_info_response.get('reply')
-    outputs = get_tenant_info_command(client)
-    assert expected_output == outputs
+    response = get_tenant_info_command(client)
+    assert response.outputs[0] == expected_output 
 
 
 def test_insert_parsed_alert(requests_mock):
