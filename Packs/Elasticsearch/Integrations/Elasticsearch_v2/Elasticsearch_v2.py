@@ -261,8 +261,7 @@ def search_command(proxies):
                                          time_field=timestamp_field)
 
     if query_dsl:
-
-        response = execute_raw_query(es, query_dsl, index)
+        response = execute_raw_query(es, query_dsl, index, size, base_page)
 
     else:
         que = QueryString(query=query)
@@ -671,15 +670,20 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     return {'range': {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query, index=None):
+def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     try:
         raw_query = json.loads(raw_query)
     except Exception as e:
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
     body = {"query": raw_query}
-    response = es.search(index=index or FETCH_INDEX, body=body)
-    return response
+    requested_index = index or FETCH_INDEX
+
+    try:
+        return es.search(index=requested_index, body=body, size=size, from_=page)
+    except Exception as e:
+        demisto.debug(f'got an error when searching with {body}, error:\n{e}')
+        return es.search(index=requested_index, body=raw_query, size=size, from_=page)
 
 
 def fetch_incidents(proxies):
