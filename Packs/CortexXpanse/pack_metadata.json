@@ -23,5 +23,29 @@
     ],
     "marketplaces": [
         "xsoar"
+    ],
+    "dependencies": {
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "ExpanseV2": {
+            "mandatory": true,
+            "display_name": "Cortex Xpanse by Palo Alto Networks"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        }
+    },
+    "displayedImages": [
+        "Phishing",
+        "ExpanseV2",
+        "CommonTypes",
+        "CoreAlertFields"
     ]
 }
