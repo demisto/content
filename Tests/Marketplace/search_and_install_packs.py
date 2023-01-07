@@ -145,6 +145,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
         )
 
         if 200 <= status_code < 300:
+            logging.info(f'Found the following dependencies for pack {pack_id}: {response_data}')
             dependencies_data: list = []
             dependants_ids = [pack_id]
             reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
@@ -193,6 +194,7 @@ def search_pack(client: demisto_client,
                                                                             _request_timeout=None)
 
         if 200 <= status_code < 300:
+            logging.info((f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!'))
             result_object = ast.literal_eval(response_data)
 
             if result_object and result_object.get('currentVersion'):
@@ -345,7 +347,7 @@ def install_packs(client: demisto_client,
 
     def call_install_packs_request(packs):
         try:
-            logging.debug(f'Installing the following packs on server {host}:\n{[pack["id"] for pack in packs]}')
+            logging.info(f'Installing the following packs on server {host}:\n{[pack["id"] for pack in packs]}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
@@ -358,7 +360,7 @@ def install_packs(client: demisto_client,
                 packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
                               ast.literal_eval(response_data)]
                 logging.success(f'Packs were successfully installed on server {host}')
-                logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
+                logging.info(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
         except ApiException as ex:
             if 'timeout awaiting response' in ex.body:
