@@ -487,11 +487,14 @@ def check_source_and_destination(source_rule_object_id: Optional[int], source_ru
     """
     if (source_rule_object_id and not source_rule_object_type and source_rule_object_id != -1) or (
             not source_rule_object_id and source_rule_object_type):
+        # If the user provides source_rule_object_id he must provide source_rule_object_type and vice versa
         raise Exception('Please provide both source_rule_object_id and source_rule_object_type.')
     if (destination_rule_object_id and not destination_rule_object_type and destination_rule_object_id != -1) or \
             (not destination_rule_object_id and destination_rule_object_type):
+        # If the user provides destination_rule_object_id he must provide destination_rule_object_type and vice versa
         raise Exception('Please provide both destination_rule_object_id and destination_rule_object_type.')
     if create_or_update == 'create':
+        # if the user wants to create a new firewall policy, he must provide a source rule or destination rule or both.
         if source_rule_object_id == -1 and destination_rule_object_id == -1:
             raise Exception('You must provide the source fields or destination fields or both.')
 
@@ -868,14 +871,9 @@ def create_firewall_policy_command(client: Client, args: Dict) -> CommandResults
     source_rule_object_type = rule_object_type_cases(source_rule_object_type, 'up') if source_rule_object_type else None
     destination_rule_object_type = rule_object_type_cases(destination_rule_object_type, 'up') if \
         destination_rule_object_type else None
-    source_object = [{
-        'RuleObjectId': source_rule_object_id,
-        'RuleObjectType': source_rule_object_type
-    }]
-    destination_object = [{
-        'RuleObjectId': destination_rule_object_id,
-        'RuleObjectType': destination_rule_object_type
-    }]
+    source_object = overwrite_source_destination_object(source_rule_object_id, source_rule_object_type, '', {})
+    destination_object = overwrite_source_destination_object(destination_rule_object_id, destination_rule_object_type,
+                                                             '', {})
 
     body = create_body_firewall_policy(domain, name, visible_to_child, description, is_editable, policy_type,
                                        rule_description, response_param, rule_enabled, direction, source_object,
