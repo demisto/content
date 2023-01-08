@@ -1,6 +1,3 @@
-import pytest
-import demistomock as demisto
-
 ''' STANDALONE FUNCTION UNIT TESTS'''
 
 
