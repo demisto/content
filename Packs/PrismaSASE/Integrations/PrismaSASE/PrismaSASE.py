@@ -601,11 +601,11 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     # first get the original address, so user won't need to send all data
     original_address = client.get_address_by_id(query_params, args.get('id'))
     for address_type in ADDRESS_TYPES:
+        # address object can have exactly one type. If the type is updated, need to delete the previous type
         if address_type in original_address:
             original_address.pop(address_type)
-    original_address = {
-        args.get('type'): args.get('address_value')
-    }
+    original_address[args.get('type')] = args.get('address_value')
+
     if description := args.get('description'):
         original_address['description'] = description
 
