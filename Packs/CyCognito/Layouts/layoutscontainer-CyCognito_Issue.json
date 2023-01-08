@@ -2305,6 +2305,6 @@
     "version": -1,
     "fromVersion": "6.2.0",
     "marketplaces": [
-        "marketplacev2"
+        "xsoar"
     ]
 }

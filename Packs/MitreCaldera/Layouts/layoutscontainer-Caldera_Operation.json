@@ -417,6 +417,6 @@
     "fromVersion": "6.2.0",
     "description": "",
     "marketplaces": [
-        "marketplacev2"
+        "xsoar"
     ]
 }

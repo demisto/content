@@ -363,6 +363,6 @@
     "fromVersion": "6.5.0",
     "description": "",
     "marketplaces": [
-        "marketplacev2"
+        "xsoar"
     ]
 }
