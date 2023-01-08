@@ -17,7 +17,7 @@ from six import string_types  # type: ignore
 from typing import Dict, List, Optional
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 SOURCE_NAME = "Alien Vault OTX TAXII"
 
