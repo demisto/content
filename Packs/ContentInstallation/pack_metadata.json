@@ -1,6 +1,6 @@
 {
-    "name": "Content Installation",
-    "description": "This pack enables you install content packs.",
+    "name": "Content Installation (deprecated)",
+    "description": "Deprecated. Use from CommonScripts instead.",
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",

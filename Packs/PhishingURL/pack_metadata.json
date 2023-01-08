@@ -1,6 +1,6 @@
 {
-    "name": "Phishing URL",
-    "description": "Phishing URL is a project with the goal of detecting phishing URLs using machine learning",
+    "name": "Phishing URL (deprecated)",
+    "description": "Deprecated. Use scripts: DBotPredictURLPhishing, DBotUpdateLogoURLPhishing from CommonScripts Pack instead.",
     "support": "xsoar",
     "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",

@@ -1,6 +1,6 @@
 {
-    "name": "ExifRead",
-    "description": "Read image files metadata and provide Exif tags.",
+    "name": "ExifRead (deprecated)",
+    "description": "Deprecated. Use ExifRead script from CommonScripts Pack instead",
     "support": "xsoar",
     "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
