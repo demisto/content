@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Vulnerability Management
 commonfields:
   id: Tenable.io
   version: -1
@@ -443,7 +443,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.9.42476
 tests:
 - Tenable.io test
 fromversion: 5.0.0
