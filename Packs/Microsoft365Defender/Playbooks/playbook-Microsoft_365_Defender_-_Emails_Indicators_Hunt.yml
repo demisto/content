@@ -254,7 +254,7 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailAttachmentInfo | where Timestamp >= _start |where SHA256 has_any ("${SHA256Parsed}") | join EmailEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, RecipientEmailAddress1, SenderDisplayName1, NetworkMessageId1, DetectionMethods1, SenderFromAddress1, RecipientObjectId1, ThreatNames1, ThreatTypes1, SenderObjectId1, OrgLevelAction, SenderObjectId${inputs.ListenerMailbox}
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailAttachmentInfo | where Timestamp >= _start |where SHA256 has_any ("${SHA256Parsed}") | join EmailEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, RecipientEmailAddress1, SenderDisplayName1, NetworkMessageId1, DetectionMethods1, SenderFromAddress1, RecipientObjectId1, ThreatNames1, ThreatTypes1, SenderObjectId1, OrgLevelAction, SenderObjectId
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
@@ -538,8 +538,8 @@ tasks:
     task:
       id: 61724f65-0d28-434d-8dac-c8d1d70a7ce7
       version: -1
-      name: Retrieve emails data (IPAddress)
-      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      name: Retrieve emails data (IPAddress) - EmailEvents table
+      description: 'This task will retrieve emails data based on the EmailEvents table.'
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
       type: regular
       iscommand: true
@@ -676,8 +676,8 @@ tasks:
     task:
       id: 42a24672-f182-4b50-83b7-b08a6b79c4c6
       version: -1
-      name: Retrieve emails data (IPAddress)
-      description: 'Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+      name: Retrieve emails data (IPAddress) - EmailUrlInfo table
+      description: 'This task will retrieve emails data based on the EmailUrlInfo table.
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
       type: regular
       iscommand: true
