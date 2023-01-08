@@ -1,5 +1,6 @@
 from ExportToXLSX import parse_data
 import pytest
+from unittest.mock import patch
 
 
 DATA_INPUT_SINGLE_DICT = {"key1": "val1", "key2": "val2"}
@@ -109,7 +110,8 @@ def test_prepare_bold_and_border(is_bold: bool, is_border: bool):
     assert result_border.bottom == border_value
 
 
-def test_write_data(mocker):
+@patch("xlsxwriter.Workbook.worksheet_class")
+def test_write_data(self):
     """
     When:
         - running write_data
@@ -118,9 +120,35 @@ def test_write_data(mocker):
     """
     from ExportToXLSX import write_data
     import xlsxwriter
-    from xlsxwriter.format import Format
-    worksheet = xlsxwriter.Workbook()
-    format_arg = Format()
-    mocker.patch.object(xlsxwriter.Workbook, 'worksheet.write')
-    write_data("", DATA_INPUT_SINGLE_DICT, None, worksheet, format_arg, format_arg)
-    assert mocker.call_count == 4
+    workbook = xlsxwriter.Workbook()
+    format_arg = xlsxwriter.format.Format()
+    write_data("", DATA_INPUT_SINGLE_DICT, None, workbook, format_arg, format_arg)
+    assert self.return_value.write.call_count == 4
+
+
+ARGS_MAIN = [
+    ({"data": DATA_INPUT_SINGLE_DICT, "file_name": 'file_name', "sheet_name": 'sheet_name', 'headers': 'headers_name'}),
+    ({"data": DATA_INPUT_SINGLE_DICT, "file_name": 'file_name', "sheet_name": 'sheet_name'})
+]
+
+
+@pytest.mark.parametrize('args', ARGS_MAIN)
+def test_main(mocker, args):
+    """
+    Given:
+        - All return values from helper functions are valid
+    When:
+        - main function is executed
+    Then:
+        - Return results to War-Room
+    """
+    import demistomock as demisto
+    from ExportToXLSX import main
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch('ExportToXLSX.parse_data', return_value=[DATA_INPUT_SINGLE_DICT])
+    mocker.patch('ExportToXLSX.prepare_bold_and_border', return_value=(None, None))
+    mocker.patch('ExportToXLSX.write_data')
+    mocker.patch('CommonServerPython.file_result_existing_file', return_value={'state': 'success'})
+    return_results_mock = mocker.patch('ExportToXLSX.return_results')
+    main()
+    assert return_results_mock.call_args.args[0].get('File') == 'file_name'
