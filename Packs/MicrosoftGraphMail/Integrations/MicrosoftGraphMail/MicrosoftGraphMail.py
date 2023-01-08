@@ -2110,7 +2110,7 @@ def main():
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
-    a=5
+
     try:
         if command == 'test-module':
             client.ms_client.get_access_token()
