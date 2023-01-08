@@ -4,7 +4,7 @@ name: Phishing - Handle Microsoft 365 Defender Results
 description: |-
   This playbook is used to handle the results from the "Microsoft 365 Defender - Threat Hunting Generic" playbook inside a phishing incident. It will do the following actions:
   1) Set the relevant incident fields based on the results, such as "Clicked URLs", "Malicious URL Viewed" and "Malicious URL Clicked".
-  2) In case the relevant playbook inputs were configured, it will create new incidents for each email returned in the results. First, it will try to retrieve to original emails' files and then it will create an incident for each retrieved email.
+  2) In case the relevant playbook inputs were configured, it will create new incidents for each email returned in the results of the playbook "Microsoft 365 Defender - Threat Hunting Generic". First, it will try to retrieve to original emails' files and then it will create an incident for each retrieved email.
   3) Link the newly created incidents to the main originating incident.
 
   Please note that this playbook should only be used inside a phishing incident and not as a main playbook.
@@ -289,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 5220
+          "y": 5430
         }
       }
     note: false
@@ -340,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 4860
+          "y": 5070
         }
       }
     note: false
@@ -396,12 +396,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 18121f01-cf70-49e1-8975-66493488ef28
+    taskid: d215b5df-7aae-4f0b-8f19-13ad41a62753
     type: title
     task:
-      id: 18121f01-cf70-49e1-8975-66493488ef28
+      id: d215b5df-7aae-4f0b-8f19-13ad41a62753
       version: -1
-      name: Get EML files and create new Phishing incidents
+      name: Retrieve EMLs for hunted emails without existing XSOAR incident
       type: title
       iscommand: false
       brand: ""
@@ -558,7 +558,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 5050
+          "y": 5260
         }
       }
     note: false
@@ -769,7 +769,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 4470
+          "y": 4480
         }
       }
     note: false
@@ -840,12 +840,11 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "9"
       "yes":
-      - "12"
+      - "39"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -861,7 +860,7 @@ tasks:
       {
         "position": {
           "x": 1580,
-          "y": 4650
+          "y": 4680
         }
       }
     note: false
@@ -1328,6 +1327,37 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: b0209faf-5ecf-44cc-8767-9b76b7a10199
+    type: title
+    task:
+      id: b0209faf-5ecf-44cc-8767-9b76b7a10199
+      version: -1
+      name: Create new incidents for retrieved EML files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1339,7 +1369,6 @@ view: |-
       "1_34_#default#": 0.24,
       "22_24_Yes": 0.57,
       "22_3_#default#": 0.25,
-      "27_12_yes": 0.37,
       "27_9_#default#": 0.36,
       "28_29_yes": 0.64,
       "28_3_#default#": 0.13,
@@ -1353,7 +1382,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3865,
+        "height": 4075,
         "width": 1910,
         "x": 810,
         "y": 1420
