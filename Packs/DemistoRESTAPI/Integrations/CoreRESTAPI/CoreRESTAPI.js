@@ -63,13 +63,19 @@ var sendRequest = function(method, uri, body, raw) {
     if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
+    try {
+         cortexVersion = getDemistoVersion().platform
+    } catch (e) {
+        throw 'Was unable to get CORTEX version.';
+    }
+
     requestUrl += uri;
     var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
     if (key == ''){
         throw 'API Key must be provided.';
     }
     var auth_id = [params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '')];
-        if (auth_id == ''){
+        if (auth_id == '' && cortexVersion != 'xsoar'){
             throw 'Auth ID must be provided.';
     }
     var res = http(

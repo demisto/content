@@ -15,12 +15,19 @@ configuration:
   name: creds_apikey
   type: 9
   required: false
+  hidden:
+    - xsoar
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
+  type: 8
+  required: false
+- display: Use tenant
+  additionalinfo: Whether API calls should be made to the current tenant instead of the master tenant.
+  name: use_tenant
   type: 8
   required: false
 script:
