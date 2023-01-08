@@ -2,12 +2,12 @@ id: TIM - Indicator Relationships Analysis
 version: -1
 name: TIM - Indicator Relationships Analysis
 description: |-
-  This playbook is designed to assist with investigation by providing analysis of indicator relationships. The following information is included:
-  - Indicators of compromise (IOCs) related to the investigation
-  - Attack patterns related to the investigation
-  - Campaigns related to the investigation
-  - IOCs associated with the identified campaigns
-  - Reports containing details on the identified campaigns
+  This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+  - Indicators of compromise (IOCs) related to the investigation.
+  - Attack patterns related to the investigation.
+  - Campaigns related to the investigation.
+  - IOCs associated with the identified campaigns.
+  - Reports containing details on the identified campaigns.
 starttaskid: "0"
 tasks:
   "0":
@@ -47,8 +47,8 @@ tasks:
     task:
       id: 408729ca-ca33-4d44-8528-ba22c6afb08d
       version: -1
-      name: Has related  campaign?
-      description: check if the indicator related to a campaign.
+      name: Has related campaign?
+      description: Check if the indicator is related to a campaign.
       type: condition
       iscommand: false
       brand: ""
@@ -299,7 +299,7 @@ tasks:
       id: 7a6cd9f0-7aed-43fb-8e6c-25e11dc4e1e2
       version: -1
       name: Is there a File type indicators?
-      description: check if FILE type indicators exists.
+      description: Check if FILE type indicators exist.
       type: condition
       iscommand: false
       brand: ""
@@ -346,7 +346,7 @@ tasks:
       id: 81ba69cf-145c-4836-8fb7-ab3d856fd02b
       version: -1
       name: Is there a URL type indicators?
-      description: check if URL type indicators exists.
+      description: Check if URL type indicators exist.
       type: condition
       iscommand: false
       brand: ""
@@ -393,7 +393,7 @@ tasks:
       id: 08c5c837-a41e-4914-8236-58cf78a1a728
       version: -1
       name: Is there a Domain type indicators?
-      description: check if Domain type indicators exists.
+      description: Check if Domain type indicators exist.
       type: condition
       iscommand: false
       brand: ""
@@ -440,7 +440,7 @@ tasks:
       id: 8aa12485-1f21-42c5-8e89-0c1d13322335
       version: -1
       name: Is there a IP type indicators?
-      description: check if IP type indicators exists.
+      description: Check if IP type indicators exist.
       type: condition
       iscommand: false
       brand: ""
@@ -682,7 +682,7 @@ tasks:
       id: 81762b42-569e-4cd7-883f-fb96904758ac
       version: -1
       name: Has reports?
-      description: check if the campaign has related report
+      description: Check if the campaign has related reports.
       type: condition
       iscommand: false
       brand: ""
@@ -780,7 +780,7 @@ tasks:
       id: bad25040-e60a-4fa3-8f35-9a20a19be6c4
       version: -1
       name: Has Related Attack Patterns?
-      description: check if the indicator related to attack patterns.
+      description: Check if the indicator has related attack patterns.
       type: condition
       iscommand: false
       brand: ""
@@ -907,35 +907,35 @@ inputs:
 - key: Indicator
   value: {}
   required: false
-  description: Input indicator to analyze his relationships
+  description: Input an indicator to analyze its relationships.
   playbookInputQuery:
 - key: LimitResults
   value:
     simple: "200"
   required: false
-  description: The number of results to return. if the input is empty than the limit will be 20
+  description: The number of results to return. If the input is empty, the limit will be 20.
   playbookInputQuery:
 outputs:
 - contextPath: RelatedAttackPatterns
-  description: Attack patterns related to the indicator
+  description: Attack patterns related to the indicator.
   type: unknown
 - contextPath: RelatedCampaign
-  description: Campaign related to the indicator
+  description: Campaign related to the indicator.
   type: unknown
 - contextPath: RelatedReport
-  description: Report related to the campaign
+  description: Report related to the campaign.
   type: unknown
 - contextPath: RelatedFiles
-  description: Files related to the indicator and campaign
+  description: Files related to the indicator and campaign.
   type: unknown
 - contextPath: RelatedDomains
-  description: Domains related to the indicator and campaign
+  description: Domains related to the indicator and campaign.
   type: unknown
 - contextPath: RelatedIPs
-  description: IPs related to the indicator and campaign
+  description: IPs related to the indicator and campaign.
   type: unknown
 - contextPath: RelatedURLs
-  description: URLs related to the indicator and campaign
+  description: URLs related to the indicator and campaign.
   type: unknown
 tests:
 - No tests (auto formatted)
