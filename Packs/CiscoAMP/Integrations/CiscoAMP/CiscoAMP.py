@@ -1304,8 +1304,7 @@ def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandR
         raw_response_list: List[Dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
-        for request_number in \
-                range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+        for request_number in pagination_range(pagination):
             raw_response_list.append(client.computer_list_request(
                 limit=pagination.limit,
                 offset=None if pagination.offset is None else pagination.offset * request_number,
@@ -1432,8 +1431,7 @@ def computer_user_activity_list_command(client: Client, args: Dict[str, Any]) ->
     raw_response_list: List[Dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
-    for request_number in \
-            range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+    for request_number in pagination_range(pagination):
         raw_response_list.append(client.computer_user_activity_get_request(
             username=username,
             limit=pagination.limit,
@@ -1525,8 +1523,7 @@ def computer_vulnerabilities_list_command(client: Client, args: Dict[str, Any]) 
     raw_response_list: List[Dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
-    for request_number in \
-            range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+    for request_number in pagination_range(pagination):
         raw_response_list.append(client.computer_vulnerabilities_list_request(
             connector_guid=connector_guid,
             start_time=start_time,
@@ -1669,8 +1666,7 @@ def computer_activity_list_command(client: Client, args: Dict[str, Any]) -> Comm
     raw_response_list: List[Dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
-    for request_number in \
-            range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+    for request_number in pagination_range(pagination):
         raw_response_list.append(client.computer_activity_list_request(
             query_string=query_string,
             limit=pagination.limit,
@@ -1989,8 +1985,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     raw_response_list: List[Dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
-    for request_number in \
-            range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+    for request_number in pagination_range(pagination):
         raw_response_list.append(client.event_list_request(
             detection_sha256=detection_sha256,
             application_sha256=application_sha256,
@@ -2128,8 +2123,7 @@ def file_list_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
         raw_response_list: List[Dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
-        for request_number in \
-                range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+        for request_number in pagination_range(pagination):
             raw_response_list.append(file_list_request_by_type[file_list_type](
                 names=names,
                 limit=pagination.limit,
@@ -2189,8 +2183,7 @@ def file_list_item_list_command(client: Client, args: Dict[str, Any]) -> Command
         raw_response_list: List[Dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
-        for request_number in \
-                range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+        for request_number in pagination_range(pagination):
             raw_response_list.append(client.file_list_item_list_request(
                 file_list_guid=file_list_guid,
                 limit=pagination.limit,
@@ -2338,8 +2331,7 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raw_response_list: List[Dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
-        for request_number in \
-                range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+        for request_number in pagination_range(pagination):
             raw_response_list.append(client.group_list_request(
                 name=name,
                 limit=pagination.limit,
@@ -2568,8 +2560,7 @@ def indicator_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
         raw_response_list: List[Dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
-        for request_number in \
-                range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+        for request_number in pagination_range(pagination):
             raw_response_list.append(client.indicator_list_request(
                 limit=pagination.limit,
                 offset=None if pagination.offset is None else pagination.offset * request_number,
@@ -2645,8 +2636,7 @@ def policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raw_response_list: List[Dict[str, Any]] = []
 
         # Run multiple requests according to pagination inputs.
-        for request_number in \
-                range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+        for request_number in pagination_range(pagination):
             raw_response_list.append(client.policy_list_request(
                 products=products,
                 names=names,
@@ -2782,8 +2772,7 @@ def vulnerability_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     raw_response_list: List[Dict[str, Any]] = []
 
     # Run multiple requests according to pagination inputs.
-    for request_number in \
-            range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier):
+    for request_number in pagination_range(pagination):
         if not sha256:
             raw_response_list.append(client.vulnerability_list_request(
                 group_guids=group_guid,
@@ -3002,6 +2991,19 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
 
 ''' HELPER FUNCTIONS '''  # pylint: disable=pointless-string-statement
+
+
+def pagination_range(pagination: Pagination) -> range:
+    """
+    Generate a range according to pagination parameters.
+
+    Args:
+        pagination (Pagination): parameters to be used to calculate the start and stop index.
+
+    Returns:
+        range: A range according to pagination parameters
+    """
+    return range(pagination.offset_multiplier, pagination.number_of_requests + pagination.offset_multiplier)
 
 
 def get_pagination_parameters(
