@@ -33,7 +33,7 @@
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload content graph CSVs to GCP" --collapsed
-        gsutil -m cp $ARTIFACTS_FOLDER/content_graph/MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
+        gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
         section_end "Upload content graph CSVs to GCP"
       fi
 
@@ -238,6 +238,7 @@ upload-packs-to-marketplace:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "xsoar"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     INSTANCE_ROLE: "Server Master"
@@ -313,6 +314,7 @@ upload-packs-to-marketplace-v2:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "marketplacev2"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
@@ -369,6 +371,7 @@ upload-packs-to-xpanse-marketplace:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "xpanse"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
