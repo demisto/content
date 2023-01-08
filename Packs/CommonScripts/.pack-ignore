@@ -99,3 +99,7 @@ ActiveDirectoryQuery
 GenericPolling
 VirusTotal
 keysToKeep
+BetweenDates
+FiltersAndTransformers
+ConvertAllExcept
+BetweenHours
