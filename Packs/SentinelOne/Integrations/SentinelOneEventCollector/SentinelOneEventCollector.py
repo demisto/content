@@ -14,8 +14,8 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'hello'
-PRODUCT = 'world'
+VENDOR = 'sentinelone'
+PRODUCT = 'xdr'
 
 ''' CLIENT CLASS '''
 
@@ -48,9 +48,9 @@ class Client(BaseClient):
             'description': f'This is test description {prev_id + 1}',
             'alert_status': alert_status,
             'custom_details': {
-                               'triggered_by_name': f'Name for id: {prev_id + 1}',
-                               'triggered_by_uuid': str(uuid.uuid4()),
-                               'type': 'customType'
+                'triggered_by_name': f'Name for id: {prev_id + 1}',
+                'triggered_by_uuid': str(uuid.uuid4()),
+                'type': 'customType'
             }
         }]
 

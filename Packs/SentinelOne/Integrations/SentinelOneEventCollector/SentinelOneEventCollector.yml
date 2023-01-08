@@ -3,17 +3,28 @@ commonfields:
   id: HelloWorldEventCollector
   version: -1
 configuration:
-- defaultvalue: https://some_url.com
-  display: Server URL (e.g. https://some_url.com)
+- display: Server URL (e.g., https://usea1.sentinelone.net)
   name: url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+- display: ''
   name: credentials
   required: false
-  hiddenusername: true
   type: 9
+  hiddenusername: true
+  displaypassword: API Token
+- defaultvalue: '2.1'
+  display: API Version
+  required: true
+  name: api_version
+  options:
+  - '2.0'
+  - '2.1'
+  type: 15
+- display: Fetch events
+  name: isFetch
+  required: false
+  type: 8
 - defaultvalue: ACTIVE
   display: Fetch alerts with status (ACTIVE, CLOSED)
   name: alert_status
@@ -27,6 +38,26 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- defaultvalue: '5'
+  display: Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0.
+  name: fetch_threat_rank
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: 'Fetch limit: The maximum number of incidents to fetch'
+  name: fetch_limit
+  required: false
+  type: 0
+- display: Site IDs
+  additionalinfo: Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites.
+  name: fetch_site_ids
+  type: 0
+  required: false
+- display: Block Site IDs
+  name: block_site_ids
+  required: false
+  type: 0
+  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -35,6 +66,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: This is the Hello World event collector integration for XSIAM.
 display: HelloWorld Event Collector
 name: HelloWorldEventCollector
