@@ -1756,7 +1756,7 @@ class Client(BaseClient):
         Args:
             block_period (Optional[int]): Block period input value.
         """
-        if block_period and not 1 <= block_period <= 600:
+        if block_period is not None and not 1 <= block_period <= 600:
             raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
 
     @abstractmethod
