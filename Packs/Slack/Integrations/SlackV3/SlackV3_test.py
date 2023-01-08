@@ -4784,3 +4784,29 @@ def test_search_slack_users(mocker):
     results = search_slack_users(users=users)
 
     assert results == [{'ValidUser'}]
+
+
+def test_slack_get_integration_context_statistics(mocker):
+    """
+    Given:
+        An integration context containing mirrors, conversations, and channels.
+    When:
+        Generating a report of the integration context statistics.
+    Then:
+        Assert that the value returned matches what we expect to receive back.
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    from SlackV3 import slack_get_integration_context_statistics
+
+    expected_results = {
+        'Mirrors Count': 5,
+        'Mirror Size In Bytes': 1397,
+        'Conversations Count': 2,
+        'Conversations Size In Bytes': 1706,
+        'Users Count': 2,
+        'Users Size In Bytes': 1843
+    }
+
+    integration_statistics, _ = slack_get_integration_context_statistics()
+
+    assert integration_statistics == expected_results
