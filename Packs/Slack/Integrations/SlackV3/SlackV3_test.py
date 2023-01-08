@@ -4825,8 +4825,6 @@ def test_check_for_unanswered_questions(mocker):
     mocker.patch.object(SlackV3, 'fetch_context', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
 
-    expected_context = {'questions': '[]'}
-
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
