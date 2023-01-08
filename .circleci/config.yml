@@ -14,41 +14,6 @@ commands:
           command: |
             echo 'export INSTANCE_ROLE="<< parameters.instance_role >>"' >> $BASH_ENV
             echo 'export INSTANCE_WAS_CREATED="<< parameters.instance_created >>"' >> $BASH_ENV
-  start-tunnel:
-    description: "Opens an ssh tunnel to the demisto servers and wait until the tunnels are established"
-    parameters:
-      timeout:
-        type: integer
-        default: 10
-    steps:
-      - run:
-          name: add ssh configurations
-          shell: /bin/bash
-          command: |
-            if [ -z $INSTANCE_WAS_CREATED ];
-              then
-                echo "Skipping - instance was not created"
-                exit 0
-            fi
-            # Modifying ssh config file
-            echo "Host 10.0.*
-              StrictHostKeyChecking no
-              LogLevel ERROR
-              ProxyJump content-build@content-build-lb.demisto.works  # disable-secrets-detection
-             Host content-build-lb.demisto.works
-              Port 43567
-              UserKnownHostsFile /dev/null
-              StrictHostKeyChecking no
-              LogLevel ERROR" >> ~/.ssh/config
-      - run:
-          name: Open SSH Tunnel
-          command: |
-            if [ -z $INSTANCE_WAS_CREATED ];
-              then
-                echo "Skipping - instance was not created"
-                exit 0
-            fi
-            ./Tests/scripts/open_ssh_tunnel.sh
 
 parameters:
   artifact_build_num:
@@ -111,12 +76,6 @@ references:
   attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
-
-  add_ssh_keys: &add_ssh_keys
-    add_ssh_keys:
-      fingerprints:
-        - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
-        - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
 
   prepare_environment: &prepare_environment
     run:
@@ -343,7 +302,6 @@ jobs:
             - node_modules
           key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
-      - *add_ssh_keys
       - *persist_to_workspace
 
   Run Unit Testing And Lint:
@@ -354,7 +312,6 @@ jobs:
       - *attach_workspace
       - *remote_docker
       - *restore_cache
-      - *add_ssh_keys
       - *prepare_environment
       - *infrastructure_testing
       - *run_unit_testing_and_lint
@@ -370,7 +327,6 @@ jobs:
     steps:
       - *attach_workspace
       - *restore_cache
-      - *add_ssh_keys
       - *prepare_environment
       - *secrets
       - *create_id_set
