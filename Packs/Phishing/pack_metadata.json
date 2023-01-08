@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
-    "currentVersion": "3.4.0",
+    "currentVersion": "3.3.12",
     "serverMinVersion": "6.0.0",
     "videos": [
         "https://www.youtube.com/watch?v=SY-3L348PoY"
@@ -19,10 +19,7 @@
     ],
     "itemPrefix": [
         "Email",
-        "Reported",
-        "Malicious",
-        "Clicked",
-        "Total"
+        "Reported"
     ],
     "useCases": [
         "Phishing"
@@ -83,7 +80,7 @@
         },
         "CrowdStrikeFalconX": {
             "mandatory": false,
-            "display_name": "CrowdStrike FalconX"
+            "display_name": "CrowdStrike Falcon Intelligence Sandbox"
         },
         "FortiSandbox": {
             "mandatory": false,
@@ -232,10 +229,6 @@
         "Oletools": {
             "mandatory": false,
             "display_name": "Oletools"
-        },
-        "Microsoft365Defender": {
-            "mandatory": false,
-            "display_name": "Microsoft 365 Defender"
         }
     },
     "marketplaces": [
