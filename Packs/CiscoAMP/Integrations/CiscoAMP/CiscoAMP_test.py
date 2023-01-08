@@ -7,6 +7,7 @@ import os
 from typing import Dict, List, Any
 import pytest
 from CiscoAMP import Client
+from CommonServerPython import DemistoException
 
 API_KEY = 'API_Key'
 CLIENT_ID = 'Client_ID'
@@ -628,7 +629,6 @@ def test_computer_delete_error_command(requests_mock, mock_client):
         json=mock_response
     )
 
-    from CommonServerPython import DemistoException
     with pytest.raises(DemistoException) as de:
         from CiscoAMP import computer_delete_command
         computer_delete_command(mock_client, args)
@@ -1112,11 +1112,11 @@ def test_file_list_item_delete_error_command(requests_mock, mock_client):
         json=mock_response
     )
 
-    with pytest.raises(ValueError) as ve:
+    with pytest.raises(DemistoException) as de:
         from CiscoAMP import file_list_item_delete_command
         file_list_item_delete_command(mock_client, args)
 
-        assert str(ve) == \
+        assert de.message == \
             f'Failed to delete-\nFile List GUID: "{args["file_list_guid"]}"\nSHA-256: "{args["sha256"]}" not found.'
 
 
@@ -1375,11 +1375,11 @@ def test_group_delete_error_command(requests_mock, mock_client):
         json=mock_response
     )
 
-    with pytest.raises(ValueError) as ve:
+    with pytest.raises(DemistoException) as de:
         from CiscoAMP import groups_delete_command
         groups_delete_command(mock_client, args)
 
-        assert str(ve) == f'Failed to delete Group GUID: "{args["group_guid"]}".'
+        assert de.message == f'Failed to delete Group GUID: "{args["group_guid"]}".'
 
 
 @pytest.mark.parametrize(

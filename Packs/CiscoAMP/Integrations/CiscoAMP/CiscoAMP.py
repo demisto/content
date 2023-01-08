@@ -2297,7 +2297,10 @@ def file_list_item_delete_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
     if 'errors' in raw_response:
-        raise ValueError(f'Failed to delete-\nFile List GUID: "{file_list_guid}"\nSHA-256: "{sha256}" not found.')
+        raise DemistoException(
+            message=f'Failed to delete-\nFile List GUID: "{file_list_guid}"\nSHA-256: "{sha256}" not found.',
+            res=raw_response,
+        )
 
     readable_output = f'SHA-256: "{sha256}" Successfully deleted from File List GUID: "{file_list_guid}".'
 
@@ -2527,7 +2530,10 @@ def groups_delete_command(client: Client, args: Dict[str, Any]) -> CommandResult
     is_deleted = dict_safe_get(raw_response, ['data', 'deleted'])
 
     if not is_deleted:
-        raise ValueError(f'Failed to delete Group GUID: "{group_guid}".')
+        raise DemistoException(
+            message=f'Failed to delete Group GUID: "{group_guid}".',
+            res=raw_response,
+        )
 
     readable_output = f'Group GUID: "{group_guid}"\nSuccessfully deleted.'
 
@@ -3007,9 +3013,9 @@ def pagination_range(pagination: Pagination) -> range:
 
 
 def get_pagination_parameters(
-    page: int = None,
-    page_size: int = None,
-    limit: int = None
+    page: int = 0,
+    page_size: int = 0,
+    limit: int = 0,
 ) -> Pagination:
     """
     Get the limit and offset required for the http request,
@@ -3034,8 +3040,8 @@ def get_pagination_parameters(
             is_automatic (bool): Whether the pagination type is automatic.
             is_manual (bool): Whether the pagination type is manual.
     """
-    is_automatic: bool = limit != 0 and limit is not None
-    is_manual: bool = (page != 0 or page_size != 0) and (page is not None or page_size is not None)
+    is_automatic: bool = limit != 0
+    is_manual: bool = page != 0 or page_size != 0
 
     if is_manual and is_automatic:
         raise ValueError('page or page_size can not be entered with limit.')
