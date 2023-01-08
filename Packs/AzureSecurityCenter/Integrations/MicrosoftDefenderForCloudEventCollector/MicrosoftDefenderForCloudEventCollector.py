@@ -35,22 +35,19 @@ class MsClient:
         self.subscription_id = subscription_id
 
     
-    def get_event_list(self, last_run):
+    def get_event_list(self, last_run) -> dict:
         
         """Listing alerts
         Args: 
-            filter_query (str): what to filter
-            select_query (str): what to select
-            expand_query (str): what to expand
+            last_run (str): last run
         Returns:
-            dict: contains response body
+            dict: contains response body with events
         """
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {'api-version': API_VERSION}
         # example = f'Properties/reportedTimeUtc gt 2023-01-01T15:36:50.6288854Z'
         filter_query = f'Properties/reportedTimeUtc gt {last_run}'
         params['$filter'] = filter_query
-      
         events = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
         return events
 
@@ -67,10 +64,19 @@ def test_module(client: MsClient):
     demisto.results('ok')
 
 
-def get_events(client: MsClient, last_run, args:dict):
+def get_events(client: MsClient, last_run: str, args:dict):
+    """
+     Args: 
+            client (MsClient): The microsoft client.
+            last_run (str): The last run.
+            args (dict) : The demisto args.
+        Returns:
+            The raw events and a CommandResults object. 
+    """
     limit = arg_to_number(args.get('limit', 50))
     events = client.get_event_list(last_run)
-    events_list = events.get("value", [])
+    events = events.get('value', [])
+    events_list = events
     sort_events(events_list)
 
     if limit: 
@@ -112,8 +118,14 @@ def get_events(client: MsClient, last_run, args:dict):
     return events, cr
 
 
-def find_next_run(events : dict, last_run) -> str:
-    events_list = events.get('value')
+def find_next_run(events_list : list, last_run: str) -> str:
+    """
+    Args:
+        events (list): The list of events from the API call
+        last_run (str): The prevision last run
+    Returns:
+        The next run for the next fetch-event command. 
+    """
     if not events_list:
         # No new events fetched we will keep the previos last_run.
         return last_run
@@ -130,22 +142,20 @@ def sort_events(events: list) -> None:
     return events.sort(reverse=True, key=lambda event: event.get('properties').get('detectedTimeUtc'))
   
 
-def fetch_events(client: MsClient, last_run, args: dict):
+def fetch_events(client: MsClient, last_run: str) -> list:
     """
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
+        client (MsClient): The microsoft client.
+        last_run (str): The last run.
+        first_fetch_time(int): The first_fetch_time If last_run is None (first time we are fetching)
         alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
+        next_run: A time for the next run.
         list: List of events that will be created in XSIAM.
     """
-    search_filter = 'filter'
-
     events = client.get_event_list(last_run)
-    demisto.info(f'Fetched {len(events.get("value"))} events.')
+    events = events.get("value", [])
+    demisto.info(f'Fetched {len(events)} events.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = find_next_run(events, last_run)
@@ -153,10 +163,16 @@ def fetch_events(client: MsClient, last_run, args: dict):
     return next_run, events
 
 
-def handle_last_run(params: dict):
+def handle_last_run(first_fetch: str) -> str:
+    """
+    Args:
+        first_fetch (str) : The first_fetch_time argument
+    Returns:
+        last_run (str): This will be the first_fetch on the first run and then the previos last_run
+    """
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
+        arg=first_fetch,
         arg_name='First fetch time',
         required=True
     )
@@ -191,7 +207,6 @@ def main() -> None:
     ok_codes = (200, 201, 202, 204)
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
-    verify_certificate = not params.get('insecure', False)
 
     if not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.'
@@ -200,7 +215,9 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-        # @TODO: change the self_deploted 
+
+        # @TODO: CHANGE THE SELF DEPLOYTED
+
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
                           server=server, verify=use_ssl, self_deployed=False, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
@@ -211,7 +228,8 @@ def main() -> None:
 
         elif command in ('ms-defender-for-cloud-get-events', 'fetch-events'):
             
-            last_run = handle_last_run(params)
+            first_fetch = params.get('first_fetch', '3 days')
+            last_run = handle_last_run(first_fetch)
 
             if command == 'ms-defender-for-cloud-get-events':
                 should_push_events = argToBoolean(args.pop('should_push_events'))
