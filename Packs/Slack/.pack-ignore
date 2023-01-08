@@ -4,7 +4,5 @@ ignore=RM104,RM106
 [file:Slack_IAM.yml]
 ignore=BA108,BA109
 
-[file:Slack.yml]
-
 [known_words]
 externalAskSubmit
