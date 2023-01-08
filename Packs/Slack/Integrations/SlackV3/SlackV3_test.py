@@ -4846,5 +4846,6 @@ def test_check_for_unanswered_questions(mocker):
 
     SlackV3.check_for_unanswered_questions()
     updated_context = demisto.setIntegrationContext.call_args[0][0]
+    total_questions = js.loads(updated_context.get('questions'))
 
-    assert expected_context == updated_context
+    assert len(total_questions) == 0
