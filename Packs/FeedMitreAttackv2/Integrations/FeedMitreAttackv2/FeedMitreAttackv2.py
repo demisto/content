@@ -51,6 +51,7 @@ FILTER_OBJS = {
     "Group": {"name": "intrusion-set", "filter": Filter("type", "=", "intrusion-set")},
     "Malware": {"name": "malware", "filter": Filter("type", "=", "malware")},
     "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
+    "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
@@ -301,10 +302,24 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'stixaliases': indicator_json.get('x_mitre_aliases'),
             'stixdescription': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
+        },
+        "Campaign": {
+            'description': indicator_json.get('description'),
+            'aliases': indicator_json.get('aliases'),
+            'ltp': get_LTP(indicator_json)
         }
     }
     generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
+
+
+def get_LTP(indicator_json: dict) -> list[str]:
+    object_marking_definition_list = indicator_json.get("object_marking_refs", '')
+    ltp: list[str] = []
+    for object_marking_definition in object_marking_definition_list:
+        if MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
+            ltp.append(f'{MARKING_DEFINITION_TO_TLP.get(object_marking_definition)}')
+    return ltp
 
 
 def create_relationship_list(mitre_relationships_list, id_to_name):
@@ -635,6 +650,8 @@ def main():
     except Exception as e:
         return_error(e)
 
+
+from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
