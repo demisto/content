@@ -1,0 +1,170 @@
+[MODEL: dataset=corelight_zeek_raw]
+// DNS Logs
+filter qtype_name != null
+| alter 
+    src_ip = json_extract_scalar(id, "$.orig_h"),
+    src_port = json_extract_scalar(id, "$.orig_p"),
+    tar_ip = json_extract_scalar(id, "$.resp_h"),
+    tar_port = json_extract_scalar(id, "$.resp_p")
+| alter
+    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    s_ip_v6 = if(src_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
+    t_ip_v6 = if(tar_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null)
+| alter 
+    xdm.source.ipv4 = s_ip_v4,
+    xdm.source.ipv6 = s_ip_v6,
+    xdm.target.ipv4 = t_ip_v4,
+    xdm.target.ipv6 = t_ip_v6,
+    xdm.source.port = to_integer(src_port),
+    xdm.target.port = to_integer(tar_port),
+    xdm.event.type = "DNS",
+    xdm.event.id = uid,
+    xdm.network.protocol_layers = arraycreate(proto),
+    xdm.event.duration = to_integer(rtt),
+    xdm.network.dns.is_response = if(rejected = "true", to_boolean("TRUE"), to_boolean("FALSE")),
+    xdm.network.dns.dns_question.name = query,
+    xdm.network.dns.dns_question.type = if(qtype_name = "A", "A", qtype_name = "AAAA", "AAAA", qtype_name = "AFSDB", "AFSDB", qtype_name = "APL", "APL", qtype_name = "CAA", "CAA", qtype_name = "CDNSKEY", "CDNSKEY", qtype_name = "CDS", "CDS", qtype_name = "CERT", "CERT", qtype_name = "CNAME", "CNAME", qtype_name = "CSYNC", "CSYNC", qtype_name = "DHCID", "DHCID", qtype_name = "DLV", "DLV", qtype_name = "DNAME", "DNAME", qtype_name = "DNSKEY", "DNSKEY", qtype_name = "DS", "DS", qtype_name = "EUI48", "EUI48", qtype_name = "EUI64", "EUI64", qtype_name = "HINFO", "HINFO", qtype_name = "HIP", "HIP", qtype_name = "HTTPS", "HTTPS", qtype_name = "IPSECKEY", "IPSECKEY", qtype_name = "KEY", "KEY", qtype_name = "KX", "KX", qtype_name = "LOC", "LOC", qtype_name = "MX", "MX", qtype_name = "NAPTR", "NAPTR", qtype_name = "NS", "NS", qtype_name = "NSEC", "NSEC", qtype_name = "NSEC3", "NSEC3", qtype_name = "NSEC3PARAM", "NSEC3PARAM", qtype_name = "OPENPGPKEY", "OPENPGPKEY", qtype_name = "PTR", "PTR", qtype_name = "RRSIG", "RRSIG", qtype_name = "RP", "RP", qtype_name = "SIG", "SIG", qtype_name = "SMIMEA", "SMIMEA", qtype_name = "SOA", "SOA", qtype_name = "SRV", "SRV", qtype_name = "SSHFP", "SSHFP", qtype_name = "SVCB", "SVCB", qtype_name = "TA", "TA", qtype_name = "TKEY", "TKEY", qtype_name = "TLSA", "TLSA", qtype_name = "TSIG", "TSIG", qtype_name = "TXT", "TXT", qtype_name = "URI", "URI", qtype_name = "ZONEMD", "ZONEMD", qtype_name = null, null, "UNKNOWN"),
+    xdm.network.dns.dns_resource_record.name = rcode,
+    xdm.network.dns.dns_resource_record.type = if(rcode_name = "A", "A", rcode_name = "AAAA", "AAAA", rcode_name = "AFSDB", "AFSDB", rcode_name = "APL", "APL", rcode_name = "CAA", "CAA", rcode_name = "CDNSKEY", "CDNSKEY", rcode_name = "CDS", "CDS", rcode_name = "CERT", "CERT", rcode_name = "CNAME", "CNAME", rcode_name = "CSYNC", "CSYNC", rcode_name = "DHCID", "DHCID", rcode_name = "DLV", "DLV", rcode_name = "DNAME", "DNAME", rcode_name = "DNSKEY", "DNSKEY", rcode_name = "DS", "DS", rcode_name = "EUI48", "EUI48", rcode_name = "EUI64", "EUI64", rcode_name = "HINFO", "HINFO", rcode_name = "HIP", "HIP", rcode_name = "HTTPS", "HTTPS", rcode_name = "IPSECKEY", "IPSECKEY", rcode_name = "KEY", "KEY", rcode_name = "KX", "KX", rcode_name = "LOC", "LOC", rcode_name = "MX", "MX", rcode_name = "NAPTR", "NAPTR", rcode_name = "NS", "NS", rcode_name = "NSEC", "NSEC", rcode_name = "NSEC3", "NSEC3", rcode_name = "NSEC3PARAM", "NSEC3PARAM", rcode_name = "OPENPGPKEY", "OPENPGPKEY", rcode_name = "PTR", "PTR", rcode_name = "RRSIG", "RRSIG", rcode_name = "RP", "RP", rcode_name = "SIG", "SIG", rcode_name = "SMIMEA", "SMIMEA", rcode_name = "SOA", "SOA", rcode_name = "SRV", "SRV", rcode_name = "SSHFP", "SSHFP", rcode_name = "SVCB", "SVCB", rcode_name = "TA", "TA", rcode_name = "TKEY", "TKEY", rcode_name = "TLSA", "TLSA", rcode_name = "TSIG", "TSIG", rcode_name = "TXT", "TXT", rcode_name = "URI", "URI", rcode_name = "ZONEMD", "ZONEMD", rcode_name = null, null, "UNKNOWN"),
+    xdm.network.dns.dns_resource_record.value = answers,
+    xdm.target.agent.identifier = trans_id;
+// HTTP Logs
+filter origin != null
+| alter 
+    src_ip = json_extract_scalar(id, "$.orig_h"),
+    src_port = json_extract_scalar(id, "$.orig_p"),
+    tar_ip = json_extract_scalar(id, "$.resp_h"),
+    tar_port = json_extract_scalar(id, "$.resp_p")
+| alter
+    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    s_ip_v6 = if(src_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
+    t_ip_v6 = if(tar_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null)
+| alter 
+    xdm.source.ipv4 = s_ip_v4,
+    xdm.source.ipv6 = s_ip_v6,
+    xdm.target.ipv4 = t_ip_v4,
+    xdm.target.ipv6 = t_ip_v6,
+    xdm.source.port = to_integer(src_port),
+    xdm.target.port = to_integer(tar_port),
+    xdm.event.type = "HTTP",
+    xdm.event.id = uid,
+    xdm.network.http.referrer = referrer,
+    xdm.network.http.url = uri,
+    xdm.observer.unique_identifier = tags,
+    xdm.source.user_agent = user_agent,
+    xdm.network.http.method = if(method = "ACL", "ACL", method = "BASELINE_CONTROL", "BASELINE_CONTROL", method = "BIND", "BIND", method = "CHECKIN", "CHECKIN", method = "CHECKOUT", "CHECKOUT", method = "CONNECT", "CONNECT", method = "COPY", "COPY", method = "DELETE", "DELETE", method = "GET", "GET", method = "HEAD", "HEAD", method = "LABEL", "LABEL", method = "LINK", "LINK", method = "LOCK", "LOCK", method = "MERGE", "MERGE", method = "MKACTIVITY", "MKACTIVITY", method = "MKCALENDAR", "MKCALENDAR", method = "MKCOL", "MKCOL", method = "MKREDIRECTREF", "MKREDIRECTREF", method = "MKWORKSPACE", "MKWORKSPACE", method = "MOVE", "MOVE", method = "OPTIONS", "OPTIONS", method = "ORDERPATCH", "ORDERPATCH", method = "PATCH", "PATCH", method = "POST", "POST", method = "PRI", "PRI", method = "PROPFIND", "PROPFIND", method = "PROPPATCH", "PROPPATCH", method = "PUT", "PUT", method = "REBIND", "REBIND", method = "REPORT", "REPORT", method = "SEARCH", "SEARCH", method = "TRACE", "TRACE", method = "UNBIND", "UNBIND", method = "UNCHECKOUT", "UNCHECKOUT", method = "UNLINK", "UNLINK", method = "UNLOCK", "UNLOCK", method = "UPDATE", "UPDATE", method = "UPDATEREDIRECTREF", "UPDATEREDIRECTREF", method = "VERSION_CONTROL", "VERSION_CONTROL", method = null, null, "UNKNOWN"),
+    xdm.network.http.response_code = if(status_code = "100", "CONTINUE", status_code = "101", "SWITCHING_PROTOCOLS", status_code = "102", "PROCESSING", status_code = "103", "EARLY_HINTS", status_code = "200", "OK", status_code = "201", "CREATED", status_code = "202", "ACCEPTED", status_code = "203", "NON__AUTHORITATIVE_INFORMATION", status_code = "204", "NO_CONTENT", status_code = "205", "RESET_CONTENT", status_code = "206", "PARTIAL_CONTENT", status_code = "207", "MULTI__STATUS", status_code = "208", "ALREADY_REPORTED", status_code = "226", "IM_USED", status_code = "300", "MULTIPLE_CHOICES", status_code = "301", "MOVED_PERMANENTLY", status_code = "302", "FOUND", status_code = "303", "SEE_OTHER", status_code = "304", "NOT_MODIFIED", status_code = "305", "USE_PROXY", status_code = "307", "TEMPORARY_REDIRECT", status_code = "308", "PERMANENT_REDIRECT", status_code = "400", "BAD_REQUEST", status_code = "401", "UNAUTHORIZED", status_code = "402", "PAYMENT_REQUIRED", status_code = "403", "FORBIDDEN", status_code = "404", "NOT_FOUND", status_code = "405", "METHOD_NOT_ALLOWED", status_code = "406", "NOT_ACCEPTABLE", status_code = "407", "PROXY_AUTHENTICATION_REQUIRED", status_code = "408", "REQUEST_TIMEOUT", status_code = "409", "CONFLICT", status_code = "410", "GONE", status_code = "411", "LENGTH_REQUIRED", status_code = "412", "PRECONDITION_FAILED", status_code = "413", "CONTENT_TOO_LARGE", status_code = "414", "URI_TOO_LONG", status_code = "415", "UNSUPPORTED_MEDIA_TYPE", status_code = "416", "RANGE_NOT_SATISFIABLE", status_code = "417", "EXPECTATION_FAILED", status_code = "421", "MISDIRECTED_REQUEST", status_code = "422", "UNPROCESSABLE_CONTENT", status_code = "423", "LOCKED", status_code = "424", "FAILED_DEPENDENCY", status_code = "425", "TOO_EARLY", status_code = "426", "UPGRADE_REQUIRED", status_code = "428", "PRECONDITION_REQUIRED", status_code = "429", "TOO_MANY_REQUESTS", status_code = "431", "REQUEST_HEADER_FIELDS_TOO_LARGE", status_code = "451", "UNAVAILABLE_FOR_LEGAL_REASONS", status_code = "500", "INTERNAL_SERVER_ERROR", status_code = "501", "NOT_IMPLEMENTED", status_code = "502", "BAD_GATEWAY", status_code = "503", "SERVICE_UNAVAILABLE", status_code = "504", "GATEWAY_TIMEOUT", status_code = "505", "HTTP_VERSION_NOT_SUPPORTED", status_code = "506", "VARIANT_ALSO_NEGOTIATES", status_code = "507", "INSUFFICIENT_STORAGE", status_code = "508", "LOOP_DETECTED", status_code = "511", "NETWORK_AUTHENTICATION_REQUIRED", status_code = null, null, "UNKNOWN"),
+    xdm.source.host.hostname = origin,
+    xdm.source.sent_bytes = to_integer(request_body_len),
+    xdm.target.host.hostname = host,
+    xdm.target.sent_bytes = to_integer(response_body_len);
+// NTLM Logs
+filter server_tree_name != null
+| alter 
+    src_ip = json_extract_scalar(id, "$.orig_h"),
+    src_port = json_extract_scalar(id, "$.orig_p"),
+    tar_ip = json_extract_scalar(id, "$.resp_h"),
+    tar_port = json_extract_scalar(id, "$.resp_p")
+| alter
+    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    s_ip_v6 = if(src_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
+    t_ip_v6 = if(tar_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null)
+| alter 
+    xdm.source.ipv4 = s_ip_v4,
+    xdm.source.ipv6 = s_ip_v6,
+    xdm.target.ipv4 = t_ip_v4,
+    xdm.target.ipv6 = t_ip_v6,
+    xdm.source.port = to_integer(src_port),
+    xdm.target.port = to_integer(tar_port),
+    xdm.event.type = "NTLM",
+    xdm.event.id = uid,
+    xdm.auth.ntlm.user_name = username,
+    xdm.auth.ntlm.hostname = hostname,
+    xdm.auth.ntlm.domain = domainname,
+    xdm.auth.ntlm.dns_domain = server_dns_computer_name,
+    xdm.auth.ntlm.dns_three = server_tree_name,
+    xdm.event.outcome = if(success = "true", "SUCCESS", success = "false", "FAILED", success = null, null, "UNKNOWN");
+// Syslogs 
+filter severity != null
+| alter 
+    src_ip = json_extract_scalar(id, "$.orig_h"),
+    src_port = json_extract_scalar(id, "$.orig_p"),
+    tar_ip = json_extract_scalar(id, "$.resp_h"),
+    tar_port = json_extract_scalar(id, "$.resp_p")
+| alter
+    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    s_ip_v6 = if(src_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
+    t_ip_v6 = if(tar_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null)
+| alter 
+    xdm.source.ipv4 = s_ip_v4,
+    xdm.source.ipv6 = s_ip_v6,
+    xdm.target.ipv4 = t_ip_v4,
+    xdm.target.ipv6 = t_ip_v6,
+    xdm.source.port = to_integer(src_port),
+    xdm.target.port = to_integer(tar_port),
+    xdm.event.type = "Syslogs",
+    xdm.event.id = uid,
+    xdm.event.description = message,
+    xdm.network.protocol_layers = arraycreate(proto), 
+    xdm.alert.severity = severity,
+    xdm.intermediate.process.name = facility;
+// Conn Logs
+filter conn_state != null
+| alter 
+    src_ip = json_extract_scalar(id, "$.orig_h"),
+    src_port = json_extract_scalar(id, "$.orig_p"),
+    tar_ip = json_extract_scalar(id, "$.resp_h"),
+    tar_port = json_extract_scalar(id, "$.resp_p")
+| alter
+    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    s_ip_v6 = if(src_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
+    t_ip_v6 = if(tar_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null)
+| alter 
+    xdm.source.ipv4 = s_ip_v4,
+    xdm.source.ipv6 = s_ip_v6,
+    xdm.target.ipv4 = t_ip_v4,
+    xdm.target.ipv6 = t_ip_v6,
+    xdm.source.port = to_integer(src_port),
+    xdm.target.port = to_integer(tar_port),
+    xdm.event.type = "Conn",
+    xdm.event.id = uid,
+    xdm.event.operation_sub_type = conn_state,
+    xdm.network.application_protocol = service,
+    xdm.network.protocol_layers = arraycreate(proto),
+    xdm.event.duration = to_integer(duration),
+    xdm.source.sent_bytes = to_integer(orig_bytes),
+    xdm.source.sent_packets = to_integer(orig_pkts),
+    xdm.target.sent_bytes = to_integer(resp_bytes),
+    xdm.target.sent_packets = to_integer(resp_pkts);
+// Kerberos
+filter request_type != null
+| alter 
+    src_ip = json_extract_scalar(id, "$.orig_h"),
+    src_port = json_extract_scalar(id, "$.orig_p"),
+    tar_ip = json_extract_scalar(id, "$.resp_h"),
+    tar_port = json_extract_scalar(id, "$.resp_p"),
+    lower_c_cipher = lowercase(cipher)
+| alter
+    s_ip_v4 = if(src_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    s_ip_v6 = if(src_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ip, null),
+    t_ip_v4 = if(tar_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null),
+    t_ip_v6 = if(tar_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", tar_ip, null)
+| alter 
+    xdm.source.ipv4 = s_ip_v4,
+    xdm.source.ipv6 = s_ip_v6,
+    xdm.target.ipv4 = t_ip_v4,
+    xdm.target.ipv6 = t_ip_v6,
+    xdm.source.port = to_integer(src_port),
+    xdm.target.port = to_integer(tar_port),
+    xdm.event.type = "Kerberos",
+    xdm.event.id = uid,
+    xdm.event.outcome = if(success = "true", "SUCCESS", success = "false", "FAILED", success = null, null, "UNKNOWN"),
+    xdm.auth.kerberos_tgt.msg_type = if(request_type = "AS", "AS_REQ", request_type = "TGS", "TGS_REQ", request_type = "AP", "AP_REQ", request_type = "RESERVED16", "RESERVED16", request_type = "SAFE", "SAFE", request_type = "PRIV", "PRIV", request_type = "CRED", "CRED", request_type = "ERROR", "ERROR", request_type = null, null, "UNKNOWN"),
+    xdm.auth.kerberos_tgt.spn_values = arraycreate(service),
+    xdm.auth.kerberos_tgt.cname_values = arraycreate(client),
+    xdm.auth.kerberos_tgt.encryption_type = if(lower_c_cipher ~= "des[\-|\_]cbc[\-|\_]crc", "DES_CBC_CRC", lower_c_cipher ~= "aes128[\_|\-]cts[\_|\-]hmac[\_|\-]sha1[\_|\-]96", "AES128_CTS_HMAC_SHA1_96", lower_c_cipher ~= "aes128[\_|\-]cts[\_|\-]hmac[\_|\-]sha256[\_|\-]128", "AES128_CTS_HMAC_SHA256_128", lower_c_cipher ~= "aes256[\_|\-]cts[\_|\-]hmac[\_|\-]sha1[\_|\-]96", "AES256_CTS_HMAC_SHA1_96", lower_c_cipher ~= "aes256[\_|\-]cts[\_|\-]hmac[\_|\-]sha384[\_|\-]192", "AES256_CTS_HMAC_SHA384_192", lower_c_cipher ~= "camellia128[\_|\-]cts[\_|\-]cmac", "CAMELLIA128_CTS_CMAC", lower_c_cipher ~= "camellia256[\_|\-]cts[\_|\-]cmac", "CAMELLIA256_CTS_CMAC", lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]md5", "DES3_CBC_MD5", lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]raw", "DES3_CBC_RAW", lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]sha1[\_|\-]kd", "DES3_CBC_SHA1_KD", lower_c_cipher ~= "des3[\_|\-]cbc[\_|\-]sha1", "DES3_CBC_SHA1", lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]md4", "DES_CBC_MD4", lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]md5", "DES_CBC_MD5", lower_c_cipher ~= "des[\_|\-]cbc[\_|\-]raw", "DES_CBC_RAW", lower_c_cipher ~= "des[\_|\-]ede3[\_|\-]cbc[\_|\-]env[\_|\-]oid", "DES_EDE3_CBC_ENV_OID", lower_c_cipher ~= "des[\_|\-]hmac[\_|\-]sha1", "DES_HMAC_SHA1", lower_c_cipher ~= "dsawithsha1[\_|\-]cmsoid", DSAWITHSHA1_CMSOID", lower_c_cipher ~= "md5withrsaencryption[\_|\-]cmsoid", "MD5WITHRSAENCRYPTION_CMSOID", lower_c_cipher ~= "rc2cbc[\_|\-]envoid", "RC2CBC_ENVOID", lower_c_cipher ~= "rc4[\_|\-]hmac[\_|\-]exp", "RC4_HMAC_EXP", lower_c_cipher ~= "rc4[\_|\-]hmac", "RC4_HMAC", lower_c_cipher ~= "rsaencryption[\_|\-]envoid", "RSAENCRYPTION_ENVOID", lower_c_cipher ~= "rsaes[\_|\-]oaep[\_|\-]env[\_|\-]oid", "RSAES_OAEP_ENV_OID", lower_c_cipher ~= "sha1withrsaencryption[\_|\-]cmsoid", "SHA1WITHRSAENCRYPTION_CMSOID", lower_c_cipher ~= "subkey[\_|\-]keymaterial", "SUBKEY_KEYMATERIAL", lower_c_cipher = null, null, "UNKNOWN");
