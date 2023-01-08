@@ -560,7 +560,7 @@ script:
       contextPath: CiscoFP.IntrusionPolicy.basePolicy.type
       description: 'Response object associated with resource.'
   - name: ciscofp-create-intrusion-policy
-    description: 'Creates an intrusion policy with the specified parameters.'
+    description: 'Creates an intrusion policy with the specified parameters. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300.)'
     arguments:
     - name: name
       description: 'Name of the Intrusion Policy.'
@@ -677,7 +677,7 @@ script:
       contextPath: CiscoFP.IntrusionPolicy.basePolicy.type
       description: 'Response object associated with resource.'
   - name: ciscofp-update-intrusion-policy
-    description: 'Modifies the intrusion policy associated with the specified ID.'
+    description: 'Modifies the intrusion policy associated with the specified ID. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300.)'
     arguments:
     - name: intrusion_policy_id
       description: 'Identifier for intrusion policy.'
@@ -1294,7 +1294,7 @@ script:
       contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.type
       description: 'Response object associated with resource.'
   - name: ciscofp-create-network-analysis-policy
-    description: 'Creates a network analysis policy.'
+    description: 'Creates a network analysis policy. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300.)'
     arguments:
     - name: name
       description: 'Name of the Network Analysis Policy.'
@@ -1435,7 +1435,7 @@ script:
       contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.type
       description: 'Response object associated with resource.'
   - name: ciscofp-update-network-analysis-policy
-    description: 'Modifies the network analysis policy associated with the specified ID.'
+    description: 'Modifies the network analysis policy associated with the specified ID. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300.)'
     arguments:
     - name: network_analysis_policy_id
       description: 'Unique identifier of the Network Analysis Policy.'
