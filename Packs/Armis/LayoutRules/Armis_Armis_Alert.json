@@ -1,0 +1,11 @@
+{
+    "rule_id": "default_rule_Armis_Alert",
+    "layout_id": "Armis Alert",
+    "description": "This rule is a default rule as this layout did not have any.",
+    "rule_name": "default rule",
+    "alerts_filter": {
+        "filter": {}
+    },
+    "fromVersion": "6.10.0",
+    "toVersion": "6.11.9"
+}

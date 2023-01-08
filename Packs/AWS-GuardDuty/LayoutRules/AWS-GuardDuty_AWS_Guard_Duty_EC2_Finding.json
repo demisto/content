@@ -1,0 +1,11 @@
+{
+    "rule_id": "default_rule_AWS_Guard_Duty_EC2_Finding",
+    "layout_id": "AWS Guard Duty EC2 Finding",
+    "description": "This rule is a default rule as this layout did not have any.",
+    "rule_name": "default rule",
+    "alerts_filter": {
+        "filter": {}
+    },
+    "fromVersion": "6.10.0",
+    "toVersion": "6.11.9"
+}

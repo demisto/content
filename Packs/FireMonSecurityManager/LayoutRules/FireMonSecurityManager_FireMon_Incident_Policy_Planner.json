@@ -1,0 +1,11 @@
+{
+    "rule_id": "default_rule_FireMon_Incident_Policy_Planner",
+    "layout_id": "FireMon Incident Policy Planner",
+    "description": "This rule is a default rule as this layout did not have any.",
+    "rule_name": "default rule",
+    "alerts_filter": {
+        "filter": {}
+    },
+    "fromVersion": "6.10.0",
+    "toVersion": "6.11.9"
+}
