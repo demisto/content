@@ -4181,7 +4181,7 @@ script:
         description: Subscriptions URL for user
         type: String
       - contextPath: GitHub.Assignees.assignees.received_events_url
-        description: Received event URL for user
+        description: Received events URL for user
         type: String
       - contextPath: GitHub.Assignees.assignees.events_url
         description: Events URL for user
