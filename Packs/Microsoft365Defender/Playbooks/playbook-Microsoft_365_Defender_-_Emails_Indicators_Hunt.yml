@@ -539,8 +539,8 @@ tasks:
       id: 61724f65-0d28-434d-8dac-c8d1d70a7ce7
       version: -1
       name: Retrieve emails data (IPAddress) - EmailEvents table
-      description: 'This task will retrieve emails data based on the EmailEvents table.'
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
+      description: 'This task will retrieve emails data based on the EmailEvents table. It will look for the given IP in the "SenderIPv4" and in the "SenderIPv46" properties.'
       type: regular
       iscommand: true
       brand: Microsoft 365 Defender
@@ -677,7 +677,7 @@ tasks:
       id: 42a24672-f182-4b50-83b7-b08a6b79c4c6
       version: -1
       name: Retrieve emails data (IPAddress) - EmailUrlInfo table
-      description: 'This task will retrieve emails data based on the EmailUrlInfo table.
+      description: 'This task will retrieve emails data based on the EmailUrlInfo table. It will look for the given IP in the "UrlDomain" property since IP can be part of a URL.'
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
       type: regular
       iscommand: true
