@@ -3913,7 +3913,7 @@ def update_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Comma
 
     # Rule groups must be entered when merging.
     if is_merge and not rule_group_ids:
-        raise ValueError('rule_group_ids must be entered when merging.')
+        raise ValueError('rule_group_ids must be populated when merging.')
 
     # If on of the main arguments are missing, fill there data through a GET request.
     if bool(rule_data) != bool(rule_group_ids):
