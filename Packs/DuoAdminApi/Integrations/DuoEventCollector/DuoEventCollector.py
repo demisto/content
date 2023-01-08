@@ -25,6 +25,7 @@ class Params(BaseModel):
     mintime: dict
     limit: str = '1000'
     retries: Optional[str] = '5'
+    auth_api_version: Optional[str] = '1'
 
     def set_mintime_value(self, mintime: list, log_type: LogType) -> None:  # pragma: no cover
         self.mintime[log_type] = mintime
@@ -43,11 +44,17 @@ class Client:
 
     def call(self, request_order: list) -> dict:  # pragma: no cover
         retries = int(self.params.retries)
+        auth_api_version = int(self.params.auth_api_version)
         while retries != 0:
             try:
                 if request_order[0] == LogType.AUTHENTICATION:
-                    response = self.admin_api.get_authentication_log(
-                        mintime=self.params.mintime[LogType.AUTHENTICATION])
+                    if auth_api_version == 2:
+                        response = self.admin_api.get_authentication_log(
+                            mintime=self.params.mintime[LogType.AUTHENTICATION] * 1000, api_version=2, limit='1000')
+                        response = response.get('authlogs', [])
+                    elif auth_api_version == 1:
+                        response = self.admin_api.get_authentication_log(
+                            mintime=self.params.mintime[LogType.AUTHENTICATION])
                 elif request_order[0] == LogType.ADMINISTRATION:
                     response = self.admin_api.get_administrator_log(
                         mintime=self.params.mintime[LogType.ADMINISTRATION])
@@ -60,6 +67,8 @@ class Client:
                 demisto.debug(msg)
                 if str(exc) == 'Received 429 Too Many Requests':
                     retries -= 1
+                else:
+                    retries = 0
         return {}
 
     def set_next_run_filter(self, mintime: int, log_type: LogType):  # pragma: no cover

@@ -34,6 +34,14 @@ configuration:
   type: 0
   defaultvalue: 5
   required: false
+- additionalinfo: The version we would like to use for the authentication events API.
+  display: Authentication events API.
+  name: auth_api_version
+  options:
+  - 1
+  - 2
+  required: false
+  type: 16
 - display: Use system proxy settings
   name: proxy
   type: 8
