@@ -3197,7 +3197,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether to enter the "Email Indicators Hunting" branch in the playbook. Under this branch, sub playbooks would be triggered in order to hunt malicious indicators fount in other emails and optionally, automatically create new incidents for each found email (configurable through next playbook inputs). Default is "True".
+  description: Whether to enter the "Email Indicators Hunting" branch in the playbook. Under this branch, sub playbooks would be triggered in order to hunt malicious indicators found in other emails and optionally, automatically create new incidents for each found email (configurable through next playbook inputs). Default is "True".
   playbookInputQuery:
 - key: EmailHuntingCreateNewIncidents
   value:
