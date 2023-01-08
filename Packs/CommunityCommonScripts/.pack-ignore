@@ -1,40 +1,40 @@
 [file:pack_metadata.json]
 ignore=PA125
 
-[file:BatchData/BatchData.yml]
+[file:Scripts/BatchData/BatchData.yml]
 ignore=BA114
 
-[file:BatchData//README.md]
+[file:Scripts/BatchData//README.md]
 ignore=BA114
 
-[file:CreatePlbkDoc/CreatePlbkDoc.yml]
+[file:Scripts/CreatePlbkDoc/CreatePlbkDoc.yml]
 ignore=BA114
 
-[file:BatchData/README.md]
+[file:Scripts/BatchData/README.md]
 ignore=BA114
 
-[file:DateTimeToADTime/DateTimeToADTime.yml]
+[file:Scripts/DateTimeToADTime/DateTimeToADTime.yml]
 ignore=BA114
 
-[file:DateTimeToADTime/README.md]
+[file:Scripts/DateTimeToADTime/README.md]
 ignore=BA114
 
-[file:IsArrayItemInList/IsArrayItemInList.yml]
+[file:Scripts/IsArrayItemInList/IsArrayItemInList.yml]
 ignore=BA114
 
-[file:IsArrayItemInList/README.md]
+[file:Scripts/IsArrayItemInList/README.md]
 ignore=BA114
 
-[file:MarkdownToHTML/MarkdownToHTML.yml]
+[file:Scripts/MarkdownToHTML/MarkdownToHTML.yml]
 ignore=BA114
 
-[file:MarkdownToHTML/README.md]
+[file:Scripts/MarkdownToHTML/README.md]
 ignore=BA114
 
-[file:ExtFilter/ExtFilter.yml]
+[file:Scripts/ExtFilter/ExtFilter.yml]
 ignore=BA114
 
-[file:ExtFilter/README.md]
+[file:Scripts/ExtFilter/README.md]
 ignore=BA114
 
 [file:TestPlaybooks/Test_-_ExtFilter.yml]
@@ -43,14 +43,14 @@ ignore=BA114
 [file:TestPlaybooks/Test_-_ExtFilter_Main.yml]
 ignore=BA114
 
-[file:CreateFileFromPathObject/CreateFileFromPathObject.yml]
+[file:Scripts/CreateFileFromPathObject/CreateFileFromPathObject.yml]
 ignore=BA114
 
-[file:CreateFileFromPathObject/README.md]
+[file:Scripts/CreateFileFromPathObject/README.md]
 ignore=BA114
 
-[file:GetFilePathPreProcessing/GetFilePathPreProcessing.yml]
+[file:Scripts/GetFilePathPreProcessing/GetFilePathPreProcessing.yml]
 ignore=BA114
 
-[file:GetFilePathPreProcessing/README.md]
+[file:Scripts/GetFilePathPreProcessing/README.md]
 ignore=BA114
