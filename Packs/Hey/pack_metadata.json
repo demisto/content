@@ -1,6 +1,6 @@
 {
     "name": "Hey (deprecated)",
-    "description": "Use rakyll/hey to test a web application with a load of requests.",
+    "description": "Deprecated. Use the script 'Hey' from 'Developer Tools' pack instead",
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
