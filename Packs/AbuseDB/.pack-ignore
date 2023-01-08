@@ -1,5 +1,4 @@
 [file:AbuseDB.yml]
-ignore=IN145
 
 [known_words]
 AbuseIPDB
