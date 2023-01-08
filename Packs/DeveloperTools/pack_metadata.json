@@ -32,10 +32,6 @@
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
-        },
-        "GetServerURL": {
-            "mandatory": true,
-            "display_name": "GetServerURL"
         }
     },
     "marketplaces": [
