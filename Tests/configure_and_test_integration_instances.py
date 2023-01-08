@@ -536,12 +536,13 @@ class Build(ABC):
         installed_content_packs_successfully = self.install_packs()
         return installed_content_packs_successfully
 
-    def create_and_upload_test_pack(self, packs_to_install: list = []):
+    def create_and_upload_test_pack(self, packs_to_install: list = None):
         """Creates and uploads a test pack that contains the test playbook of the specified packs to install list.
 
         Args:
             packs_to_install (list): The packs to install list from the artifacts.
         """
+        packs_to_install = packs_to_install or []
         create_test_pack(packs_to_install)
 
         for server in self.servers:
@@ -1595,10 +1596,11 @@ def test_pack_metadata():
     return json.dumps(metadata, indent=4)
 
 
-def test_pack_zip(content_path, target, packs: list = []):
+def test_pack_zip(content_path, target, packs: list = None):
     """
     Iterates over all TestPlaybooks folders and adds all files from there to test_pack.zip' file.
     """
+    packs = packs or []
     with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
         for test_path, test in test_files(content_path, packs):
