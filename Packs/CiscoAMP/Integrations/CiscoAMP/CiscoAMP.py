@@ -3139,10 +3139,7 @@ def delete_keys_from_dict(dictionary: MutableMapping, keys_to_delete: List[str] 
             elif isinstance(value, MutableSequence) \
                     and len(value) > 0 \
                     and isinstance(value[0], MutableMapping):
-                modified_dict[key] = []
-
-                for val in value:
-                    modified_dict[key].append(delete_keys_from_dict(val, keys_set))
+                modified_dict[key] = [delete_keys_from_dict(val, keys_set) for val in value]
 
             else:
                 modified_dict[key] = copy.deepcopy(value)
