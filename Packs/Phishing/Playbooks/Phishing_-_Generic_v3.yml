@@ -2826,6 +2826,7 @@ tasks:
           right:
             value:
               simple: "True"
+          ignorecase: true
       - - operator: isNotEmpty
           left:
             value:
@@ -2950,6 +2951,15 @@ tasks:
       DBotScore:
         complex:
           root: DBotScore
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
       EmailHuntingCreateNewIncidents:
         complex:
           root: inputs.EmailHuntingCreateNewIncidents
