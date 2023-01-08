@@ -511,7 +511,7 @@ class Pack(object):
     def is_data_source_pack(self, yaml_content):
 
         is_data_source = self._is_data_source
-        # this's the first integration in the pack, and the pack is in xsiem
+        # this's the first integration in the pack, and the pack is in xsiam
         if self._single_integration and 'marketplacev2' in self.marketplaces:
 
             # the integration is not deprecated
@@ -534,7 +534,7 @@ class Pack(object):
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
-        Checks if an pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
+        Checks if a pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
         Args:
             yaml_content: The yaml content extracted by yaml.safe_load().
             yaml_type: The type of object to check.
@@ -2401,7 +2401,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {PackTags.DATA_SOURCE} if self._is_data_source else set()
+        tags |= {PackTags.DATA_SOURCE} if self._is_data_source and marketplace == XSIAM_MP else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -4291,7 +4291,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
-        res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
+        res = interface.search(content_type=content_type, marketplace=marketplace, display_name=display_name)
         logging.debug(f'Content type for {display_name} is {content_type}, result is {bool(res)}')
         return bool(res)
 
