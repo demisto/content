@@ -10,7 +10,6 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'Micrsoft'
 PRODUCT = 'Microsoft_defender_for_cloud'
 API_VERSION = '2019-01-01'
@@ -46,16 +45,12 @@ class MsClient:
         Returns:
             dict: contains response body
         """
-        # filter_query = args.get("filter")
-        # select_query = args.get("select")
-        # expand_query = args.get("expand")
-        
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {'api-version': API_VERSION}
-        example = f'Properties/reportedTimeUtc ge 2023-01-01T15:36:50.6288854Z'
-        filter_query = f'Properties/reportedTimeUtc ge {last_run}'
+        # example = f'Properties/reportedTimeUtc gt 2023-01-01T15:36:50.6288854Z'
+        filter_query = f'Properties/reportedTimeUtc gt {last_run}'
         params['$filter'] = filter_query
-
+      
         events = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
         return events
 
@@ -73,10 +68,16 @@ def test_module(client: MsClient):
 
 
 def get_events(client: MsClient, last_run, args:dict):
+    limit = arg_to_number(args.get('limit', 50))
     events = client.get_event_list(last_run)
-    events.get("value")
+    events_list = events.get("value", [])
+    sort_events(events_list)
+
+    if limit: 
+        events_list = events_list[:limit]
+
     outputs = list()
-    for alert in events:
+    for alert in events_list:
         properties = alert.get("properties")
         if properties:
             outputs.append(
@@ -93,7 +94,7 @@ def get_events(client: MsClient, last_run, args:dict):
             )
 
     md = tableToMarkdown(
-        "Microsft Defender For Cloud - List Alerts",
+        f"Microsft Defender For Cloud - List Alerts {limit} latests events",
         outputs,
         [
             "DisplayName",
@@ -110,9 +111,24 @@ def get_events(client: MsClient, last_run, args:dict):
     cr =  CommandResults(outputs_prefix="Microsoft-Defender-For-Cloud.Alerts", outputs=outputs, readable_output=md, raw_response=events)
     return events, cr
 
-def find_next_run():
-    return 0 
 
+def find_next_run(events : dict, last_run) -> str:
+    events_list = events.get('value')
+    if not events_list:
+        # No new events fetched we will keep the previos last_run.
+        return last_run
+    else:
+        # New events fetched set the latest detected time for next run.
+        sort_events(events_list)
+        return events_list[0].get('properties').get('detectedTimeUtc')
+
+
+def sort_events(events: list) -> None:
+    """
+    Sorts the list inplace by the detectedTimeUtc
+    """
+    return events.sort(reverse=True, key=lambda event: event.get('properties').get('detectedTimeUtc'))
+  
 
 def fetch_events(client: MsClient, last_run, args: dict):
     """
@@ -132,9 +148,10 @@ def fetch_events(client: MsClient, last_run, args: dict):
     demisto.info(f'Fetched {len(events.get("value"))} events.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = find_next_run()
+    next_run = find_next_run(events, last_run)
     demisto.info(f'Setting next run {next_run}.')
     return next_run, events
+
 
 def handle_last_run(params: dict):
     # How much time before the first fetch to retrieve events
@@ -150,6 +167,7 @@ def handle_last_run(params: dict):
     
     demisto.info(f'Last run is set to be {last_run}')
     return last_run
+
 
 ''' MAIN FUNCTION '''
 
