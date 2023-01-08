@@ -73,7 +73,7 @@ ignore=BA119
 [file:HideFieldsOnNewIncident.yml]
 ignore=SC105
 
-[file:HideFieldsOnNewIncident.yml]
+[file:1_10_43.md]
 ignore=RN114
 
 [known_words]
