@@ -4810,3 +4810,41 @@ def test_slack_get_integration_context_statistics(mocker):
     integration_statistics, _ = slack_get_integration_context_statistics()
 
     assert integration_statistics == expected_results
+
+
+def test_check_for_unanswered_questions(mocker):
+    """
+    Given:
+        Integration Context containing one expired question.
+    When:
+        Checking to see if a question is unanswered.
+    Then:
+        Assert that the question is seen as expired and is then removed from the updated context.
+    """
+    import SlackV3
+    mocker.patch.object(SlackV3, 'fetch_context', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    expected_context = {'questions': '[]'}
+
+    questions = [{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro',
+        'expiry': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
+        'default_response': 'NoResponse'
+    }]
+
+    set_integration_context({
+        'mirrors': MIRRORS,
+        'users': USERS,
+        'conversations': CONVERSATIONS,
+        'bot_id': 'W12345678',
+        'questions': js.dumps(questions)
+    })
+
+    SlackV3.check_for_unanswered_questions()
+    updated_context = demisto.setIntegrationContext.call_args[0][0]
+
+    assert expected_context == updated_context
