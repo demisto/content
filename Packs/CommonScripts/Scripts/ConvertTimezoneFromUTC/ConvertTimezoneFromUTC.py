@@ -28,7 +28,7 @@ def main():     # pragma: no cover
         timezone = args.get('timezone')
         fmt = args.get('format')
 
-        # Convert UTC to correct format and datetime type
+        # Convert UTC string to a datetime type
         utc_time = determine_correct_format(time=time, fmt=fmt)
 
         # Convert to desired Timezone and format
