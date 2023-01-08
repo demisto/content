@@ -156,8 +156,6 @@ class URLUnshortingService(BaseClient, metaclass=ABCMeta):
         """
         pass
 
-# --- Abstract stuff end here ---
-
 
 class LongurlInService(URLUnshortingService):
     """
