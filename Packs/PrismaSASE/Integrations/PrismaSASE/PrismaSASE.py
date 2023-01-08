@@ -343,6 +343,67 @@ class Client(BaseClient):
             params=query_params
         )
 
+    def get_tag_by_id(self, query_params: dict, tag_id: str) -> dict:
+        """Get a tag
+        Args:
+            query_params: Address object dictionary
+            tag_id: Identifier of existing tag to be edited
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}tags/{tag_id}'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def list_tags(self, query_params: dict) -> dict:
+        """Command to list tags
+        Args:
+            query_params: query parameters for the request
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}tags'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def update_tag(self, tag_id: str, tag: dict) -> dict:
+        """Edit existing address object
+        Args:
+            tag: Tag dictionary
+            tag_id: Identifier of existing address to be edited
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}tags/{tag_id}'
+
+        return self.http_request(
+            method="PUT",
+            url_suffix=uri,
+            json_data=tag
+        )
+
+    def delete_tag(self, tag_id):
+        """Delete Prisma SASE tag
+        Args:
+            tag_id: Identifier of the existing tag to be deleted
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}tags/{tag_id}'
+
+        return self.http_request(
+            method="DELETE",
+            url_suffix=uri
+        )
+
     def get_access_token(self) -> str:
         """Get access token to use for API call.
 
@@ -813,6 +874,133 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
+def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to list config jobs from Prisma Sase
+        Args:
+            client: Client object with request
+            args: demisto.args()
+
+        Returns:
+            Outputs.
+        """
+    # TODO - add pagination
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    if tag_id := args.get('tag_id'):
+        raw_response = client.get_tag_by_id(query_params, tag_id)
+        outputs = raw_response
+    else:
+        if limit := arg_to_number(args.get('limit', SEARCH_LIMIT)):
+            query_params['limit'] = limit
+
+        if offset := arg_to_number(args.get('offset', 0)):
+            query_params['offset'] = offset
+
+        raw_response = client.list_tags(query_params)  # type: ignore
+        outputs = raw_response.get('data')
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Tags',
+                                        outputs,
+                                        headers=['id', 'name', 'folder', 'color', 'comments'],
+                                        headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to create new Prisma Sase tag
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    tag = {
+        'name': args.get('name')
+    }
+
+    if color := args.get('color'):
+        tag['color'] = color
+
+    if comments := args.get('comments'):
+        tag['comments'] = comments
+
+    raw_response = client.create_tag(tag, args.get('folder'))  # type: ignore
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
+        outputs_key_field='id',
+        outputs=raw_response,
+        readable_output=tableToMarkdown('Address Object Created', raw_response, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to create new tag
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    # first get the original tag, so user won't need to send all data
+    original_tag = client.get_tag_by_id(query_params, args.get('id'))
+
+    if color := args.get('color'):
+        original_tag['color'] = color
+
+    if comments := args.get('comments'):
+        original_tag['comments'] = comments
+
+    raw_response = client.update_tag(original_tag, args.get('id'))  # type: ignore
+    outputs = raw_response
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Tag Edited', outputs, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to delete the specified tag within the targeted Prisma Sase tenant / TSG
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    tag_id = args.get('tag_id')
+
+    raw_response = client.delete_tag(tag_id)  # type: ignore
+
+    return CommandResults(
+        readable_output=f'Tag with id {raw_response.get("id", "")} '
+                        f'and name {raw_response.get("name", "")} was deleted successfully',
+        raw_response=raw_response
+    )
+
+
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -846,7 +1034,13 @@ def main():
         'prisma-sase-address-object-create': create_address_object_command,
         'prisma-sase-address-object-update': edit_address_object_command,
         'prisma-sase-address-object-delete': delete_address_object_command,
-        'prisma-sase-address-object-list': list_address_objects_command
+        'prisma-sase-address-object-list': list_address_objects_command,
+
+        'prisma-sase-tag-list': list_tags_command,
+        'prisma-sase-tag-create': create_tag_command,
+        'prisma-sase-tag-update': update_tag_command,
+        'prisma-sase-tag-delete': delete_tag_command,
+
     }
     client = Client(
         base_url=base_url,

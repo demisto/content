@@ -2,50 +2,38 @@ category: Network Security
 commonfields:
   id: Prisma SASE
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
   display: API Gateway URL
   name: url
   required: true
   type: 0
-  section: Connect
 - display: API Client ID
   name: credentials
   required: true
   type: 9
-  section: Connect
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-  section: Connect
-  advanced: true
 - additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example:
     1234567890.'
   display: Tenant Services Group ID
   name: tsg_id
   required: true
   type: 0
-  section: Connect
 - additionalinfo: URL used to obtain the OAUTH2 access token.
   defaultvalue: https://auth.apps.paloaltonetworks.com/am/oauth2/access_token
   display: Prisma API OAUTH URL
   name: oauth_url
   required: false
   type: 0
-  section: Connect
-  advanced: true
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-  section: Connect
-  advanced: true
 description: Provides commands for interaction with Prisma SASE API.
 display: Prisma SASE
 name: Prisma SASE
@@ -54,6 +42,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      defaultValue: Shared
       description: Prisma access folder location for the rule.
       isArray: false
       name: folder
@@ -65,9 +54,10 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-      defaultValue: Shared
+      secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: pre
       description: Rule position.
       isArray: false
       name: position
@@ -75,18 +65,18 @@ script:
       - pre
       - post
       required: true
-      defaultValue: pre
+      secret: false
     - default: false
       description: Friendly name of the rule.
       isArray: false
       name: name
       required: true
+      secret: false
     - auto: PREDEFINED
       default: false
       description: Rule action.
       isArray: false
       name: action
-      required: true
       predefined:
       - deny
       - allow
@@ -94,98 +84,118 @@ script:
       - reset client
       - reset server
       - reset both client and server
+      required: true
+      secret: false
     - default: false
       description: Rule description.
       isArray: false
       name: description
       required: false
+      secret: false
     - default: false
       description: Rule log setting.
       isArray: false
       name: log_setting
       required: false
+      secret: false
     - default: false
+      defaultValue: any
       description: A comma-separated list of applications.
       isArray: true
       name: application
       required: false
-      defaultValue: any
+      secret: false
     - default: false
-      description: A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
+      defaultValue: any
+      description: A comma-separated list of categories. You can get category values
+        by running the prisma-sase-custom-url-category-list command.
       isArray: true
       name: category
       required: false
-      defaultValue: any
+      secret: false
     - default: false
+      defaultValue: any
       description: A comma-separated list of destination networks.
       isArray: false
       name: destination
       required: false
-      defaultValue: any
+      secret: false
     - default: false
       description: A comma-separated list of destination HIPs.
       isArray: false
       name: destination_hip
       required: false
+      secret: false
     - default: false
       description: Security profiles to apply to the traffic.
       isArray: false
       name: profile_setting
       required: false
+      secret: false
     - default: false
+      defaultValue: any
       description: Services the rule applies to.
       isArray: false
       required: false
-      defaultValue: any
+      secret: false
     - default: false
+      defaultValue: any
       description: A comma-separated list of source networks.
       isArray: true
       name: source
       required: false
-      defaultValue: any
+      secret: false
     - default: false
       description: A comma-separated list of source HIPs.
       isArray: false
       name: source_hip
       required: false
+      secret: false
     - default: false
+      defaultValue: any
       description: A semi-colon (;) separated list of source users or groups.
       isArray: true
       name: source_user
       required: false
-      defaultValue: any
+      secret: false
     - default: false
       description: A comma-separated list of rule tags.
       isArray: true
       name: tag
       required: false
+      secret: false
     - default: false
+      defaultValue: any
       description: A comma-separated list of source zones.
       isArray: true
       name: from
       required: false
-      defaultValue: any
+      secret: false
     - default: false
+      defaultValue: any
       description: A comma-separated list of destination zones.
       isArray: true
       name: to
       required: false
-      defaultValue: any
+      secret: false
     - default: false
       description: Whether the rule is disabled.
       isArray: false
       name: disabled
       required: false
+      secret: false
     - default: false
       description: Negate the source.
       isArray: false
       name: negate_source
       required: false
+      secret: false
     - default: false
       description: Negate the destination.
       isArray: false
       name: negate_destination
       required: false
+      secret: false
     deprecated: false
     description: Create a new security rule.
     execution: false
@@ -242,6 +252,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      defaultValue: Shared
       description: Prisma access folder location for the rule.
       isArray: false
       name: folder
@@ -253,9 +264,10 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-      defaultValue: Shared
+      secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: pre
       description: Security rule position.
       isArray: false
       name: position
@@ -263,12 +275,13 @@ script:
       - pre
       - post
       required: true
-      defaultValue: pre
+      secret: false
     - default: false
       description: Name of the security rule.
       isArray: false
       name: name
       required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: '50'
@@ -276,20 +289,26 @@ script:
       isArray: false
       name: limit
       required: false
+      secret: false
     - default: false
+      description: The maximum number of results to return.
       isArray: false
       name: page
       required: false
-      description: The maximum number of results to return.
+      secret: false
     - default: false
+      description: The maximum number of results to return.
       isArray: false
       name: page_size
       required: false
-      description: The maximum number of results to return.
+      secret: false
     - default: false
-      description: A specific security rule to return. If not specified, all security rules will be returned.
+      description: A specific security rule to return. If not specified, all security
+        rules will be returned.
+      isArray: false
       name: rule_id
       required: false
+      secret: false
     deprecated: false
     description: List the security rules.
     execution: false
@@ -356,11 +375,13 @@ script:
       isArray: false
       name: folders
       required: true
+      secret: false
     - default: false
       description: Configuration push job description.
       isArray: false
       name: description
       required: false
+      secret: false
     deprecated: false
     description: Push the candidate configuration.
     execution: false
@@ -384,8 +405,10 @@ script:
       isArray: false
       name: id
       required: true
+      secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: Shared
       description: Folder Location for the Object.
       isArray: false
       name: folder
@@ -397,13 +420,12 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-      defaultValue: Shared
+      secret: false
     - auto: PREDEFINED
       default: false
       description: Rule action.
       isArray: false
       name: action
-      required: true
       predefined:
       - deny
       - allow
@@ -411,97 +433,117 @@ script:
       - reset client
       - reset server
       - reset both client and server
+      required: true
+      secret: false
     - default: false
       description: Rule description.
       isArray: false
       name: description
       required: false
+      secret: false
     - default: false
       description: Rule log setting.
       isArray: false
       name: log_setting
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of applications.
       isArray: false
       name: application
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of categories.
       isArray: true
       name: category
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of destination networks.
       isArray: false
       name: destination
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of destination HIPs.
       isArray: false
       name: destination_hip
       required: false
+      secret: false
     - default: false
       description: Security profiles to apply to the traffic.
       isArray: false
       name: profile_setting
       required: false
+      secret: false
     - default: false
       description: Services the rule applies to.
       isArray: false
       name: service
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of source networks.
       isArray: true
       name: source
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of source HIPs.
       isArray: false
       name: source_hip
       required: false
+      secret: false
     - default: false
       description: A semi-colon (;) separated list of source user(s).
       isArray: false
       name: source_user
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of rule tags.
       isArray: true
       name: tag
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of source zones.
       isArray: true
       name: from
       required: false
+      secret: false
     - default: false
       description: A comma-separated list of destination zones.
       isArray: true
       name: to
       required: false
+      secret: false
     - default: false
       description: Whether the rule is disabled.
       isArray: false
       name: disabled
       required: false
+      secret: false
     - default: false
       description: Negate source
       isArray: false
       name: negate_source
       required: false
+      secret: false
     - default: false
       description: Negate the destination.
       isArray: false
       name: negate_destination
       required: false
+      secret: false
     - default: false
+      defaultValue: 'false'
       description: This argument specifies rather to append or overwrite the....
       isArray: false
       name: overwrite
       required: false
-      defaultValue: false
+      secret: false
     deprecated: false
     description: Edit an existing security rule.
     execution: false
@@ -558,8 +600,10 @@ script:
       isArray: false
       name: id
       required: true
+      secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: Shared
       description: Folder Location for the Object.
       isArray: false
       name: folder
@@ -571,12 +615,13 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-      defaultValue: Shared
+      secret: false
     - default: false
       description: Address Object description
       isArray: false
       name: description
       required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: The type of the address
@@ -588,16 +633,19 @@ script:
       - ip_wildcard
       - fqdn
       required: true
+      secret: false
     - default: false
       description: The address value (should match the type)
       isArray: false
       name: address_value
       required: true
+      secret: false
     - default: false
       description: A comma-separated list of address object tags.
       isArray: true
       name: tag
       required: false
+      secret: false
     deprecated: false
     description: Edit address object
     execution: false
@@ -627,12 +675,14 @@ script:
       isArray: false
       name: query_data
       required: false
+      secret: false
     - default: false
       description: 'Aggregate monitor URI to query (for example: mt/monitor/v1/agg/threats).'
       isArray: false
       name: uri
       required: true
-      deprecated: false
+      secret: false
+    deprecated: false
     description: Query the aggregate monitor API.
     execution: false
     name: prisma-sase-query-agg-monitor-api
@@ -645,15 +695,19 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: A specific config job to return. If not specified, all config jobs will be returned.
+      description: A specific config job to return. If not specified, all config jobs
+        will be returned.
+      isArray: false
       name: job_id
       required: false
+      secret: false
     - default: false
       defaultValue: '200'
       description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
+      secret: false
     deprecated: false
     description: List configuration jobs.
     execution: false
@@ -710,6 +764,7 @@ script:
       isArray: false
       name: rule_id
       required: true
+      secret: false
     deprecated: false
     description: Delete a security rule.
     execution: false
@@ -717,6 +772,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      defaultValue: Shared
       description: Prisma Access Folder Location for the Object
       isArray: false
       name: folder
@@ -728,17 +784,19 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-      defaultValue: Shared
+      secret: false
     - default: false
       description: Friendly name of the address object.
       isArray: false
       name: name
       required: true
+      secret: false
     - default: false
       description: Address object description.
       isArray: false
       name: description
       required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: The type of the address.
@@ -750,16 +808,19 @@ script:
       - ip_wildcard
       - fqdn
       required: true
+      secret: false
     - default: false
       description: A comma-separated list of address object tags.
       isArray: true
       name: tag
       required: false
+      secret: false
     - default: false
       description: The address value (should match the type)
       isArray: false
       name: address_value
       required: true
+      secret: false
     deprecated: false
     description: Create a new address object
     execution: false
@@ -789,17 +850,22 @@ script:
       isArray: false
       name: id
       required: true
+      secret: false
     deprecated: false
     description: Delete address object
     execution: false
     name: prisma-sase-address-object-delete
   - arguments:
     - default: false
-      description: The specific address object to return. If not specified, all addresses will be returned.
+      description: The specific address object to return. If not specified, all addresses
+        will be returned.
+      isArray: false
       name: object_id
       required: false
+      secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: Shared
       description: Prisma access folder location for the object.
       isArray: false
       name: folder
@@ -811,7 +877,7 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-      defaultValue: Shared
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: '50'
@@ -819,16 +885,19 @@ script:
       isArray: false
       name: limit
       required: false
+      secret: false
     - default: false
+      description: The maximum number of results to return.
       isArray: false
       name: page
       required: false
-      description: The maximum number of results to return.
+      secret: false
     - default: false
+      description: The maximum number of results to return.
       isArray: false
       name: page_size
       required: false
-      description: The maximum number of results to return.
+      secret: false
     deprecated: false
     description: List address objects.
     execution: false
@@ -858,10 +927,13 @@ script:
   - arguments:
     - default: false
       description: A specific tag to return. If not specified, all tags will be returned.
+      isArray: false
       name: tag_id
       required: false
+      secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: Shared
       description: Prisma sase folder location for the tag.
       isArray: false
       name: folder
@@ -873,7 +945,7 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-      defaultValue: Shared
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: '10'
@@ -881,21 +953,19 @@ script:
       isArray: false
       name: limit
       required: false
-    - default: false
-      description: Results paging offset.
-      isArray: false
-      name: offset
-      required: false
+      secret: false
     - default: false
       isArray: false
       name: page
       required: false
+      secret: false
     - default: false
       isArray: false
       name: page_size
       required: false
+      secret: false
     deprecated: false
-    description: List address objects.
+    description: List tags.
     execution: false
     name: prisma-sase-tag-list
     outputs:
@@ -914,6 +984,204 @@ script:
     - contextPath: PrismaSase.Tag.comments
       description: Address ID.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Prisma sase folder location for the tag.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+      secret: false
+    - default: false
+      description: Tag unique name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Tag color.
+      isArray: false
+      name: color
+      predefined:
+      - Red
+      - Green
+      - Blue
+      - Yellow
+      - Copper
+      - Orange
+      - Purple
+      - Gray
+      - Light Green
+      - Cyan
+      - Light Gray
+      - Blue Gray
+      - Lime
+      - Black
+      - Gold
+      - Brown
+      - Olive
+      - Maroon
+      - Red-Orange
+      - Yellow-Orange
+      - Forest Green
+      - Turquoise Blue
+      - Azure Blue
+      - Cerulean Blue
+      - Midnight Blue
+      - Medium Blue
+      - Cobalt Blue
+      - Violet Blue
+      - Blue Violet
+      - Medium Violet
+      - Medium Rose
+      - Lavender
+      - Orchid
+      - Thistle
+      - Peach
+      - Salmon
+      - Magenta
+      - Red Violet
+      - Mahogany
+      - Burnt Sienna
+      - Chestnut
+      required: false
+      secret: false
+    - default: false
+      description: Tag comments
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a tag.
+    execution: false
+    name: prisma-sase-tag-create
+    outputs:
+    - contextPath: PrismaSase.Tag
+      type: Unknown
+    - contextPath: PrismaSase.Tag.id
+      type: Unknown
+    - contextPath: PrismaSase.Tag.name
+      type: Unknown
+    - contextPath: PrismaSase.Tag.folder
+      type: Unknown
+    - contextPath: PrismaSase.Tag.color
+      type: Unknown
+    - contextPath: comments
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+      secret: false
+    - default: false
+      description: The tag ID
+      isArray: false
+      name: tag_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Tag color.
+      isArray: false
+      name: color
+      predefined:
+      - Red
+      - Green
+      - Blue
+      - Yellow
+      - Copper
+      - Orange
+      - Purple
+      - Gray
+      - Light Green
+      - Cyan
+      - Light Gray
+      - Blue Gray
+      - Lime
+      - Black
+      - Gold
+      - Brown
+      - Olive
+      - Maroon
+      - Red-Orange
+      - Yellow-Orange
+      - Forest Green
+      - Turquoise Blue
+      - Azure Blue
+      - Cerulean Blue
+      - Midnight Blue
+      - Medium Blue
+      - Cobalt Blue
+      - Violet Blue
+      - Blue Violet
+      - Medium Violet
+      - Medium Rose
+      - Lavender
+      - Orchid
+      - Thistle
+      - Peach
+      - Salmon
+      - Magenta
+      - Red Violet
+      - Mahogany
+      - Burnt Sienna
+      - Chestnut
+      required: false
+      secret: false
+    - default: false
+      description: Tag comments.
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    deprecated: false
+    description: Uptade tag
+    execution: false
+    name: prisma-sase-tag-update
+    outputs:
+    - contextPath: PrismaSase.Tag
+      type: String
+    - contextPath: PrismaSase.Tag.id
+      type: String
+    - contextPath: PrismaSase.Tag.name
+      type: String
+    - contextPath: PrismaSase.Tag.folder
+      type: String
+    - contextPath: PrismaSase.Tag.color
+      type: String
+    - contextPath: PrismaSase.Tag.comments
+      type: String
+  - arguments:
+    - default: false
+      description: The specific tag to delete
+      isArray: false
+      name: tag_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a specific tag.
+    execution: false
+    name: prisma-sase-tag-delete
   dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: false
@@ -925,4 +1193,7 @@ script:
   type: python
 tests:
 - PrismaSASE Test
+sectionOrder:
+- Connect
+- Collect
 fromversion: 6.5.0
