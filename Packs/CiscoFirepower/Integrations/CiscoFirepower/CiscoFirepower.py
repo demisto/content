@@ -2051,7 +2051,7 @@ def check_is_get_request(get_args: list, list_args: list) -> bool:
     is_list_request = any(list_args)
 
     if is_get_request and is_list_request:
-        raise ValueError('GET and LIST arguments can not be supported simutanlesy.')
+        raise ValueError('GET and LIST arguments can not be supported simultaneously.')
 
     return is_get_request
 
