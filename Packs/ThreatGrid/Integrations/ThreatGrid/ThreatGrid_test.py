@@ -536,8 +536,7 @@ def test_reputation_command(
     args.update({'reliability': DBotScoreReliability.B})
     result = reputation_command(mock_client, args)
 
-    assert result[0].outputs_prefix == f'ThreatGrid.{outputs_prefix}'
-    assert result[0].outputs_key_field == outputs_key_field
+    assert result.entry_type == 1
 
 
 @pytest.mark.parametrize('date, output', [

@@ -543,7 +543,7 @@ def analysis_sample_command(
     """
     url_param = get_arg_from_command_name(args["command_name"], 3)
     arg_name = ANALYSIS_ARG_NAME.get(url_param)
-    arg_value = args.get(arg_name)  # type: ignore[arg-type]
+    arg_value = args.get(arg_name) if arg_name else None
     sample_id = args["sample_id"]
     response = client.analysis_sample_request(sample_id, url_param, arg_value)
 
@@ -1005,21 +1005,8 @@ def reputation_command(
             'dbot_score': dbot_score,
             'sample_details': sample_details,
         }
-        command_indicator, outputs_prefix, outputs_key_field, outputs = reputation_helper_command(
-            **kwargs)
+        command_results.append(reputation_helper_command(**kwargs))
 
-        readable_output = tableToMarkdown(
-            name=f"ThreatGrid {generic_command_name} Reputation for {command_arg} \n",
-            t=outputs,
-        )
-        command_results.append(
-            CommandResults(
-                readable_output=readable_output,
-                outputs_prefix=outputs_prefix,
-                outputs=outputs,
-                outputs_key_field=outputs_key_field,
-                indicator=command_indicator,
-            ))
     return command_results
 
 
@@ -1065,7 +1052,7 @@ def parse_domain_indicator(
     command_arg: str,
     dbot_score: Common.DBotScore,
     **kwargs,
-) -> Tuple:
+) -> CommandResults:
     """Build outputs for generic command reputation.
 
     Args:
@@ -1082,22 +1069,31 @@ def parse_domain_indicator(
         domain=command_arg,
         dbot_score=dbot_score,
     )
-    domain_reputation_from_threat_grid = {
+    outputs = {
         "domain": command_arg,
         "name": command_arg,
         "dns": command_arg,
     }
-    outputs_prefix = "ThreatGrid.Domain"
-    outputs_key_field = "domain"
-    outputs = domain_reputation_from_threat_grid
-    return command_indicator, outputs_prefix, outputs_key_field, outputs
+
+    readable_output = tableToMarkdown(
+        name=f"ThreatGrid Domain Reputation for {command_arg} \n",
+        t=outputs,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.Domain",
+        outputs=outputs,
+        outputs_key_field='domain',
+        indicator=command_indicator,
+    )
 
 
 def parse_file_indicator(
     dbot_score: Common.DBotScore,
     sample_details: dict,
     **kwargs,
-) -> Tuple:
+) -> CommandResults:
     """Build outputs for generic command reputation.
 
     Args:
@@ -1121,15 +1117,23 @@ def parse_file_indicator(
         name=sample_details.get('filename'),
         dbot_score=dbot_score,
     )
-    file_reputation_from_threat_grid = {
+    outputs = {
         "md5": md5,
         "sha1": sha1,
         "sha256": sha256,
     }
-    outputs_prefix = "ThreatGrid.File"
-    outputs_key_field = "md5"
-    outputs = file_reputation_from_threat_grid
-    return command_indicator, outputs_prefix, outputs_key_field, outputs
+    readable_output = tableToMarkdown(
+        name=f"ThreatGrid File Reputation for {md5} \n",
+        t=outputs,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.File",
+        outputs=outputs,
+        outputs_key_field='file',
+        indicator=command_indicator,
+    )
 
 
 def parse_ip_indicator(
@@ -1138,7 +1142,7 @@ def parse_ip_indicator(
     dbot_score: Common.DBotScore,
     sample_id: str,
     **kwargs,
-) -> Tuple:
+) -> CommandResults:
     """Build outputs for generic command reputation.
 
     Args:
@@ -1159,22 +1163,30 @@ def parse_ip_indicator(
         asn=dict_safe_get(response, ["data", "items", "network", command_arg, "asn"]),
         dbot_score=dbot_score,
     )
-    ip_reputation_from_threat_grid = {
+    outputs = {
         "indicator": command_arg,
         "asn": dict_safe_get(response, ["data", "items", "network", command_arg, "asn"]),
         "confidence": "",
     }
-    outputs_prefix = "ThreatGrid.IP"
-    outputs_key_field = "indicator"
-    outputs = ip_reputation_from_threat_grid
-    return command_indicator, outputs_prefix, outputs_key_field, outputs
+    readable_output = tableToMarkdown(
+        name=f"ThreatGrid IP Reputation for {command_arg} \n",
+        t=outputs,
+    )
+    print(readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.IP",
+        outputs=outputs,
+        outputs_key_field='ip',
+        indicator=command_indicator,
+    )
 
 
 def parse_url_indicator(
     command_arg: str,
     dbot_score: Common.DBotScore,
     **kwargs,
-) -> Tuple:
+) -> CommandResults:
     """Build outputs for generic command reputation.
 
     Args:
@@ -1191,13 +1203,21 @@ def parse_url_indicator(
         dbot_score=dbot_score,
     )
 
-    url_reputation_from_threat_grid = {
+    outputs = {
         "url": command_arg,
     }
-    outputs_prefix = "ThreatGrid.URL"
-    outputs_key_field = "url"
-    outputs = url_reputation_from_threat_grid
-    return command_indicator, outputs_prefix, outputs_key_field, outputs
+    readable_output = tableToMarkdown(
+        name=f"ThreatGrid URL Reputation for {command_arg} \n",
+        t=outputs,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.URL",
+        outputs=outputs,
+        outputs_key_field='url',
+        indicator=command_indicator,
+    )
 
 
 def delete_keys_from_dict(dictionary: MutableMapping,
@@ -1309,7 +1329,7 @@ def get_specific_key_from_dict(
     Returns:
         Dict[Any, Any]: New dictionary.
     """
-    dict_by_key = dict.get(key) or dict
+    dict_by_key = dict.get(key, dict)
     return dict_by_key
 
 
