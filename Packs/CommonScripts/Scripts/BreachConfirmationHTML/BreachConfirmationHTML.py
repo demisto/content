@@ -1,24 +1,32 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-incident = demisto.incidents()
-query = incident[0].get('CustomFields', {}).get('breachconfirmation', "Pending Confirmation")
-Color = 'green'
 
-if query == "Confirm":
-    color = 'red'
-    html = "<div style='color:red;'><h2>Confirmed</h2></div>"
+def main():
+    try:
+        incident = demisto.incidents()
+        query = incident[0].get('CustomFields', {}).get('breachconfirmation', "Pending Confirmation")
+        color = 'green'
+        header = 'Pending Confirmation'
 
-elif query == "Not Confirm":
-    color = 'red'
-    html = "<div style='color:blue;'><h2>Not Confirmed</h2></div>"
+        if query == "Confirm":
+            color = 'red'
+            header = 'Confirmed'
 
-else:
-    html = "<div style='color:green;'><h2>Pending Confirmation</h2></div>"
+        elif query == "Not Confirm":
+            color = 'blue'
+            header = "Not Confirmed"
+
+        html = f"<div style='color:{color};'><h2>{header}</h2></div>"
+        demisto.results({
+            'ContentsFormat': formats['html'],
+            'Type': entryTypes['note'],
+            'Contents': html
+        })
+
+    except Exception as ex:
+        return_error(f'Failed to execute calculate entropy script. Error: {str(ex)}')
 
 
-demisto.results({
-    'ContentsFormat': formats['html'],
-    'Type': entryTypes['note'],
-    'Contents': html
-})
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
