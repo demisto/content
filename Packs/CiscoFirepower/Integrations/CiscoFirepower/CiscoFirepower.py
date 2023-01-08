@@ -1970,7 +1970,7 @@ def get_context_output(
                 **context_output
             }
 
-        context_outputs.append(context_output if context_output else item)
+        context_outputs.append(context_output or item)
 
     return context_outputs
 
