@@ -69,7 +69,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "12"
     scriptarguments:
       ListenerMailbox:
         complex:
@@ -129,7 +129,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "12"
     scriptarguments:
       IPAddress:
         complex:
@@ -175,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 1f3e9431-0642-46f2-844b-f10fad7687ff
+    taskid: 256f3a24-dbbe-4db4-87bb-167919b5b385
     type: regular
     task:
-      id: 1f3e9431-0642-46f2-844b-f10fad7687ff
+      id: 256f3a24-dbbe-4db4-87bb-167919b5b385
       version: -1
       name: Set RetrievedEmailsJoined (emails objects without click events)
       description: |-
@@ -193,12 +193,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "11"
     scriptarguments:
       append:
-        simple: "true"
+        simple: "false"
       key:
-        simple: RetrievedEmailsJoined
+        simple: Microsoft365Defender.RetrievedEmails
       value:
         complex:
           root: Microsoft365Defender.RetrievedEmails
@@ -212,13 +212,20 @@ tasks:
                 value:
                   simple: RetrievedEmailsJoined.NetworkMessageId
                 iscontext: true
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RetrievedEmailsJoined
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 280,
-          "y": 940
+          "y": 1090
         }
       }
     note: false
@@ -267,52 +274,7 @@ tasks:
       {
         "position": {
           "x": 280,
-          "y": 765
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: d28891e7-fa0c-4871-89ad-d2bd5be3bd3f
-    type: regular
-    task:
-      id: d28891e7-fa0c-4871-89ad-d2bd5be3bd3f
-      version: -1
-      name: Set RetrievedEmails (without duplicate emails)
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      append:
-        simple: "false"
-      key:
-        simple: Microsoft365Defender.RetrievedEmails
-      value:
-        complex:
-          root: RetrievedEmailsJoined
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 1110
+          "y": 905
         }
       }
     note: false
@@ -341,6 +303,37 @@ tasks:
         "position": {
           "x": 280,
           "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 66e983d2-df70-4fb5-8cac-e289e17a668b
+    type: title
+    task:
+      id: 66e983d2-df70-4fb5-8cac-e289e17a668b
+      version: -1
+      name: Merge email events from both playbooks
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 760
         }
       }
     note: false
@@ -390,13 +383,13 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "180"
+    simple: "300"
   required: false
   description: The time limit in seconds for the HTTP request to run. Default is 180.
   playbookInputQuery:
 - key: SearchTimeframe
   value:
-    simple: "7"
+    simple: "14"
   required: false
   description: Number of previous days to search. Default is 7.
   playbookInputQuery:
