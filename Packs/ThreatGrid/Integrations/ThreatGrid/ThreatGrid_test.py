@@ -14,6 +14,12 @@ API_VERSION2_URL = 'api/v2'
 API_VERSION3_URL = 'api/v3'
 URL_SHA256 = hashlib.sha256('url'.encode('utf-8')).hexdigest()
 
+DBOT_SCORE = Common.DBotScore(indicator='url_value',
+                              indicator_type='url',
+                              integration_name="ThreatGrid",
+                              reliability=DBotScoreReliability.B,
+                              score=Common.DBotScore.SUSPICIOUS)
+
 
 def load_mock_response(file_name: str) -> str:
     """
@@ -589,3 +595,17 @@ def test_pagination(args, outputs):
     limit, offset, _ = pagination(args)
     assert limit == outputs['limit']
     assert offset == outputs['offset']
+
+
+def test_parse_url_indicator():
+    from ThreatGrid import parse_url_indicator
+    result = parse_url_indicator('url', DBOT_SCORE)
+
+    assert result.outputs_key_field == 'url'
+
+
+def test_parse_domain_indicator():
+    from ThreatGrid import parse_domain_indicator
+    result = parse_domain_indicator('domain', DBOT_SCORE)
+
+    assert result.outputs_key_field == 'domain'

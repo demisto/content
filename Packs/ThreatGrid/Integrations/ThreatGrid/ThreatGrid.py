@@ -467,8 +467,7 @@ def search_command(
         arg_name=arg_name,
         arg_value=arg_value,
     )
-
-    search_data = get_specific_key_from_dict(response["data"], "url")
+    search_data = response["data"]['url'] if response["data"].get("url") else response["data"]
 
     readable_output = tableToMarkdown(name=f"{arg_name} data:",
                                       t=search_data,
@@ -547,8 +546,9 @@ def analysis_sample_command(
     sample_id = args["sample_id"]
     response = client.analysis_sample_request(sample_id, url_param, arg_value)
 
-    items = get_specific_key_from_dict(response["data"], "items")
-    items_to_display = parse_output(items, url_param)  # type: ignore[arg-type]
+    items = response["data"]['items'] if response["data"].get('items') else response["data"]
+
+    items_to_display = parse_output(items, url_param) if isinstance(items, dict) else items
 
     response['data'].update({'sample_id': sample_id})
 
@@ -1172,7 +1172,7 @@ def parse_ip_indicator(
         name=f"ThreatGrid IP Reputation for {command_arg} \n",
         t=outputs,
     )
-    print(readable_output)
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="ThreatGrid.IP",
@@ -1316,23 +1316,6 @@ def optional_arg_to_boolean(arg: Optional[Any]) -> Optional[bool]:
     return argToBoolean(arg) if arg is not None else None
 
 
-def get_specific_key_from_dict(
-    dict: Dict[str, Any],
-    key: str,
-) -> Union[Dict[Any, Any], Any, None]:
-    """Get specific key from a dictionary if key is exist.
-
-    Args:
-        dict (dict): The dictionary.
-        key (str): The key from the dictionary.
-
-    Returns:
-        Dict[Any, Any]: New dictionary.
-    """
-    dict_by_key = dict.get(key, dict)
-    return dict_by_key
-
-
 REPUTATION_TYPE_TO_FUNCTION: Dict[str, Callable] = {
     'ip': parse_ip_indicator,
     'url': parse_url_indicator,
@@ -1363,7 +1346,7 @@ SAMPLE_ARGS = {
 
 
 def parse_output(
-    items: Union[List, Dict],
+    items: dict,
     analysis_arg: str,
 ) -> Union[Dict[Any, Any], Any, None]:
     """ Get relevant output from response.
@@ -1376,17 +1359,14 @@ def parse_output(
         Union[List, Dict]: The relevant data to display.
     """
     items_to_display = items
-    if isinstance(items, dict):
-        if ANALYSIS_OUTPUTS[analysis_arg].get("keys_to_get"):
-            items_to_display = get_specific_key_from_dict(  # type: ignore[assignment]
-                items,
-                ANALYSIS_OUTPUTS[analysis_arg]["keys_to_get"],
-            )
-        if ANALYSIS_OUTPUTS[analysis_arg].get("keys_to_delete"):
-            items_to_display = delete_keys_from_dict(
-                items,
-                ANALYSIS_OUTPUTS[analysis_arg]["keys_to_delete"],
-            )
+    if ANALYSIS_OUTPUTS[analysis_arg].get("keys_to_get"):
+        items_to_display = items[ANALYSIS_OUTPUTS[analysis_arg]["keys_to_get"]] if items.get(
+            ANALYSIS_OUTPUTS[analysis_arg]["keys_to_get"]) else items
+    if ANALYSIS_OUTPUTS[analysis_arg].get("keys_to_delete"):
+        items_to_display = delete_keys_from_dict(
+            items,
+            ANALYSIS_OUTPUTS[analysis_arg]["keys_to_delete"],
+        )
     return items_to_display
 
 
