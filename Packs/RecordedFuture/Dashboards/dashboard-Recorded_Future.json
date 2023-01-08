@@ -60,7 +60,7 @@
                 },
                 "params": {
                     "groupBy": [
-                        "type"
+                        "rawType"
                     ],
                     "tableColumns": [
                         {
@@ -296,7 +296,7 @@
                 },
                 "params": {
                     "groupBy": [
-                        "closeReason"
+                        "rawCloseReason"
                     ],
                     "tableColumns": [
                         {
