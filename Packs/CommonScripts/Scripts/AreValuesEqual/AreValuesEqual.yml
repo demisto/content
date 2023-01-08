@@ -25,5 +25,3 @@ comment: Check whether the values provided in arguments are equal. If either of 
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
