@@ -4312,10 +4312,16 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
+        logging.debug("id_set does not exist, searching in graph")
         content_type = rn_header.replace(' ', '')[:-1]
-        return is_content_item_in_graph(display_name=display_name,
+
+        if not is_content_item_in_graph(display_name=display_name,
                                         content_type=content_type,
-                                        marketplace=marketplace)
+                                        marketplace=marketplace):
+            logging.debug(f"Could not find the content entity of type {content_type} with display name "
+                          f"'{display_name}' in the graph")
+            return False
+        return True
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
 
