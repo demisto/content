@@ -552,8 +552,8 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     tenant_id = demisto.params()['tenant_id']
-    access_key_id = demisto.params()['access_key_id']
-    secret_access_key = demisto.params()['secret_access_key']
+    access_key_id = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key_id')
+    secret_access_key = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_access_key')
 
     api_timeout = 60
     try:
