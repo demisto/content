@@ -10,8 +10,6 @@ from tempfile import NamedTemporaryFile
 
 from charset_normalizer import from_bytes
 import quopri
-import warnings
-warnings.simplefilter("default")
 
 ''' HELPER FUNCTIONS '''
 
@@ -49,23 +47,24 @@ def sign_email(client: Client, args: Dict):
             + quopri.encodestring(args.get('message_body', '').encode("utf-8"))
         )
         buf = makebuf(message_body)
+
+        client.smime.load_key(client.private_key_file, client.public_key_file)
+        p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
+
+        buf = makebuf(message_body)
+        out = BIO.MemoryBuffer()
+
+        client.smime.write(out, p7, buf)
     else:
         message_body = args.get('message_body', '')
         buf = makebuf(message_body.encode())
 
-    client.smime.load_key(client.private_key_file, client.public_key_file)
-    p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
+        client.smime.load_key(client.private_key_file, client.public_key_file)
+        p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
 
-    if use_transport_encoding:
-        buf = makebuf(message_body)
-    else:
         buf = makebuf(message_body.encode())
+        out = BIO.MemoryBuffer()
 
-    out = BIO.MemoryBuffer()
-
-    if use_transport_encoding:
-        client.smime.write(out, p7, buf)
-    else:
         client.smime.write(out, p7, buf, SMIME.PKCS7_TEXT)
     signed = out.read().decode('utf-8')
     signed_message = signed.split('\n\n')
