@@ -1,6 +1,7 @@
 from ExportToXLSX import parse_data
 import pytest
 
+
 DATA_INPUT_SINGLE_DICT = {"key1": "val1", "key2": "val2"}
 DATA_INPUT_MULTIPLE_DICTS = '{\"key1\":\"val1\",\"key2\":\"val2\"},{\"key1\":\"val3\",\"key2\":\"val4\"}'
 
@@ -99,10 +100,27 @@ def test_prepare_bold_and_border(is_bold: bool, is_border: bool):
     """
     from ExportToXLSX import prepare_bold_and_border
     from xlsxwriter import Workbook
-    expected_workbook = Workbook()
+    workbook = Workbook()
     bold_value = 1 if is_bold else 0
     border_value = 1 if is_border else 0
-    result_bold, result_border = prepare_bold_and_border(expected_workbook, is_bold, is_border)
+    result_bold, result_border = prepare_bold_and_border(workbook, is_bold, is_border)
     assert result_bold.bold == bold_value
     assert result_bold.bottom == border_value
     assert result_border.bottom == border_value
+
+
+def test_write_data(mocker):
+    """
+    When:
+        - running write_data
+    Then:
+        - Checks that write function was called 4 times.
+    """
+    from ExportToXLSX import write_data
+    import xlsxwriter
+    from xlsxwriter.format import Format
+    worksheet = xlsxwriter.Workbook()
+    format_arg = Format()
+    mocker.patch.object(xlsxwriter.Workbook, 'worksheet.write')
+    write_data("", DATA_INPUT_SINGLE_DICT, None, worksheet, format_arg, format_arg)
+    assert mocker.call_count == 4
