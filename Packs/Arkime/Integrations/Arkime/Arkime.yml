@@ -212,7 +212,7 @@ script:
     arguments:
     - name: ids
       description: The list of IDs to return.
-      required: true
+      required: false
       isArray: true
     - name: expression
       description: The search expression string.
