@@ -3,7 +3,7 @@ CiscoAMP (Advanced Malware Protection) API Integration for Cortex XSOAR (aka Dem
 """
 import copy
 import math
-from typing import Callable, Dict, Any, MutableMapping, MutableSequence, Tuple
+from typing import Callable, Dict, Any, MutableMapping, MutableSequence, Tuple, Optional
 from http import HTTPStatus
 from collections import namedtuple
 import demistomock as demisto
@@ -3013,18 +3013,18 @@ def pagination_range(pagination: Pagination) -> range:
 
 
 def get_pagination_parameters(
-    page: int = 0,
-    page_size: int = 0,
-    limit: int = 0,
+    page: Optional[int] = 0,
+    page_size: Optional[int] = 0,
+    limit: Optional[int] = 0,
 ) -> Pagination:
     """
     Get the limit and offset required for the http request,
     number of requests required and if the pagination is automatic, manual or none of them.
 
     Args:
-        page (int, optional): Page number to view. Defaults to None.
-        page_size (int, optional): Number of elements in each page. Defaults to None.
-        limit (int, optional): Total number of elements to return. Defaults to None.
+        page (Optional[int]): Page number to view. Defaults to None.
+        page_size (Optional[int]): Number of elements in each page. Defaults to None.
+        limit (Optional[int]): Total number of elements to return. Defaults to None.
 
     Raises:
         ValueError: If both manual and automatic arguments have been filled.
