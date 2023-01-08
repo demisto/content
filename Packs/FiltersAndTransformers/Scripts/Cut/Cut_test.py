@@ -31,11 +31,10 @@ def test_cut(value, delimiter, fields, expected):
 def test_cut_main(mocker, args):
     """
     Given:
-        Case 1: A-B-C-D-E to split by - from char 1 to 5
+        a,ב,c to split by , from char 2 to 3
     When:
         Running Cut
     Then:
-        Case 1: Ensure A-E is returned
         demisto.results called
     """
     mocker.patch.object(demisto, 'args', return_value=args)
