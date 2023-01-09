@@ -2,6 +2,7 @@ import dateparser
 from datetime import datetime, timezone
 import json
 import time
+import urllib3
 from typing import Any, Optional
 
 import demistomock as demisto
@@ -13,7 +14,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 # api list size limit
