@@ -25,19 +25,21 @@ def test_cut(value, delimiter, fields, expected):
     assert cut(value, fields, delimiter) == expected
 
 
-@pytest.mark.parametrize('args', [
-    {'value': 'a,ב,c', 'delimiter': ',', 'fields': '2,3'},
+@pytest.mark.parametrize('args, expected', [
+    ({'value': 'a,ב,c', 'delimiter': ',', 'fields': '2,3'}, 'ב,c'),
 ])
-def test_cut_main(mocker, args):
+def test_cut_main(mocker, args, expected):
     """
     Given:
-        a,ב,c to split by , from char 2 to 3
+        a,ב,c to split by , from char 2 to 3.
     When:
-        Running Cut
+        Running Cut script.
     Then:
-        demisto.results called
+        demisto.results called.
     """
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'results')
     main()
     assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0][0]
+    assert results == expected

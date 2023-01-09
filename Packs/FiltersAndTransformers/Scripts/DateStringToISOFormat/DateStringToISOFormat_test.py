@@ -99,3 +99,5 @@ def test_cut_main(mocker, args):
     mocker.patch.object(demisto, 'results')
     main()
     assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0][0]
+    assert results == '2929-11-05T00:00:00+00:00'
