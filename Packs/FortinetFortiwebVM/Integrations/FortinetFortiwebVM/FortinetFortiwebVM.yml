@@ -1906,7 +1906,7 @@ script:
       name: virtual_server
       required: false
     - auto: PREDEFINED
-      description: 'Match once enabled. Required when: deployment_mode = "HTTP Content Routing".'
+      description: 'Enable to forward subsequent requests from an identified client connection to the same server pool as the initial connection from the client. Required when: deployment_mode = "HTTP Content Routing".'
       isArray: false
       name: match_once
       defaultValue: disable
