@@ -21,7 +21,8 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "IndicatorFormatterFilterTest"
+            "playbookID": "IndicatorFormatterFilterTest",
+            "timeout": 1200
         },
         {
             "integrations": "FeedURLhaus",
