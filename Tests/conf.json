@@ -3016,13 +3016,13 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "QRadar v3",
+            "integrations": "QRadar v3 test",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 12000,
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "QRadar v3",
+            "integrations": "QRadar v3 test",
             "playbookID": "QRadar - Get Offense Logs Test",
             "timeout": 600,
             "fromversion": "6.0.0"
