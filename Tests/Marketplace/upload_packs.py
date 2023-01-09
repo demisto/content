@@ -176,7 +176,8 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
-                elif (metadata_version := re.findall('metadata\-([\d\.]+)\.json', d.name)) and pack_versions_to_keep:
+                elif (metadata_version := re.findall(Metadata.METADATA_FILE_REGEX_GET_VERSION, d.name)) \
+                        and pack_versions_to_keep:
                     if metadata_version[0] not in pack_versions_to_keep:
                         os.remove(d.path)
 
