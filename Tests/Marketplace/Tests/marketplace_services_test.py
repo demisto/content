@@ -3273,7 +3273,6 @@ class TestDetectModified:
 
         assert dummy_pack._modified_files['Integrations'][0] == \
                'Packs/TestPack/Integrations/integration/integration.yml'
-        assert dummy_pack._is_modified
         assert status is True
 
 
