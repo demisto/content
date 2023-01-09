@@ -3118,7 +3118,8 @@ script:
   isremotesyncout: true
   type: python
 tests:
-- Test XDR Playbook
+- Test XDR general and file commands Playbook
+- Test XDR execute script Playbook
 defaultmapperin: Cortex XDR - IR-mapper
 defaultclassifier: Cortex XDR Incident Handler - Classifier
 defaultmapperout: Cortex XDR - IR-out-mapper
