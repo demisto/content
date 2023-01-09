@@ -243,7 +243,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "15"
+      - "10"
     scriptarguments:
       gridfield:
         simple: asmserviceowner
@@ -295,7 +295,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "15"
+      - "10"
     scriptarguments:
       gridfield:
         simple: asmserviceowner
@@ -396,7 +396,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "10"
+      - "17"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -443,7 +443,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+      - "15"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -464,8 +464,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 1150
+          "x": 770,
+          "y": 1560
         }
       }
     note: false
@@ -477,10 +477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: f083ef50-9fc1-4b21-8a2b-67861ac06baf
+    taskid: 01de46ac-9eb1-4136-89f5-8c9575a9a54d
     type: regular
     task:
-      id: f083ef50-9fc1-4b21-8a2b-67861ac06baf
+      id: 01de46ac-9eb1-4136-89f5-8c9575a9a54d
       version: -1
       name: Set system IDs grid field (Company)
       description: |-
@@ -526,13 +526,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f4f78018-1e7c-40b7-80bf-1023f3b8e95a
+    taskid: e7c84686-ca51-42cd-8911-1b8915f93fa9
     type: condition
     task:
-      id: f4f78018-1e7c-40b7-80bf-1023f3b8e95a
+      id: e7c84686-ca51-42cd-8911-1b8915f93fa9
       version: -1
-      name: Is there ServiceNow record information?
-      description: Determines if there is ServiceNow record information to set in the service owner field.
+      name: Is there ServiceNow assigned_to information?
+      description: Determines if there is ServiceNow assigned_to information to set in the service owner field.
       type: condition
       iscommand: false
       brand: ""
@@ -549,8 +549,8 @@ tasks:
           left:
             value:
               complex:
-                root: ServiceNowCMDB
-                accessor: Record
+                root: ServiceNowCMDB.Record.Attributes.assigned_to
+                accessor: display_value
             iscontext: true
           right:
             value: {}
@@ -571,13 +571,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6860e858-d5d4-4c59-82d9-c25859d12cac
+    taskid: e4303261-c568-4163-86f1-1d85431b3ec2
     type: condition
     task:
-      id: 6860e858-d5d4-4c59-82d9-c25859d12cac
+      id: e4303261-c568-4163-86f1-1d85431b3ec2
       version: -1
       name: Is there ServiceNow record and records information?
-      description: Determines if there is ServiceNow record and records information to set in the service owner field.
+      description: Determines if there is ServiceNow record and records information to set in the system ID field.
       type: condition
       iscommand: false
       brand: ""
@@ -682,7 +682,7 @@ tasks:
       {
         "position": {
           "x": 1110,
-          "y": 1540
+          "y": 1810
         }
       }
     note: false
@@ -725,15 +725,62 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0717d616-3467-4d69-83f5-716e8aa903cd
+    type: condition
+    task:
+      id: 0717d616-3467-4d69-83f5-716e8aa903cd
+      version: -1
+      name: Is there ServiceNow company information?
+      description: Determines if there is ServiceNow company information to set in the systemID field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNowCMDB.Record.Attributes.company
+                accessor: value
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "12_15_#default#": 0.25,
-      "13_15_#default#": 0.33
+      "13_15_#default#": 0.33,
+      "17_11_yes": 0.5,
+      "17_15_#default#": 0.31
     },
     "paper": {
       "dimensions": {
-        "height": 1555,
+        "height": 1825,
         "width": 1800,
         "x": -310,
         "y": 50
@@ -753,3 +800,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
