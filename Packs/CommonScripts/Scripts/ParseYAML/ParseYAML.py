@@ -35,12 +35,12 @@ def load_and_parse_yaml_command(args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: XSOAR CommandResults object
     """
-    s = args.get("string", None)
+    stream = args.get("string", None)
 
-    if not s:
+    if not stream:
         raise ValueError("string not specified in command args")
 
-    result = load_yaml(s)
+    result = load_yaml(stream)
 
     return CommandResults(
         outputs_prefix="ParseYAML",
