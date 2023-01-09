@@ -71,7 +71,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 355
+          "y": 375
         }
       }
     note: false
@@ -118,7 +118,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 515
+          "y": 565
         }
       }
     note: false
@@ -143,7 +143,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "8"
     scriptarguments:
       input:
         complex:
@@ -154,60 +154,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 197dcf9d-0387-4ea1-896c-bafc2933748b
-    type: regular
-    task:
-      id: 197dcf9d-0387-4ea1-896c-bafc2933748b
-      version: -1
-      name: Extract emails without an incident (EmailFilesRetrieval)
-      description: |
-        This task will go over the "RetrievedEmails" playbook input and will filter out emails which already have an existing incident in XSOAR. It will also remove duplicates based on the InternetMessageId property.
-        
-        Eventually, for each email it will return these fields:
-        
-        - Subject --> The new incident name.
-        - InternetMessageId --> Thew new incident "Reported Email Message ID".
-        - RecipientEmailAddress --> The new incident email attachment which will be investigated.
-        
-        These values will be used later on in the parent playbook in order to retrieve the original EML files (if it was configured in the relevant playbook input).
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      key:
-        simple: EmailFilesRetrieval
-      value:
-        simple: '${.=unique(val.inputs.RetrievedEmails); function unique(x){let exist
-                = false; let res = []; for(let i=0; i<x.length; i++){exist = false; if (res.length
-                == 0){res.push({InternetMessageId: x[i].InternetMessageId, Subject: x[i].Subject,
-                RecipientEmailAddress: x[i].RecipientEmailAddress})} else {for(let j=0;
-                j<res.length; j++){if(x[i].InternetMessageId == res[j].InternetMessageId){exist
-                = true; break;} }if(exist == false){res.push({InternetMessageId: x[i].InternetMessageId,
-                Subject: x[i].Subject, RecipientEmailAddress: x[i].RecipientEmailAddress})}}};
-                return res;}}'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 865
+          "y": 750
         }
       }
     note: false
@@ -300,7 +247,103 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1090
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5f38004d-8185-4495-8c34-3e131bd99dd7
+    type: regular
+    task:
+      id: 5f38004d-8185-4495-8c34-3e131bd99dd7
+      version: -1
+      name: Extract emails without an incident (EmailFilesRetrieval)
+      description: This task will go over the "RetrievedEmails" playbook input and will filter out emails which already have an existing incident in XSOAR.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: EmailFilesRetrieval
+      value:
+        complex:
+          root: inputs.RetrievedEmails
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.InternetMessageId
+                iscontext: true
+              right:
+                value:
+                  simple: JsonObject.reportedemailmessageid
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 47277205-1ed6-42d3-82cc-1a047a158057
+    type: regular
+    task:
+      id: 47277205-1ed6-42d3-82cc-1a047a158057
+      version: -1
+      name: Remove duplicate emails from results (based on Message-ID)
+      description: |
+        This task will go over the "EmailFilesRetrieval" key which was set in the previous task and will remove duplicates based on the InternetMessageId property.
+
+        Eventually, for each email it will return these fields:
+
+        - Subject --> The new incident name.
+        - InternetMessageId --> Thew new incident "Reported Email Message ID".
+        - RecipientEmailAddress --> The new incident email attachment which will be investigated.
+
+        These values will be used later on in the parent playbook in order to retrieve the original EML files (if it was configured in the relevant playbook input).
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: EmailFilesRetrieval
+      value:
+        simple: '${.=unique(val.EmailFilesRetrieval); function unique(x){let exist = false; let res = []; for(let i=0; i<x.length; i++){exist = false; if (res.length == 0){res.push({InternetMessageId: x[i].InternetMessageId, Subject: x[i].Subject, RecipientEmailAddress: x[i].RecipientEmailAddress})} else {for(let j=0; j<res.length; j++){if(x[i].InternetMessageId == res[j].InternetMessageId){exist = true; break;} }if(exist == false){res.push({InternetMessageId: x[i].InternetMessageId, Subject: x[i].Subject, RecipientEmailAddress: x[i].RecipientEmailAddress})}}}; return res;}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
         }
       }
     note: false
@@ -315,7 +358,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1105,
+        "height": 1325,
         "width": 380,
         "x": 450,
         "y": 50
