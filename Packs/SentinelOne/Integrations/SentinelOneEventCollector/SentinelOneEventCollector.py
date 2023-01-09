@@ -30,9 +30,57 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def search_events(self, prev_id, alert_status):
+    def get_activities(self, prev_id, alert_status):
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
+        All the parameters are passed directly to the API as HTTP POST parameters in the request
+
+        Args:
+            prev_id: previous id that was fetched.
+            alert_status:
+
+        Returns:
+            dict: the next event
+        """
+        return [{
+            'id': prev_id + 1,
+            'created_time': datetime.now().isoformat(),
+            'description': f'This is test description {prev_id + 1}',
+            'alert_status': alert_status,
+            'custom_details': {
+                'triggered_by_name': f'Name for id: {prev_id + 1}',
+                'triggered_by_uuid': str(uuid.uuid4()),
+                'type': 'customType'
+            }
+        }]
+
+    def get_threats(self, prev_id, alert_status):
+        """
+        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
+        All the parameters are passed directly to the API as HTTP POST parameters in the request
+
+        Args:
+            prev_id: previous id that was fetched.
+            alert_status:
+
+        Returns:
+            dict: the next event
+        """
+        return [{
+            'id': prev_id + 1,
+            'created_time': datetime.now().isoformat(),
+            'description': f'This is test description {prev_id + 1}',
+            'alert_status': alert_status,
+            'custom_details': {
+                'triggered_by_name': f'Name for id: {prev_id + 1}',
+                'triggered_by_uuid': str(uuid.uuid4()),
+                'type': 'customType'
+            }
+        }]
+
+    def get_alerts(self, prev_id, alert_status):
+        """
+        Returns SentinelOne alerts using the '/cloud-detection/alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
 
         Args:
@@ -91,10 +139,19 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
 
 
 def get_events(client, alert_status):
-    events = client.search_events(
+    activities = client.get_activities(
         prev_id=0,
         alert_status=alert_status
     )
+    threats = client.get_threats(
+        prev_id=0,
+        alert_status=alert_status
+    )
+    alerts = client.get_alerts(
+        prev_id=0,
+        alert_status=alert_status
+    )
+    events = activities + threats + alerts
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
