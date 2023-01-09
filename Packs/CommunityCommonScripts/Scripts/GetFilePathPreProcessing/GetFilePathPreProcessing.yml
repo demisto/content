@@ -11,7 +11,7 @@ contentitemexportablefields:
 dockerimage: demisto/python3:3.10.9.42476
 enabled: true
 name: GetFilePathPreProcessing
-runas: DBotWeekRole
+runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
