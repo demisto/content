@@ -73,7 +73,7 @@ tasks:
       id: 6175cf4e-8083-452b-87f7-4fab0cb8e554
       version: -1
       name: threat-grid-who-am-i
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-who-am-i
+      script: Threat Grid|||threat-grid-who-am-i
       type: regular
       iscommand: true
       brand: ""
@@ -145,7 +145,7 @@ tasks:
       id: aeb166bd-588d-4865-8757-5719a12dc864
       version: -1
       name: threat-grid-rate-limit-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-rate-limit-get
+      script: Threat Grid|||threat-grid-rate-limit-get
       type: regular
       iscommand: true
       brand: ""
@@ -252,7 +252,7 @@ tasks:
       id: ad3e9d74-e136-4541-8399-fd2b9ff14976
       version: -1
       name: threat-grid-domain-samples-list
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-domain-samples-list
+      script: Threat Grid|||threat-grid-domain-samples-list
       type: regular
       iscommand: true
       brand: ""
@@ -285,7 +285,7 @@ tasks:
       id: b13df3b4-dce4-4181-8f97-b4b66df083cc
       version: -1
       name: threat-grid-ip-samples-list
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-samples-list
+      script: Threat Grid|||threat-grid-ip-samples-list
       type: regular
       iscommand: true
       brand: ""
@@ -363,7 +363,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-path-samples-list
+      script: Threat Grid|||threat-grid-path-samples-list
     nexttasks:
       '#none#':
       - "13"
@@ -396,7 +396,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-associated-domains
+      script: Threat Grid|||threat-grid-ip-associated-domains
     nexttasks:
       '#none#':
       - "19"
@@ -468,7 +468,7 @@ tasks:
       id: 55d7d72e-4590-43f3-8d71-880139e3d2df
       version: -1
       name: threat-grid-ip-associated-urls
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-associated-urls
+      script: Threat Grid|||threat-grid-ip-associated-urls
       type: regular
       iscommand: true
       brand: ""
@@ -538,7 +538,7 @@ tasks:
       id: ea4eba9f-486e-4fee-834b-7902ed4a5e78
       version: -1
       name: threat-grid-submissions-search
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-submissions-search
+      script: Threat Grid|||threat-grid-submissions-search
       type: regular
       iscommand: true
       brand: ""
@@ -652,7 +652,7 @@ tasks:
       id: eaa01a13-cc8d-4731-8c6f-edf97a5d154c
       version: -1
       name: threat-grid-sample-list
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-sample-list
+      script: Threat Grid|||threat-grid-sample-list
       type: regular
       iscommand: true
       brand: ""
@@ -769,7 +769,7 @@ tasks:
       id: 64cadd03-e6a3-4edd-86e9-3151d570af5b
       version: -1
       name: threat-grid-sample-summary-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-sample-summary-get
+      script: Threat Grid|||threat-grid-sample-summary-get
       type: regular
       iscommand: true
       brand: ""
@@ -911,7 +911,7 @@ tasks:
       id: 381b994c-1776-4431-8157-ac302bf25713
       version: -1
       name: threat-grid-domain-associated-urls
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-domain-associated-urls
+      script: Threat Grid|||threat-grid-domain-associated-urls
       type: regular
       iscommand: true
       brand: ""
@@ -986,7 +986,7 @@ tasks:
       id: 00b82b65-208c-4baf-8eb4-59a8e2bdd9fc
       version: -1
       name: threat-grid-domain-associated-ips
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-domain-associated-ips
+      script: Threat Grid|||threat-grid-domain-associated-ips
       type: regular
       iscommand: true
       brand: ""
@@ -1061,7 +1061,7 @@ tasks:
       id: dce3e590-c552-4951-8cc3-22bb4226087a
       version: -1
       name: threat-grid-feeds-artifact
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-feeds-artifact
+      script: Threat Grid|||threat-grid-feeds-artifact
       type: regular
       iscommand: true
       brand: ""
@@ -1153,7 +1153,7 @@ tasks:
       id: 1be394ab-0c49-49b5-8c9f-d2efa0d8bd15
       version: -1
       name: threat-grid-feeds-domain
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-feeds-domain
+      script: Threat Grid|||threat-grid-feeds-domain
       type: regular
       iscommand: true
       brand: ""
@@ -1245,7 +1245,7 @@ tasks:
       id: d6a50f43-02eb-4982-8735-02700f860408
       version: -1
       name: threat-grid-feeds-ip
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-feeds-ip
+      script: Threat Grid|||threat-grid-feeds-ip
       type: regular
       iscommand: true
       brand: ""
@@ -1342,7 +1342,7 @@ tasks:
       id: 617ed54f-631b-457b-8a7c-c55257fba4c1
       version: -1
       name: threat-grid-feeds-network-stream
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-feeds-network-stream
+      script: Threat Grid|||threat-grid-feeds-network-stream
       type: regular
       iscommand: true
       brand: ""
@@ -1449,7 +1449,7 @@ tasks:
       id: 9694fdf6-c5ea-48fd-8b9e-4e4e4be2c96b
       version: -1
       name: threat-grid-feeds-url
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-feeds-url
+      script: Threat Grid|||threat-grid-feeds-url
       type: regular
       iscommand: true
       brand: ""
@@ -1541,7 +1541,7 @@ tasks:
       id: e5582e24-aafb-490a-8cf4-93744ff6e2fd
       version: -1
       name: threat-grid-feeds-path
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-feeds-path
+      script: Threat Grid|||threat-grid-feeds-path
       type: regular
       iscommand: true
       brand: ""
@@ -1628,7 +1628,7 @@ tasks:
       id: e3b9a40c-2caf-4056-8c8f-367678e232ca
       version: -1
       name: threat-grid-feed-specific-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-feed-specific-get
+      script: Threat Grid|||threat-grid-feed-specific-get
       type: regular
       iscommand: true
       brand: ""
@@ -1703,7 +1703,7 @@ tasks:
       id: 0cf99490-2bc8-4842-8aca-6e337a905563
       version: -1
       name: threat-grid-ip-search
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-search
+      script: Threat Grid|||threat-grid-ip-search
       type: regular
       iscommand: true
       brand: ""
@@ -1783,7 +1783,7 @@ tasks:
       id: c65be679-ada2-4def-88da-1755f7d6f529
       version: -1
       name: threat-grid-analysis-artifacts-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-analysis-artifacts-get
+      script: Threat Grid|||threat-grid-analysis-artifacts-get
       type: regular
       iscommand: true
       brand: ""
@@ -1853,7 +1853,7 @@ tasks:
       id: a4f48e49-9c36-4306-8693-088e5345c090
       version: -1
       name: threat-grid-analysis-iocs-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-analysis-iocs-get
+      script: Threat Grid|||threat-grid-analysis-iocs-get
       type: regular
       iscommand: true
       brand: ""
@@ -1953,7 +1953,7 @@ tasks:
       id: ea0bbf2c-7159-424e-86c2-6e9170e716dd
       version: -1
       name: threat-grid-analysis-metadata-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-analysis-metadata-get
+      script: Threat Grid|||threat-grid-analysis-metadata-get
       type: regular
       iscommand: true
       brand: ""
@@ -2033,7 +2033,7 @@ tasks:
       id: d5000f76-c642-41b5-89db-679b0c46c33e
       version: -1
       name: threat-grid-analysis-network-streams-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-analysis-network-streams-get
+      script: Threat Grid|||threat-grid-analysis-network-streams-get
       type: regular
       iscommand: true
       brand: ""
@@ -2123,7 +2123,7 @@ tasks:
       id: 2c8d2f99-4966-4998-8cbf-aba5940d133d
       version: -1
       name: threat-grid-analysis-processes-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-analysis-processes-get
+      script: Threat Grid|||threat-grid-analysis-processes-get
       type: regular
       iscommand: true
       brand: ""
@@ -2198,7 +2198,7 @@ tasks:
       id: 80049596-37f6-4a61-8093-e7bfd801c0a8
       version: -1
       name: threat-grid-analysis-annotations-get
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-analysis-annotations-get
+      script: Threat Grid|||threat-grid-analysis-annotations-get
       type: regular
       iscommand: true
       brand: ""
@@ -2268,10 +2268,10 @@ tasks:
       id: bac0b2a0-687a-461e-8a1a-a170f2e3a378
       version: -1
       name: threat-grid-url-search
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-url-search
+      script: Threat Grid|||threat-grid-url-search
       type: regular
       iscommand: true
-      brand: Cisco Secure Malware Analytics (Threat Grid)
+      brand: Threat Grid
     nexttasks:
       '#none#':
       - "55"
@@ -2338,10 +2338,10 @@ tasks:
       id: 471b834a-7b5d-4532-8650-587aac30c958
       version: -1
       name: threat-grid-url-samples-list
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-url-samples-list
+      script: Threat Grid|||threat-grid-url-samples-list
       type: regular
       iscommand: true
-      brand: Cisco Secure Malware Analytics (Threat Grid)
+      brand: Threat Grid
     nexttasks:
       '#none#':
       - "57"
@@ -2413,10 +2413,10 @@ tasks:
       id: eb01e3bf-32eb-44f7-8ac8-bec9b164c0e1
       version: -1
       name: threat-grid-registry-key-samples-list
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-registry-key-samples-list
+      script: Threat Grid|||threat-grid-registry-key-samples-list
       type: regular
       iscommand: true
-      brand: Cisco Secure Malware Analytics (Threat Grid)
+      brand: Threat Grid
     nexttasks:
       '#none#':
       - "59"
@@ -2485,10 +2485,10 @@ tasks:
       id: 93a932ca-e2bd-4e2d-88d7-f40f7be18d87
       version: -1
       name: threat-grid-sample-upload
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-sample-upload
+      script: Threat Grid|||threat-grid-sample-upload
       type: regular
       iscommand: true
-      brand: Cisco Secure Malware Analytics (Threat Grid)
+      brand: Threat Grid
     nexttasks:
       '#none#':
       - "61"
@@ -2595,10 +2595,10 @@ tasks:
       id: 189bdfb9-f1cd-4310-8afe-4ce3385febb7
       version: -1
       name: file
-      script: Cisco Secure Malware Analytics (Threat Grid)|||file
+      script: Threat Grid|||file
       type: regular
       iscommand: true
-      brand: Cisco Secure Malware Analytics (Threat Grid)
+      brand: Threat Grid
     nexttasks:
       '#none#':
       - "63"
@@ -2685,7 +2685,7 @@ tasks:
       id: 5d02eda6-8ecf-497d-82be-437e90d2fb81
       version: -1
       name: ip
-      script: Cisco Secure Malware Analytics (Threat Grid)|||ip
+      script: Threat Grid|||ip
       type: regular
       iscommand: true
       brand: ""
@@ -2775,7 +2775,7 @@ tasks:
       id: 27b87acb-cff8-4d04-8c9a-d5b10ec413a6
       version: -1
       name: url
-      script: Cisco Secure Malware Analytics (Threat Grid)|||url
+      script: Threat Grid|||url
       type: regular
       iscommand: true
       brand: ""
@@ -2865,7 +2865,7 @@ tasks:
       id: 94b31c62-e49b-443f-87d6-d65ab79e0778
       version: -1
       name: domain
-      script: Cisco Secure Malware Analytics (Threat Grid)|||domain
+      script: Threat Grid|||domain
       type: regular
       iscommand: true
       brand: ""
