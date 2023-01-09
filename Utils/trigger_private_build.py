@@ -21,7 +21,9 @@ NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',
                            'Tests/Marketplace/validate_landing_page_sections.py',
                            'Tests/Marketplace/Tests/validate_landing_page_sections_test.py']
 
-TRIGGER_BUILD_URL = 'https://api.github.com/repos/demisto/content-private/dispatches'
+TRIGGER_BUILD_URL_ON_MASTER = 'https://api.github.com/repos/demisto/content-private/dispatches'
+TRIGGER_BUILD_URL_ON_CUSTOM_BRANCH = \
+    'https://api.github.com/repos/demisto/content-private/actions/workflows/config.yml/dispatches'
 GET_DISPATCH_WORKFLOWS_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs'
 WORKFLOW_HTML_URL = 'https://github.com/demisto/content-private/actions/runs'
 GET_WORKFLOW_URL = 'https://api.github.com/repos/demisto/content-private/actions/runs/{:s}/jobs'
@@ -89,7 +91,10 @@ def get_dispatch_workflows_ids(github_token: str, branch: str) -> List[int]:
     """
     res = requests.get(GET_DISPATCH_WORKFLOWS_URL,
                        headers={'Authorization': f'Bearer {github_token}'},
-                       params={'branch': branch, 'event': 'repository_dispatch'},
+                       params={
+                           'branch': branch,
+                           'event': 'repository_dispatch' if branch == 'master' else 'workflow_dispatch'
+                       },
                        verify=False)
     if res.status_code != 200:
         logging.error(f'Failed to get private repo workflows, request to '
@@ -111,9 +116,17 @@ def main():
     # get github token parameter
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
+    arg_parser.add_argument(
+        '--private-branch-name',
+        help='Name of the branch in the private repository, if not provided the default will be master.',
+        default='master'
+    )
     args = arg_parser.parse_args()
 
+    private_branch_name = args.private_branch_name
     github_token = args.github_token
+
+    logging.info(f'Triggering build for branch {private_branch_name} in content-private repo.')
 
     # get branch name
     branches = tools.run_command("git branch")
@@ -123,13 +136,25 @@ def main():
 
     if branch_has_private_build_infra_change(branch_name):
         # get the workflows ids before triggering the build
-        pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, 'master')
+        pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, private_branch_name)
 
         # trigger private build
-        payload = {'event_type': f'Trigger private build from content/{branch_name}',
-                   'client_payload': {'commit_sha1': branch_name, 'is_infra_build': 'True'}}
-
-        res = requests.post(TRIGGER_BUILD_URL,
+        if private_branch_name == 'master':
+            trigger_build_url = TRIGGER_BUILD_URL_ON_MASTER
+            payload = {
+                'event_type': f'Trigger private build from content/{branch_name}',
+                'client_payload': {'commit_sha1': branch_name, 'is_infra_build': 'True'}
+            }
+        else:
+            trigger_build_url = TRIGGER_BUILD_URL_ON_CUSTOM_BRANCH
+            payload = {
+                'ref': private_branch_name,
+                'inputs': {
+                    'commit_sha1': branch_name,
+                    'is_infra_build': 'True'
+                }
+            }
+        res = requests.post(trigger_build_url,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',
                                      'Authorization': f'Bearer {github_token}'},
                             data=json.dumps(payload),
@@ -137,14 +162,14 @@ def main():
 
         if res.status_code != 204:
             logging.critical(f'Failed to trigger private repo build, request to '
-                             f'{TRIGGER_BUILD_URL} failed with error: {str(res.content)}')
+                             f'{trigger_build_url} failed with error: {str(res.content)}')
             sys.exit(1)
 
         workflow_ids_diff = []
         for i in range(GET_WORKFLOWS_MAX_RETRIES):
             # wait 5 seconds and get the workflow ids again
             time.sleep(5)
-            workflow_ids_after_dispatch = get_dispatch_workflows_ids(github_token, 'master')
+            workflow_ids_after_dispatch = get_dispatch_workflows_ids(github_token, private_branch_name)
 
             # compare with the first workflows list to get the current id
             workflow_ids_diff = [x for x in workflow_ids_after_dispatch if x not in pre_existing_workflow_ids]
