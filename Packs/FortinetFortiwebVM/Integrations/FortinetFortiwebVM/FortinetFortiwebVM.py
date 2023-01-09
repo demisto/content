@@ -1330,10 +1330,6 @@ class Client(BaseClient):
             ValueError: Errors.
         """
 
-        block_period = arg_to_number(args.get("block_period"))
-        if isinstance(self, ClientV2) and block_period and not 1 <= block_period <= 600:
-            raise ValueError(ErrorMessage.BLOCK_PERIOD.value)
-
         if args.get("action") and args["action"] not in [
             "Alert deny",
             "Block period",
@@ -1364,8 +1360,6 @@ class Client(BaseClient):
         Raises:
             ValueError: Errors.
         """
-        if isinstance(self, ClientV1):
-            raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
         self.validate_ip_list_group(args)
 
 
@@ -2192,6 +2186,17 @@ class ClientV1(Client):
             Union[int,str]: Error value.
         """
         return error["msg"]
+
+    def validate_update_ip_list_group(self, args: dict[str, Any]):
+        """IP list group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+        raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
     def validate_ip_list_member(self, args: dict[str, Any]):
         """IP list member args validator.
@@ -3446,6 +3451,20 @@ class ClientV2(Client):
             str: Member ID
         """
         return create_response["results"]["id"]
+
+    def validate_ip_list_group(self, args: dict[str, Any]):
+        """IP list group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+        super().validate_ip_list_group(args)
+        block_period = arg_to_number(args.get("block_period"))
+        if block_period is not None and block_period and not 1 <= block_period <= 600:
+            raise ValueError(ErrorMessage.BLOCK_PERIOD.value)
 
     def validate_geo_ip_group(self, args: dict[str, Any]):
         """Geo IP Group args validator.
