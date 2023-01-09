@@ -27,12 +27,19 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+- display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
   section: Connect
+  advanced: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
   section: Connect
   advanced: true
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
@@ -40,6 +47,7 @@ configuration:
   name: private_key
   required: false
   type: 14
+  hidden: true
   section: Connect
   advanced: true
 - additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
@@ -85,7 +93,6 @@ configuration:
   advanced: true
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: 'true'
   required: false
   type: 8
   section: Collect
@@ -108,6 +115,8 @@ configuration:
 - defaultvalue: Informational,Low,Medium,High
   display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
+  required: false
+  type: 16
   options:
   - Informational
   - Low
@@ -147,7 +156,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- defaultvalue: 3 days
+- defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch_timestamp
   required: false

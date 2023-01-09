@@ -6,16 +6,28 @@ commonfields:
   id: SlackV2
   version: -1
 configuration:
+- name: cred_access_token
+  required: false
+  type: 9
+  displaypassword: Slack API access token
+  hiddenusername: true
+- name: cred_bot_token
+  required: false
+  type: 9
+  displaypassword: Slack API bot token
+  hiddenusername: true
 - display: Slack API access token
   name: access_token
-  required: true
+  required: false
   type: 4
   section: Connect
+  hidden: true
 - display: Slack API bot token
   name: bot_token
-  required: true
+  required: false
   type: 4
   section: Connect
+  hidden: true
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   required: false
@@ -32,14 +44,14 @@ configuration:
 - defaultvalue: Low
   display: Minimum incident severity to send messages to slack by
   name: min_severity
+  required: false
+  type: 15
   options:
   - Unknown
   - Low
   - Medium
   - High
   - Critical
-  required: false
-  type: 15
   section: Collect
   advanced: true
 - defaultvalue: Unclassified
@@ -48,6 +60,7 @@ configuration:
   required: false
   type: 13
   section: Connect
+  defaultvalue: Unclassified
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   required: false
@@ -74,6 +87,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  hidden: true
 - display: Bot display name in Slack (Cortex XSOAR by default)
   name: bot_name
   required: false
@@ -621,3 +635,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
