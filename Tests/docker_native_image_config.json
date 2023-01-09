@@ -69,6 +69,27 @@
          "ignored_native_images":[
             "native:8.1"
          ]
+      },
+      {
+         "id":"DockerHardeningCheck",
+         "reason":"Failed unit-test: get_default_gateway (ip command does not exist).",
+         "ignored_native_images":[
+            "native:8.1"
+         ]
+      },
+      {
+         "id":"FetchIndicatorsFromFile",
+         "reason":"ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures: test_xls_file_to_indicator_list_1, test_xls_file_to_indicator_list_2, test_xls_file_to_indicator_list_3, test_xls_file_to_indicator_list_4.",
+         "ignored_native_images":[
+            "native:8.1"
+         ]
+      },
+      {
+         "id":"PaloAltoNetworks_Traps",
+         "reason":"Integration is Deprecated.",
+         "ignored_native_images":[
+            "native:8.1"
+         ]
       }
    ],
    "flags_versions_mapping": {
