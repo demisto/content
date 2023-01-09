@@ -9,8 +9,6 @@ from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
 from charset_normalizer import from_bytes
-import warnings
-warnings.simplefilter("default")
 
 ''' HELPER FUNCTIONS '''
 
