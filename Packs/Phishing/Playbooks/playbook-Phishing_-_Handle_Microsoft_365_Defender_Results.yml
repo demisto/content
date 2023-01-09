@@ -762,7 +762,7 @@ tasks:
       key:
         simple: NewIncidentsFields
       value:
-        simple: '${.=merge(val.FileAssociation, val.EmailFilesRetrieval);function merge(x, y){let res = []; for(let i=0; i<x.length; i++) {for(let j=0; j<y.length; j++){if(x[i].MessageID==y[j].InternetMessageId) {res.push({MessageID: x[i].MessageID, EntryID: x[i].EntryID, Subject: y[j].Subject});}}} return res;}}'
+        simple: '${.=merge(val.FileAssociation, val.EmailFilesRetrieval);function merge(x, y){let res = []; if (Array.isArray(y) != true && y.length != 0){res.push({MessageID: y.InternetMessageId, EntryID: x[0].EntryID, Subject: y.Subject}); return res;}; for(let i=0; i<x.length; i++) {for(let j=0; j<y.length; j++){if(x[i].MessageID==y[j].InternetMessageId) {res.push({MessageID: x[i].MessageID, EntryID: x[i].EntryID, Subject: y[j].Subject});}}} return res;}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
