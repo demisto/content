@@ -5,7 +5,6 @@ import urllib
 from typing import List, Dict, Tuple
 import pandas as pd
 import base64
-import requests
 import dill
 import copy
 import numpy as np
