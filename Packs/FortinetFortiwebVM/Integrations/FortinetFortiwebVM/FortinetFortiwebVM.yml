@@ -1667,7 +1667,7 @@ script:
       isArray: false
       name: name
       required: true
-    - description: Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration.
+    - description: Allows the use of the server policy JSON template. All of the arguments listed below will be overridden.
       isArray: false
       name: json_template_id
       required: false
