@@ -54,4 +54,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Search all mailboxes - Gmail with polling](../doc_files/Search_all_mailboxes_-_Gmail_with_polling.png)
+![Search all mailboxes - Gmail with polling](https://raw.githubusercontent.com/demisto/content/master/Packs/Gmail/doc_files/Search_all_mailboxes_-_Gmail_with_polling.png)
