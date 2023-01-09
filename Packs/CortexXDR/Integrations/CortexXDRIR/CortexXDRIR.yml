@@ -3046,7 +3046,7 @@ script:
     - defaultValue: '50'
       description: The page size.
       name: page_size
-    description: Retrieves contributing events for a specific alert.
+    description: Retrieves contributing events for a specific correlation alert.
     name: xdr-get-contributing-event
     outputs:
     - contextPath: PaloAltoNetworksXDR.ContributingEvent.alertID
