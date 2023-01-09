@@ -206,6 +206,7 @@ def test_analysis_sample_command(requests_mock, mock_client, url, args, outputs_
     result = analysis_sample_command(mock_client, args)
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
+    assert result.outputs['items']['network']['ip1']['ts'] == 'data_items_network_ip1_ts'
 
 
 def test_get_rate_limit_command(requests_mock, mock_client):
