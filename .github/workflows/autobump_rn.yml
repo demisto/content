@@ -1,4 +1,4 @@
-name: Contribution Form Filled label verification
+name: Autobump Release Notes Version
 on:
   pull_request:
     types: [opened, synchronize]
