@@ -11,7 +11,6 @@ import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CLIENT CLASS '''
 
 
@@ -366,18 +365,18 @@ def alerts_list_pagination(records_list: List, limit: int, page: Optional[int], 
         The wanted records.
     """
     if page and page_size:
-        num_rec_2_remove = (page_size * (page - 1))
+        offset = (page_size * (page - 1))
         results_list = []
-        while (num_rec_2_remove + page_size > 1000) and (len(records_list) == 1000):
-            records_list = records_list[num_rec_2_remove:]
+        while (offset + page_size > 1000) and (len(records_list) == 1000):
+            records_list = records_list[offset:]
             results_list.extend(records_list)
             page_size = page_size - len(records_list)
-            num_rec_2_remove = 0 if num_rec_2_remove <= 1000 else num_rec_2_remove - 1000
+            offset = 0 if offset <= 1000 else offset - 1000
             response = client.get_alerts_request(time_period, start_time, end_time, state, search, filter_arg,
                                                  domain_id, 'next')
             records_list = response.get('alertsList', [])
 
-        records_list = records_list[num_rec_2_remove:]
+        records_list = records_list[offset:]
         results_list.extend(records_list[:page_size])
         return results_list
     else:
@@ -612,11 +611,11 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
                         f' address arguments should be empty.')
 
 
-def h_r_get_domains(children: List[Dict], human_readable: List):
+def h_r_get_domains(children: List[Dict], contents: List):
     """ Creates the human readable for the command get_domains.
         Args:
             children: List[Dict] - A list of the children.
-            human_readable: List - The human readable object.
+            contents: List - The human readable object.
         Returns:
             The human readable contains the relevant values.
     """
@@ -629,9 +628,9 @@ def h_r_get_domains(children: List[Dict], human_readable: List):
             'ID': child.get('ID'),
             'Name': child.get('Name')
         }
-        human_readable.append(d)
+        contents.append(d)
         if child.get('childdomains', []):
-            h_r_get_domains(child.get('childdomains', []), human_readable)
+            h_r_get_domains(child.get('childdomains', []), contents)
 
 
 def update_source_destination_object(obj: List[Dict], rule_object_id: Optional[int], rule_object_type: Optional[str]) -> \
@@ -752,19 +751,18 @@ def list_domain_firewall_policy_command(client: Client, args: Dict) -> CommandRe
     Returns:
         A CommandResult object with the list of Firewall Policies defined in a particular domain.
     """
-    domain_id = int(args.get('domain_id', None))
+    domain_id = int(args.get('domain_id', 0))
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
-    if args.get('limit') and page:
-        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.list_domain_firewall_policy_request(domain_id)
-    result = sorted(response.get('FirewallPoliciesForDomainResponseList', []), key=lambda k: k['policyId'], reverse=True)
+    result = sorted(response.get('FirewallPoliciesForDomainResponseList', []), key=lambda k: k['policyId'],
+                    reverse=True)
     result = pagination(result, limit, page, page_size)
-    human_readable = []
+    contents = []
     for value in result:
         d = {'policyId': value.get('policyId'),
              'policyName': value.get('policyName'),
@@ -775,14 +773,13 @@ def list_domain_firewall_policy_command(client: Client, args: Dict) -> CommandRe
              'policyType': value.get('policyType'),
              'policyVersion': value.get('policyVersion'),
              'lastModUser': value.get('lastModUser')}
-        human_readable.append(d)
+        contents.append(d)
 
-    hr_title = 'Firewall Policies List'
     headers = ['policyId', 'policyName', 'domainId', 'visibleToChild', 'description', 'isEditable', 'policyType',
                'policyVersion', 'lastModUser']
     readable_output = tableToMarkdown(
-        name=hr_title,
-        t=human_readable,
+        name='Firewall Policies List',
+        t=contents,
         removeNull=True,
         headers=headers
     )
@@ -809,27 +806,31 @@ def get_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
     response = client.get_firewall_policy_request(policy_id)
     if not include_rule_objects:
         member_rule_list = response.get('MemberDetails', {}).get('MemberRuleList', [Dict])
+        updated_member_rule_list = []
         for member in member_rule_list:
-            del member['SourceAddressObjectList']
-            del member['DestinationAddressObjectList']
-            del member['SourceUserObjectList']
-            del member['ServiceObjectList']
-            del member['ApplicationObjectList']
-            del member['TimeObjectList']
-    human_readable = {'FirewallPolicyId': response.get('FirewallPolicyId'),
-                      'Name': response.get('Name'),
-                      'Description': response.get('Description'),
-                      'VisibleToChild': response.get('VisibleToChild'),
-                      'IsEditable': response.get('IsEditable'),
-                      'PolicyType': response.get('PolicyType'),
-                      'PolicyVersion': response.get('PolicyVersion'),
-                      'LastModifiedUser': response.get('LastModifiedUser'),
-                      'LastModifiedTime': response.get('LastModifiedTime')}
+            d = {
+                'Description': member.get('Description'),
+                'Direction': member.get('Direction'),
+                'Enabled': member.get('Enabled'),
+                'Response': member.get('Response'),
+                'IsLogging': member.get('IsLogging')
+            }
+            updated_member_rule_list.append(d)
+        response.get('MemberDetails', {})['MemberRuleList'] = updated_member_rule_list
+    contents = {'FirewallPolicyId': response.get('FirewallPolicyId'),
+                'Name': response.get('Name'),
+                'Description': response.get('Description'),
+                'VisibleToChild': response.get('VisibleToChild'),
+                'IsEditable': response.get('IsEditable'),
+                'PolicyType': response.get('PolicyType'),
+                'PolicyVersion': response.get('PolicyVersion'),
+                'LastModifiedUser': response.get('LastModifiedUser'),
+                'LastModifiedTime': response.get('LastModifiedTime')}
     headers = ['PolicyId', 'Name', 'Description', 'VisibleToChild', 'IsEditable', 'PolicyType', 'PolicyVersion',
                'LastModifiedUser', 'LastModifiedTime']
     readable_output = tableToMarkdown(
         name=f'Firewall Policy {policy_id}',
-        t=human_readable,
+        t=contents,
         removeNull=True,
         headers=headers
     )
@@ -995,8 +996,6 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
 
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
-    if args.get('limit') and page:
-        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     if rule_type == 'All':
         rule_type = 'hostipv4,hostipv6,ipv4addressrange,ipv6addressrange,networkipv4,networkipv6'
@@ -1005,7 +1004,7 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     response = client.list_domain_rule_objects_request(domain_id, rule_type)
     results = pagination(response.get('RuleObjDef', []), limit, page, page_size)
 
-    human_readable = []
+    contents = []
     for record in results:
         record['ruleobjType'] = reverse_rule_object_type_cases(record.get('ruleobjType', None))
         d = {
@@ -1015,10 +1014,10 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
             'VisibleToChild': record.get('visibleToChild'),
             'RuleType': record.get('ruleobjType')
         }
-        human_readable.append(d)
+        contents.append(d)
     headers = ['RuleId', 'Name', 'Description', 'VisibleToChild', 'RuleType']
     readable_output = tableToMarkdown(name='List of Rule Objects',
-                                      t=human_readable,
+                                      t=contents,
                                       removeNull=True,
                                       headers=headers)
 
@@ -1042,7 +1041,7 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     response = response.get('RuleObjDef', {})
     addresses = get_addresses_from_response(response)
     response['ruleobjType'] = reverse_rule_object_type_cases(response.get('ruleobjType'))
-    human_readable = {
+    contents = {
         'RuleId': response.get('ruleobjId'),
         'Name': response.get('name'),
         'Description': response.get('description'),
@@ -1052,7 +1051,7 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     }
     headers = ['RuleId', 'Name', 'Description', 'VisibleToChild', 'RuleType', 'Addresses']
     readable_output = tableToMarkdown(name=f'Rule Objects {rule_id}',
-                                      t=human_readable,
+                                      t=contents,
                                       removeNull=True,
                                       headers=headers)
     return CommandResults(readable_output=readable_output,
@@ -1299,8 +1298,6 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
 
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
-    if args.get('limit') and page:
-        raise Exception('Please provide either limit argument or page and page_size arguments.')
     if (start_time and not end_time) or (not start_time and end_time):
         raise Exception('If you provide one of the time parameters, you must provide the other as well.')
     if start_time and time_period != 'CUSTOM':
@@ -1343,7 +1340,7 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
         event_obj['device'] = alert.get('detection', {}).get('device')
         result_list.append(record)
     alerts_list = result_list
-    human_readable = []
+    contents = []
     for alert_info in alerts_list:
         d = {'ID': alert_info.get('ID'),
              'Name': alert_info.get('Name'),
@@ -1355,7 +1352,7 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
              'Attack Count': alert_info.get('EventResult'),
              'Attacker IP': alert_info.get('Attacker', {}).get('ipAddrs'),
              'Target IP': alert_info.get('Target', {}).get('ipAddrs')}
-        human_readable.append(d)
+        contents.append(d)
 
     headers = ['ID', 'Name', 'Event Time', 'Severity', 'State', 'Direction', 'Result', 'Attack Count', 'Attacker IP',
                'Target IP']
@@ -1365,7 +1362,7 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
         title = f'Alerts list. Showing {len(alerts_list)} of {total_alerts_count}'
     readable_output = tableToMarkdown(
         name=title,
-        t=human_readable,
+        t=contents,
         removeNull=True,
         headers=headers
     )
@@ -1417,7 +1414,7 @@ def get_alert_details_command(client: Client, args: Dict) -> CommandResults:
     del summary_obj['event']
     del summary_obj['attacker']
     del summary_obj['target']
-    human_readable = {
+    contents = {
         'ID': response.get('ID'),
         'Name': response.get('Name'),
         'Event Time': response.get('CreatedTime'),
@@ -1431,7 +1428,7 @@ def get_alert_details_command(client: Client, args: Dict) -> CommandResults:
     headers = ['ID', 'Name', 'Event Time', 'State', 'Direction', 'Result', 'Attack Count', 'Attacker IP', 'Target IP']
     readable_output = tableToMarkdown(
         name=f'Alert no.{alert_id}',
-        t=human_readable,
+        t=contents,
         removeNull=True,
         headers=headers
     )
@@ -1478,7 +1475,7 @@ def get_attacks_command(client: Client, args: Dict) -> List:
         }
         result_list.append(record)
     attacks_list = result_list
-    human_readable = []
+    contents = []
     for attack in attacks_list:
         d = {
             'ID': attack.get('ID'),
@@ -1487,11 +1484,11 @@ def get_attacks_command(client: Client, args: Dict) -> List:
             'Severity': attack.get('Severity'),
             'Category': attack.get('Category')
         }
-        human_readable.append(d)
+        contents.append(d)
     headers = ['ID', 'Name', 'Direction', 'Severity', 'Category']
     readable_outputs = tableToMarkdown(
         name=title,
-        t=human_readable,
+        t=contents,
         removeNull=True,
         headers=headers
     )
@@ -1524,12 +1521,10 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
-    if args.get('limit') and page:
-        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.get_domains_request(domain_id)
     results = response.get('DomainDescriptor', {})
-    human_readable = []
+    contents = []
     if domain_id is not None:
         title = f'Domain no.{domain_id}'
         results = {
@@ -1537,18 +1532,18 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
             'Name': results.get('name'),
             'childdomains': results.get('childdomains')
         }
-        human_readable = [{
+        contents = [{
             'ID': results.get('ID'),
             'Name': results.get('Name')
         }]
     else:
         title = 'List of Domains'
         children = [results]
-        h_r_get_domains(children, human_readable)
-    human_readable = pagination(human_readable, limit, page, page_size)
+        h_r_get_domains(children, contents)
+    contents = pagination(contents, limit, page, page_size)
     readable_outputs = tableToMarkdown(
         name=title,
-        t=human_readable,
+        t=contents,
         removeNull=True
     )
     return CommandResults(
@@ -1575,8 +1570,6 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
-    if args.get('limit') and page:
-        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.get_sensors_request(domain_id)
     sensors_list = pagination(response.get('SensorDescriptor', [Dict]), limit, page, page_size)
@@ -1605,7 +1598,7 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
         }
         result_list.append(record)
     sensors_list = result_list
-    human_readable = []
+    contents = []
     for sensor in sensors_list:
         d = {
             'ID': sensor.get('ID'),
@@ -1615,7 +1608,7 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
             'IPSPolicyID': sensor.get('IPSPolicyID'),
             'IP Address': sensor.get('IP Address')
         }
-        human_readable.append(d)
+        contents.append(d)
     headers = ['ID', 'Name', 'Description', 'DomainID', 'IPSPolicyID', 'IP Address']
     if domain_id:
         title = f'The Sensors of Domain no.{domain_id}'
@@ -1623,7 +1616,7 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
         title = 'Sensors List'
     readable_output = tableToMarkdown(
         name=title,
-        t=human_readable,
+        t=contents,
         removeNull=True,
         headers=headers
     )
@@ -1650,8 +1643,6 @@ def get_ips_policies_command(client: Client, args: Dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
-    if args.get('limit') and page:
-        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.get_ips_policies_request(domain_id)
     policies_list = pagination(response.get('PolicyDescriptorDetailsList', [Dict]), limit, page, page_size)
@@ -1666,7 +1657,7 @@ def get_ips_policies_command(client: Client, args: Dict) -> CommandResults:
         }
         result_list.append(record)
     policies_list = result_list
-    human_readable = []
+    contents = []
     for policy in policies_list:
         d = {
             'ID': policy.get('ID'),
@@ -1675,11 +1666,11 @@ def get_ips_policies_command(client: Client, args: Dict) -> CommandResults:
             'IsEditable': policy.get('IsEditable'),
             'VisibleToChildren': policy.get('VisibleToChildren')
         }
-        human_readable.append(d)
+        contents.append(d)
     headers = ['ID', 'Name', 'DomainID', 'IsEditable', 'VisibleToChildren']
     readable_output = tableToMarkdown(
         name=f'IPS Policies List of Domain no.{domain_id}',
-        t=human_readable,
+        t=contents,
         removeNull=True,
         headers=headers
     )
@@ -1719,7 +1710,7 @@ def get_ips_policy_details_command(client: Client, args: Dict) -> CommandResults
         'IsEditable': policy_details.get('IsEditable'),
         'IsLightWeightPolicy': policy_details.get('IsLightWeightPolicy')
     }
-    human_readable = {
+    contents = {
         'ID': policy_details.get('ID'),
         'Name': policy_details.get('Name'),
         'Description': policy_details.get('Description'),
@@ -1734,7 +1725,7 @@ def get_ips_policy_details_command(client: Client, args: Dict) -> CommandResults
                'Version', 'InboundRuleSet', 'OutboundRuleSet']
     readable_output = tableToMarkdown(
         name=f'IPS Policy no.{policy_id} Details',
-        t=human_readable,
+        t=contents,
         removeNull=True,
         headers=headers
     )
@@ -1800,20 +1791,18 @@ def list_pcap_file_command(client: Client, args: Dict) -> CommandResults:
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
         raise Exception('Please provide both page and page_size arguments.')
-    if args.get('limit') and page:
-        raise Exception('Please provide either limit argument or page and page_size arguments.')
 
     response = client.list_pcap_file_request(sensor_id)
     files_list = pagination(response.get('files', []), limit, page, page_size)
-    human_readable = []
+    contents = []
     for file_name in files_list:
         d = {
             'FileName': file_name
         }
-        human_readable.append(d)
+        contents.append(d)
     readable_output = tableToMarkdown(
         name='PCAP files List',
-        t=human_readable,
+        t=contents,
         removeNull=True
     )
     return CommandResults(

@@ -233,7 +233,7 @@ Gets the firewall policy details.
 
 ### nsm-create-firewall-policy
 ***
-Adds a new firewall policy and access rules. You have to provide at lease one of the source/destination objects. If you provide one of the source/destination fields, you must provide the other one as well.
+Adds a new firewall policy and access rules. You have to provide at lease one of the source/destination rule objects. If you provide the id or type of the source/destination rule object, you must provide the matching type or id the source/destination rule object as well.
 
 
 #### Base Command
@@ -288,7 +288,7 @@ Updates the firewall policy details. If the argument is_overwrite=true, the new 
 * If you want to delete a rule, enter is_overwrite=true and the relevant rule_object_id=-1. 
 * If is_overwrite=false and there is no value in one of the rules (source or destination), their value will be as before. 
 * If is_overwrite=true, at least one of the rules (source or destination) must be provided. 
-* If you provide one of the source/destination fields, you must provide the other one as well.
+* If you provide the id or type of the source/destination rule object, you must provide the matching type or id the source/destination rule object as well.
 
 
 #### Base Command
@@ -1384,8 +1384,8 @@ Gets the list of sensors available in the specified domain. If the domain is not
 #### Human Readable Output
 
 >### Sensors List
->| ID  |Name|Description|DomainID|IPSPolicyID|IP Address|
------|---|---|---|---|---|---|
+>|ID|Name|Description|DomainID|IPSPolicyID|IP Address|
+>|---|---|---|---|---|---|---|
 >| 1111 | VVVV1 | MCAFEE-NETWORK-SECURITY-PLATFORM | 0 | 0 | 1.1.1.1 |
 
 ### nsm-get-ips-policies
@@ -1641,8 +1641,8 @@ Gets all the IPS policies defined in the specific domain.
 #### Human Readable Output
 
 >### IPS Policy no.17 Details
->| ID  |Name|Description|CreatedTime|IsEditable|VisibleToChildren|Version|InboundRuleSet|OutboundRuleSet|
------|---|---|---|---|---|---|---|---|---|
+>|ID|Name|Description|CreatedTime|IsEditable|VisibleToChildren|Version|InboundRuleSet|OutboundRuleSet|
+>|---|---|---|---|---|---|---|---|---|---|
 >| 17 | IpsPolicy | To test the IPS policy | To test the IPS policy | false | true | 1 | To test the IPS policy | Null |
 
 ### nsm-update-alerts

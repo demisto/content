@@ -196,7 +196,7 @@ script:
       description: Time mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP".
       type: Unknown
   - name: nsm-create-firewall-policy
-    description: Adds a new firewall policy and access rules. You have to provide at lease one of the source/destination objects. If you provide one of the source/destination fields, you must provide the other one as well.
+    description: Adds a new firewall policy and access rules. You have to provide at lease one of the source/destination rule objects. If you provide the id or type of the source/destination rule object, you must provide the matching type or id the source/destination rule object as well.
     arguments:
     - name: domain
       required: true
@@ -308,7 +308,7 @@ script:
       description: The ID of the newly created firewall policy.
       type: Number
   - name: nsm-update-firewall-policy
-    description: Updates the firewall policy details. If the argument is_overwrite=true, the new values of the provided addresses will replace the existing values, otherwise the addresses will be added to them. If you want to delete a rule, enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=false and there is no value in one of the rules (source or destination), their value will be as before. If is_overwrite=true, at least one of the rules (source or destination) must be provided. If you provide one of the source/destination fields, you must provide the other one as well.
+    description: Updates the firewall policy details. If the argument is_overwrite=true, the new values of the provided addresses will replace the existing values, otherwise the addresses will be added to them. If you want to delete a rule, enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=false and there is no value in one of the rules (source or destination), their value will be as before. If is_overwrite=true, at least one of the rules (source or destination) must be provided. If you provide the id or type of the source/destination rule object, you must provide the matching type or id the source/destination rule object as well.
     arguments:
     - name: policy_id
       required: true
