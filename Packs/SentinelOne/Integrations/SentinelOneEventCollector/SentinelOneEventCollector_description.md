@@ -1,3 +1,4 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+1. To get your API token, log in to your SentinelOne console.
+2. Click your user name in the upper-right corner, and select *My User*.
+3. Click the *Generate* link, located near the *API Token* field.
+4. Save your API token in a safe place because you will not be able to access it anymore.
