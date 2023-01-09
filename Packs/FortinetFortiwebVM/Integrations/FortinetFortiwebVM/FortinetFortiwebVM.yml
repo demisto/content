@@ -1782,7 +1782,7 @@ script:
       name: comments
       required: false
     - auto: PREDEFINED
-      description: Enable to allow FortiWeb to automatically retrieve CA certificates from Let's Encrypt. Supports API version 2 only.
+      description: Certificate type. Supports API version 2 only.
       isArray: false
       name: certificate_type
       defaultValue: Local
@@ -2010,7 +2010,7 @@ script:
       name: comments
       required: false
     - auto: PREDEFINED
-      description: Enable to allow FortiWeb to automatically retrieve CA certificates from Let's Encrypt. Supports API version 2 only.
+      description: Certificate type. Supports API version 2 only.
       isArray: false
       name: certificate_type
       defaultValue: Local
