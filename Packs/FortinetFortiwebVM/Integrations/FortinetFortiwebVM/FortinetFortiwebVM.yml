@@ -1494,7 +1494,7 @@ script:
       description: Geo IP group block period. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.GeoIpGroup.ignore_x_forwarded_for
-      description: Geo IP group Ignore X-Forwarded-For flag. Supports API version 2 only.
+      description: Enable Ignore X-Forwarded-For so that the IP addresses can be scanned at the TCP layer instead the HTTP layer. Supports API version 2 only.
       type: String
   - deprecated: false
     description: Get operation status.
