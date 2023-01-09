@@ -1,7 +1,7 @@
 commonfields:
-  id: QRadar v3
+  id: QRadar v3 test
   version: -1
-name: QRadar v3
+name: QRadar v3 test
 display: IBM QRadar v3
 category: Analytics & SIEM
 description: IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.

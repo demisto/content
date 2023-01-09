@@ -3581,7 +3581,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "QRadar v3",
+            "integrations": "QRadar v3 test",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
             "timeout" : 600
