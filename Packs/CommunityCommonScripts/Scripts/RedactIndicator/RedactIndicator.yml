@@ -16,10 +16,10 @@ comment: Redactindicator can help you to defang/redact any kind of indicator (IP
   all domains will be example[.]com. Optional you can define a "searchkey" which does
   not to be case sensitive, which will be replaced as <REDACTED>
 commonfields:
-  id: redactindicator
+  id: RedactIndicator
   version: -1
 enabled: true
-name: redactindicator
+name: RedactIndicator
 script: '-'
 subtype: python3
 system: false
