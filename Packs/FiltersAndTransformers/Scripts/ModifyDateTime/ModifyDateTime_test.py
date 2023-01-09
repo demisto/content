@@ -2,7 +2,7 @@ import pytest
 import dateparser
 from ModifyDateTime import apply_variation, main
 import demistomock as demisto
-
+from CommonServerPython import entryTypes
 
 @pytest.mark.parametrize('original_time, variation, expected', [
     # sanity
@@ -32,16 +32,18 @@ def test_apply_variation(original_time, variation, expected):
 @pytest.mark.parametrize('args', [
     {'value': '2020/01/01', 'variation': 'in 1 day'},
 ])
-def test_date_to_epoch_main(mocker, args):
+def test_modify_date_time_main(mocker, args):
     """
     Given:
-        value and formatter
+        Value and variation.
     When:
-        date_to_epoch
+        Running ModifyDateTime script.
     Then:
-        demisto.results called
+        demisto.results called.
     """
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'results')
     main()
+    results = demisto.results.call_args[0]
     assert demisto.results.call_count == 1
+    assert results[0] == '2020-01-02T00:00:00'
