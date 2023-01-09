@@ -41,4 +41,3 @@ def test_load_and_parse_yaml_command():
     from ParseYAML import load_and_parse_yaml_command
     result = load_and_parse_yaml_command({"string": "a: 1"})
     assert result.outputs == {"a": 1}
-
