@@ -463,6 +463,10 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     all_emails: Set[str] = set()
     output_capture = io.StringIO()
     with open(file_path, 'rb') as pdf_file:
+        # The following context manager was added so we could redirect error messages to the server logs since
+        # PyPDF2 would sometimes return warnings on some files (warnings and not errors because strict=False), and these warnings
+        # would be flushed to stderr, and therefore they would be returned as an error message to the user instead of being
+        # flushed to the server logs.
         with contextlib.redirect_stderr(output_capture):
             pdf = PyPDF2.PdfReader(pdf_file, strict=False)
             pages_len = len(pdf.pages)
