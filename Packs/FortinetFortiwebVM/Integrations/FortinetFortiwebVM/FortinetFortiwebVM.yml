@@ -2328,7 +2328,7 @@ script:
       name: profile
       required: false
     - auto: PREDEFINED
-      description: Supports API version 2 only.
+      description: HTTP content routing member status. Supports API version 2 only.
       isArray: false
       name: status
       predefined:
