@@ -157,7 +157,7 @@ script:
     - name: service_desk_type
       description: The type of service desk id (e.g. XSOAR)
     - name: assignee_id
-      description: The auth0 ID of a user
+      description: The auth0 ID of a user, in 'auth0|12345' format
     outputs:
     - contextPath: TaegisXDR.InvestigationUpdate
       description: ID of the updated Taegis investigation
@@ -250,7 +250,7 @@ script:
   - name: taegis-fetch-users
     arguments:
     - name: id
-      description: The auth0 ID, beginning with 'auth0|'
+      description: The auth0 ID, in 'auth0|12345' format
     - name: email
       description: The email address to search for
     - name: status

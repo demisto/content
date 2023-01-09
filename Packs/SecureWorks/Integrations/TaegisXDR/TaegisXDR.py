@@ -833,6 +833,9 @@ def fetch_users_command(client: Client, env: str, args=None):
     }
     fields = "user_id email family_name given_name status"
     if args.get("id"):
+        if not args["id"].startswith("auth0"):
+            raise ValueError("id MUST be in 'auth0|12345' format")
+
         query = """
         query ($ids: [String!]) {
             tdrusersByIDs (userIDs: $ids) {
@@ -930,7 +933,7 @@ def update_investigation_command(client: Client, env: str, args=None):
 
     if args.get("assignee_id"):
         if not args["assignee_id"].startswith("auth0") and args["assignee_id"] != "@secureworks":
-            raise ValueError("assignee_id MUST either be an 'auth0' user ID or '@secureworks'")
+            raise ValueError("assignee_id MUST be in 'auth0|12345' format or '@secureworks'")
 
     query = """
     mutation ($investigation_id: ID!, $investigation: UpdateInvestigationInput!) {

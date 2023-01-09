@@ -376,7 +376,7 @@ def test_update_investigation(requests_mock):
 
     # Invalid Assignee ID Format
     args["assignee_id"] = "BadAssigneeIDFormat"
-    invalid_fields = r"assignee_id MUST either be an 'auth0' user ID or '@secureworks'"
+    invalid_fields = r"assignee_id MUST be in 'auth0|12345' format or '@secureworks'"
     with pytest.raises(ValueError, match=invalid_fields):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
@@ -465,3 +465,9 @@ def test_fetch_users(requests_mock):
     response = fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_USER
     assert len(response.outputs) == len([TAEGIS_USER])
+
+    # Invalid id Format
+    args["id"] = "BadAssigneeIDFormat"
+    invalid_fields = r"id MUST be in 'auth0|12345' format"
+    with pytest.raises(ValueError, match=invalid_fields):
+        assert fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
