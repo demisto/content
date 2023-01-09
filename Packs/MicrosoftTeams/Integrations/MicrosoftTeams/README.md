@@ -330,15 +330,13 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 4. In the search box, type the name of the team to which to add the bot.
 5. Click **Set up** and configure the new app.
 
-## Known Limitations
-- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the Client Credentials flow due to a limitation in Microsoft's permissions system. In addition, the [microsoft-teams-chat-create](https://learn.microsoft.com/en-us/graph/api/chat-post?view=graph-rest-1.0&tabs=http) and [microsoft-teams-message-send-to-chat](https://learn.microsoft.com/en-us/graph/api/chat-post-messages?view=graph-rest-1.0&tabs=http) commands are only supported when using the Authorization Code flow.
-  To work around these limitations, you can configure two instances of the integration, each with a different Authentication Type.
-- Posting a message or adaptive card to a private/shared channel is currently not supported in the *send-notification* command. Thus, also the *mirror_investigation* command does not support private/shared channels. For more information, see the [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
-
 
 ## Known Limitations
 ---
-In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
+- In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
+- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the Client Credentials flow due to a limitation in Microsoft's permissions system. In addition, the [microsoft-teams-chat-create](https://learn.microsoft.com/en-us/graph/api/chat-post?view=graph-rest-1.0&tabs=http) and [microsoft-teams-message-send-to-chat](https://learn.microsoft.com/en-us/graph/api/chat-post-messages?view=graph-rest-1.0&tabs=http) commands are only supported when using the Authorization Code flow.
+  To work around these limitations, you can configure two instances of the integration, each with a different Authentication Type.
+- Posting a message or adaptive card to a private/shared channel is currently not supported in the *send-notification* command. Thus, also the *mirror_investigation* command does not support private/shared channels. For more information, see the [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
