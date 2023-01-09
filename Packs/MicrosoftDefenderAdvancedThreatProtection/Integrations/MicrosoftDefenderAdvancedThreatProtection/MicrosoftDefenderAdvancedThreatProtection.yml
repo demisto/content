@@ -122,8 +122,6 @@ configuration:
   - Low
   - Medium
   - High
-  required: false
-  type: 16
   section: Collect
   advanced: true
 - defaultvalue: '50'

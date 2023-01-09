@@ -60,7 +60,6 @@ configuration:
   required: false
   type: 13
   section: Connect
-  defaultvalue: Unclassified
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   required: false
@@ -87,7 +86,6 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-  hidden: true
 - display: Bot display name in Slack (Cortex XSOAR by default)
   name: bot_name
   required: false
