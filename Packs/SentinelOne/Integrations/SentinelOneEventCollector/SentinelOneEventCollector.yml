@@ -3,6 +3,10 @@ commonfields:
   id: HelloWorldEventCollector
   version: -1
 configuration:
+- display: Fetch events
+  name: isFetch
+  required: false
+  type: 8
 - display: Server URL (e.g., https://usea1.sentinelone.net)
   name: url
   required: true
@@ -21,18 +25,15 @@ configuration:
   - '2.0'
   - '2.1'
   type: 15
-- display: Fetch events
-  name: isFetch
-  required: false
-  type: 8
 - defaultvalue: ACTIVE
   display: Fetch alerts with status (ACTIVE, CLOSED)
   name: alert_status
   options:
-  - ACTIVE
-  - CLOSED
+  - ACTIVITIES
+  - THREATS
+  - ALERTS
   required: false
-  type: 15
+  type: 16
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -43,7 +44,7 @@ configuration:
   name: fetch_threat_rank
   required: false
   type: 0
-- defaultvalue: '10'
+- defaultvalue: '1000'
   display: 'Fetch limit: The maximum number of incidents to fetch'
   name: fetch_limit
   required: false

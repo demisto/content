@@ -140,8 +140,8 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
+    api_key = params.get('credentials', {}).get('password')
+    base_url = urljoin(params.get('url'), 'web/api/v2.1')
     verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve events
