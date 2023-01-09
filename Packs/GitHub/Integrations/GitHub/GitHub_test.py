@@ -411,9 +411,9 @@ def test_assignee(mocker, args, response_content, expected_result):
     Given:
       - Case 1: one valid user to be assigned to PR
       - Case 2: two valid users to be assigned to a PR
-      - Case 3: one not valid user to be assigned to a PR
+      - Case 3: invalid user to be assigned to a PR
     When:
-      - all the args are given
+      - Calling the 'github_add_assignee_command' funciton
     Then:
       - Ensure the correct behaviour
       - Case 1: Should return Success for one provided user
