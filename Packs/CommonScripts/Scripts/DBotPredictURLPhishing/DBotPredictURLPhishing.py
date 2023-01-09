@@ -11,6 +11,7 @@ import copy
 import numpy as np
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
+import requests.packages.urllib3
 
 requests.packages.urllib3.disable_warnings()
 
