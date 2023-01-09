@@ -5210,6 +5210,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "CiscoAMP",
+            "playbookID": "CiscoAMP",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "XSOAR EDL Checker",
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
