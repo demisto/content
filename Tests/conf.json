@@ -21,7 +21,8 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "IndicatorFormatterFilterTest"
+            "playbookID": "IndicatorFormatterFilterTest",
+            "timeout": 1200
         },
         {
             "integrations": "FeedURLhaus",
@@ -606,6 +607,7 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
+            "timeout": 600,
             "instance_names": "ms_graph_mail_dev"
         },
         {
@@ -3582,7 +3584,8 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout" : 600
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
