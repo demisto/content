@@ -924,7 +924,7 @@ def quarantine_file_command(client: Client, args: dict):
     if is_machine_connected is True:
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, comment)
-        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+        if dict_safe_get(action_status, ['Remediation status']) in ['SUCCESS','IN_PROGRESS']:
             success_response = f'''Quarantine file remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
@@ -948,7 +948,7 @@ def unquarantine_file_command(client: Client, args: dict):
     if is_machine_connected is True:
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, comment)
-        if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
+        if dict_safe_get(action_status, ['Remediation status']) in ['SUCCESS','IN_PROGRESS']:
             success_response = f'''Unquarantine file remediation action status is: {dict_safe_get(
                 action_status, ['Remediation status'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             return CommandResults(readable_output=success_response)
