@@ -16,6 +16,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "relationship": "Relationship"
 }
 INDICATOR_TYPE_TO_SCORE = {
@@ -23,7 +24,8 @@ INDICATOR_TYPE_TO_SCORE = {
     "Attack Pattern": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
     "Course of Action": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
     "Malware": ThreatIntel.ObjectsScore.MALWARE,
-    "Tool": ThreatIntel.ObjectsScore.TOOL
+    "Tool": ThreatIntel.ObjectsScore.TOOL,
+    "Campaign": ThreatIntel.ObjectsScore.CAMPAIGN
 }
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
@@ -51,8 +53,8 @@ FILTER_OBJS = {
     "Group": {"name": "intrusion-set", "filter": Filter("type", "=", "intrusion-set")},
     "Malware": {"name": "malware", "filter": Filter("type", "=", "malware")},
     "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
-    "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
+    "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
@@ -103,6 +105,9 @@ class Client:
         }
 
         indicator_obj['fields']['tags'].extend(self.tags)
+        tlp = indicator_obj['fields']['tlp']
+        if tlp != '':
+            indicator_obj['fields']['trafficlightprotocol'] = tlp
 
         if self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
@@ -243,7 +248,8 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         url = external_reference.get('url', '')
         description = external_reference.get('description')
         source_name = external_reference.get('source_name')
-        publications.append({'link': url, 'title': description, 'source': source_name})
+        time_stamp = extract_timestamp_from_description(description)
+        publications.append({'link': url, 'title': description, 'source': source_name, 'timestamp': time_stamp})
 
     mitre_id = [external.get('external_id') for external in indicator_json.get('external_references', [])
                 if external.get('source_name', '') == 'mitre-attack']
@@ -253,13 +259,16 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     if indicator_type in ['Tool', 'STIX Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
+    tlp = get_TLP(indicator_json)
+
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
         'firstseenbysource': created,
         'modified': modified,
         'publications': publications,
         'mitreid': mitre_id,
-        'tags': tags
+        'tags': tags,
+        'tlp': tlp
     }
 
     mapping_by_type = {
@@ -305,21 +314,31 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         },
         "Campaign": {
             'description': indicator_json.get('description'),
-            'aliases': indicator_json.get('aliases'),
-            'ltp': get_LTP(indicator_json)
+            'aliases': indicator_json.get('aliases')
         }
     }
     generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
 
 
-def get_LTP(indicator_json: dict) -> list[str]:
-    object_marking_definition_list = indicator_json.get("object_marking_refs", '')
-    ltp: list[str] = []
+def extract_timestamp_from_description(description: str) -> str:
+    if description is None:
+        return ''
+    if 'Citation' in description:
+        return ''
+    match = re.search(r"\((.+)\)", description)
+    timestamp = match.group(1) if match else ''
+    return timestamp
+
+
+def get_TLP(indicator_json: dict) -> str:
+    object_marking_definition_list = indicator_json.get('object_marking_refs', '')
+    tlp_color: str = ''
     for object_marking_definition in object_marking_definition_list:
         if MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
-            ltp.append(f'{MARKING_DEFINITION_TO_TLP.get(object_marking_definition)}')
-    return ltp
+            tlp_color = MARKING_DEFINITION_TO_TLP.get(object_marking_definition, '')
+            break
+    return tlp_color
 
 
 def create_relationship_list(mitre_relationships_list, id_to_name):

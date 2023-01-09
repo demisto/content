@@ -219,3 +219,10 @@ def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj
     from FeedMitreAttackv2 import filter_attack_pattern_object_by_attack_id
     output = filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj)
     assert output == expected_result
+
+
+def test_extract_timestamp_from_description():
+    from FeedMitreAttackv2 import extract_timestamp_from_description
+    description = "Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021."
+    output = extract_timestamp_from_description(description)
+    assert output == '2016, February 23'
