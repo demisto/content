@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Zoom
+  id: Zoom Dev
   version: -1
 configuration:
   - display: Server URL (e.g. 'https://api.zoom.us/v2/')
@@ -36,8 +36,8 @@ configuration:
     type: 8
     required: false
 description: Use the Zoom integration manage your Zoom users and meetings
-display: Zoom
-name: Zoom
+display: Zoom Dev
+name: Zoom Dev
 script:
   commands:
     - arguments:
@@ -249,6 +249,13 @@ script:
         - description: Meeting id to get the recording
           name: meeting_id
           required: true
+        - description: Whether to delete the recording from the cloud after downloading.
+          name: delete_after
+          auto: PREDEFINED
+          defaultValue: "true"
+          predefined:
+            - "false"
+            - "true"
       description: Get meeting record and save as file in the warroom
       name: zoom-fetch-recording
       outputs:
