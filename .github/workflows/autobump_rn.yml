@@ -1,0 +1,10 @@
+name: Contribution Form Filled label verification
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches:
+      - master
+
+permissions:
+  pull-requests: write
