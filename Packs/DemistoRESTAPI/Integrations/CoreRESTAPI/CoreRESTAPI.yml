@@ -17,6 +17,11 @@ configuration:
   required: false
   hidden:
     - xsoar
+- display: Base marketplace url
+  name: marketplace_url
+  defaultvalue: https://storage.googleapis.com/marketplace-dist/content/packs/
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
