@@ -402,7 +402,7 @@ class URLCheck(object):
 
         elif char in self.brackets:
             # char is a type of bracket or quotation mark
-            if char in self.bracket_pairs.keys():
+            if char in self.bracket_pairs:
                 # If the char is an opening bracket set `inside_brackets` flag to True
                 self.inside_brackets = True
                 self.opening_bracket = char
