@@ -35,7 +35,7 @@ filter cat in ("Connector Status")
     xdm.source.agent.version = Version,
     xdm.target.resource_before.name = Connector,
     xdm.target.cloud.provider = ZEN,
-    xdm.source.ipv4 = _final_reporting_device_ip,
+    xdm.source.ipv4 = src,
     xdm.target.resource_before.parent_id = Customer,
     xdm.session_context_id = SessionID,
     xdm.source.location.country = CountryCode,
