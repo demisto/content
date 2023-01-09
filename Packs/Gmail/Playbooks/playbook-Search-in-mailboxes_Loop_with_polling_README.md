@@ -62,4 +62,4 @@ gmail-search-all-mailboxes
 
 ## Playbook Image
 ---
-![Search in mailboxes Gmail (Loop) with polling](../doc_files/Search_in_mailboxes_Gmail_(Loop)_with_polling.png)
+![Search in mailboxes Gmail (Loop) with polling](../doc_files/Search_in_mailboxes_Gmail_Loop_with_polling.png)
