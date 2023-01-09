@@ -112,7 +112,6 @@ script:
 dockerimage: demisto/crypto:1.0.0.36225
 isfetch: false
 isfetchevents: true
-runonce: false
 longRunning: false
 longRunningPort: false
 runonce: false
