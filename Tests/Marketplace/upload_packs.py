@@ -948,6 +948,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 for current_pack in pack_and_its_dependencies:
                     if current_pack.hidden:
                         continue
+                    logging.debug(f"Starting to collect zip of pack {current_pack.name}")
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
                     if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
                         # the zip does not exist yet, zip the current pack
