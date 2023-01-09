@@ -1,6 +1,6 @@
 {
     "name": "Dig (Deprecated)",
-    "description": "Run Dig automation to get 'A' and 'PTR' records.",
+    "description": "Deprecated. Dig script moved to CommonScripts pack.",
     "support": "community",
     "currentVersion": "1.1.1",
     "author": "Anil Agrawal",
