@@ -5,13 +5,13 @@ import secrets
 import string
 from typing import Any, Dict, Tuple
 
-import requests
+import urllib3
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
