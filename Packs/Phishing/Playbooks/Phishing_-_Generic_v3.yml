@@ -3008,8 +3008,28 @@ tasks:
         simple: ListenerMailbox
       value:
         complex:
-          root: incident
-          accessor: emailto
+          root: .
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              else:
+                value:
+                  simple: incident.emailto
+                iscontext: true
+              equals: { }
+              lhs:
+                value:
+                  simple: inputs.ListenerMailbox
+                iscontext: true
+              options: { }
+              rhs: { }
+              then:
+                value:
+                  simple: inputs.ListenerMailbox
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3214,6 +3234,13 @@ inputs:
     simple: "False"
   required: false
   description: When "True", the sub-playbook "Phishing - Handle Microsoft 365 Defender Results" will open new phishing incidents for each email which contain one of the malicious indicators. Default is "False".
+  playbookInputQuery:
+- key: ListenerMailbox
+  value: {}
+  required: false
+  description: |-
+    The mailbox which is being used to fetch phishing incidents. This mailbox would be excluded in the "Phishing - Indicators Hunting" playbook.
+    In case the value of this input is empty, the value of the "Email To" incident field will be automatically used as the listener mailbox.
   playbookInputQuery:
 outputs: []
 tests:
