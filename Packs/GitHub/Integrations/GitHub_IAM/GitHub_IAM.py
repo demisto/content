@@ -321,7 +321,12 @@ def main():
     # checks for '/' at the end url, if it is not available add it
     if base_url[-1] != '/':
         base_url += '/'
-    token = params.get('token')
+
+    token = params.get('creds_token', {}).get('password') or params.get('token')
+
+    if token is None:
+        raise ValueError('Token must be provided.')
+
     org = params.get('org')
 
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
