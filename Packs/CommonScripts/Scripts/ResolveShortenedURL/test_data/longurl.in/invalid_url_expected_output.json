@@ -1,0 +1,10 @@
+{
+  "OriginalURL": "https://invalid.url",
+  "ResolvedURL": "https://invalid.url",
+  "ServiceName": "longurl.in",
+  "RedirectCount": 0,
+  "RedirectHistory": [
+    "https://invalid.url"
+  ],
+  "EncounteredError": true
+}
