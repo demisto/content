@@ -6,6 +6,5 @@
     "alerts_filter": {
         "filter": {}
     },
-    "fromVersion": "6.10.0",
-    "toVersion": "6.11.9"
+    "fromVersion": "6.10.0"
 }
