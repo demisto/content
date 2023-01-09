@@ -1591,6 +1591,7 @@ class Pack(object):
         Returns:
             bool: whether the operation succeeded.
             bool: whether running build has not updated pack release notes.
+            list: pack versions to keep in the changelog
         """
         task_status = False
         not_updated_build = False
@@ -1598,6 +1599,7 @@ class Pack(object):
 
         modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
         id_set = id_set if id_set else {}
+        pack_versions_to_keep: List[str] = []
 
         try:
             version_to_prs = self.get_version_to_pr_numbers(release_notes_dir)
@@ -1628,7 +1630,7 @@ class Pack(object):
                                       f"pack_metadata.json: {self._current_version} and latest release notes "
                                       f"version: {latest_release_notes}.")
                         task_status = False
-                        return task_status, not_updated_build
+                        return task_status, not_updated_build, pack_versions_to_keep
                     else:
                         prs_for_version = version_to_prs[latest_release_notes]
                         logging.info(f"found prs for version {latest_release_notes} : {prs_for_version}")
@@ -1684,7 +1686,6 @@ class Pack(object):
                         logging.warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
-                        return task_status, not_updated_build
 
                     else:
                         # allow changing the initial changelog version
@@ -1709,7 +1710,7 @@ class Pack(object):
                 logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
                 task_status = True
                 not_updated_build = True
-                return task_status, not_updated_build
+                return task_status, not_updated_build, pack_versions_to_keep
 
             else:
                 # if there is no changelog file for the pack, this is a new pack, and we start it's changelog at it's
@@ -1735,6 +1736,10 @@ class Pack(object):
             # Update change log entries with BC flag.
             self.add_bc_entries_if_needed(release_notes_dir, changelog)
 
+            # Remove old entries from change log
+            pack_versions_to_keep = remove_old_versions_from_changelog(changelog)
+
+            logging.debug(f'Versions to keep for pack: {self._pack_name} = {pack_versions_to_keep}')
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
                 json.dump(changelog, pack_changelog, indent=4)
@@ -1745,7 +1750,7 @@ class Pack(object):
             logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
                           f"Additional info: {e}")
         finally:
-            return task_status, not_updated_build
+            return task_status, not_updated_build, pack_versions_to_keep
 
     def filter_changelog_entries(self, changelog_entry: dict, version: str, marketplace: str, id_set: dict):
         """
@@ -1768,7 +1773,6 @@ class Pack(object):
             (dict) The filtered changelog entry.
             (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
-
         logging.debug(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
                       f"{self._pack_name}")
 
@@ -4329,3 +4333,53 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
 
     logging.debug(f"Could not find the entity with display name {display_name} in id_set.")
     return False
+
+
+def remove_old_versions_from_changelog(changelog: dict):
+    """
+    Removes old pack versions from changelog in order to reduce index.zip size.
+    We are keeping the maximum number of versions between the following options:
+    1.  Versions were released last year.
+    2.  Last minor version and one version before it.
+    3.  Last five versions.
+    Edits the changelog entries in place.
+
+    Args:
+        changelog (dict): The changelog of some pack.
+    Returns:
+        (list) last pack versions
+    """
+    versions_to_keep: List[str] = []
+    if not changelog:
+        return versions_to_keep
+
+    last_same_minor_versions = []
+    last_year_versions = []
+    last_five_versions = list(changelog.keys())[-5:]
+
+    year_ago_datetime_obj = datetime.utcnow() - timedelta(days=365)
+    last_version = Version(list(changelog.keys())[-1])
+    save_last_minor_versions = not (last_version.minor == 0 and last_version.major == 1)
+
+    prev_version = None
+    for version, info in changelog.items():
+        # get versions that were released in last year
+        if version_release_date := info.get(Changelog.RELEASED):
+            version_released_datetime_obj = datetime.strptime(version_release_date, Metadata.DATE_FORMAT)
+            if version_released_datetime_obj > year_ago_datetime_obj:
+                last_year_versions.append(version)
+
+        # get versions with same minor version
+        if save_last_minor_versions and Version(version).minor == last_version.minor \
+                and Version(version).major == last_version.major:
+            last_same_minor_versions.append(version)
+            if prev_version and prev_version not in last_same_minor_versions:
+                last_same_minor_versions.append(prev_version)
+
+        prev_version = version
+
+    versions_to_keep = max([last_five_versions, last_year_versions, last_same_minor_versions], key=len)
+
+    [changelog.pop(version) for version in list(changelog.keys()) if version not in versions_to_keep]
+
+    return versions_to_keep
