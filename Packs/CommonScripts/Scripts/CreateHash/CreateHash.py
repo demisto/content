@@ -7,11 +7,14 @@ from CommonServerPython import *  # noqa: F401
 
 
 def create_hash(text, hashtype):
-    """Create a sha256 hash from a given input
+    """Create a sha256 hash from a given input and return it as a context output
 
     Args:
         text (str): input to hash
         hashtype (str): hash type
+
+    Returns:
+        Dict[str,str]: Dictionary representing the command results context
     """
     if hashtype == "sha512":
         h = hashlib.sha512()
@@ -32,16 +35,17 @@ def create_hash(text, hashtype):
     context = {
         "CreateHash": str(h.hexdigest())
     }
-    command_results = CommandResults(outputs=context)
 
-    return_results(command_results)
+    return context
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
     text = args.get('text')
     hashtype = args.get('type')
-    create_hash(text, hashtype)
+
+    context = create_hash(text, hashtype)
+    return_results(CommandResults(outputs=context))
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
