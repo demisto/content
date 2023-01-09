@@ -1355,6 +1355,20 @@ class Client(BaseClient):
         ]:
             raise ValueError(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
 
+    def validate_update_ip_list_group(self, args: dict[str, Any]):
+        """IP list group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+        if isinstance(self, ClientV1):
+            raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
+        self.validate_ip_list_group(args)
+
+
     def validate_ip_list_member(self, args: dict[str, Any]):
         """IP list member args validator.
 
@@ -5482,7 +5496,7 @@ def ip_list_group_update_command(
     """
     if not isinstance(client, ClientV2):
         raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
-    client.validate_ip_list_group(args)
+    client.validate_update_ip_list_group(args)
     group_name = args["name"]
     response = client.ip_list_group_update_request(
         group_name=group_name,
