@@ -1,6 +1,6 @@
 {
     "name": "Hey (deprecated)",
-    "description": "Deprecated. Use the script 'Hey' from 'Developer Tools' pack instead",
+    "description": "Deprecated. Use the script Hey from Developer Tools pack instead",
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
