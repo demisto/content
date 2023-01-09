@@ -1,9 +1,9 @@
 {
-    "name": "Create EDL Instance (Deprecated)",
-    "description": "Deprecated. please use Community Common Scripts instead.",
+    "name": "Community Common Scripts",
+    "description": "A pack that contains community scripts",
     "support": "community",
-    "currentVersion": "1.0.2",
-    "author": "Nicholas Ericksen",
+    "currentVersion": "1.0.0",
+    "author": "",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
@@ -11,11 +11,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
-    "githubUser": [],
+    "keywords": ["scripts", "community", "contributors", "automation"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
     ],
-    "hidden": true
+    "githubUser": []
 }
