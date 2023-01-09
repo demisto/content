@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: FireEye ETP
 display: FireEye ETP
-category: Email Gateway
+category: Network Security
 description: 'FireEye Email Threat Prevention (ETP Cloud) is a cloud-based platform that protects against advanced email attacks.'
 configuration:
 - display: 'Server URL. Valid values: https://etp.us.fireeye.com, https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com '
@@ -281,8 +281,8 @@ script:
     description: Detailed information from any particular alert. Alerts more than 90 days old are not available.
   isfetch: true
   runonce: false
-  subtype: python2
-  dockerimage: demisto/python:2.7.18.27799
+  subtype: python3
+  dockerimage: demisto/python3:3.10.8.39276
 tests:
 - No Test
 

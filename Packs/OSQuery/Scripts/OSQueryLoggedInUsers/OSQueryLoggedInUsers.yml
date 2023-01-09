@@ -1,0 +1,26 @@
+commonfields:
+  id: OSQueryLoggedInUsers
+  version: -1
+name: OSQueryLoggedInUsers
+script: ''
+type: python
+subtype: python2
+tags:
+- OSQuery
+deprecated: true
+comment: "Deprecated. Use OSQueryBasicQuery with query='select liu.*, p.name, p.cmdline, p.cwd, p.root from logged_in_users liu, processes p where liu.pid = p.pid;' instead."
+system: true
+args:
+- name: system
+  required: true
+  default: true
+  description: The System to remote execute on, can be a list of systems
+scripttarget: 0
+dependson:
+  must:
+  - OSQueryBasicQuery
+timeout: 0s
+fromversion: 6.0.0
+dockerimage: demisto/python:2.7.18.24398
+tests:
+- No tests (auto formatted)

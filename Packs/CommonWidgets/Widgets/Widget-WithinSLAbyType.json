@@ -1,0 +1,31 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "rawType"
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "-category:job and (detectionsla.slaStatus:within or containmentsla.slaStatus:within or triagesla.slaStatus:within or remediationsla.slaStatus:within)",
+    "modified": "2022-09-15T14:14:49.186820805Z",
+    "name": "Within SLA by Type",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "574f6536-d268-4c06-89c0-e81c7c7239cd",
+    "widgetType": "pie",
+    "fromVersion": "6.5.0",
+    "description": ""
+}

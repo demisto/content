@@ -1,4 +1,5 @@
 Whether value is within a date range.
+
 ## Script Data
 ---
 
@@ -19,16 +20,10 @@ Whether value is within a date range.
 
 ## Outputs
 ---
-There are no outputs for this script.
 
-
-## Script Example
-```!BetweenDates value=2020-04-04T15:13:29 begin_date=2020-04-01T12:00:00 end_date=2020-04-14T12:00:00```
-
-## Context Example
-```
-{}
-```
-
-## Human Readable Output
-True
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| BetweenDates.result | Whether the input hour is between the given hours. | boolean |
+| BetweenDates.value | The value to check. | string |
+| BetweenDates.begin_date | Lower date range. | string |
+| BetweenDates.end_date | Upper date range. | string |

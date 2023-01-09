@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -5,7 +6,7 @@ from CommonServerUserPython import *
 from typing import Dict, List, Any
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
 
@@ -55,6 +56,7 @@ class MsGraphClient:
         filters = " and ".join(filters)
         cmd_url = 'security/alerts'
         params = {'$filter': filters}
+        demisto.debug(f'Fetching MS Graph Security incidents with params: {params}')
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
         return response
 

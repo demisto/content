@@ -1,0 +1,23 @@
+{
+	"count": 2,
+	"results": [
+		{
+			"id": 1,
+			"adapter_id": 35,
+			"adapter_name": "Active Directory",
+			"name": "Insecure AD",
+			"status": false,
+			"description": "",
+			"enabled": true
+		},
+		{
+			"id": 2,
+			"adapter_id": 15,
+			"adapter_name": "Falcon Crowdstrike",
+			"name": "cs",
+			"status": false,
+			"description": "",
+			"enabled": true
+		}
+	]
+}

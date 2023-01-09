@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 400,
+        "message": "generic::invalid_argument: invalid wildcard version ID: invalid rule_id: invalid rule_id ru_f04b9ef9-bd49, must be either a user rule_id or an uppercase rule_id",
+        "status": "INVALID_ARGUMENT"
+    }
+}

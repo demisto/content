@@ -10,9 +10,11 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": ["Alerts", "Security Analytics", "TIM","Threat Intelligence"],
-    "useCases": ["Threat Intelligence Management"],
-    "keywords": ["Alerts", "Security", "Security Analytics", "TIM", "Threat Intelligence","Cryptosim"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Alerts", "Security", "Security Analytics", "TIM", "Threat Intelligence"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

@@ -1,3 +1,5 @@
+deprecated: true
+description: Deprecated. Use Check Point Threat Emulation (SandBlast) instead.
 id: Sandblast_malicious_test
 version: -1
 name: Sandblast_malicious_test

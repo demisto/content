@@ -17,6 +17,9 @@ switch (command) {
     case 'hpsm-create-incident':
         result = createIncident();
         break;
+    case 'hpsm-create-request':
+        result = createRequest();
+        break;
     case 'hpsm-update-incident':
         result = updateIncident();
         break;
@@ -123,6 +126,49 @@ function updateIncident() {
         EntryContext: entryContext
     };
 } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
+
+function createRequest() {
+    var resourceName = args.resourceName;
+    var newRequest = {
+        [resourceName]: {
+            Purpose: [
+                args.purpose
+            ],
+            Title: args.title,
+            CallbackContactName: args.callbackcontactname,
+            ContactName: args.contactname,
+            cartItems: [{ 'ItemName': args.title , 'Quantity': '1', 'RequestedFor': args.callbackcontactname }]
+        }
+    };
+    //throw JSON.stringify(newRequest)
+    var res = doPost('/'+ resourceName, newRequest);
+    var parsedRes = JSON.parse(res);
+    if (parsedRes.ReturnCode !== 0) {
+        throw 'Failed to create request. Error Response: ' + res.Messages;
+    }
+    req = parsedRes['Messages'][2];
+    request = req.split('"');
+    var srHPSM = {};
+    var lstHPSM = [];
+    srHPSM['ID'] = request[1];
+    srHPSM['CallbackContactName'] = parsedRes[resourceName]['CallbackContactName'];
+    srHPSM['Title'] = parsedRes[resourceName]['Title'];
+    srHPSM['Purpose'] = parsedRes[resourceName]['Purpose'][0];
+    srHPSM['ContactName'] = parsedRes[resourceName]['ContactName'];
+    lstHPSM.push(srHPSM);
+    var entryContext = {
+        'HPSM.ServiceRequest': lstHPSM,
+    };
+    return {
+        Type: entryTypes.note,
+        ContentsFormat: formats.json,
+        Contents: parsedRes,
+        ReadableContentsFormat: formats.markdown,
+        HumanReadable: tableToMarkdown('Created Service Request ', lstHPSM),
+        EntryContext: entryContext
+    };
+}
+
 function createIncident() {
     var newIncident = {
         Incident: {
@@ -134,7 +180,6 @@ function createIncident() {
             Title: args.title,
         }
     };
-
     if (args.customFields !== undefined){
         fields = JSON.parse(args.customFields);
         for (var field in fields) {
@@ -552,6 +597,7 @@ function doRequest(method, queryPath, body) {
             Method: method,
             Headers: {
                 Authorization: ['Basic ' + token],
+                Connecion: ['Closed'],
                 'Content-Type': ['application/json']
             },
             Body: JSON.stringify(body)
@@ -593,6 +639,7 @@ function doGet(queryPath, queryParams) {
             Method: 'GET',
             Headers: {
                 Authorization: ['Basic ' + token],
+                Connecion: ['Closed'],
                 'Content-Type': ['application/json']
             }
         },

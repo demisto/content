@@ -1,0 +1,30 @@
+name: pre-commit
+on: pull_request
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Changed Files
+      id: changed-files
+      uses: tj-actions/changed-files@v34.4.0
+    - name: quote changed Files
+      id: quote-changed-files
+      run:
+        # We need to surround quotes in the changed files
+        # Example: "ab acc arr b" -> "'ab' 'acc' 'arr' b'"
+        echo files=$(echo ${{ steps.changed-files.outputs.all_changed_files }} | sed -e "s/ /' '/g" -e "s/^/'/" -e "s/$/'/") >> $GITHUB_OUTPUT
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: run pre-commit
+      uses: pre-commit/action@v3.0.0
+      with: 
+        extra_args: '--files ${{ steps.quote-changed-files.outputs.files }}'

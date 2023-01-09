@@ -1,4 +1,5 @@
-Whether value is within an hour range.
+Checks whether the given value is within the specified time (hour) range.
+
 ## Script Data
 ---
 
@@ -13,22 +14,16 @@ Whether value is within an hour range.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | Value to check |
-| begin_time | Format is HH:MM:SS |
-| end_time | Format is HH:MM:SS |
+| value | The value to check. |
+| begin_time | The start time range in the format HH:MM:SS. |
+| end_time | The end time range in the format HH:MM:SS. |
 
 ## Outputs
 ---
-There are no outputs for this script.
 
-
-## Script Example
-```!BetweenHours value=12:00:00 begin_time=02:00:00 end_time=21:00:00```
-
-## Context Example
-```
-{}
-```
-
-## Human Readable Output
-True
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| BetweenHours.result | Whether the input hour is between the given hours. | boolean |
+| BetweenHours.value | The value to check. | string |
+| BetweenHours.begin_time | The start time range in the format HH:MM:SS. | string |
+| BetweenHours.end_time | The end time range in the format HH:MM:SS. | string |

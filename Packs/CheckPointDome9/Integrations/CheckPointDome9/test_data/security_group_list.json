@@ -1,0 +1,18 @@
+[
+    {
+        "cloudAccountId": "cloudAccountId",
+        "cloudAccountName": null,
+        "externalId": "sg-externalId",
+        "regionId": "regionId",
+        "securityGroupName": "securityGroupName",
+        "vpcId": "vpc-vpcId"
+    },
+    {
+        "cloudAccountId": "cloudAccountId",
+        "cloudAccountName": null,
+        "externalId": "sg-externalId",
+        "regionId": "regionId",
+        "securityGroupName": "securityGroupName",
+        "vpcId": "vpc-vpcId"
+    }
+]

@@ -2692,7 +2692,7 @@ script:
     - contextPath: PassiveTotal.Summary.ThirdPartyObservation.nextPage
       description: Link to the next page.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: false
   longRunning: false

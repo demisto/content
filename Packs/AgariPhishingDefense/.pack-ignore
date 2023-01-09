@@ -16,3 +16,6 @@ ignore=BA101
 
 [file:classifier-Agari_Phishing_Defense.json]
 ignore=BA101
+
+[known_words]
+Agari

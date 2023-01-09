@@ -30,7 +30,15 @@
   "IAM - Sync User",
   "IAM - Rehire User",
   "Mandiant Automated Defense Incident",
-  "OpsGenie Incident"
+  "OpsGenie Incident",
+  "ThreatConnect",
+  "Vectra Account",
+  "AWS Guard Duty EC2 Finding",
+  "AWS Guard Duty IAM Finding",
+  "AWS Guard Duty Kubernetes Finding",
+  "AWS Guard Duty Malware Protection Finding",
+  "AWS Guard Duty S3 Finding",
+  "Exabeam Incident"
  ],
  "associatedToAll": false,
  "unmapped": false,

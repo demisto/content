@@ -599,6 +599,8 @@ Get a list of active sessions.
 | device_ip | IP address of the client. | Optional | 
 | device_mac_address | MAC address of the client device. | Optional | 
 | visitor_phone | The visitor’s phone number. | Optional | 
+| limit | Maximum number of items to return in the range of 1 – 1000. Default is 25. | Optional | 
+
 
 
 #### Context Output

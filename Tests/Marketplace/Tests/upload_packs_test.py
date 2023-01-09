@@ -8,8 +8,10 @@ import pytest
 from unittest.mock import patch
 from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
 
+from Tests.Marketplace.marketplace_services import Pack
 
 # disable-secrets-detection-start
+
 
 class TestModifiedPacks:
     @pytest.mark.parametrize("packs_names_input, expected_result", [
@@ -17,19 +19,9 @@ class TestModifiedPacks:
         ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
     ])
     def test_get_packs_names_specific(self, packs_names_input, expected_result):
-        modified_packs = get_packs_names(packs_names_input, 'fake_commit_hash')
+        modified_packs = get_packs_names(packs_names_input)
 
         assert modified_packs == expected_result
-
-    @pytest.mark.parametrize("packs_names_input", [None, ""])
-    def test_get_packs_names_empty(self, mocker, packs_names_input):
-        modified_packs_return_value = ("Packs/Pack1/pack_metadata.json\n"
-                                       "Packs/Pack1/Integrations/Integration1/CHANGELOG.md\n"
-                                       "Packs/Pack2/pack_metadata.json\n")
-        mocker.patch('Tests.Marketplace.upload_packs.run_command', return_value=modified_packs_return_value)
-        modified_packs = get_packs_names("modified", 'fake_commit_hash')
-
-        assert modified_packs == {"Pack1", "Pack2"}
 
 
 # disable-secrets-detection-end
@@ -425,7 +417,8 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
+                                                   content_packs=[])
 
         assert skipped_cleanup
 
@@ -454,7 +447,8 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
+                                                   content_packs=[])
 
         assert skipped_cleanup
 
@@ -500,12 +494,16 @@ class TestCleanPacks:
 
         private_packs = [{'id': private_pack, 'price': 120}]
 
-        skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
-                                                   storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
+        skipped_cleanup = clean_non_existing_packs(
+            index_folder_path=index_folder_path,
+            private_packs=private_packs,
+            storage_bucket=dummy_storage_bucket,
+            storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
+            content_packs=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")]
+        )
 
         assert not skipped_cleanup
-        shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
+        shutil.rmtree.assert_called_with(os.path.join(index_folder_path, invalid_pack))
 
 
 class TestUpdatedPrivatePacks:
@@ -564,7 +562,7 @@ class TestUpdatedPrivatePacks:
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
         assert len(updated_private_packs) == 1
         assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
-               updated_private_packs[0] != "second_non_updated_pack"
+            updated_private_packs[0] != "second_non_updated_pack"
 
     def test_is_private_packs_updated(self, mocker):
         """

@@ -39,9 +39,9 @@ class MockResponse:
 
 @pytest.mark.parametrize('params, expected_params', [
     ({'limit': '1'}, {'limit': 1}),
-    ({'oldest': '1643806800'}, {'limit': 200, 'oldest': 1643806800}),
-    ({'latest': '02/02/2022 15:00:00'}, {'limit': 200, 'latest': 1643814000}),
-    ({'action': 'user_login'}, {'limit': 200, 'action': 'user_login'}),
+    ({'oldest': '1643806800'}, {'limit': 1000, 'oldest': 1643806800}),
+    ({'latest': '02/02/2022 15:00:00'}, {'limit': 1000, 'latest': 1643814000}),
+    ({'action': 'user_login'}, {'limit': 1000, 'action': 'user_login'}),
 ])
 def test_slack_events_params_good(params, expected_params):
     """
@@ -57,7 +57,6 @@ def test_slack_events_params_good(params, expected_params):
 
 @pytest.mark.parametrize('params', [
     {'limit': 'hello'},
-    {'limit': '1001'},
     {'oldest': 'hello'},
     {'latest': 'hello'}
 ])
@@ -102,6 +101,27 @@ def test_fetch_events(mocker):
     assert len(events) == 2
     assert events[0].get('id') != '1'
     assert new_last_run['last_id'] == '3'
+
+
+def test_fetch_events_with_two_iterations(mocker):
+    """
+    Given:
+        - fetch-events command execution.
+    When:
+        - Limit parameter value is 300.
+        - A single /logs API call retrieves 200 events.
+    Then:
+        - Make sure the logs API is called twice.
+    """
+    from SlackEventCollector import fetch_events_command
+
+    last_run = {}
+
+    mock_response = MockResponse([{'id': '1', 'date_create': 1521214343}] * 200)
+    mock_response.data['response_metadata'] = {'next_cursor': 'mock_cursor'}
+    mock_request = mocker.patch.object(Session, 'request', return_value=mock_response)
+    fetch_events_command(Client(base_url=''), params={'limit': '300'}, last_run=last_run)
+    assert mock_request.call_count == 2
 
 
 def test_get_events(mocker):

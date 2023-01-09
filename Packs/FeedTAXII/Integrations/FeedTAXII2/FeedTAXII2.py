@@ -88,7 +88,9 @@ def fetch_indicators_command(
             )
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
+            last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
+                if client.last_fetched_indicator__modified \
+                else added_after
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
@@ -102,6 +104,7 @@ def fetch_indicators_command(
             if client.last_fetched_indicator__modified
             else added_after
         )
+    demisto.debug(f'{indicators=}')
     return indicators, last_run_ctx
 
 
@@ -228,6 +231,8 @@ def main():
     key = params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root')
+
+    demisto.info(f'{objects_to_fetch=}')
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")

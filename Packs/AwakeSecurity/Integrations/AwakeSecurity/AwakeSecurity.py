@@ -5,9 +5,10 @@ from CommonServerPython import *
 import base64
 import re
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 handle_proxy()
@@ -138,11 +139,8 @@ def lookup(lookup_type, lookup_key):
     request["lookback_minutes"] = int(args["lookback_minutes"])
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
-            str(response.status_code),
-            response.content,
-            str(response.headers))
-        )
+        return_error(f'Request Failed.\nStatus code: {str(response.status_code)}'
+                     f' with body {str(response.content)} with headers {response.headers}')
 
     return response.json()
 
@@ -290,11 +288,8 @@ def query(lookup_type):
     path = "/query/" + lookup_type
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
-            str(response.status_code),
-            response.content,
-            str(response.headers))
-        )
+        return_error(f'Request Failed.\nStatus code: {str(response.status_code)}'
+                     f' with body {str(response.content)} with headers {response.headers}')
     contents = response.json()
     return request["queryExpression"], contents
 
@@ -379,11 +374,8 @@ def pcapDownload():
     path = "/pcap/download"
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
-            str(response.status_code),
-            response.content,
-            str(response.headers))
-        )
+        return_error(f"Request Failed.\nStatus code: {str(response.status_code)} "
+                     f"with body {str(response.content)} with headers {response.headers}")
     b64 = response.json()["pcap"]
     bytes = base64.b64decode(b64)
     demisto.results(fileResult("download.pcap", bytes))
@@ -478,4 +470,4 @@ except Exception as e:
         raise
     LOG(e)
     LOG.print_log()
-    return_error(e.message)
+    return_error(e)

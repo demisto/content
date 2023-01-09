@@ -15,9 +15,10 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
+* core-iocs-disable
+* core-allowlist-files
 * closeInvestigation
 * core-add-exclusion
-* core-allowlist-files
 
 ## Playbook Inputs
 ---
@@ -29,6 +30,8 @@ This playbook does not use any scripts.
 | username | The username from the alert. | alert.username | Optional |
 | alertName | The alert name. | alert.name | Optional |
 | FileSHA256 | The file SHA256 from the alert. | alert.initiatorsha256 | Optional |
+| IOC | The IOC to disable from IOC alerts. |  | Optional |
+| ShouldHandleFPautomatically | Should we automatically handle false positive alerts? Specify true/false. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -36,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle False Positive Alerts](https://raw.githubusercontent.com/demisto/content/83139fce8bb3f76917669e780df144115da69c90/Packs/CommonPlaybooks/doc_files/Handle_False_Positive_Alerts.png)
+![Handle False Positive Alerts](../doc_files/Handle_False_Positive_Alerts.png)

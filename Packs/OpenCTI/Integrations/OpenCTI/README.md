@@ -1,4 +1,4 @@
-Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API version.
+Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
 ## Configure OpenCTI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

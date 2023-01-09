@@ -2,6 +2,8 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
+The integration will use the UPN parameter (if given) as the target mailbox if it's different from the Email Address, otherwise, the Email Address is used.
+
 ## EWS O365 Playbook
 
 *   Get Original Email - EWS
@@ -43,6 +45,7 @@ The EWS integration can be used for the following use cases.
     *   **Name of the folder from which to fetch incidents**: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
     *   **Public Folder**
     *   **Access Type**: Run the commands using `Delegate` or `Impersonation` access types.
+    *   **Mark fetched emails as read**: Mark emails as read after fetching them.
     *   **Use system proxy settings**
     *   **Trust any certificate (not secure)**  
     *   **Timeout (in seconds) for HTTP requests to Exchange Server**
@@ -96,6 +99,8 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 17.  Expand a distribution list: ews-expand-group
 18.  Mark items as read: ews-mark-items-as-read
 19.  Send an email: send-mail
+20.  Retrieve item as eml: ews-get-items-as-eml 
+21.  Reply to an email: reply-mail
 
 ### 1\. Get the attachments of an item
 
@@ -261,6 +266,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
 * * *
 
 Returns a list of searchable mailboxes.
+
+When using UPN parameter, the command ews-get-searchable-mailboxes would work after assigning RBAC roles requested in the management role header as explained [https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019].
 
 ##### Required Permissions
 
@@ -1419,6 +1426,46 @@ Retrieves items by item ID and uploads its content as an EML file.
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The extension of the file. | 
 
+
+### 21\. reply-mail
+***
+##### Required Permissions
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+
+#### Base Command
+
+`reply-mail`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| inReplyTo | ID of the item to reply to. | Required | 
+| to | A comma-separated list of email addresses for the 'to' field. | Required | 
+| cc | A comma-separated list of email addresses for the 'cc' field. | Optional | 
+| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional | 
+| subject | Subject for the email to be sent. | Optional | 
+| body | The contents (body) of the email to send. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| attachIDs | A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!reply-mail item_id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGFeAAA= body=hello subject=hi to="avishai@demistodev.onmicrosoft.com"```
+
+#### Human Readable Output
+
+>### Sent email
+>|attachments|from|subject|to|
+>|---|---|---|---|
+>|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |
 
 ## Additional Information
 

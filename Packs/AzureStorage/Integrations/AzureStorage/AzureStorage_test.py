@@ -16,7 +16,7 @@ resource_group_name = 'resource_group_name'
 @pytest.fixture()
 def client(mocker):
     mocker.patch('AzureStorage.MicrosoftClient.get_access_token', return_value='token')
-    return ASClient(app_id, subscription_id, resource_group_name, False, False)
+    return ASClient(app_id, subscription_id, resource_group_name, False, False, 'Device Code')
 
 
 def util_load_json(path):

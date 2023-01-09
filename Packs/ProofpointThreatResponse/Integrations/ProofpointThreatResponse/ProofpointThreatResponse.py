@@ -6,9 +6,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import dateparser
 
-''' IMPORTS '''
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -238,21 +238,27 @@ def get_emails_context(event):
     """
     emails_context = []
     for email in event.get('emails', []):
+        email_obj = {
+            'sender': email.get('sender', {}).get('email'),
+            'recipient': email.get('recipient', {}).get('email'),
+            'subject': email.get('subject'),
+            'message_id': email.get('messageId'),
+            'body': email.get('body'),
+            'body_type': email.get('bodyType'),
+            'headers': email.get('headers'),
+            'urls': email.get('urls'),
+            'sender_vap': email.get('sender', {}).get('vap'),
+            'recipient_vap': email.get('recipient', {}).get('vap'),
+            'attachments': email.get('attachments'),
+        }
+        message_delivery_time = email.get('messageDeliveryTime', {})
+        if message_delivery_time and isinstance(message_delivery_time, dict):
+            email_obj['message_delivery_time'] = message_delivery_time.get('millis')
+        elif message_delivery_time and isinstance(message_delivery_time, str):
+            email_obj['message_delivery_time'] = message_delivery_time
         emails_context.append(
-            assign_params(**{
-                'sender': email.get('sender', {}).get('email'),
-                'recipient': email.get('recipient', {}).get('email'),
-                'subject': email.get('subject'),
-                'message_id': email.get('messageId'),
-                'message_delivery_time': email.get('messageDeliveryTime', {}).get('millis'),
-                'body': email.get('body'),
-                'body_type': email.get('bodyType'),
-                'headers': email.get('headers'),
-                'urls': email.get('urls'),
-                'sender_vap': email.get('sender', {}).get('vap'),
-                'recipient_vap': email.get('recipient', {}).get('vap'),
-                'attachments': email.get('attachments'),
-            }))
+            assign_params(**email_obj)
+        )
 
     return emails_context
 
@@ -799,7 +805,14 @@ def search_quarantine():
     mid = demisto.args().get('message_id')
     recipient = demisto.args().get('recipient')
 
-    incidents_list = get_incidents_request({})
+    request_params = {
+        'created_after': datetime.strftime(arg_time - get_time_delta('1 hour'), TIME_FORMAT),  # for safety
+        'fetch_delta': '6 hours',
+        'fetch_limit': '50'
+    }
+
+    incidents_list = get_incidents_batch_by_time_request(request_params)
+
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
 
