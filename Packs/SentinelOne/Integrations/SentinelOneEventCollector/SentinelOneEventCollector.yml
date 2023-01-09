@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: HelloWorldEventCollector
+  id: SentinelOneEventCollector
   version: -1
 configuration:
 - display: Fetch events
@@ -25,23 +25,18 @@ configuration:
   - '2.0'
   - '2.1'
   type: 15
-- defaultvalue: ACTIVITIES, THREATS, ALERTS
+- defaultvalue: ACTIVITIES,THREATS,ALERTS
   display: Fetch events of type (ACTIVITIES, THREATS, ALERTS)
   name: event_type
   options:
-  - ACTIVITIES
-  - THREATS
-  - ALERTS
+  - 'ACTIVITIES'
+  - 'THREATS'
+  - 'ALERTS'
   required: false
   type: 16
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
-  type: 0
-- defaultvalue: '5'
-  display: Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0.
-  name: fetch_threat_rank
   required: false
   type: 0
 - defaultvalue: '1000'
@@ -50,16 +45,6 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- display: Site IDs
-  additionalinfo: Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites.
-  name: fetch_site_ids
-  type: 0
-  required: false
-- display: Block Site IDs
-  name: block_site_ids
-  required: false
-  type: 0
-  additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -68,14 +53,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 description: This is the Hello World event collector integration for XSIAM.
-display: HelloWorld Event Collector
-name: HelloWorldEventCollector
+display: SentinelOne Event Collector
+name: SentinelOneEventCollector
 script:
   commands:
   - arguments:
@@ -87,19 +67,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: true
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: false
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-      required: false
-      secret: false
     - default: false
-      description: Maximum results to return.
+      description: Maximum results to return value should be between 1 - 1000.
       isArray: false
       name: limit
       required: false
@@ -107,7 +76,7 @@ script:
     deprecated: false
     description: Gets events from Hello World.
     execution: false
-    name: hello-world-get-events
+    name: sentinelone-xdr-get-events
   dockerimage: demisto/python3:3.10.5.31928
   isfetchevents: true
   runonce: false

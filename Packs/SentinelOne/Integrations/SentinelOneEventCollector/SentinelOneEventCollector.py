@@ -100,7 +100,7 @@ class Client(BaseClient):
         return result.get('data', [])
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+def test_module(client: Client, event_type) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -109,22 +109,24 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
 
     Args:
         client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time (int): The first fetch time as configured in the integration params.
+        event_type (List): Integration parameters.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
+    first_fetch_time = arg_to_datetime('3 days')
+
     try:
-        fetch_events(
-            client=client,
-            last_run={},
-            event_type=params.get('event_type', ['ACTIVITIES', 'THREATS', 'ALERTS']),
-        )
+        if 'ACTIVITIES' in event_type:
+            client.get_activities(first_fetch_time)
+        if 'THREATS' in event_type:
+            client.get_threats(first_fetch_time)
+        if 'ALERTS' in event_type:
+            client.get_alerts(first_fetch_time)
 
     except Exception as e:
-        if 'Forbidden' in str(e):
+        if 'UNAUTHORIZED' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
@@ -187,7 +189,7 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
     api_key = params.get('credentials', {}).get('password')
-    base_url = urljoin(params.get('url'), 'web/api/v2.1')
+    base_url = urljoin(params.get('url'), f'web/api/v{params.get("api_version", "2.1")}')
     verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve events
@@ -196,10 +198,10 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    fetch_limit = arg_to_number(params.get('fetch_limit', 1000))
+    fetch_limit = arg_to_number(args.get('limit') or params.get('fetch_limit', 1000))
     assert 0 < fetch_limit < 1001  # Verify fetch_limit is within range 1 - 1000.
     proxy = params.get('proxy', False)
-    event_type = params.get('event_type', ['ACTIVITIES', 'THREATS', 'ALERTS'])
+    event_type = [event_type.strip() for event_type in params.get('event_type', ['ACTIVITIES', 'THREATS', 'ALERTS'])]
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -216,7 +218,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_time)
+            result = test_module(client, event_type)
             return_results(result)
 
         elif command in (f'{VENDOR}-{PRODUCT}-get-events', 'fetch-events'):
