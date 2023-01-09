@@ -339,10 +339,10 @@ class Client(BaseClient):
         Returns:
             str: The type of the indicator.
         """
-        if re.match(urlRegex, indicator):
-            return FeedIndicatorType.URL
-        elif ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
+        if ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
             return ip_type
+        elif re.match(urlRegex, indicator):
+            return FeedIndicatorType.URL
         elif re.match(sha256Regex, indicator):
             return FeedIndicatorType.File
         else:

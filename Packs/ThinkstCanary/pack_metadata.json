@@ -8,11 +8,9 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Deception"
+        "Network Security"
     ],
-    "tags": [
-        "Data Source"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

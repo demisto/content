@@ -61,6 +61,7 @@ Queries an index.
 | query_dsl | Will overwrite the ‘query' arguments. | Optional | 
 | timestamp_range_start | The starting time of the time range. | Optional | 
 | timestamp_range_end | The ending time of the time range. | Optional | 
+| timestamp_field | Timestamp field name. Default is @timestamp. | Optional | 
 
 
 #### Context Output
@@ -101,6 +102,7 @@ Searches an index.
 | size | The number of documents displayed per page. Can be an integer between "1" and "10,000". Default is 100. | Optional | 
 | sort-field | The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server. Possible values are: . | Optional | 
 | sort-order | The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined. Possible values are: asc, desc. Default is asc. | Optional | 
+| timestamp_field | Timestamp field name. Default is @timestamp. | Optional | 
 
 
 #### Context Output

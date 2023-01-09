@@ -21,21 +21,41 @@ RETURN_ERROR_TARGET = 'Active_Directory_Query.return_error'
 
 
 def test_bad_host_no_ssl(mocker):
+    """
+        Given:
+            - Demisto.params() with an invalid server (host), and insecure connection type (None).
+        When:
+            - Running the 'main()' function.
+        Then:
+            - Verify that the expected error message was raised.
+    """
+    params = BASE_TEST_PARAMS
+    params['server_ip'] = '127.0.0.'
     mocker.patch.object(demisto, 'params',
                         return_value=BASE_TEST_PARAMS)
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     # validate our mock of params
-    assert demisto.params().get('server_ip') == '127.0.0.1'
+    assert demisto.params().get('server_ip') == '127.0.0.'
     main()
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
     assert len(err_msg) < 100
     assert 'Failed to access' in err_msg
+    assert 'invalid server address' in err_msg
 
 
 @pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_bad_ssl(mocker):
+    """
+        Given:
+            - Demisto.params() with an ssl connection type (SSL) and a server (host) that will cause
+              an SSL socket error.
+        When:
+            - Running the 'main()' function.
+        Then:
+            - Verify that the expected error message was raised.
+    """
     params = BASE_TEST_PARAMS.copy()
     params['server_ip'] = '185.199.108.153'  # disable-secrets-detection
     params['secure_connection'] = 'SSL'
@@ -50,9 +70,8 @@ def test_bad_ssl(mocker):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert len(err_msg) < 100
     assert 'Failed to access' in err_msg
-    assert 'SSL error' in err_msg
+    assert 'Try using: "Trust any certificate" option.' in err_msg
 
 
 def ssl_bad_socket_server(port):
@@ -105,8 +124,9 @@ def test_faulty_server(mocker):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert len(err_msg) < 100
+    assert len(err_msg) < 125
     assert 'Failed to access' in err_msg
+    assert 'Try using: "Trust any certificate" option.' not in err_msg
 
 
 def test_ssl_custom_cert(mocker, request):
@@ -137,7 +157,6 @@ def test_ssl_custom_cert(mocker, request):
     err_msg = return_error_mock.call_args[0][0]
     assert len(err_msg) < 100
     assert 'Failed to access' in err_msg
-    assert 'SSL error' not in err_msg
 
 
 def test_endpoint_entry():
@@ -659,3 +678,71 @@ def test_password_not_expire_missing_username(mocker):
     with pytest.raises(Exception) as err:
         set_password_not_expire(default_base_dn)
     assert err.value.args[0] == 'Missing argument - You must specify a username (sAMAccountName).'
+
+
+@pytest.mark.parametrize('connection_type, unsecure, expected_auto_bind_value', [
+    ('Start TLS', True, 'TLS_BEFORE_BIND'),
+    ('Start TLS', False, 'TLS_BEFORE_BIND'),
+    ('TLS', False, 'TLS_BEFORE_BIND'),
+    ('TLS', True, 'NO_TLS'),
+    ('SSL', True, 'NO_TLS'),
+    ('SSL', False, 'NO_TLS'),
+    ('None', True, 'NO_TLS'),
+    ('None', False, 'NO_TLS')
+])
+def test_get_auto_bind_value(connection_type, unsecure, expected_auto_bind_value):
+    """
+        Given:
+            - A connection type:
+                1. Start TLS
+                2. TLS
+                3. SSL
+                4. None
+        When:
+            - Running the 'get_auto_bind_value()' function.
+        Then:
+            - Verify that the returned auto_bind value is as expected:
+                1. 'TLS_BEFORE_BIND' - which means that connection should upgrade it's secure level to TLS before
+                                       the bind itself (STARTTLS command is executed).
+
+                2. 'TLS_BEFORE_BIND' - for unsecure=False and 'NO_TLS' for unsecure=True
+
+                3. 'NO_TLS' - The connection is secured from the beginning,
+                              thus STARTTLS command shouldn't be executed.
+
+                4. 'NO_TLS' - Connection is insecure (cleartext) and shouldn't be upgraded to TLS.
+    """
+    from Active_Directory_Query import get_auto_bind_value
+    auto_bind_value = get_auto_bind_value(connection_type, unsecure)
+    assert auto_bind_value == expected_auto_bind_value
+
+
+@pytest.mark.parametrize('ssl_version, expected_ssl_version', [
+    ('TLS', 2), ('TLSv1', 3), ('TLSv1_1', 4), ('TLSv1_2', 5), ('TLS_CLIENT', 16), (None, None), ('None', None)
+])
+def test_get_ssl_version(ssl_version, expected_ssl_version):
+    """
+        Given:
+            - An ssl protocol version:
+                1. TLS
+                2. TLSv1
+                3. TLSv1_1
+                4. TLSv1_2
+                5. TLS_CLIENT
+                6. None
+                7. 'None'
+        When:
+            - Running the 'get_ssl_version()' function.
+        Then:
+            - Verify that the returned ssl version value is as expected:
+                1. TLS - 2
+                2. TLSv1 - 3
+                3. TLSv1_1 - 4
+                4. TLSv1_2 - 5
+                5. TLS_CLIENT - 16
+                6. None - None
+                7. 'None' - None
+    """
+    from Active_Directory_Query import get_ssl_version
+    ssl_version_value = get_ssl_version(ssl_version)
+    assert ssl_version_value == expected_ssl_version

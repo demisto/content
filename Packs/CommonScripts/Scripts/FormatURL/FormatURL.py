@@ -394,6 +394,11 @@ class URLCheck(object):
         elif char in self.brackets:
             return len(self.modified_url), part
 
+        elif char == '\\':
+            # Edge case of the url ending with quotes and an escape char before them
+            if self.modified_url[index + 1] == "\"":
+                return len(self.modified_url), part
+
         elif not char.isalnum() and char not in self.url_code_points:
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
@@ -519,10 +524,10 @@ class URLCheck(object):
 class URLFormatter(object):
 
     # URL Security Wrappers
-    ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&')
-    fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)')
-    proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))')
-    trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&')
+    ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
+    fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
+    proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))', re.I)
+    trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&', re.I)
 
     # Scheme slash fixer
     scheme_fix = re.compile("https?(:[/|\\\]*)")
@@ -538,7 +543,7 @@ class URLFormatter(object):
             URLError if an exception occurs
         """
 
-        self.original_url = original_url.lower()
+        self.original_url = original_url
         self.output = ''
 
         url = self.correct_and_refang_url(self.original_url)
@@ -622,12 +627,31 @@ class URLFormatter(object):
             Refnaged corrected URL
         """
 
-        url = url.lower().replace("meow", "http").replace("hxxp", "http").replace("[.]", ".")
+        schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
+        url = url.replace("[.]", ".")
+        url = re.sub(schemas, "http", url)
 
         def fix_scheme(match: Match) -> str:
             return re.sub(":(\\\\|/)*", "://", match.group(0))
 
         return URLFormatter.scheme_fix.sub(fix_scheme, url)
+
+
+def _is_valid_cidr(cidr: str) -> bool:
+    """
+    Will check if "url" is a valid CIDR in order to ignore it
+    Args:
+        cidr: the suspected input
+
+    Returns:
+        True if inout is a valid CIDR
+
+    """
+    try:
+        ipaddress.ip_network(cidr)
+        return True
+    except ValueError:
+        return False
 
 
 def main():
@@ -640,6 +664,11 @@ def main():
 
     for url in raw_urls:
         formatted_url = ''
+
+        if _is_valid_cidr(url):
+            # If input is a valid CIDR formatter will ignore it to let it become a CIDR
+            formatted_urls.append('')
+            continue
 
         try:
             formatted_url = URLFormatter(url).output

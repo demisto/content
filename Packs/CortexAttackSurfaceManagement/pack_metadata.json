@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.4.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -19,30 +19,30 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
         "Nmap": {
             "mandatory": false,
             "display_name": "Nmap"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "AWS-Enrichment-Remediation": {
-            "mandatory": false,
-            "display_name": "AWS Enrichment and Remediaton"
         },
         "Tenable_io": {
             "mandatory": false,
             "display_name": "Tenable.io"
         },
-        "CoreAlertFields": {
-            "mandatory": true,
-            "display_name": "Core Alert Fields"
-        },
-        "ServiceNow": {
+        "AWS-Enrichment-Remediation": {
             "mandatory": false,
-            "display_name": "ServiceNow"
-        }
+            "display_name": "AWS Enrichment and Remediation"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "GCP-Enrichment-Remediation": {	
+            "mandatory": false,	
+            "display_name": "GCP Enrichment and Remediation"	
+            }
     },
     "marketplaces": [
         "marketplacev2",
@@ -52,10 +52,11 @@
         "ASM"
     ],
     "displayedImages": [
-        "CoreAlertFields",
         "ServiceNow",
         "Nmap",
-        "CommonScripts",
-        "AWS-Enrichment-Remediation"
+        "Tenable_io",
+        "AWS-Enrichment-Remediation",
+        "GCP-Enrichment-Remediation",
+        "CommonScripts"
     ]
 }

@@ -86,16 +86,16 @@ script:
       description: The feature creation date.
       type: Date
   - name: aha-edit-feature
-    description: "You can edit any of the following fields in a feature: Name, Status and Description."
+    description: "You can edit the following fields in a feature: Name and Status."
     deprecated: false
     arguments:
     - name: feature_name
-      description: The name of the features to edit.
+      description: The name of the feature to edit.
       required: true
       isArray: false
       defaultValue: ""
     - name: fields
-      description: 'Fields in JSON format to edit in a feature. Possible fields are name, description and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "description": "desc", "status" : "Closed"}'
+      description: 'Fields in JSON format to edit in a feature. Possible fields are name and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "status" : "Closed"}'
       required: true
       isArray: false
       defaultValue: ""
@@ -109,20 +109,96 @@ script:
     - contextPath: AHA.Feature.reference_num
       description: The feature reference number.
       type: String
-    - contextPath: AHA.Feature.workflow_status
-      description: The feature status description.
-      type: String
     - contextPath: AHA.Feature.description
       description: The feature description.
       type: String
+    - contextPath: AHA.Feature.workflow_status
+      description: The feature status description.
+      type: String
     - contextPath: AHA.Feature.created_at
       description: The feature creation date.
+      type: Date
+  - name: aha-get-ideas
+    description: Lists all ideas from service, unless a specific idea is specified.
+    deprecated: false
+    arguments:
+    - name: from_date
+      description: Show ideas created after this date.
+      required: false
+      isArray: false
+      defaultValue: "2020-01-01"
+    - name: idea_name
+      description: The name of a specific idea to retrieve.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: fields
+      description: A comma-separated list of fields to include in the Aha! service response.
+      required: false
+      isArray: false
+      defaultValue: "name,reference_num,id,created_at"
+    - name: page
+      description: The specific results page to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "1"
+    - name: per_page
+      description: The maximum number of results per page.
+      required: false
+      isArray: false
+      defaultValue: "30"
+    outputs:
+    - contextPath: AHA.Idea.id
+      description: The idea ID.
+      type: UUID
+    - contextPath: AHA.Idea.name
+      description: The idea name.
+      type: String
+    - contextPath: AHA.Idea.reference_num
+      description: The idea reference number.
+      type: String
+    - contextPath: AHA.Idea.workflow_status
+      description: The idea status description.
+      type: String
+    - contextPath: AHA.Idea.description
+      description: The idea description.
+      type: String
+    - contextPath: AHA.Idea.created_at
+      description: The idea creation date.
+      type: Date
+  - name: aha-edit-idea
+    description: "Edit an idea status to Shipped."
+    deprecated: false
+    arguments:
+    - name: idea_name
+      description: The name of the idea to edit.
+      required: true
+      isArray: false
+      defaultValue: ""
+    outputs:
+    - contextPath: AHA.Idea.id
+      description: The idea ID.
+      type: UUID
+    - contextPath: AHA.Idea.name
+      description: The idea name.
+      type: String
+    - contextPath: AHA.Idea.reference_num
+      description: The idea reference number.
+      type: String
+    - contextPath: AHA.Idea.workflow_status
+      description: The idea status description.
+      type: String
+    - contextPath: AHA.Idea.description
+      description: The idea description.
+      type: String
+    - contextPath: AHA.Idea.created_at
+      description: The idea creation date.
       type: Date
   isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
 fromversion: 6.5.0

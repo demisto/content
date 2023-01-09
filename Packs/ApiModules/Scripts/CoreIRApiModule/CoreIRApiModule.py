@@ -2040,7 +2040,7 @@ def blocklist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "blocklist")}.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -2077,7 +2077,7 @@ def allowlist_files_command(client, args):
     if detailed_response:
         return CommandResults(
             readable_output=tableToMarkdown('Allowlist Files', res),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.blocklist',
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.allowlist',
             outputs=res,
             raw_response=res
         )
@@ -2090,7 +2090,7 @@ def allowlist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "allowlist")}.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 

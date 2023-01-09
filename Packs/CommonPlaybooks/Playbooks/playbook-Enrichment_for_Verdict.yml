@@ -1357,7 +1357,7 @@ inputs:
   playbookInputQuery:
 - key: query
   value:
-    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+    simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
   required: false
   description: |-
     A query for the previous alerts search.

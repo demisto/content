@@ -30,6 +30,7 @@
   suppression_enabled: false
   suppression_fields: null
   user_defined_category: null
+  fromversion: 6.10.0
   user_defined_severity: null
   xql_query: "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"\
     identity\"\r\n|filter xdm.event.type=\"Cloud.Core.LoginFail\"\r\n|comp count(xdm.event.type)\

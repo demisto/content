@@ -393,7 +393,7 @@ script:
       name: network_configuration_geography
       type: textArea
     - defaultValue: third-party
-      description: The registration authority or certificate authority (CA) you want to use to obtain a certificate. 
+      description: The registration authority or certificate authority (CA) you want to use to obtain a certificate.
       name: ra
     - defaultValue: third-party
       description: Validation type, Either dv, ev, ov, or third-party.
@@ -1196,6 +1196,11 @@ script:
     - description: value to be operated against
       name: value
       required: true
+    - description: whether to convert value to json format. yes/no
+      name: value_to_json
+      predefined:
+      - 'yes'
+      - 'no'
     description: Generic JSON patch command for Papi Property Default Rule
     name: akamai-patch-papi-property-rule-generic
   - arguments:
@@ -1214,24 +1219,12 @@ script:
     - description: whether validate rule or not
       name: validate_rules
       required: true
-    - description: add/replace/remove
-      name: operation
-      required: true
-    - description: json rule tree path for the default rule
-      name: path
-      required: true
-    - description: value to be operated against
-      name: value
-      required: true
-    - description: whether to convert value to json format. yes/no
-      name: value_to_json
-      required: true
     description: get papi property rule json and dump into string
     name: akamai-get-papi-property-rule
     outputs:
     - contextPath: Akamai.PapiProperty.DefaultRule
       description: Papi Property default rule
-  dockerimage: demisto/akamai:1.0.0.34769
+  dockerimage: demisto/akamai:1.0.0.39599
   runonce: false
   script: ''
   subtype: python3

@@ -1,0 +1,53 @@
+[
+    {
+        "AssetId": 12,
+        "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
+        "Name": null,
+        "Site": "Test",
+        "Exploits": 4,
+        "Malware": 0,
+        "OperatingSystem": "Microsoft Windows",
+        "Vulnerabilities": 45,
+        "RiskScore": 18794.236328125,
+        "Assessed": true,
+        "LastScanDate": "2049-03-01T04:31:56Z",
+        "LastScanId": "-"
+    },
+    {
+        "AssetId": 14,
+        "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
+        "Name": "php.testsparker.com",
+        "Site": "Test",
+        "Exploits": 68,
+        "Malware": 0,
+        "OperatingSystem": "Microsoft Windows",
+        "Vulnerabilities": 383,
+        "RiskScore": 185949.84375,
+        "Assessed": true,
+        "LastScanDate": "2022-11-10T10:53:29.792Z",
+        "LastScanId": "-"
+    },
+    {
+        "AssetId": 19,
+        "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
+        "Name": "ec2-34-255-72-253.eu-west-1.compute.amazonaws.com",
+        "Site": "Test",
+        "Exploits": 0,
+        "Malware": 0,
+        "OperatingSystem": "Microsoft Windows Server 2016 Datacenter Edition 1607",
+        "Vulnerabilities": 18,
+        "RiskScore": 9519.7001953125,
+        "Assessed": true,
+        "LastScanDate": "2022-11-02T14:54:19.045Z",
+        "LastScanId": "-"
+    }
+]

@@ -34,6 +34,7 @@
 <li><a href="#h_3361940724151542101639987">Check the status of a scan: tenable-io-get-scan-status</a></li>
 <li><a href="#h_3361940724151542101639988">Pause a scan: tenable-io-pause-scan</a></li>
 <li><a href="#h_3361940724151542101639989">Resume a scan: tenable-io-resume-scan</a></li>
+<li><a href="#h_3361940724151542101639990">Get asset details: tenable-io-get-asset-details</a></li>
 
 </ol>
 <h3 id="h_48852000951542101617984">1. Get a list of scans</h3>
@@ -1594,6 +1595,123 @@
 <tr>
 <td>Resuming</td>
 <td>10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h_3361940724151542101639990">9. Get asset details by IP address</h3>
+<hr>
+<p>Retrieves details for the specified asset to include custom attributes.</p>
+<h5>Base Command</h5>
+<pre><code>tenable-io-get-asset-details</code></pre>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 230px;"><strong>Argument Name</strong></th>
+<th style="width: 344px;"><strong>Description</strong></th>
+<th style="width: 134px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 230px;">ip</td>
+<td style="width: 344px;"> IP Address of the asset.</td>
+<td style="width: 134px;">Required</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Context Output</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 241px;"><strong>Path</strong></th>
+<th style="width: 75px;"><strong>Type</strong></th>
+<th style="width: 392px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.attributes</td>
+<td style="width: 75px;">unknown</td>
+<td style="width: 392px;">Array of custom attributes of asset.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.counts</td>
+<td style="width: 75px;">unknown</td>
+<td style="width: 392px;">Array of audit statuses and vulnerabilities by type.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.created_at</td>
+<td style="width: 75px;">date</td>
+<td style="width: 392px;">Date asset was created.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.first_seen</td>
+<td style="width: 75px;">date</td>
+<td style="width: 392px;">Date asset was first seen.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.fqdn</td>
+<td style="width: 75px;">unknown</td>
+<td style="width: 392px;">Array of fully-qualified domain names.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.id</td>
+<td style="width: 75px;">string</td>
+<td style="width: 392px;">GUID of tenable.io asset.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.interfaces</td>
+<td style="width: 75px;">unknown</td>
+<td style="width: 392px;">Array of interface information.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.ipv4</td>
+<td style="width: 75px;">unknown</td>
+<td style="width: 392px;">Array of IPv4 addresses.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.operating_system</td>
+<td style="width: 75px;">unknown</td>
+<td style="width: 392px;">Array of operating systems.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.tags</td>
+<td style="width: 75px;">unknown</td>
+<td style="width: 392px;">Array of tags added to asset.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.AssetDetails.updated_at</td>
+<td style="width: 75px;">date</td>
+<td style="width: 392px;">Date the asset was last updated.</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Command Example</h5>
+<pre><code>!tenable-io-get-asset-details ip=1.3.2.1</code></pre>
+<h5>Human Readable Output</h5>
+<h3>Asset Info for 1.3.2.1</h3>
+<table border="2">
+<thead>
+<tr>
+<th>attributes</th>
+<th>fqdn</th>
+<th>interfaces</th>
+<th>ipv4</th>
+<th>id</th>
+<th>last_seen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>{'owner': 'owner@demisto.com'}</td>
+<td>1.2.3.1.bc.googleusercontent.com</td>
+<td>{'name': 'UNKNOWN', 'fqdn': ['1.2.3.1.bc.googleusercontent.com'], 'mac_address': [], 'ipv4': ['1.3.2.1'], 'ipv6': []}</td>
+<td>1.3.2.1</td>
+<td>fake_asset_id</td>
+<td>2022-09-07T19:25:28.329Z</td>
 </tr>
 </tbody>
 </table>

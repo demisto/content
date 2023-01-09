@@ -2,7 +2,7 @@ comment: This button will generate summary 'Case Report' template for a given In
 commonfields:
   id: GenerateSummaryReportButton
   version: -1
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.9.42476
 enabled: true
 name: GenerateSummaryReportButton
 runas: DBotWeakRole

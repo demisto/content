@@ -93,7 +93,7 @@ PROOF_POINT_REDIRECTS = [
 FIREEYE_REDIRECT = [
     ('https://protect2.fireeye.com/v1/url?k=00bf92e9-5f24adeb-00beb0cd-0cc47aa88f82-a1f32e4f84d91cbe&q=1'
      '&e=221919da-9d68-429a-a70e-9d8d836ca107&u=https%3A%2F%2Fwww.facebook.com%2FNamshiOfficial',
-     'https://www.facebook.com/namshiofficial'),
+     'https://www.facebook.com/NamshiOfficial'),
 ]
 
 TRENDMICRO_REDIRECT = [
@@ -134,8 +134,9 @@ FORMAT_IPv6 = [
 ]
 
 FORMAT_PATH = [
-    ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),
-    ('www.test.com/check', 'www.test.com/check'),
+    ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),  # disable-secrets-detection
+    ('www.test.com/check', 'www.test.com/check'),  # disable-secrets-detection
+    ('https://test.test/Test\\"', 'https://test.test/Test'),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
@@ -234,7 +235,7 @@ class TestFormatURL:
         - Ensure for every expected protocol given, it is replaced with the expected value.
         """
         url = URLFormatter('https://www.test.com/')
-        assert url.correct_and_refang_url(non_formatted_url) == expected.lower()
+        assert url.correct_and_refang_url(non_formatted_url) == expected
 
     @pytest.mark.parametrize('non_formatted_url, expected', FORMAT_HEX)
     def test_hex_chars(self, non_formatted_url: str, expected: str):
@@ -265,7 +266,7 @@ class TestFormatURL:
         - Ensure URL is formatted as expected
         """
 
-        assert URLFormatter(url_).__str__() == expected.lower()
+        assert URLFormatter(url_).__str__() == expected
 
     @pytest.mark.parametrize('url_, expected', FAILS)
     def test_exceptions(self, url_: str, expected):
@@ -289,7 +290,7 @@ class TestFormatURL:
         - Ensure redirected URL is returned.
         """
 
-        assert URLFormatter(url_).__str__() == expected.lower()
+        assert URLFormatter(url_).__str__() == expected
 
     @pytest.mark.parametrize('url_, expected', [
         ('[https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$]',
@@ -311,7 +312,7 @@ class TestFormatURL:
         Then:
         - Ensure formatted URL is returned.
         """
-        assert URLFormatter(url_).__str__() == expected.lower()
+        assert URLFormatter(url_).__str__() == expected
 
     def test_url_class(self):
         url = URLType('https://www.test.com')

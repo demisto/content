@@ -34,6 +34,9 @@ BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication w
 JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
 USE_SSL = not demisto.params().get('insecure', False)
 
+SESSION = requests.Session()
+SESSION.mount(prefix='https://', adapter=SSLAdapter(verify=USE_SSL))
+
 
 def jira_req(
         method: str,
@@ -42,21 +45,24 @@ def jira_req(
         link: bool = False,
         resp_type: str = 'text',
         headers: Optional[dict] = None,
-        files: Optional[dict] = None
+        files: Optional[dict] = None,
+        params: Optional[dict] = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
     AUTH = get_auth()
     if headers and HEADERS.get('Authorization'):
         headers['Authorization'] = HEADERS.get('Authorization')
     try:
-        result = requests.request(
+
+        result = SESSION.request(
             method=method,
             url=url,
             data=body,
             auth=AUTH,
             headers=headers if headers else HEADERS,
             verify=USE_SSL,
-            files=files
+            files=files,
+            params=params
         )
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
@@ -138,13 +144,7 @@ def get_custom_field_names():
     custom_id_name_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        res = requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+        res = jira_req(method='GET', resource_url='rest/api/latest/field', headers=HEADERS)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -172,7 +172,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
     }
     """
     demisto.debug(f'querying with: {query}')
-    url = BASE_URL + 'rest/api/latest/search/'
+    url = 'rest/api/latest/search/'
     query_params = {
         'jql': query,
         "startAt": start_at,
@@ -190,13 +190,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
         else:
             return_warning(f'{",".join(nofields)} does not exist')
     try:
-        result = requests.get(
-            url=url,
-            headers=HEADERS,
-            verify=USE_SSL,
-            params=query_params,
-            auth=get_auth(),
-        )
+        result = jira_req(method='GET', resource_url=url, headers=HEADERS, params=query_params)
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
 
@@ -236,13 +230,7 @@ def get_custom_fields():
     custom_id_description_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        res = requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+        res = jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/field', headers=HEADERS)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -376,6 +364,7 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None, extra_
         context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
         context_obj['Description'] = md_obj['description'] = demisto.get(element, 'fields.description')
+        context_obj['Labels'] = md_obj['labels'] = demisto.get(element, 'fields.labels')
 
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
@@ -818,7 +807,7 @@ def __get_field_type(field_id):
 
 def __add_value_by_type(type, current_value, new_value):
     if type == 'string':
-        new_val = current_value + "," + new_value
+        new_val = current_value + " , " + new_value
     elif type == 'array':
         new_val = current_value + [new_value]
     else:
@@ -1299,8 +1288,7 @@ def get_user_info_data():
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
-    return requests.request(method='GET', url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS, verify=USE_SSL,
-                            auth=get_auth())
+    return jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS)
 
 
 def get_modified_remote_data_command(args):

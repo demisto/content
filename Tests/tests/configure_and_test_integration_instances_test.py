@@ -1,9 +1,10 @@
+import os
 import pytest
 from unittest.mock import mock_open
 
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
     options_handler, XSIAMBuild, get_turned_non_hidden_packs, update_integration_lists, \
-    get_packs_with_higher_min_version, filter_new_to_marketplace_packs
+    get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -170,6 +171,28 @@ def test_update_integration_lists(mocker, new_integrations_names, turned_non_hid
                  return_value=turned_non_hidden_packs_id)
     returned_results = update_integration_lists(new_integrations_names, turned_non_hidden_packs_id, modified_integrations_names)
     assert the_expected_result(returned_results[0], returned_results[1])
+
+
+def test_pack_names_to_integration_names_no_integrations_folder(tmp_path):
+    """
+    Given:
+        - Pack without integrations dir.
+    When:
+        - Transforming pack names to integration names when installing integrations.
+    Then:
+        - Assert no exceptions are raised.
+        - Assert no integrations are found.
+    """
+    packs_path = tmp_path / 'Packs'
+    packs_path.mkdir()
+    pack_path = packs_path / 'PackName'
+    pack_path.mkdir()
+    current_path = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        assert packs_names_to_integrations_names(['PackName']) == []
+    finally:
+        os.chdir(current_path)
 
 
 def test_get_packs_with_higher_min_version(mocker):

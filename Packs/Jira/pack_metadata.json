@@ -2,7 +2,7 @@
     "name": "Atlassian Jira",
     "description": "Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects.",
     "support": "xsoar",
-    "currentVersion": "2.0.17",
+    "currentVersion": "2.0.22",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +11,6 @@
         "Case Management"
     ],
     "tags": [
-        "Incident Mirroring"
     ],
     "itemPrefix": [
         "Jira"

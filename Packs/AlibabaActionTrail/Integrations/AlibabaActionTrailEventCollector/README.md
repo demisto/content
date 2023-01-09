@@ -7,7 +7,7 @@ This integration was integrated and tested with API version 0.6 of Alicloud Log 
 2. Search for Alibaba Action Trail Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | ** **Required** |
+    | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Endpoint | The URL used to access your project and the data of your project. |True |
     | Access key id | The ID  used to identify the user. | True |

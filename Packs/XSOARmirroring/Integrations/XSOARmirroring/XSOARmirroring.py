@@ -350,7 +350,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1))  # type: ignore[operator]
+    next_run = {'last_fetch': (latest_created_time + timedelta(milliseconds=1))  # type: ignore[operator]
                 .strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
 
     return next_run, incidents_result
@@ -751,8 +751,8 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')) \
-        .strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
+    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
+
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \

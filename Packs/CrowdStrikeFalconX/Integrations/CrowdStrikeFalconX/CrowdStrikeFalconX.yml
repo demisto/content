@@ -34,8 +34,8 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
-description: Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
-display: CrowdStrike Falcon X
+description: Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
+display: CrowdStrike Falcon Intelligence Sandbox
 name: CrowdStrike Falcon X
 script:
   commands:
@@ -1956,7 +1956,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: false
   longRunning: false
@@ -1967,4 +1967,6 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- No tests - no instance
+- CrowdStrike_FalconX_Test
+- CrowdStrike_Falcon_X_-Test-Detonate_File
+- CrowdStrike_Falcon_X_-Test-Detonate_URL
