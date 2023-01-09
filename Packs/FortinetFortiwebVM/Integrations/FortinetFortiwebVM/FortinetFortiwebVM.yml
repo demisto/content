@@ -2086,7 +2086,7 @@ script:
       - '503'
       - '504'
       required: false
-    - description: Not Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only.
+    - description: Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only.
       isArray: false
       name: scripting
       required: false
