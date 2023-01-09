@@ -121,8 +121,16 @@ script:
       description: The timeout in seconds of the behavioral analysis
       isArray: false
     - name: network
-      description: 'The type of network routing to use: internet, drop, tor, sim200, or sim404'
+      auto: PREDEFINED
+      description: The type of network routing to use
       isArray: false
+      predefined:
+      - internet
+      - drop
+      - tor
+      - sim200
+      - sim404
+      - nxdomain
     deprecated: false
     description: Submits a file or url for analysis
     execution: false
@@ -190,7 +198,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Sample's unique identifier, can be found using the query samples command
+      description: One or more comma-separated unique sample identifiers. These can be found using the query samples command.
       isArray: true
       name: sample_id
       required: true
@@ -655,6 +663,9 @@ script:
       - drop
       - internet
       - proxy
+      - tor
+      - sim200
+      - sim404
       required: false
       secret: false
     deprecated: false
