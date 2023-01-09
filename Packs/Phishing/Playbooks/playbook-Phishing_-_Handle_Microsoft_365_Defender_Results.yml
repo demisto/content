@@ -320,7 +320,7 @@ tasks:
         complex:
           root: NewIncidentsFields
           accessor: EntryID
-      IncidenName:
+      IncidentName:
         complex:
           root: NewIncidentsFields
           accessor: Subject
