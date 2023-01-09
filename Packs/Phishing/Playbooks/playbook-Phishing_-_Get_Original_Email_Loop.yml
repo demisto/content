@@ -172,7 +172,7 @@ tasks:
       key:
         simple: FileAssociation
       value:
-        simple: '{"MessageID":"${inputs.MessageID}", "EntryID": "${EntryID}"}'
+        simple: '[{"MessageID":"${inputs.MessageID}", "EntryID": "${EntryID}"}]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
