@@ -30,77 +30,74 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def get_activities(self, prev_id, alert_status):
+    def __init__(self, base_url, verify, headers, proxy, fetch_limit=1000):
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            headers=headers,
+            proxy=proxy
+        )
+        self.limit = fetch_limit
+
+    def get_activities(self, from_time):
         """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        Returns SentinelOne activities using the '/activities' API endpoint.
+        All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            prev_id: previous id that was fetched.
-            alert_status:
+            from_time: Time (the incident was created) to start fetching.
 
         Returns:
-            dict: the next event
+            list: The activities.
         """
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType'
-            }
-        }]
+        params = {
+            'createdAt__gte': from_time,
+            'limit': self.limit,
+            'sortBy': 'createdAt',
+            'sortOrder': 'asc',
+        }
+        result = self._http_request('GET', url_suffix='/activities', params=params)
+        return result.get('data', [])
 
-    def get_threats(self, prev_id, alert_status):
+    def get_threats(self, from_time):
         """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        Returns SentinelOne threats using the '/threats' API endpoint.
+        All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            prev_id: previous id that was fetched.
-            alert_status:
+            from_time: Time (the incident was created) to start fetching.
 
         Returns:
-            dict: the next event
+            list: The threats.
         """
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType'
-            }
-        }]
+        params = {
+            'createdAt__gte': from_time,
+            'limit': self.limit,
+            'sortBy': 'createdAt',
+            'sortOrder': 'asc',
+        }
+        result = self._http_request('GET', url_suffix='/threats', params=params)
+        return result.get('data', [])
 
-    def get_alerts(self, prev_id, alert_status):
+    def get_alerts(self, from_time):
         """
         Returns SentinelOne alerts using the '/cloud-detection/alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            prev_id: previous id that was fetched.
-            alert_status:
+            from_time: Time (the incident was created) to start fetching.
 
         Returns:
-            dict: the next event
+            list: The alerts.
         """
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType'
-            }
-        }]
+        params = {
+            'limit': self.limit,
+            'createdAt__gte': from_time,
+            'sortBy': 'alertInfoCreatedAt',
+            'sortOrder': 'asc',
+        }
+        result = self._http_request('GET', url_suffix='/cloud-detection/alerts', params=params)
+        return result.get('data', [])
 
 
 def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
@@ -120,13 +117,10 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     """
 
     try:
-        alert_status = params.get('alert_status', None)
-
         fetch_events(
             client=client,
             last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
+            event_type=params.get('event_type', ['ACTIVITIES', 'THREATS', 'ALERTS']),
         )
 
     except Exception as e:
@@ -138,52 +132,47 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     return 'ok'
 
 
-def get_events(client, alert_status):
-    activities = client.get_activities(
-        prev_id=0,
-        alert_status=alert_status
-    )
-    threats = client.get_threats(
-        prev_id=0,
-        alert_status=alert_status
-    )
-    alerts = client.get_alerts(
-        prev_id=0,
-        alert_status=alert_status
-    )
-    events = activities + threats + alerts
+def get_events(client, first_fetch_time, event_type):
+    events = []
+    if 'ACTIVITIES' in event_type:
+        events.extend(client.get_activities(first_fetch_time))
+    if 'THREATS' in event_type:
+        events.extend(client.get_threats(first_fetch_time))
+    if 'ALERTS' in event_type:
+        events.extend(client.get_alerts(first_fetch_time))
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, int],
-                 first_fetch_time: Optional[int], alert_status: Optional[str]
-                 ):
+def fetch_events(client: Client, last_run: Dict[str, str], event_type: Optional[list]):
     """
     Args:
         client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+        last_run (dict): A dict containing the latest event (for each event type) created time we got from last fetch.
+            For example: {'last_activity_created': '2023-01-01T00:00:00', 'last_threat_created': '2023-01-01T00:00:00'}
+        event_type (list): Event type to be fetched ['ACTIVITIES', 'THREATS', 'ALERTS']
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = 0
+    events = []
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status
-    )
-    demisto.info(f'Fetched event with id: {prev_id + 1}.')
+    demisto.info(f'Fetched event of type: {event_type} from time {last_run}.')
+    if 'ACTIVITIES' in event_type:
+        if activities := client.get_activities(last_run.get('last_activity_created')):
+            events.extend(activities)
+            last_run['last_activity_created'] = activities[-1].get('createdAt')
+    if 'THREATS' in event_type:
+        if threats := client.get_threats(last_run.get('last_threat_created')):
+            events.extend(threats)
+            last_run['last_threat_created'] = threats[-1].get('threatInfo', {}).get('createdAt')
+    if 'ALERTS' in event_type:
+        if alerts := client.get_alerts(last_run.get('last_alert_created')):
+            events.extend(alerts)
+            last_run['last_alert_created'] = alerts[-1].get('createdAt')
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
-    demisto.info(f'Setting next run {next_run}.')
-    return next_run, events
+    demisto.info(f'Setting next run {last_run}.')
+    return last_run, events
 
 
 ''' MAIN FUNCTION '''
@@ -207,41 +196,46 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    assert isinstance(first_fetch_timestamp, int)
+    fetch_limit = arg_to_number(params.get('fetch_limit', 1000))
+    assert 0 < fetch_limit < 1001  # Verify fetch_limit is within range 1 - 1000.
     proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status', None)
+    event_type = params.get('event_type', ['ACTIVITIES', 'THREATS', 'ALERTS'])
 
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {
-            'Authorization': f'Bearer {api_key}'
+            'Authorization': f'ApiToken {api_key}'
         }
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            fetch_limit=params.get('fetch_limit')
+        )
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_timestamp)
+            result = test_module(client, params, first_fetch_time)
             return_results(result)
 
-        elif command in ('hello-world-get-events', 'fetch-events'):
-            if command == 'hello-world-get-events':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client, alert_status)
+        elif command in (f'{VENDOR}-{PRODUCT}-get-events', 'fetch-events'):
+            if command == f'{VENDOR}-{PRODUCT}-get-events':
+                should_push_events = argToBoolean(args.get('should_push_events', False))
+                events, results = get_events(client, first_fetch_time, event_type)
                 return_results(results)
 
             else:  # command == 'fetch-events':
                 should_push_events = True
-                last_run = demisto.getLastRun()
+                last_run = demisto.getLastRun() or {
+                    'last_activity_created': first_fetch_time,
+                    'last_threat_created': first_fetch_time,
+                    'last_alert_created': first_fetch_time,
+                }  # For the first execution.
                 next_run, events = fetch_events(
                     client=client,
                     last_run=last_run,
-                    first_fetch_time=first_fetch_timestamp,
-                    alert_status=alert_status,
+                    event_type=event_type
                 )
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)
