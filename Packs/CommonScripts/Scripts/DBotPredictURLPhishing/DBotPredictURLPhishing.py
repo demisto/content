@@ -11,9 +11,9 @@ import copy
 import numpy as np
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
-import requests.packages.urllib3
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 dill.settings['recurse'] = True
 
