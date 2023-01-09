@@ -606,6 +606,7 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
+            "timeout": 600,
             "instance_names": "ms_graph_mail_dev"
         },
         {
@@ -3582,7 +3583,8 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout" : 600
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -4537,23 +4539,14 @@
             ]
         },
         {
-            "playbookID": "playbook-feodoteackerhash_test",
-            "fromversion": "5.5.0",
-            "integrations": [
-                "Feodo Tracker IP Blocklist Feed",
-                "Feodo Tracker Hashes Feed"
-            ],
-            "instance_names": [
-                "feodo_tracker_ip_currently__active",
-                "feodo_tracker_ip_30_days"
-            ]
-        },
-        {
             "playbookID": "playbook-feodotrackeripblock_test",
             "fromversion": "5.5.0",
             "integrations": [
-                "Feodo Tracker IP Blocklist Feed",
-                "Feodo Tracker Hashes Feed"
+                "Feodo Tracker IP Blocklist Feed"
+            ],
+             "instance_names": [
+                "feodo_tracker_ip_currently__active",
+                "feodo_tracker_ip_30_days"
             ]
         },
         {
