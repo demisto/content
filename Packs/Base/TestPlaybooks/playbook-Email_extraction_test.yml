@@ -237,10 +237,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
       - "79"
       - "81"
-      - "80"
       - "83"
       - "82"
     scriptarguments:
@@ -274,9 +272,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "76"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -501,9 +496,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "76"
     separatecontext: false
     conditions:
     - label: "yes"
