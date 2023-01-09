@@ -3211,7 +3211,7 @@ inputs:
   playbookInputQuery:
 - key: EmailHuntingCreateNewIncidents
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: When "True", the sub-playbook "Phishing - Handle Microsoft 365 Defender Results" will open new phishing incidents for each email which contain one of the malicious indicators. Default is "False".
   playbookInputQuery:
