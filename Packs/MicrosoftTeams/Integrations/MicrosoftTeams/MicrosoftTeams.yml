@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Microsoft Teams TEST
+  id: Microsoft Teams
   version: -1
 configuration:
 - display: Bot ID
