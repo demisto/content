@@ -2927,71 +2927,65 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     for file_hash in files:
-        try:
-            hash_type = get_hash_type(file_hash)
+        hash_type = get_hash_type(file_hash)
 
-            if hash_type != 'sha256':
-                raise ValueError(f'Cisco AMP: Hash "{file_hash}" is not of type SHA-256')
+        if hash_type != 'sha256':
+            raise ValueError(f'Cisco AMP: Hash "{file_hash}" is not of type SHA-256')
 
-            raw_response = client.event_list_request(
-                detection_sha256=file_hash
-            )
+        raw_response = client.event_list_request(
+            detection_sha256=file_hash
+        )
 
-            data_list = raw_response['data']
+        data_list = raw_response['data']
 
-            disposition = dict_safe_get(data_list[0], ['file', 'disposition'])
+        disposition = dict_safe_get(data_list[0], ['file', 'disposition'])
+        dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
+
+        file_indicator = Common.File(
+            md5=dict_safe_get(data_list[0], ['file', 'identity', 'md5']),
+            sha1=dict_safe_get(data_list[0], ['file', 'identity', 'sha1']),
+            sha256=file_hash,
+            path=dict_safe_get(data_list[0], ['file', 'file_path']),
+            name=dict_safe_get(data_list[0], ['file', 'file_name']),
+            hostname=dict_safe_get(data_list[0], ['computer', 'hostname']),
+            dbot_score=dbot_score
+        )
+
+        for data in data_list[1:]:
+            disposition = dict_safe_get(data, ['file', 'disposition'])
             dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
 
-            file_indicator = Common.File(
-                md5=dict_safe_get(data_list[0], ['file', 'identity', 'md5']),
-                sha1=dict_safe_get(data_list[0], ['file', 'identity', 'sha1']),
-                sha256=file_hash,
-                path=dict_safe_get(data_list[0], ['file', 'file_path']),
-                name=dict_safe_get(data_list[0], ['file', 'file_name']),
-                hostname=dict_safe_get(data_list[0], ['computer', 'hostname']),
-                dbot_score=dbot_score
-            )
+            file_indicator.md5 = file_indicator.md5 or dict_safe_get(data, ['file', 'identity', 'md5'])
+            file_indicator.sha1 = file_indicator.sha1 or dict_safe_get(data, ['file', 'identity', 'sha1'])
+            file_indicator.path = file_indicator.path or dict_safe_get(data, ['file', 'file_path'])
+            file_indicator.name = file_indicator.name or dict_safe_get(data, ['file', 'file_name'])
+            file_indicator.hostname = file_indicator.hostname or dict_safe_get(data, ['computer', 'hostname'])
+            file_indicator.dbot_score = file_indicator.dbot_score or dbot_score
 
-            for data in data_list[1:]:
-                disposition = dict_safe_get(data, ['file', 'disposition'])
-                dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
+            is_all_filled = file_indicator.md5 \
+                and file_indicator.sha1 \
+                and file_indicator.sha256 \
+                and file_indicator.path \
+                and file_indicator.name \
+                and file_indicator.hostname \
+                and file_indicator.dbot_score
 
-                file_indicator.md5 = file_indicator.md5 or dict_safe_get(data, ['file', 'identity', 'md5'])
-                file_indicator.sha1 = file_indicator.sha1 or dict_safe_get(data, ['file', 'identity', 'sha1'])
-                file_indicator.path = file_indicator.path or dict_safe_get(data, ['file', 'file_path'])
-                file_indicator.name = file_indicator.name or dict_safe_get(data, ['file', 'file_name'])
-                file_indicator.hostname = file_indicator.hostname or dict_safe_get(data, ['computer', 'hostname'])
-                file_indicator.dbot_score = file_indicator.dbot_score or dbot_score
+            if is_all_filled:
+                break
 
-                is_all_filled = file_indicator.md5 \
-                    and file_indicator.sha1 \
-                    and file_indicator.sha256 \
-                    and file_indicator.path \
-                    and file_indicator.name \
-                    and file_indicator.hostname \
-                    and file_indicator.dbot_score
+        file_context = file_indicator.to_context().get(Common.File.CONTEXT_PATH)
+        readable_output = tableToMarkdown(
+            f'Cisco AMP - Hash Reputation for: {file_hash}',
+            file_context
+        )
 
-                if is_all_filled:
-                    break
-
-            file_context = file_indicator.to_context().get(Common.File.CONTEXT_PATH)
-            readable_output = tableToMarkdown(
-                f'Cisco AMP - Hash Reputation for: {file_hash}',
-                file_context
-            )
-
-            command_results.append(CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='',
-                raw_response=raw_response,
-                outputs_key_field='SHA256',
-                indicator=file_indicator
-            ))
-
-        except Exception as exc:  # pylint: disable=broad-except
-            command_results.append(CommandResults(
-                readable_output=f'Could not process file: "{file_hash}"\n{str(exc)}')
-            )
+        command_results.append(CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='',
+            raw_response=raw_response,
+            outputs_key_field='SHA256',
+            indicator=file_indicator
+        ))
 
     return command_results
 
