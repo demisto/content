@@ -990,7 +990,7 @@ class Client(BaseClient):
         response = self._http_request(
             method='GET',
             url_suffix=f'acqs/files/{acquisition_id}.zip',
-            headers=headers,
+            headers=self._headers | headers,  # Update the headers with the new Accept octet-stream
             resp_type='content'
         )
         return response

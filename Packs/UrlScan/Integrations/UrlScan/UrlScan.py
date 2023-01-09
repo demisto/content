@@ -391,6 +391,12 @@ def format_results(client, uuid, use_url_as_name):
             for ip in scan_lists.get('ips'):
                 feed_related_indicators.append({'value': ip, 'type': 'IP'})
         IP_HEADERS = ['Count', 'IP', 'ASN']
+    if 'links' in scan_data:
+        links = []
+        for o in scan_data['links']:
+            if 'href' in o:
+                links.append(o['href'])
+        cont['links'] = links
     # add redirected URLs
     if 'requests' in scan_data:
         redirected_urls = []
@@ -794,11 +800,10 @@ def main():
         Exception("Please provide a valid value for the Source Reliability parameter.")
 
     demisto_version = get_demisto_version_as_str()
-    pack_version = get_pack_version()
-
+    instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     client = Client(
         api_key=api_key,
-        user_agent='xsoar-{}/urlscan-{}'.format(demisto_version, pack_version),
+        user_agent='xsoar-{}/urlscan-{}'.format(demisto_version, instance_name),
         scan_visibility=scan_visibility,
         threshold=threshold,
         use_ssl=use_ssl,

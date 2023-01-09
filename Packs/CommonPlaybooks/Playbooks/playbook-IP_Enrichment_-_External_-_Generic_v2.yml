@@ -5,9 +5,9 @@ fromversion: 5.0.0
 description: |-
   Enrich IP addresses using one or more integrations.
 
-  - Resolve IP addresses to hostnames (DNS)
-  - Provide threat information
-  - Separate internal and external addresses
+  - Resolve IP addresses to hostnames (DNS).
+  - Provide threat information.
+  - Separate internal and external addresses.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,9 +18,9 @@ tasks:
       id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -28,13 +28,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 49
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: c8d8906f-cbf4-4ddd-84e6-1e55570d00a0
@@ -91,13 +96,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 590
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
@@ -106,21 +116,26 @@ tasks:
       id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": 2050
+          "x": -600,
+          "y": 1860
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 1734f24b-0b27-431e-81b6-89997f08894c
@@ -129,25 +144,31 @@ tasks:
       id: 1734f24b-0b27-431e-81b6-89997f08894c
       version: -1
       name: Enrich external IP addresses
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
       - "41"
+      - "44"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 1140
+          "x": 102.5,
+          "y": 1150
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: 6b8d857a-6012-41ac-8133-999741963259
@@ -177,13 +198,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 583bdb15-2ba1-4818-8040-960105e9c247
@@ -214,13 +240,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 385
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: 607dafbe-8ee1-47ad-810a-dacf03842673
@@ -254,13 +285,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 102.5,
           "y": 800
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
     taskid: 9a9092a5-a173-4c8d-8a0c-f63960c42451
@@ -308,13 +344,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
+          "x": 460,
           "y": 970
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
     taskid: 22f7b81d-ea1a-44b3-8b73-c628afaf5cfc
@@ -323,10 +364,10 @@ tasks:
       id: 22f7b81d-ea1a-44b3-8b73-c628afaf5cfc
       version: -1
       name: Enrich Using VirusTotal Private API
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "37"
@@ -334,13 +375,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -88,
-          "y": 1345
+          "x": 102.5,
+          "y": 1290
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
     taskid: 0df4420b-8119-4731-8cb3-4745fd044913
@@ -392,19 +438,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -88,
-          "y": 1513
+          "x": 102.5,
+          "y": 1453
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 700d9287-b7b0-440b-84a0-43eb625d45eb
+    taskid: 28f08e7d-3a2f-495a-8dbb-4bb08f2675be
     type: regular
     task:
-      id: 700d9287-b7b0-440b-84a0-43eb625d45eb
+      id: 28f08e7d-3a2f-495a-8dbb-4bb08f2675be
       version: -1
       name: Get IP report from VirusTotal Private API
       description: |
@@ -417,7 +468,6 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      fullResponse: {}
       ip:
         complex:
           root: IP
@@ -433,19 +483,23 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
-      threshold: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -88,
-          "y": 1750
+          "x": 102.5,
+          "y": 1670
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "39":
     id: "39"
     taskid: 67d938bf-2bd3-4dfd-885f-8dd190cd0b93
@@ -454,10 +508,10 @@ tasks:
       id: 67d938bf-2bd3-4dfd-885f-8dd190cd0b93
       version: -1
       name: No External IP Address
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -465,13 +519,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 950
+          "x": -600,
+          "y": 970
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "41":
     id: "41"
     taskid: 8828c9f9-9144-42ab-8c98-7479e8f19a04
@@ -480,10 +539,10 @@ tasks:
       id: 8828c9f9-9144-42ab-8c98-7479e8f19a04
       version: -1
       name: Enrich Using Threat Crowd
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -491,13 +550,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1345
+          "x": 500,
+          "y": 1290
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
     taskid: bfd335eb-f565-4abd-87d2-6299336bc89b
@@ -549,19 +613,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1523
+          "x": 500,
+          "y": 1453
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: bfa43e99-360c-4f84-8e09-77a8b7ca5b52
+    taskid: 017faa3e-752d-4339-8b22-5c35442bff75
     type: regular
     task:
-      id: bfa43e99-360c-4f84-8e09-77a8b7ca5b52
+      id: 017faa3e-752d-4339-8b22-5c35442bff75
       version: -1
       name: Get IP report from ThreatCrowd
       description: |
@@ -594,13 +663,141 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1750
+          "x": 500,
+          "y": 1670
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 9bda4dfe-35b9-40ac-8d8c-c6973b2d1d40
+    type: title
+    task:
+      id: 9bda4dfe-35b9-40ac-8d8c-c6973b2d1d40
+      version: -1
+      name: Check Reputation Using All Available Integrations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: e47282e7-f860-4707-883f-623837a431b9
+    type: regular
+    task:
+      id: e47282e7-f860-4707-883f-623837a431b9
+      version: -1
+      name: Check Reputation
+      description: Checks the reputation of an IP address using all available integrations.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      ip:
+        complex:
+          root: IP.Address
+          filters:
+          - - operator: IsNotInCidrRanges
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: 192.168.0.0/16,172.16.0.0/12,10.0.0.0/8
+          transformers:
+            - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: c55e9651-e6f5-48ec-8bbc-995c4e87808b
+    type: condition
+    task:
+      id: c55e9651-e6f5-48ec-8bbc-995c4e87808b
+      version: -1
+      name: Should use !IP command?
+      description: Should use !IP command?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.UseReputationCommand
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1453
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -610,15 +807,17 @@ view: |-
       "28_39_#default#": 0.35,
       "34_27_#default#": 0.49,
       "34_35_yes": 0.53,
-      "37_24_#default#": 0.42,
+      "37_24_#default#": 0.28,
       "37_38_yes": 0.52,
-      "42_24_#default#": 0.28
+      "42_24_#default#": 0.2,
+      "42_43_yes": 0.51,
+      "46_24_#default#": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 2066,
-        "width": 1460,
-        "x": -560,
+        "height": 1876,
+        "width": 1480,
+        "x": -600,
         "y": 49
       }
     }
@@ -633,17 +832,28 @@ inputs:
       - operator: uniq
   required: false
   description: The IP address to enrich.
+  playbookInputQuery:
 - key: InternalRange
   value:
-    simple: inputs.InternalRange
+    simple: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
   required: false
   description: 'A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 - key: ResolveIP
   value:
-    complex:
-      root: inputs.ResolveIP
+    simple: "True"
   required: true
   description: Whether to convert the IP address to a hostname using a DNS query (True/False).
+  playbookInputQuery:
+- key: UseReputationCommand
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    Define if you would like to use the !IP command.
+    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
+    Possible values: True / False.
+  playbookInputQuery:
 outputs:
 - contextPath: IP
   description: The IP address objects.
@@ -668,4 +878,6 @@ outputs:
   description: Endpoint domain name.
   type: string
 tests:
-- IP Enrichment - Generic v2 - Test
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}

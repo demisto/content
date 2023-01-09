@@ -4,8 +4,8 @@ Playbook that looks at what ASM sub-type the alert is and directs it to differen
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* NMAP - Banner Check
 * NMAP - Single Port Scan
+* NMAP - Banner Check
 
 ### Integrations
 This playbook does not use any integrations.
@@ -21,8 +21,8 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemoteIP | Remote IP address in the alert. | alert.remoteip | Required |
-| RemotePort | Remote port number in the alert. | alert.remoteport | Required |
+| RemoteIP | Remote IP address in the alert. | alert.remoteip | Optional |
+| RemotePort | Remote port number in the alert. | alert.remoteport | Optional |
 | ASMRuleID | Attack Surface Management Rule ID. | alert.asmattacksurfaceruleid | Required |
 | ScanNumber | Scan number in case there are multiple IDs in the parent playbook. |  | Required |
 

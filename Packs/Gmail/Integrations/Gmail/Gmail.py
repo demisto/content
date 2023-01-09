@@ -12,7 +12,9 @@ import random
 import re
 import string
 import sys
+import copy
 from datetime import datetime, timedelta
+from email.utils import parsedate_to_datetime, format_datetime
 from distutils.util import strtobool
 from email.header import Header
 from email.mime.application import MIMEApplication
@@ -34,7 +36,7 @@ from googleapiclient.errors import HttpError
 
 ''' GLOBAL VARS '''
 
-ADMIN_EMAIL = None
+ADMIN_EMAIL = ''  # set from params later on
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
@@ -44,6 +46,10 @@ FETCH_TIME = demisto.params().get('fetch_time', '1 days')
 
 SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
 DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
+
+BATCH_DIVIDER = 5
+MAX_USERS = 2500
+MAX_WITHOUT_POLLING = 500
 
 ''' HELPER FUNCTIONS '''
 
@@ -230,7 +236,67 @@ def create_base_time(internal_date_timestamp, header_date):
     return base_time
 
 
+def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
+    """Get the occurred date of an email. The date gmail uses is actually the X-Received or the top Received
+    dates in the header. If fails finding these dates will fall back to internal date.
+    Args:
+        email_data (dict): email to extract from
+    Returns:
+        Tuple[datetime, bool]: occurred datetime, can be used for incrementing search date
+    """
+    headers = demisto.get(email_data, 'payload.headers')
+    if not headers or not isinstance(headers, list):
+        demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
+    else:
+        # use x-received or recvived. We want to use x-received first and fallback to received.
+        for name in ['x-received', 'received', ]:
+            header = next(filter(lambda ht: ht.get('name', '').lower() == name, headers), None)
+            if header:
+                val = header.get('value')
+                if val:
+                    res = get_date_from_email_header(val)
+                    if res:
+                        demisto.debug(f"Using occurred date: {res} from header: {name} value: {val}")
+                        return res, True
+    internalDate = email_data.get('internalDate')
+    demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
+    if internalDate and internalDate != '0':
+        # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
+        # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
+        timestamp_len = len(str(int(time.time())))
+        if len(str(internalDate)) > timestamp_len:
+            internalDate = (str(internalDate)[:timestamp_len])
+        return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
+        # we didn't get a date from anywhere
+    demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
+    return datetime.now(tz=timezone.utc), False
+
+
+def get_date_from_email_header(header: str) -> Optional[datetime]:
+    """Parse an email header such as Date or Received. The format is either just the date
+    or name value pairs followed by ; and the date specification. For example:
+    by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        Mon, 21 Dec 2020 12:11:57 -0800 (PST)
+    Args:
+        header (str): header value to parse
+    Returns:
+        Optional[datetime]: parsed datetime
+    """
+    if not header:
+        return None
+    try:
+        date_part = header.split(';')[-1].strip()
+        res = parsedate_to_datetime(date_part)
+        if res.tzinfo is None:
+            # some headers may contain a non TZ date so we assume utc
+            res = res.replace(tzinfo=timezone.utc)
+        return res
+    except Exception as ex:
+        demisto.debug(f'Failed parsing date from header value: [{header}]. Err: {ex}. Will ignore and continue.')
+    return None
+
+
 def get_email_context(email_data, mailbox):
+    occurred, occurred_is_valid = get_occurred_date(email_data)
     context_headers = email_data.get('payload', {}).get('headers', [])
     context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
@@ -238,16 +304,11 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
-    if email_data.get('internalDate') is not None:
-        base_time = create_base_time(email_data.get('internalDate'), str(headers.get('date', '')))
-
-    else:
-        # in case no internalDate field exists will revert to extracting the date from the email payload itself
-        # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
-        # email payload nor internalDate
-        demisto.info(
-            "No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
-        base_time = str(headers.get('date', ''))
+    base_time = email_data.get('internalDate')
+    if not base_time or not get_date_from_email_header(base_time):
+        # we have an invalid date. use the occurred in rfc 2822
+        demisto.debug(f'Using Date base time from occurred: {occurred} instead of date header: [{base_time}]')
+        base_time = format_datetime(occurred)
 
     context_gmail = {
         'Type': 'Gmail',
@@ -310,7 +371,7 @@ def get_email_context(email_data, mailbox):
         context_email['Attachment Names'] = ', '.join(
             [attachment['Name'] for attachment in context_email['Attachments']])  # type: ignore
 
-    return context_gmail, headers, context_email
+    return context_gmail, headers, context_email, occurred, occurred_is_valid
 
 
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')  # pylint: disable=E1101
@@ -348,28 +409,43 @@ def create_incident_labels(parsed_msg, headers):
     return labels
 
 
-def mailboxes_to_entry(mailboxes):
+def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
-    result = [{"Mailbox": user['Mailbox']} for user in mailboxes if user.get('Mailbox')]
+    found_accounts = []
+    errored_accounts = []  # accounts not searched, due to an error accessing them
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': mailboxes,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(query, result, headers=['Mailbox'], removeNull=True),
-        'EntryContext': {
-            'Gmail(val.ID && val.ID == obj.ID)': result,
-            'Email(val.ID && val.ID == obj.ID)': result
-        }
-    }
+    for user in mailboxes:
+        mailbox = user.get('Mailbox')
+        if (error := user.get('Error')):
+            errored_accounts.append({"Mailbox": mailbox, "Error": error})
+        elif mailbox:
+            found_accounts.append(mailbox)
+        else:
+            demisto.debug(f"unexpected value: neither user['Mailbox'] nor user['Error']: {user=}")
+
+    command_results = [CommandResults(
+        outputs_prefix='Gmail.Mailboxes',
+        readable_output=tableToMarkdown(
+            query,
+            [{'Mailbox': mailbox} for mailbox in found_accounts],
+            headers=['Mailbox'],
+            removeNull=True),
+        outputs=found_accounts
+    )]
+
+    if errored_accounts:
+        command_results.append(CommandResults(
+            outputs_prefix='Gmail.UnsearchedAcounts',
+            outputs=errored_accounts,
+        ))
+    return command_results
 
 
 def emails_to_entry(title, raw_emails, format_data, mailbox):
     gmail_emails = []
     emails = []
     for email_data in raw_emails:
-        context_gmail, _, context_email = get_email_context(email_data, mailbox)
+        context_gmail, _, context_email, occurred, occurred_is_valid = get_email_context(email_data, mailbox)
         gmail_emails.append(context_gmail)
         emails.append(context_email)
 
@@ -393,9 +469,19 @@ def emails_to_entry(title, raw_emails, format_data, mailbox):
     }
 
 
-def mail_to_incident(msg, service, user_key):
-    parsed_msg, headers, _ = get_email_context(msg, user_key)
+def get_date_isoformat_server(dt: datetime) -> str:
+    """Get the  datetime str in the format a server can parse. UTC based with Z at the end
+    Args:
+        dt (datetime): datetime
+    Returns:
+        str: string representation
+    """
+    return datetime.fromtimestamp(dt.timestamp()).isoformat(timespec='seconds') + 'Z'
 
+
+def mail_to_incident(msg, service, user_key):
+    parsed_msg, headers, _, occurred, occurred_is_valid = get_email_context(msg, user_key)
+    occurred_str = get_date_isoformat_server(occurred)
     file_names = []
     command_args = {
         'messageId': parsed_msg['ID'],
@@ -420,18 +506,17 @@ def mail_to_incident(msg, service, user_key):
             'name': attachment['Name'],
         })
     # date in the incident itself is set to GMT time, the correction to local time is done in Demisto
-    gmt_time = move_to_gmt(parsed_msg['Date'])
 
     incident = {
         'type': 'Gmail',
         'name': parsed_msg['Subject'],
         'details': parsed_msg['Body'],
         'labels': create_incident_labels(parsed_msg, headers),
-        'occurred': gmt_time,
+        'occurred': occurred_str,
         'attachment': file_names,
         'rawJSON': json.dumps(parsed_msg),
     }
-    return incident
+    return incident, occurred, occurred_is_valid
 
 
 def users_to_entry(title, response, next_page_token=None):
@@ -680,12 +765,111 @@ def get_millis_from_date(date, arg_name):
             raise ValueError(f'{arg_name} argument is not in expected format.')
 
 
+def cutting_for_batches(list_accounts: list) -> List[list]:
+
+    accounts: list = []
+    rest_accounts: list = []
+
+    batch_size = int(len(list_accounts) / BATCH_DIVIDER)
+    if rest := len(list_accounts) % BATCH_DIVIDER:
+        rest_accounts = list_accounts[-rest:]
+        list_accounts = list_accounts[:-rest]
+
+    accounts.extend(batch(list_accounts, batch_size))
+
+    # When the number of accounts is not exactly divisible by BATCH_DIVIDER,
+    # We add the remaining accounts to the first batch to avoid running another polling command.
+    if rest_accounts:
+        accounts[0].extend(rest_accounts)
+
+    return accounts
+
+
+def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> List[CommandResults]:
+
+    accounts_batches = cutting_for_batches(accounts)
+
+    command_results: list[CommandResults] = []
+    args = copy.deepcopy(demisto.args())
+    for batch in accounts_batches:
+
+        args.update({'list_accounts': batch})
+        command_results.append(
+            CommandResults(
+                readable_output='Serching mailboxes, please wait...',
+                scheduled_command=ScheduledCommand(
+                    command='gmail-search-all-mailboxes',
+                    next_run_in_seconds=10,
+                    args=copy.deepcopy(args),
+                    timeout_in_seconds=600
+                )
+            )
+        )
+        args.pop('list_accounts', None)
+    if next_page_token:
+        command_results.append(
+            CommandResults(
+                outputs_key_field='PageToken',
+                outputs={'PageToken': {'NextPageToken': next_page_token}}
+            )
+        )
+
+    return command_results
+
+
+def get_mailboxes(max_results: int, users_next_page_token: str = None):
+    '''
+    Used to fetch the list of accounts for the search-all-mailboxes command
+    '''
+    accounts: list[str] = []
+    accounts_counter = 0
+    users_next_page_token = users_next_page_token
+    service = get_service('admin', 'directory_v1')
+
+    while True:
+        command_args = {
+            'maxResults': min(max_results, 100),
+            'domain': ADMIN_EMAIL.split('@')[1],
+            'pageToken': users_next_page_token
+        }
+
+        result = service.users().list(**command_args).execute()
+        accounts_counter += len(result['users'])
+        accounts.extend([account['primaryEmail'] for account in result['users']])
+        users_next_page_token = result.get('nextPageToken')
+
+        if accounts_counter >= max_results:
+            accounts = accounts[:max_results]
+            break
+        if users_next_page_token is None:
+            break
+
+    return accounts, users_next_page_token
+
+
+def information_search_process(length_accounts: int, search_from: int | None, search_to: int | None) -> CommandResults:
+
+    if search_from is None or search_to is None:
+        readable_output = f'Searching the first {length_accounts} accounts'
+        search_from = 0
+        search_to = length_accounts
+    else:
+        search_from = search_to + 1
+        search_to = search_to + length_accounts
+        readable_output = f'Searching accounts {search_from} to {search_to}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs={'SearchFromAccountIndex': search_from, 'SearchToAccountIndex': search_to},
+    )
+
+
 ''' FUNCTIONS '''
 
 
 def list_users_command() -> CommandResults:
     args = demisto.args()
-    domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
+    domain = args.get('domain', ADMIN_EMAIL.split('@')[1])
     customer = args.get('customer')
     view_type = args.get('view-type-public-domain', 'admin_view')
     query = args.get('query')
@@ -1081,55 +1265,74 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_all_mailboxes(receive_only_accounts):
-    users_next_page_token = None
-    service = get_service('admin', 'directory_v1')
-    while True:
-        command_args = {
-            'maxResults': 100,
-            'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
-            'pageToken': users_next_page_token
-        }
+def search_in_mailboxes(accounts: list[str], only_return_account_names: bool) -> None:
+    '''
+    Searching for email messages within accounts based on a query,
+    Results are returned only if messages matching the query are found.
+    Returns only the names of the accounts where the messages were found
+    if the only_return_account_names argument is true,
+    Otherwise, returns all the information about the message, including its content.
+    '''
+    futures: list = []
+    entries: list = []
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for user in accounts:
+            futures.append(executor.submit(search_command, mailbox=user,
+                                           only_return_account_names=only_return_account_names))
+        for account in concurrent.futures.as_completed(futures):
+            if found := account.result():
+                entries.append(found)
 
-        result = service.users().list(**command_args).execute()
-        users_count = len(result['users'])
-        users_next_page_token = result.get('nextPageToken')
+        if entries:
+            if only_return_account_names:
+                entries = [mailboxes_to_entry(entries)]
+            return_results(entries)
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            accounts_counter = 0
-            futures = []
-            entries = []
-            for user in result['users']:
-                futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
-            for future in concurrent.futures.as_completed(futures):
-                accounts_counter += 1
-                result = future.result()
-                if result is None:
-                    continue
-                entries.append(future.result())
-                if accounts_counter % 100 == 0:
-                    demisto.info(
-                        f'Still searching. Searched {int((accounts_counter / users_count) * 100)}%  \
-                        of total accounts ({accounts_counter} / {users_count}), \
-                        and found {len(entries)} results so far',
+
+def search_all_mailboxes():
+
+    args = demisto.args()
+    only_return_account_names = argToBoolean(args.get('show-only-mailboxes', 'true'))
+    list_accounts = argToList(args.get('list_accounts', ''))
+    next_page_token = args.get('page-token', '')
+
+    if list_accounts:
+        support_multithreading()
+        search_in_mailboxes(list_accounts, only_return_account_names)
+    else:
+        # check if there is next_page_token and remove it from the args (To avoid using this argument in search command)
+        if next_page_token:
+            demisto.args().pop('page-token', None)
+
+        # Get the accounts that will be searched, maximum accounts is set by MAX_USERS.
+        all_accounts, next_page_token = get_mailboxes(MAX_USERS, next_page_token)
+
+        # When the number of accounts is more than MAX_WITHOUT_POLLING the searching will make with polling commands.
+        if len(all_accounts) > MAX_WITHOUT_POLLING:
+            command_results: List[CommandResults] = scheduled_commands_for_more_users(all_accounts, next_page_token)
+            if next_page_token:
+                command_results.append(
+                    information_search_process(
+                        len(all_accounts),
+                        arg_to_number(args.get('search_from')),
+                        arg_to_number(args.get('search_to'))
                     )
+                )
+            return_results(command_results)
 
-        if receive_only_accounts:
-            entries = [mailboxes_to_entry(entries)]
-
-        # if these are the final result push - return them
-        if users_next_page_token is None:
-            if entries:
-                entries.append("Search completed")
-            else:
-                entries.append("No entries.")
-                return entries
-
-        # return midway results
-        return entries
+        # In case that the number of accounts less than MAX_WITHOUT_POLLING the searching run as usual.
+        elif all_accounts:
+            if args.get('search_from'):
+                return_results(information_search_process(
+                    len(all_accounts),
+                    arg_to_number(args.get('search_from')),
+                    arg_to_number(args.get('search_to'))
+                ))
+            args['list_accounts'] = all_accounts
+            search_all_mailboxes()
 
 
-def search_command(mailbox=None):
+def search_command(mailbox: str = None, only_return_account_names: bool = False) -> dict[str, Any] | None:
     """
     Searches for Gmail records of a specified Google user.
     """
@@ -1154,32 +1357,35 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
-    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'false'))
 
     if max_results > 500:
         raise ValueError(
             'maxResults must be lower than 500, got %s' % (max_results,))
-
-    mails, q = search(user_id, subject, _from, to,
-                      before, after, filename, _in, query,
-                      fields, label_ids, max_results, page_token,
-                      include_spam_trash, has_attachments, receive_only_accounts,
-                      )
+    try:
+        mails, q = search(user_id, subject, _from, to,
+                          before, after, filename, _in, query,
+                          fields, label_ids, max_results, page_token,
+                          include_spam_trash, has_attachments, only_return_account_names,
+                          )
+    except HttpError as err:
+        if only_return_account_names and err.status_code == 429:
+            return {'Mailbox': mailbox, 'Error': {'message': str(err.error_details), 'status_code': err.status_code}}
+        raise
 
     # In case the user wants only account list without content.
-    if receive_only_accounts:
+    if only_return_account_names:
         if mails:
             return {'Mailbox': mailbox, 'q': q}
-        return {'Mailbox': None, 'q': q}
+        return None
     if mails:
         res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox)
         return res
-    return
+    return None
 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
            fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
-           has_attachments=None, receive_only_accounts=None):
+           has_attachments=None, only_return_account_names=None):
     query_values = {
         'subject': subject,
         'from': _from,
@@ -1218,7 +1424,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
             raise
 
     # In case the user wants only account list without content.
-    if receive_only_accounts and result.get('sizeEstimate', 0) > 0:
+    if only_return_account_names and result.get('sizeEstimate', 0) > 0:
         return True, q
 
     entries = [get_mail(user_id=user_id,
@@ -2185,6 +2391,16 @@ def send_as_add_command():
     )
 
 
+def parse_date_isoformat_server(dt: str) -> datetime:
+    """Get the datetime by parsing the format passed to the server. UTC basded with Z at the end
+    Args:
+        dt (str): datetime as string
+    Returns:
+        datetime: datetime representation
+    """
+    return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+
+
 def forwarding_address_get(user_id: str, forwarding_email: str) -> dict:
     """ Gets an Existing forwarding address.
         Args:
@@ -2316,54 +2532,97 @@ def fetch_incidents():
     params = demisto.params()
     user_key = params.get('queryUserKey')
     user_key = user_key if user_key else ADMIN_EMAIL
+    max_fetch = int(params.get('fetch_limit') or 50)
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
+    demisto.debug(f'last run: {last_run}')
     last_fetch = last_run.get('gmt_time')
+    next_last_fetch = last_run.get('next_gmt_time')
+    page_token = last_run.get('page_token') or None
+    ignore_ids: List[str] = last_run.get('ignore_ids') or []
+    ignore_list_used = last_run.get('ignore_list_used') or False  # can we reset the ignore list if we haven't used it
     # handle first time fetch - gets current GMT time -1 day
-    if last_fetch is None:
-        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
-        last_fetch = str(last_fetch.isoformat()).split('.')[0] + 'Z'
-
-    last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
-    current_fetch = last_fetch
+    if not last_fetch:
+        last_fetch = dateparser.parse(date_string=FETCH_TIME, settings={'TIMEZONE': 'UTC'})
+        last_fetch = str(last_fetch.isoformat(timespec='seconds')) + 'Z'
+    # use replace(tzinfo) to  make the datetime aware of the timezone as all other dates we use are aware
+    last_fetch = parse_date_isoformat_server(last_fetch)
+    if next_last_fetch:
+        next_last_fetch = parse_date_isoformat_server(next_last_fetch)
+    else:
+        next_last_fetch = last_fetch + timedelta(seconds=1)
     service = get_service(
         'gmail',
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
         user_key)
 
-    query += last_fetch.strftime(' after:%Y/%m/%d')
-    LOG('GMAIL: fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' %
-        (user_key, query, last_fetch,))
-
+    # use seconds for the filter (note that it is inclusive)
+    # see: https://developers.google.com/gmail/api/guides/filtering
+    query += f' after:{int(last_fetch.timestamp())}'
+    max_results = max_fetch
+    if max_fetch > 200:
+        max_results = 200
+    demisto.debug(f'GMAIL: fetch parameters: user: {user_key} query={query} fetch time: {last_fetch} \
+    page_token: {page_token} max results: {max_results}')
     result = service.users().messages().list(
-        userId=user_key, maxResults=100, q=query).execute()
+        userId=user_key, maxResults=max_results, pageToken=page_token, q=query).execute()
 
     incidents = []
     # so far, so good
-    LOG('GMAIL: possible new incidents are %s' % (result,))
+    LOG(f'GMAIL: possible new incidents are {result}')
     for msg in result.get('messages', []):
+        msg_id = msg['id']
+        if msg_id in ignore_ids:
+            demisto.info(f'Ignoring msg id: {msg_id} as it is in the ignore list')
+            ignore_list_used = True
+            continue
         msg_result = service.users().messages().get(
-            id=msg['id'], userId=user_key).execute()
-        incident = mail_to_incident(msg_result, service, user_key)
-        temp_date = datetime.strptime(
-            incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
-        # update last run
-        if temp_date > last_fetch:
-            last_fetch = temp_date + timedelta(seconds=1)
+            id=msg_id, userId=user_key).execute()
+        incident, occurred, is_valid_date = mail_to_incident(msg_result, service, user_key)
+        if not is_valid_date:  # if  we can't trust the date store the msg id in the ignore list
+            demisto.info(f'appending to ignore list msg id: {msg_id}. name: {incident.get("name")}')
+            ignore_list_used = True
+            ignore_ids.append(msg_id)
+        # update last run only if we trust the occurred timestamp
+        if is_valid_date and occurred > next_last_fetch:
+            next_last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
-        if temp_date > current_fetch:
+        if (not is_valid_date) or (occurred >= last_fetch):
             incidents.append(incident)
+        else:
+            demisto.info(
+                f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
-    demisto.info(f'extract {len(incidents)} incidents')
-    demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z'})
+    demisto.info('extract {} incidents'.format(len(incidents)))
+    next_page_token = result.get('nextPageToken', '')
+    if next_page_token:
+        # we still have more results
+        demisto.info(f'keeping current last fetch: {last_fetch} as result has additional pages to fetch.'
+                     f' token: {next_page_token}. Ignoring incremented last_fatch: {next_last_fetch}')
+    else:
+        demisto.debug(f'will use new last fetch date (no next page token): {next_last_fetch}')
+        # if we are not in a tokenized search and we didn't use the ignore ids we can reset it
+        if (not page_token) and (not ignore_list_used) and (len(ignore_ids) > 0):
+            demisto.info(f'reseting igonre list of len: {len(ignore_ids)}')
+            ignore_ids = []
+        last_fetch = next_last_fetch
+    demisto.setLastRun({
+        'gmt_time': get_date_isoformat_server(last_fetch),
+        'next_gmt_time': get_date_isoformat_server(next_last_fetch),
+        'page_token': next_page_token,
+        'ignore_ids': ignore_ids,
+        'ignore_list_used': ignore_list_used,
+    })
     return incidents
 
 
 def main():
     global ADMIN_EMAIL, PRIVATE_KEY_CONTENT, GAPPS_ID
     ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
+    if '@' not in ADMIN_EMAIL:
+        raise ValueError(f"Admin email {ADMIN_EMAIL} must be in an email format")
     PRIVATE_KEY_CONTENT = demisto.params()['adminEmail'].get('password', '{}')
     GAPPS_ID = demisto.params().get('gappsID')
     ''' EXECUTION CODE '''
@@ -2422,8 +2681,7 @@ def main():
 
         else:
             if command == 'gmail-search-all-mailboxes':
-                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
-                return_results(cmd_func(receive_only_accounts))  # type: ignore
+                cmd_func()  # type: ignore[operator]
             else:
                 return_results(cmd_func())  # type: ignore
     except Exception as e:

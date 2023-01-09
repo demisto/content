@@ -12,10 +12,11 @@ from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    ALWAYS_INSTALLED_PACKS_XSOAR, DEFAULT_MARKETPLACE_WHEN_MISSING,
+    DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
-    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES, ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2)
+    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
+    ALWAYS_INSTALLED_PACKS_MAPPING)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -53,7 +54,7 @@ class CollectionReason(str, Enum):
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
-    FILES_MOVED_FROM_PACK = 'files were moved from this pack, installing to make sure it is not broken'
+    FILES_REMOVED_FROM_PACK = 'files were removed from this pack, installing to make sure it is not broken'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -76,7 +77,9 @@ class CollectionResult:
             id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool = False,
             is_nightly: bool = False,
-            skip_support_level_compatibility: bool = False
+            skip_support_level_compatibility: bool = False,
+            only_to_install: bool = False,
+            only_to_upload: bool = False,
     ):
         """
         Collected test playbook, and/or a pack to install.
@@ -97,9 +100,12 @@ class CollectionResult:
         :param skip_support_level_compatibility:
                 whether to install a pack, even if it is not directly compatible.
                 This is used when collecting a pack containing a content item, when their marketplace values differ.
+        :param only_to_install: whether to collect the pack only to install it without upload to the bucket.
+        :param only_to_upload: whether to collect the pack only to upload it to the bucket without install.
         """
         self.tests: set[str] = set()
-        self.packs: set[str] = set()
+        self.packs_to_install: set[str] = set()
+        self.packs_to_upload: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[tuple[Machine, ...]] = None
 
@@ -140,8 +146,22 @@ class CollectionResult:
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
-            self.packs = {pack}
-            logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
+            if only_to_upload == only_to_install:
+
+                if only_to_upload and only_to_install:
+                    raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
+
+                self.packs_to_install = {pack}
+                self.packs_to_upload = {pack}
+                logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
+
+            elif only_to_install:
+                self.packs_to_install = {pack}
+                logger.info(f'collected {pack=} only to install, {reason} ({reason_description}, {version_range=})')
+
+            elif only_to_upload:
+                self.packs_to_upload = {pack}
+                logger.info(f'collected {pack=} only to upload, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
     def _validate_collection(
@@ -228,7 +248,8 @@ class CollectionResult:
             return self
         result = self.__empty_result()
         result.tests = self.tests | other.tests  # type: ignore[operator]
-        result.packs = self.packs | other.packs  # type: ignore[operator]
+        result.packs_to_install = self.packs_to_install | other.packs_to_install  # type: ignore[operator]
+        result.packs_to_upload = self.packs_to_upload | other.packs_to_upload
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
         return result
 
@@ -238,10 +259,11 @@ class CollectionResult:
         return sum(non_none, start=CollectionResult.__empty_result())
 
     def __repr__(self):
-        return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
+        return f'{len(self.packs_to_install)} packs, {len(self.packs_to_upload)} packs to upload, {len(self.tests)} tests, ' \
+               f'{self.version_range=}'
 
     def __bool__(self):
-        return bool(self.tests or self.packs)
+        return bool(self.tests or self.packs_to_install or self.packs_to_upload)
 
 
 class TestCollector(ABC):
@@ -265,18 +287,19 @@ class TestCollector(ABC):
                 reason_description=f'by marketplace version {self.marketplace}',
                 conf=self.conf,
                 id_set=self.id_set,
-                is_sanity=True
+                is_sanity=True,
+                only_to_install=True,
             )
             for test in self._sanity_test_names
         ))
 
     @property
     def _always_installed_packs(self) -> Optional[CollectionResult]:
-        always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 if \
-            self.marketplace == MarketplaceVersions.MarketplaceV2 else ALWAYS_INSTALLED_PACKS_XSOAR
+        always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MAPPING[self.marketplace]
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
-                             version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
+                             version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True,
+                             only_to_install=True)
             for pack in always_installed_packs_list)
         )
 
@@ -287,6 +310,8 @@ class TestCollector(ABC):
                 return tuple(self.conf['test_marketplacev2'])
             case MarketplaceVersions.XSOAR:
                 return XSOAR_SANITY_TEST_NAMES
+            case MarketplaceVersions.XPANSE:
+                return ()  # none at the moment
             case _:
                 raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
 
@@ -335,6 +360,7 @@ class TestCollector(ABC):
                 reason_description=f'test {test_id} is saved under pack {pack_id}',
                 content_item_range=test_object.version_range,
                 allow_incompatible_marketplace=True,  # allow xsoar&xsiam packs
+                only_to_install=True
             ))
 
             # collect integrations used in the test
@@ -376,6 +402,7 @@ class TestCollector(ABC):
             reason_description=f'test {test_id} depends on {dependency_type} {dependency_name} from {pack_id}',
             conf=self.conf,
             id_set=self.id_set,
+            only_to_install=True,
         )
 
     def __validate_compatibility(
@@ -443,8 +470,10 @@ class TestCollector(ABC):
             content_item_range: Optional[VersionRange] = None,
             allow_incompatible_marketplace: bool = False,
             is_nightly: bool = False,
+            only_to_install: bool = False,
     ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
+        collect_only_to_upload = False
 
         try:
             self._validate_content_item_compatibility(pack_metadata, is_integration=False)
@@ -453,9 +482,21 @@ class TestCollector(ABC):
             logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
                         f'collecting to make sure it is installed properly.')
         except IncompatibleMarketplaceException:
-            # sometimes, we want to install packs that are not compatible (e.g. both marketplaces)
+            is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
+                MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
+
+            # collect only to upload if:
+            # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
+            # 2. allow_incompatible_marketplace=False, if True, then should be also to install
+            if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
+                    not allow_incompatible_marketplace:
+                collect_only_to_upload = True
+
+            # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
             # because they have content that IS compatible.
-            if not allow_incompatible_marketplace:
+            # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
+            if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
+                    and not collect_only_to_upload:
                 raise
 
         version_range = content_item_range \
@@ -470,7 +511,9 @@ class TestCollector(ABC):
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
-            is_nightly=is_nightly
+            is_nightly=is_nightly,
+            only_to_upload=collect_only_to_upload,
+            only_to_install=only_to_install
         )
 
     def __validate_skipped_integration(self, id_: str, path: Path):
@@ -497,6 +540,9 @@ class TestCollector(ABC):
             raise NothingToCollectException(path, 'file under test_data, samples or documentation folder,'
                                                   ' (not triggering sanity tests)')
 
+        if path.name.casefold().endswith('_testdata.json') and 'ModelingRules' in path.parts:
+            raise NothingToCollectException(path, 'modeling rule testdata file does not yet support test collection')
+
     @staticmethod
     def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
         # intended to only be called from __validate_compatibility
@@ -514,14 +560,15 @@ class TestCollector(ABC):
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
-                if content_item_marketplaces != (self.marketplace,):
-                    # marketplacev2 must be the only value in order to be collected
+                # For XSIAM machines we collect tests that have not xsoar marketplace.
+                # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
+                # will run on xsiam machines only.
+                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
+                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-
-            case MarketplaceVersions.XSOAR:
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
                 if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
@@ -566,7 +613,7 @@ class BranchTestCollector(TestCollector):
 
         return CollectionResult.union([
             self.__collect_from_changed_files(collect_from.changed_files),
-            self.__collect_packs_from_which_files_were_moved(collect_from.pack_ids_files_were_removed_from)
+            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
         ])
 
     def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> Optional[CollectionResult]:
@@ -591,14 +638,14 @@ class BranchTestCollector(TestCollector):
                 raise e
         return CollectionResult.union(collected)
 
-    def __collect_packs_from_which_files_were_moved(self, pack_ids: tuple[str, ...]) -> Optional[CollectionResult]:
+    def __collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> Optional[CollectionResult]:
         """NOTE: this should only be used from _collect"""
         collected: list[CollectionResult] = []
         for pack_id in pack_ids:
-            logger.info(f'one or more files were moved from the {pack_id} pack, attempting to collect the pack.')
+            logger.info(f'one or more files were removed from the {pack_id} pack, attempting to collect the pack.')
             try:
                 if pack_to_collect := self._collect_pack(pack_id=pack_id,
-                                                         reason=CollectionReason.FILES_MOVED_FROM_PACK,
+                                                         reason=CollectionReason.FILES_REMOVED_FROM_PACK,
                                                          reason_description='',
                                                          allow_incompatible_marketplace=True):
                     collected.append(pack_to_collect)
@@ -857,15 +904,16 @@ class BranchTestCollector(TestCollector):
                 logger.warning(f'unexpected {git_status=}, considering it as <M>odified')
 
             if git_status == 'D':  # git-deleted file
-                logger.warning(f'Found a file deleted from git {file_path}, '
-                               f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
-                continue
+                if pack_file_removed_from := find_pack_file_removed_from(Path(file_path), None):
+                    packs_files_were_removed_from.add(pack_file_removed_from)
+                continue  # not adding to changed files list
+
             changed_files.append(file_path)  # non-deleted files (added, modified)
         return FilesToCollect(changed_files=tuple(changed_files),
                               pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
 
 
-def find_pack_file_removed_from(old_path: Path, new_path: Path):
+def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
     """
     If a file is moved between packs, we should collect the older one, to make sure it is installed properly.
     """
@@ -873,17 +921,25 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path):
     try:
         old_pack = find_pack_folder(old_path).name
     except NotUnderPackException:
+        logger.debug(f'Skipping pack collection for removed file: {old_path}, as it does not belong to any pack')
         return None  # not moved from a pack, no special treatment we can do here.
 
-    try:
-        new_pack = find_pack_folder(new_path).name
-    except NotUnderPackException:
-        new_pack = None
+    if new_path:
+        try:
+            new_pack = find_pack_folder(new_path).name
+        except NotUnderPackException:
+            new_pack = None
+            logger.warning(f'Could not find the new pack of the file that was moved from {old_path}')
 
-    if old_pack != new_pack:  # file moved between packs
-        logger.info(f'file {old_path.name} was moved '
+        if old_pack != new_pack:  # file moved between packs
+            logger.info(f'file {old_path.name} was moved '
+                        f'from pack {old_pack}, adding it, to make sure it still installs properly')
+    else:
+        # Since new_path is None we understand the item was deleted
+        logger.info(f'file {old_path.name} was deleted '  # changing log
                     f'from pack {old_pack}, adding it, to make sure it still installs properly')
-        return old_pack
+
+    return old_pack
 
 
 class UploadCollector(BranchTestCollector):
@@ -896,6 +952,14 @@ class UploadCollector(BranchTestCollector):
 
 
 class NightlyTestCollector(TestCollector, ABC):
+    def collect(self) -> Optional[CollectionResult]:
+        result: Optional[CollectionResult] = super().collect()
+
+        logger.info('NightlyCollector drops packs to upload, as they don\'t need to be uploaded')
+        if result:
+            result.packs_to_upload = set()
+        return result
+
     def _id_set_tests_matching_marketplace_value(self) -> Optional[CollectionResult]:
         """
         :return: all tests whose marketplace field includes the collector's marketplace value
@@ -990,7 +1054,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                 reason_description='XSIAM Nightly sanity',
                 conf=self.conf,
                 id_set=self.id_set,
-                is_sanity=True
+                is_sanity=True,
+                only_to_install=True
             )
             for test in self.conf['test_marketplacev2']
         ))
@@ -1020,20 +1085,33 @@ def output(result: Optional[CollectionResult]):
     writes to both log and files
     """
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
-    packs = sorted(result.packs, key=lambda x: x.lower()) if result else ()
+    packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
+    packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
     machines = result.machines if result and result.machines else ()
 
     test_str = '\n'.join(tests)
-    pack_str = '\n'.join(packs)
+    packs_to_install_str = '\n'.join(packs_to_install)
+    packs_to_upload_str = '\n'.join(packs_to_upload)
     machine_str = ', '.join(sorted(map(str, machines)))
 
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
-    logger.info(f'collected {len(packs)} packs:\n{pack_str}')
+    logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
+    logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
     PATHS.output_tests_file.write_text(test_str)
-    PATHS.output_packs_file.write_text(pack_str)
+    PATHS.output_packs_file.write_text(packs_to_install_str)
+    PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
     PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
+
+
+class XPANSENightlyTestCollector(NightlyTestCollector):
+    def __init__(self, graph: bool = False):
+        super().__init__(MarketplaceVersions.XPANSE, graph=graph)
+
+    def _collect(self) -> Optional[CollectionResult]:
+        logger.info('tests are not currently supported for XPANSE, returning nothing.')
+        return None
 
 
 if __name__ == '__main__':
@@ -1073,6 +1151,8 @@ if __name__ == '__main__':
                 collector = XSOARNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
+            case True, MarketplaceVersions.XPANSE:
+                collector = XPANSENightlyTestCollector(graph=graph)
             case _:
                 raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
 
