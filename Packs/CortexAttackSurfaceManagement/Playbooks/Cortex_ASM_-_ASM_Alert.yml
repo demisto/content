@@ -2780,10 +2780,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "96":
     id: "96"
-    taskid: 11132e44-5449-4f6f-82d2-41b9fc61033f
+    taskid: 9839d481-9d4e-44c9-8d50-5ca7e340d29a
     type: condition
     task:
-      id: 11132e44-5449-4f6f-82d2-41b9fc61033f
+      id: 9839d481-9d4e-44c9-8d50-5ca7e340d29a
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -2832,27 +2832,13 @@ tasks:
                 root: alert
                 accessor: asmserviceowner
             iscontext: true
-      - - operator: containsString
+      - - operator: isTrue
           left:
             value:
               complex:
-                root: alert.asmtags
-                accessor: Key
+                root: alert
+                accessor: asmdevcheck
             iscontext: true
-          right:
-            value:
-              simple: dev
-          ignorecase: true
-        - operator: containsString
-          left:
-            value:
-              complex:
-                root: alert.asmtags
-                accessor: Value
-            iscontext: true
-          right:
-            value:
-              simple: dev
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -3005,9 +2991,9 @@ inputs:
 - key: OwnerNotificationBody
   value:
     simple: |+
-      Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}<br><br>
+      Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}
+
       Description: ${alert.details}
-      <br><br>
 
   required: true
   description: Body of the notification (email or ticket) sent to potential service owner.

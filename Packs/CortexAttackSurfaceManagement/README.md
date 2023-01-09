@@ -31,7 +31,8 @@ Automated remediation is only possible when the right conditions are met.  These
   - Tenable.io Assets
   - GCP IAM
 - Indicators of a non-production host:
-  - "dev" found in either the keys or values of tags associated with the asset (case insensitive)
+  - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
+  - has an active "DevelopmentEnvironment" classification from processing of public data
   
 ### Playbooks
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)

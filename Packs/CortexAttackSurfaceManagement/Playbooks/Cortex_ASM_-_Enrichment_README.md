@@ -4,20 +4,20 @@ Used as a container folder for all enrichments of ASM alerts.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex ASM - Tenable.io Enrichment
 * Cortex ASM - ServiceNow CMDB Enrichment
-* Cortex ASM - AWS Enrichment
+* Cortex ASM - Tenable.io Enrichment
 * Cortex ASM - GCP Enrichment
+* Cortex ASM - AWS Enrichment
 
 ### Integrations
 * Cortex Attack Surface Management
 
 ### Scripts
-This playbook does not use any scripts.
+* InferWhetherServiceIsDev
 
 ### Commands
-* setAlert
 * asm-get-external-service
+* setAlert
 
 ## Playbook Inputs
 ---
