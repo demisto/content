@@ -549,11 +549,11 @@ def test_reputation_command(
     ('2022-01-21T12:09:33Z', False),
     (str(datetime.now()).split(" ")[0], True),
 ])
-def test_validate_days_diff(date, output):
+def test_is_day_diff_valid(date, output):
     """ Validate days diff.
     """
-    from ThreatGrid import validate_days_diff
-    result = validate_days_diff(date)
+    from ThreatGrid import is_day_diff_valid
+    result = is_day_diff_valid(date)
     assert result is output
 
 
@@ -598,6 +598,8 @@ def test_pagination(args, outputs):
 
 
 def test_parse_url_indicator():
+    """ Parse URL indicator.
+    """
     from ThreatGrid import parse_url_indicator
     result = parse_url_indicator('url', DBOT_SCORE)
 
@@ -605,6 +607,8 @@ def test_parse_url_indicator():
 
 
 def test_parse_domain_indicator():
+    """ Parse domain indicator.
+    """
     from ThreatGrid import parse_domain_indicator
     result = parse_domain_indicator('domain', DBOT_SCORE)
 
