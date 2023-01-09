@@ -133,7 +133,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
         (list) The pack's dependencies.
     """
     pack_id = pack_data['id']
-    logging.debug(f'Getting dependencies for pack {pack_id}')
+    logging.info(f'Getting dependencies for pack {pack_id}')
     try:
         response_data, status_code, _ = demisto_client.generic_request_func(
             client,
@@ -187,14 +187,14 @@ def search_pack(client: demisto_client,
 
     try:
         # make the search request
+        logging.info(f'i am in the search_pack fanction the path is = /contentpacks/marketplace/{pack_id}')
         response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                             path=f'/contentpacks/marketplace/{pack_id}',
                                                                             method='GET',
                                                                             accept='application/json',
                                                                             _request_timeout=None)
-
         if 200 <= status_code < 300:
-            logging.info((f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!'))
+            logging.info(f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!')
             result_object = ast.literal_eval(response_data)
 
             if result_object and result_object.get('currentVersion'):
@@ -420,7 +420,9 @@ def search_pack_and_its_dependencies(client: demisto_client,
         lock (Lock): A lock object.
     """
     pack_data = {}
+    logging.info(f'before the if pack_id = {pack_id} and packs_to_install are = {packs_to_install} and installation_request_body is = {installation_request_body}')
     if pack_id not in packs_to_install:
+        logging.info(f'yes i am in the if and pack_id = {pack_id}')
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
             pack_data = search_pack(client, pack_display_name, pack_id, lock)
@@ -431,6 +433,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
             }
 
     if pack_data:
+        logging.info(f'the pack data is {pack_data}')
         dependencies = get_pack_dependencies(client, pack_data, lock)
 
         current_packs_to_install = [pack_data]
