@@ -1616,7 +1616,8 @@ def messages() -> Response:
             if event_type == 'teamMemberAdded':
                 demisto.info('New Microsoft Teams team member was added')
                 member_added_handler(integration_context, request_body, channel_data)
-                demisto.debug(f'Updated integration context: {json.dumps(get_integration_context().get("teams"))}')
+                demisto.debug(f'Updated team in the integration context. '
+                              f'Current saved teams: {json.dumps(get_integration_context().get("teams"))}')
             elif value:
                 # In TeamsAsk process
                 demisto.info('Got response from user in MicrosoftTeamsAsk process')
