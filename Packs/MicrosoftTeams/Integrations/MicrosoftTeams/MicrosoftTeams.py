@@ -1625,7 +1625,7 @@ def messages() -> Response:
             elif conversation_type == 'personal':
                 demisto.info('Got direct message to the bot')
                 demisto.debug(f"Text is : {request_body.get('text')}")
-                if request_body.get("membersAdded",  []):
+                if request_body.get("membersAdded", []):
                     demisto.debug("the bot was added to a one-to-one chat")
                 direct_message_handler(integration_context, request_body, conversation, formatted_message)
             else:
