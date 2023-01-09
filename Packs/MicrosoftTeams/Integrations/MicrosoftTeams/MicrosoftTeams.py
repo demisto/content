@@ -1261,7 +1261,7 @@ def remove_user_from_channel(team_id: str, channel_id: str, membership_id: str):
     http_request('DELETE', url)
 
 
-def get_user_membership_id(member: str, team_id: str, channel_id: str) -> Optional[str]:
+def get_user_membership_id(member: str, team_id: str, channel_id: str) -> str:
     """
     Searches for the given member in the channel's members and returns its membership id
     :param member: The display name of the user
@@ -1272,8 +1272,8 @@ def get_user_membership_id(member: str, team_id: str, channel_id: str) -> Option
     channel_members: List[Dict[str, Any]] = get_channel_members(team_id, channel_id)
     for user in channel_members:
         if user.get('displayName') == member:
-            return user.get('id')
-
+            return user.get('id', '')
+    return ''
 
 def user_remove_from_channel_command():
     """

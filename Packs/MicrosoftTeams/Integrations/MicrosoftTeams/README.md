@@ -197,13 +197,13 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 
 
 
-In order to connect to the Azure Network Security Groups use one of the following methods:
+### In order to connect to the Azure Network Security Groups use one of the following methods:
 
 1. *Client Credentials Flow*
 2. *Authorization Code Flow*
 
-## Client Credentials Flow
-### Grant the Demisto Bot Permissions in Microsoft Graph
+### Client Credentials Flow
+#### Grant the Demisto Bot Permissions in Microsoft Graph
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
@@ -218,23 +218,22 @@ In order to connect to the Azure Network Security Groups use one of the followin
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 
-## Authentication Using the Client Credentials Flow
+#### Authentication Using the Client Credentials Flow
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. Choose the 'Client Credentials' option in the ***Authentication Type*** parameter.
-3. Enter your Client/Application ID in the ***Bot ID*** parameter. 
-4. Enter your Client Secret in the ***Bot Password*** parameter.
-5. Save the instance.
+1. Choose the 'Client Credentials' option in the ***Authentication Type*** parameter.
+2. Enter your Client/Application ID in the ***Bot ID*** parameter. 
+3. Enter your Client Secret in the ***Bot Password*** parameter.
+4. Save the instance.
 
 
-## Authorization Code Flow
-### Grant the Demisto Bot Permissions in Microsoft Graph
+### Authorization Code Flow
+#### Grant the Demisto Bot Permissions in Microsoft Graph
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For the following permissions, search for, select the checkbox and click **Add permissions**.
-    ## Required Application Permissions:
+    ##### Required Application Permissions:
       1. User.Read.All
       2. Group.ReadWrite.All
       3. Calls.Initiate.All
@@ -242,7 +241,7 @@ In order to connect to the Azure Network Security Groups use one of the followin
       5. OnlineMeetings.ReadWrite.All
       6. ChannelMember.ReadWrite.All
 
-    ## Required Delegated Permissions:
+    ##### Required Delegated Permissions:
       1. ChannelMessage.Send
       2. Chat.ReadWrite
       3. ChatMessage.Send
@@ -258,17 +257,16 @@ In order to connect to the Azure Network Security Groups use one of the followin
    - ChannelMember.Read.All
 9. Click **Authentication > Platform configurations > Add a platform. Choose Web and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
 
-## Authentication Using the Authorization Code Flow
+#### Authentication Using the Authorization Code Flow
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
-2. Choose the 'Authorization Code' option in the ***Authentication Type*** parameter.
-3. Enter your Client/Application ID in the ***Bot ID*** parameter. 
-4. Enter your Client Secret in the ***Bot Password*** parameter.
-5. Enter your Tenant ID in the ***Tenant ID*** parameter.
-6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
-7. Enter your Authorization code in the ***Authorization code*** parameter.
-8. Save the instance.
-9. Run the ***!microsoft-teams-auth-test*** command - a 'Success' message should be printed to the War Room.
+1. Choose the 'Authorization Code' option in the ***Authentication Type*** parameter.
+2. Enter your Client/Application ID in the ***Bot ID*** parameter. 
+3. Enter your Client Secret in the ***Bot Password*** parameter.
+4. Enter your Tenant ID in the ***Tenant ID*** parameter.
+5. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
+6. Enter your Authorization code in the ***Authorization code*** parameter.
+7. Save the instance.
+8. Run the ***!microsoft-teams-auth-test*** command - a 'Success' message should be printed to the War Room.
 
 
 
