@@ -114,4 +114,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Rapid7 InsightIDR - Indicator Hunting](../doc_files/Rapid7_InsightIDR_-_Indicator_Hunting.png)
+![Rapid7 InsightIDR - Indicator Hunting](../doc_files/playbook-Rapid7_InsightIDR_-_Indicator_Hunting.png)

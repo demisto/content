@@ -54,4 +54,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Rapid7 InsightIDR - Execution Flow Indicators Hunting](../doc_files/Rapid7_InsightIDR_-_Execution_Flow_Indicators_Hunting.png)
+![Rapid7 InsightIDR - Execution Flow Indicators Hunting](../doc_files/playbook-Rapid7_InsightIDR_-_Execution_Flow_Indicators_Hunting.png)

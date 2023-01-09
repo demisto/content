@@ -57,4 +57,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Rapid7 InsightIDR - Traffic Indicators Hunting](../doc_files/Rapid7_InsightIDR_-_Traffic_Indicators_Hunting.png)
+![Rapid7 InsightIDR - Traffic Indicators Hunting](../doc_files/playbook-Rapid7_InsightIDR_-_Traffic_Indicators_Hunting.png)
