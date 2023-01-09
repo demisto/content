@@ -1976,6 +1976,7 @@ def parse_results(
     command_headers_by_keys: Dict[str, Any],
     command_title: str,
     command_context: str,
+    raw_responses: Union[List, Dict] = None
 ) -> CommandResults:
     """
     Create a CommandResults from a given response.
@@ -1985,6 +1986,9 @@ def parse_results(
         command_headers_by_keys (Dict[str, Any]): Headers by a list of keys to the response value.
         command_title (str): Readable output title.
         command_context (str): Command context path.
+        raw_responses (Union[List, Dict], optional): Potentially multiple API responses from a LIST request.
+            This argument will replace raw_response in the CommandResults incase it exists.
+            Defaults to None.
 
     Returns:
         CommandResults: Created CommandResults from the API response.
@@ -1999,13 +2003,18 @@ def parse_results(
         title=command_title,
     )
 
-    return CommandResults(
+    command_results = CommandResults(
         outputs_prefix='.'.join((INTEGRATION_CONTEXT_NAME, command_context)),
         outputs_key_field='id',
         outputs=context_output,
         readable_output=readable_output,
         raw_response=raw_response,
     )
+
+    if raw_responses:
+        command_results.raw_response = raw_responses
+
+    return command_results
 
 
 def append_items_to_value(raw_response: Dict[str, Any], value: str, items_key: str, inner_key: str) -> str:
@@ -3669,12 +3678,12 @@ def list_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Comma
     page_size = arg_to_number(args.get('page_size', 0))
     expanded_response = argToBoolean(args.get('expanded_response', 'False'))
 
-    is_get_request = check_is_get_request(
+    raw_responses = None
+
+    if check_is_get_request(
         get_args=[intrusion_policy_id, include_count],
         list_args=[limit, page, page_size, expanded_response]
-    )
-
-    if is_get_request:
+    ):
         raw_response = client.get_intrusion_policy(
             intrusion_policy_id=intrusion_policy_id,
             include_count=include_count,
@@ -3688,17 +3697,13 @@ def list_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Comma
             expanded_response=expanded_response,
         )
 
-    command_results = parse_results(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_POLICY_HEADERS_BY_KEYS,
         command_title=f'Fetched {INTRUSION_POLICY_TITLE}',
         command_context=INTRUSION_POLICY_CONTEXT,
+        raw_responses=raw_responses,
     )
-
-    if not is_get_request:
-        command_results.raw_response = raw_responses
-
-    return command_results
 
 
 def update_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3846,12 +3851,12 @@ def list_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Command
     filter_string = args.get('filter')
     expanded_response = argToBoolean(args.get('expanded_response', 'False'))
 
-    is_get_request = check_is_get_request(
+    raw_responses = None
+
+    if check_is_get_request(
         get_args=[intrusion_rule_id],
         list_args=[sort, filter_string, expanded_response, limit, page, page_size]
-    )
-
-    if is_get_request:
+    ):
         raw_response = client.get_intrusion_rule(
             intrusion_rule_id=intrusion_rule_id,
         )
@@ -3866,17 +3871,13 @@ def list_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> Command
             expanded_response=expanded_response,
         )
 
-    command_results = parse_results(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_HEADERS_BY_KEYS,
         command_title=f'Fetched {INTRUSION_RULE_TITLE}',
         command_context=INTRUSION_RULE_CONTEXT,
+        raw_responses=raw_responses,
     )
-
-    if not is_get_request:
-        command_results.raw_response = raw_responses
-
-    return command_results
 
 
 def update_intrusion_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4081,12 +4082,12 @@ def list_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> C
     filter_string = args.get('filter')
     expanded_response = argToBoolean(args.get('expanded_response', 'False'))
 
-    is_get_request = check_is_get_request(
+    raw_responses = None
+
+    if check_is_get_request(
         get_args=[rule_group_id],
         list_args=[filter_string, expanded_response, limit, page, page_size]
-    )
-
-    if is_get_request:
+    ):
         raw_response = client.get_intrusion_rule_group(
             rule_group_id=rule_group_id,
         )
@@ -4100,17 +4101,13 @@ def list_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> C
             expanded_response=expanded_response,
         )
 
-    command_results = parse_results(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=INTRUSION_RULE_GROUP_HEADERS_BY_KEYS,
         command_title=f'Fetched {INTRUSION_RULE_GROUP_TITLE}',
         command_context=INTRUSION_RULE_GROUP_CONTEXT,
+        raw_responses=raw_responses,
     )
-
-    if not is_get_request:
-        command_results.raw_response = raw_responses
-
-    return command_results
 
 
 def update_intrusion_rule_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4231,12 +4228,12 @@ def list_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -
     page_size = arg_to_number(args.get('page_size', 0))
     expanded_response = argToBoolean(args.get('expanded_response', 'False'))
 
-    is_get_request = check_is_get_request(
+    raw_responses = None
+
+    if check_is_get_request(
         get_args=[network_analysis_policy_id],
         list_args=[expanded_response, limit, page, page_size]
-    )
-
-    if is_get_request:
+    ):
         raw_response = client.get_network_analysis_policy(
             network_analysis_policy_id=network_analysis_policy_id,
         )
@@ -4249,17 +4246,13 @@ def list_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -
             expanded_response=expanded_response,
         )
 
-    command_results = parse_results(
+    return parse_results(
         raw_response=raw_response,
         command_headers_by_keys=NETWORK_ANALYSIS_POLICY_HEADERS_BY_KEYS,
         command_title=f'Fetched {NETWORK_ANALYSIS_POLICY_TITLE}',
         command_context=NETWORK_ANALYSIS_POLICY_CONTEXT,
+        raw_responses=raw_responses,
     )
-
-    if not is_get_request:
-        command_results.raw_response = raw_responses
-
-    return command_results
 
 
 def update_network_analysis_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
