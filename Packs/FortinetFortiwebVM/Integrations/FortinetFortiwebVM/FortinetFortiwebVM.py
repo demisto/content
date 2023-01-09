@@ -5513,8 +5513,6 @@ def ip_list_group_update_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    if not isinstance(client, ClientV2):
-        raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
     client.validate_update_ip_list_group(args)
     group_name = args["name"]
     response = client.ip_list_group_update_request(
