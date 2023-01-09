@@ -6,7 +6,9 @@ from MicrosoftTeams import send_message
 
 entryTypes['warning'] = 11
 
-BASE_URL = "https://graph.microsoft.com/beta/groups"
+GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
+
+BASE_URL = "https://graph.microsoft.com/v1.0/groups"
 
 bot_id: str = '9bi5353b-md6a-4458-8321-e924af433amb'
 
@@ -62,6 +64,34 @@ team_members: list = [
         'tenantId': tenant_id
     }
 ]
+
+
+channel_members: dict = {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#teams('2ab9c796-2902-45f8-b712-7c5a63cf41c4')/"
+                      "channels('19%3A20bc1df46b1148e9b22539b83bc66809%40thread.skype')/members",
+    "@odata.count": 2,
+    "value": [
+        {
+            "@odata.type": "#microsoft.graph.aadUserConversationMember",
+            "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkMTQ=",
+            "roles": [],
+            "displayName": "Jane Doe",
+            "userId": "eef9cb36-06de-469b-87cd-70f4cbe32d14",
+            "email": "jdoe@teamsip.onmicrosoft.com"
+        },
+        {
+            "@odata.type": "#microsoft.graph.aadUserConversationMember",
+            "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNiMzI0NmY0NC1jMDkxLTQ2MjctOTZjNi0yNWIxOGZhMmM5MTA=",
+            "roles": [
+                "owner"
+            ],
+            "displayName": "Ace John",
+            "userId": "b3246f44-c091-4627-96c6-25b18fa2c910",
+            "email": "ajohn@teamsip.onmicrosoft.com"
+        }
+    ]
+}
+
 
 integration_context: dict = {
     'bot_name': 'DemistoBot',
@@ -275,6 +305,7 @@ def test_mirror_investigation(mocker, requests_mock):
     })
     expected_integration_context: dict = {
         'bot_name': 'DemistoBot',
+        'current_refresh_token': '',
         'tenant_id': tenant_id,
         'service_url': service_url,
         'teams': json.dumps([{
@@ -287,7 +318,8 @@ def test_mirror_investigation(mocker, requests_mock):
     }
     assert requests_mock.request_history[1].json() == {
         'displayName': 'incident-2',
-        'description': 'Channel to mirror incident 2'
+        'description': 'Channel to mirror incident 2',
+        'membershipType': 'standard'
     }
     assert requests_mock.request_history[3].json() == {
         'text': 'This channel was created to mirror [incident 2](https://test-address:8443#/WarRoom/2) between '
@@ -353,7 +385,8 @@ def test_mirror_investigation(mocker, requests_mock):
     mirror_investigation()
     assert requests_mock.request_history[5].json() == {
         'displayName': 'booya',
-        'description': 'Channel to mirror incident 14'
+        'description': 'Channel to mirror incident 14',
+        'membershipType': 'standard'
     }
     results = demisto.results.call_args[0]
     assert len(results) == 1
@@ -476,6 +509,7 @@ def test_send_message_with_channel(mocker, requests_mock):
     # verify message is sent properly given channel
 
     mocker.patch.object(demisto, 'results')
+    mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
 
     mocker.patch.object(
         demisto,
@@ -699,6 +733,8 @@ def test_send_message_server_notifications_incident_opened(mocker, requests_mock
     """
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
+    mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
+
     mocker.patch.object(
         demisto,
         'params',
@@ -755,6 +791,8 @@ def test_send_message_server_notifications_incident_changed(mocker, requests_moc
     """
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
+    mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
+
     mocker.patch.object(
         demisto,
         'params',
@@ -963,7 +1001,7 @@ def test_get_team_aad_id(mocker, requests_mock):
     assert get_team_aad_id('The-A-Team') == '7d8efdf8-0c5a-42e3-a489-5ef5c3fc7a2b'
 
     json_response = {
-        '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
+        '@odata.context': 'https://graph.microsoft.com/v1.0/$metadata#groups',
         'value': [
             {
                 'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',

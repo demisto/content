@@ -5,3 +5,7 @@
 !microsoft-teams-integration-health
 !microsoft-teams-ring-user username="Avishai Brandeis"
 !mirror-investigation team=DemistoTeam channel_name=General mirror_type=chat direction=ToDemisto
+!microsoft-teams-channel-user-list team=DemistoTeam channel_name="example channel"
+!microsoft-teams-chat-create chat_type=group member=itayadmin chat_name="example chat"
+!microsoft-teams-message-send-to-chat chat="example chat" content="Hello World"
+!microsoft-teams-user-remove-from-channel channel_name="example channel" member=itayadmin team=DemistoTeam

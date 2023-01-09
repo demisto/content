@@ -196,6 +196,13 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 17. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
 
 
+
+In order to connect to the Azure Network Security Groups use one of the following methods:
+
+1. *Client Credentials Flow*
+2. *Authorization Code Flow*
+
+## Client Credentials Flow
 ### Grant the Demisto Bot Permissions in Microsoft Graph
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
@@ -211,6 +218,58 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 
+## Authentication Using the Client Credentials Flow
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. Choose the 'Client Credentials' option in the ***Authentication Type*** parameter.
+3. Enter your Client/Application ID in the ***Bot ID*** parameter. 
+4. Enter your Client Secret in the ***Bot Password*** parameter.
+5. Save the instance.
+
+
+## Authorization Code Flow
+### Grant the Demisto Bot Permissions in Microsoft Graph
+
+1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
+2. Search for and click **Demisto Bot**.
+3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
+4. For the following permissions, search for, select the checkbox and click **Add permissions**.
+    ## Required Application Permissions:
+      1. User.Read.All
+      2. Group.ReadWrite.All
+      3. Calls.Initiate.All
+      4. Calls.InitiateGroupCall.All
+      5. OnlineMeetings.ReadWrite.All
+      6. ChannelMember.ReadWrite.All
+
+    ## Required Delegated Permissions:
+      1. ChannelMessage.Send
+      2. Chat.ReadWrite
+      3. ChatMessage.Send
+      4. Group.ReadWrite.All
+      5. ChannelSettings.ReadWrite.All
+5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
+6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
+7. Click **Expose an API and add Application ID URI (id only)  
+8. Click **Expose an API > Add a scope > 
+   - Chat.ReadWrite
+   - ChatMessage.Send
+   - ChannelSettings.ReadWrite.All
+   - ChannelMember.Read.All
+9. Click **Authentication > Platform configurations > Add a platform. Choose Web and add Redirect URIs: https://login.microsoftonline.com/common/oauth2/nativeclient
+
+## Authentication Using the Authorization Code Flow
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+2. Choose the 'Authorization Code' option in the ***Authentication Type*** parameter.
+3. Enter your Client/Application ID in the ***Bot ID*** parameter. 
+4. Enter your Client Secret in the ***Bot Password*** parameter.
+5. Enter your Tenant ID in the ***Tenant ID*** parameter.
+6. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
+7. Enter your Authorization code in the ***Authorization code*** parameter.
+8. Save the instance.
+9. Run the ***!microsoft-teams-auth-test*** command - a 'Success' message should be printed to the War Room.
+
 
 
 ### Configure Microsoft Teams on Cortex XSOAR
@@ -219,23 +278,27 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 2. Search for Microsoft Teams.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
-| bot_id | Bot ID | True |
-| bot_password | Bot Password | True |
-| team | Default team - team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter | True |
-| incident_notifications_channel | Notifications channel | True |
-| certificate | Certificate (Required for HTTPS) | False |
-| key | Private Key (Required for HTTPS) | False |
-| min_incident_severity | Minimum incident severity to send notifications to Teams by | False |
-| auto_notifications | Disable Automatic Notifications | False |
-| allow_external_incidents_creation | Allow external users to create incidents via direct message | False |
-| insecure | Trust any certificate (not secure) | False |
-| proxy | Use system proxy settings | False |
-| longRunning | Long running instance | False |
-| longRunningPort | Listen port, e.g. 7000 (Required for investigation mirroring and direct messages) | False |
-| incidentType | Incident type | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
+    | Bot ID | Bot ID | True |
+    | Bot Password | Bot Password | True |
+    | Tenant ID |  | False |
+    | Authentication Type |  | True |
+    | Application redirect URI (for Authorization Code mode) |  | False |
+    | Authorization code | For Authorization Code flow mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+    | Default team | Default team - team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter | True |
+    | Notifications channel |  | True |
+    | Certificate (Required for HTTPS) |  | False |
+    | Private Key (Required for HTTPS) |  | False |
+    | Minimum incident severity to send notifications to Teams by |  | False |
+    | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
+    | Allow external users to create incidents via direct message |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Long running instance |  | False |
+    | Listen port, e.g. 7000 (Required for investigation mirroring and direct messages) | longRunningPort | False |
+    | Incident type | Incident type | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 5. Click the **Save & exit** button.
@@ -269,11 +332,16 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 4. In the search box, type the name of the team to which to add the bot.
 5. Click **Set up** and configure the new app.
 
+## Known Limitations
+- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the Client Credentials flow due to a limitation in Microsoft's permissions system. In addition, the [microsoft-teams-chat-create](https://learn.microsoft.com/en-us/graph/api/chat-post?view=graph-rest-1.0&tabs=http) and [microsoft-teams-message-send-to-chat](https://learn.microsoft.com/en-us/graph/api/chat-post-messages?view=graph-rest-1.0&tabs=http) commands are only supported when using the Authorization Code flow.
+  To work around these limitations, you can configure two instances of the integration, each with a different Authentication Type.
+- Posting a message or adaptive card to a private/shared channel is currently not supported in the *send-notification* command. Thus, also the *mirror_investigation* command does not support private/shared channels. For more information, see the [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### Send a message to teams
+### send-notification
 ***
 Sends a message to the specified teams.
 To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
@@ -289,13 +357,14 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| channel | The channel to which to send messages. | Optional |
-| message | The message to send to the channel or team member. | Optional |
-| team_member | Display name or email address of the team member to send the message to. | Optional |
-| team | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. Used only when sending notification to a channel | Optional |
-| adaptive_card | The Microsoft Teams adaptive card to send. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                         | **Required** |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| channel           | The channel to which to send messages. Supports only standard channels.                                                                                                 | Optional     | 
+| message           | The message to send to the channel or team member.                                                                                                                      | Optional     | 
+| team_member       | Display name or email address of the team member to send the message to.                                                                                                | Optional     | 
+| team              | The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters. | Optional     | 
+| adaptive_card     | The Microsoft Teams adaptive card to send.                                                                                                                              | Optional     | 
+| to                | The team member to which to send the message.                                                                                                                           | Optional     | 
 
 
 ##### Context Output
@@ -308,9 +377,9 @@ There is no context output for this command.
 ##### Human Readable Output
 Message was sent successfully.
 
-### Mirror an investigation to a Microsoft Teams channel
+### mirror-investigation
 ***
-Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams channel.
+Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams channel. Supports only standard channels.
 
 
 ##### Base Command
@@ -323,13 +392,13 @@ Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams channel.
 
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| mirror_type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. | Optional |
-| autoclose | Whether to auto-close the channel when the incident is closed in Cortex XSOAR. If "true", the channel will be auto-closed. Default is "true". | Optional |
-| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". | Optional |
-| team | The team in which to mirror the Demisto investigation. If not specified, the default team configured in the integration parameters will be used. | Optional |
-| channel_name | The name of the channel. The default is "incident-INCIDENTID". | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                          | **Required** |
+|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| mirror_type       | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional     | 
+| autoclose         | Whether to auto-close the channel when the incident is closed in Cortex XSOAR. If "true", the channel will be auto-closed. Default is "true". Possible values are: true, false. Default is true.         | Optional     | 
+| direction         | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Possible values are: Both, FromDemisto, ToDemisto. Default is both.                                                               | Optional     | 
+| team              | The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.                                                    | Optional     | 
+| channel_name      | The name of the channel. The default is "incident-INCIDENTID".                                                                                                                                           | Optional     | 
 
 
 ##### Context Output
@@ -358,9 +427,10 @@ Deletes the specified Microsoft Teams channel.
 
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| channel | The name of the channel to close. | Optional |
+| **Argument Name** | **Description**                   | **Required** |
+|-------------------|-----------------------------------|--------------|
+| channel           | The name of the channel to close. | Optional     | 
+| team              | The channel's team.               | Optional     | 
 
 
 ##### Context Output
@@ -396,9 +466,9 @@ There is no context output for this command.
 
 ##### Human Readable Output
 ### Microsoft API Health
-|Bot Framework API Health|Graph API Health|
-|---|---|
-| Operational | Operational |
+| Bot Framework API Health | Graph API Health |
+|--------------------------|------------------|
+| Operational              | Operational      |
 No mirrored channels.
 
 ### Ring a user's Team account
@@ -417,9 +487,9 @@ Rings a user's Teams account. Note: This is a ring only! no media will play in c
 
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The display name of the member to call. | Required |
+| **Argument Name** | **Description**                         | **Required** |
+|-------------------|-----------------------------------------|--------------|
+| username          | The display name of the member to call. | Required     | 
 
 
 ##### Context Output
@@ -435,7 +505,7 @@ Calling Avishai Brandeis
 
 ### Add a user to a channel
 ***
-Adds a member (user) to a private channel.
+Adds a member (user) to a private/shared channel.
 
 
 ##### Base Command
@@ -449,11 +519,12 @@ Adds a member (user) to a private channel.
 
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| channel | The channel to which to add the add the member to this channel | Required |
-| team | The channel's team. | Required |
-| member | The display name of the member to add to the channel. | Required |
+| **Argument Name** | **Description**                                                                                                      | **Required** |
+|-------------------|----------------------------------------------------------------------------------------------------------------------|--------------|
+| channel           | The channel to which to add the member.                                                                              | Required     | 
+| team              | The channel's team.                                                                                                  | Required     | 
+| member            | The display name of the member to add to the channel.                                                                | Required     | 
+| owner             | Determine whether the new member should be an owner. Possible values are: true, false. The default value is 'false'. | Optional     | 
 
 
 ##### Context Output
@@ -469,6 +540,8 @@ The User "itayadmin" has been added to channel "example channel" successfully.
 ### Create a channel
 ***
 Creates a new channel in a Microsoft Teams team.
+For more information about the channels types, see the Microsoft documentation: [standard, private, or shared channels](https://support.microsoft.com/en-us/office/teams-can-have-standard-private-or-shared-channels-de3e20b0-7494-439c-b7e5-75899ebe6a0e)
+See also [Channel feature comparison](https://learn.microsoft.com/en-us/MicrosoftTeams/teams-channels-overview#channel-feature-comparison).
 
 
 ##### Base Command
@@ -481,11 +554,13 @@ Creates a new channel in a Microsoft Teams team.
 
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| channel_name | The name of the channel. | Required |
-| description | The description of the channel. | Optional |
-| team | The team in which to create the channel. | Required |
+| **Argument Name** | **Description**                                                                               | **Required** |
+|-------------------|-----------------------------------------------------------------------------------------------|--------------|
+| channel_name      | The name of the channel.                                                                      | Required     | 
+| description       | The description of the channel.                                                               | Optional     | 
+| team              | The team in which to create the channel.                                                      | Required     | 
+| membership_type   | The type of the channel. Possible values are: private, standard, shared. Default is standard. | Optional     | 
+| owner_user        | The channel owner (Display name/mail/UPN)                                                     | Optional     | 
 
 
 ##### Context Output
@@ -501,8 +576,7 @@ The channel "example channel" was created successfully
 
 ### Create a meeting
 ***
-Creates a Teams meeting.
-
+Creates a new meeting in Microsoft Teams.
 
 
 ##### Base Command
@@ -517,35 +591,213 @@ The script *ConfigureAzureApplicationAccessPolicy* was created to support the ne
 For more information:
 [Allow applications to access online meetings on behalf of a user](https://docs.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy)
 
-#### Input
+##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subject | The meeting subject. | Required |
-| member | The user who created the meeting. | Required |
-| start_time | The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00". | Optional |
-| end_time | The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00". | Optional |
-
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MicrosoftTeams.CreateMeeting.creationDateTime | String | Meeting creation time. |
-| MicrosoftTeams.CreateMeeting.threadId | String | Meeting thread ID. |
-| MicrosoftTeams.CreateMeeting.messageId | String | Meeting message ID. |
-| MicrosoftTeams.CreateMeeting.id | String | Meeting ID. |
-| MicrosoftTeams.CreateMeeting.joinWebUrl | String | The URL to join the meeting. |
-| MicrosoftTeams.CreateMeeting.participantId | String | The participant ID. |
-| MicrosoftTeams.CreateMeeting.participantDisplayName | String | The display name of the participant. |
+| **Argument Name** | **Description**                                                                      | **Required** |
+|-------------------|--------------------------------------------------------------------------------------|--------------|
+| start_time        | The meeting start time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00". | Optional     | 
+| end_time          | The meeting end time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".   | Optional     | 
+| subject           | The meeting subject.                                                                 | Required     | 
+| member            | Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.             | Required     | 
 
 
-#### Command Example
+##### Context Output
+
+| **Path**                                            | **Type** | **Description**                       |
+|-----------------------------------------------------|----------|---------------------------------------|
+| MicrosoftTeams.CreateMeeting.creationDateTime       | Date     | Meeting creation time.                | 
+| MicrosoftTeams.CreateMeeting.threadId               | String   | Meeting thread ID.                    | 
+| MicrosoftTeams.CreateMeeting.messageId              | String   | Meeting message ID.                   | 
+| MicrosoftTeams.CreateMeeting.id                     | String   | Meeting ID.                           | 
+| MicrosoftTeams.CreateMeeting.joinWebUrl             | String   | The URL to join the meeting.          | 
+| MicrosoftTeams.CreateMeeting.participantId          | String   | The meeting participants.             | 
+| MicrosoftTeams.CreateMeeting.participantDisplayName | String   | The display name of the participants. | 
+
+
+##### Command Example
 ``` !microsoft-teams-create-meeting member="example user" subject="Important meeting" ```
 
-#### Human Readable Output
+##### Human Readable Output
 The meeting "Important meeting" was created successfully
+
+### microsoft-teams-user-remove-from-channel
+***
+Removes a member (user) from a private/shared channel.
+
+
+##### Base Command
+
+`microsoft-teams-user-remove-from-channel`
+
+##### Required Permissions
+
+`ChannelMember.ReadWrite.All` - Delegated, Application
+
+##### Input
+
+| **Argument Name** | **Description**                                            | **Required** |
+|-------------------|------------------------------------------------------------|--------------|
+| channel_name      | The name of the channel.                                   | Required     | 
+| team              | The name of the channel's team.                            | Required     | 
+| member            | The display name of the member to remove from the channel. | Required     | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!microsoft-teams-user-remove-from-channel channel_name="example channel" member=itayadmin team=DemistoTeam```
+
+##### Human Readable Output
+The User "itayadmin" has been removed from channel "example channel" successfully.
+
+### microsoft-teams-channel-user-list
+***
+Retrieve a list of members from a channel. Only a user who is a member of the shared channel can retrieve the channel member list.
+
+
+##### Base Command
+
+`microsoft-teams-channel-user-list`
+
+##### Required Permissions
+
+`ChannelMember.Read.All` - Delegated, Application
+`ChannelMember.ReadWrite.All` - Delegated, Application
+
+##### Input
+
+| **Argument Name** | **Description**                 | **Required** |
+|-------------------|---------------------------------|--------------|
+| channel_name      | The name of the channel.        | Required     | 
+| team              | The name of the channel's team. | Required     | 
+
+
+##### Context Output
+
+| **Path**                                                               | **Type** | **Description**                                                                                      |
+|------------------------------------------------------------------------|----------|------------------------------------------------------------------------------------------------------|
+| MicrosoftTeams.Channel.ChannelName.Members.displayName                 | String   | The display name of the members.                                                                     | 
+| MicrosoftTeams.Channel.ChannelName.Members.email                       | String   | The email of the members.                                                                            | 
+| MicrosoftTeams.Channel.ChannelName.Members.id                          | String   | The id of the members.                                                                               | 
+| MicrosoftTeams.Channel.ChannelName.Members.roles                       | String   | The roles of the members.                                                                            | 
+| MicrosoftTeams.Channel.ChannelName.Members.tenantId                    | String   | The tenantId of the members.                                                                         | 
+| MicrosoftTeams.Channel.ChannelName.Members.userId                      | String   | The userId of the members.                                                                           | 
+| MicrosoftTeams.Channel.ChannelName.Members.visibleHistoryStartDateTime | String   | The timestamp denoting how far back a conversation's history is shared with the conversation member. | 
+
+##### Command Example
+```!microsoft-teams-channel-user-list channel_name="example channel" team=DemistoTeam```
+
+##### Human Readable Output
+### Channel 'example channel' Members List:
+| userId                               | email          | tenantid                             | Membership id                                                                                        | User roles | Display Name | Start DateTime       |
+|--------------------------------------|----------------|--------------------------------------|------------------------------------------------------------------------------------------------------|------------|--------------|----------------------|
+| 359d2c3c-162b-414c-b2eq-386461e5l050 | test@gmail.com | pbae9ao6-01ql-249o-5me3-4738p3e1m941 | MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkMTQ= | owner      | itayadmin    | 0001-01-01T00:00:00Z |
+
+### microsoft-teams-chat-create
+***
+Create a new chat object. Only one one-on-one chat can exist between two members. If a one-on-one chat already exists, this operation will return the existing chat and not create a new one.
+
+
+##### Base Command
+
+`microsoft-teams-chat-create`
+
+##### Required Permissions
+`Chat.Create` - Delegated
+`Chat.ReadWrite` - Delegated
+
+##### Input
+
+| **Argument Name** | **Description**                                                                          | **Required** |
+|-------------------|------------------------------------------------------------------------------------------|--------------|
+| chat_type         | Specifies the type of chat. Possible values are: group, oneOnOne. Default is group.      | Required     | 
+| member            | Display name/mail/UPN of user that should be added to the chat. Can be an array.         | Optional     | 
+| chat_name         | The title of the chat. The chat title can be provided only if the chat is of group type. | Optional     | 
+
+
+##### Context Output
+
+| **Path**                                     | **Type** | **Description**                                                                                                         |
+|----------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------|
+| MicrosoftTeams.Chat.Info.id                  | String   | The chat's unique identifier.                                                                                           | 
+| MicrosoftTeams.Chat.Info.topic               | String   | Subject or topic for the chat. Only available for group chats.                                                          | 
+| MicrosoftTeams.Chat.Info.createdDateTime     | String   | Date and time at which the chat was created.                                                                            | 
+| MicrosoftTeams.Chat.Info.lastUpdatedDateTime | String   | Date and time at which the chat was renamed or list of members were last changed.                                       | 
+| MicrosoftTeams.Chat.Info.chatType            | String   | Specifies the type of chat.                                                                                             | 
+| MicrosoftTeams.Chat.Info.webUrl              | String   | The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed.                   | 
+| MicrosoftTeams.Chat.Info.tenantId            | String   | The identifier of the tenant in which the chat was created.                                                             | 
+| MicrosoftTeams.Chat.Info.viewpoint           | String   | Represents caller-specific information about the chat.                                                                  | 
+| MicrosoftTeams.Chat.Info.onlineMeetingInfo   | String   | Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty. | 
+
+##### Command Example
+```!microsoft-teams-chat-create chat_type=group member="itayadmin, Bruce Willis" chat_name="DemistoChat"```
+
+##### Human Readable Output
+### The chat "DemistoChat" was created successfully
+| Chat id                                       | Chat name   | Created DateTime        | Last Updated Date Time  | webUrl                                                                                                                               | tenantId                             |
+|-----------------------------------------------|-------------|-------------------------|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| 19:1c771fdc14dc4b05b3a9184414bc8948@thread.v2 | DemistoChat | 2023-01-08T07:51:53.07Z | 2023-01-08T07:51:53.07Z | https://teams.microsoft.com/l/chat/19%3A1c771fdc14dc4b05b3a9184414bc8948%40thread.v2/0?tenantId=pbae9ao6-01ql-249o-5me3-4738p3e1m941 | pbae9ao6-01ql-249o-5me3-4738p3e1m941 |
+
+### microsoft-teams-message-send-to-chat
+***
+Send a new chat message in the specified chat.
+
+
+##### Base Command
+
+`microsoft-teams-message-send-to-chat`
+
+##### Required Permissions
+`ChatMessage.Send` - Delegated
+`Chat.ReadWrite` - Delegated
+
+##### Input
+
+| **Argument Name** | **Description**                                                                                      | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------|--------------|
+| chat              | Represents the identity of the chat - chat_name/chat_id/member only in case of "oneOnOne" chat_type. | Required     |
+| content           | The content of the chat message.                                                                     | Required     | 
+| message_type      | The type of chat message. Default is message.                                                        | Optional     |
+
+##### Context Output
+
+| **Path**                                         | **Type** | **Description**                                                                                                                        |
+|--------------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------|
+| MicrosoftTeams.Chat.Message.id                   | String   | Unique ID of the message.                                                                                                              | 
+| MicrosoftTeams.Chat.Message.replyToId            | String   | ID of the parent chat message or root chat message of the thread.                                                                      | 
+| MicrosoftTeams.Chat.Message.etag                 | String   | Version number of the chat message.                                                                                                    | 
+| MicrosoftTeams.Chat.Message.messageType          | String   | The type of chat message.                                                                                                              | 
+| MicrosoftTeams.Chat.Message.createdDateTime      | String   | Timestamp of when the chat message was created.                                                                                        | 
+| MicrosoftTeams.Chat.Message.lastModifiedDateTime | String   | Timestamp when the chat message is created \(initial setting\) or modified, including when a reaction is added or removed.             | 
+| MicrosoftTeams.Chat.Message.lastEditedDateTime   | String   | Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null. | 
+| MicrosoftTeams.Chat.Message.deletedDateTime      | String   | Timestamp at which the chat message was deleted, or null if not deleted.                                                               | 
+| MicrosoftTeams.Chat.Message.subject              | String   | The subject of the chat message, in plaintext.                                                                                         | 
+| MicrosoftTeams.Chat.Message.summary              | String   | Summary text of the chat message that could be used for push notifications and summary views or fall back views.                       | 
+| MicrosoftTeams.Chat.Message.chatId               | String   | If the message was sent in a chat, represents the identity of the chat.                                                                | 
+| MicrosoftTeams.Chat.Message.importance           | String   | The importance of the chat message.                                                                                                    | 
+| MicrosoftTeams.Chat.Message.locale               | String   | Locale of the chat message set by the client.                                                                                          | 
+| MicrosoftTeams.Chat.Message.webUrl               | String   | Link to the message in Microsoft Teams.                                                                                                | 
+| MicrosoftTeams.Chat.Message.channelIdentity      | String   | If the message was sent in a channel, represents identity of the channel.                                                              | 
+| MicrosoftTeams.Chat.Message.policyViolation      | String   | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application.                                        | 
+| MicrosoftTeams.Chat.Message.eventDetail          | String   | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members.             | 
+| MicrosoftTeams.Chat.Message.from                 | String   | Details of the sender of the chat message.                                                                                             | 
+| MicrosoftTeams.Chat.Message.body                 | String   | Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body.      | 
+| MicrosoftTeams.Chat.Message.attachments          | String   | References to attached objects like files, tabs, meetings etc.                                                                         | 
+| MicrosoftTeams.Chat.Message.mentions             | String   | List of entities mentioned in the chat message.                                                                                        | 
+| MicrosoftTeams.Chat.Message.reactions            | String   | Reactions for this chat message \(for example, Like\).                                                                                 | 
+
+
+##### Command Example
+```!microsoft-teams-message-send-to-chat content="Hello World" chat="DemistoChat"```
+
+##### Human Readable Output
+### Message was sent successfully in the 'DemistoChat' chat.
+| Chat Id                                       | Created DateTime         | Id from                              | Message Type | Message content | Message id    | User from | importance | lastModified DateTime    |
+|-----------------------------------------------|--------------------------|--------------------------------------|--------------|-----------------|---------------|-----------|------------|--------------------------|
+| 19:1c771fdc14dc4b05b3a9184414bc8948@thread.v2 | 2023-01-08T07:55:50.222Z | 359d2c3c-162b-414c-b2eq-386461e5l050 | message      | Hello World     | 1673864550222 | itayadmin | normal     | 2023-01-08T07:55:50.222Z |
+
 
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.

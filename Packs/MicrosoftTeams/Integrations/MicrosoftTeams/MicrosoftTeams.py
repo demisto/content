@@ -23,7 +23,7 @@ requests.packages.urllib3.disable_warnings()   # type: ignore
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get('bot_id', '')
 BOT_PASSWORD: str = PARAMS.get('bot_password', '')
-tenant_id: str = PARAMS.get('tenant_id', '')
+TENANT_ID: str = PARAMS.get('tenant_id', '')
 USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
@@ -48,6 +48,45 @@ if '@' in BOT_ID:
     demisto.debug("setting tenant id in the integration context")
     BOT_ID, tenant_id, service_url = BOT_ID.split('@')
     set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
+
+CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
+AUTHORIZATION_CODE_FLOW = 'Authorization Code'
+AUTH_TYPE = PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW)
+
+AUTH_CODE: str = PARAMS.get('auth_code', '')  # PARAMS.get('auth_code', {}).get('password', '')
+REDIRECT_URI: str = PARAMS.get('redirect_uri', '')
+SESSION_STATE = 'session_state'
+REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
+
+CLIENT_CREDENTIALS = 'client_credentials'
+AUTHORIZATION_CODE = 'authorization_code'
+
+USER_LIST_HEADERS: dict = {
+    'id': 'Membership id',
+    'roles': 'User roles',
+    'displayName': 'Display Name',
+    'visibleHistoryStartDateTime': 'Start DateTime',
+    'userId': 'userId',
+    'email': 'email',
+    'tenantId': 'tenantId'
+}
+
+CREATE_CHAT_HEADERS: dict = {
+    'id': 'Chat id',
+    'topic': 'Chat name',
+    'createdDateTime': 'Created DateTime',
+    'lastUpdatedDateTime': 'Last Updated Date Time',
+    'webUrl': 'webUrl',
+    'tenantId': 'tenantId'
+}
+
+USER_TYPE_TO_USER_ROLE = {
+    "Guest": "guest",
+    "Member": "owner"
+}
+
+GROUP_CHAT_ID_ENDS_WITH = "@thread.v2"
+ONEONONE_CHAT_ID_ENDS_WITH = "@unq.gbl.spaces"
 
 ''' HELPER FUNCTIONS '''
 
@@ -435,37 +474,66 @@ def get_bot_access_token() -> str:
         raise ValueError('Failed to get bot access token')
 
 
+def get_refresh_token_from_auth_code_param() -> str:
+    """
+    The function is taken from 'MicrosoftApiModule'
+    """
+    refresh_prefix = "refresh_token:"
+    if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
+        demisto.debug("Using refresh token set as auth_code")
+        return AUTH_CODE[len(refresh_prefix):]
+    return ''
+
+
 def get_graph_access_token() -> str:
     """
     Retrieves Microsoft Graph API access token, either from cache or from Microsoft
     :return: The Microsoft Graph API access token
     """
     integration_context: dict = get_integration_context()
+
+    refresh_token = integration_context.get('current_refresh_token', '')
     access_token: str = integration_context.get('graph_access_token', '')
     valid_until: int = integration_context.get('graph_valid_until', int)
     if access_token and valid_until:
         if epoch_seconds() < valid_until:
+            demisto.debug('Using access token from integration context')
             return access_token
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('tenant_id', '') or TENANT_ID
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
             'See https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams#troubleshooting for more information'
         )
+    headers = None
     url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
     data: dict = {
-        'grant_type': 'client_credentials',
+        'grant_type': CLIENT_CREDENTIALS,
         'client_id': BOT_ID,
         'scope': 'https://graph.microsoft.com/.default',
         'client_secret': BOT_PASSWORD
     }
+    if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+        data['redirect_uri'] = REDIRECT_URI
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        refresh_token = refresh_token or get_refresh_token_from_auth_code_param()
+        if refresh_token:
+            demisto.debug('Using refresh token from integration context')
+            data['grant_type'] = REFRESH_TOKEN
+            data['refresh_token'] = refresh_token
+        else:
+            if SESSION_STATE in AUTH_CODE:
+                raise ValueError('Malformed auth_code parameter: Please copy the auth code from the redirected uri '
+                                 'without any additional info and without the "session_state" query parameter.')
+            data['grant_type'] = AUTHORIZATION_CODE
+            data['code'] = AUTH_CODE
 
     response: requests.Response = requests.post(
         url,
         data=data,
-        verify=USE_SSL
+        verify=USE_SSL,
+        headers=headers
     )
-
     if not response.ok:
         error = error_parser(response)
         raise ValueError(f'Failed to get Graph access token [{response.status_code}] - {error}')
@@ -473,10 +541,13 @@ def get_graph_access_token() -> str:
         response_json: dict = response.json()
         access_token = response_json.get('access_token', '')
         expires_in: int = response_json.get('expires_in', 3595)
+        refresh_token = response_json.get('refresh_token', '')
+
         time_now: int = epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
             expires_in -= time_buffer
+        integration_context['current_refresh_token'] = refresh_token
         integration_context['graph_access_token'] = access_token
         integration_context['graph_valid_until'] = time_now + expires_in
         set_integration_context(integration_context)
@@ -528,9 +599,14 @@ def http_request(
         if response.status_code in {202, 204}:
             # Delete channel or remove user from channel return 204 if successful
             # Update message returns 202 if the request has been accepted for processing
+            # Remove member from a channel returns 204 if successful.
+            # Create channel with a membershipType value of shared, returns 202 Accepted response code
+            # and a link to the teamsAsyncOperation.
             return {}
         if response.status_code == 201:
-            # For channel creation query, we get a body in the response, otherwise we should just return
+            # For channel creation query (with a membershipType value of standard or private) returns 201 if successful,
+            # Create chat returns 201 if successful
+            # we get a body in the response, otherwise we should just return
             if not response.content:
                 return {}
         try:
@@ -712,7 +788,7 @@ def get_team_aad_id(team_name: str) -> str:
         for team in teams:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
-    url: str = f"{GRAPH_BASE_URL}/beta/groups?$filter=displayName eq '{team_name}' " \
+    url: str = f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{team_name}' " \
                "and resourceProvisioningOptions/Any(x:x eq 'Team')"
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
     demisto.debug(f'Response {response}')
@@ -721,6 +797,38 @@ def get_team_aad_id(team_name: str) -> str:
         if team.get('displayName', '') == team_name:
             return team.get('id', '')
     raise ValueError('Could not find requested team.')
+
+
+def get_chat_id(chat: str) -> str:
+    """
+    Returns the Chat ID
+    :param chat: Represents the identity of the chat - chat_name, chat_id or member in case of "oneOnOne" chat_type.
+    :return: Chat ID
+    """
+    demisto.debug(f'Given chat: {chat}')
+
+    url: str = f"{GRAPH_BASE_URL}/v1.0/chats/"
+    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    chats = response.get('value', [])
+    demisto.debug(f'Chats list: {chats}')
+
+    for chat_data in chats:
+        if chat_data.get('topic', '') == chat or chat_data.get('id') == chat:
+            return chat_data.get('id', '')
+
+    if chat.endswith(GROUP_CHAT_ID_ENDS_WITH) or chat.endswith(ONEONONE_CHAT_ID_ENDS_WITH):
+        # chat_id is probably malformed/user is not part of, as it's not appearing in the list of chats
+        raise ValueError(f'Could not find requested "{chat}" chat.')
+
+    # Check if the given "chat" argument is representing an existing member
+    user_data: list = get_user(chat)
+    if not (user_data and user_data[0].get('id')):
+        raise ValueError(f'Could not find requested "{chat}" chat.')
+
+    # Find the chat_id in case of 'oneOnOne' chat by calling "create_chat"
+    # If a one-on-one chat already exists, this operation will return the existing chat and not create a new one
+    chat_data: dict = create_chat("oneOnOne", [(user_data[0].get('id'), user_data[0].get('userType'))])
+    return chat_data.get('id', '')
 
 
 # def add_member_to_team(user_principal_name: str, team_id: str):
@@ -732,7 +840,7 @@ def get_team_aad_id(team_name: str) -> str:
 
 
 def get_user(user: str) -> list:
-    """Retrieves the AAD ID of requested user
+    """Retrieves the AAD ID of requested user and the userType
 
     Args:
         user (str): Display name/mail/UPN of user to get ID of.
@@ -740,42 +848,46 @@ def get_user(user: str) -> list:
     Return:
         list: List containing the requsted user object
     """
+    demisto.debug(f"Given user = {user}")
     url: str = f'{GRAPH_BASE_URL}/v1.0/users'
     params = {
         '$filter': f"displayName eq '{user}' or mail eq '{user}' or userPrincipalName eq '{user}'",
-        '$select': 'id'
+        '$select': 'id, userType'
     }
     users = cast(Dict[Any, Any], http_request('GET', url, params=params))
     return users.get('value', [])
 
 
-def add_user_to_channel(team_aad_id: str, channel_id: str, user_id: str):
+def add_user_to_channel(team_aad_id: str, channel_id: str, user_id: str, is_owner: bool = False):
     """
     Request for adding user to channel
     """
-    url: str = f'{GRAPH_BASE_URL}/beta/teams/{team_aad_id}/channels/{channel_id}/members'
-    requestjson_: dict = {
-        '@odata.type': '#microsoft.graph.aadUserConversationMember',
-        'roles': [],
-        'user@odata.bind': f'https://graph.microsoft.com/beta/users/{user_id}'  # disable-secrets-detection
-    }
-    http_request('POST', url, json_=requestjson_)
+    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels/{channel_id}/members'
+    user_role = ["owner"] if is_owner else []
+    request_json: dict = create_conversation_member(user_id, user_role)
+    http_request('POST', url, json_=request_json)
 
 
 def add_user_to_channel_command():
     """
-    Add user to channel (private channel only as still in beta mode)
+    Add user to channel
+    This operation is allowed only for channels with a membershipType value of private or shared.
     """
     channel_name: str = demisto.args().get('channel', '')
     team_name: str = demisto.args().get('team', '')
     member = demisto.args().get('member', '')
+    is_owner: bool = argToBoolean(demisto.args().get('owner', False))
+
     user: list = get_user(member)
     if not (user and user[0].get('id')):
         raise ValueError(f'User {member} was not found')
 
     team_aad_id = get_team_aad_id(team_name)
     channel_id = get_channel_id(channel_name, team_aad_id, investigation_id=None)
-    add_user_to_channel(team_aad_id, channel_id, user[0].get('id'))
+    if get_channel_type(channel_id, team_aad_id) == 'standard':
+        raise ValueError('This operation is allowed only for private or shared channels.')
+
+    add_user_to_channel(team_aad_id, channel_id, user[0].get('id'), is_owner)
 
     demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
 
@@ -863,20 +975,40 @@ def add_user_to_channel_command():
 #     add_bot_to_team(team_id)
 #     demisto.results(f'Team {display_name} was created successfully')
 
+def create_conversation_member(user_id: str, user_role: list) -> dict:
+    """
+    Create a conversation member dictionary for the specified user ID.
+    """
+    return {
+        "@odata.type": '#microsoft.graph.aadUserConversationMember',
+        "user@odata.bind": f"https://graph.microsoft.com/v1.0/users('{user_id}')",
+        "roles": user_role
+    }
 
-def create_channel(team_aad_id: str, channel_name: str, channel_description: str = '') -> str:
+
+def create_channel(team_aad_id: str, channel_name: str, channel_description: str = '',
+                   membership_type: str = 'standard', owner_id: str = "") -> str:
     """
     Creates a Microsoft Teams channel
     :param team_aad_id: Team AAD ID to create channel in
     :param channel_name: Name of channel to create
     :param channel_description: Description of channel to create
+    :param membership_type: Channel membership type, Standard, Private or Shared. default is 'standard'
+    :param owner_id: The channel owner id.
     :return: ID of created channel
     """
     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels'
     request_json: dict = {
         'displayName': channel_name,
-        'description': channel_description
+        'description': channel_description,
+        'membershipType': membership_type
     }
+
+    if owner_id:
+        request_json["members"] = [create_conversation_member(owner_id, ["owner"])]
+
+    # For membershipType: standard or private - returns 201 in successful
+    # For shared, returns 202 Accepted response code and a link to the teamsAsyncOperation.
     channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
     channel_id: str = channel_data.get('id', '')
     return channel_id
@@ -904,14 +1036,83 @@ def create_meeting(user_id: str, subject: str, start_date_time: str, end_date_ti
     return channel_data
 
 
+def send_message_in_chat(content: str, message_type: str, chat_id: str) -> dict:
+    """
+    Sends an HTTP request to send message in chat to Microsoft Teams
+    :param content: The content of the chat message.
+    :param message_type: The type of chat message.
+    :param chat_id: The chat id
+    :return: dict
+    """
+    url: str = f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages'
+    request_json = {
+        "body": {
+            "content": content
+        },
+        "messageType": message_type
+    }
+
+    response: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
+    return response
+
+
+def get_signed_in_user():
+    """
+    Get the properties of the signed-in user
+    :return: the properties of the signed-in user
+    """
+    url: str = f"{GRAPH_BASE_URL}/beta/me"
+    return cast(Dict[Any, Any], http_request('GET', url))
+
+
+def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
+    """
+    Create a new chat object.
+    :param chat_type: Specifies the type of chat. Possible values are: group and oneOnOne.
+    :param chat_name: The title of the chat. The chat title can be provided only if the chat is of group type.
+    :param users: List of conversation members that should be added, contains the (user_id, user_type)
+    """
+    demisto.debug(f'create_chat with user_id = {users}')
+    url: str = f'{GRAPH_BASE_URL}/v1.0/chats'
+
+    # Add the caller as owner member
+    caller_id = get_signed_in_user().get('id')
+    members: list = [create_conversation_member(caller_id, ["owner"])]
+
+    members += [create_conversation_member(user_id, [USER_TYPE_TO_USER_ROLE.get(user_type)])
+                for user_id, user_type in users]
+
+    request_json: dict = {
+        "chatType": chat_type,
+        "members": members,
+    }
+
+    if chat_type == 'group' and chat_name:  # The chat title can be provided only if the chat is of group type.
+        request_json["topic"] = chat_name
+    chat_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
+    return chat_data
+
+
 def create_channel_command():
     channel_name: str = demisto.args().get('channel_name', '')
     channel_description: str = demisto.args().get('description', '')
     team_name: str = demisto.args().get('team', '')
-    team_aad_id = get_team_aad_id(team_name)
+    membership_type: str = demisto.args().get('membership_type', 'standard')
 
-    channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
-    if channel_id:
+    owner_user = demisto.args().get("owner_user")
+    if not owner_user and membership_type != "standard" and AUTH_TYPE == CLIENT_CREDENTIALS_FLOW:
+        raise ValueError("When using the 'Client Credentials flow', you must specify an 'owner_user'.")
+
+    owner_id: str = ""
+    if owner_user:
+        owner: list = get_user(owner_user)
+        if not (owner and owner[0].get('id')):
+            raise ValueError(f'The given owner_user "{owner_user}" was not found')
+        owner_id = owner[0].get('id')
+
+    team_aad_id = get_team_aad_id(team_name)
+    channel_id: str = create_channel(team_aad_id, channel_name, channel_description, membership_type, owner_id)
+    if channel_id or membership_type == 'shared':
         demisto.results(f'The channel "{channel_name}" was created successfully')
 
 
@@ -950,6 +1151,149 @@ def create_meeting_command():
         outputs=outputs
     )
     return_results(result)
+
+
+def channel_user_list_command():
+    """
+    Retrieve a list of conversationMembers from a channel.
+    """
+    channel_name: str = demisto.args().get('channel_name', '')
+    team_name: str = demisto.args().get('team', '')
+    team_aad_id = get_team_aad_id(team_name)
+
+    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id=None)
+    channel_members: list = get_channel_members(team_aad_id, channel_id)
+    [member.pop('@odata.type', None) for member in channel_members]
+    result = CommandResults(
+        readable_output=tableToMarkdown(
+            f'Channel "{channel_name}" Members List:',
+            channel_members,
+            ['userId', 'email', 'tenantId', 'id', 'roles', 'displayName', 'visibleHistoryStartDateTime'],
+            headerTransform=lambda h: USER_LIST_HEADERS.get(h, pascalToSpace(h)),
+        ),
+        outputs_prefix=f'MicrosoftTeams.Channel.{channel_name}.Members',
+        outputs_key_field='id',
+        outputs=channel_members
+    )
+    return_results(result)
+
+
+def chat_create_command():
+    """
+    Create a new chat object.
+    Note: Only one one-on-one chat can exist between two members.
+    If a one-on-one chat already exists, this operation will return the existing chat and not create a new one.
+    """
+    chat_type: str = demisto.args().get('chat_type', 'group')
+    chat_name: str = demisto.args().get('chat_name', '')
+
+    members: list = argToList(demisto.args().get('member', ''))
+
+    if chat_type == 'oneOnOne' and len(members) != 1:
+        raise ValueError("Creation of 'oneOnOne' chat requires 2 members. Please enter 'member'.")
+
+    # get users ids and userTypes:
+    users = []
+    for member in members:
+        user_data: list = get_user(member)
+        if not (user_data and user_data[0].get('id')):
+            raise ValueError(f'User "{member}" was not found')
+        users.append((user_data[0].get('id'), user_data[0].get('userType')))
+
+    chat_data: dict = create_chat(chat_type, users, chat_name)
+    chat_data.pop('@odata.context', '')
+    hr_title = f'The chat "{chat_name}" was created successfully' if chat_type == 'group' else \
+        f'The chat with "{members[0]}" was created successfully'
+    result = CommandResults(
+        readable_output=tableToMarkdown(
+            hr_title,
+            chat_data,
+            ['id', 'topic', 'createdDateTime', 'lastUpdatedDateTime', 'webUrl', 'tenantId'],
+            url_keys=['webUrl'],
+            headerTransform=lambda h: CREATE_CHAT_HEADERS.get(h, pascalToSpace(h)),
+            removeNull=True
+        ),
+        outputs_prefix='MicrosoftTeams.Chat.Info',
+        outputs_key_field='id',
+        outputs=chat_data
+    )
+    return_results(result)
+
+
+def message_send_to_chat_command():
+    """
+    Send a new chatMessage in the specified chat.
+    """
+    content: str = demisto.args().get('content', '')
+    message_type: str = demisto.args().get('message_type', 'message')
+    chat: str = demisto.args().get('chat', '')
+    chat_id: str = get_chat_id(chat)
+
+    message_data: dict = send_message_in_chat(content, message_type, chat_id)
+    message_data.pop('@odata.context', '')
+    hr = {'Message id': message_data.get('id'),
+          'Message Type': message_data.get('messageType'),
+          'Created DateTime': message_data.get('createdDateTime'),
+          'lastModified DateTime': message_data.get('lastModifiedDateTime'),
+          'Chat Id': message_data.get('chatId'),
+          'importance': message_data.get('importance'),
+          'User from': demisto.get(message_data, 'from.user.displayName'),
+          'Id from': demisto.get(message_data, 'from.user.id'),
+          'Message content': demisto.get(message_data, 'body.content')}
+    result = CommandResults(
+        readable_output=tableToMarkdown(
+            f"Message was sent successfully in the '{chat}' chat.",
+            hr,
+            removeNull=True
+        ),
+        outputs_prefix='MicrosoftTeams.Chat.Message',
+        outputs_key_field='id',
+        outputs=message_data
+    )
+    return_results(result)
+
+
+def remove_user_from_channel(team_id: str, channel_id: str, membership_id: str):
+    """
+    Request for removing user from channel
+    """
+    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/members/{membership_id}'
+    http_request('DELETE', url)
+
+
+def get_user_membership_id(member: str, team_id: str, channel_id: str) -> Optional[str]:
+    """
+    Searches for the given member in the channel's members and returns its membership id
+    :param member: The display name of the user
+    :param team_id: The team id
+    :param channel_id: The channel id
+    :return: the user membership_id
+    """
+    channel_members: List[Dict[str, Any]] = get_channel_members(team_id, channel_id)
+    for user in channel_members:
+        if user.get('displayName') == member:
+            return user.get('id')
+
+
+def user_remove_from_channel_command():
+    """
+    remove user from channel
+    This operation is allowed only for channels with a membershipType value of private or shared.
+    """
+    channel_name: str = demisto.args().get('channel_name', '')
+    team_name: str = demisto.args().get('team', '')
+    member = demisto.args().get('member', '')
+    team_id = get_team_aad_id(team_name)
+    channel_id = get_channel_id(channel_name, team_id, investigation_id=None)
+    if get_channel_type(channel_id, team_id) == 'standard':
+        raise ValueError('This operation is allowed only for private or shared channels.')
+
+    user_membership_id = get_user_membership_id(member, team_id, channel_id)
+    if not user_membership_id:
+        raise ValueError(f'User "{member}" was not found in channel "{channel_name}".')
+
+    remove_user_from_channel(team_id, channel_id, user_membership_id)
+    return_results(f'The user "{member}" has been removed from channel "{channel_name}" successfully.')
 
 
 def get_participant_info(participants: dict) -> Tuple[str, str]:
@@ -1000,6 +1344,18 @@ def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = 
     return channel_id
 
 
+def get_channel_type(channel_id, team_id) -> str:
+    """
+    Returns the channel membershipType
+    :param channel_id: Name of channel to get ID of
+    :param team_id: AAD ID of team to search channel in
+    :return: The channel's membershipType
+    """
+    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}'
+    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    return response.get('membershipType', 'standard')
+
+
 def get_team_members(service_url: str, team_id: str) -> list:
     """
     Retrieves team members given a team
@@ -1010,6 +1366,18 @@ def get_team_members(service_url: str, team_id: str) -> list:
     url: str = f'{service_url}/v3/conversations/{team_id}/members'
     response: list = cast(List[Any], http_request('GET', url, api='bot'))
     return response
+
+
+def get_channel_members(team_id: str, channel_id: str) -> List[Dict[str, Any]]:
+    """
+    Retrieves channel members given a channel
+    :param team_id: ID of team to get team members of
+    :param channel_id: ID of channel to get channel members of
+    :return: List of channel members
+    """
+    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/members'
+    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    return response.get('value', [])
 
 
 def update_message(service_url: str, conversation_id: str, activity_id: str, text: str):
@@ -1090,7 +1458,7 @@ def create_personal_conversation(integration_context: dict, team_member_id: str)
     """
     bot_id: str = demisto.params().get('bot_id', '')
     bot_name: str = integration_context.get('bot_name', '')
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('tenant_id', '') or TENANT_ID
     conversation: dict = {
         'bot': {
             'id': f'28:{bot_id}',
@@ -1213,6 +1581,10 @@ def send_message():
             investigation: dict = demisto.investigation()
             investigation_id = investigation.get('id', '')
         channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
+        if get_channel_type(channel_id, team_aad_id) != 'standard':
+            raise ValueError('Posting a message or adaptive card to a private\shared channel is currently '
+                             'not supported.')
+
     elif team_member:
         team_member_id: str = get_team_member_id(team_member, integration_context)
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
@@ -1647,9 +2019,14 @@ def ring_user():
     Returns:
         None.
     """
+    if AUTH_TYPE == AUTHORIZATION_CODE_FLOW:
+        raise DemistoException("In order to use the 'microsoft-teams-ring-user' command, you must set the "
+                               "'Authentication Type' parameter to 'Client Credentials' in the integration "
+                               "configuration.")
+
     bot_id = demisto.params().get('bot_id')
     integration_context: dict = get_integration_context()
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('tenant_id', '') or TENANT_ID
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -1763,12 +2140,49 @@ def long_running_loop():
             time.sleep(5)
 
 
+def validate_auth_code_flow_params(command: str = ''):
+    """
+    Validates that the necessary parameters for the Authorization Code flow have been received.
+    Raises a DemistoException if a required parameter is missing.
+    :param command: the command that should be executed
+    """
+    if not all([AUTH_CODE, REDIRECT_URI, AUTH_TYPE == AUTHORIZATION_CODE_FLOW]):
+
+        err = f"In order to use the '{command}' command, "
+        if AUTH_TYPE != AUTHORIZATION_CODE_FLOW:
+            raise DemistoException(err + "you must set the 'Authentication Type' parameter to 'Authorization Code' in "
+                                         "the integration configuration.")
+        elif not all([AUTH_CODE, REDIRECT_URI]):
+            raise DemistoException(err + "you must provide both 'Application redirect URI' and 'Authorization code' in "
+                                         "the integration configuration for the Authorization Code flow.")
+        else:
+            raise DemistoException(err + "Please set the necessary parameters for the Authorization Code flow in the "
+                                         "integration configuration.")
+
+
+def test_connection():
+    """
+    Test connectivity in the Authorization Code flow mode.
+    """
+    get_graph_access_token()  # If fails, get_graph_access_token returns an error
+    return_results(CommandResults(readable_output='✅ Success!'))
+
+
 def test_module():
+    """Tests API connectivity and authentication for Bot Framework API only.
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    :return: 'ok' if test passed.
+    :rtype: ``str``
     """
-    Tests token retrieval for Bot Framework API
-    """
-    get_bot_access_token()
-    demisto.results('ok')
+    if 'Client' not in AUTH_TYPE:
+        raise DemistoException(
+            "Test module is available for Client Credentials only."
+            " For other authentication types use the microsoft-teams-auth-test command")
+
+    get_bot_access_token()  # Tests token retrieval for Bot Framework API
+    return_results('ok')
 
 
 def main():
@@ -1789,6 +2203,15 @@ def main():
         'microsoft-teams-create-channel': create_channel_command,
         'microsoft-teams-add-user-to-channel': add_user_to_channel_command,
         'microsoft-teams-create-meeting': create_meeting_command,
+        'microsoft-teams-channel-user-list': channel_user_list_command,
+        'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command
+
+    }
+
+    commands_auth_code: dict = {
+        'microsoft-teams-auth-test': test_connection,
+        'microsoft-teams-chat-create': chat_create_command,
+        'microsoft-teams-message-send-to-chat': message_send_to_chat_command,
     }
 
     ''' EXECUTION '''
@@ -1799,9 +2222,14 @@ def main():
         LOG(f'Command being called is {command}')
         if command in commands.keys():
             commands[command]()
+        elif command in commands_auth_code.keys():
+            validate_auth_code_flow_params(command)  # raises error in case one of the required params is missing
+            commands_auth_code[command]()
+        else:
+            raise NotImplementedError(f"command {command} is not implemented.")
     # Log exceptions
     except Exception as e:
-        return_error(f'{str(e)} - {format_exc()}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ == 'builtins':
