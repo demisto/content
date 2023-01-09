@@ -23,19 +23,9 @@
                 "type": "workPlan"
             },
             {
-                "id": "evidenceBoard",
-                "name": "Evidence Board",
-                "type": "evidenceBoard"
-            },
-            {
                 "id": "relatedIncidents",
                 "name": "Related Incidents",
                 "type": "relatedIncidents"
-            },
-            {
-                "id": "canvas",
-                "name": "Canvas",
-                "type": "canvas"
             }
         ]
     },
