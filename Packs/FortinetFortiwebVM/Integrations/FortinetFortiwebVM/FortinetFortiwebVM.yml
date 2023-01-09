@@ -1742,7 +1742,7 @@ script:
       isArray: false
       name: certificate_group
       required: false
-    - description: Missing.
+    - description: Certificate group name.
       isArray: false
       name: proxy
       required: false
