@@ -461,9 +461,9 @@ def main():
     )
 
     # verify that the successful from Prepare content and are the ones that were copied
-    logging.warning(f"verify that no packs were mistakenly copied from successful_packs dict")
+    logging.warning("verify that no packs were mistakenly copied from successful_packs dict")
     verify_copy(successful_packs, pc_successful_packs_dict)
-    logging.warning(f"verify that no packs were mistakenly copied from successful_uploaded_dependencies dict")
+    logging.warning("verify that no packs were mistakenly copied from successful_uploaded_dependencies dict")
     verify_copy(successful_uploaded_dependencies_zip_packs, pc_successful_uploaded_dependencies_zip_packs_dict)
 
     # summary of packs status
