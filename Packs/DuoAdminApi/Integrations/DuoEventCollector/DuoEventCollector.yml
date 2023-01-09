@@ -44,8 +44,8 @@ configuration:
   display: Authentication events API.
   name: auth_api_version
   options:
-  - 1
-  - 2
+  - '1'
+  - '2'
   required: false
   type: 16
 - display: Use system proxy settings
