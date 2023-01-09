@@ -131,7 +131,7 @@ class Pack(object):
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
-        self._all_levels_dependencies = []  # initialized in set_pack_dependencies function
+        self._all_levels_dependencies = {}  # initialized in set_pack_dependencies function
         self._displayed_images_dependent_on_packs = []  # initialized in set_pack_dependencies function
         self._parsed_dependencies = None  # initialized in enhance_pack_attributes function
 
@@ -2619,7 +2619,7 @@ class Pack(object):
         """
         pack_dependencies_mapping = packs_dependencies_mapping.get(self._pack_name, {})
         first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
-        all_levels_dependencies = pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, [])
+        all_levels_dependencies = pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {})
         displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
         logging.debug(f'(0) {first_level_dependencies=}')
         logging.debug(f'(0) {all_levels_dependencies=}')
