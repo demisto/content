@@ -2537,7 +2537,7 @@ script:
     - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'
       name: filter
       required: false
-    - description: Unique agent identifier (AID) of a sensor. 
+    - description: Unique agent identifier (AID) of a sensor.
       name: aid
       isArray: true
       required: false
@@ -2859,7 +2859,7 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   ismappable: true
   isremotesyncin: true
