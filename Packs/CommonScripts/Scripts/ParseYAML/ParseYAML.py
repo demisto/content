@@ -11,26 +11,26 @@ from typing import Any, Dict
 import yaml
 
 
-def load_yaml(s: str) -> Dict:
+def load_yaml(stream: str) -> Dict:
     """Simple YAML Loader function
 
     Args:
-        s (str): YAML formatted string
+        stream (str): YAML formatted string
 
     Returns:
         Dict: python simple data structure
     """
-    return yaml.safe_load(s)
+    return yaml.safe_load(stream)
 
 
-def yamlload(args: Dict[str, Any]) -> CommandResults:
+def load_and_parse_yaml_command(args: Dict[str, Any]) -> CommandResults:
     """XSOAR command function
 
     Args:
         args (Dict[str, Any]): XSOAR args
 
     Raises:
-        ValueError: Returned if no string was passed in
+        ValueError: Returned if no string was passed
 
     Returns:
         CommandResults: XSOAR CommandResults object
@@ -49,9 +49,9 @@ def yamlload(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def main():
+def main():  # pragma: no cover
     try:
-        return_results(yamlload(demisto.args()))
+        return_results(load_and_parse_yaml_command(demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute ParseYAML script. Error: {str(e)}")
