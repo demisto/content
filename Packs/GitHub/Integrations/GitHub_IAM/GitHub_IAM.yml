@@ -14,7 +14,6 @@ configuration:
   hiddenusername: true
 - display: Token
   name: token
-  required: false
   type: 4
   hidden: true
 - display: Organization name
