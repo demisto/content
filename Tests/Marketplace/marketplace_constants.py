@@ -186,7 +186,6 @@ class Metadata(object):
     URL = 'url'
     MARKETPLACES = 'marketplaces'
     DISABLE_MONTHLY = 'disableMonthly'
-    METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
 
 class PackFolders(enum.Enum):

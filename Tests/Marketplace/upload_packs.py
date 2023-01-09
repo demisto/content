@@ -30,6 +30,8 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
 
+METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
+
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
     """Detects and returns packs names to upload.
@@ -176,7 +178,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
-                elif (metadata_version := re.findall(Metadata.METADATA_FILE_REGEX_GET_VERSION, d.name)) \
+                elif (metadata_version := re.findall(METADATA_FILE_REGEX_GET_VERSION, d.name)) \
                         and pack_versions_to_keep:
                     if metadata_version[0] not in pack_versions_to_keep:
                         os.remove(d.path)
