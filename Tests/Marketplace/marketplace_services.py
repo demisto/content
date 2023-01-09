@@ -67,7 +67,7 @@ class Pack(object):
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
 
-    def __init__(self, pack_name, pack_path):
+    def __init__(self, pack_name, pack_path, is_modified=None):
         self._pack_name = pack_name
         self._pack_path = pack_path
         self._zip_path = None  # zip_path will be updated as part of zip_pack
@@ -122,7 +122,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
-        self._is_modified = None  # initialized in detect_modified function
+        self._is_modified = is_modified
         self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
@@ -511,7 +511,7 @@ class Pack(object):
     def is_data_source_pack(self, yaml_content):
 
         is_data_source = self._is_data_source
-        # this's the first integration in the pack, and the pack is in xsiem
+        # this's the first integration in the pack, and the pack is in xsiam
         if self._single_integration and 'marketplacev2' in self.marketplaces:
 
             # the integration is not deprecated
@@ -534,7 +534,7 @@ class Pack(object):
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
-        Checks if an pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
+        Checks if a pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
         Args:
             yaml_content: The yaml content extracted by yaml.safe_load().
             yaml_type: The type of object to check.
@@ -1138,7 +1138,6 @@ class Pack(object):
                 pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-            self._is_modified = pack_was_modified
             return
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
@@ -2401,7 +2400,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {PackTags.DATA_SOURCE} if self._is_data_source else set()
+        tags |= {PackTags.DATA_SOURCE} if self._is_data_source and marketplace == XSIAM_MP else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -4291,7 +4290,8 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
-        res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
+        res = interface.search(content_type=content_type, marketplace=marketplace, display_name=display_name)
+        logging.debug(f'Content type for {display_name} is {content_type}, result is {bool(res)}')
         return bool(res)
 
 
@@ -4311,10 +4311,16 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
-        content_type = RN_HEADER_TO_ID_SET_KEYS[rn_header].capitalize()[:-1]
-        return is_content_item_in_graph(display_name=display_name,
+        logging.debug("id_set does not exist, searching in graph")
+        content_type = rn_header.replace(' ', '')[:-1]
+
+        if not is_content_item_in_graph(display_name=display_name,
                                         content_type=content_type,
-                                        marketplace=marketplace)
+                                        marketplace=marketplace):
+            logging.debug(f"Could not find the content entity of type {content_type} with display name "
+                          f"'{display_name}' in the graph")
+            return False
+        return True
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
 
