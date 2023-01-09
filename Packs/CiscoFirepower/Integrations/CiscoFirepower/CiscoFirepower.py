@@ -25,6 +25,7 @@ OUTPUT_KEYS_DICTIONARY = {
 }
 
 API_LIMIT = 1000
+EXECUTION_TIMEOUT = 600
 
 INTRUSION_POLICY_TITLE = 'Intrusion Policy Information'
 INTRUSION_POLICY_HEADERS_BY_KEYS = {
@@ -955,6 +956,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='policy/intrusionpolicies',
             json_data=body,
+            timeout=EXECUTION_TIMEOUT,
         )
 
     def get_intrusion_policy(self, intrusion_policy_id: str, include_count: bool = None) -> Dict[str, Any]:
@@ -1059,6 +1061,7 @@ class Client(BaseClient):
             url_suffix=f'policy/intrusionpolicies/{intrusion_policy_id}',
             params=params,
             json_data=body,
+            timeout=EXECUTION_TIMEOUT,
         )
 
     def delete_intrusion_policy(
@@ -1435,6 +1438,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='policy/networkanalysispolicies',
             json_data=body,
+            timeout=EXECUTION_TIMEOUT,
         )
 
     def get_network_analysis_policy(self, network_analysis_policy_id: str) -> Dict[str, Any]:
@@ -1532,6 +1536,7 @@ class Client(BaseClient):
             url_suffix=f'policy/networkanalysispolicies/{network_analysis_policy_id}',
             params=params,
             json_data=body,
+            timeout=EXECUTION_TIMEOUT,
         )
 
     def delete_network_analysis_policy(
