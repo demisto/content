@@ -10,8 +10,8 @@ To simplify GCenter v2.5.3.102 is called GCenter in the Pack.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | GCenter IP address |  | True |
-    | GCenter Version |  | False |
+    | GCenter IP address | | True |
+    | GCenter Version | | False |
     | GCenter API token | You must provide either an API token or a username and a password. | False |
     | GCenter username |  | False |
     | GCenter password |  | False |
@@ -155,7 +155,7 @@ Get an alert by it's uid
 
 ##### Command Example
 
-```get```
+```!gw-get-alert uid="d7e612cb-567a-431b-a14b-9f9f4e88c9a4"```
 
 ##### Context Example
 
@@ -377,7 +377,7 @@ There is no context output for this command.
 
 ##### Command Example
 
-```None```
+```!gw-es-query index="suricata" query="{}"```
 
 ### gw-add-malcore-list-entry
 ***
@@ -408,13 +408,13 @@ Add malcore whitelist/blacklist entry
 
 ##### Command Example
 
-```post```
+```!gw-add-malcore-list-entry type="white" sha256="d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e"```
 
 ##### Context Example
 
 ```json
 {
-    "sha256": "d955e262d7a05fc436e65c2a312593e4c7031482d",
+    "sha256": "d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e",
     "created": "2022-03-21T16:36:58.957178Z",
     "comment": "test",
     "threat": "undefined"
@@ -426,7 +426,7 @@ Add malcore whitelist/blacklist entry
 >### Malcore whitelist/blacklist entry
 >|comment|created|sha256|threat|
 >|---|---|---|---|
->| test | 2022-03-21T16:36:58.957178Z | d955e262d7a05fc436e65c2a312593e4c7031482d | undefined |
+>| test | 2022-03-21T16:36:58.957178Z | d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e | undefined |
 
 ### gw-del-malcore-list-entry
 ***
@@ -450,7 +450,7 @@ There is no context output for this command.
 
 ##### Command Example
 
-```None```
+```!gw-del-malcore-list-entry type="white" sha256="d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e"```
 
 ### gw-add-dga-list-entry
 ***
@@ -480,7 +480,7 @@ Add dga whitelist/blacklist entry
 
 ##### Command Example
 
-```post```
+```!gw-add-dga-list-entry type="white" domain="test.domain.com"```
 
 ##### Context Example
 
@@ -522,7 +522,7 @@ There is no context output for this command.
 
 ##### Command Example
 
-```None```
+```!gw-del-dga-list-entry type="white" domain="test.domain.com"```
 
 ### gw-add-ignore-asset-name
 ***
@@ -554,7 +554,7 @@ Ignore asset name
 
 ##### Command Example
 
-```post```
+```!gw-add-ignore-asset-name name="test_asset"```
 
 ##### Context Example
 
@@ -563,7 +563,7 @@ Ignore asset name
     "id": "1",
     "created_at": "2022-03-21T16:37:54.657263Z",
     "created_by": "admin",
-    "name": "test",
+    "name": "test_asset",
     "is_startswith_pattern": true,
     "is_endswith_pattern": false
 }
@@ -574,7 +574,7 @@ Ignore asset name
 >### Asset name entry
 >|created_at|created_by|id|is_endswith_pattern|is_startswith_pattern|name|
 >|---|---|---|---|---|---|
->| 2022-03-21T16:37:54.657263Z | admin | 1 | false | true | test |
+>| 2022-03-21T16:37:54.657263Z | admin | 1 | false | true | test_asset |
 
 ### gw-add-ignore-kuser-ip
 ***
@@ -602,7 +602,7 @@ Ignore kuser IP
 
 ##### Command Example
 
-```post```
+```!gw-add-ignore-kuser-ip ip="10.10.10.0"```
 
 ##### Context Example
 
@@ -652,7 +652,7 @@ Ignore kuser name
 
 ##### Command Example
 
-```post```
+```!gw-add-ignore-kuser-name name="test_kuser"```
 
 ##### Context Example
 
@@ -661,7 +661,7 @@ Ignore kuser name
     "id": "1",
     "created_at": "2022-03-21T16:39:18.435420Z",
     "created_by": "admin",
-    "name": "test",
+    "name": "test_kuser",
     "is_startswith_pattern": true,
     "is_endswith_pattern": false
 }
@@ -672,7 +672,7 @@ Ignore kuser name
 >### Kuser name entry
 >|created_at|created_by|id|is_endswith_pattern|is_startswith_pattern|name|
 >|---|---|---|---|---|---|
->| 2022-03-21T16:39:18.435420Z | admin | 1 | false | true | test |
+>| 2022-03-21T16:39:18.435420Z | admin | 1 | false | true | test_kuser |
 
 ### gw-add-ignore-mac-address
 ***
@@ -702,7 +702,7 @@ Ignore mac address
 
 ##### Command Example
 
-```post```
+```!gw-add-ignore-mac-address mac="50:50:50:50:50:50"```
 
 ##### Context Example
 
@@ -744,7 +744,7 @@ There is no context output for this command.
 
 ##### Command Example
 
-```None```
+```!gw-del-ignore-asset-name ignore_id=1```
 
 ### gw-del-ignore-kuser-ip
 ***
@@ -767,7 +767,7 @@ There is no context output for this command.
 
 ##### Command Example
 
-```None```
+```!gw-del-ignore-kuser-ip ignore_id=1```
 
 ### gw-del-ignore-kuser-name
 ***
@@ -790,7 +790,7 @@ There is no context output for this command.
 
 ##### Command Example
 
-```None```
+```!gw-del-ignore-kuser-name ignore_id=1```
 
 ### gw-del-ignore-mac-address
 ***
@@ -813,7 +813,7 @@ There is no context output for this command.
 
 ##### Command Example
 
-```None```
+```!gw-del-ignore-mac-address ignore_id=1```
 
 ### gw-send-malware
 ***
@@ -854,7 +854,7 @@ Send malware
 
 ##### Command Example
 
-```post```
+```!gw-send-malware filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"```
 
 ##### Context Example
 
@@ -922,7 +922,7 @@ Send powershell
 
 ##### Command Example
 
-```post```
+```!gw-send-powershell filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"```
 
 ##### Context Example
 
@@ -988,7 +988,7 @@ Send shellcode
 
 ##### Command Example
 
-```post```
+```!gw-send-shellcode filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5" deep=false timeout=120```
 
 ##### Context Example
 
@@ -1044,7 +1044,24 @@ There is no context output for this command.
 
 ##### Command Example
 
-```None```
+```!gw-es-wrapper index="malware" aggs_term="src_ip" must_match="state=Infected" timerange="240" formatted="True"```
+
+##### Context Example
+
+```json
+{
+    "src_ip": [
+        "10.10.10.10"
+    ]
+}
+```
+
+##### Human Readable Output
+
+>### Elasticsearch wrapper result
+>|src_ip|
+>|---|
+>| 10.10.10.10 |
 
 ### gw-get-malcore-list-entry
 ***
@@ -1065,14 +1082,14 @@ Get the malcore whitelist/blacklist
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCenter.Malcore.List.sha256 | String |  | 
-| GCenter.Malcore.List.created | Date |  | 
-| GCenter.Malcore.List.comment | String |  | 
-| GCenter.Malcore.List.threat | String |  | 
+| GCenter.Malcore.List.sha256 | String | Sha256 | 
+| GCenter.Malcore.List.created | Date | Created | 
+| GCenter.Malcore.List.comment | String | Comment | 
+| GCenter.Malcore.List.threat | String | Name Of Threat For Reference | 
 
 ##### Command Example
 
-```get```
+```!gw-get-malcore-list-entry type=black```
 
 ##### Context Example
 
@@ -1081,13 +1098,13 @@ Get the malcore whitelist/blacklist
     {
         "sha256": "d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351f",
         "created": "2022-09-13T08:16:21.400100Z",
-        "comment": "test2",
+        "comment": "added by cortex",
         "threat": "undefined"
     },
     {
         "sha256": "d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e",
         "created": "2022-09-13T08:16:09.880381Z",
-        "comment": "test",
+        "comment": "added by cortex",
         "threat": "undefined"
     }
 ]
@@ -1098,8 +1115,8 @@ Get the malcore whitelist/blacklist
 >### Malcore whitelist/blacklist entry
 >|comment|created|sha256|threat|
 >|---|---|---|---|
->| test2 | 2022-09-13T08:16:21.400100Z | d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351f | undefined |
->| test | 2022-09-13T08:16:09.880381Z | d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e | undefined |
+>| added by cortex | 2022-09-13T08:16:21.400100Z | d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351f | undefined |
+>| added by cortex | 2022-09-13T08:16:09.880381Z | d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e | undefined |
 
 ### gw-get-dga-list-entry
 ***
@@ -1120,14 +1137,14 @@ Get the dga whitelist/blacklist
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCenter.Dga.List.domain_name | String |  | 
-| GCenter.Dga.List.created | Date |  | 
-| GCenter.Dga.List.comment | String |  | 
-| GCenter.Dga.List.is_wildcard | Boolean |  | 
+| GCenter.Dga.List.domain_name | String | Domain Name | 
+| GCenter.Dga.List.created | Date | Created | 
+| GCenter.Dga.List.comment | String | Comment | 
+| GCenter.Dga.List.is_wildcard | Boolean | Is Wildcard | 
 
 ##### Command Example
 
-```get```
+```!gw-get-dga-list-entry type=black```
 
 ##### Context Example
 
@@ -1136,13 +1153,7 @@ Get the dga whitelist/blacklist
     {
         "domain_name": "test.domain.com",
         "created": "2022-03-21T16:30:20.012035Z",
-        "comment": "test",
-        "is_wildcard": false
-    },
-    {
-        "domain_name": "test2.domain.com",
-        "created": "2022-03-21T16:30:20.012035Z",
-        "comment": "test2",
+        "comment": "added by cortex",
         "is_wildcard": false
     }
 ]
@@ -1153,8 +1164,7 @@ Get the dga whitelist/blacklist
 >### DGA whitelist/blacklist entry
 >|comment|created|domain_name|is_wildcard|
 >|---|---|---|---|
->| test | 2022-03-21T16:30:20.012035Z | test.domain.com | false |
->| test2 | 2022-03-21T16:30:20.012035Z | test2.domain.com | false |
+>| added by cortex | 2022-03-21T16:30:20.012035Z | test.domain.com | false |
 
 ### gw-get-ignore-asset-name
 ***
@@ -1172,16 +1182,16 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCenter.Ignore.AssetName.List.id | String |  | 
-| GCenter.Ignore.AssetName.List.created_at | Date |  | 
-| GCenter.Ignore.AssetName.List.created_by | String |  | 
-| GCenter.Ignore.AssetName.List.name | String |  | 
-| GCenter.Ignore.AssetName.List.is_startswith_pattern | Boolean |  | 
-| GCenter.Ignore.AssetName.List.is_endswith_pattern | Boolean |  | 
+| GCenter.Ignore.AssetName.List.id | String | Id | 
+| GCenter.Ignore.AssetName.List.created_at | Date | Created At | 
+| GCenter.Ignore.AssetName.List.created_by | String | Created By | 
+| GCenter.Ignore.AssetName.List.name | String | Ignored Name For The Assets (Hostnames). Case Insensitive. | 
+| GCenter.Ignore.AssetName.List.is_startswith_pattern | Boolean | Should The Assets (Hostnames) Be Ignored If They Start With This Name ? | 
+| GCenter.Ignore.AssetName.List.is_endswith_pattern | Boolean | Should The Assets (Hostnames) Be Ignored If They End With This Name ? | 
 
 ##### Command Example
 
-```get```
+```!gw-get-ignore-asset-name```
 
 ##### Context Example
 
@@ -1230,14 +1240,14 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCenter.Ignore.KuserIP.List.id | String |  | 
-| GCenter.Ignore.KuserIP.List.created_at | Date |  | 
-| GCenter.Ignore.KuserIP.List.created_by | String |  | 
-| GCenter.Ignore.KuserIP.List.ip | String |  | 
+| GCenter.Ignore.KuserIP.List.id | String | Id | 
+| GCenter.Ignore.KuserIP.List.created_at | Date | Created At | 
+| GCenter.Ignore.KuserIP.List.created_by | String | Created By | 
+| GCenter.Ignore.KuserIP.List.ip | String | Ignored Ip For The Kerberos Users | 
 
 ##### Command Example
 
-```get```
+```!gw-get-ignore-kuser-ip```
 
 ##### Context Example
 
@@ -1282,16 +1292,16 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCenter.Ignore.KuserName.List.id | String |  | 
-| GCenter.Ignore.KuserName.List.created_at | Date |  | 
-| GCenter.Ignore.KuserName.List.created_by | String |  | 
-| GCenter.Ignore.KuserName.List.name | String |  | 
-| GCenter.Ignore.KuserName.List.is_startswith_pattern | Boolean |  | 
-| GCenter.Ignore.KuserName.List.is_endswith_pattern | Boolean |  | 
+| GCenter.Ignore.KuserName.List.id | String | Id | 
+| GCenter.Ignore.KuserName.List.created_at | Date | Created At | 
+| GCenter.Ignore.KuserName.List.created_by | String | Created By | 
+| GCenter.Ignore.KuserName.List.name | String | Ignored Name For The Kerberos Users. Case Insensitive. | 
+| GCenter.Ignore.KuserName.List.is_startswith_pattern | Boolean | Should The Kerberos Users Be Ignored If They Start With This Name ? | 
+| GCenter.Ignore.KuserName.List.is_endswith_pattern | Boolean | Should The Kerberos Users Be Ignored If They End With This Name ? | 
 
 ##### Command Example
 
-```get```
+```!gw-get-ignore-kuser-name```
 
 ##### Context Example
 
@@ -1340,15 +1350,15 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCenter.Ignore.MacAddress.List.id | String |  | 
-| GCenter.Ignore.MacAddress.List.created_at | Date |  | 
-| GCenter.Ignore.MacAddress.List.created_by | String |  | 
-| GCenter.Ignore.MacAddress.List.address | String |  | 
-| GCenter.Ignore.MacAddress.List.is_startswith_pattern | Boolean |  | 
+| GCenter.Ignore.MacAddress.List.id | String | Id | 
+| GCenter.Ignore.MacAddress.List.created_at | Date | Created At | 
+| GCenter.Ignore.MacAddress.List.created_by | String | Created By | 
+| GCenter.Ignore.MacAddress.List.address | String | Address | 
+| GCenter.Ignore.MacAddress.List.is_startswith_pattern | Boolean | Should The Mac Addresses Be Ignored If They Start With This Address Value ? | 
 
 ##### Command Example
 
-```get```
+```!gw-get-ignore-mac-address```
 
 ##### Context Example
 
@@ -1402,8 +1412,29 @@ If there is no uuid, get all the files infected from a time interval.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gcenter.File.Infected | String | File infected | 
+| Gcenter.File.Infected | String | File infected |
 
 ##### Command Example
 
-```None```
+```!gw-get-file-infected timerange="1440"```
+
+##### Context Example
+
+```json
+[
+    {
+        "Content": "",
+        "ContentFormat": "text",
+        "File": "malcore_b34fc6de9763e3640f93dda3f7a97470af6f009089bca588272a03807ae9f5bf_2022-12-12_18-21-40.zip",
+        "FileID": "f956f5cd-bad2-4f9c-ab75-cc6b16e58873",
+        "Type": "3"
+    }
+]
+```
+
+##### Human Readable Output
+
+>### Files infected entry
+>|Contents|ContentsFormat|File|FileID|Type|
+>|---|---|---|---|---|
+>|  | text | malcore_b34fc6de9763e3640f93dda3f7a97470af6f009089bca588272a03807ae9f5bf_2022-12-12_18-21-40.zip | f956f5cd-bad2-4f9c-ab75-cc6b16e58873 | 3 |

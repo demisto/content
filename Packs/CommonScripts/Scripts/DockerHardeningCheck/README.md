@@ -1,4 +1,4 @@
-Checks if the Docker container running this script has been hardened according to the recommended settings located [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/docker-hardening-guide.html).
+Checks if the Docker container running this script has been hardened according to the recommended settings located [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/docker/docker-hardening-guide.html).
 
 ## Script Data
 ---
@@ -20,7 +20,11 @@ Checks if the Docker container running this script has been hardened according t
 | fds_soft | The soft file descriptor limit to check. |
 | fds_hard | The hard file descriptor limit to check. |
 | cpus | The number of CPUs limit to check. |
+| network_check | The network check to perform. cloud_metadata - check that access is blocked to cloud metadata server, host_machine - check that access is blocked to the host machine on the default gateway IP, all - perform all network tests. |
 
 ## Outputs
 ---
 There are no outputs for this script.
+
+## Notes
+* **Network Host Check:** The network host check only checks available access on the default gateway's IP using an https request to port 443. There still may be access available to the host network either on a different IP or port and this check will not detect it.

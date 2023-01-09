@@ -36,6 +36,7 @@ def test_check_tld(address, valid):
     ('\\u003ctest@test.com', 'test@test.com'),
     ('"test@test.com"', 'test@test.com'),
     ('<test@test.com>', 'test@test.com'),
+    ('test', '')
 ])  # noqa: E124
 def test_extract_email(input, output):
     assert extract_email(input) == output
@@ -48,11 +49,11 @@ ARGS = {
 }
 
 EXPECTED_RESULTS = [
-    'xsoar@test.org.de',  # disable-secrets-detection
-    '',
-    'xsoar@test.uk',  # disable-secrets-detection
-    '',
-    'xsoar@xsoar.co.il',  # disable-secrets-detection
+    ['xsoar@test.org.de'],  # disable-secrets-detection
+    [],
+    ['xsoar@test.uk'],  # disable-secrets-detection
+    [],
+    ['xsoar@xsoar.co.il'],  # disable-secrets-detection
 ]
 
 
@@ -75,7 +76,7 @@ def test_main(mocker):
 def test_main_invalid_emails(mocker):
     """Verifies that no input returns an empty string.
        Given
-       - Empty string as an input to the fprmatter.
+       - Empty string as an input to the formatter.
        When
        - An empty string is passed to formatter by the user.
        Then
