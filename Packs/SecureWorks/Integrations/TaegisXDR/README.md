@@ -30,8 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The investigation id to (un)archive | True |
-| unarchive | If unarchiving an investigation, set to `true` | False |
+| id | The investigation id to archive | True |
 
 #### Command Example
 
@@ -44,7 +43,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 {
     "TaegisXDR": {
-        "InvestigationArchiving": {
+        "ArchivedInvestigation": {
             "id": "c207ca4c-8a78-4408-a056-49f05d6eb77d"
         }
     }
@@ -569,6 +568,37 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
     "TaegisXDR": {
         "InvestigationUpdate": {
             "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d"
+        }
+    }
+}
+```
+
+
+### taegis-unarchive-investigation
+
+#### Base Command
+
+`!taegis-unarchive-investigation`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The investigation id to unarchive | True |
+
+#### Command Example
+
+```
+!taegis-unarchive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "UnarchivedInvestigation": {
+            "id": "c207ca4c-8a78-4408-a056-49f05d6eb77d"
         }
     }
 }

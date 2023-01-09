@@ -979,39 +979,91 @@ def update_investigation_command(client: Client, env: str, args=None):
     return results
 
 
-def update_investigation_archive_command(client: Client, env: str, args=None):
+def archive_investigation_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
     if not investigation_id:
-        raise ValueError("Cannot archive or unarchive investigation, missing investigation id")
+        raise ValueError("Cannot archive investigation, missing investigation id")
 
-    archive_investigation = (not args.get("unarchive") or args["unarchive"].lower() == "false")
-
-    mutation_key = "archiveInvestigation" if archive_investigation else "unArchiveInvestigation"
     query = """
     mutation ($investigation_id: ID!) {
-      %s(investigation_id: $investigation_id) {
+      archiveInvestigation(investigation_id: $investigation_id) {
         id
       }
     }
-    """ % (mutation_key)
+    """
 
     variables = {"investigation_id": investigation_id}
     result = client.graphql_run(query=query, variables=variables)
     try:
-        investigation = result["data"][mutation_key]
+        investigation = result["data"]["archiveInvestigation"]
+        status = "Successfully Archived Investigation"
     except (KeyError, TypeError):
-        raise ValueError(f"Failed to archive or unarchive investigation: {result['errors'][0]['message']}")
+        raise ValueError(f"Could not locate investigation with id: {investigation_id}")
 
-    archive_results = {"Results": f"Successfully {'Archived' if archive_investigation else 'Unarchived'} Investigation"}
+    archive_results = {
+        "id": investigation_id,
+        "result": investigation,
+        "status": status,
+        "url": generate_id_url(env, "investigations", investigation_id),
+    }
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.InvestigationArchiving",
+        outputs_prefix="TaegisXDR.ArchivedInvestigation",
         outputs_key_field="id",
-        outputs=investigation,
+        outputs=archive_results,
         readable_output=tableToMarkdown(
             "Taegis Investigation Archiving",
             archive_results,
             removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def unarchive_investigation_command(client: Client, env: str, args=None):
+    investigation_id = args.get("id")
+    if not investigation_id:
+        raise ValueError("Cannot unarchive investigation, missing investigation id")
+
+    query = """
+    mutation ($investigation_id: ID!) {
+      unArchiveInvestigation(investigation_id: $investigation_id) {
+        id
+      }
+    }
+    """
+
+    variables = {"investigation_id": investigation_id}
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"]["unArchiveInvestigation"]
+        status = "Successfully Unarchived Investigation"
+    except (KeyError, TypeError):
+        if result["errors"][0].get("message"):
+            investigation = {}
+            status = "Investigation is not currently archived"
+        else:
+            raise ValueError(f"Could not locate investigation with id: {investigation_id}")
+
+    archive_results = {
+        "id": investigation_id,
+        "result": investigation,
+        "status": status,
+        "url": generate_id_url(env, "investigations", investigation_id),
+    }
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.UnarchivedInvestigation",
+        outputs_key_field="id",
+        outputs=archive_results,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Unarchiving",
+            archive_results,
+            removeNull=True,
+            url_keys=("url"),
         ),
         raw_response=result,
     )
@@ -1059,7 +1111,8 @@ def main():
         "taegis-fetch-users": fetch_users_command,
         "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
-        "taegis-archive-investigation": update_investigation_archive_command,
+        "taegis-archive-investigation": archive_investigation_command,
+        "taegis-unarchive-investigation": unarchive_investigation_command,
         "test-module": test_module,
     }
 

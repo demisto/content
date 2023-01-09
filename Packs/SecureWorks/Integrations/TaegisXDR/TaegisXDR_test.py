@@ -17,7 +17,8 @@ from TaegisXDR import (
     fetch_playbook_execution_command,
     create_investigation_command,
     update_investigation_command,
-    update_investigation_archive_command,
+    archive_investigation_command,
+    unarchive_investigation_command,
     test_module as connectivity_test,
 )
 
@@ -386,32 +387,53 @@ def test_update_investigation(requests_mock):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
-def test_update_investigation_archiving(requests_mock):
+def test_archive_investigation(requests_mock):
     """Tests taegis-archive-investigation command function
     """
     client = mock_client(requests_mock, INVESTIGATION_ARCHIVE_RESPONSE)
 
     # Test Archiving
     args = {"id": TAEGIS_INVESTIGATION["id"]}
-    response = update_investigation_archive_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    response = archive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs["id"] == args["id"]
     assert response.raw_response["data"]["archiveInvestigation"]
 
     # investigation id not set
-    with pytest.raises(ValueError, match="Cannot archive or unarchive investigation, missing investigation id"):
-        assert update_investigation_archive_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+    with pytest.raises(ValueError, match="Cannot archive investigation, missing investigation id"):
+        assert archive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
 
-    # Investigation archive failure
-    client = mock_client(requests_mock, INVESTIGATION_ARCHIVE_BAD_RESPONSE)
-    with pytest.raises(ValueError, match="Failed to archive or unarchive investigation:.*"):
-        assert update_investigation_archive_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    # Investigation archive not found
+    client = mock_client(requests_mock, INVESTIGATION_ARCHIVE_ALREADY_COMPLETE)
+    with pytest.raises(ValueError, match="Could not locate investigation with id:.*"):
+        assert archive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_unarchive_investigation(requests_mock):
+    """Tests taegis-unarchive-investigation command function
+    """
+    client = mock_client(requests_mock, INVESTIGATION_UNARCHIVE_RESPONSE)
 
     # Test Unarchiving
-    client = mock_client(requests_mock, INVESTIGATION_UNARCHIVE_RESPONSE)
-    args = {"id": TAEGIS_INVESTIGATION["id"], "unarchive": "true"}
-    response = update_investigation_archive_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    args = {"id": TAEGIS_INVESTIGATION["id"]}
+    response = unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs["id"] == args["id"]
     assert response.raw_response["data"]["unArchiveInvestigation"]
+
+    # investigation id not set
+    with pytest.raises(ValueError, match="Cannot unarchive investigation, missing investigation id"):
+        assert unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    # Investigation is not archived
+    client = mock_client(requests_mock, INVESTIGATION_ARCHIVE_ALREADY_COMPLETE)
+    response = unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == args["id"]
+    assert response.outputs["status"] == "Investigation is not currently archived"
+
+    # Could not find investigation by investigation id
+    args = {"id": "InvalidInvestigationId"}
+    client = mock_client(requests_mock, INVESTIGATION_NOT_ARCHIVED_RESPONSE)
+    with pytest.raises(ValueError, match="Could not locate investigation with id:.*"):
+        assert unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_fetch_users(requests_mock):

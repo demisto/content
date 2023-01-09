@@ -283,17 +283,17 @@ INVESTIGATION_ARCHIVE_RESPONSE = {
     }
 }
 
-INVESTIGATION_ARCHIVE_BAD_RESPONSE = {
+INVESTIGATION_ARCHIVE_ALREADY_COMPLETE = {
     "data": {},
     "errors": [
         {
-            "message": "missing required input",
-            "path": [
-                "variables",
-                "id"
-            ]
+            "message": "sql: no rows in result set"
         }
     ]
+}
+
+INVESTIGATION_NOT_ARCHIVED_RESPONSE = {
+    'data': None, 'errors': [{'Offset': 182}]
 }
 
 INVESTIGATION_UNARCHIVE_RESPONSE = {

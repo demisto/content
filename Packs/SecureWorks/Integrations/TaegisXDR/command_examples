@@ -1,5 +1,3 @@
-!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
-!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d unarchive=true
 !taegis-create-comment comment="This is a test comment" parent_id="c2e09554-833e-41a1-bc9d-8160aec0d70d"
 !taegis-create-investigation priority=1 description="XSOAR Created Investigation"
 !taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
@@ -16,3 +14,5 @@
 !taegis-fetch-users email="mytenantuser@email.com"
 !taegis-update-comment id="ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f" comment="Newly updated comment"
 !taegis-update-investigation investigation_id="936c1cc1-db8f-430c-837c-1c914fcca35a" status=Open description="XSOAR Modified Investigation"
+!taegis-archive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
+!taegis-unarchive-investigation id=c207ca4c-8a78-4408-a056-49f05d6eb77d
