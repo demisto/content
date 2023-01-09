@@ -1791,7 +1791,7 @@ script:
       - Multi Certificate
       - Letsencrypt
       required: false
-    - description: "Select the Letsencrypt certificate you created. Supports API version 2 only. Required when: certificate-type is enabled."
+    - description: "Select the Letsencrypt certificate you created. Supports API version 2 only. Required when: certificate_type is "Letsencrypt"."
       isArray: false
       name: lets_certificate
       required: false
