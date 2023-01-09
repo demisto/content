@@ -355,7 +355,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-
+    # Test
     is_disable_enabled = argToBoolean(params.get('disable-user-enabled'))
     is_enable_enabled = argToBoolean(params.get('enable-user-enabled'))
 
