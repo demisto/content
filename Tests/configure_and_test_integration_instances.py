@@ -43,8 +43,9 @@ from Tests.update_content_data import update_content
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 NO_PROXY = ','.join([
-    'oproxy.demisto.ninja',
-    'oproxy-dev.demisto.ninja',
+    '*.demisto.ninja',
+    '*.demisto.com',
+    '*.paloaltonetworks.com'
 ])
 NO_PROXY_CONFIG = {'python.pass.extra.keys': f'--env##no_proxy={NO_PROXY}'}  # noqa: E501
 DOCKER_HARDENING_CONFIGURATION = {
