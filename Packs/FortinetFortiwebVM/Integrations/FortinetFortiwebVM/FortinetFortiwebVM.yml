@@ -1696,7 +1696,7 @@ script:
       isArray: false
       name: server_pool
       required: false
-    - description: The name of a protected hosts group to allow or reject connections based on whether the Host.
+    - description: The name of a protected hosts group to allow or reject connections based upon their host.
       isArray: false
       name: protected_hostnames
       required: false
@@ -1918,7 +1918,7 @@ script:
       isArray: false
       name: server_pool
       required: false
-    - description: Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon whether the Host.
+    - description: Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon their host.
       isArray: false
       name: protected_hostnames
       required: false
