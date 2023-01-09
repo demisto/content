@@ -1977,7 +1977,7 @@ script:
       name: intergroup
       required: false
     - auto: PREDEFINED
-      description: The name of an intermediate certificate authority (CA) group.
+      description: Enable this option when proxy servers or load balancers are installed before FortiWeb.
       isArray: false
       name: proxy
       defaultValue: disable
