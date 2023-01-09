@@ -2,7 +2,7 @@ Security Command Center is a security and risk management platform for Google Cl
 This integration was integrated and tested with version v1 of GoogleCloudSCC.
 
 ## Detailed Description
-This integration uses Pub/Sub to fetch the incidents. To set up the initial parameters of Google SCC in Cortex XSOAR, please follow the below instructions -
+This integration uses Pub/Sub to fetch the incidents. This integration supports multiple organizations. In order to fetch data from multiple organizations, configure multiple instances for different organizations. To set up the initial parameters of Google SCC in Cortex XSOAR, please follow the below instructions. For more information, refer to this [guide](https://cloud.google.com/security-command-center/docs/how-to-configure-scc-cortex-xsoar) by Google SCC for configuring Cortex XSOAR Integration.
 
 ### Scope
 We need to provide the below mentioned OAuth scope to execute the commands: https://www.googleapis.com/auth/cloud-platform.

@@ -1,5 +1,19 @@
 This pack is part of the [Rapid Breach Response](https://cortex.marketplace.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse/) pack.
 
+**UPDATE**
+A new method for bypassing ProxyNotShell mitigations was found after being seen exploited in the wild by the Play ransomware gang.
+While the original exploit took advantage of the Autodiscover endpoint, the new exploit is using the OWA endpoint leading to SSRF.
+The OWASSRF exploit method involves two different vulnerabilities tracked by CVE-2022-41080 and CVE-2022-41082 that allow remote code execution (RCE) via Outlook Web Access (OWA).
+
+This playbook introduces several updates in response to the new discovery:
+- Hunting:
+    - Detecting possibly successful exploitation of the OWA SSRF vulnerability.
+- Mitigations:
+    - IIS URL Rewrite rule for the modified exploitation URI path.
+- Remediation:
+    - Block Indicators - Generic v3 playbook.
+  
+  
 Microsoft is investigating two reported zero-day vulnerabilities affecting Microsoft Exchange Server 2013, Exchange Server 2016, and Exchange Server 2019. The first one, identified as CVE-2022-41040, is a Server-Side Request Forgery (SSRF) vulnerability, and the second one, identified as CVE-2022-41082, allows Remote Code Execution (RCE) when PowerShell is accessible to the attacker.  
 
 Currently, Microsoft is aware of limited targeted attacks using these two vulnerabilities.  In these attacks, CVE-2022-41040 can enable an authenticated attacker to remotely trigger CVE-2022-41082. It should be noted that authenticated access to the vulnerable Exchange Server is necessary to successfully exploit either vulnerability.

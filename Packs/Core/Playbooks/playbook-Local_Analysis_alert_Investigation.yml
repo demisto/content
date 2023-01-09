@@ -953,7 +953,7 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (initiatorsha256:${alert.initiatorsha256.[0]} or hostip:${alert.hostip.[0]}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        simple: (initiatorsha256:${alert.initiatorsha256.[0]} or hostip:${alert.hostip.[0]}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
       threshold:
         simple: "5"
     loop:
