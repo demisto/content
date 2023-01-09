@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import argparse
 import shutil
@@ -27,6 +28,8 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
+
+METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
 
 def get_packs_names(packs_to_upload: str) -> set:
@@ -118,7 +121,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
 
 
 def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, pack_version: str = '',
-                        hidden_pack: bool = False) -> bool:
+                        hidden_pack: bool = False, pack_versions_to_keep: list = None) -> bool:
     """
     Copies pack folder into index folder.
 
@@ -128,6 +131,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         pack_path (str): pack folder full path.
         pack_version (str): pack latest version.
         hidden_pack (bool): whether pack is hidden/internal or regular pack.
+        pack_versions_to_keep (list): pack versions to keep its metadata. If empty, do not remove any versions.
 
     Returns:
         bool: whether the operation succeeded.
@@ -151,6 +155,10 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
+                elif (metadata_version := re.findall(METADATA_FILE_REGEX_GET_VERSION, d.name)) \
+                        and pack_versions_to_keep:
+                    if metadata_version[0] not in pack_versions_to_keep:
+                        os.remove(d.path)
 
         # skipping index update in case hidden is set to True
         if hidden_pack:
@@ -1172,9 +1180,12 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                    modified_rn_files_paths,
-                                                                    marketplace, id_set)
+        task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
+            index_folder_path,
+            build_number,
+            modified_rn_files_paths,
+            marketplace, id_set
+        )
 
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
@@ -1214,9 +1225,9 @@ def main():
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
             pack.cleanup()
             continue
-
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden,
+                                          pack_versions_to_keep=pack_versions_to_keep)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
