@@ -1,0 +1,2617 @@
+id: Cortex XDR - User Investigation
+version: -1
+name: Cortex XDR - User Investigation
+description: This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook search data and logs related to a specific user from Siem, Identities management systems, and Firewalls.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 12d19917-d85e-4a42-8e53-7ff1ab81aa09
+    type: start
+    task:
+      id: 12d19917-d85e-4a42-8e53-7ff1ab81aa09
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 93fe0ced-0cc0-4fe6-8d97-11b74243539b
+    type: title
+    task:
+      id: 93fe0ced-0cc0-4fe6-8d97-11b74243539b
+      version: -1
+      name: Failed Logon Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: cb74532d-5a5b-4626-82e4-f036fb25cb8f
+    type: title
+    task:
+      id: cb74532d-5a5b-4626-82e4-f036fb25cb8f
+      version: -1
+      name: Splunk
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b0305a89-edc4-464d-83b4-e47f931e7424
+    type: title
+    task:
+      id: b0305a89-edc4-464d-83b4-e47f931e7424
+      version: -1
+      name: Qradar
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 429d288f-ebcb-48f2-8aa5-430b754ea8ec
+    type: title
+    task:
+      id: 429d288f-ebcb-48f2-8aa5-430b754ea8ec
+      version: -1
+      name: Manually search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d03a6d37-76b9-40dd-83ac-a9d3e48de6da
+    type: condition
+    task:
+      id: d03a6d37-76b9-40dd-83ac-a9d3e48de6da
+      version: -1
+      name: Is SIEM enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Azure Log Analytics:
+      - "14"
+      Qradar:
+      - "3"
+      Splunk:
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: Qradar
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar,QRadar_v2,QRadar v3
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    - label: Splunk
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SplunkPy
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    - label: Azure Log Analytics
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure Log Analytics
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d3f0aa8d-651f-493f-8084-ed98d5e99160
+    type: playbook
+    task:
+      id: d3f0aa8d-651f-493f-8084-ed98d5e99160
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: select * from events WHERE LogSourceTypeName(deviceType) = 'Microsoft Windows Security Event Log' and username='${inputs.Username}' and "EventID"='4771'  or "EventID"='4625' and "Logon Type"='2' OR "Logon Type"='7' OR "Logon Type"='10' Last 1 days
+      timeout:
+        simple: "600"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b442475d-f619-4492-862c-2ae9c627071d
+    type: regular
+    task:
+      id: b442475d-f619-4492-862c-2ae9c627071d
+      version: -1
+      name: Manually search for related events
+      description: |
+        Search for the windows event IDs 4771 and 4625 with Logon Type 2,7,10.
+        Search for message="Failed password" OR message="FAILED LOGIN" OR message="Invalid user" on Linux logs.
+        Search for Treat logs on the user.
+        Search for Related XDR Alerts.
+        Search for the user's permanent location.
+        Search for failed logon event on Okta.
+        Search for suspicious activities such as MFA bypass attempts or reset password attempts.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 369240fc-bb32-4b29-8f83-b378ae4dd770
+    type: regular
+    task:
+      id: 369240fc-bb32-4b29-8f83-b378ae4dd770
+      version: -1
+      name: Search for failed logon from the user
+      description: Search for failed logon events
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      earliest_time:
+        complex:
+          root: inputs.SplunkEarliestTime
+      extend-context:
+        simple: SplunkFailedLogonLogs=
+      ignore-outputs:
+        simple: "true"
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
+      query:
+        simple: index=${inputs.SplunkIndex} user=${inputs.Username} (sourcetype="WinEventLog" source="WinEventLog:Security" (EventCode=4771 OR (EventCode=4624 (Logon_Type=2 OR Logon_Type=7 OR Logon_Type=10)))) OR (sourcetype=syslog  (( _raw="*Failed password*" OR _raw="*FAILED LOGIN*" OR _raw="*Invalid user*" )))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b717a94b-5c66-4564-8057-2dac08c917ee
+    type: title
+    task:
+      id: b717a94b-5c66-4564-8057-2dac08c917ee
+      version: -1
+      name: Permanent Location  Check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d5fdd9cc-89e9-4d3c-8383-eb82a74398a6
+    type: condition
+    task:
+      id: d5fdd9cc-89e9-4d3c-8383-eb82a74398a6
+      version: -1
+      name: Is Okta V2 integration enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 62f3045e-1b60-4ac8-89e9-1bd8454f65c3
+    type: regular
+    task:
+      id: 62f3045e-1b60-4ac8-89e9-1bd8454f65c3
+      version: -1
+      name: Check for failed logon attempts from the user
+      description: Gets logs on failed logon events.
+      script: Okta v2|||okta-get-logs
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      extend-context:
+        simple: OktaFailedLogonLogs=
+      filter:
+        simple: actor.alternateId eq "${inputs.UserEmail}" and eventType eq "user.authentication.sso" and outcome.result eq "FAILURE" or eventType eq "user.authentication.auth" and outcome.result eq "FAILURE"
+      ignore-outputs:
+        simple: "true"
+      retry-count:
+        simple: "6"
+      retry-interval:
+        simple: "10"
+      since:
+        complex:
+          root: inputs.TimeLast1Day
+      until:
+        complex:
+          root: inputs.CurrentTime
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b47370b3-16c9-48ca-8cdc-31833ab332b9
+    type: title
+    task:
+      id: b47370b3-16c9-48ca-8cdc-31833ab332b9
+      version: -1
+      name: Azure Log Analytics
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a16e3aaf-599b-4b68-8d6f-55efeef8def1
+    type: regular
+    task:
+      id: a16e3aaf-599b-4b68-8d6f-55efeef8def1
+      version: -1
+      name: Azure Log Analytics search for failed logon from the user
+      description: Executes an Analytics query for failed logon events.
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      extend-context:
+        simple: AzureFailedLogonLogs=
+      ignore-outputs:
+        simple: "true"
+      query:
+        simple: |-
+          SecurityEvent
+          | where EventID == 4771 or EventID == 4625 and (LogonType ==  2 or LogonType == 7 or LogonType == 10)
+          | where TargetAccount == '${inputs.Username}'
+          | where TimeGenerated > ago(24h)
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 079af6ed-0728-4152-8b8f-6713b79c85bc
+    type: title
+    task:
+      id: 079af6ed-0728-4152-8b8f-6713b79c85bc
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+      - "49"
+      - "50"
+      - "51"
+      - "61"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e63c6d2e-6445-4999-8e9b-74223e7f7144
+    type: regular
+    task:
+      id: e63c6d2e-6445-4999-8e9b-74223e7f7144
+      version: -1
+      name: Check for success Logon from the country for the user
+      description: Gets logs by providing optional filters.
+      script: Okta v2|||okta-get-logs
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      extend-context:
+        simple: countrysuccessLogs=
+      filter:
+        simple: actor.alternateId eq "${inputs.UserEmail}" and eventType eq "user.authentication.sso" and outcome.result eq "SUCCESS" or eventType eq "user.authentication.auth" and outcome.result eq "SUCCESS"
+      ignore-outputs:
+        simple: "true"
+      retry-count:
+        simple: "6"
+      retry-interval:
+        simple: "10"
+      since:
+        complex:
+          root: inputs.TimeLast7Days
+      until:
+        complex:
+          root: inputs.TimeLast1Day
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 5503545c-4c5d-4f38-877b-803e5b1ce9a3
+    type: condition
+    task:
+      id: 5503545c-4c5d-4f38-877b-803e5b1ce9a3
+      version: -1
+      name: The user work from a permanent country?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: inputs.LoginCountry
+                transformers:
+                - operator: ConvertCountryCodeCountryName
+                  args:
+                    country_code:
+                      value:
+                        simple: inputs.LoginCountry
+                      iscontext: true
+                    country_name: {}
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: countrysuccessLogs.client.geographicalContext
+                accessor: country
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: dbb65bbf-ed33-4787-8db0-20cecf327ab0
+    type: regular
+    task:
+      id: dbb65bbf-ed33-4787-8db0-20cecf327ab0
+      version: -1
+      name: Set not a permanent country
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: PermanentCountry
+      value:
+        simple: "No"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: ee038b4a-7d1c-4409-8415-2eab74ee06ae
+    type: regular
+    task:
+      id: ee038b4a-7d1c-4409-8415-2eab74ee06ae
+      version: -1
+      name: Set permanent country
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: PermanentCountry
+      value:
+        simple: "Yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: b93855ac-03c3-4e1f-81c0-fa1d989acf58
+    type: regular
+    task:
+      id: b93855ac-03c3-4e1f-81c0-fa1d989acf58
+      version: -1
+      name: count failed logon from Azure Log Analytics logs
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      array:
+        complex:
+          root: AzureFailedLogonLogs.tables
+          accessor: rows
+      contextKey:
+        simple: NumOfSiemFailedLogon
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: add2888c-09b9-428d-8567-9a5eed75e91f
+    type: regular
+    task:
+      id: add2888c-09b9-428d-8567-9a5eed75e91f
+      version: -1
+      name: count Okta failed logon
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      array:
+        complex:
+          root: OktaFailedLogonLogs
+      contextKey:
+        simple: NumOfOktaFailedLogon
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 85e91ccb-1565-48a5-8f56-e745b4b3d5a2
+    type: title
+    task:
+      id: 85e91ccb-1565-48a5-8f56-e745b4b3d5a2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 8d5f4d57-bdb3-4f0e-835b-de06e784a823
+    type: regular
+    task:
+      id: 8d5f4d57-bdb3-4f0e-835b-de06e784a823
+      version: -1
+      name: count failed logon from Qradar logs
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      array:
+        complex:
+          root: QRadar.Search.Result
+          accessor: events
+      contextKey:
+        simple: NumOfSiemFailedLogon
+      extend-context:
+        simple: NoOfFailedLogon=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: b632202b-40e8-41aa-8de5-b98ddef463b2
+    type: title
+    task:
+      id: b632202b-40e8-41aa-8de5-b98ddef463b2
+      version: -1
+      name: Threat Logs Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 120f445e-5654-48be-8c96-467c6de57779
+    type: condition
+    task:
+      id: 120f445e-5654-48be-8c96-467c6de57779
+      version: -1
+      name: Is PAN-OS integration enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: f367b6db-4958-4c31-8c1c-c92a69de7622
+    type: regular
+    task:
+      id: f367b6db-4958-4c31-8c1c-c92a69de7622
+      version: -1
+      name: PAN-OS query logs
+      description: The query logs in Panorama.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      log-type:
+        simple: threat
+      query:
+        simple: (user.src eq ${inputs.Username}) or (user.dst eq ${inputs.Username}) and (time_generated in last-24-hrs)
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 912dcc74-cd17-454e-8ea2-695af8a14e4b
+    type: regular
+    task:
+      id: 912dcc74-cd17-454e-8ea2-695af8a14e4b
+      version: -1
+      name: count Threat logs for the user from Panorama logs
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      array:
+        complex:
+          root: Panorama.Monitor
+          accessor: Logs
+      contextKey:
+        simple: NoOfThreatLogs
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 0052792a-2852-4549-816d-9cedc0aef435
+    type: regular
+    task:
+      id: 0052792a-2852-4549-816d-9cedc0aef435
+      version: -1
+      name: PAN-OS get logs
+      description: Retrieves the data of a logs query.
+      script: '|||pan-os-get-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      job_id:
+        complex:
+          root: Panorama.Monitor
+          accessor: JobID
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f0f56331-0f18-4b46-821d-1c128e8f326d
+    type: title
+    task:
+      id: f0f56331-0f18-4b46-821d-1c128e8f326d
+      version: -1
+      name: Time Calculation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: cc2006b7-f562-44a5-8e98-4fa349f8f395
+    type: regular
+    task:
+      id: cc2006b7-f562-44a5-8e98-4fa349f8f395
+      version: -1
+      name: Get current time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 845a2580-a257-4403-80e1-6585aa3d5f88
+    type: regular
+    task:
+      id: 845a2580-a257-4403-80e1-6585aa3d5f88
+      version: -1
+      name: Get time 1 day ago
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: e525f19b-f262-4aed-8fb7-d85ef88bb94f
+    type: regular
+    task:
+      id: e525f19b-f262-4aed-8fb7-d85ef88bb94f
+      version: -1
+      name: Get time 7 days ago
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 490591b6-0fa6-42df-8a2a-78a52f6ef169
+    type: regular
+    task:
+      id: 490591b6-0fa6-42df-8a2a-78a52f6ef169
+      version: -1
+      name: count failed logon from Splunk logs
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      array:
+        complex:
+          root: SplunkFailedLogonLogs
+      contextKey:
+        simple: NumOfSiemFailedLogon
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: f9f7fdce-cc5b-4aa5-87d1-c5f5e8f2a89e
+    type: condition
+    task:
+      id: f9f7fdce-cc5b-4aa5-87d1-c5f5e8f2a89e
+      version: -1
+      name: Is Okta V2 integration enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 51786e50-9c7b-481e-8bb3-61c809711c47
+    type: title
+    task:
+      id: 51786e50-9c7b-481e-8bb3-61c809711c47
+      version: -1
+      name: Okta
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 1e94ed10-2733-4148-8982-a1b6f17c3bb6
+    type: title
+    task:
+      id: 1e94ed10-2733-4148-8982-a1b6f17c3bb6
+      version: -1
+      name: PAN-OS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 4d527a3e-ea54-4f0c-84a8-eda5a4a84130
+    type: title
+    task:
+      id: 4d527a3e-ea54-4f0c-84a8-eda5a4a84130
+      version: -1
+      name: Okta
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 0c346c23-69f5-4e9c-8350-2ab4c133f5fe
+    type: title
+    task:
+      id: 0c346c23-69f5-4e9c-8350-2ab4c133f5fe
+      version: -1
+      name: Related alerts from XDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3070,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 41b91fb2-b1b3-420d-8ed8-68d08b90a641
+    type: condition
+    task:
+      id: 41b91fb2-b1b3-420d-8ed8-68d08b90a641
+      version: -1
+      name: Search for Failed logons?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FailedLogonSearch
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: e61f89af-b96e-4075-83f6-c3006b9bc4d3
+    type: condition
+    task:
+      id: e61f89af-b96e-4075-83f6-c3006b9bc4d3
+      version: -1
+      name: Search for Threat logs?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ThreatLogSearch
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 32a24da9-524f-4bfa-8555-186f3e85b498
+    type: condition
+    task:
+      id: 32a24da9-524f-4bfa-8555-186f3e85b498
+      version: -1
+      name: Search for Permanent Location?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.LocationSearch
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 127d78e5-1e1b-407a-8263-01e7cec5ff52
+    type: condition
+    task:
+      id: 127d78e5-1e1b-407a-8263-01e7cec5ff52
+      version: -1
+      name: Search for Related alerts from XDR?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.XdrAlertSearch
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3070,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 750543db-fb6c-494a-879d-b997d9579661
+    type: regular
+    task:
+      id: 750543db-fb6c-494a-879d-b997d9579661
+      version: -1
+      name: Failed logon count
+      description: |
+        Script will run the provided mathematical action on 2 provided values and produce a result.
+        The result can be stored on the context using the contextKey argument
+      scriptName: MathUtil
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      action:
+        simple: +
+      contextKey:
+        simple: NumOfFailedLogon
+      lh:
+        complex:
+          root: NumOfSiemFailedLogon
+      rh:
+        complex:
+          root: NumOfOktaFailedLogon
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: c2915499-93da-4080-8583-98c9f60bccf8
+    type: condition
+    task:
+      id: c2915499-93da-4080-8583-98c9f60bccf8
+      version: -1
+      name: Does the result from Qradar exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: QRadar.Search.Result
+                accessor: events
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 46fdfc73-7f2c-445f-860b-c239a93963e6
+    type: condition
+    task:
+      id: 46fdfc73-7f2c-445f-860b-c239a93963e6
+      version: -1
+      name: Does the result from Splunk exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SplunkFailedLogonLogs
+                accessor: _raw
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 49054f44-d793-4785-8203-540913eee25c
+    type: condition
+    task:
+      id: 49054f44-d793-4785-8203-540913eee25c
+      version: -1
+      name: Does the result from Azure Log Analytics exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AzureFailedLogonLogs.tables.rows.[0]
+                accessor: '[0]'
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 1481235c-ae5e-4914-81fd-f2bceaaef0f7
+    type: condition
+    task:
+      id: 1481235c-ae5e-4914-81fd-f2bceaaef0f7
+      version: -1
+      name: Does the result from Okta exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      - "59"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: OktaFailedLogonLogs
+                accessor: displayMessage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 3268fbf0-932b-4996-8338-4bdaf6beb90c
+    type: condition
+    task:
+      id: 3268fbf0-932b-4996-8338-4bdaf6beb90c
+      version: -1
+      name: Does the result from PAN-OS exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Panorama.Monitor.Logs
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 71126b4d-d9b4-4e9a-8dfd-ce659b08882b
+    type: regular
+    task:
+      id: 71126b4d-d9b4-4e9a-8dfd-ce659b08882b
+      version: -1
+      name: Set Count to zero
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: NumOfSiemFailedLogon
+      value:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1350,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 31ac3906-a6f9-4ab0-8bb8-f6d977a4f705
+    type: regular
+    task:
+      id: 31ac3906-a6f9-4ab0-8bb8-f6d977a4f705
+      version: -1
+      name: Set Count to zero
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: NumOfOktaFailedLogon
+      value:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: cf3e9886-5c4e-4aae-8183-6bb253958c3d
+    type: condition
+    task:
+      id: cf3e9886-5c4e-4aae-8183-6bb253958c3d
+      version: -1
+      name: Does the result from Okta exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: countrysuccessLogs
+                accessor: displayMessage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: b395df4c-c573-45ad-880d-4baabcfecd71
+    type: condition
+    task:
+      id: b395df4c-c573-45ad-880d-4baabcfecd71
+      version: -1
+      name: Search for suspicious activities?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.OktaSuspiciousactivitySearch
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: b3d9ae7a-32f0-458d-848c-ed68caef3e65
+    type: title
+    task:
+      id: b3d9ae7a-32f0-458d-848c-ed68caef3e65
+      version: -1
+      name: Suspicious activity Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 0a3bb9da-cbf1-4219-83bc-e5b25b215c03
+    type: condition
+    task:
+      id: 0a3bb9da-cbf1-4219-83bc-e5b25b215c03
+      version: -1
+      name: Is Okta V2 integration enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: b915b90d-7f53-4373-8472-e4bc894a09bf
+    type: title
+    task:
+      id: b915b90d-7f53-4373-8472-e4bc894a09bf
+      version: -1
+      name: Okta
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 949668c9-10d9-43ff-872b-9b635e3d7608
+    type: regular
+    task:
+      id: 949668c9-10d9-43ff-872b-9b635e3d7608
+      version: -1
+      name: Check for suspicious activities
+      description: Gets logs by providing optional filters.
+      script: Okta v2|||okta-get-logs
+      type: regular
+      iscommand: true
+      brand: Okta v2
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      extend-context:
+        simple: OktaSuspiciousActivities=
+      filter:
+        simple: actor.alternateId eq "${inputs.UserEmail}" and eventType eq "user.mfa.attempt_bypass" or eventType eq "user.account.reset_password" and outcome.result eq "FAILURE" and outcome.reason eq "User answered recovery question invalid"
+      ignore-outputs:
+        simple: "true"
+      retry-count:
+        simple: "6"
+      retry-interval:
+        simple: "10"
+      since:
+        complex:
+          root: inputs.TimeLast1Day
+      until:
+        complex:
+          root: inputs.CurrentTime
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 494f0207-1df4-40e8-87d2-ba106bc3890c
+    type: condition
+    task:
+      id: 494f0207-1df4-40e8-87d2-ba106bc3890c
+      version: -1
+      name: Does the result from Okta exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: OktaFailedLogonLogs
+                accessor: displayMessage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: bd204393-ae00-4faf-87c7-3c3f8f4bc340
+    type: regular
+    task:
+      id: bd204393-ae00-4faf-87c7-3c3f8f4bc340
+      version: -1
+      name: count Okta failed logon
+      description: Count an array size
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      array:
+        complex:
+          root: OktaSuspiciousActivities
+      contextKey:
+        simple: NumOfOktaSuspiciousActivities
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 917e8db5-c814-4cf0-869e-415782186a11
+    type: playbook
+    task:
+      id: 917e8db5-c814-4cf0-869e-415782186a11
+      version: -1
+      name: Cortex XDR - Get entity alerts by MITRE tactics
+      description: |-
+        This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
+        Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
+      playbookName: Cortex XDR - Get entity alerts by MITRE tactics
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      EntityType:
+        simple: actor_effective_username
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      RunAll:
+        simple: "True"
+      entityID:
+        complex:
+          root: inputs.Username
+      timeRange:
+        simple: 2 hours
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3070,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_4_#default#": 0.24,
+      "22_24_#default#": 0.65,
+      "22_25_yes": 0.63,
+      "32_4_#default#": 0.71,
+      "48_1_yes": 0.54,
+      "49_28_#default#": 0.82,
+      "49_31_yes": 0.52,
+      "50_11_yes": 0.53,
+      "51_45_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2805,
+        "width": 4800,
+        "x": -1350,
+        "y": -800
+      }
+    }
+  }
+inputs:
+- key: SplunkIndex
+  value:
+    simple: '*'
+  required: false
+  description: Splunk's index name in which to search. Default is "*" - All.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -1d
+  required: false
+  description: The earliest time for the Splunk search query.
+  playbookInputQuery:
+- key: SplunkLatestTime
+  value:
+    simple: now
+  required: false
+  description: The latest time for the Splunk search query.
+  playbookInputQuery:
+- key: UserEmail
+  value: {}
+  required: false
+  description: User Email.
+  playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: Username.
+  playbookInputQuery:
+- key: LoginCountry
+  value: {}
+  required: false
+  description: The Country from which the user logged in.
+  playbookInputQuery:
+- key: CurrentTime
+  value:
+    complex:
+      root: TimeNow
+      accessor: '[0]'
+  required: false
+  description: 'Date/Time Format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
+  playbookInputQuery:
+- key: TimeLast1Day
+  value:
+    complex:
+      root: TimeNow
+      accessor: '[1]'
+  required: false
+  description: 'Date/Time Format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
+  playbookInputQuery:
+- key: TimeLast7Days
+  value:
+    complex:
+      root: TimeNow
+      accessor: '[2]'
+  required: false
+  description: 'Date/Time Format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
+  playbookInputQuery:
+- key: FailedLogonSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for failed logon logs from Siem? Can be False or True.
+  playbookInputQuery:
+- key: ThreatLogSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for threat logs from PAN-OS? Can be False or True.
+  playbookInputQuery:
+- key: LocationSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for the user's permanent location? Can be False or True.
+  playbookInputQuery:
+- key: XdrAlertSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for Related alerts from XDR? Can be False or True.
+  playbookInputQuery:
+- key: OktaSuspiciousactivitySearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for Suspicious activities from Okta? Can be False or True.
+  playbookInputQuery:
+outputs:
+- contextPath: PermanentCountry
+  description: True if the user work from a permanent country. False if else.
+  type: unknown
+- contextPath: NumOfFailedLogon
+  description: Number of failed login from Siem.
+- contextPath: NumOfThreatLogs
+  description: Number of Threat Logs for the user from Panorama.
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.Alert
+  description: XDR Alerts.
+  type: unknown
+- contextPath: ArraySize
+  description: Number of xdr alert for the user.
+- contextPath: NumOfOktaSuspiciousActivities
+  description: Number of Suspicious Activities for the user from Okta.
+  type: unknown
+- contextPath: OktaSuspiciousActivities
+  description: Suspicious activities logs from Okta.
+  type: unknown
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
