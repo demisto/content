@@ -160,7 +160,7 @@ def get_events_command(client: Client, first_fetch_time: datetime, event_type: L
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, Optional[datetime, str]], event_type: Optional[list]) -> Tuple[Dict, List]:
+def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type: Optional[list]) -> Tuple[Dict, List]:
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -185,7 +185,7 @@ def fetch_events(client: Client, last_run: Dict[str, Optional[datetime, str]], e
     if 'ALERTS' in event_type:
         if alerts := client.get_alerts(last_run.get('last_alert_created')):
             events.extend(alerts)
-            last_run['last_alert_created'] = alerts[-1].get('createdAt')
+            last_run['last_alert_created'] = alerts[-1].get('alertInfo', {}).get('createdAt')
 
     demisto.info(f'Setting next run {last_run}.')
     return last_run, events
@@ -231,33 +231,23 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client, event_type)
             return_results(result)
 
         elif command in (f'{VENDOR}-{PRODUCT}-get-events', 'fetch-events'):
+            should_push_events = argToBoolean(args.get('should_push_events', False))
             if command == f'{VENDOR}-{PRODUCT}-get-events':
-                should_push_events = argToBoolean(args.get('should_push_events', False))
                 events, results = get_events_command(client, first_fetch_time, event_type)
                 return_results(results)
 
-            else:  # command == 'fetch-events':
+            if command == 'fetch-events':
                 should_push_events = True
-                last_run = demisto.getLastRun() or first_run(first_fetch_time)  # For the first execution.
-                next_run, events = fetch_events(
-                    client=client,
-                    last_run=last_run,
-                    event_type=event_type
-                )
-                # saves next_run for the time fetch-events is invoked
+                last_run = demisto.getLastRun() or first_run(first_fetch_time)
+                next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
                 demisto.setLastRun(next_run)
 
             if should_push_events:
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
     except Exception as e:
