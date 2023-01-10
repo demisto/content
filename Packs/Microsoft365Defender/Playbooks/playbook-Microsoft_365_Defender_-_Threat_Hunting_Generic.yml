@@ -58,9 +58,9 @@ tasks:
 
         **URLDomain** - If the “URLDomain” value is found as a substring of URL(s) in the body of the email, the email is retrieved.
 
-        **MessageID** - The message id of the email from which the URL was clicked. Please note that this can be either of the following 2 values:
+        **MessageID** - The message ID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:
         - The value of the header "Message-ID".
-        - The internal ID of the message within Microsoft's products (e.g NetworkMessageId).
+        - The internal ID of the message within Microsoft's products (e.g., NetworkMessageId).
 
         Can be a single MessageID or an array of MessageIDs to search.
       playbookName: Microsoft 365 Defender - Get Email URL Clicks
