@@ -390,7 +390,7 @@ class Client(BaseClient):
             json_data=tag
         )
 
-    def delete_tag(self, tag_id):
+    def delete_tag(self, tag_id: str) -> dict:
         """Delete Prisma SASE tag
         Args:
             tag_id: Identifier of the existing tag to be deleted
@@ -398,6 +398,179 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}tags/{tag_id}'
+
+        return self.http_request(
+            method="DELETE",
+            url_suffix=uri
+        )
+
+    def create_tag(self, query_params: dict, tag: dict) -> dict:
+        """Create new Prisma SASE tag within the given Folder
+        Args:
+            tag: tag dictionary
+            query_params: Prisma SASE Folder
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}tags'
+
+        return self.http_request(
+            method="POST",
+            url_suffix=uri,
+            params=query_params,
+            json_data=tag
+        )
+
+    def get_address_group_by_id(self, query_params: dict, group_id: str) -> dict:
+        """Get a tag
+        Args:
+            query_params: Address object dictionary
+            group_id: Identifier of existing tag to be edited
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}address-groups/{group_id}'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def list_address_group(self, query_params: dict) -> dict:
+        """Get all address groups
+        Args:
+            query_params: Address object dictionary
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}address-groups'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def update_address_group(self, address_group: dict, group_id: str) -> dict:
+        """Edit existing address group
+        Args:
+            address_group: Address object dictionary
+            group_id: Identifier of existing address group to update
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}address-groups/{group_id}'
+
+        return self.http_request(
+            method="PUT",
+            url_suffix=uri,
+            json_data=address_group
+        )
+
+    def create_address_group(self, query_params: dict, address_group: dict) -> dict:
+        """Create new Prisma SASE addres group
+        Args:
+            address_group: address group dictionary
+            query_params: Prisma SASE Folder
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}address-groups'
+
+        return self.http_request(
+            method="POST",
+            url_suffix=uri,
+            params=query_params,
+            json_data=address_group
+        )
+
+    def delete_address_group(self, group_id: str) -> dict:
+        """Delete Prisma SASE address group
+        Args:
+            group_id: Identifier of the existing address group to be deleted
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}address-groups/{group_id}'
+
+        return self.http_request(
+            method="DELETE",
+            url_suffix=uri
+        )
+
+    def get_custom_url_category_by_id(self, query_params: dict, id: str) -> dict:
+        """Get a tag
+        Args:
+            query_params: Address object dictionary
+            id: Identifier of existing tag to be edited
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}url-categories/{id}'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def list_custom_url_category(self, query_params: dict) -> dict:
+        """Get all custom url category
+        Args:
+            query_params: Address object dictionary
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}url-categories'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def update_custom_url_category(self, custom_url_category: dict, id: str) -> dict:
+        """Updatr existing custom url category
+        Args:
+            custom_url_category: custom url category
+            id: Identifier of existing address group to update
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}url-categories/{id}'
+
+        return self.http_request(
+            method="PUT",
+            url_suffix=uri,
+            json_data=custom_url_category
+        )
+
+    def create_custom_url_category(self, query_params: dict, custom_url_category: dict) -> dict:
+        """Create new custom url category
+        Args:
+            custom_url_category: address group dictionary
+            query_params: Prisma SASE Folder
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}url-categories'
+
+        return self.http_request(
+            method="POST",
+            url_suffix=uri,
+            params=query_params,
+            json_data=custom_url_category
+        )
+
+    def delete_custom_url_category(self, id: str) -> dict:
+        """Delete custom url category
+        Args:
+            id: Identifier of the existing custom url category to be deleted
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}url-categories/{id}'
 
         return self.http_request(
             method="DELETE",
@@ -488,6 +661,17 @@ def modify_address(outputs: List[dict]) -> List[dict]:
                 output['type'] = address_type
                 output['address_value'] = output[address_type]
                 output.pop(address_type)
+    return outputs
+
+
+def modify_group_address(outputs: List[dict]) -> List[dict]:
+    for output in outputs:
+        if 'static' in output:
+            output['addresses'] = output['static']
+            output.pop('static')
+        elif 'dynamic' in output:
+            output['dynamic_filter'] = output['dynamic'].get('filter', '')
+            output.pop('dynamic')
     return outputs
 
 
@@ -598,8 +782,9 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    object_id = args.get('object_id')
     # first get the original address, so user won't need to send all data
-    original_address = client.get_address_by_id(query_params, args.get('id'))
+    original_address = client.get_address_by_id(query_params, object_id)
     for address_type in ADDRESS_TYPES:
         # address object can have exactly one type. If the type is updated, need to delete the previous type
         if address_type in original_address:
@@ -612,7 +797,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     if tag := args.get('tag'):
         original_address['tag'] = tag
 
-    raw_response = client.edit_address_object(original_address, args.get('id'))  # type: ignore
+    raw_response = client.edit_address_object(original_address, object_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
@@ -749,7 +934,7 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
         Outputs.
     """
     rule = client.build_security_rule(args)
-    rule_id = args.get('id')
+    rule_id = args.get('rule_id')
     overwrite = argToBoolean(args.get('overwrite'))
     query_params = {
         'folder': encode_string_results(args.get('folder'))
@@ -808,8 +993,8 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
         'position': encode_string_results(args.get('position'))
     }
 
-    if object_id := args.get('rule_id') or '':
-        raw_response = client.get_address_by_id(query_params, object_id)
+    if rule_id := args.get('rule_id') or '':
+        raw_response = client.get_security_rule_by_id(query_params, rule_id)
         outputs = raw_response
     else:
         page = arg_to_number(args.get('page')) or 1
@@ -958,7 +1143,8 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         'folder': encode_string_results(args.get('folder'))
     }
     # first get the original tag, so user won't need to send all data
-    original_tag = client.get_tag_by_id(query_params, args.get('id'))
+    original_tag = client.get_tag_by_id(query_params, args.get('tag_id'))
+    print(original_tag)
 
     if color := args.get('color'):
         original_tag['color'] = color
@@ -966,7 +1152,7 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if comments := args.get('comments'):
         original_tag['comments'] = comments
 
-    raw_response = client.update_tag(original_tag, args.get('id'))  # type: ignore
+    raw_response = client.update_tag(args.get('tag_id'), original_tag)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
@@ -994,6 +1180,291 @@ def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=f'Tag with id {raw_response.get("id", "")} '
+                        f'and name {raw_response.get("name", "")} was deleted successfully',
+        raw_response=raw_response
+    )
+
+
+def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to get address groups for a given Prisma Access Folder / Position
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    if group_id := args.get('group_id'):
+        raw_response = client.get_address_group_by_id(query_params, group_id)
+        outputs = [raw_response]
+    else:
+        page = arg_to_number(args.get('page')) or 1
+        page_size = arg_to_number(args.get('page_size'))
+        if page and page_size:
+            query_params['offset'] = (page - 1) * page_size
+            query_params['limit'] = page_size
+        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
+            query_params['limit'] = limit
+
+        raw_response = client.list_address_group(query_params)  # type: ignore
+
+        outputs = raw_response.get('data')
+
+    outputs = modify_group_address(outputs)
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Address Groups', outputs,
+                                        headers=['id', 'name', 'description', 'addresses', 'dynamic_filter'],
+                                        headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def create_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to create new Prisma Access address group
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    address_group = {
+        'name': args.get('name')}
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+
+    if description := args.get('description'):
+        address_group['description'] = description
+
+    if group_type := args.get('type'):
+        if group_type == 'static':
+            if static_addresses := argToList(args.get('static_addresses')):
+                address_group['static'] = static_addresses
+        else:  # type == 'dynamic'
+            if dynamic_filter := argToList(args.get('dynamic_filter')):
+                address_group['dynamic'] = {'filter': dynamic_filter}
+
+    raw_response = client.create_address_group(query_params, address_group)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
+        outputs_key_field='id',
+        outputs=raw_response,
+        readable_output=tableToMarkdown('Address Group Created', raw_response, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def update_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to update new Prisma Access address group
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    group_id = args.get('group_id')
+    # first get the original address, so user won't need to send all data
+    original_address_group = client.get_address_group_by_id(query_params, group_id)
+    # TODO change overwrite
+
+    if description := args.get('description'):
+        original_address_group['description'] = description
+    overwrite = args.get('overwrite')
+    group_type = args.get('type')
+    if not group_type:
+        group_type = 'static' if 'static' in original_address_group else 'dynamic'
+
+    if group_type == 'static':
+        if static_addresses := argToList(args.get('static_addresses')):
+            if static_addresses:
+                original_address_group['static'] = static_addresses
+                original_address_group.pop('dynamic')
+    else:  # type == 'dynamic'
+        if dynamic_filter := args.get('dynamic_filter'):
+            if dynamic_filter:
+                original_address_group['dynamic'] = {'filter': dynamic_filter}
+                original_address_group.pop('static')
+
+    raw_response = client.update_address_group(original_address_group, group_id)  # type: ignore
+    outputs = raw_response
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Address Group updated', outputs, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def delete_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to delete Prisma Access address group
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    raw_response = client.delete_address_group(args.get('group_id'))  # type: ignore
+
+    return CommandResults(
+        readable_output=f'Address group with id {raw_response.get("id", "")} '
+                        f'and name {raw_response.get("name", "")} was deleted successfully',
+        raw_response=raw_response
+    )
+
+
+def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to get custom url categories
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    if url_category_id := args.get('id'):
+        raw_response = client.get_custom_url_category_by_id(query_params, url_category_id)
+        outputs = [raw_response]
+    else:
+        page = arg_to_number(args.get('page')) or 1
+        page_size = arg_to_number(args.get('page_size'))
+        if page and page_size:
+            query_params['offset'] = (page - 1) * page_size
+            query_params['limit'] = page_size
+        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
+            query_params['limit'] = limit
+
+        raw_response = client.list_custom_url_category(query_params)  # type: ignore
+
+        outputs = raw_response.get('data')
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Custom Url Categories', outputs,
+                                        headers=['id', 'name', 'folder', 'type', 'match'],
+                                        headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to create new custom url category
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    custom_url_category = {
+        'name': args.get('name'),
+        'type': args.get('type')
+    }
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+
+    if description := args.get('description'):
+        custom_url_category['description'] = description
+
+    if value := argToList(args.get('value')):
+        custom_url_category['list'] = value
+
+    raw_response = client.create_custom_url_category(query_params, custom_url_category)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_key_field='id',
+        outputs=raw_response,
+        readable_output=tableToMarkdown('Custom URrl Category Created', raw_response, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to update custom url category
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    url_category_id = args.get('id')
+    # first get the original address, so user won't need to send all data
+    original_custom_url_category = client.get_custom_url_category_by_id(query_params, url_category_id)
+    # TODO change
+
+    if description := args.get('description'):
+        original_custom_url_category['description'] = description
+    overwrite = args.get('overwrite')
+    if category_type := args.get('type'):
+        original_custom_url_category['type'] = category_type
+
+    value = argToList(args.get('value'))
+    if overwrite:
+        original_custom_url_category['list'] = value
+    else:
+        original_custom_url_category.get('list', []).extend(value)
+
+    raw_response = client.update_custom_url_category(original_address_group, url_category_id)  # type: ignore
+    outputs = raw_response
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Custom Url Category updated', outputs, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to delete Prisma custom url category
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    raw_response = client.delete_custom_url_category(args.get('id'))  # type: ignore
+
+    return CommandResults(
+        readable_output=f'Custom Url Category with id {raw_response.get("id", "")} '
                         f'and name {raw_response.get("name", "")} was deleted successfully',
         raw_response=raw_response
     )
@@ -1040,6 +1511,11 @@ def main():
         'prisma-sase-tag-create': create_tag_command,
         'prisma-sase-tag-update': update_tag_command,
         'prisma-sase-tag-delete': delete_tag_command,
+
+        'prisma-sase-address-group-list': list_address_group_command,
+        'prisma-sase-address-group-create': create_address_group_command,
+        'prisma-sase-address-group-update': update_address_group_command,
+        'prisma-sase-address-group-delete': delete_address_group_command,
 
     }
     client = Client(
