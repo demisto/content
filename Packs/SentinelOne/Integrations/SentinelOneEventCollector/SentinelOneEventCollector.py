@@ -39,7 +39,7 @@ class Client(BaseClient):
         )
         self.limit = fetch_limit
 
-    def get_activities(self, from_time):
+    def get_activities(self, from_time: datetime) -> List:
         """
         Returns SentinelOne activities using the '/activities' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -51,7 +51,7 @@ class Client(BaseClient):
             list: The activities.
         """
         params = {
-            'createdAt__gte': from_time,
+            'createdAt__gt': from_time,
             'limit': self.limit,
             'sortBy': 'createdAt',
             'sortOrder': 'asc',
@@ -59,7 +59,7 @@ class Client(BaseClient):
         result = self._http_request('GET', url_suffix='/activities', params=params)
         return result.get('data', [])
 
-    def get_threats(self, from_time):
+    def get_threats(self, from_time: datetime) -> List:
         """
         Returns SentinelOne threats using the '/threats' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -71,7 +71,7 @@ class Client(BaseClient):
             list: The threats.
         """
         params = {
-            'createdAt__gte': from_time,
+            'createdAt__gt': from_time,
             'limit': self.limit,
             'sortBy': 'createdAt',
             'sortOrder': 'asc',
@@ -79,7 +79,7 @@ class Client(BaseClient):
         result = self._http_request('GET', url_suffix='/threats', params=params)
         return result.get('data', [])
 
-    def get_alerts(self, from_time):
+    def get_alerts(self, from_time: datetime) -> List:
         """
         Returns SentinelOne alerts using the '/cloud-detection/alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -92,7 +92,7 @@ class Client(BaseClient):
         """
         params = {
             'limit': self.limit,
-            'createdAt__gte': from_time,
+            'createdAt__gt': from_time,
             'sortBy': 'alertInfoCreatedAt',
             'sortOrder': 'asc',
         }
@@ -103,28 +103,33 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_events(client: Client, from_time: str = arg_to_datetime('3 days'), event_type: List = None) -> Tuple:
+def get_events(client: Client, event_type: Optional[List], from_time: datetime = arg_to_datetime('3 days')) -> List:
     if not event_type:
         event_type = ['ACTIVITIES', 'THREATS', 'ALERTS']
 
-    activities = []
-    threats = []
-    alerts = []
-
+    events = []
     if 'ACTIVITIES' in event_type:
-        activities = client.get_activities(from_time)
+        events.extend(client.get_activities(from_time))
     if 'THREATS' in event_type:
-        threats = client.get_threats(from_time)
+        events.extend(client.get_threats(from_time))
     if 'ALERTS' in event_type:
-        alerts = client.get_alerts(from_time)
+        events.extend(client.get_alerts(from_time))
 
-    return activities, threats, alerts
+    return events
+
+
+def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:
+    return {
+        'last_activity_created': from_time,
+        'last_threat_created': from_time,
+        'last_alert_created': from_time,
+    }
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, event_type) -> str:
+def test_module(client: Client, event_type: Optional[List]) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -149,15 +154,13 @@ def test_module(client: Client, event_type) -> str:
     return 'ok'
 
 
-def get_events_command(client, first_fetch_time, event_type):
-    events = []
-    for event_list in get_events(client, first_fetch_time, event_type):
-        events.extend(event_list)
+def get_events_command(client: Client, first_fetch_time: datetime, event_type: List) -> Tuple[List, CommandResults]:
+    events = get_events(client, from_time=first_fetch_time, event_type=event_type)
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, str], event_type: Optional[list]):
+def fetch_events(client: Client, last_run: Dict[str, Optional[datetime, str]], event_type: Optional[list]) -> Tuple[Dict, List]:
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -240,11 +243,7 @@ def main() -> None:
 
             else:  # command == 'fetch-events':
                 should_push_events = True
-                last_run = demisto.getLastRun() or {
-                    'last_activity_created': first_fetch_time,
-                    'last_threat_created': first_fetch_time,
-                    'last_alert_created': first_fetch_time,
-                }  # For the first execution.
+                last_run = demisto.getLastRun() or first_run(first_fetch_time)  # For the first execution.
                 next_run, events = fetch_events(
                     client=client,
                     last_run=last_run,
