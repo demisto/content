@@ -28,8 +28,9 @@ from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.scripts.utils import logging_wrapper as logging
 
-PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
-                                     r'+\.zip$')
+PACK_PATH_VERSION_REGEX = re.compile(
+    fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
+    r'+\.zip$')
 SUCCESS_FLAG = True
 
 
@@ -346,13 +347,14 @@ def install_packs(client: demisto_client,
     def call_install_packs_request(packs):
         try:
             logging.debug(f'Installing the following packs on server {host}:\n{[pack["id"] for pack in packs]}')
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path='/contentpacks/marketplace/install',
-                                                                                method='POST',
-                                                                                body={'packs': packs,
-                                                                                      'ignoreWarnings': True},
-                                                                                accept='application/json',
-                                                                                _request_timeout=request_timeout)
+            response_data, status_code, _ = demisto_client.generic_request_func(
+                client,
+                path='/contentpacks/marketplace/install',
+                method='POST',
+                body={'packs': packs,
+                      'ignoreWarnings': True},
+                accept='application/json',
+                _request_timeout=request_timeout)
 
             if status_code in range(200, 300) and status_code != 204:
                 packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
@@ -371,6 +373,9 @@ def install_packs(client: demisto_client,
 
     try:
         logging.info(f'Installing packs on server {host}')
+        logging.info(f'Writing what to install on server to install_file.json')
+        with open(os.path.join(os.getenv("ARTIFACTS_FOLDER"), 'install_file.json'), 'w') as f:
+            f.write(json.dumps(packs_to_install))
         try:
             call_install_packs_request(packs_to_install)
 
@@ -660,6 +665,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             pool.submit(search_pack_and_its_dependencies,
                         client, pack_id, packs_to_install, installation_request_body, lock)
 
-    install_packs(client, host, installation_request_body)
+    install_packs(client, host, installation_request_body, request_timeout=600)
 
     return packs_to_install, SUCCESS_FLAG
