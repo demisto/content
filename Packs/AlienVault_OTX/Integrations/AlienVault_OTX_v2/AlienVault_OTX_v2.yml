@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AlienVault OTX v2
   version: -1
@@ -8,23 +11,27 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Token
   name: api_token
   required: false
   type: 4
+  section: Connect
 - defaultvalue: '2'
-  display: Indicator Threshold. The minimum number of pulses to consider the indicator
-    as malicious.
+  display: Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.
   name: default_threshold
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: '10'
   display: Maximum number of relationships for indicators
   name: max_indicator_relationships
   required: false
   type: 0
-  additionalinfo: If not provided, no relationships will be added. This field is relevant
-    only for url, file hash and ip / domain indicators.
+  additionalinfo: If not provided, no relationships will be added. This field is relevant only for url, file hash and ip / domain indicators.
+  section: Collect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -39,20 +46,27 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Query Indicators of Compromise in AlienVault OTX.
 display: AlienVault OTX v2
 name: AlienVault OTX v2
@@ -66,9 +80,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the IP address
-        is considered as malicious. If the threshold is not specified, the default
-        indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -88,8 +100,7 @@ script:
       description: The country where the IP address is located.
       type: String
     - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format:
-        latitude:longitude.'
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: String
     - contextPath: AlienVaultOTX.IP.Reputation
       description: The reputation of the IP address.
@@ -132,9 +143,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the domain
-        is considered as malicious. If the threshold is not specified, the default
-        indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the domain is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -188,9 +197,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the IP address
-        is considered as malicious. If the threshold is not specified, the default
-        indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -229,9 +236,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the host
-        name is considered as malicious. If the threshold is not specified, the default
-        indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the host name is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -273,9 +278,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the file
-        is considered as malicious. If the threshold is not specified, the default
-        indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the file is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -298,8 +301,7 @@ script:
       description: IDs of pulses which are marked as malicious.
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
     - contextPath: File.Size
       description: The size of the file in bytes.
@@ -342,9 +344,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the CVE is
-        considered as malicious. If the threshold is not specified, the default indicator
-        threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the CVE is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -384,8 +384,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname",
-        or "url".'
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname", or "url".'
       isArray: false
       name: indicator_type
       predefined:
@@ -562,9 +561,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the URL is
-        considered as malicious. If threshold is not specified, the default indicator
-        threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the URL is considered as malicious. If threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
