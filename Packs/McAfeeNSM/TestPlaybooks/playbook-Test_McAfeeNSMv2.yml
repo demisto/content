@@ -1,6 +1,5 @@
 id: Test_McAfeeNSMv2
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Test_McAfeeNSMv2
 fromversion: 6.5.0
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -531,6 +531,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -704,9 +705,7 @@ tasks:
       id: 6b483abc-eaae-4297-89f2-b81c053b90c3
       version: -1
       name: Create firewall policy
-      description: Adds a new Firewall Policy and Access Rules. You have to provide
-        at lease one of the source/destination object. If you provide one of the source/destination
-        fields, you must provide the other one as well.
+      description: Adds a new Firewall Policy and Access Rules. You have to provide at lease one of the source/destination object. If you provide one of the source/destination fields, you must provide the other one as well.
       script: '|||nsm-create-firewall-policy'
       type: regular
       iscommand: true
@@ -767,13 +766,7 @@ tasks:
       id: c72f5c06-e369-40e8-8f67-df05c6c07f5c
       version: -1
       name: Update Firewall policy
-      description: Updates the Firewall Policy details. If the argument is_overwrite=true
-        than the new values of the provided addresses will replace the existing values
-        else the addresses will be added to them. If you want to delete a rule than
-        enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true
-        and there is no value in one of the rules (source or destination) their value
-        will be as before. If is_overwrite=true than at least one of the rules (source
-        or destination) must be provided.
+      description: Updates the Firewall Policy details. If the argument is_overwrite=true than the new values of the provided addresses will replace the existing values else the addresses will be added to them. If you want to delete a rule than enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before. If is_overwrite=true than at least one of the rules (source or destination) must be provided.
       script: '|||nsm-update-firewall-policy'
       type: regular
       iscommand: true
@@ -1885,3 +1878,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: A test playbook for McAfee NSM v2
