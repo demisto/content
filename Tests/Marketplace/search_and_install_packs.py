@@ -664,5 +664,4 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     install_packs(client, host, installation_request_body, request_timeout)
 
-
     return packs_to_install, SUCCESS_FLAG
