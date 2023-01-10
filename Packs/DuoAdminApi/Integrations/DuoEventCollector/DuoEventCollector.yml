@@ -34,13 +34,13 @@ configuration:
   type: 0
   defaultvalue: 5
   required: false
-- additionalinfo: A comma-delimited string that specifies the inital order and type in which we get logs from the available APIs, possible values are AUTHENTICATION, ADMINISTRATION and TELEPHONY.
+- additionalinfo: A comma-delimited string that specifies the initial order and type in which to get logs from the available APIs. Possible values are AUTHENTICATION, ADMINISTRATION, and TELEPHONY.
   display: APIs to use
   name: logs_type_array
   type: 0
   defaultvalue: AUTHENTICATION,ADMINISTRATION,TELEPHONY
   required: false
-- additionalinfo: The version we would like to use for the authentication events API.
+- additionalinfo: The version to use for the authentication events API.
   display: Authentication events API.
   name: auth_api_version
   options:
