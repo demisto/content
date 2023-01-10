@@ -1,0 +1,763 @@
+id: EWS_O365_send_mail_test
+version: -1
+name: EWS_O365_send_mail_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a7eb8dfe-9729-4d96-86a8-8e7a687f3e5e
+    type: start
+    task:
+      id: a7eb8dfe-9729-4d96-86a8-8e7a687f3e5e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 21c248d9-a135-4dd2-839c-7fdab353ae17
+    type: regular
+    task:
+      id: 21c248d9-a135-4dd2-839c-7fdab353ae17
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1dede025-40f0-429f-899b-e80cbef2f69a
+    type: regular
+    task:
+      id: 1dede025-40f0-429f-899b-e80cbef2f69a
+      version: -1
+      name: GenerateRandomString
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "10"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "True"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ad4d7f8c-1bdd-4615-8c73-18d2ac248997
+    type: regular
+    task:
+      id: ad4d7f8c-1bdd-4615-8c73-18d2ac248997
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      data:
+        simple: Some text
+      extend-context:
+        simple: x.=[0]
+      filename:
+        simple: attachment-to-mail.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0a11a4b2-34bc-498d-8faf-dda6d1b4adbd
+    type: regular
+    task:
+      id: 0a11a4b2-34bc-498d-8faf-dda6d1b4adbd
+      version: -1
+      name: Wait for context update
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 014f5d28-71f8-45e5-8855-91c46fbff92f
+    type: regular
+    task:
+      id: 014f5d28-71f8-45e5-8855-91c46fbff92f
+      version: -1
+      name: send-mail
+      description: Send an email
+      script: EWSO365|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWSO365
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      additionalHeader:
+        simple: some_header=header_value
+      attachIDs:
+        simple: ${File.EntryID}
+      attachNames:
+        simple: changed_name.txt
+      body:
+        simple: some body
+      htmlBody:
+        simple: <html><body>Hello <b>World</b></body></html>
+      replyTo:
+        simple: testbox@demistodev.onmicrosoft.com
+      subject:
+        simple: ${RandomString}
+      to:
+        simple: testbox@demistodev.onmicrosoft.com
+      transientFile:
+        simple: tansient_file.txt
+      transientFileContent:
+        simple: content of file
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c445afd9-6ba1-4f3b-8932-65e032cebc1b
+    type: regular
+    task:
+      id: c445afd9-6ba1-4f3b-8932-65e032cebc1b
+      version: -1
+      name: Wait for the mail to be sent
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3f7835f1-7040-4433-837e-f64d095c8812
+    type: regular
+    task:
+      id: 3f7835f1-7040-4433-837e-f64d095c8812
+      version: -1
+      name: ews-get-items-from-folder
+      description: Retrieves items from a specified folder in a mailbox. The items
+        are order by the item created time, most recent is first.
+      script: EWSO365|||ews-get-items-from-folder
+      type: regular
+      iscommand: true
+      brand: EWSO365
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      folder-path:
+        simple: Inbox
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9615cddc-6dc6-4e65-8226-f9108d7b1d67
+    type: condition
+    task:
+      id: 9615cddc-6dc6-4e65-8226-f9108d7b1d67
+      version: -1
+      name: checkValue Subject
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.subject
+            iscontext: true
+          right:
+            value:
+              simple: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: abfd6ba5-0bcd-48a8-854e-71c20ceeefb0
+    type: condition
+    task:
+      id: abfd6ba5-0bcd-48a8-854e-71c20ceeefb0
+      version: -1
+      name: checkValue regular attachment
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.FileAttachments.attachmentName
+            iscontext: true
+          right:
+            value:
+              simple: changed_name.txt
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.subject
+            iscontext: true
+          right:
+            value:
+              simple: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: dc06a9c6-d414-4711-825e-10db18998dc4
+    type: condition
+    task:
+      id: dc06a9c6-d414-4711-825e-10db18998dc4
+      version: -1
+      name: checkValue transient attachment
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.FileAttachments.attachmentName
+            iscontext: true
+          right:
+            value:
+              simple: tansient_file.txt
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.subject
+            iscontext: true
+          right:
+            value:
+              simple: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4c974a16-cf32-4ef4-84f5-07fa3c11ce2c
+    type: condition
+    task:
+      id: 4c974a16-cf32-4ef4-84f5-07fa3c11ce2c
+      version: -1
+      name: checkValue body
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: EWS.Items.textBody
+            iscontext: true
+          right:
+            value:
+              simple: some body
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.subject
+            iscontext: true
+          right:
+            value:
+              simple: RandomString
+            iscontext: true
+      - - operator: containsString
+          left:
+            value:
+              simple: EWS.Items.textBody
+            iscontext: true
+          right:
+            value:
+              simple: Hello World
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8b31d92c-4225-43ef-882c-3b64438c2d94
+    type: regular
+    task:
+      id: 8b31d92c-4225-43ef-882c-3b64438c2d94
+      version: -1
+      name: Wait for the mail to be sent
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: b9a4893b-9d4d-4c75-8abe-b3f72bbaf8bb
+    type: regular
+    task:
+      id: b9a4893b-9d4d-4c75-8abe-b3f72bbaf8bb
+      version: -1
+      name: ews-get-items-from-folder
+      description: Retrieves items from a specified folder in a mailbox. The items
+        are order by the item created time, most recent is first.
+      script: EWSO365|||ews-get-items-from-folder
+      type: regular
+      iscommand: true
+      brand: EWSO365
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      folder-path:
+        simple: Inbox
+      limit:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: fc5b9fcc-487e-40b4-88ea-5e77364d2d42
+    type: condition
+    task:
+      id: fc5b9fcc-487e-40b4-88ea-5e77364d2d42
+      version: -1
+      name: checkValue Subject
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.subject
+            iscontext: true
+          right:
+            value:
+              simple: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: b6ff2f1d-6829-4e22-8d5c-728488c6a389
+    type: title
+    task:
+      id: b6ff2f1d-6829-4e22-8d5c-728488c6a389
+      version: -1
+      name: Validate mail
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "22"
+      - "21"
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: a2579fa9-ef3c-4bb2-887a-c947195963f6
+    type: title
+    task:
+      id: a2579fa9-ef3c-4bb2-887a-c947195963f6
+      version: -1
+      name: Test Passed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d378e1db-628f-4f70-8fdb-12d2a9b48294
+    type: condition
+    task:
+      id: d378e1db-628f-4f70-8fdb-12d2a9b48294
+      version: -1
+      name: checkValue custom header
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.headers.name
+            iscontext: true
+          right:
+            value:
+              simple: some_header
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.subject
+            iscontext: true
+          right:
+            value:
+              simple: RandomString
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: EWS.Items.headers.value
+            iscontext: true
+          right:
+            value:
+              simple: header_value
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2500,
+        "width": 1610,
+        "x": -560,
+        "y": 65
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

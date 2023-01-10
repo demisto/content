@@ -1,0 +1,18 @@
+{
+	"id": "EWS v2",
+    "name": "EWS - Classifier",
+    "type": "classification",
+    "description": "Classifies EWS phishing email messages.",
+	"version": -1,
+	"defaultIncidentType": "",
+	"transformer": {
+		"simple": "importance",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"High": "Phishing",
+		"Low": "Phishing",
+		"Normal": "Phishing"
+	},
+	"fromVersion": "6.0.0"
+}
