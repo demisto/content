@@ -1,10 +1,39 @@
 name: Autobump Release Notes Version
 on:
-  pull_request:
-    types: [opened, synchronize]
   push:
     branches:
       - master
 
 permissions:
   pull-requests: write
+
+jobs:
+  autobump_rn_version:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content' && startsWith(github.head_ref, 'contrib/') == false
+    steps:
+      - name: Print out context
+          run: |
+            echo "$GITHUB_CONTEXT"
+          env:
+            GITHUB_CONTEXT: ${{ toJSON(github) }}
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v7
+      - name: Install python dependencies
+        run: |
+          poetry install --with ci
+      - name: Check pack and request review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BRANCH_NAME: ${{ github.head_ref }}
+          SENDGRID_EMAIL_API_KEY: ${{ secrets.SENDGRID_EMAIL_API_KEY }}
+        if: env.SENDGRID_EMAIL_API_KEY
+        run: |
+          echo "PR number is: $PR_NUMBER"
+          echo "Target branch name is: $BRANCH_NAME"
+
