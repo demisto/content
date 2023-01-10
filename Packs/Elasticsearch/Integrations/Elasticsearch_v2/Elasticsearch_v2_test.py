@@ -630,7 +630,8 @@ def test_context_creation_es7(params, mocker):
                                                                                size, total_dict, ES_V7_RESPONSE)
 
     assert str(search_context) == MOCK_ES7_SEARCH_CONTEXT
-    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']"
+    assert str(meta_headers) == "['Query', 'took', 'timed_out', 'total', 'max_score', " \
+                                "'Server', 'Page', 'Size', 'aggregations']"
     assert str(hit_tables) == MOCK_ES7_HIT_CONTEXT
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 

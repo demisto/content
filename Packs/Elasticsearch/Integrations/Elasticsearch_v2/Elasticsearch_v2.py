@@ -191,7 +191,6 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
         'max_score': response.get('hits').get('max_score'),
         'took': response.get('took'),
         'timed_out': response.get('timed_out'),
-        'aggregations': response.get('aggregations')
     }
 
     if aggregations := response.get('aggregations'):
