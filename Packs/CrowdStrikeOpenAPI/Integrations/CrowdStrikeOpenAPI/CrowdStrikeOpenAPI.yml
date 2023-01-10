@@ -3252,7 +3252,7 @@ script:
       name: offset
       required: false
     description: Find hosts that have observed a given custom IOC. For details about
-      those hosts, use GET /devices/entities/devices/v1
+      those hosts, use GET /devices/entities/devices/v2
     name: cs-devices-ran-on
     outputs:
     - contextPath: CrowdStrike.apiMsaReplyDevicesRanOn.errors.code
