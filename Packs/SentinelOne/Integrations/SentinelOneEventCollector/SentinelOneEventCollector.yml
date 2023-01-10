@@ -31,9 +31,9 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '1000'
-  display: 'Fetch limit: The maximum number of incidents to fetch'
-  additionalinfo: Due to API limitation the limit should be between 1 and 1000
+- defaultvalue: '200'
+  display: 'Fetch limit: The maximum number of events to fetch should be between 1-1000'
+  additionalinfo: 'The limit is per event type for example if you will choose 3 event types (ACTIVITIES, THREATS, ALERTS) and limit of 100 the actually limit will be 300'
   name: fetch_limit
   required: false
   type: 0

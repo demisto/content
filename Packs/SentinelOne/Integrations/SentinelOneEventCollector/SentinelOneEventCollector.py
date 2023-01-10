@@ -1,6 +1,6 @@
 from CommonServerPython import *
 import urllib3
-from typing import Dict, Tuple, List, Optional
+from typing import Dict, Tuple, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -97,10 +97,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_events(client: Client, from_time: datetime = arg_to_datetime('3 days'), event_type: List = None) -> List:  # type: ignore
-    if not event_type:
-        event_type = ['ACTIVITIES', 'THREATS', 'ALERTS']
-
+def get_events(client: Client, event_type: List, from_time: datetime = arg_to_datetime('3 days')) -> List:  # type: ignore
     events = []
     if 'ACTIVITIES' in event_type:
         events.extend(client.get_activities(from_time))
