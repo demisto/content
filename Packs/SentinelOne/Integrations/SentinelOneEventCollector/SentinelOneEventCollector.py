@@ -100,6 +100,30 @@ class Client(BaseClient):
         return result.get('data', [])
 
 
+''' HELPER FUNCTIONS '''
+
+
+def get_events(client: Client, from_time: str = arg_to_datetime('3 days'), event_type: List = None) -> Tuple:
+    if not event_type:
+        event_type = ['ACTIVITIES', 'THREATS', 'ALERTS']
+
+    activities = []
+    threats = []
+    alerts = []
+
+    if 'ACTIVITIES' in event_type:
+        activities = client.get_activities(from_time)
+    if 'THREATS' in event_type:
+        threats = client.get_threats(from_time)
+    if 'ALERTS' in event_type:
+        alerts = client.get_alerts(from_time)
+
+    return activities, threats, alerts
+
+
+''' COMMAND FUNCTIONS '''
+
+
 def test_module(client: Client, event_type) -> str:
     """
     Tests API connectivity and authentication'
@@ -114,17 +138,8 @@ def test_module(client: Client, event_type) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-
-    first_fetch_time = arg_to_datetime('3 days')
-
     try:
-        if 'ACTIVITIES' in event_type:
-            client.get_activities(first_fetch_time)
-        if 'THREATS' in event_type:
-            client.get_threats(first_fetch_time)
-        if 'ALERTS' in event_type:
-            client.get_alerts(first_fetch_time)
-
+        get_events(client, event_type=event_type)
     except Exception as e:
         if 'UNAUTHORIZED' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -134,14 +149,10 @@ def test_module(client: Client, event_type) -> str:
     return 'ok'
 
 
-def get_events(client, first_fetch_time, event_type):
+def get_events_command(client, first_fetch_time, event_type):
     events = []
-    if 'ACTIVITIES' in event_type:
-        events.extend(client.get_activities(first_fetch_time))
-    if 'THREATS' in event_type:
-        events.extend(client.get_threats(first_fetch_time))
-    if 'ALERTS' in event_type:
-        events.extend(client.get_alerts(first_fetch_time))
+    for event_list in get_events(client, first_fetch_time, event_type):
+        events.extend(event_list)
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
@@ -224,7 +235,7 @@ def main() -> None:
         elif command in (f'{VENDOR}-{PRODUCT}-get-events', 'fetch-events'):
             if command == f'{VENDOR}-{PRODUCT}-get-events':
                 should_push_events = argToBoolean(args.get('should_push_events', False))
-                events, results = get_events(client, first_fetch_time, event_type)
+                events, results = get_events_command(client, first_fetch_time, event_type)
                 return_results(results)
 
             else:  # command == 'fetch-events':
