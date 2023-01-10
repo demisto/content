@@ -17,6 +17,11 @@ configuration:
   name: credentials
   required: false
   type: 9
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR are on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
