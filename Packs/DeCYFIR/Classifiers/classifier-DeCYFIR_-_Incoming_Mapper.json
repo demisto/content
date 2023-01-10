@@ -20,20 +20,6 @@
                         "transformers": []
                     }
                 },
-                "DeCYFIR-Category": {
-                    "complex": {
-                        "filters": [],
-                        "root": "category",
-                        "transformers": []
-                    }
-                },
-                "DeCYFIR-Sub Category": {
-                    "complex": {
-                        "filters": [],
-                        "root": "sub_category",
-                        "transformers": []
-                    }
-                },
                 "Description": {
                     "complex": {
                         "filters": [],
