@@ -4924,10 +4924,10 @@ Retrieves the Snort3 Intrusion rule group. If no ID is specified, retrieves a li
 | CiscoFP.IntrusionRule.msg | String | User provided rule description. | 
 | CiscoFP.IntrusionRule.ruleData | String | Details of the rule based on which rule created or updated. | 
 | CiscoFP.IntrusionRule.description | String | User provided resource description. | 
-| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
-| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
-| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
-| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT. | 
+| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT. | 
+| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE. | 
+| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE. | 
 | CiscoFP.IntrusionRule.ruleAction.policy.name | String | Name of the intrusion policy | 
 | CiscoFP.IntrusionRule.ruleAction.policy.id | String | Intrusion Policy UUID | 
 | CiscoFP.IntrusionRule.ruleAction.policy.type | String | Type must be intrusionpolicy | 
@@ -5006,10 +5006,10 @@ Creates or overrides the Snort3 Intrusion rule group with the specified paramete
 | CiscoFP.IntrusionRule.msg | String | User provided rule description. | 
 | CiscoFP.IntrusionRule.ruleData | String | Details of the rule based on which rule created or updated. | 
 | CiscoFP.IntrusionRule.description | String | User provided resource description. | 
-| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
-| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
-| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
-| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT. | 
+| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT. | 
+| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE. | 
+| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE. | 
 | CiscoFP.IntrusionRule.ruleAction.policy.name | String | Name of the intrusion policy | 
 | CiscoFP.IntrusionRule.ruleAction.policy.id | String | Intrusion Policy UUID | 
 | CiscoFP.IntrusionRule.ruleAction.policy.type | String | Type must be intrusionpolicy | 
@@ -5096,10 +5096,10 @@ Modifies the Snort3 Intrusion rule group with the specified ID. Must enter at le
 | CiscoFP.IntrusionRule.msg | String | User provided rule description. | 
 | CiscoFP.IntrusionRule.ruleData | String | Details of the rule based on which rule created or updated. | 
 | CiscoFP.IntrusionRule.description | String | User provided resource description. | 
-| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
-| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
-| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
-| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT. | 
+| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT. | 
+| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE. | 
+| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE. | 
 | CiscoFP.IntrusionRule.ruleAction.policy.name | String | Name of the intrusion policy | 
 | CiscoFP.IntrusionRule.ruleAction.policy.id | String | Intrusion Policy UUID | 
 | CiscoFP.IntrusionRule.ruleAction.policy.type | String | Type must be intrusionpolicy | 

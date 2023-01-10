@@ -200,16 +200,16 @@ script:
       description: 'User provided resource description.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.overrideState
-      description: 'User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT'
+      description: 'User override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.defaultState
-      description: 'Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT'
+      description: 'Default State of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.defaultState
-      description: 'Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE'
+      description: 'Default state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.overrideState
-      description: 'Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE'
+      description: 'Override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.name
       description: 'Name of the intrusion policy'
@@ -284,16 +284,16 @@ script:
       description: 'User provided resource description.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.overrideState
-      description: 'User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT'
+      description: 'User override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.defaultState
-      description: 'Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT'
+      description: 'Default State of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.defaultState
-      description: 'Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE'
+      description: 'Default state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.overrideState
-      description: 'Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE'
+      description: 'Override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.name
       description: 'Name of the intrusion policy'
@@ -381,16 +381,16 @@ script:
       description: 'User provided resource description.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.overrideState
-      description: 'User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT'
+      description: 'User override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.defaultState
-      description: 'Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT'
+      description: 'Default State of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.defaultState
-      description: 'Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE'
+      description: 'Default state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.overrideState
-      description: 'Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE'
+      description: 'Override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.name
       description: 'Name of the intrusion policy'
