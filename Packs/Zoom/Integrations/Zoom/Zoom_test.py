@@ -3,6 +3,7 @@ from freezegun import freeze_time
 import Zoom
 import pytest
 from CommonServerPython import DemistoException
+from unittest.mock import Mock, patch
 
 
 def mock_client_ouath(mocker):
@@ -914,3 +915,74 @@ def test_manual_meeting_list_pagination__next_page_token_None(mocker):
     manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
                                    limit=limit, type="all")
     assert zoom_meeting_list_mocker.called
+
+
+class MockResponse:
+    def __init__(self, text='', content='', raw='', decode_content: bool = False):
+        self.text = text
+        self.content = content
+        self.raw = raw
+        self.decode_content = decode_content
+
+
+def test_zoom_fetch_recording_command_1(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a specific recording
+       Then -
+           Validate that the successfull messege is added to the commandResults
+    """
+    from shutil import copyfileobj
+    import shutil
+    mocker.patch.object(shutil, "copyfileobj", return_value="bla")
+    mocker.patch.object(Client, "zoom_fetch_recording",
+                        side_effect=[{'recording_files': [{'id': '29c7tc',
+                                                           'meeting_id': 'Y',
+                                                           'play_url': 'hsy',
+                                                           'download_url': 'htsy', 'status': 'completed',
+                                                           'recording_type': 't'}
+                                                          ]},
+                                     MockResponse(raw=MockResponse(decode_content=False))])
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_fetch_recording_command
+    res = zoom_fetch_recording_command(
+        client=client, meeting_id="000000", delete_after="false")
+
+    assert res[1].readable_output == 'The file recording_000000_29c7tc.mp4 was downloaded successfully'
+
+
+def test_zoom_fetch_recording_command_2(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a specific recording and deleting that recording from the cloud
+       Then -
+           Validate that the successfull deleting messege is added to the commandResults
+    """
+    from shutil import copyfileobj
+    import shutil
+    mocker.patch.object(shutil, "copyfileobj", return_value="bla")
+    mocker.patch.object(Client, "zoom_fetch_recording",
+                        side_effect=[{'recording_files': [{'id': '29c7tc',
+                                                           'meeting_id': 'Y',
+                                                           'play_url': 'hsy',
+                                                           'download_url': 'htsy', 'status': 'completed',
+                                                           'recording_type': 't'}
+                                                          ]},
+                                     MockResponse(raw=MockResponse(decode_content=False)),
+                                     MockResponse(text="sff")])
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_fetch_recording_command
+    res = zoom_fetch_recording_command(
+        client=client, meeting_id="000000", delete_after="true")
+
+    assert res[2].readable_output == 'The file recording_000000_29c7tc.mp4 was successfully removed from the cloud'
