@@ -2079,6 +2079,34 @@ class TestCopyAndUploadToStorage:
         assert task_status
         assert not skipped_pack
 
+    def test_copy_and_upload_to_storage_dependencies(self, mocker, dummy_pack):
+        """
+           Given:
+               - A pack that updated its dependencies file in the build bucket but not in the production bucket.
+           When:
+               - Copying the pack from the build bucket to the production bucket.
+           Then:
+               - Validate that the task succeeds and that the pack isn't skipped
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_pack.latest_version = "2.0.0"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
+            dummy_prod_bucket, dummy_build_bucket, {}, {
+                "TestPack": {
+                    BucketUploadFlow.STATUS: "status1",
+                    BucketUploadFlow.AGGREGATED: "False",
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                }
+            }, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
+        )
+        assert task_status
+        assert not skipped_pack
+
 
 class TestLoadUserMetadata:
     @pytest.fixture(scope="function")
@@ -2900,6 +2928,10 @@ class TestStoreInCircleCIArtifacts:
         BucketUploadFlow.AGGREGATED: '[1.0.0, 1.0.1] => 1.0.1',
         BucketUploadFlow.LATEST_VERSION: '1.0.1'
     }
+    SUCCESSFUL_DEPENDENCIES_PACK_DICT = {
+        BucketUploadFlow.STATUS: PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name,
+        BucketUploadFlow.LATEST_VERSION: '1.0.1'
+    }
 
     @staticmethod
     def get_successful_packs():
@@ -2928,6 +2960,17 @@ class TestStoreInCircleCIArtifacts:
     @staticmethod
     def get_updated_private_packs():
         return ['TestPack5', 'TestPack6']
+
+    @staticmethod
+    def get_successful_dependencies_packs():
+        successful_dependencies = [
+            Pack(pack_name='TestPack7', pack_path='.'),
+            Pack(pack_name='TestPack8', pack_path='.'),
+        ]
+        for pack in successful_dependencies:
+            pack._status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
+            pack.latest_version = '1.0.1'
+        return successful_dependencies
 
     def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):
         """
@@ -3040,6 +3083,39 @@ class TestStoreInCircleCIArtifacts:
                 f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
                     'TestPack5': {},
                     'TestPack6': {}
+                }
+            }
+        }
+
+    def test_store_successful_and_successful_dependencies_in_ci_artifacts(self, tmp_path):
+        """
+           Given:
+               - Successful packs list - TestPack1, TestPack2
+               - Successful dependencies packs list - TestPack7, TestPack8
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $ARTIFACTS_FOLDER/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful packs TestPack1 & TestPack2.
+               - Verify that the file content contains the successful dependencies packs TestPack7 & TestPack8.
+       """
+        successful_packs = self.get_successful_packs()
+        successful_dependencies_packs = self.get_successful_dependencies_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+            successful_dependencies_packs, list(), list()
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
+                    'TestPack1': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'TestPack2': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                },
+                f'{BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS}': {
+                    'TestPack7': TestStoreInCircleCIArtifacts.SUCCESSFUL_DEPENDENCIES_PACK_DICT,
+                    'TestPack8': TestStoreInCircleCIArtifacts.SUCCESSFUL_DEPENDENCIES_PACK_DICT
                 }
             }
         }
