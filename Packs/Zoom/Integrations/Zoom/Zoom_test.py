@@ -914,3 +914,22 @@ def test_manual_meeting_list_pagination__next_page_token_None(mocker):
     manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
                                    limit=limit, type="all")
     assert zoom_meeting_list_mocker.called
+
+
+def test_zoom_fetch_recording_command(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a specific recording
+       Then -
+           Validate that the recording id is sent in the API
+    """
+    zoom_fetch_recording_mocker = mocker.patch.object(Client, "zoom_fetch_recording", return_value={"bla": "bla"})
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_fetch_recording_command
+    zoom_fetch_recording_command(client=client, meeting_id="000000", delete_after="true")
+    assert zoom_fetch_recording_mocker.call_args[1]["json_data"].get("type") == 2
