@@ -1333,7 +1333,7 @@ script:
         description: If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list.
         isArray: true
         name: value
-        required: false
+        required: true
       - default: false
         isArray: false
         name: description

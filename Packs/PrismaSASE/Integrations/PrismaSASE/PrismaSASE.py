@@ -1367,7 +1367,7 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Custom Url Categories', outputs,
-                                        headers=['id', 'name', 'folder', 'type', 'match'],
+                                        headers=['id', 'name', 'folder', 'type', 'list'],
                                         headerTransform=string_to_table_header),
         raw_response=raw_response
     )
@@ -1423,7 +1423,7 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
         'folder': encode_string_results(args.get('folder'))
     }
     url_category_id = args.get('id')
-    # first get the original address, so user won't need to send all data
+    # first get the original, so user won't need to send all data
     original_custom_url_category = client.get_custom_url_category_by_id(query_params, url_category_id)
     # TODO change
 
@@ -1433,13 +1433,14 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     if category_type := args.get('type'):
         original_custom_url_category['type'] = category_type
 
-    value = argToList(args.get('value'))
-    if overwrite:
-        original_custom_url_category['list'] = value
-    else:
-        original_custom_url_category.get('list', []).extend(value)
+    if value := argToList(args.get('value')):
+        if overwrite:
+            original_custom_url_category['list'] = value
+        else:
+            original_custom_url_category.get('list', []).extend(value)
 
-    raw_response = client.update_custom_url_category(original_address_group, url_category_id)  # type: ignore
+    print(original_custom_url_category)
+    raw_response = client.update_custom_url_category(original_custom_url_category, url_category_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
