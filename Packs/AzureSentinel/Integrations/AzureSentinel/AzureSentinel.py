@@ -1369,9 +1369,9 @@ def main():
         if not client_secret and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
-        tenant_id = params.get('creds_tenant_id', {}).get('password') or params.get('tenant_id')
+        tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
 
-        if tenant_id is None:
+        if not tenant_id:
             raise ValueError('Tenant ID must be provided.')
 
         client = AzureSentinelClient(
