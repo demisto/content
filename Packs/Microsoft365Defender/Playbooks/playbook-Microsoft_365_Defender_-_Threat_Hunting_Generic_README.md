@@ -1,4 +1,4 @@
-This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`. and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
+This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`, and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
 
 - **Microsoft 365 Defender - Get Email URL clicks**:
         Retrieves data based on URL click events.
@@ -7,7 +7,7 @@ This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddres
 - **Microsoft 365 Defender - Emails Indicators Hunt**:
         Retrieves data based on several different email events.
 
-Read the playbook's descriptions in order to get the full details.
+Read the playbooks' descriptions in order to get the full details.
 
 
 ## Dependencies
