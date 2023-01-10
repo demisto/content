@@ -86,7 +86,7 @@ knownerrors = [
     {
         "(error: websocket: close 1006 (abnormal closure): unexpected EOF)": [
             " Error Found: `error: websocket: close 1006 (abnormal closure): unexpected EOF`",
-            "WebSocket Configuration: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-1/cortex-xsoar-admin/installation/"
+            "WebSocket Configuration: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Single-Server-Deployment"
             "post-installation-checklist/websocket-configuration.html#idee004eaa-34d9-41a1-a8d0-aba3bf9f91bb"
         ]
     },
