@@ -9,3 +9,5 @@ repos:
     -   id: check-ast
     -   id: check-toml
     -   id: check-xml
+    -   id: flake8
+        types: [python]
