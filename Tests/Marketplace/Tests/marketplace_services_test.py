@@ -1,5 +1,5 @@
 # type: ignore[attr-defined]
-
+import copy
 import shutil
 import pytest
 import json
@@ -15,13 +15,14 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from pathlib import Path
+
 # pylint: disable=no-member
 
 
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
-    is_the_only_rn_in_block, get_pull_request_numbers_from_file
+    is_the_only_rn_in_block, get_pull_request_numbers_from_file, remove_old_versions_from_changelog
 from Tests.Marketplace.marketplace_constants import Changelog, PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags, BASE_PACK_DEPENDENCY_DICT
 
@@ -65,6 +66,201 @@ AGGREGATED_CHANGELOG = {
 
 DUMMY_PACKS_DICT = {'HelloWorld': '', 'ServiceNow': '', 'Ipstack': '', 'Active_Directory_Query': '', 'SlackV2': '',
                     'CommonTypes': '', 'CommonPlaybooks': '', 'Base': ''}
+
+CHANGELOG_ONE_LAST_YEAR_SAME_MINOR = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.1": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.1 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.2": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.2 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.3": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.3 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.4": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.4 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.5": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.5 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.6": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.6 - 123456',
+        'released': '2023-01-01T23:01:58Z'
+    }
+}
+
+CHANGELOG_TEN_LAST_YEAR_DIFFERENT_MINOR = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2022-05-05T13:39:33Z"
+    },
+    "1.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.0 - 123456',
+        'released': '2022-09-27T23:01:58Z'
+    },
+    "1.2.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.3 - 123456',
+        'released': '2022-10-27T23:01:58Z'
+    },
+    "1.3.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.3.0 - 123456',
+        'released': '2022-11-27T23:01:58Z'
+    },
+    "1.3.1": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.3.1 - 123456',
+        'released': '2022-12-01T23:01:58Z'
+    },
+    "1.3.2": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.3.2 - 123456',
+        'released': '2023-01-01T23:01:58Z'
+    }
+}
+
+CHANGELOG_MINOR_CHANGED_LAST_RELEASE_OLD_CHANGES = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.1": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.0.2": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.2 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.3": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.3 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.0.4": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.0.4 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.0 - 123456',
+        'released': '2021-11-01T23:01:58Z'
+    },
+}
+
+CHANGELOG_MINOR_CHANGED_LONG_TIME_AGO = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.1": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.1 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.2": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.2 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.3": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.3 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.4": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.4 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.5": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.5 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "1.1.6": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.6 - 123456',
+        'released': '2021-11-01T23:01:58Z'
+    },
+    "1.1.7": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.7 - 123456',
+        'released': '2021-11-01T23:01:58Z'
+    },
+}
+
+CHANGELOG_MINOR_MAJOR_CHANGES = {
+    "1.0.0": {
+        "releaseNotes": "dummy release notes",
+        "displayName": "1.0.0 - 123456",
+        "released": "2020-05-05T13:39:33Z"
+    },
+    "1.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '1.1.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "2.0.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '2.0.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "2.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '2.1.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "3.0.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '3.0.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "3.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '3.1.0 - 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "4.0.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '4.0.0- 123456',
+        'released': '2021-01-27T23:01:58Z'
+    },
+    "4.1.0": {
+        'releaseNotes': 'dummy release notes',
+        'displayName': '4.1.0 - 123456',
+        'released': '2021-11-01T23:01:58Z'
+    },
+}
 
 
 @pytest.fixture(scope="module")
@@ -614,7 +810,7 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
@@ -655,7 +851,7 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch('builtins.open', open_mocker)
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
@@ -690,7 +886,7 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is False
@@ -727,7 +923,7 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = \
+        task_status, not_updated_build, _ = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
@@ -3245,3 +3441,47 @@ class TestCheckChangesRelevanceForMarketplace:
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
+
+
+@freeze_time("2023-01-01")
+@pytest.mark.parametrize('changelog, expected_result', [
+    (copy.deepcopy(CHANGELOG_DATA_INITIAL_VERSION), ["1.0.0"]),
+    (copy.deepcopy(CHANGELOG_DATA_MULTIPLE_VERSIONS), ["1.0.0", "1.1.0"]),
+    (copy.deepcopy(CHANGELOG_ONE_LAST_YEAR_SAME_MINOR), ["1.0.2", "1.0.3", "1.0.4", "1.0.5", "1.0.6"]),
+    (copy.deepcopy(CHANGELOG_TEN_LAST_YEAR_DIFFERENT_MINOR), ["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.3.1", "1.3.2"]),
+    (copy.deepcopy(CHANGELOG_MINOR_CHANGED_LAST_RELEASE_OLD_CHANGES),
+     ["1.0.1", "1.0.2", "1.0.3", "1.0.4", "1.1.0"]),
+    (copy.deepcopy(CHANGELOG_MINOR_CHANGED_LONG_TIME_AGO), ["1.1.0", "1.0.0", "1.1.1", "1.1.2", "1.1.3",
+                                                            "1.1.4", "1.1.5", "1.1.6", "1.1.7"]),
+    (copy.deepcopy(CHANGELOG_MINOR_MAJOR_CHANGES), ["2.1.0", "3.0.0", "3.1.0", "4.0.0", "4.1.0"]),
+])
+def test_remove_old_versions_from_changelog(changelog, expected_result):
+    """
+    Given:
+        7 different changelog files:
+        1. Changelog with only 1 initial version
+        2. Changelog with only 2 versions
+        3. Changelog with only one version released in last year, and all versions with same major-minor version
+        4. Changelog with ten versions released in last year, and minor versions changed almost every release
+        5. Changelog without versions released in last year, and the minor version changed in last release
+        6. Changelog without versions released in last year,
+        and the minor version bumped at second release (from total 9 releases)
+        7. Changelog where a lot of major and minor versions changes
+    When:
+        Removing old versions from changelog file, following the policy:
+        We are keeping the maximum number of versions between the following options:
+            1.  Versions were released last year.
+            2.  Last minor version and one version before it.
+            3.  Last five versions.
+    Then:
+        We decide to keep the following versions:
+        1. All existing versions.
+        2. All existing versions.
+        3. Last 5 versions.
+        4. Ten versions released in last year
+        5. Last 5 versions.
+        6. All versions from last minor, and one before it.
+        7. Last 5 versions.
+
+    """
+    assert remove_old_versions_from_changelog(changelog) == expected_result
