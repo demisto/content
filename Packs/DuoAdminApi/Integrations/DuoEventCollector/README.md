@@ -8,15 +8,15 @@ Collects Auth and Audit events for Duo using the API.
 
     | **Parameter** | **Description**                                                                                          | **Required**  |  
     |----------------------------------------------------------------------------------------------------------|---------------| --- |  
-    | Server Host               | The url for the API.                                                                                     | True          |
+    | Server Host               | The URL for the API.                                                                                     | True          |
     | First fetch timestamps    | The first time fetch date range, for example: 2 days, 1 month, 3 years.                                  | True          |
-    | Integration key           | The integraion key for the admin API from Duo.                                                           | True          |
+    | Integration key           | The integration key for the admin API from Duo.                                                           | True          |
     | Secret key                | The secret key for the admin API from Duo.                                                               | True          |
     | XSIAM request limit       | The maximum number of events to collect from the API in each cycle.                                      | True          |
-    | Request retries           | The number of times to retry a faild too many requests 429 http error.                                   | False         |
+    | Request retries           | The number of times to retry a failed too many requests 429 HTTP error.                                   | False         |
     | Use system proxy settings | Enable proxy support for running the collector.                                                          | False         |
-    | auth_api_version          | This parameter lets yo choose the version of th Authentication API version (possible values are 1 or 2). | False         |
-    | logs_type_array           | This parameter lets you choose the type of APIs that this instance will use in the collector.            | False         |  
+    | auth_api_version          | The version of th Authentication API. Possible values are 1, 2. | False         |
+    | logs_type_array           | The type of APIs that this instance will use in the collector.            | False         |  
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
