@@ -2799,7 +2799,8 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
 
 ### xdr-get-contributing-event
 ***
-Retrieves contributing events for a specific alert.
+Retrieves contributing events for a specific correlation alert.
+Known limitation: the command is compatible **only** with correlation alerts, otherwise an error will be raised.
 
 
 #### Base Command
