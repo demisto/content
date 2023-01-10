@@ -345,8 +345,8 @@ def main():  # pragma: no cover
     user_profile = None
     params = demisto.params()
     base_url = params.get('url')
-    api_key = params.get('api_key')
-    api_secret = params.get('api_secret')
+    api_key = params.get('creds_api_key', {}).get('password') or params.get('api_key')
+    api_secret = params.get('creds_api_secret', {}).get('password') or params.get('api_secret')
     account_id = params.get('account_id')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
