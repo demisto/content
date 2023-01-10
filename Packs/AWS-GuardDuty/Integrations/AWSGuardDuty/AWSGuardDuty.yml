@@ -1132,8 +1132,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       defaultValue: false
     deprecated: false
     description: Describes Amazon GuardDuty findings specified by finding IDs.
@@ -1505,7 +1505,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.41464
+  dockerimage: demisto/boto3py3:1.0.0.43720
   feed: false
   isfetch: true
   longRunning: false
