@@ -595,55 +595,13 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     )
 
 
-def zoom_fetch_recording_command(client: Client, **args):
-    # this is the original code with no changes at all.
-    # this part will be removed in the future
-    # waiting for a paid account
-    # def get_jwt(apiKey, apiSecret):
-    #     """
-    #     Encode the JWT token given the api ket and secret
-    #     """
-    #     tt = datetime.now()
-    #     expire_time = int(tt.strftime('%s')) + 5000
-    #     payload = {
-    #         'iss': apiKey,
-    #         'exp': expire_time
-    #     }
-    #     encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
-    #     return encoded
-    # URL = 'https://api.zoom.us/v2/'
-    # ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
-    # PARAMS = {'access_token': ACCESS_TOKEN}
-    # HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-    # USE_SSL = not demisto.params().get('insecure', False)
-    # meeting = demisto.getArg('meeting_id')
-    # res = requests.get(URL + 'meetings/%s/recordings' % meeting, headers=HEADERS, params=PARAMS, verify=USE_SSL)
-    # if res.status_code == requests.codes.ok:
-    #     data = res.json()
-    #     recording_files = data['recording_files']
-    #     for file in recording_files:
-    #         download_url = file['download_url']
-    #         r = requests.get(download_url, stream=True)
-    #         if r.status_code < 200 or r.status_code > 299:
-    #             return_error('Unable to download recording for meeting %s: [%d] - %s' % (meeting, r.status_code, r.text))
-    #         filename = 'recording_%s_%s.mp4' % (meeting, file['id'])
-    #         with open(filename, 'wb') as f:
-    #             r.raw.decode_content = True
-    #             shutil.copyfileobj(r.raw, f)
-
-    #         demisto.results(file_result_existing_file(filename))
-    #         rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']), headers=HEADERS,
-    #                              params=PARAMS, verify=USE_SSL)
-    #         if rf.status_code == 204:
-    #             demisto.results('File ' + filename + ' was moved to trash.')
-    #         else:
-    #             demisto.results('Failed to delete file ' + filename + '.')
-    # else:
-    #     return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
+def zoom_fetch_recording_command(client: Client, **args) -> list:
+    # preprocessing
     results = []
     meeting_id = args.get('meeting_id')
     delete_after = argToBoolean(args.get('delete_after'))
     client = client
+
     data = client.zoom_fetch_recording(
         method='GET',
         url_suffix=f'meetings/{meeting_id}/recordings'
@@ -653,6 +611,7 @@ def zoom_fetch_recording_command(client: Client, **args):
     for file in recording_files:
         download_url = file.get('download_url')
         try:
+            # download the file
             demisto.debug(f"Trying to download the files of meeting {meeting_id}")
             record = client.zoom_fetch_recording(
                 method='GET',
@@ -660,6 +619,7 @@ def zoom_fetch_recording_command(client: Client, **args):
                 resp_type='response',
                 stream=True
             )
+            # save the file
             filename = f'recording_{meeting_id}_{file.get("id")}.mp4'
             with open(filename, 'wb') as f:
                 record.raw.decode_content = True
@@ -667,8 +627,10 @@ def zoom_fetch_recording_command(client: Client, **args):
 
             results.append(file_result_existing_file(filename))
             results.append(CommandResults(readable_output=f"The file {filename} was downloaded successfully"))
+
             if delete_after:
                 try:
+                    # delete the file from the cloud
                     demisto.debug(f"Trying to delete the file {filename}")
                     client.zoom_fetch_recording(
                         method='DELETE',
