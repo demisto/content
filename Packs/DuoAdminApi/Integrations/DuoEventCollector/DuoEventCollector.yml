@@ -40,14 +40,12 @@ configuration:
   type: 0
   defaultvalue: AUTHENTICATION,ADMINISTRATION,TELEPHONY
   required: false
-- additionalinfo: The version to use for the authentication events API.
+- additionalinfo: The version to use for the authentication events API(possible values are 1 or 2).
   display: Authentication events API.
   name: auth_api_version
-  options:
-  - '1'
-  - '2'
+  defaultvalue: 1
   required: false
-  type: 16
+  type: 0
 - display: Use system proxy settings
   name: proxy
   type: 8
