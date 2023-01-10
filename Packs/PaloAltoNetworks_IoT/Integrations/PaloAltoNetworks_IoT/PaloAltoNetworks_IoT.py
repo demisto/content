@@ -5,7 +5,7 @@ import time
 from typing import Any, Optional
 
 import demistomock as demisto
-import requests
+import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -13,7 +13,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 # api list size limit
@@ -552,8 +552,8 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     tenant_id = demisto.params()['tenant_id']
-    access_key_id = demisto.params()['access_key_id']
-    secret_access_key = demisto.params()['secret_access_key']
+    access_key_id = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key_id')
+    secret_access_key = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_access_key')
 
     api_timeout = 60
     try:
