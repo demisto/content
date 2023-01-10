@@ -263,6 +263,13 @@ script:
         - description: Meeting id to get the recording
           name: meeting_id
           required: true
+        - description: Whether to delete the recording from the cloud after downloading.
+          name: delete_after
+          auto: PREDEFINED
+          defaultValue: "true"
+          predefined:
+            - "false"
+            - "true"
       description: Get meeting record and save as file in the warroom
       name: zoom-fetch-recording
       outputs:
