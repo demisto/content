@@ -236,9 +236,11 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         # Verify the correctness of the query / procedure
         try:
             params['max_fetch'] = 1
-            last_run = get_last_run(params)
-            sql_query = create_sql_query(last_run, params)
-            bind_variables = generate_bind_variables_for_fetch(params, last_run)
+            last_run = initialize_last_run(params.get('fetch_parameters', ''), params.get('first_fetch', ''))
+            sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
+                                         params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+            bind_variables = generate_bind_variables_for_fetch(params.get('column_name'), params.get('max_fetch'),
+                                                               last_run)
             result, headers = client.sql_query_execute_request(sql_query, bind_variables, 1)
         except Exception as e:
             raise e
@@ -298,40 +300,64 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         raise err
 
 
-def get_last_run(params: dict):
-    last_run = demisto.getLastRun()
-    demisto.debug(f"### {last_run=} ###")
+def initialize_last_run(fetch_parameters: str, first_fetch: str):
+    """
+    This function initializes the last run based on the configuration,
+    when the first fetch is initialized either by timestamp or by ID.
+    ids field will be initialized to an empty list for the 'ID and timestamp' case, for avoiding duplicates.
+    Args:
+        fetch_parameters: This is what the fetch is based on (timestamp, ID or both).
+        first_fetch: First fetch timestamp or First fetch ID.
 
-    # for the first iteration
-    if not last_run:
-        # Fetch should be by timestamp or id
-        if params.get('fetch_parameters') in ['Unique timestamp', 'ID and timestamp']:
-            last_run = {'last_timestamp': params.get('first_fetch'), 'last_id': False}
+    Returns:
+            A dictionary which contains the required fields for the last run.
+    """
 
-        else:
-            last_run = {'last_timestamp': False, 'last_id': params.get('first_fetch', '-1')}
-        # for the case when we get timestamp and id - need to maintain an id's list
-        last_run['ids'] = list()
+    # Fetch should be by timestamp or id
+    if fetch_parameters in ['Unique timestamp', 'ID and timestamp']:
+        last_run = {'last_timestamp': first_fetch, 'last_id': False}
+
+    else:  # in case of 'Unique ascending ID'
+        last_run = {'last_timestamp': False, 'last_id': first_fetch}
+
+    # for the case when we get timestamp and id - need to maintain an id's list
+    last_run['ids'] = list()
+
     return last_run
 
 
-def create_sql_query(last_run: dict, params: dict):
+def create_sql_query(last_run: dict, query: str, column_name: str, max_fetch: str):
+    """
+    This function creates the sql query.
+    1) In case of runStoreProcedure MSSQL, it wraps the procedure with the limit
+    (MSSQL doesn't support limits inside queries, so this is the correct syntax).
+    2) In case of runStoreProcedure MySQL, it adds the two parameters (last fetch - id/timestamp and the limit).
+    3) In case of queries, returns as it is.
+    Args:
+        last_run: A dictionary which contains the required fields for the last run.
+        query: The query or the procedure given as configuration's parameter.
+        column_name: The exact column's name to fetch (id column or timestamp column).
+        max_fetch: Fetch Limit given as configuration's parameter.
+
+    Returns:
+        Query/procedure ready to run.
+    """
     last_timestamp_or_id = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get(
         'last_id')
 
     # case of runStoreProcedure MSSQL
-    if params.get('query', '').lower().startswith('exec'):
-        sql_query = f"SET ROWCOUNT {params.get('max_fetch')};" \
-                    f"{params.get('query')} @{params.get('column_name')} = '{last_timestamp_or_id}';" \
+    if query.lower().startswith('exec'):
+        sql_query = f"SET ROWCOUNT {max_fetch};" \
+                    f"{query} @{column_name} = '{last_timestamp_or_id}';" \
                     f"SET ROWCOUNT 0"
 
     # case of runStoreProcedure MySQL
-    elif params.get('query', '').lower().startswith('call'):
-        sql_query = f"{params.get('query')}('{last_timestamp_or_id}', {params.get('max_fetch')})"
+    elif query.lower().startswith('call'):
+        sql_query = f"{query}('{last_timestamp_or_id}', {max_fetch})"
 
     # case of queries
     else:
-        sql_query = params.get('query')  # type:ignore[assignment]
+        sql_query = query  # type:ignore[assignment]
 
     return sql_query
 
@@ -352,17 +378,18 @@ def convert_sqlalchemy_to_readable_table(result: dict):
     return incidents
 
 
-def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict):
-    is_timestamp_and_id = True if params.get('fetch_parameters') == 'ID and timestamp' else False
+def update_last_run_after_fetch(table: List[dict], last_run: dict, fetch_parameters: str, column_name: str,
+                                id_column: str):
+    is_timestamp_and_id = True if fetch_parameters == 'ID and timestamp' else False
     if last_run.get('last_timestamp'):
-        last_record_timestamp = table[-1].get(params.get('column_name'), '')
+        last_record_timestamp = table[-1].get(column_name)
 
         # keep the id's for the next fetch cycle for avoiding duplicates
         if is_timestamp_and_id:
             new_ids_list = list()
             for record in table:
-                if record.get(params.get('column_name')) == last_record_timestamp:
-                    new_ids_list.append(record.get(params.get('id_column')))
+                if record.get(column_name) == last_record_timestamp:
+                    new_ids_list.append(record.get(id_column))
             last_run['ids'] = new_ids_list
 
         # allow till 3 digit after the decimal point - due to limits on querying
@@ -372,30 +399,32 @@ def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict)
         elif len(before_and_after_decimal_point) == 1:
             last_run['last_timestamp'] = before_and_after_decimal_point[0]
         else:
-            raise Exception("Unsupported Format Time")
+            raise Exception(f"Unsupported Format Time! "
+                            f"We support one decimal point (not necessary, also possible without) "
+                            f"to separate time from milliseconds. {last_record_timestamp=} isn't supported")
     else:
-        last_run['last_id'] = table[-1].get(params.get('column_name'))
+        last_run['last_id'] = table[-1].get(column_name)
 
     return last_run
 
 
-def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[Dict[str, Any]]:
+def table_to_incidents(table: List[dict], last_run: dict, fetch_parameters: str, column_name: str, id_column: str,
+                       incident_name: str) -> List[Dict[str, Any]]:
     incidents = []
-    is_timestamp_and_id = True if params.get('fetch_parameters') == 'ID and timestamp' else False
+    is_timestamp_and_id = True if fetch_parameters == 'ID and timestamp' else False
     for record in table:
 
-        timestamp = record.get(params.get('column_name')) if last_run.get('last_timestamp') else None
+        timestamp = record.get(column_name) if last_run.get('last_timestamp') else None
         date_time = dateparser.parse(timestamp) if timestamp else datetime.now()
 
         # for avoiding duplicate incidents
-        if is_timestamp_and_id and record.get(params.get('column_name'), '').startswith(last_run.get('last_timestamp')):
-            if record.get(params.get('id_column'), '') in last_run.get('ids', []):
+        if is_timestamp_and_id and record.get(column_name, '').startswith(last_run.get('last_timestamp')):
+            if record.get(id_column, '') in last_run.get('ids', []):
                 continue
 
         record['type'] = 'GenericSQL Record'
         incident_context = {
-            'name': record.get(params.get('incident_name')) if record.get(params.get('incident_name'))
-            else record.get(params.get('column_name')),
+            'name': record.get(incident_name) if record.get(incident_name) else record.get(column_name),
             'occurred': date_time.strftime(DATE_FORMAT),  # type:ignore[union-attr]
             'rawJSON': json.dumps(record),
         }
@@ -404,25 +433,44 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
     return incidents
 
 
-def generate_bind_variables_for_fetch(params: dict, last_run: dict):
+def generate_bind_variables_for_fetch(column_name: str, max_fetch: str, last_run: dict):
+    """
+    This function binds the two variables (last fetch and limit) with their columns.
+
+    Args:
+        column_name: The exact column's name to fetch (id column or timestamp column).
+        max_fetch: Fetch Limit given as configuration's parameter.
+        last_run: A dictionary which contains the required fields for the last run.
+
+    Returns: A dict of the bind variables.
+
+    """
+
     last_fetch = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get('last_id')
-    bind_variables = {params.get('column_name'): last_fetch, 'limit': arg_to_number(params.get('max_fetch'))}
+    bind_variables = {column_name: last_fetch, 'limit': arg_to_number(max_fetch)}
     return bind_variables
 
 
 def fetch_incidents(client: Client, params: dict):
-    last_run = get_last_run(params)
-    sql_query = create_sql_query(last_run, params)
-    limit_fetch = arg_to_number(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
-    bind_variables = generate_bind_variables_for_fetch(params, last_run)
+    last_run = demisto.getLastRun()
+    last_run = last_run if last_run else \
+        initialize_last_run(params.get('fetch_parameters', ''), params.get('first_fetch', ''))
+    sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
+                                 params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+    limit_fetch = len(last_run.get('ids')) + arg_to_number(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+    bind_variables = generate_bind_variables_for_fetch(params.get('column_name'), params.get('max_fetch'),
+                                                       last_run)
     result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit_fetch)
     table = convert_sqlalchemy_to_readable_table(result)
     table = table[:limit_fetch]
 
-    incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run, params)
+    incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run, params.get('fetch_parameters'),
+                                                         params.get('column_name'), params.get('id_column'),
+                                                         params.get('incident_name'))
 
     if table:
-        last_run = update_last_run_after_fetch(table, last_run, params)
+        last_run = update_last_run_after_fetch(table, last_run, params.get('fetch_parameters', ''),
+                                               params.get('column_name', ''), params.get('id_column', ''))
 
     demisto.info(f'last record now is: {last_run}, '
                  f'number of incidents fetched is {len(incidents)}')
