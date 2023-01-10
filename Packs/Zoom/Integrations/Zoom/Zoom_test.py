@@ -965,7 +965,6 @@ def test_zoom_fetch_recording_command_2(mocker):
            Validate that the successfull deleting messege is added to the commandResults
     """
     import shutil
-
     # with patch("builtins.open", mock_open(read_data="data")) as mock_file:
     #     assert open("path/to/open").read() == "data"
     mocker.patch.object(shutil, "copyfileobj", return_value="bla")
@@ -986,4 +985,37 @@ def test_zoom_fetch_recording_command_2(mocker):
     res = zoom_fetch_recording_command(
         client=client, meeting_id="000000", delete_after="true")
 
+    assert res[2].readable_output == 'The file recording_000000_29c7tc.mp4 was successfully removed from the cloud'
+
+
+def test_zoom_fetch_recording_command_3(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a specific recording that dose not exist
+       Then -
+           Validate that right error will return
+    """
+    import shutil
+
+    # with patch("builtins.open", mock_open(read_data="data")) as mock_file:
+    #     assert open("path/to/open").read() == "data"
+    mocker.patch.object(shutil, "copyfileobj", return_value="bla")
+    mocker.patch.object(Client, "zoom_fetch_recording",
+                        side_effect=[{'recording_files': [{'id': '29c7tc',
+                                                           'meeting_id': 'Y',
+                                                           'play_url': 'hsy',
+                                                           'download_url': 'htsy', 'status': 'completed',
+                                                           'recording_type': 't'}
+                                                          ]},
+                                     MockResponse(raw=MockResponse(decode_content=False)),
+                                     MockResponse(text="sff")])
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_fetch_recording_command
+    res = zoom_fetch_recording_command(
+        client=client, meeting_id="000000", delete_after="true")
     assert res[2].readable_output == 'The file recording_000000_29c7tc.mp4 was successfully removed from the cloud'
