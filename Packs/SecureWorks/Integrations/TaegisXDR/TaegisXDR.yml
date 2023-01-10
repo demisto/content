@@ -59,6 +59,15 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Include Assets in Fetch
+  name: include_assets
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: An error can occur when the API is slow or there are a large numbers
+    of assets being added to a new incident/investigation. Disabling this will fetch
+    incidents without including asset information, allowing time for the investigation
+    creation to be completed.
 script:
   script: ''
   type: python
@@ -147,6 +156,8 @@ script:
       description: An ticket or ID for to an external system for reference
     - name: service_desk_type
       description: The type of service desk id (e.g. XSOAR)
+    - name: assignee_id
+      description: The auth0 ID of a user, in 'auth0|12345' format
     outputs:
     - contextPath: TaegisXDR.InvestigationUpdate
       description: ID of the updated Taegis investigation
@@ -236,7 +247,43 @@ script:
     - contextPath: TaegisXDR.CommentUpdate
       description: The comment update results
     description: Update an existing comment
-  dockerimage: demisto/python3:3.10.8.36650
+  - name: taegis-fetch-users
+    arguments:
+    - name: id
+      description: The auth0 ID, in 'auth0|12345' format
+    - name: email
+      description: The email address to search for
+    - name: status
+      description: Search by user status
+    - name: page
+      description: Page for results
+      defaultValue: "0"
+    - name: page_size
+      description: Results to return per page
+      defaultValue: "10"
+    outputs:
+    - contextPath: TaegisXDR.Users
+      description: The located user(s)
+    description: Fetch a user by ID or email address
+  - name: taegis-archive-investigation
+    arguments:
+    - name: id
+      required: true
+      description: ID of investigation to update
+    outputs:
+    - contextPath: TaegisXDR.ArchivedInvestigation
+      description: The results from archiving an investigation
+    description: Archive an investigation
+  - name: taegis-unarchive-investigation
+    arguments:
+    - name: id
+      required: true
+      description: ID of investigation to update
+    outputs:
+    - contextPath: TaegisXDR.UnarchivedInvestigation
+      description: The results from unarchiving an investigation
+    description: Unarchive an investigation
+  dockerimage: demisto/python3:3.10.9.42476
   runonce: false
   subtype: python3
   isfetch: true
