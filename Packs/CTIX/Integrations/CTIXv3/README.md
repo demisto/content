@@ -1381,3 +1381,315 @@ Lookup to get threat data
               "valid_until": null}],
  "total": 1}
 ```
+
+### domain
+***
+Lookup domain threat data
+
+
+#### Base Command
+
+`domain`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Will contain domain SDO values. Example: If you need to get the object_ids of indicator example.com then the value will be example.com. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| Domain.Name | String | The domain name, for example: "google.com". | 
+
+### ip
+***
+Lookup ip threat data
+
+
+#### Base Command
+
+`ip`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | Will contain IP SDO values. Example: If you need to get the object_ids of indicator 1.2.3.4 then the value will be 1.2.3.4. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| IP.Address | String | The IP address, for example: 1.2.3.4. | 
+
+### file
+***
+Lookup file threat data
+
+
+#### Base Command
+
+`file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | Will contain file SDO values. Example: If you need to get the object_ids of a file hash 3ed0a30799543fa2c3a913c7985bffed then the value will be 3ed0a30799543fa2c3a913c7985bffed. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+
+### url
+***
+Lookup url threat data
+
+
+#### Base Command
+
+`url`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Will contain URL SDO values. Example: If you need to get the object_ids of a URL https://cyware.com/ then the value will be https://cyware.com/. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| URL.Data | String | The URL | 
+
+### ctix-get-all-notes
+***
+Get paginated list of Notes
+
+
+#### Base Command
+
+`ctix-get-all-notes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_id | if set, this will only retrieve Notes associated with the Threat Data object with ID=`object_id`. | Optional | 
+| page | the page number of the Notes to look up, default is the first page. Default is 1. | Optional | 
+| page_size | size of the result. Default is 10. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTIX.Note.created | integer | The timestamp when the Note was created | 
+| CTIX.Note.created_by | unknown | The user who created the Note | 
+| CTIX.Note.created_by.email | string | The email of the user who created the Note | 
+| CTIX.Note.created_by.first_name | string | The first name of the user who created the Note | 
+| CTIX.Note.created_by.id | string | The ID of the user who created the Note | 
+| CTIX.Note.created_by.last_name | string | The last name of the user who created the Note | 
+| CTIX.Note.id | string | The ID of the Note | 
+| CTIX.Note.is_json | boolean | A flag indicating whether the Note is in JSON format | 
+| CTIX.Note.meta_data | unknown | Meta data for the Note | 
+| CTIX.Note.meta_data.component | string | The component for the Note | 
+| CTIX.Note.modified | integer | The timestamp when the Note was last modified | 
+| CTIX.Note.modified_by | unknown | The user who last modified the Note | 
+| CTIX.Note.modified_by.email | string | The email of the user who last modified the Note | 
+| CTIX.Note.modified_by.first_name | string | The first name of the user who last modified the Note | 
+| CTIX.Note.modified_by.id | string | The ID of the user who last modified the Note | 
+| CTIX.Note.modified_by.last_name | string | The last name of the user who last modified the Note | 
+| CTIX.Note.object_id | string | The object ID of the Note | 
+| CTIX.Note.text | string | The text of the Note | 
+| CTIX.Note.title | string | The title of the Note | 
+| CTIX.Note.type | string | The type of the Note | 
+
+### ctix-get-note-details
+***
+Get details of a Note as specified by its ID
+
+
+#### Base Command
+
+`ctix-get-note-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | the id of the Note. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTIX.Note.created | integer | The timestamp when the Note was created | 
+| CTIX.Note.created_by | unknown | The user who created the Note | 
+| CTIX.Note.created_by.email | string | The email of the user who created the Note | 
+| CTIX.Note.created_by.first_name | string | The first name of the user who created the Note | 
+| CTIX.Note.created_by.id | string | The ID of the user who created the Note | 
+| CTIX.Note.created_by.last_name | string | The last name of the user who created the Note | 
+| CTIX.Note.id | string | The ID of the Note | 
+| CTIX.Note.is_json | boolean | A flag indicating whether the Note is in JSON format | 
+| CTIX.Note.meta_data | unknown | Meta data for the Note | 
+| CTIX.Note.meta_data.component | string | The component for the Note | 
+| CTIX.Note.modified | integer | The timestamp when the Note was last modified | 
+| CTIX.Note.modified_by | unknown | The user who last modified the Note | 
+| CTIX.Note.modified_by.email | string | The email of the user who last modified the Note | 
+| CTIX.Note.modified_by.first_name | string | The first name of the user who last modified the Note | 
+| CTIX.Note.modified_by.id | string | The ID of the user who last modified the Note | 
+| CTIX.Note.modified_by.last_name | string | The last name of the user who last modified the Note | 
+| CTIX.Note.object_id | string | The object ID of the Note | 
+| CTIX.Note.text | string | The text of the Note | 
+| CTIX.Note.title | string | The title of the Note | 
+| CTIX.Note.type | string | The type of the Note | 
+
+### ctix-create-note
+***
+Creates a new Note from the parameter 'text'
+
+
+#### Base Command
+
+`ctix-create-note`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| text | the text that you want the note to have. | Required | 
+| object_id | if set, will associate Note to the Threat Data object with the provided ID. | Optional | 
+| object_type | only required if `object_id` is set, used to specify the type of object `object_id` is. Possible values are: indicator, malware, threat-actor, vulnerability, attack-pattern, campaign, course-of-action, identity, infrastructure, intrusion-set, location, malware-analysis, observed-data, opinion, tool, report, custom-object, observable, incident, note. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTIX.Note.created | integer | The timestamp when the Note was created | 
+| CTIX.Note.created_by | unknown | The user who created the Note | 
+| CTIX.Note.created_by.email | string | The email of the user who created the Note | 
+| CTIX.Note.created_by.first_name | string | The first name of the user who created the Note | 
+| CTIX.Note.created_by.id | string | The ID of the user who created the Note | 
+| CTIX.Note.created_by.last_name | string | The last name of the user who created the Note | 
+| CTIX.Note.id | string | The ID of the Note | 
+| CTIX.Note.is_json | boolean | A flag indicating whether the Note is in JSON format | 
+| CTIX.Note.meta_data | unknown | Meta data for the Note | 
+| CTIX.Note.meta_data.component | string | The component for the Note | 
+| CTIX.Note.modified | integer | The timestamp when the Note was last modified | 
+| CTIX.Note.modified_by | unknown | The user who last modified the Note | 
+| CTIX.Note.modified_by.email | string | The email of the user who last modified the Note | 
+| CTIX.Note.modified_by.first_name | string | The first name of the user who last modified the Note | 
+| CTIX.Note.modified_by.id | string | The ID of the user who last modified the Note | 
+| CTIX.Note.modified_by.last_name | string | The last name of the user who last modified the Note | 
+| CTIX.Note.object_id | string | The object ID of the Note | 
+| CTIX.Note.text | string | The text of the Note | 
+| CTIX.Note.title | string | The title of the Note | 
+| CTIX.Note.type | string | The type of the Note | 
+
+### ctix-update-note
+***
+Updates the Note text from an existing Note, as specified by its ID
+
+
+#### Base Command
+
+`ctix-update-note`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | the id of the Note. | Required | 
+| text | the updated text that you want the note to have. | Optional | 
+| object_id | if set, will associate Note to the Threat Data object with the provided ID. | Optional | 
+| object_type | only required if `object_id` is set, used to specify the type of object `object_id` is. Possible values are: indicator, malware, threat-actor, vulnerability, attack-pattern, campaign, course-of-action, identity, infrastructure, intrusion-set, location, malware-analysis, observed-data, opinion, tool, report, custom-object, observable, incident, note. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTIX.Note.created | integer | The timestamp when the Note was created | 
+| CTIX.Note.created_by | unknown | The user who created the Note | 
+| CTIX.Note.created_by.email | string | The email of the user who created the Note | 
+| CTIX.Note.created_by.first_name | string | The first name of the user who created the Note | 
+| CTIX.Note.created_by.id | string | The ID of the user who created the Note | 
+| CTIX.Note.created_by.last_name | string | The last name of the user who created the Note | 
+| CTIX.Note.id | string | The ID of the Note | 
+| CTIX.Note.is_json | boolean | A flag indicating whether the Note is in JSON format | 
+| CTIX.Note.meta_data | unknown | Meta data for the Note | 
+| CTIX.Note.meta_data.component | string | The component for the Note | 
+| CTIX.Note.modified | integer | The timestamp when the Note was last modified | 
+| CTIX.Note.modified_by | unknown | The user who last modified the Note | 
+| CTIX.Note.modified_by.email | string | The email of the user who last modified the Note | 
+| CTIX.Note.modified_by.first_name | string | The first name of the user who last modified the Note | 
+| CTIX.Note.modified_by.id | string | The ID of the user who last modified the Note | 
+| CTIX.Note.modified_by.last_name | string | The last name of the user who last modified the Note | 
+| CTIX.Note.object_id | string | The object ID of the Note | 
+| CTIX.Note.text | string | The text of the Note | 
+| CTIX.Note.title | string | The title of the Note | 
+| CTIX.Note.type | string | The type of the Note | 
+
+### ctix-delete-note
+***
+Deletes an existing Note, as specified by its ID
+
+
+#### Base Command
+
+`ctix-delete-note`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | the id of the Note. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTIX.Note.deletion.details | string | Returns "success" if the deletion request was successful, otherwise "failure" | 
+
+### ctix-make-request
+***
+allows you to make any HTTP request using CTIX endpoints
+
+
+#### Base Command
+
+`ctix-make-request`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | the HTTP method you would like to call. Possible values are: GET, POST, PUT, DELETE. | Required | 
+| endpoint | URL suffix of the API call to CTIX. | Required | 
+| body | any data you would like to pass, in JSON format. | Optional | 
+| params | any parameters you would like to pass, in JSON format. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command. It varies from command to command.
