@@ -392,38 +392,32 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
             # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
             # want to add data to the integration context (which will ruin the logic of the cache object)
             last_run_data.update({DUMMY: DUMMY})
+    
+    num_of_new_incidents = len(incidents)
 
-    # we didn't get any new incident so the next run earliest time will be the latest_time from this iteration
-    if len(incidents) == 0:
-        next_run_earliest_time = latest_time
-        extensive_log('[SplunkPy] SplunkPy - Next run earliest time with no incidents found: {}'.format(next_run_earliest_time))
-        new_last_run = {
-            'time': next_run_earliest_time,
-            'latest_time': None,
-            'offset': 0,
-            'found_incidents_ids': last_run_fetched_ids
-        }
-    # we get less then "limit" notables - so no need to use offset and next_run_earliest_time will be the latest_incident_time
-    elif len(incidents) < FETCH_LIMIT:
-        latest_incident_fetched_time = get_latest_incident_time(incidents)
-        next_run_earliest_time = get_next_start_time(latest_incident_fetched_time, now)
-        extensive_log('[SplunkPy] SplunkPy - Next run time with some incidents found: {}'.format(next_run_earliest_time))
-        new_last_run = {
-            'time': next_run_earliest_time,
-            'latest_time': None,
-            'offset': 0,
-            'found_incidents_ids': last_run_fetched_ids
-        }
+    # we have new incidents and we get the limit rate notables from splunk
     # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
-    else:
-        extensive_log('[SplunkPy] SplunkPy - '
-                      'Next run time with too many incidents:  {}'.format(occured_start_time))
+    if num_of_new_incidents > 0 and num_of_new_incidents + num_of_dropped >= FETCH_LIMIT:
         new_last_run = {
             'time': occured_start_time,
             'latest_time': latest_time,
             'offset': search_offset + FETCH_LIMIT,
             'found_incidents_ids': last_run_fetched_ids
         }
+        
+    # we didn't get any new incident or get less then limit
+    # so the next run earliest time will be the latest_time from this iteration
+    # should also set when num_of_dropped == FETCH_LIMIT
+    else:
+        next_run_earliest_time = latest_time
+        new_last_run = {
+            'time': next_run_earliest_time,
+            'latest_time': None,
+            'offset': 0,
+            'found_incidents_ids': last_run_fetched_ids
+        }
+
+    demisto.debug(f'SplunkPy - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}')
 
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
