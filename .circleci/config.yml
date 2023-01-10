@@ -135,9 +135,9 @@ references:
         npm --version
         demisto-sdk --version
 
-  restore_cache: &restore_cache
-    restore_cache:
-      key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
+#  restore_cache: &restore_cache
+#    restore_cache:
+#      key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
 
   remote_docker: &remote_docker
     setup_remote_docker:
