@@ -1747,6 +1747,12 @@ class TestCommandResults:
         with pytest.raises(ValueError, match='outputs_prefix'):
             CommandResults(outputs=[])
 
+    def test_with_tags(self):
+        from CommonServerPython import CommandResults
+        command_results = CommandResults(tags=['tag1', 'tag2'])
+        assert command_results.tags == ['tag1', 'tag2']
+        assert command_results.to_context()['Tags'] == ['tag1', 'tag2']
+
     def test_dbot_score_is_in_to_context_ip(self):
         """
         Given
@@ -5205,7 +5211,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Relationships': []
+            'Relationships': [],
         }
 
     def test_create_domain(self):
@@ -5359,7 +5365,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Relationships': []
+            'Relationships': [],
         }
 
     def test_create_url(self):
