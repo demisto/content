@@ -286,7 +286,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -584,7 +584,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html.
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -634,7 +634,7 @@ tasks:
       id: 42a24672-f182-4b50-83b7-b08a6b79c4c6
       version: -1
       name: Retrieve emails data (IPAddress) - EmailUrlInfo table
-      description: 'This task will retrieve emails data based on the EmailUrlInfo table. It will look for the given IP in the "UrlDomain" property since IP can be part of a URL.'
+      description: 'This task will retrieve email data based on the EmailUrlInfo table. It will look for the given IP in the "UrlDomain" property since the IP can be part of a URL.'
       script: Microsoft 365 Defender|||microsoft-365-defender-advanced-hunting
       type: regular
       iscommand: true
