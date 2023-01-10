@@ -644,48 +644,45 @@ def zoom_fetch_recording_command(client: Client, **args):
     meeting_id = args.get('meeting_id')
     delete_after = argToBoolean(args.get('delete_after'))
     client = client
-    try:
-        data = client.zoom_fetch_recording(
-            method='GET',
-            url_suffix=f'meetings/{meeting_id}/recordings'
-        )
-        recording_files = data.get('recording_files')
-        # getting the audio and video files
-        for file in recording_files:
-            download_url = file.get('download_url')
-            try:
-                r = client.zoom_fetch_recording(
-                    method='GET',
-                    full_url=download_url,
-                    resp_type='response',
-                    stream=True
-                )
-                filename = f'recording_{meeting_id}_{file.get("id")}.mp4'
-                with open(filename, 'wb') as f:
-                    r.raw.decode_content = True
-                    shutil.copyfileobj(r.raw, f)
+    data = client.zoom_fetch_recording(
+        method='GET',
+        url_suffix=f'meetings/{meeting_id}/recordings'
+    )
+    recording_files = data.get('recording_files')
+    # getting the audio and video files
+    for file in recording_files:
+        download_url = file.get('download_url')
+        try:
+            demisto.debug(f"Trying to download the files of meeting {meeting_id}")
+            record = client.zoom_fetch_recording(
+                method='GET',
+                full_url=download_url,
+                resp_type='response',
+                stream=True
+            )
+            filename = f'recording_{meeting_id}_{file.get("id")}.mp4'
+            with open(filename, 'wb') as f:
+                record.raw.decode_content = True
+                shutil.copyfileobj(record.raw, f)
 
-                results.append(file_result_existing_file(filename))
-                results.append(CommandResults(readable_output=f"The file {filename} was downloaded successfully"))
-                if delete_after:
-                    try:
-                        client.zoom_fetch_recording(
-                            method='DELETE',
-                            url_suffix=f'meetings/{meeting_id}/recordings/{file["id"]}',
-                            resp_type='response'
-                        )
-                        results.append(CommandResults(readable_output=f"The file {filename} was successfully removed from the cloud"))
-                    except DemistoException as e:
-                        demisto.error(str(e))
-                        raise DemistoException(
-                            f"Failed to delete file {filename}.", res=results)
+            results.append(file_result_existing_file(filename))
+            results.append(CommandResults(readable_output=f"The file {filename} was downloaded successfully"))
+            if delete_after:
+                try:
+                    demisto.debug(f"Trying to delete the file {filename}")
+                    client.zoom_fetch_recording(
+                        method='DELETE',
+                        url_suffix=f'meetings/{meeting_id}/recordings/{file["id"]}',
+                        resp_type='response'
+                    )
+                    results.append(CommandResults(readable_output=f"The file {filename} was successfully removed from the cloud"))
+                except DemistoException as e:
+                    results.append(CommandResults(readable_output=f"Failed to delete file {filename}. {e}"))
 
-            except DemistoException as e:
-                raise DemistoException(
-                    f'Unable to download recording for meeting {meeting_id}: {e}')
+        except DemistoException as e:
+            raise DemistoException(
+                f'Unable to download recording for meeting {meeting_id}: {e}')
 
-    except DemistoException as e:
-        raise DemistoException(f'Unable to reach the recording: {e}')
     return results
 
 
@@ -828,11 +825,10 @@ def main():  # pragma: no cover
         return_results(results)
 
     except DemistoException as e:
-        #import traceback
         if e.res:
             return_results(e.res)
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Error: {str(e)}.')  #Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}.')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
