@@ -59,7 +59,7 @@ configuration:
   type: 0
   additionalinfo: In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value.
   defaultvalue: '20'
-- display: Query to fetch offenses
+- display: Query to fetch offenses - configuring "status=OPEN" won't mirror closed offenses to XSOAR platform.
   name: query
   required: false
   type: 0
