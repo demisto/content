@@ -69,7 +69,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "11"
     scriptarguments:
       ListenerMailbox:
         complex:
@@ -129,7 +129,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "11"
     scriptarguments:
       IPAddress:
         complex:
@@ -173,117 +173,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 256f3a24-dbbe-4db4-87bb-167919b5b385
-    type: regular
-    task:
-      id: 256f3a24-dbbe-4db4-87bb-167919b5b385
-      version: -1
-      name: Set RetrievedEmailsJoined (emails objects without click events)
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      append:
-        simple: "false"
-      key:
-        simple: Microsoft365Defender.RetrievedEmails
-      value:
-        complex:
-          root: Microsoft365Defender.RetrievedEmails
-          filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: Microsoft365Defender.RetrievedEmails.NetworkMessageId
-                iscontext: true
-              right:
-                value:
-                  simple: RetrievedEmailsJoined.NetworkMessageId
-                iscontext: true
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RetrievedEmailsJoined
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 1090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: a3199b7b-c3be-4daf-8d8f-2aad71de1780
-    type: regular
-    task:
-      id: a3199b7b-c3be-4daf-8d8f-2aad71de1780
-      version: -1
-      name: Set RetrievedEmailsJoined (emails objects with click events)
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      key:
-        simple: RetrievedEmailsJoined
-      value:
-        complex:
-          root: Microsoft365Defender.RetrievedEmails
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Microsoft365Defender.RetrievedEmails.ClickTimestamp
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 905
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 0fb58176-a495-49d0-8cf7-81d69fc7e1d5
@@ -301,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 1300
+          "x": 270,
+          "y": 770
         }
       }
     note: false
@@ -312,43 +201,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 66e983d2-df70-4fb5-8cac-e289e17a668b
-    type: title
-    task:
-      id: 66e983d2-df70-4fb5-8cac-e289e17a668b
-      version: -1
-      name: Merge email events from both playbooks
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 975,
+        "height": 445,
         "width": 920,
         "x": 10,
         "y": 390
@@ -389,7 +248,7 @@ inputs:
   playbookInputQuery:
 - key: SearchTimeframe
   value:
-    simple: "14"
+    simple: "7"
   required: false
   description: Number of previous days to search. Default is 7.
   playbookInputQuery:
