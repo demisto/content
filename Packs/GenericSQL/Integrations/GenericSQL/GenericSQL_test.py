@@ -255,6 +255,7 @@ def test_parse_connect_parameters(connect_parameters, dialect, expected_response
     assert Client.parse_connect_parameters(connect_parameters, dialect) == expected_response
 
 
+# case of fetch by simple query based on id -- checking last_run update and incidents
 @pytest.mark.parametrize('table, params, response, headers, expected_incidents, expected_last_run', [
     (input_data.TABLE_1, input_data.PARAMS_1, input_data.RESPONSE_1, input_data.HEADERS_1,
      input_data.EXPECTED_INCIDENTS_1, input_data.EXPECTED_LAST_RUN_1)])
@@ -286,6 +287,8 @@ def test_fetch_incident_by_id_simple_query(table, params, response, headers, exp
     assert len(incidents) == len(expected_incidents)
 
 
+# case of fetch by simple query based on id where first id is bigger than the last one in the DB --
+# checking last_run update - it should be the same when there are no incidents
 @pytest.mark.parametrize('table, params, response, headers, last_run_before_fetch', [
     (input_data.TABLE_2, input_data.PARAMS_2, input_data.RESPONSE_2, input_data.HEADERS_2,
      input_data.LAST_RUN_BEFORE_FETCH_2)])
@@ -313,6 +316,7 @@ def test_fetch_incident_without_incidents(table, params, response, headers, last
     assert last_run_before_fetch == last_run
 
 
+# case of fetch by procedure based on timestamp and id -- Verifying there aren't any duplicates
 @pytest.mark.parametrize('table, params, response, headers, last_run_before_second_fetch, expected_incidents', [
     (input_data.TABLE_3, input_data.PARAMS_3, input_data.RESPONSE_3, input_data.HEADERS_3,
      input_data.LAST_RUN_BEFORE_SECOND_FETCH_3, input_data.EXPECTED_INCIDENTS_3)])
@@ -344,6 +348,7 @@ def test_fetch_incident_avoiding_duplicates(table, params, response, headers, la
         assert expected_incident.get('rawJSON') == incident.get('rawJSON')
 
 
+# case of two fetch cycles -- checking twice last_run update as expected
 @pytest.mark.parametrize('table_first_cycle, table_second_cycle, params, response_first_cycle, response_second_cycle, '
                          'headers, expected_last_run_4_1, expected_last_run_4_2',
                          [(input_data.TABLE_4_1, input_data.TABLE_4_2, input_data.PARAMS_4, input_data.RESPONSE_4_1,
