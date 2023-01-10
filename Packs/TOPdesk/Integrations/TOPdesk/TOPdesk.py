@@ -1277,7 +1277,13 @@ def fetch_incidents(client: Client,
         topdesk_incident['mirror_instance'] = demisto.integrationInstance()
         if float(last_fetch_datetime.timestamp()) < float(incident_created_time.timestamp()):
             labels = []
-            actions = client.list_actions(incident_id=topdesk_incident['id'], incident_number=None)
+            try:
+                actions = client.list_actions(incident_id=topdesk_incident['id'], incident_number=None)
+            # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError when it is not
+            # possible to load json.
+            except (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError) as e:
+                demisto.log(f'Error decoding JSON when retrieving actions:\n{e}')
+                actions = []
             for action in actions:
                 entry_date = dateparser.parse(action["entryDate"], settings={'TIMEZONE': 'UTC'})  # type: ignore
                 if action["operator"]:
