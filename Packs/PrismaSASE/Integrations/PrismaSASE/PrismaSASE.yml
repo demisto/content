@@ -17,8 +17,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example:
-    1234567890.'
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
   display: Tenant Services Group ID
   name: tsg_id
   required: true
@@ -100,8 +99,7 @@ script:
       required: false
     - default: false
       defaultValue: any
-      description: A comma-separated list of categories. You can get category values
-        by running the prisma-sase-custom-url-category-list command.
+      description: A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
       isArray: true
       name: category
       required: false
@@ -124,6 +122,7 @@ script:
     - default: false
       defaultValue: any
       description: Services the rule applies to.
+      name: service
       isArray: false
       required: false
     - default: false
@@ -276,8 +275,7 @@ script:
       name: page_size
       required: false
     - default: false
-      description: A specific security rule to return. If not specified, all security
-        rules will be returned.
+      description: A specific security rule to return. If not specified, all security rules will be returned.
       isArray: false
       name: rule_id
       required: false
@@ -342,8 +340,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Comma-separated list of targets (Remote Networks, Mobile Users,
-        Service Connections).
+      description: Comma-separated list of targets (Remote Networks, Mobile Users, Service Connections).
       isArray: false
       name: folders
       required: true
@@ -636,8 +633,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: A specific config job to return. If not specified, all config jobs
-        will be returned.
+      description: A specific config job to return. If not specified, all config jobs will be returned.
       isArray: false
       name: job_id
       required: false
@@ -788,8 +784,7 @@ script:
     name: prisma-sase-address-object-delete
   - arguments:
     - default: false
-      description: The specific address object to return. If not specified, all addresses
-        will be returned.
+      description: The specific address object to return. If not specified, all addresses will be returned.
       isArray: false
       name: object_id
       required: false
@@ -1096,8 +1091,7 @@ script:
     name: prisma-sase-tag-delete
   - arguments:
     - default: false
-      description: A specific address group to return. If not specified, all address
-        groups will be returned.
+      description: A specific address group to return. If not specified, all address groups will be returned.
       isArray: false
       name: group_id
       required: false
@@ -1165,14 +1159,12 @@ script:
       - dynamic
       required: true
     - default: false
-      description: static addresses for the address group. If the type is static,
-        value must be provided.
+      description: static addresses for the address group. If the type is static, value must be provided.
       isArray: false
       name: static_addresses
       required: false
     - default: false
-      description: dynamic filter for the address group. If the type is dynamic, value
-        must be provided.
+      description: dynamic filter for the address group. If the type is dynamic, value must be provided.
       isArray: false
       name: dynamic_filter
       required: false
@@ -1261,170 +1253,340 @@ script:
     execution: false
     name: prisma-sase-address-group-delete
   - arguments:
-      - default: false
-        description: A specific url category to return. If not specified, all url categories will be returned.
-        isArray: false
-        name: id
-        required: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: Shared
-        isArray: false
-        name: folder
-        predefined:
-          - Shared
-          - Mobile Users
-          - Remote Networks
-          - Service Connections
-          - Mobile Users Container
-          - Mobile Users Explicit Proxy
-        required: true
-      - default: false
-        isArray: false
-        name: limit
-        required: false
-      - default: false
-        isArray: false
-        name: page
-        required: false
-      - default: false
-        isArray: false
-        name: page_size
-        required: false
+    - default: false
+      description: A specific url category to return. If not specified, all url categories will be returned.
+      isArray: false
+      name: id
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      isArray: false
+      name: page_size
+      required: false
     deprecated: false
     execution: false
     name: prisma-sase-custom-url-category-list
     outputs:
-      - contextPath: PrismaSase.CustomURLCategory
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.id
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.name
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.folder
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.type
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.match
-        type: String
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
   - arguments:
-      - auto: PREDEFINED
-        default: false
-        defaultValue: Shared
-        isArray: false
-        name: folder
-        predefined:
-          - Shared
-          - Mobile Users
-          - Remote Networks
-          - Service Connections
-          - Mobile Users Container
-          - Mobile Users Explicit Proxy
-        required: true
-      - auto: PREDEFINED
-        default: false
-        isArray: false
-        name: type
-        predefined:
-          - URL List
-          - Category Match
-        required: true
-      - default: false
-        description: If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list.
-        isArray: true
-        name: value
-        required: true
-      - default: false
-        isArray: false
-        name: description
-        required: false
-      - default: false
-        isArray: false
-        name: name
-        required: yes
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+      required: true
+    - default: false
+      description: If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list.
+      isArray: true
+      name: value
+      required: true
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      isArray: false
+      name: name
+      required: true
     deprecated: false
     execution: false
     name: prisma-sase-custom-url-category-create
     outputs:
-      - contextPath: PrismaSase.CustomURLCategory
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.id
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.name
-        type: String
-      - contextPath: PrismaSase.AddressGroup.folder
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.type
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.match
-        type: String
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
   - arguments:
-      - default: false
-        isArray: false
-        name: id
-        required: true
-      - auto: PREDEFINED
-        default: false
-        defaultValue: Shared
-        isArray: false
-        name: folder
-        predefined:
-          - Shared
-          - Mobile Users
-          - Remote Networks
-          - Service Connections
-          - Mobile Users Container
-          - Mobile Users Explicit Proxy
-        required: true
-      - default: false
-        isArray: false
-        name: value
-        required: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'false'
-        isArray: false
-        name: overwrite
-        predefined:
-          - true
-          - false
-        required: false
-      - default: false
-        isArray: false
-        name: description
-        required: false
-      - auto: PREDEFINED
-        default: false
-        isArray: false
-        name: type
-        predefined:
-          - URL List
-          - Category Match
-        required: false
+    - default: false
+      isArray: false
+      name: id
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: value
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: overwrite
+      predefined:
+      - true
+      - false
+      required: false
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+      required: false
     deprecated: false
     execution: false
     name: prisma-sase-custom-url-category-update
     outputs:
-      - contextPath: PrismaSase.CustomURLCategory
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.id
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.name
-        type: String
-      - contextPath: PrismaSase.AddressGroup.folder
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.type
-        type: String
-      - contextPath: PrismaSase.CustomURLCategory.match
-        type: String
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
   - arguments:
-      - default: false
-        isArray: false
-        name: id
-        required: true
+    - default: false
+      isArray: false
+      name: id
+      required: true
     deprecated: false
     execution: false
     name: prisma-sase-custom-url-category-delete
+  - arguments:
+    - default: false
+      description: A specific external dynamic list to return. If not specified, all external dynamic lists will be returned.
+      isArray: false
+      name: id
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      isArray: false
+      name: page_size
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-external-dynamic-list-list
+    outputs:
+    - contextPath: PrismaSase.ExternalDynamicList
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.id
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.name
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.folder
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.description
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.source
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.frequency
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - predefined_ip
+      - predefined_url
+      - ip
+      - domain
+      - url
+      required: true
+    - default: false
+      description: If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list.
+      isArray: true
+      name: value
+      required: true
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      isArray: false
+      name: name
+      required: true
+    deprecated: false
+    execution: false
+    name: prisma-sase-external-dynamic-list-create
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: value
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: overwrite
+      predefined:
+      - true
+      - false
+      required: false
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-external-dynamic-list-update
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: true
+    deprecated: false
+    execution: false
+    name: prisma-sase-external-dynamic-list-delete
   dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: false

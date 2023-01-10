@@ -577,6 +577,84 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
+    def get_external_dynamic_list_by_id(self, query_params: dict, id: str) -> dict:
+        """Get a external dynamic list
+        Args:
+            query_params: Address object dictionary
+            id: Identifier of existing tag to be edited
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{id}'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def list_external_dynamic_list(self, query_params: dict) -> dict:
+        """Get all external dynamic list
+        Args:
+            query_params: Address object dictionary
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def update_external_dynamic_list(self, custom_url_category: dict, id: str) -> dict:
+        """Update existing external dynamic list
+        Args:
+            custom_url_category: external dynamic list
+            id: Identifier of existing address group to update
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{id}'
+
+        return self.http_request(
+            method="PUT",
+            url_suffix=uri,
+            json_data=custom_url_category
+        )
+
+    def create_external_dynamic_list(self, query_params: dict, custom_url_category: dict) -> dict:
+        """Create new external dynamic list
+        Args:
+            custom_url_category: external dynamic list
+            query_params: Prisma SASE Folder
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists'
+
+        return self.http_request(
+            method="POST",
+            url_suffix=uri,
+            params=query_params,
+            json_data=custom_url_category
+        )
+
+    def delete_external_dynamic_list(self, id: str) -> dict:
+        """Delete external dynamic list
+        Args:
+            id: Identifier of the existing external dynamic list to be deleted
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{id}'
+
+        return self.http_request(
+            method="DELETE",
+            url_suffix=uri
+        )
+
     def get_access_token(self) -> str:
         """Get access token to use for API call.
 
@@ -819,7 +897,7 @@ def delete_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
         Outputs.
     """
 
-    raw_response = client.delete_address_object(args.get('id'))  # type: ignore
+    raw_response = client.delete_address_object(args.get('object_id'))  # type: ignore
 
     return CommandResults(
         readable_output=f'Address object with id {raw_response.get("id", "")} '
@@ -1471,6 +1549,144 @@ def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     )
 
 
+def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to get custom url categories
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    if url_category_id := args.get('id'):
+        raw_response = client.get_external_dynamic_list_by_id(query_params, url_category_id)
+        outputs = [raw_response]
+    else:
+        page = arg_to_number(args.get('page')) or 1
+        page_size = arg_to_number(args.get('page_size'))
+        if page and page_size:
+            query_params['offset'] = (page - 1) * page_size
+            query_params['limit'] = page_size
+        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
+            query_params['limit'] = limit
+
+        raw_response = client.list_external_dynamic_list(query_params)  # type: ignore
+
+        outputs = raw_response.get('data')
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Custom Url Categories', outputs,
+                                        headers=['id', 'name', 'folder', 'type', 'list'],
+                                        headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to create new custom url category
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    custom_url_category = {
+        'name': args.get('name'),
+        'type': args.get('type')
+    }
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+
+    if description := args.get('description'):
+        custom_url_category['description'] = description
+
+    if value := argToList(args.get('value')):
+        custom_url_category['list'] = value
+
+    raw_response = client.create_external_dynamic_list(query_params, custom_url_category)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_key_field='id',
+        outputs=raw_response,
+        readable_output=tableToMarkdown('Custom URrl Category Created', raw_response, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to update custom url category
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+    url_category_id = args.get('id')
+    # first get the original, so user won't need to send all data
+    original_custom_url_category = client.get_external_dynamic_list_by_id(query_params, url_category_id)
+    # TODO change
+
+    if description := args.get('description'):
+        original_custom_url_category['description'] = description
+    overwrite = args.get('overwrite')
+    if category_type := args.get('type'):
+        original_custom_url_category['type'] = category_type
+
+    if value := argToList(args.get('value')):
+        if overwrite:
+            original_custom_url_category['list'] = value
+        else:
+            original_custom_url_category.get('list', []).extend(value)
+
+    print(original_custom_url_category)
+    raw_response = client.update_external_dynamic_list(original_custom_url_category, url_category_id)  # type: ignore
+    outputs = raw_response
+
+    return CommandResults(
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Custom Url Category updated', outputs, headerTransform=string_to_table_header),
+        raw_response=raw_response
+    )
+
+
+def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command to delete Prisma custom url category
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+
+    raw_response = client.delete_external_dynamic_list(args.get('id'))  # type: ignore
+
+    return CommandResults(
+        readable_output=f'Custom Url Category with id {raw_response.get("id", "")} '
+                        f'and name {raw_response.get("name", "")} was deleted successfully',
+        raw_response=raw_response
+    )
+
+
 
 
 def main():
@@ -1522,6 +1738,11 @@ def main():
         'prisma-sase-custom-url-category-create': create_custom_url_category_command,
         'prisma-sase-custom-url-category-update': update_custom_url_category_command,
         'prisma-sase-custom-url-category-delete': delete_custom_url_category_command,
+
+        'prisma-sase-external-dynamic-list-list': list_external_dynamic_list_command,
+        'prisma-sase-external-dynamic-list-create': create_external_dynamic_list_command,
+        'prisma-sase-external-dynamic-list-update': update_external_dynamic_list_command,
+        'prisma-sase-external-dynamic-list-delete': delete_custom_url_category_command,
 
     }
     client = Client(
