@@ -1,4 +1,3 @@
-import urllib3
 from CommonServerPython import *
 import urllib3
 # Disable insecure warnings
