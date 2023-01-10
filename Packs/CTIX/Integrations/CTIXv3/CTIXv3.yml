@@ -227,6 +227,19 @@ script:
     - name: page_size
       description: size of page
       defaultValue: "1"
+    - name: createifnotexist
+      type: boolean
+      description: Specify whether to create a new threat data entry if it does not exist
+      default: false
+      required: false
+    - name: source
+      type: string
+      description: The source of the threat data
+      required: false
+    - name: collection
+      type: string
+      description: The collection to store the threat data in
+      required: false
     outputs:
     - contextPath: CTIX.ThreatData.confidence_score
       description: Confidence Score of the IOC
