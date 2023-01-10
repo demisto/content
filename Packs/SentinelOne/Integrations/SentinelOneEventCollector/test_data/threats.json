@@ -7,7 +7,7 @@
                 "agentDetectionState": "full_mode",
                 "agentDomain": "TRUSTNET-LABS",
                 "agentIpV4": "1.1.1.1",
-                "agentIpV6": "123::123::123::123",
+                "agentIpV6": "123:123:123:123",
                 "agentLastLoggedInUpn": null,
                 "agentLastLoggedInUserMail": null,
                 "agentLastLoggedInUserName": "Win10-Regression",
@@ -52,7 +52,7 @@
                             "1.1.1.1"
                         ],
                         "inet6": [
-                            "123::123::123::123"
+                            "123:123:123:123"
                         ],
                         "name": "Ethernet0",
                         "physical": "1:1:1:1"
