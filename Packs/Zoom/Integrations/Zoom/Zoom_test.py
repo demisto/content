@@ -3,7 +3,7 @@ from freezegun import freeze_time
 import Zoom
 import pytest
 from CommonServerPython import DemistoException
-from unittest.mock import Mock, patch
+# from unittest.mock import patch, mock_open
 
 
 def mock_client_ouath(mocker):
@@ -934,7 +934,6 @@ def test_zoom_fetch_recording_command_1(mocker):
        Then -
            Validate that the successfull messege is added to the commandResults
     """
-    from shutil import copyfileobj
     import shutil
     mocker.patch.object(shutil, "copyfileobj", return_value="bla")
     mocker.patch.object(Client, "zoom_fetch_recording",
@@ -965,8 +964,10 @@ def test_zoom_fetch_recording_command_2(mocker):
        Then -
            Validate that the successfull deleting messege is added to the commandResults
     """
-    from shutil import copyfileobj
     import shutil
+
+    # with patch("builtins.open", mock_open(read_data="data")) as mock_file:
+    #     assert open("path/to/open").read() == "data"
     mocker.patch.object(shutil, "copyfileobj", return_value="bla")
     mocker.patch.object(Client, "zoom_fetch_recording",
                         side_effect=[{'recording_files': [{'id': '29c7tc',
