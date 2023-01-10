@@ -1,7 +1,7 @@
 from CommonServerPython import *
-
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CLIENT CLASS '''
 
@@ -11,8 +11,7 @@ class Client(BaseClient):
                  token: str = None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
-        self.agent = self.get_agent() # Agent is different based on the platform running this integration (XSOAR/XSIAM)
-
+        self.agent = self.get_agent()   # Agent is different based on the platform running the integration (XSOAR/XSIAM)
         add_sensitive_log_strs(token)
 
     @staticmethod
