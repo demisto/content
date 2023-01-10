@@ -82,6 +82,9 @@ ignore=BA115
 [file:1_10_42.md]
 ignore=RN114
 
+[file:1_10_44.md]
+ignore=RN114
+
 [known_words]
 UnzipFile
 ZipStrings
