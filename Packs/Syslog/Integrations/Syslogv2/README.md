@@ -24,7 +24,7 @@ To receive incidents, the Syslog engine listens on a configured port that needs 
 * Key: `python.pass.extra.keys.demisto/syslog`
 * Value: `--network=host`
 
-If listening on a port less than 1024 and running with the Docker Hardening configuration, you may need to disable the "run with non-root internal user" setting for the Syslog integration to listen on the host networking on a lower port. From more information, see [Run Docker with Non-Root Internal User](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-8/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users) and the [Docker Hardening Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-8/cortex-xsoar-admin/docker/docker-hardening-guide.html). You can disable this setting by adding the following server configuration:
+If listening on a port less than 1024 and running with the Docker Hardening configuration, you may need to disable the "run with non-root internal user" setting for the Syslog integration to listen on the host networking on a lower port. From more information, see [Run Docker with Non-Root Internal User](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-8/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users) and the [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide). You can disable this setting by adding the following server configuration:
 * Key: `docker.run.internal.asuser.ignore`
 * Value: `demisto/syslog`
 
