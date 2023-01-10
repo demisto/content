@@ -117,7 +117,6 @@ DPIA
 PII
 CISO
 CIDRBiggerThanPrefix
-FiltersAndTransformers
 GreaterCidrNumAddresses
 InRange
 AfterRelativeDate
