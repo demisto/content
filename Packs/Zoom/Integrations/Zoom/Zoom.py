@@ -606,7 +606,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     )
 
 
-def zoom_fetch_recording_command(client: Client, **args) -> list:
+def zoom_fetch_recording_command(client: Client, **args) -> CommandResults:
     # preprocessing
     results = []
     meeting_id = args.get('meeting_id')
