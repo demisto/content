@@ -21,7 +21,7 @@ class GoogleSecreteManagerModule:
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
-            logging.info(f'Getting the secret: {secret.name}')
+            logging.debug(f'Getting the secret: {secret.name}')
             if secret.name in name_filter:
                 continue
             if with_secret:
@@ -35,7 +35,8 @@ class GoogleSecreteManagerModule:
                     if len(missing_attrs) != 0:
                         missing_attrs_str = ','.join(missing_attrs)
                         logging.error(
-                            f'Error getting the secret: {secret.name}, it\'s missing the following attributes: {missing_attrs_str}')  # noqa
+                            f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa
+                        continue
                     secrets.append(secret_value)
                 except Exception as e:
                     logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
