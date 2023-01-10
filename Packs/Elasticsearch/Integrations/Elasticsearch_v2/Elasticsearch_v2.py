@@ -194,6 +194,9 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
         'aggregations': response.get('aggregations')
     }
 
+    if aggregations := response.get('aggregations'):
+        search_context['aggregations'] = aggregations
+
     hit_headers = []  # type: List
     hit_tables = []
     if total_dict.get('value') > 0:
