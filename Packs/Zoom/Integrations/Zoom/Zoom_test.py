@@ -1019,3 +1019,30 @@ def test_zoom_fetch_recording_command_3(mocker):
         zoom_fetch_recording_command(
             client=client, meeting_id="000000", delete_after="true")
     assert e.value.message == 'Unable to download recording for meeting 000000: mockerror'
+
+
+def test_zoom_fetch_recording_command_4(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a specific recording that dose not exist
+       Then -
+           Validate that right error will return
+    """
+    import shutil
+
+    # with patch("builtins.open", mock_open(read_data="data")) as mock_file:
+    #     assert open("path/to/open").read() == "data"
+    mocker.patch.object(shutil, "copyfileobj", return_value="bla")
+    mocker.patch.object(Client, "zoom_fetch_recording",
+                        side_effect=[DemistoException("mockerror")])
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_fetch_recording_command
+    with pytest.raises(DemistoException) as e:
+        zoom_fetch_recording_command(
+            client=client, meeting_id="000000", delete_after="true")
+    assert e.value.message == 'mockerror'
