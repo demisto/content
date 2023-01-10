@@ -17,6 +17,11 @@ class Scopes:
     management_azure = 'https://management.azure.com/.default'
 
 
+class Resources:
+    graph = 'https://graph.microsoft.com/'
+    security_center = 'https://api.securitycenter.windows.com/'
+    management_azure = 'https://management.azure.com/'
+
 # authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
 SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
@@ -51,7 +56,6 @@ GRAPH_BASE_ENDPOINTS = {
 }
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?' \
                             'api-version=2018-02-01&resource={resource}&client_id={client_id}'
-
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
