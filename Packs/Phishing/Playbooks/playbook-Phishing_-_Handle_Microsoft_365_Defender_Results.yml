@@ -745,7 +745,7 @@ tasks:
       version: -1
       name: Prepare new incidents required fields
       description: |-
-        In order to create a new incident for each retrieved email (which is not or was part of an existing incident) these 3 fields should identify each email uniquely:
+        In order to create a new incident for each retrieved email (which is not part of an existing incident) these 3 fields should identify each email uniquely:
         - Subject --> The new incident name.
         - MessageID --> Thew new incident "Reported Email Message ID".
         - EntryID --> The new incident email attachment which will be investigated.
