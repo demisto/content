@@ -53,15 +53,15 @@ CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 AUTHORIZATION_CODE_FLOW = 'Authorization Code'
 AUTH_TYPE = PARAMS.get('auth_type', CLIENT_CREDENTIALS_FLOW)
 
-AUTH_CODE: str = PARAMS.get('auth_code', '')  # PARAMS.get('auth_code', {}).get('password', '')
+AUTH_CODE: str = PARAMS.get('auth_code', '')
 REDIRECT_URI: str = PARAMS.get('redirect_uri', '')
 SESSION_STATE = 'session_state'
-REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
+REFRESH_TOKEN = 'refresh_token'
 
 CLIENT_CREDENTIALS = 'client_credentials'
 AUTHORIZATION_CODE = 'authorization_code'
 
-USER_LIST_HEADERS: dict = {
+USER_LIST_MARKDOWN_HEADERS: dict = {
     'id': 'Membership id',
     'roles': 'User roles',
     'displayName': 'Display Name',
@@ -71,7 +71,7 @@ USER_LIST_HEADERS: dict = {
     'tenantId': 'tenantId'
 }
 
-CREATE_CHAT_HEADERS: dict = {
+CREATE_CHAT_MARKDOWN_HEADERS: dict = {
     'id': 'Chat id',
     'topic': 'Chat name',
     'createdDateTime': 'Created DateTime',
@@ -85,8 +85,8 @@ USER_TYPE_TO_USER_ROLE = {
     "Member": "owner"
 }
 
-GROUP_CHAT_ID_ENDS_WITH = "@thread.v2"
-ONEONONE_CHAT_ID_ENDS_WITH = "@unq.gbl.spaces"
+GROUP_CHAT_ID_SUFFIX = "@thread.v2"
+ONEONONE_CHAT_ID_SUFFIX = "@unq.gbl.spaces"
 
 ''' HELPER FUNCTIONS '''
 
@@ -476,7 +476,7 @@ def get_bot_access_token() -> str:
 
 def get_refresh_token_from_auth_code_param() -> str:
     """
-    The function is taken from 'MicrosoftApiModule'
+    The function is based on MicrosoftClient._get_refresh_token_from_auth_code_param() from 'MicrosoftApiModule'
     """
     refresh_prefix = "refresh_token:"
     if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
@@ -599,14 +599,12 @@ def http_request(
         if response.status_code in {202, 204}:
             # Delete channel or remove user from channel return 204 if successful
             # Update message returns 202 if the request has been accepted for processing
-            # Remove member from a channel returns 204 if successful.
             # Create channel with a membershipType value of shared, returns 202 Accepted response code
             # and a link to the teamsAsyncOperation.
             return {}
         if response.status_code == 201:
-            # For channel creation query (with a membershipType value of standard or private) returns 201 if successful,
-            # Create chat returns 201 if successful
-            # we get a body in the response, otherwise we should just return
+            # For chat creation and channel creation query (with a membershipType value of standard or private)
+            # returns 201 if successful
             if not response.content:
                 return {}
         try:
@@ -816,7 +814,7 @@ def get_chat_id(chat: str) -> str:
         if chat_data.get('topic', '') == chat or chat_data.get('id') == chat:
             return chat_data.get('id', '')
 
-    if chat.endswith(GROUP_CHAT_ID_ENDS_WITH) or chat.endswith(ONEONONE_CHAT_ID_ENDS_WITH):
+    if chat.endswith(GROUP_CHAT_ID_SUFFIX) or chat.endswith(ONEONONE_CHAT_ID_SUFFIX):
         # chat_id is probably malformed/user is not part of, as it's not appearing in the list of chats
         raise ValueError(f'Could not find requested "{chat}" chat.')
 
@@ -1169,7 +1167,7 @@ def channel_user_list_command():
             f'Channel "{channel_name}" Members List:',
             channel_members,
             ['userId', 'email', 'tenantId', 'id', 'roles', 'displayName', 'visibleHistoryStartDateTime'],
-            headerTransform=lambda h: USER_LIST_HEADERS.get(h, pascalToSpace(h)),
+            headerTransform=lambda h: USER_LIST_MARKDOWN_HEADERS.get(h, pascalToSpace(h)),
         ),
         outputs_prefix=f'MicrosoftTeams.Channel.{channel_name}.Members',
         outputs_key_field='id',
@@ -1210,7 +1208,7 @@ def chat_create_command():
             chat_data,
             ['id', 'topic', 'createdDateTime', 'lastUpdatedDateTime', 'webUrl', 'tenantId'],
             url_keys=['webUrl'],
-            headerTransform=lambda h: CREATE_CHAT_HEADERS.get(h, pascalToSpace(h)),
+            headerTransform=lambda h: CREATE_CHAT_MARKDOWN_HEADERS.get(h, pascalToSpace(h)),
             removeNull=True
         ),
         outputs_prefix='MicrosoftTeams.Chat.Info',
@@ -1274,6 +1272,7 @@ def get_user_membership_id(member: str, team_id: str, channel_id: str) -> str:
         if user.get('displayName') == member:
             return user.get('id', '')
     return ''
+
 
 def user_remove_from_channel_command():
     """

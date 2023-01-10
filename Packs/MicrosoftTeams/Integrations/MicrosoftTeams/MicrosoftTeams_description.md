@@ -17,9 +17,9 @@ There are two different authentication methods for self-deployed configuration:
 - [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
 - [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
 
-* In order to use ***microsoft-teams-ring-user***, you must use the Client Credentials flow.
+** In order to use ***microsoft-teams-ring-user***, you must use the Client Credentials flow.
 
-* In order to use the following commands, you must use the Authorization Code flow:
+** In order to use the following commands, you must use the Authorization Code flow:
   - ***microsoft-teams-chat-create***
   - ***microsoft-teams-message-send-to-chat***
 
