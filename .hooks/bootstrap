@@ -61,6 +61,8 @@ else
     poetry install
 fi
 
+poetry run pip freeze
+
 echo "=========================="
 echo "Done setting up virtualenv with poetry"
 echo "Activate the venv by running: poetry shell"
