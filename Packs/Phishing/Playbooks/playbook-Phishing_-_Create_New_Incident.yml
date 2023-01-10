@@ -1,7 +1,7 @@
 id: Phishing - Create New Incident
 version: -1
 name: Phishing - Create New Incident
-description: This playbook take arguments which will be used in order to create a new Phishing incident. It is needed for scenarios such as creating several incidents based on values stored in the context. In such scenarios, the playbook can be looped.
+description: This playbook take arguments which will be used to create a new phishing incident. It is needed for scenarios such as creating several incidents based on values stored in the context. In such scenarios, the playbook can be looped.
 starttaskid: "0"
 tasks:
   "0":
@@ -122,17 +122,17 @@ inputs:
 - key: IncidentName
   value: {}
   required: false
-  description: "The value for the Incident Name field"
+  description: The value for the Incident Name field.
   playbookInputQuery:
 - key: ReportedEmailMessageID
   value: {}
   required: false
-  description: "The value for the Reported Email Message ID field"
+  description: The value for the Reported Email Message ID field.
   playbookInputQuery:
 - key: EntryIDs
   value: {}
   required: false
-  description: "The value for the EntryIDs field"
+  description: The value for the EntryIDs field.
   playbookInputQuery:
 outputs:
 - contextPath: CreatedIncidentID
