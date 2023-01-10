@@ -21,8 +21,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1610,
-          "y": -50
+          "x": 1190,
+          "y": -120
         }
       }
     note: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '2':
     id: '2'
-    taskid: 65599e92-12ae-43d5-8515-81af93e2f32c
+    taskid: d3875ca2-8683-4c73-82f5-d6e6baa859bf
     type: condition
     task:
-      id: 65599e92-12ae-43d5-8515-81af93e2f32c
+      id: d3875ca2-8683-4c73-82f5-d6e6baa859bf
       version: -1
       name: Check  DeCYFIR Categories
       type: condition
@@ -45,180 +45,63 @@ tasks:
       brand: ''
       description: Check  DeCYFIR Categories
     nexttasks:
-      AS:
-      - '3'
-      DR-DB_WB:
-      - '16'
-      DR-IMP_INF:
-      - '4'
+      '#default#':
+      - '17'
+      AS | DR-IM_BF | DR-DW:
+      - '22'
+      - '24'
+      - '21'
+      - '20'
+      - '14'
       DR-SO_PE:
       - '6'
     separatecontext: false
     conditions:
-    - label: AS
+    - label: AS | DR-IM_BF | DR-DW
       condition:
       - - operator: isEqualString
           left:
             value:
               complex:
-                root: incident.category
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: incident.category
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Attack Surface
+                root: incident
+                accessor: category
             iscontext: true
           right:
             value:
-              simple: incident.category
-            iscontext: true
-    - label: DR-IMP_INF
-      condition:
-      - - operator: isEqualString
+              simple: Attack Surface
+        - operator: isEqualString
           left:
             value:
-              complex:
-                root: incident.category
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: incident.category
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Impersonation & Infringement
+              simple: incident.category
             iscontext: true
           right:
             value:
-              simple: incident.category
-            iscontext: true
-    - label: DR-DB_WB
-      condition:
-      - - operator: isEqualString
+              simple: Impersonation & Infringement
+        - operator: isEqualString
           left:
             value:
-              complex:
-                root: incident.category
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: incident.category
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Data Breach & Web Monitoring
+              simple: incident.category
             iscontext: true
           right:
             value:
-              simple: incident.category
-            iscontext: true
+              simple: Data Breach & Web Monitoring
     - label: DR-SO_PE
       condition:
       - - operator: isEqualString
           left:
             value:
               complex:
-                root: incident.category
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: incident.category
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Social & Public Exposure
+                root: incident
+                accessor: category
             iscontext: true
           right:
             value:
-              simple: incident.category
-            iscontext: true
+              simple: Social & Public Exposure
     view: |-
       {
         "position": {
-          "x": 1570,
-          "y": 460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
-    taskid: 0ce8f781-1692-492c-8ec6-d33b79d3d4af
-    type: regular
-    task:
-      id: 0ce8f781-1692-492c-8ec6-d33b79d3d4af
-      version: -1
-      name: Extract Indicators from Attack Surface
-      description: Extract all indicators according to server indicators configuration
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '7'
-    scriptarguments:
-      text:
-        simple: ${incident}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1142.5,
-          "y": 645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
-    taskid: 77aac983-1ee7-4d02-8f6f-f23427d533b9
-    type: playbook
-    task:
-      id: 77aac983-1ee7-4d02-8f6f-f23427d533b9
-      version: -1
-      name: Default
-      description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
-      playbookName: Default
-      type: playbook
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '17'
-    scriptarguments:
-      Enrich:
-        simple: 'True'
-      OnCall:
-        simple: 'false'
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2135,
-          "y": 1090
+          "x": 1190,
+          "y": 370
         }
       }
     note: false
@@ -258,109 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2350,
-          "y": 960
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
-    taskid: 1a4a194e-4cc8-405c-849d-10ceb36d225e
-    type: playbook
-    task:
-      id: 1a4a194e-4cc8-405c-849d-10ceb36d225e
-      version: -1
-      name: Entity Enrichment - Generic v3
-      description: Enrich entities using one or more integrations.
-      playbookName: Entity Enrichment - Generic v3
-      type: playbook
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '14'
-      - '20'
-      - '21'
-      - '22'
-      - '24'
-    scriptarguments:
-      CVE:
-        complex:
-          root: CVE
-          accessor: ID
-      Domain:
-        complex:
-          root: Domain
-          accessor: Name
-          transformers:
-          - operator: uniq
-      Email:
-        complex:
-          root: Account
-          accessor: Email.Address
-          transformers:
-          - operator: uniq
-      Hostname:
-        complex:
-          root: Endpoint
-          accessor: Hostname
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          root: IP
-          accessor: Address
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
-      ResolveIP:
-        simple: 'False'
-      SHA1:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-          transformers:
-          - operator: uniq
-      Username:
-        complex:
-          root: Account
-          accessor: Username
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1570,
-          "y": 900
+          "x": 180,
+          "y": 775
         }
       }
     note: false
@@ -393,8 +175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 1340
+          "x": 1770,
+          "y": 1055
         }
       }
     note: false
@@ -427,8 +209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 1330
+          "x": 1490,
+          "y": 1200
         }
       }
     note: false
@@ -461,8 +243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 1320
+          "x": 410,
+          "y": 1130
         }
       }
     note: false
@@ -496,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 1090
+          "x": 1980,
+          "y": 580
         }
       }
     note: false
@@ -530,42 +312,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 1545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
-    taskid: 74502606-5abb-4c76-8a3c-530894d3b0f1
-    type: regular
-    task:
-      id: 74502606-5abb-4c76-8a3c-530894d3b0f1
-      version: -1
-      name: Extract Indicators From Data Breach & Web Monitoring (DR)
-      description: Extract all indicators according to server indicators configuration
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '7'
-    scriptarguments:
-      text:
-        simple: ${incident}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1570,
-          "y": 720
+          "x": 1770,
+          "y": 1380
         }
       }
     note: false
@@ -586,13 +334,13 @@ tasks:
       type: title
       iscommand: false
       brand: ''
-      description: Task Completed.
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1570,
-          "y": 1790
+          "x": 1150,
+          "y": 1560
         }
       }
     note: false
@@ -604,10 +352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '18':
     id: '18'
-    taskid: e850ec86-253b-4179-8918-2560b268a516
+    taskid: f618dda6-79d1-4f54-82d5-fb6aa23d508a
     type: condition
     task:
-      id: e850ec86-253b-4179-8918-2560b268a516
+      id: f618dda6-79d1-4f54-82d5-fb6aa23d508a
       version: -1
       name: Check severity Critical & High
       type: condition
@@ -627,34 +375,25 @@ tasks:
           left:
             value:
               complex:
-                root: incident.severity
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: incident.severity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: '4'
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: incident.severity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: '3'
+                root: incident
+                accessor: severity
             iscontext: true
           right:
             value:
+              simple: '4'
+        - operator: isEqualString
+          left:
+            value:
               simple: incident.severity
             iscontext: true
+          right:
+            value:
+              simple: '3'
     view: |-
       {
         "position": {
-          "x": 1610,
-          "y": 85
+          "x": 1190,
+          "y": 30
         }
       }
     note: false
@@ -699,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 280
+          "x": 1440,
+          "y": 200
         }
       }
     note: false
@@ -739,8 +478,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 477.5,
-          "y": 1090
+          "x": 1770,
+          "y": 730
         }
       }
     note: false
@@ -779,8 +518,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 917.5,
-          "y": 1090
+          "x": 1400,
+          "y": 840
         }
       }
     note: false
@@ -819,8 +558,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 1090
+          "x": 540,
+          "y": 910
         }
       }
     note: false
@@ -853,8 +592,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
-          "y": 1320
+          "x": 880,
+          "y": 1150
         }
       }
     note: false
@@ -893,8 +632,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 1090
+          "x": 940,
+          "y": 910
         }
       }
     note: false
@@ -911,30 +650,27 @@ view: |-
       "18_2_#default#": 0.56,
       "20_17_#default#": 0.1,
       "20_9_yes": 0.57,
-      "21_11_yes": 0.7,
+      "21_11_yes": 0.32,
       "21_17_#default#": 0.11,
-      "22_13_yes": 0.59,
-      "22_17_#default#": 0.15,
-      "24_17_#default#": 0.11,
+      "22_13_yes": 0.62,
+      "22_17_#default#": 0.1,
+      "24_17_#default#": 0.1,
       "24_23_yes": 0.51,
-      "2_16_DR-DB_WB": 0.61,
-      "2_3_AS": 0.52,
-      "2_4_DR-IMP_INF": 0.82,
-      "2_6_DR-SO_PE": 0.9
+      "2_21_AS | DR-IM_BF | DR-DW": 0.9,
+      "2_24_AS | DR-IM_BF | DR-DW": 0.9
     },
     "paper": {
       "dimensions": {
-        "height": 1905,
-        "width": 2700,
-        "x": 30,
-        "y": -50
+        "height": 1745,
+        "width": 2180,
+        "x": 180,
+        "y": -120
       }
     }
   }
 inputs: []
 outputs: []
-quiet: true
-tests:
-- No tests (auto formatted)
 fromversion: 6.2.0
 description: DeCYFIR API's provides External Threat Landscape Management insights.
+tests:
+- No tests (auto formatted)
