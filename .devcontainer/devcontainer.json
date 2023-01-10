@@ -73,8 +73,19 @@
 				"ms-python.black-formatter",
 				"LittleFoxTeam.vscode-python-test-adapter"
 			]
-	}
+		},
+		"codespaces": {
+			"repositories": {
+				"demisto/demisto_sdk":{
+					"permissions": {
+						"contents": "write",
+						"pull_requests": "write"
+					}
+				}
+			}
+		}
 },
+
 // this is commented out until VSCode will fix self signed certificate issues
 // "features": {
 // 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
