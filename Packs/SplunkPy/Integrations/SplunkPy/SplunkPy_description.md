@@ -14,7 +14,7 @@ There are two main use cases for the SplunkPy integration. Refer to the followin
 
 ## Fetching notable events
 The integration allows for fetching Splunk notable events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
-Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/splunk-use-case.html) before starting to use this integration.
+Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) before starting to use this integration.
 This article will help you configure your Splunk integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR.
 
 ### How to configure
