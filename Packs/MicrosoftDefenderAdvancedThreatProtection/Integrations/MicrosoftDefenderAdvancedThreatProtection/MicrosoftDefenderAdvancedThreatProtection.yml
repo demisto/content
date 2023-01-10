@@ -21,55 +21,62 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+- display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
-  required: false
   type: 14
-- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
-  display: Authentication Type
+  required: false
+  hidden: true
+- display: Authentication Type
   name: auth_type
+  type: 15
+  additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
   defaultvalue: Client Credentials
   options:
   - Authorization Code
   - Client Credentials
-  type: 15
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code
-  displaypassword: Authorization code
+- name: auth_code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions section
-  hiddenusername: true
-  name: auth_code
+  display: Authorization code
   required: false
   type: 9
-- name: Reliability
-  additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
-  options:
-    - A+ - 3rd party enrichment
-    - A - Completely reliable
-    - B - Usually reliable
-    - C - Fairly reliable
-    - D - Not usually reliable
-    - E - Unreliable
-    - F - Reliability cannot be judged
+  displaypassword: Authorization code
+  hiddenusername: true
+- display: Source Reliability
+  name: Reliability
+  defaultvalue: 'B - Usually reliable'
   required: false
   type: 15
+  additionalinfo: Reliability of the source providing the intelligence data.
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: 'true'
   required: false
   type: 8
-- display: Incident type
+  defaultvalue: 'true'
+- display: 'Incident type'
   name: incidentType
   required: false
   type: 13
@@ -82,21 +89,21 @@ configuration:
   - Resolved
   required: false
   type: 16
-- defaultvalue: Informational,Low,Medium,High
+- defaultvalue: 'Informational,Low,Medium,High'
   display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
+  required: false
+  type: 16
   options:
   - Informational
   - Low
   - Medium
   - High
-  required: false
-  type: 16
-- defaultvalue: '50'
-  display: Maximum number of incidents to fetch
+- display: Maximum number of incidents to fetch
   name: max_fetch
   required: false
   type: 0
+  defaultvalue: '50'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -113,16 +120,16 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-- defaultvalue: 3 days
+- defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch_timestamp
   required: false
   type: 0
-- defaultvalue: 'false'
-  display: Using Microsoft GCC?
+- display: Using Microsoft GCC?
   name: is_gcc
   required: false
   type: 8
+  defaultvalue: 'false'
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
@@ -4724,13 +4731,13 @@ script:
       secret: false
     - default: false
       defaultValue: '25'
-      description: Maximum number of results to retrieve. 
+      description: Maximum number of results to retrieve.
       isArray: false
       name: limit
       secret: false
     - default: false
       defaultValue: '0'
-      description: The number of items in the queried collection that are to be skipped and not included in the result. 
+      description: The number of items in the queried collection that are to be skipped and not included in the result.
       isArray: false
       name: offset
       secret: false
@@ -4804,13 +4811,13 @@ script:
       default: false
       secret: false
     - default: false
-      description: Maximum number of results to retrieve. 
+      description: Maximum number of results to retrieve.
       isArray: false
       name: limit
       defaultValue: '25'
       secret: false
     - default: false
-      description: The number of items in the queried collection that are to be skipped and not included in the result. 
+      description: The number of items in the queried collection that are to be skipped and not included in the result.
       isArray: false
       defaultValue: '0'
       name: offset
