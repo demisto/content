@@ -1,12 +1,6 @@
-import uuid
-
-from requests import Response
-
-import demistomock as demisto
 from CommonServerPython import *
-import json
 import urllib3
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Dict, Tuple, List, Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -30,7 +24,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify, headers, proxy, fetch_limit=1000):
+    def __init__(self, base_url, verify=True, headers=None, proxy=False, fetch_limit=1000):
         super().__init__(
             base_url=base_url,
             verify=verify,
@@ -39,7 +33,7 @@ class Client(BaseClient):
         )
         self.limit = fetch_limit
 
-    def get_activities(self, from_time: datetime) -> List:
+    def get_activities(self, from_time: datetime | str) -> List:
         """
         Returns SentinelOne activities using the '/activities' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -59,7 +53,7 @@ class Client(BaseClient):
         result = self._http_request('GET', url_suffix='/activities', params=params)
         return result.get('data', [])
 
-    def get_threats(self, from_time: datetime) -> List:
+    def get_threats(self, from_time: datetime | str) -> List:
         """
         Returns SentinelOne threats using the '/threats' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -79,7 +73,7 @@ class Client(BaseClient):
         result = self._http_request('GET', url_suffix='/threats', params=params)
         return result.get('data', [])
 
-    def get_alerts(self, from_time: datetime) -> List:
+    def get_alerts(self, from_time: datetime | str) -> List:
         """
         Returns SentinelOne alerts using the '/cloud-detection/alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -103,7 +97,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_events(client: Client, event_type: Optional[List], from_time: datetime = arg_to_datetime('3 days')) -> List:
+def get_events(client: Client, from_time: datetime = arg_to_datetime('3 days'), event_type: List = None) -> List:  # type: ignore
     if not event_type:
         event_type = ['ACTIVITIES', 'THREATS', 'ALERTS']
 
@@ -118,7 +112,7 @@ def get_events(client: Client, event_type: Optional[List], from_time: datetime =
     return events
 
 
-def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:
+def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:  # type: ignore
     return {
         'last_activity_created': from_time,
         'last_threat_created': from_time,
@@ -129,7 +123,7 @@ def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, event_type: Optional[List]) -> str:
+def test_module(client: Client, event_type: List) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -160,7 +154,7 @@ def get_events_command(client: Client, first_fetch_time: datetime, event_type: L
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type: Optional[list]) -> Tuple[Dict, List]:
+def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type: list = None) -> Tuple[Dict, List]:
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -171,19 +165,21 @@ def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    events = []
+    if not event_type:
+        event_type = ['ACTIVITIES', 'THREATS', 'ALERTS']
 
     demisto.info(f'Fetched event of type: {event_type} from time {last_run}.')
+    events = []
     if 'ACTIVITIES' in event_type:
-        if activities := client.get_activities(last_run.get('last_activity_created')):
+        if activities := client.get_activities(last_run['last_activity_created']):
             events.extend(activities)
             last_run['last_activity_created'] = activities[-1].get('createdAt')
     if 'THREATS' in event_type:
-        if threats := client.get_threats(last_run.get('last_threat_created')):
+        if threats := client.get_threats(last_run['last_threat_created']):
             events.extend(threats)
             last_run['last_threat_created'] = threats[-1].get('threatInfo', {}).get('createdAt')
     if 'ALERTS' in event_type:
-        if alerts := client.get_alerts(last_run.get('last_alert_created')):
+        if alerts := client.get_alerts(last_run['last_alert_created']):
             events.extend(alerts)
             last_run['last_alert_created'] = alerts[-1].get('alertInfo', {}).get('createdAt')
 
@@ -213,7 +209,6 @@ def main() -> None:
         required=True
     )
     fetch_limit = arg_to_number(args.get('limit') or params.get('fetch_limit', 1000))
-    assert 0 < fetch_limit < 1001  # Verify fetch_limit is within range 1 - 1000.
     proxy = params.get('proxy', False)
     event_type = [event_type.strip() for event_type in params.get('event_type', ['ACTIVITIES', 'THREATS', 'ALERTS'])]
 
@@ -227,7 +222,7 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy,
-            fetch_limit=params.get('fetch_limit')
+            fetch_limit=fetch_limit
         )
 
         if command == 'test-module':
@@ -237,12 +232,12 @@ def main() -> None:
         elif command in (f'{VENDOR}-{PRODUCT}-get-events', 'fetch-events'):
             should_push_events = argToBoolean(args.get('should_push_events', False))
             if command == f'{VENDOR}-{PRODUCT}-get-events':
-                events, results = get_events_command(client, first_fetch_time, event_type)
+                events, results = get_events_command(client, first_fetch_time, event_type)  # type: ignore
                 return_results(results)
 
             if command == 'fetch-events':
                 should_push_events = True
-                last_run = demisto.getLastRun() or first_run(first_fetch_time)
+                last_run = demisto.getLastRun() or first_run(first_fetch_time)  # type: ignore
                 next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
                 demisto.setLastRun(next_run)
 
