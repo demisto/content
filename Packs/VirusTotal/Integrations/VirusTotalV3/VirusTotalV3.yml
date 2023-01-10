@@ -954,6 +954,7 @@ script:
       - url
       - domain
       - file
+      - hash
     - name: limit
       description: Maximum comments to fetch.
       defaultValue: 10
@@ -1416,7 +1417,7 @@ script:
       type: String
 
   runonce: false
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.9.40422
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test

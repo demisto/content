@@ -16,7 +16,7 @@ import urllib3
 from typing import Any, Dict
 
 # Disable insecure warnings
-urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 '''GLOBALS'''
 

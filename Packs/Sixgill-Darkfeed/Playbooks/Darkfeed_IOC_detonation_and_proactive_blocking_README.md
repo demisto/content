@@ -23,9 +23,9 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | File hash \(MD5, SHA\-1, SHA\-256\) from Darkfeed | File.None | Optional |
+| File | File hash \(MD5, SHA\-1, SHA\-256\) from Darkfeed | File | Optional |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
-| URL | URL from Darkfeed\_010 \- Malware available for download from the deep and dark web | URL.None | Optional |
+| URL | URL from Darkfeed\_010 \- Malware available for download from the deep and dark web | URL | Optional |
 | Manual download | Set "true" if analyst can manually download malware from deep and dark web filesharing site. | true | Optional |
 | VTdownload | Set "true" if you would like to automatically download file from Virustotal API. | true | Optional |
 | AutomatedIndicatorBlocking | Set "true" if you would like to automatically block discovered malicious indicators. | true | Optional |

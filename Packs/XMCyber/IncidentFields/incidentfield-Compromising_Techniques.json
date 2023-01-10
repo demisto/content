@@ -2,7 +2,7 @@
     "id": "incident_compromisingtechniques",
     "version": -1,
     "fromVersion": "6.0.0",
-    "modified": "2020-10-20T20:55:42.645738146Z",
+    "modified": "2022-09-11T07:46:25.873479234Z",
     "name": "Compromising Techniques",
     "ownerOnly": false,
     "description": "Name of each attack technique that has compromised the entity and the count such attack vectors from the time period",
@@ -30,7 +30,7 @@
     "columns": [
         {
             "key": "name",
-            "displayName": "Name",
+            "displayName": "Technique",
             "type": "shortText",
             "required": false,
             "script": "",

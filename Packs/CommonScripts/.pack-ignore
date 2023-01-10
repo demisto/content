@@ -73,6 +73,9 @@ ignore=BA119
 [file:HideFieldsOnNewIncident.yml]
 ignore=SC105
 
+[file:1_10_42.md]
+ignore=RN114
+
 [known_words]
 UnzipFile
 ZipStrings
@@ -94,3 +97,9 @@ MicrosoftGraphUser
 SailPointIdentityIQ
 ActiveDirectoryQuery
 GenericPolling
+VirusTotal
+keysToKeep
+BetweenDates
+FiltersAndTransformers
+ConvertAllExcept
+BetweenHours

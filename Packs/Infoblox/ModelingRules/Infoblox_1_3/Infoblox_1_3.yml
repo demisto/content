@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: infoblox_modeling_rules
+name: Infoblox Modeling Rules
+rules: ''
+schema: ''
+tags: Infoblox

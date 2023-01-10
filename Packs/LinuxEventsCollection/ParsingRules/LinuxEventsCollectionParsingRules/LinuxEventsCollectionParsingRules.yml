@@ -1,0 +1,6 @@
+name: LinuxEventsCollection Parsing Rule
+id: LinuxEventsCollection_Parsing_Rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

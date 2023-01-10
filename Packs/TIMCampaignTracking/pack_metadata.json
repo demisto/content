@@ -7,9 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-04-21T22:16:05Z",
-    "categories": [],
-    "tags": [],
-    "useCases": [],
+    "categories": ["Data Enrichment & Threat Intelligence"],
+    "tags": ["Use Case"],
+    "useCases": ["Threat Intelligence Management"],
     "keywords": [],
     "githubUser": [
         "nericksen"

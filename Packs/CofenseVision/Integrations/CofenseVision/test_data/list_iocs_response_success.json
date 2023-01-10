@@ -1,0 +1,126 @@
+{
+    "rawResponse": {
+        "data": [
+            {
+                "id": "test_id_1",
+                "type": "ioc",
+                "attributes": {
+                    "threat_type": "SUBJECT",
+                    "threat_value": "test_ioc_1"
+                },
+                "metadata": {
+                    "source": {
+                        "threat_level": "Malicious",
+                        "id": " ",
+                        "created_at": "2022-07-12T19:37:39.801+00:00",
+                        "updated_at": "2022-07-12T19:37:39.801+00:00",
+                        "requested_expiration": "2022-07-27T03:59:59.999+00:00"
+                    },
+                    "quarantine": {
+                        "source_names": [
+                            "test-source-1"
+                        ],
+                        "expires_at": "2022-07-27T03:59:59.999+00:00",
+                        "created_at": "2022-07-12T19:37:40.094+00:00",
+                        "first_quarantined_at": "2022-07-12T19:37:43.268+00:00",
+                        "last_quarantined_at": "2022-07-12T19:37:43.268+00:00",
+                        "match_count": 1,
+                        "quarantine_count": 10,
+                        "expired": true,
+                        "wildcard": false
+                    }
+                }
+            },
+            {
+                "id": "test_id_2",
+                "type": "ioc",
+                "attributes": {
+                    "threat_type": "SUBJECT",
+                    "threat_value": "test_ioc_2"
+                },
+                "metadata": {
+                    "source": {
+                        "threat_level": "Malicious",
+                        "id": " ",
+                        "created_at": "2022-07-15T05:29:36.503+00:00",
+                        "updated_at": "2022-07-15T05:29:36.503+00:00",
+                        "requested_expiration": "2022-07-29T18:29:59.999+00:00"
+                    },
+                    "quarantine": {
+                        "source_names": [
+                            "test-source-1"
+                        ],
+                        "expires_at": "2022-07-29T18:29:59.999+00:00",
+                        "created_at": "2022-07-15T05:29:38.202+00:00",
+                        "first_quarantined_at": null,
+                        "last_quarantined_at": null,
+                        "match_count": 0,
+                        "quarantine_count": 0,
+                        "expired": false,
+                        "wildcard": false
+                    }
+                }
+            }
+        ]
+    },
+    "outputs": [
+        {
+            "id": "test_id_1",
+            "type": "ioc",
+            "attributes": {
+                "threat_type": "SUBJECT",
+                "threat_value": "test_ioc_1"
+            },
+            "metadata": {
+                "source": {
+                    "threat_level": "Malicious",
+                    "id": " ",
+                    "created_at": "2022-07-12T19:37:39.801+00:00",
+                    "updated_at": "2022-07-12T19:37:39.801+00:00",
+                    "requested_expiration": "2022-07-27T03:59:59.999+00:00"
+                },
+                "quarantine": {
+                    "source_names": [
+                        "test-source-1"
+                    ],
+                    "expires_at": "2022-07-27T03:59:59.999+00:00",
+                    "created_at": "2022-07-12T19:37:40.094+00:00",
+                    "first_quarantined_at": "2022-07-12T19:37:43.268+00:00",
+                    "last_quarantined_at": "2022-07-12T19:37:43.268+00:00",
+                    "match_count": 1,
+                    "quarantine_count": 10,
+                    "expired": true,
+                    "wildcard": false
+                }
+            }
+        },
+        {
+            "id": "test_id_2",
+            "type": "ioc",
+            "attributes": {
+                "threat_type": "SUBJECT",
+                "threat_value": "test_ioc_2"
+            },
+            "metadata": {
+                "source": {
+                    "threat_level": "Malicious",
+                    "id": " ",
+                    "created_at": "2022-07-15T05:29:36.503+00:00",
+                    "updated_at": "2022-07-15T05:29:36.503+00:00",
+                    "requested_expiration": "2022-07-29T18:29:59.999+00:00"
+                },
+                "quarantine": {
+                    "source_names": [
+                        "test-source-1"
+                    ],
+                    "expires_at": "2022-07-29T18:29:59.999+00:00",
+                    "created_at": "2022-07-15T05:29:38.202+00:00",
+                    "match_count": 0,
+                    "quarantine_count": 0,
+                    "expired": false,
+                    "wildcard": false
+                }
+            }
+        }
+    ]
+}

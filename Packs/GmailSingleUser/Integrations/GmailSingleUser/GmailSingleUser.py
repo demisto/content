@@ -36,9 +36,13 @@ PROXIES = handle_proxy()
 DISABLE_SSL = params.get('insecure', False)
 FETCH_TIME = params.get('fetch_time', '1 days')
 MAX_FETCH = int(params.get('fetch_limit') or 50)
-AUTH_CODE = params.get('code')
+AUTH_CODE = params.get('auth_code_creds', {}).get('password') or params.get('code')
+AUTH_CODE_UNQUOTE_PREFIX = 'code='
 
-CLIENT_ID = params.get('client_id') or "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"
+OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
+CLIENT_ID = params.get('credentials', {}).get('identifier') or params.get('client_id') or OOB_CLIENT_ID
+CLIENT_SECRET = params.get('credentials', {}).get('password') or params.get('client_secret')
+REDIRECT_URI = params.get('redirect_uri')
 TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
 TOKEN_FORM_HEADERS = {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -150,17 +154,26 @@ class Client:
             demisto.debug("Using refresh token set as auth_code")
             return AUTH_CODE[len(refresh_prefix):]
         demisto.info(f"Going to obtain refresh token from google's oauth service. For client id: {CLIENT_ID}")
-        verifier = integration_context.get('verifier')
-        if not verifier:
-            raise ValueError("Missing verifier. Make sure to follow the auth flow. Start by running !gmail-auth-link.")
-        h = self.get_http_client_with_proxy()
+        code = AUTH_CODE
+        if AUTH_CODE.lower().startswith(AUTH_CODE_UNQUOTE_PREFIX):
+            code = urllib.parse.unquote(AUTH_CODE[len(AUTH_CODE_UNQUOTE_PREFIX):])
         body = {
             'client_id': CLIENT_ID,
-            'code_verifier': verifier,
             'grant_type': 'authorization_code',
-            'code': AUTH_CODE,
-            'redirect_uri': 'urn:ietf:wg:oauth:2.0:oob',  # disable-secrets-detection
+            'code': code,
         }
+        if not CLIENT_SECRET:
+            # old OOB authentication
+            verifier = integration_context.get('verifier')
+            if not verifier:
+                raise ValueError("Missing verifier. Make sure to follow the auth flow. Start by running !gmail-auth-link.")
+            body['code_verifier'] = verifier
+            body['redirect_uri'] = 'urn:ietf:wg:oauth:2.0:oob'
+        else:
+            body['redirect_uri'] = REDIRECT_URI
+            body['client_secret'] = CLIENT_SECRET
+
+        h = self.get_http_client_with_proxy()
         resp, content = h.request(TOKEN_URL, "POST", urllib.parse.urlencode(body), TOKEN_FORM_HEADERS)
         if resp.status not in {200, 201}:
             raise ValueError(f'Error obtaining refresh token. Make sure to follow auth flow. '
@@ -176,13 +189,17 @@ class Client:
         valid_until = integration_context.get('valid_until')
         if access_token and valid_until and integration_context.get('code') == AUTH_CODE:
             if self.epoch_seconds() < valid_until:
+                demisto.debug('Using access token from integration context')
                 return access_token
         refresh_token = self.get_refresh_token(integration_context)
+        demisto.debug(f"Going to obtain access token for client id: {CLIENT_ID}")
         body = {
             'refresh_token': refresh_token,
             'client_id': CLIENT_ID,
             'grant_type': 'refresh_token',
         }
+        if CLIENT_SECRET:
+            body['client_secret'] = CLIENT_SECRET
         h = self.get_http_client_with_proxy()
         resp, content = h.request(TOKEN_URL, "POST", urllib.parse.urlencode(body), TOKEN_FORM_HEADERS)
 
@@ -210,6 +227,7 @@ class Client:
         integration_context['refresh_token'] = refresh_token
         integration_context['code'] = AUTH_CODE
         demisto.setIntegrationContext(integration_context)
+        demisto.debug(f"Done obtaining access token for client id: {CLIENT_ID}. Expires in: {expires_in}")
         return access_token
 
     def parse_mail_parts(self, parts):
@@ -687,9 +705,9 @@ class Client:
                 'maintype': maintype,
                 'subtype': subtype,
                 'data': base64.b64decode(m.group(3)),
-                'name': 'image%d.%s' % (i, subtype)
+                'name': f'image{i}.{subtype}'
             }
-            att['cid'] = '%s@%s.%s' % (att['name'], self.randomword(8), self.randomword(8))
+            att['cid'] = f"{att['name']}@{self.randomword(8)}.{self.randomword(8)}"  # type: ignore[str-bytes-safe]
             attachments.append(att)
             cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
             lastIndex = m.end() - 1
@@ -942,21 +960,44 @@ class Client:
         """
         return self.get_service('gmail', 'v1').users().messages().send(userId=email_from, body=body).execute()
 
-    def generate_auth_link(self) -> Tuple[str, str]:
+    def generate_auth_link(self):
         """Generate an auth2 link.
 
         Returns:
-            Tuple[str, str] -- Return the link and the challenge used for generating the link.
+            str -- Return the link
         """
-        verifier = secrets.token_hex(64)
-        sha = hashlib.sha256()
-        sha.update(bytes(verifier, 'us-ascii'))
-        challenge = str(base64.urlsafe_b64encode(sha.digest()), 'us-ascii').rstrip('=')
-        link = f"https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/gmail.compose%20https://www.googleapis.com/auth/gmail.send%20https://www.googleapis.com/auth/gmail.readonly&response_type=code&redirect_uri=urn:ietf:wg:oauth:2.0:oob&client_id={CLIENT_ID}&code_challenge={challenge}&code_challenge_method=S256"  # noqa: E501
-        integration_context = demisto.getIntegrationContext() or {}
-        integration_context['verifier'] = verifier
-        demisto.setIntegrationContext(integration_context)
-        return link, challenge
+        url_params = {
+            "scope": "https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly",  # noqa: E501
+            "client_id": CLIENT_ID,
+            "response_type": "code",
+        }
+        if EMAIL:
+            url_params['login_hint'] = EMAIL
+        if not CLIENT_SECRET:
+            # old OOB authentication
+            verifier = secrets.token_hex(64)
+            sha = hashlib.sha256()
+            sha.update(bytes(verifier, 'us-ascii'))
+            challenge = str(base64.urlsafe_b64encode(sha.digest()), 'us-ascii').rstrip('=')
+            url_params['redirect_uri'] = 'urn:ietf:wg:oauth:2.0:oob'
+            url_params['code_challenge'] = challenge
+            url_params['code_challenge_method'] = 'S256'
+            integration_context = demisto.getIntegrationContext() or {}
+            integration_context['verifier'] = verifier
+            demisto.setIntegrationContext(integration_context)
+        else:
+            if not REDIRECT_URI.lower().startswith('http'):
+                raise DemistoException(f'Invalid redirect URI: "{REDIRECT_URI}". The URI should start with "http".')
+            if CLIENT_ID == OOB_CLIENT_ID:
+                raise DemistoException('Client ID is not set. '
+                                       'Make sure to set the Client ID param of the integration configuration.')
+            url_params['redirect_uri'] = REDIRECT_URI
+            url_params['access_type'] = 'offline'
+            url_params['prompt'] = 'consent'
+
+        params = urllib.parse.urlencode(url_params)
+        link = f"https://accounts.google.com/o/oauth2/v2/auth?{params}"  # noqa: E501
+        return link
 
 
 def test_module(client):
@@ -1114,7 +1155,7 @@ def fetch_incidents(client: Client):
 
 
 def auth_link_command(client: Client):
-    link, challange = client.generate_auth_link()
+    link = client.generate_auth_link()
     markdown = f"""
 ## Gmail Auth Link
 Please follow the following **[link]({link})**.

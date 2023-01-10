@@ -9,17 +9,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Alerts",
-        "Dark Web",
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Identity and Access Management",
-        "Impossible Traveler",
-        "Threat Intelligence Management",
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "qintel",
         "enrichment",

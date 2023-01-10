@@ -1,0 +1,88 @@
+{
+    "meta": {
+      "totalCount": -1
+    },
+    "data": {
+      "type": "mail_incoming_traffic_summary",
+      "resultSet": [
+        {
+          "failed_dkim": 0
+        },
+        {
+          "total_graymail_recipients": 3
+        },
+        {
+          "detected_spam": 17
+        },
+        {
+          "malicious_url": 1
+        },
+        {
+          "total_spoofed_emails": 0
+        },
+        {
+          "verif_decrypt_success": 0
+        },
+        {
+          "detected_virus": 0
+        },
+        {
+          "threat_content_filter": 0
+        },
+        {
+          "blocked_invalid_recipient": 1
+        },
+        {
+          "blocked_sdr": 0
+        },
+        {
+          "marketing_mail": 0
+        },
+        {
+          "ims_spam_increment_over_case": 0
+        },
+        {
+          "total_mailbox_auto_remediated_recipients": 0
+        },
+        {
+          "detected_spam_certain": 17
+        },
+        {
+          "detected_spam_suspect": 0
+        },
+        {
+          "blocked_dmarc": 0
+        },
+        {
+          "total_threat_recipients": 132
+        },
+        {
+          "total_recipients": 208
+        },
+        {
+          "verif_decrypt_fail": 0
+        },
+        {
+          "detected_amp": 0
+        },
+        {
+          "bulk_mail": 3
+        },
+        {
+          "social_mail": 0
+        },
+        {
+          "total_clean_recipients": 73
+        },
+        {
+          "detected_virus_per_msg": 0
+        },
+        {
+          "failed_spf": 0
+        },
+        {
+          "blocked_reputation": 113
+        }
+      ]
+    }
+  }

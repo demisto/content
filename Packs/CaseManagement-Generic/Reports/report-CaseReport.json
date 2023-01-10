@@ -301,7 +301,6 @@
             "data": null,
             "layout": {
                 "columnPos": 0,
-                "format": "MMMM Do YYYY, h:mm:ss a z",
                 "h": 1,
                 "i": "581de1ac-d26e-4e28-992b-8bc6dbee4fea",
                 "rowPos": 3,
@@ -310,7 +309,9 @@
                     "marginBottom": 12,
                     "textAlign": "left"
                 },
-                "w": 12
+                "w": 12,
+                "format": "MMMM Do YYYY, h:mm:ss a z",
+                "useCurrentTime": true
             },
             "query": {},
             "titleStyle": null,

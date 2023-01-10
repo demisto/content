@@ -164,31 +164,53 @@ def test_search_for_ioc(mocker_results, mocker):
     import IntSight
 
     mock_response = {
-        "Value": value,
-        "Type": "Domains",
-        "Severity": {
-            "Value": "High"
-        },
-        "Whitelist": "false",
-        "FirstSeen": "2020-01-01T20:01:27.344Z",
-        "LastSeen": "2020-01-30T16:18:51.148Z",
-        "LastUpdate": "2020-02-21T23:00:51.268Z",
-        "Sources": [
+        "firstSeen": "2018-07-20T01:00:49.000Z",
+        "geolocation": "AU",
+        "lastSeen": "2022-07-14T20:03:08.256Z",
+        "lastUpdateDate": "2022-10-31T16:02:41.781Z",
+        "relatedCampaigns": [],
+        "relatedMalware": [
+            "agent",
+            "arkei",
+            "zegost"
+        ],
+        "relatedThreatActors": [],
+        "reportedFeeds": [
             {
-                "Name": "AlienVault OTX",
-                "ConfidenceLevel": 3
+                "confidenceLevel": 3,
+                "id": "123123123",
+                "name": "Cyber"
+            },
+            {
+                "confidenceLevel": 3,
+                "id": "123123",
+                "name": "Cyber1"
+            },
+            {
+                "confidenceLevel": 2,
+                "id": "123123123123123",
+                "name": "Cyber111"
+            },
+            {
+                "confidenceLevel": 3,
+                "id": "123123123123",
+                "name": "Cyber11"
             }
         ],
-        "Tags": [
-            "MyTag_1"
+        "score": 80,
+        "severity": "High",
+        "status": "Retired",
+        "tags": [
+            "njrat",
+            "Installation"
         ],
-        "SystemTags": [
-            "Phishing"
-        ]
+        "type": "IpAddresses",
+        "value": "test_value",
+        "whitelisted": True
     }
     mocker.patch('IntSight.http_request', return_value=mock_response)
     IntSight.search_for_ioc()
-    assert (value == mocker_results.call_args[0][0]['Contents']['Value'])
+    assert (value == mocker_results.call_args[0][0]['Contents']['value'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
@@ -451,32 +473,54 @@ def test_get_iocs(mocker_results, mocker):
     import IntSight
 
     mock_response = {
-        "Value": value,
-        "Type": "Domains",
-        "Severity": {
-            "Value": "High"
-        },
-        "Whitelist": "false",
-        "FirstSeen": "2020-01-01T20:01:27.344Z",
-        "LastSeen": "2020-01-30T16:18:51.148Z",
-        "LastUpdate": "2020-02-21T23:00:51.268Z",
-        "Sources": [
+        "firstSeen": "2018-07-20T01:00:49.000Z",
+        "geolocation": "AU",
+        "lastSeen": "2022-07-14T20:03:08.256Z",
+        "lastUpdateDate": "2022-10-31T16:02:41.781Z",
+        "relatedCampaigns": [],
+        "relatedMalware": [
+            "agent",
+            "arkei",
+            "zegost"
+        ],
+        "relatedThreatActors": [],
+        "reportedFeeds": [
             {
-                "Name": "AlienVault OTX",
-                "ConfidenceLevel": 3
+                "confidenceLevel": 3,
+                "id": "123123123",
+                "name": "Cyber"
+            },
+            {
+                "confidenceLevel": 3,
+                "id": "123123",
+                "name": "Cyber1"
+            },
+            {
+                "confidenceLevel": 2,
+                "id": "123123123123123",
+                "name": "Cyber111"
+            },
+            {
+                "confidenceLevel": 3,
+                "id": "123123123123",
+                "name": "Cyber11"
             }
         ],
-        "Tags": [
-            "MyTag_1"
+        "score": 80,
+        "severity": "High",
+        "status": "Retired",
+        "tags": [
+            "njrat",
+            "Installation"
         ],
-        "SystemTags": [
-            "Phishing"
-        ]
+        "type": "IpAddresses",
+        "value": value,
+        "whitelisted": True
     }
 
     mocker.patch('IntSight.http_request', return_value=mock_response)
     IntSight.search_for_ioc()
-    assert (value == mocker_results.call_args[0][0]['Contents']['Value'])
+    assert (value == mocker_results.call_args[0][0]['Contents']['value'])
 
 
 @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')

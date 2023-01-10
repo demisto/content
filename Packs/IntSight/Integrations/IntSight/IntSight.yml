@@ -1,6 +1,9 @@
 commonfields:
   id: IntSights
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: IntSights
 display: IntSights
 category: Data Enrichment & Threat Intelligence
@@ -11,59 +14,73 @@ configuration:
   defaultvalue: https://api.intsights.com/
   type: 0
   required: true
+  section: Connect
 - display: Credentials
   name: credentials
   type: 9
   required: true
-- display: 'Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage",
-    "Phishing", "BrandSecurity", "ExploitableData", "VIP"'
+  section: Connect
+- display: 'Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP"'
   name: type
   type: 0
   required: false
-- display: 'Minimum Alert severity level to fetch incidents incidents from, allowed
-    values are: ''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all
-    incidents)'
+  section: Collect
+  advanced: true
+- display: 'Minimum Alert severity level to fetch incidents incidents from, allowed values are: ''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)'
   name: severity_level
   defaultvalue: All
   type: 0
   required: false
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Last date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
   name: fetch_delta
   defaultvalue: 1 day
   type: 0
   required: false
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   defaultvalue: 7 days
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Max fetch
   defaultvalue: '50'
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Sub Account ID (MSSP accounts only)
   name: mssp_sub_account_id
   type: 0
   required: false
+  section: Connect
+  advanced: true
 script:
   script: ''
   type: python
@@ -330,9 +347,6 @@ script:
       default: true
       description: The IOC value for which to search.
     outputs:
-    - contextPath: IntSights.Iocs.ID
-      description: The ID of the IOC.
-      type: string
     - contextPath: IntSights.Iocs.Value
       description: The value of the IOC.
       type: string
@@ -345,36 +359,36 @@ script:
     - contextPath: IntSights.Iocs.LastSeen
       description: The date the IOC was last seen.
       type: date
+    - contextPath: IntSights.Iocs.LastUpdatedDate
+      description: The date the IOC was last updated.
+      type: date
     - contextPath: IntSights.Iocs.SourceID
-      description: The ID source of the IOC.
+      description: The source ID of the IOC.
       type: string
     - contextPath: IntSights.Iocs.SourceName
       description: The source name of the IOC.
       type: string
     - contextPath: IntSights.Iocs.SourceConfidenceLevel
-      description: The source confidence level of the IOC.
+      description: The confidence level of the IOC source.
       type: string
     - contextPath: IntSights.Iocs.Severity
       description: The severity of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.AccountID
-      description: The account ID of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Domain
-      description: The domain of the IOC.
-      type: string
     - contextPath: IntSights.Iocs.Status
       description: The status of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.Flags.IsInAlexa
-      description: Whether or not the IOC is in Alexa.
-      type: boolean
-    - contextPath: IntSights.Iocs.Enrichment.Status
-      description: The enrichment status of the IOC.
+    - contextPath: IntSights.Iocs.Sources.name
+      description: The source name of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.Enrichment.Data
-      description: The enrichment data of the IOC.
+    - contextPath: IntSights.Iocs.Sources.confidenceLevel
+      description: The confidence level of the IOC source.
       type: string
+    - contextPath: IntSights.Iocs.Sources.id
+      description: The source id of the IOC.
+      type: string
+    - contextPath: IntSights.Iocs.tags
+      description: The tags of the IOC.
+      type: Array
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -386,7 +400,7 @@ script:
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
-      type: String
+      type: Number
     - contextPath: File.Name
       description: The full file name (including file extension).
       type: String
@@ -421,7 +435,7 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
     - contextPath: IP.Address
-      description: The IP address.
+      description: IP address.
       type: String
     - contextPath: Domain.Name
       description: The domain name. For example, "google.com".
@@ -442,8 +456,7 @@ script:
       - Hashes
       - IpAddresses
       - Domains
-      description: 'The type of the IOC. Can be: "Urls", "Hashes", "IpAddresses",
-        or "domains".'
+      description: 'The type of the IOC. Can be: "Urls", "Hashes", "IpAddresses", or "domains".'
     - name: limit
       description: The maximum number of results from 1-1000. Default is 1000.
     - name: severity
@@ -456,21 +469,16 @@ script:
     - name: source-ID
       description: The source of the IOC.
     - name: first-seen-from
-      description: Beginning of the date range when the IOC was first seen (MM/DD/YYYY).
-        Default is 0.
+      description: Beginning of the date range when the IOC was first seen (MM/DD/YYYY). Default is 0.
     - name: first-seen-to
-      description: End of the date range when the IOC was first seen (MM/DD/YYYY).
-        Default is 0.
+      description: End of the date range when the IOC was first seen (MM/DD/YYYY). Default is 0.
     - name: last-seen-from
-      description: Beginning of the date range when the IOC was last seen (MM/DD/YYYY).
-        Default is 0.
+      description: Beginning of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0.
+    - name: last-updated-from
+      description: Beginning of the date range when the IOC was last updated (YYYY-MM-DD).
     - name: last-seen-to
-      description: End of the date range when the IOC was last seen (MM/DD/YYYY).
-        Default is 0.
+      description: End of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0.
     outputs:
-    - contextPath: IntSights.Iocs.ID
-      description: The ID of the IOC.
-      type: string
     - contextPath: IntSights.Iocs.Value
       description: The value of the IOC.
       type: string
@@ -482,6 +490,9 @@ script:
       type: date
     - contextPath: IntSights.Iocs.LastSeen
       description: The date the IOC was last seen.
+      type: date
+    - contextPath: IntSights.Iocs.LastUpdatedDate
+      description: The date the IOC was last updated.
       type: date
     - contextPath: IntSights.Iocs.SourceID
       description: The source ID of the IOC.
@@ -495,24 +506,21 @@ script:
     - contextPath: IntSights.Iocs.Severity
       description: The severity of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.AccountID
-      description: The account ID of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Domain
-      description: The domain of the IOC.
-      type: string
     - contextPath: IntSights.Iocs.Status
       description: The status of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.Flags.IsInAlexa
-      description: Whether or not the IOC is in Alexa.
-      type: boolean
-    - contextPath: IntSights.Iocs.Enrichment.Status
-      description: The enrichment status of the IOC.
+    - contextPath: IntSights.Iocs.Sources.name
+      description: The source name of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.Enrichment.Data
-      description: The enrichment data of the IOC.
+    - contextPath: IntSights.Iocs.Sources.confidenceLevel
+      description: The confidence level of the IOC source.
       type: string
+    - contextPath: IntSights.Iocs.Sources.id
+      description: The source id of the IOC.
+      type: string
+    - contextPath: IntSights.Iocs.tags
+      description: The tags of the IOC.
+      type: Array
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -582,8 +590,7 @@ script:
       - BrandSecurity
       - ExploitableData
       - VIP
-      description: 'The type of the alert. Can be: "AttackIndication", "DataLeakage",
-        "Phishing", "BrandSecurity", "ExploitableData", "VIP".'
+      description: 'The type of the alert. Can be: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP".'
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -600,8 +607,7 @@ script:
       - SocialMedia
       - PasteSites
       - Others
-      description: 'The source type of the alert. Can be: "ApplicationStores", "BlackMarkets",
-        "HackingForums", "SocialMedia", "PasteSites", or "Others".'
+      description: 'The source type of the alert. Can be: "ApplicationStores", "BlackMarkets", "HackingForums", "SocialMedia", "PasteSites", or "Others".'
     - name: network-type
       auto: PREDEFINED
       predefined:
@@ -713,15 +719,13 @@ script:
       description: The ID of the alert.
     - name: type
       required: true
-      description: 'A comma separated list of each type of IOC. Options: Domains,
-        IPs, URLs'
+      description: 'A comma separated list of each type of IOC. Options: Domains, IPs, URLs'
     - name: value
       required: true
       description: A comma separated list of the value of the IOCs.
     - name: blocklist-status
       required: true
-      description: 'A comma separated list of the IOCs block list status. Options:
-        Sent, NotSent.'
+      description: 'A comma separated list of the IOCs block list status. Options: Sent, NotSent.'
     outputs:
     - contextPath: IntSights.Alerts.ID
       description: The ID of the alert.
@@ -761,9 +765,7 @@ script:
       - NotRelatedToMyCompany
       - FalsePositive
       - Other
-      description: 'The reason to close the alert. Can be: "ProblemSolved", "InformationalOnly",
-        "ProblemWeAreAlreadyAwareOf", "CompanyOwnedDomain", "LegitimateApplication/Profile",
-        "NotRelatedToMyCompany", "FalsePositive", or "Other".'
+      description: 'The reason to close the alert. Can be: "ProblemSolved", "InformationalOnly", "ProblemWeAreAlreadyAwareOf", "CompanyOwnedDomain", "LegitimateApplication/Profile", "NotRelatedToMyCompany", "FalsePositive", or "Other".'
     - name: free-text
       description: The comments in the alert.
     - name: is-hidden
@@ -771,8 +773,7 @@ script:
       predefined:
       - "True"
       - "False"
-      description: The hidden status of the alert. Deletes an alert from the account
-        instance - only when reason is a FalsePositive).
+      description: The hidden status of the alert. Deletes an alert from the account instance - only when reason is a FalsePositive).
       defaultValue: "False"
     - name: rate
       description: The rate of the alert.
@@ -935,7 +936,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.8.39276
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

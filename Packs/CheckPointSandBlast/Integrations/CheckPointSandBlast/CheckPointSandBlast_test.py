@@ -7,8 +7,9 @@ import io
 import os
 from unittest import mock
 import pytest
+from CommonServerPython import *
 from CheckPointSandBlast import Client,\
-    file_command, query_command, quota_command, upload_command, download_command
+    file_command, query_command, quota_command, upload_command, download_command, get_dbotscore
 
 
 HOST = 'https://te.checkpoint.com'
@@ -57,6 +58,7 @@ def mock_client() -> Client:
     return Client(
         host=HOST,
         api_key=API_KEY,
+        reliability='C - Fairly reliable'
     )
 
 
@@ -217,3 +219,18 @@ def test_download_command(requests_mock, mock_client):
     assert 'ContentsFormat' in response
     assert 'Type' in response
     assert 'FileID' in response
+
+
+def test_dbot_score():
+    """
+    Given:
+    - Response.
+    When:
+    - get_dbotscore is called.
+    Then:
+    -   Ensure the right dbot score is returned.
+    """
+    response = {"response": {"av": {"malware_info": {"confidence": 0, "severity": 0}},
+                             "features": ["te", "av", "extraction"],
+                             "te": {"combined_verdict": "Benign", "confidence": 0, "severity": 0}}}
+    assert get_dbotscore(response) == Common.DBotScore.GOOD
