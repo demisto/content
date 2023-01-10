@@ -3,6 +3,8 @@ import demistomock as demisto
 import json
 from MicrosoftGraphListener import MsGraphClient
 from MicrosoftGraphListener import add_second_to_str_date
+import requests_mock
+from CommonServerPython import *
 
 
 def oproxy_client():
@@ -233,12 +235,12 @@ def test_reply_mail_command(client, mocker):
             'from': "ex1@example.com"}
     mocker.patch.object(client.ms_client, 'http_request')
 
-    reply_message = client.reply_mail(args)
+    reply_message = client.reply_mail_command(args)
 
     assert reply_message.outputs_prefix == "MicrosoftGraph"
     assert reply_message.outputs_key_field == "SentMail"
     assert reply_message.outputs['ID'] == args['inReplyTo']
-    assert reply_message.outputs['subject'] == 'Re: ' + args['subject']
+    assert reply_message.outputs['subject'] == f'Re: {args["subject"]}'
     assert reply_message.outputs['toRecipients'] == args['to']
     assert reply_message.outputs['bodyPreview'] == args['body']
 
@@ -540,3 +542,442 @@ def test_get_email_as_eml(mocker):
     mocker.patch.object(client, 'get_email_as_eml', return_value=RAW_RESPONSE['body']['content'])
     get_email_as_eml_command_results = get_email_as_eml_command(client, {'message_id': 'id'})
     assert get_email_as_eml_command_results['File'] == 'id.eml'
+
+
+@pytest.mark.parametrize("args",
+                         [
+                             ({"message_ids": "EMAIL1", "status": "Read"}),
+                             ({"message_ids": "EMAIL1", "folder_id": "Inbox", "status": "Read"}),
+                             ({"message_ids": "EMAIL1", "status": "Unread"}),
+                             ({"message_ids": "EMAIL1", "folder_id": "Inbox", "status": "Unread"}),
+                         ])
+def test_update_email_status_command(mocker, args: dict):
+    from MicrosoftGraphListener import MicrosoftClient, build_folders_path, update_email_status_command
+
+    mark_as_read = (args["status"].lower() == 'read')
+
+    client = self_deployed_client()
+    http_request = mocker.patch.object(MicrosoftClient, "http_request", return_value={})
+
+    result = update_email_status_command(client=client, args=args)
+
+    if "folder_id" in args:
+        http_request.assert_called_with(
+            method="PATCH",
+            url_suffix=f"/users/{client._mailbox_to_fetch}/"
+                       f"{build_folders_path(args['folder_id'])}/messages/{args['message_ids']}",
+            json_data={'isRead': mark_as_read},
+        )
+
+    else:
+        http_request.assert_called_with(
+            method="PATCH",
+            url_suffix=f"/users/{client._mailbox_to_fetch}/messages/{args['message_ids']}",
+            json_data={'isRead': mark_as_read},
+        )
+
+    assert result.outputs is None
+
+
+class MockedResponse:
+
+    def __init__(self, status_code):
+        self.status_code = status_code
+
+
+class TestCommandsWithLargeAttachments:
+
+    SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS = [
+        (
+            self_deployed_client(),
+            {'to_recipients': ['ex@example.com'],
+             'cc_recipients': [],
+             'bcc_recipients': [],
+             'subject': "test subject",
+             'replyTo': ['ex2@example.com', 'ex3@example.com'],
+             'body': "<b>This text is bold</b>",
+             'body_type': 'html',
+             'flag': 'notFlagged',
+             'importance':'Low',
+             'internet_message_headers': [],
+             'attach_ids': ['1'],
+             'attach_names': [],
+             'attach_cids': [],
+             'manual_attachments': []
+             },
+        ),
+        (
+            oproxy_client(),
+            {'to_recipients': ['ex@example.com'],
+             'cc_recipients': [],
+             'bcc_recipients': [],
+             'subject': "test subject",
+             'body': "<b>This text is bold</b>",
+             'body_type': 'html',
+             'replyTo': ['ex2@example.com', 'ex3@example.com'],
+             'flag': 'notFlagged',
+             'importance':'Low',
+             'internet_message_headers': [],
+             'attach_ids': ['2'],
+             'attach_names': [],
+             'attach_cids': [],
+             'manual_attachments': []
+             },
+        ),
+        (
+            self_deployed_client(),
+            {'to_recipients': ['ex@example.com'],
+             'cc_recipients': [],
+             'bcc_recipients': [],
+             'subject': "test subject",
+             'body': "<b>This text is bold</b>",
+             'body_type': 'html',
+             'flag': 'notFlagged',
+             'importance':'Low',
+             'replyTo': ['ex2@example.com', 'ex3@example.com'],
+             'internet_message_headers': [],
+             'attach_ids': ['1', '2'],
+             'attach_names': [],
+             'attach_cids': [],
+             'manual_attachments': []
+             }
+        )
+    ]
+
+    REPLY_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS = [
+        (
+            self_deployed_client(),
+            {
+                'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "123",
+                'from': "ex1@example.com", 'attachIDs': '3'
+            },
+        ),
+        (
+            oproxy_client(),
+            {
+                'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "123",
+                'from': "ex1@example.com", 'attachIDs': '4'
+            }
+        ),
+        (
+            self_deployed_client(),
+            {
+                'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "123",
+                'from': "ex1@example.com", 'attachIDs': '3,4'
+            }
+        )
+    ]
+
+    @staticmethod
+    def expected_upload_headers(world_file=True):
+        if world_file:
+            for header in [  # testing on the world.jpg file.
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 3145728-6291455/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 6291456-9437183/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 9437184-12582911/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 12582912-15728639/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 15728640-18874367/21796912',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '2922544', 'Content-Range': 'bytes 18874368-21796911/21796912',
+                 'Content-Type': 'application/octet-stream'}
+            ]:
+                yield header
+        else:
+            for header in [   # testing on the computer_architecture.pdf
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/10520433',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 3145728-6291455/10520433',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 6291456-9437183/10520433',
+                 'Content-Type': 'application/octet-stream'},
+                {'Content-Length': '1083249', 'Content-Range': 'bytes 9437184-10520432/10520433',
+                 'Content-Type': 'application/octet-stream'},
+            ]:
+                yield header
+
+    @staticmethod
+    def get_attachment_file_details_by_attachment_id(attach_id):
+        attachment_info = {
+            '1': {
+                'path': 'test_data/world.jpg',  # bigger than 3mb attachment
+                'name': 'world.jpg'
+            },
+            '2': {
+                'path': 'test_data/plant.jpeg',  # smaller than 3mb attachment
+                'name': 'plant.jpeg'
+            },
+            '3': {
+                'path': 'test_data/computer_architecture.pdf',  # bigger than 3mb attachment
+                'name': 'computer_architecture.pdf'
+            },
+            '4': {
+                'path': 'test_data/sample.pdf',  # smaller than 3mb attachment
+                'name': 'sample-pdf'
+            }
+        }
+        return attachment_info.get(attach_id)
+
+    @staticmethod
+    def upload_response_side_effect(**kwargs):
+        headers = kwargs.get('headers')
+        if int(headers['Content-Length']) < MsGraphClient.MAX_ATTACHMENT_SIZE:
+            return MockedResponse(status_code=201)
+        return MockedResponse(status_code=200)
+
+    def validate_upload_attachments_flow(self, create_upload_mock, upload_query_mock, world_file=True):
+        """
+        Validates that the upload flow is working as expected, each piece of headers is sent as expected.
+        """
+        if not create_upload_mock.called:
+            return False
+
+        if create_upload_mock.call_count != 1:
+            return False
+
+        expected_headers = iter(self.expected_upload_headers(world_file=world_file))
+        for i in range(upload_query_mock.call_count):
+            current_headers = next(expected_headers)
+            if upload_query_mock.mock_calls[i].kwargs['headers'] != current_headers:
+                return False
+        return True
+
+    @pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
+    def test_send_mail_command(self, mocker, client, args):
+        """
+        Given:
+            Case 1: send email command arguments and attachment > 3mb.
+            Case 2: send email command arguments and attachment < 3mb.
+            Case 3: send email command arguments and one attachment > 3m and one attachment < 3mb.
+        When:
+            - sending a mail
+        Then:
+            Case1:
+             * make sure an upload session was created and that the correct headers were sent
+             * make sure the endpoint to send an email without creating draft mail was not called.
+             * make sure the endpoint to create a draft mail and send a draft mail were called.
+            Case2:
+             * make sure an upload session was not created
+             * make sure the endpoints to create a draft email and send the draft email were not called.
+             * make sure the endpoint to send an email was called.
+            Case3:
+             * make sure an upload session was created and that the correct headers were sent.
+             * make sure the endpoint to send an email without creating draft mail was not called.
+             * make sure the endpoint to create a draft email and send the draft mail were called.
+             * make sure the the attachment < 3mb was sent when creating a draft mail not through an upload session.
+            - Make sure for all three cases the expected context output is returned.
+        """
+        with requests_mock.Mocker() as request_mocker:
+            mocked_draft_id = '123'
+            mocker.patch.object(client.ms_client, 'get_access_token')
+            mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
+
+            create_draft_mail_mocker = request_mocker.post(
+                f'https://graph.microsoft.com/v1.0/users/{client._mailbox_to_fetch}/messages', json={'id': mocked_draft_id}
+            )
+            send_draft_mail_mocker = request_mocker.post(  # mock the endpoint to send a draft mail
+                f'https://graph.microsoft.com/v1.0/users/{client._mailbox_to_fetch}/messages/{mocked_draft_id}/send'
+            )
+
+            send_mail_mocker = request_mocker.post(
+                f'https://graph.microsoft.com/v1.0/users/{client._mailbox_to_fetch}/SendMail'
+            )
+
+            create_upload_mock = mocker.patch.object(
+                client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
+            )
+            upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
+
+            human_readable, ec = client.send_email_command(**args)
+
+            # attachment 1 is an attachment bigger than 3MB
+            # means the attachment should be created in the upload session
+            if (args.get('attach_ids') and '1' in args.get('attach_ids')):
+                assert create_draft_mail_mocker.called
+                assert send_draft_mail_mocker.called
+                assert not send_mail_mocker.called
+                assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
+
+                if (args.get('attach_ids') and '2' in args.get('attach_ids')):
+                    assert create_draft_mail_mocker.last_request.json().get('attachments')
+
+                draft_sent_json = create_draft_mail_mocker.last_request.json()
+                assert draft_sent_json
+                assert draft_sent_json.get('toRecipients')
+                assert draft_sent_json.get('subject')
+            else:
+                assert not create_draft_mail_mocker.called
+                assert not send_draft_mail_mocker.called
+                assert send_mail_mocker.called
+
+                message = send_mail_mocker.last_request.json().get('message')
+                assert message
+                assert message.get('toRecipients')[0].get('emailAddress').get("address") == args.get('to_recipients')[0]
+                assert message.get('body').get('content') == args.get('htmlBody') or args.get('body')
+                assert message.get('subject') == args.get('subject')
+                assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')[0]
+                assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
+                assert message.get('attachments')
+
+    @pytest.mark.parametrize('client, args', REPLY_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
+    def test_reply_mail_command(self, mocker, client, args):
+        """
+        Given:
+            Case 1: reply email command arguments and attachment > 3mb.
+            Case 2: reply email command arguments and attachment < 3mb.
+            Case 3: reply email command arguments and one attachment > 3m and one attachment < 3mb.
+        When:
+            - sending a reply mail
+        Then:
+            Case1:
+             * make sure an upload session was created and that the correct headers were sent
+             * make sure the endpoint to send a reply without creating draft mail was not called.
+             * make sure the endpoint to create a draft reply mail and send a reply draft mail were called.
+            Case2:
+             * make sure an upload session was not created
+             * make sure the endpoints to create a draft reply and send a draft reply were not called.
+            Case3:
+             * make sure an upload session was created and that the correct headers were sent.
+             * make sure the endpoint to send a reply without creating draft mail was not called.
+             * make sure the endpoint to create a draft reply mail and send a reply draft mail were called.
+             * make sure the the attachment < 3mb was sent when creating a draft reply not through an upload session.
+            - Make sure for all three cases the expected context output is returned.
+        """
+        with requests_mock.Mocker() as request_mocker:
+            from_email = args.get('from')
+            mocked_draft_id = '123'
+            reply_message_id = args.get('inReplyTo')
+            mocker.patch.object(client.ms_client, 'get_access_token')
+            mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
+
+            create_draft_mail_mocker = request_mocker.post(  # mock the endpoint to create a draft for an existing message
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{reply_message_id}/createReply',
+                json={'id': mocked_draft_id}
+            )
+            send_reply_draft_mail_mocker = request_mocker.post(  # mock the endpoint to reply a draft mail
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{mocked_draft_id}/send'
+            )
+
+            create_upload_mock = mocker.patch.object(
+                client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
+            )
+            upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
+            reply_mail_mocker = request_mocker.post(
+                f'https://graph.microsoft.com/v1.0/users/{from_email}/messages/{reply_message_id}/reply'
+            )
+
+            command_results = client.reply_mail_command(args)
+
+            if '3' in args.get('attachIDs'):
+                assert create_draft_mail_mocker.called
+                assert send_reply_draft_mail_mocker.called  # sending the draft reply email should be called
+                assert not reply_mail_mocker.called
+                assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock, world_file=False)
+
+                if '4' in args.get('attachIDs'):
+                    # make sure when creating draft to send a reply that the attachments are being added to the api
+                    # call the create a draft and not through upload session
+                    assert create_draft_mail_mocker.last_request.json().get('message').get('attachments')
+            else:
+                assert reply_mail_mocker.called
+                assert not create_draft_mail_mocker.called
+                assert not create_upload_mock.called
+                assert not send_reply_draft_mail_mocker.called
+            assert command_results.outputs == {
+                'toRecipients': ['ex@example.com'], 'subject': 'Re: test subject', 'bodyPreview': 'test body',
+                'ID': '123'
+            }
+
+    @pytest.mark.parametrize('client, args', SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS)
+    def test_create_draft_email_command(self, mocker, client, args):
+        """
+        Given:
+            Case 1: create draft command arguments and attachment > 3mb.
+            Case 2: create draft command arguments and attachment < 3mb.
+            Case 3: create draft command arguments and one attachment > 3m and one attachment < 3mb.
+        When:
+            creating a draft mail.
+        Then:
+            Case1:
+             * make sure an upload session was created and that the correct headers were sent
+             * make sure the endpoint to create a draft email was called.
+            Case2:
+             * make sure an upload session was not created
+             * make sure the endpoint to create a draft mail was called with the attachment.
+            Case3:
+             * make sure an upload session was created and that the correct headers were sent.
+             * make sure the endpoint to create a draft mail was called.
+             * make sure the the attachment < 3mb was sent when creating a draft reply not through an upload session
+            - Make sure for all three cases the expected context output is returned.
+        """
+
+        with requests_mock.Mocker() as request_mocker:
+            mocker.patch.object(client.ms_client, 'get_access_token')
+            create_draft_mail_mocker = request_mocker.post(
+                f'https://graph.microsoft.com/v1.0/users/{client._mailbox_to_fetch}/messages', json={'id': '123'}
+            )
+            mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
+
+            create_upload_mock = mocker.patch.object(
+                client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
+            )
+            upload_query_mock = mocker.patch.object(requests, 'put', side_effect=self.upload_response_side_effect)
+
+            _, ec, _ = client.create_draft_command(**args)
+
+            # attachment 1 is an attachment bigger than 3MB
+            # means the attachment should be created in the upload session
+            if (args.get('attachIDs') and '1' in args.get('attachIDs')) or \
+               (args.get('attach_ids') and '1' in args.get('attach_ids')):
+                assert create_upload_mock.called
+                assert upload_query_mock.called
+                assert self.validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
+                if (args.get('attachIDs') and '2' in args.get('attachIDs')) or \
+                   (args.get('attach_ids') and '2' in args.get('attach_ids')):
+                    assert create_draft_mail_mocker.last_request.json()['attachments']
+
+            else:
+                assert not create_upload_mock.called
+                assert not upload_query_mock.called
+                assert create_draft_mail_mocker.last_request.json()['attachments']
+        assert ec['MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)']['ID'] == '123'
+        assert create_draft_mail_mocker.called
+        assert create_draft_mail_mocker.last_request.json()
+
+    @pytest.mark.parametrize('command_args, expected_http_params',
+                             [(
+                                 {
+                                     "exclude_ids": [], "last_fetch": "2022-12-31T09:38:15Z", "folder_id": "XYZ",
+                                     "overwrite_rate_limit_retry": True, "fetch_mail_body_as_text": True
+                                 },
+                                 {
+                                     "method": 'GET',
+                                     "url_suffix":
+                                     "/users/dummy@mailbox.com/mailFolders/XYZ/messages",
+                                         "params": {
+                                             "$filter": "receivedDateTime ge 2022-12-31T09:38:16Z",
+                                             "$orderby": "receivedDateTime asc",
+                                             "select": "*",
+                                             "$top": 50,
+                                         },
+                                     "headers": {"Prefer": "outlook.body-content-type='text'"},
+                                     "overwrite_rate_limit_retry": True,
+                                 }
+                             ),
+                             ])
+    def test_get_emails(self, mocker, command_args: dict, expected_http_params: dict):
+        """
+        Given: Command arguments and expected http request parameters.
+        When: Running the `get_emails` command.
+        Then: Ensure the expected http params are sent to the API.
+        """
+        client = oproxy_client()
+        http_mock = mocker.patch.object(client.ms_client, 'http_request')
+        client.get_emails(**command_args)
+
+        http_mock.assert_called_with(**expected_http_params)
