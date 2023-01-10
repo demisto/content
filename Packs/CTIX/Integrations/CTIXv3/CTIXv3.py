@@ -638,6 +638,28 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         return self.post_http_request(client_url, payload, params)
 
+    def bulk_lookup_and_create_data(self, object_names, source, collection):
+        url_suffix = "ingestion/threat-data/bulk-lookup-and-create/"
+        client_url = self.base_url + url_suffix
+        params = {"create": True}
+        
+        payload = {
+            "ioc_values": object_names,
+            "metadata": {
+                "tlp": "AMBER",
+                "confidence": 100,
+                "tags": []
+            },
+            "source": {
+                "source_name": source
+            },
+            "collection": {
+                "collection_name": collection
+            }
+        }
+
+        return self.post_http_request(client_url, payload, params)
+        
 
 """ HELPER FUNCTIONS """
 
@@ -1562,12 +1584,21 @@ def get_lookup_threat_data_command(
     object_type = args.get("object_type", "indicator")
     ioc_type = argToList(args.get("ioc_type"))
     object_names = argToList(args.get("object_names"))
+    createifnotexist = args.get("createifnotexist", False)
+    source = args.get("source")
+    collection = args.get("collection")
     page_size = args.get("page_size", 10)
     params = {"page_size": page_size}
-    response = client.get_lookup_threat_data(
-        object_type, ioc_type, object_names, params
-    )
+    response = client.get_lookup_threat_data(object_type, ioc_type, object_names, params)
     data_set = response.get("data").get("results")
+
+    if createifnotexist and (not source or not collection):
+        return_error("Error: 'source' and 'colleciton' both must be set if `createifnotexist` is set to True.")
+    
+    if createifnotexist and len(data_set) == 0:
+        response = client.bulk_lookup_and_create_data(object_names, source, collection)
+        data_set = response.get("data").get("results")
+    
     results = no_result_found(data_set)
     reliability = args.get("reliability")
 
