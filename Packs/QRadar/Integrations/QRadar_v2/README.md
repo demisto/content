@@ -58,7 +58,7 @@ Depending on the system load, **the initial fetch might take a long time**.
 
 #### Field (Schema) Mapping
 The scheme is divided to 4 sections. Offense (root), Events: Builtins, Events: Custom Fields, and Assets.
-For more details, see the [Classification & Mapping documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper.html).
+For more details, see the [Classification & Mapping documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper).
 
 #### Query to fetch offenses
 You can apply additional (optional) filters for the fetch-incident query using the `Query to fetch offenses` integration parameter. For more information on how to use the filter syntax, see the [QRadar filter documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_rest_api_filtering.html) and [QRadar offense documentation](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.2/com.ibm.qradar.doc/11.0--siem-offenses-GET.html).
