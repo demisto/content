@@ -1128,7 +1128,7 @@ script:
       required: false
       secret: false
     - name: returnRawResponse
-      description: Whether to include all fields from the response in the context, or to store complex fields as JSON for further breakdown as desired. Default value is False.
+      description: Select 'true' to save all fields from the response to the context. Otherwise, complex fields will be stored in JSON format. Default value is False.
       required: false
       auto: PREDEFINED
       predefined:
