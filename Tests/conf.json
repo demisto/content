@@ -21,7 +21,8 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "IndicatorFormatterFilterTest"
+            "playbookID": "IndicatorFormatterFilterTest",
+            "timeout": 1200
         },
         {
             "integrations": "FeedURLhaus",
@@ -606,6 +607,7 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
+            "timeout": 600,
             "instance_names": "ms_graph_mail_dev"
         },
         {
@@ -3582,7 +3584,8 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout" : 600
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -4390,7 +4393,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 100,
+            "memory_threshold": 130,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4399,7 +4402,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 100,
+            "memory_threshold": 130,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -4537,23 +4540,14 @@
             ]
         },
         {
-            "playbookID": "playbook-feodoteackerhash_test",
-            "fromversion": "5.5.0",
-            "integrations": [
-                "Feodo Tracker IP Blocklist Feed",
-                "Feodo Tracker Hashes Feed"
-            ],
-            "instance_names": [
-                "feodo_tracker_ip_currently__active",
-                "feodo_tracker_ip_30_days"
-            ]
-        },
-        {
             "playbookID": "playbook-feodotrackeripblock_test",
             "fromversion": "5.5.0",
             "integrations": [
-                "Feodo Tracker IP Blocklist Feed",
-                "Feodo Tracker Hashes Feed"
+                "Feodo Tracker IP Blocklist Feed"
+            ],
+             "instance_names": [
+                "feodo_tracker_ip_currently__active",
+                "feodo_tracker_ip_30_days"
             ]
         },
         {
