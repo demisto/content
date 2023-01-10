@@ -8,10 +8,10 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.9.42476
 enabled: true
 name: GetFilePathPreProcessing
-runas: DBotRole
+runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
