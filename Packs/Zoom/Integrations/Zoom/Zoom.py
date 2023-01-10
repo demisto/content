@@ -640,7 +640,7 @@ def zoom_fetch_recording_command(client: Client, **args):
     #             demisto.results('Failed to delete file ' + filename + '.')
     # else:
     #     return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
-
+    results = []
     meeting_id = args.get('meeting_id')
     delete_after = argToBoolean(args.get('delete_after'))
     client = client
@@ -665,7 +665,7 @@ def zoom_fetch_recording_command(client: Client, **args):
                     r.raw.decode_content = True
                     shutil.copyfileobj(r.raw, f)
 
-                results = [file_result_existing_file(filename)]
+                results.append(file_result_existing_file(filename))
                 results.append(CommandResults(readable_output=f"The file {filename} was downloaded successfully"))
                 if delete_after:
                     try:
@@ -674,7 +674,7 @@ def zoom_fetch_recording_command(client: Client, **args):
                             url_suffix=f'meetings/{meeting_id}/recordings/{file["id"]}',
                             resp_type='response'
                         )
-                        results.append(CommandResults(readable_output=f"The file {filename} successfully removed from the cloud"))
+                        results.append(CommandResults(readable_output=f"The file {filename} was successfully removed from the cloud"))
                     except DemistoException as e:
                         demisto.error(str(e))
                         raise DemistoException(
