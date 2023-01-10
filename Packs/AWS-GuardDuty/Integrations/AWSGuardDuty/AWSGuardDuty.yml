@@ -1127,6 +1127,14 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - name: returnRawResponse
+      description: Whether to include all fields from the response in the context, or to store complex fields as JSON for further breakdown as desired. Default value is False.
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+      defaultValue: false
     deprecated: false
     description: Describes Amazon GuardDuty findings specified by finding IDs.
     execution: false
