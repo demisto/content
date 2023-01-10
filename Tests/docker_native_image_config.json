@@ -90,6 +90,13 @@
          "ignored_native_images":[
             "native:8.1"
          ]
+      },
+      {
+         "id":"Rasterize",
+         "reason":"Issue: CRTX-72338.",
+         "ignored_native_images":[
+            "native:8.1"
+         ]
       }
    ],
    "flags_versions_mapping": {
