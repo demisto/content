@@ -190,7 +190,8 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
         'total': total_dict,
         'max_score': response.get('hits').get('max_score'),
         'took': response.get('took'),
-        'timed_out': response.get('timed_out')
+        'timed_out': response.get('timed_out'),
+        'aggregations': response.get('aggregations')
     }
 
     hit_headers = []  # type: List
@@ -208,7 +209,7 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
         hit_headers = ['_id', '_index', '_type', '_score'] + hit_headers
 
     search_context['Results'] = response.get('hits').get('hits')
-    meta_headers = ['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']
+    meta_headers = ['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size', 'aggregations']
     return search_context, meta_headers, hit_tables, hit_headers
 
 
