@@ -457,7 +457,7 @@ def fetch_incidents(client: Client, params: dict):
         initialize_last_run(params.get('fetch_parameters', ''), params.get('first_fetch', ''))
     sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
                                  params.get('max_fetch', FETCH_DEFAULT_LIMIT))
-    limit_fetch = len(last_run.get('ids', [])) + arg_to_number(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+    limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
     bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
                                                        params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
     result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit_fetch)
