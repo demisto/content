@@ -1517,6 +1517,11 @@ def main():
         'prisma-sase-address-group-update': update_address_group_command,
         'prisma-sase-address-group-delete': delete_address_group_command,
 
+        'prisma-sase-custom-url-category-list': list_custom_url_category_command,
+        'prisma-sase-custom-url-category-create': create_custom_url_category_command,
+        'prisma-sase-custom-url-category-update': update_custom_url_category_command,
+        'prisma-sase-custom-url-category-delete': delete_custom_url_category_command,
+
     }
     client = Client(
         base_url=base_url,
