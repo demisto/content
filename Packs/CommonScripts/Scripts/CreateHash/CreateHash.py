@@ -23,10 +23,10 @@ def create_hash(text, hashtype):
         h = hashlib.sha256()
         h.update(text.encode('utf-8'))
     elif hashtype == 'sha1':
-        h = hashlib.sha1()  # nosec
+        h = hashlib.sha1()
         h.update(text.encode('utf-8'))
     elif hashtype == 'md5':
-        h = hashlib.md5()   # nosec
+        h = hashlib.md5()
         h.update(text.encode('utf-8'))
     else:
         h = blake2b()
