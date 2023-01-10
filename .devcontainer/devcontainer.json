@@ -18,7 +18,7 @@
 	"remoteUser": "demisto",
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
-		"PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}",
+		"PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/.venv/bin",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
