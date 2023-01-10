@@ -214,7 +214,7 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailUrlInfo | where Timestamp >= _start | where Url has_any ("${URLDomainParsed}") or UrlDomain has_any ("${URLDomainParsed}") | join EmailEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join EmailUrlInfo on NetworkMessageId | where Url has_any ("${URLDomainParsed}") or UrlDomain has_any ("${URLDomainParsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
@@ -254,7 +254,7 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailAttachmentInfo | where Timestamp >= _start |where SHA256 has_any ("${SHA256Parsed}") | join EmailEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, RecipientEmailAddress1, SenderDisplayName1, NetworkMessageId1, DetectionMethods1, SenderFromAddress1, RecipientObjectId1, ThreatNames1, ThreatTypes1, SenderObjectId1, OrgLevelAction, SenderObjectId
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join EmailAttachmentInfo on NetworkMessageId | where SHA256 has_any ("${SHA256Parsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, RecipientEmailAddress1, SenderDisplayName1, NetworkMessageId1, DetectionMethods1, SenderFromAddress1, RecipientObjectId1, ThreatNames1, ThreatTypes1, SenderObjectId1, OrgLevelAction, SenderObjectId
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
@@ -311,6 +311,8 @@ tasks:
                 value:
                   simple: Microsoft365Defender.Hunt.results.Url
                 iscontext: true
+          transformers:
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -610,6 +612,8 @@ tasks:
                 value:
                   simple: Microsoft365Defender.RetrievedEmails.NetworkMessageId
                 iscontext: true
+          transformers:
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -647,7 +651,7 @@ tasks:
         complex:
           root: inputs.ResultsLimit
       query:
-        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailUrlInfo | where Timestamp >= _start | where UrlDomain has_any ("${IPAddressParsed}") | join EmailEvents on NetworkMessageId | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
+        simple: let _start = now(-${inputs.SearchTimeframe}d); EmailEvents | where Timestamp >= _start | where RecipientEmailAddress != "${inputs.ListenerMailbox}" | join EmailUrlInfo on NetworkMessageId | where UrlDomain has_any ("${IPAddressParsed}") | project-away AdditionalFields, EmailActionPolicy, UserLevelPolicy, EmailActionPolicyGuid, OrgLevelPolicy, UserLevelAction, EmailClusterId, ReportId, ReportId1, Timestamp1, OrgLevelAction, SenderObjectId, NetworkMessageId1
       timeout:
         simple: ${inputs.Timeout}
     separatecontext: false
