@@ -73,12 +73,6 @@ ignore=BA119
 [file:HideFieldsOnNewIncident.yml]
 ignore=SC105
 
-[file:1_10_43.md]
-ignore=RN114
-
-[file:ConvertToSingleElementArray.py]
-ignore=BA115
-
 [file:1_10_42.md]
 ignore=RN114
 
