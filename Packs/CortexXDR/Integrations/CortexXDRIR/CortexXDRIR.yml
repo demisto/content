@@ -3046,7 +3046,7 @@ script:
     - defaultValue: '50'
       description: The page size.
       name: page_size
-    description: Retrieves contributing events for a specific alert.
+    description: Retrieves contributing events for a specific correlation alert.
     name: xdr-get-contributing-event
     outputs:
     - contextPath: PaloAltoNetworksXDR.ContributingEvent.alertID
@@ -3108,7 +3108,7 @@ script:
       required: true
     description: Removes a tag from specified endpoint_ids.
     name: xdr-endpoint-tag-remove
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   runonce: false
   script: ''
@@ -3118,7 +3118,8 @@ script:
   isremotesyncout: true
   type: python
 tests:
-- Test XDR Playbook
+- Test XDR general and file commands Playbook
+- Test XDR execute script Playbook
 defaultmapperin: Cortex XDR - IR-mapper
 defaultclassifier: Cortex XDR Incident Handler - Classifier
 defaultmapperout: Cortex XDR - IR-out-mapper
