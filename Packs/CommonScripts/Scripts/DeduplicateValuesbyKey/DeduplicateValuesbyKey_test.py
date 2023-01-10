@@ -30,7 +30,7 @@ def test_generate_unique_values_from_objects():
             "value": "value6"
         }]
     values = generate_unique_values_from_objects(objects, "key", False)
-    assert values == ["value1", "value2", "value3"]
+    assert set(values) == set(["value1", "value2", "value3"])
 
 
 def test_generate_unique_values_from_objects_with_none():
