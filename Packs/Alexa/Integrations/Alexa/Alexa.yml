@@ -37,6 +37,7 @@ configuration:
   required: false
   type: 8
 description: Deprecated. Vendor has declared end of life for this product. No available replacement.
+deprecated: true
 display: Alexa Rank Indicator (Deprecated)
 name: Alexa Rank Indicator
 script:
