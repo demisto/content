@@ -16,7 +16,7 @@ class GoogleSecreteManagerModule:
             logging.error(
                 f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
 
-    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False) -> list:
+    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=[]) -> list:
         secrets = []
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
@@ -27,6 +27,15 @@ class GoogleSecreteManagerModule:
             if with_secret:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
+                    missing_attrs = []
+                    # We make sure that the keys we want in the dict are presence
+                    for attr in attr_validation:
+                        if attr not in secret_value:
+                            missing_attrs.append(attr)
+                    if len(missing_attrs) != 0:
+                        missing_attrs_str = ','.join(missing_attrs)
+                        logging.error(
+                            f'Error getting the secret: {secret.name}, it\'s missing the following attributes: {missing_attrs_str}')  # noqa
                     secrets.append(secret_value)
                 except Exception as e:
                     logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
