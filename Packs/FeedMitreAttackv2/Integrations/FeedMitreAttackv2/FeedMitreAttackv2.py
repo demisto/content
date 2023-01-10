@@ -58,6 +58,7 @@ FILTER_OBJS = {
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
+EXTRACT_TIMESTAMP_REGEX = r"\((.+)\)"
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
@@ -109,7 +110,7 @@ class Client:
         if tlp != '':
             indicator_obj['fields']['trafficlightprotocol'] = tlp
 
-        if self.tlp_color:
+        elif self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
         return indicator_obj
@@ -259,7 +260,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     if indicator_type in ['Tool', 'STIX Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
-    tlp = get_TLP(indicator_json)
+    tlp = get_tlp(indicator_json)
 
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
@@ -268,7 +269,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         'publications': publications,
         'mitreid': mitre_id,
         'tags': tags,
-        'tlp': tlp
+        'tlp': tlp,
     }
 
     mapping_by_type = {
@@ -322,16 +323,16 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
 
 
 def extract_timestamp_from_description(description: str) -> str:
-    if description is None:
+    if not description:
         return ''
     if 'Citation' in description:
         return ''
-    match = re.search(r"\((.+)\)", description)
+    match = re.search(EXTRACT_TIMESTAMP_REGEX, description)
     timestamp = match.group(1) if match else ''
     return timestamp
 
 
-def get_TLP(indicator_json: dict) -> str:
+def get_tlp(indicator_json: dict) -> str:
     object_marking_definition_list = indicator_json.get('object_marking_refs', '')
     tlp_color: str = ''
     for object_marking_definition in object_marking_definition_list:
