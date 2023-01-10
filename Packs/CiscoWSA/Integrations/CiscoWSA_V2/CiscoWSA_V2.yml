@@ -93,57 +93,37 @@ script:
     - type: Unknown
       contextPath: CiscoWSA.AccessPolicy.amw_reputation
       description: Anti-Malware and reputation settings.
-  # - name: cisco-wsa-access-policy-create
-  #   description: Create access policy.
-  #   arguments:
-  #   - name: policy_status
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: policy_name
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: policy_order
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: profile_name
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: auth
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: predefined
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: custom
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: is_inverse
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: state
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: allow_connect_ports
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: block_protocols
-  #     description: ''
-  #     required: false
-  #     isArray: false
-  #   - name: block_custom_user_agents
-  #     description: ''
-  #     required: false
-  #     isArray: false
+  - name: cisco-wsa-access-policy-create
+    description: Create access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name.
+      required: true
+      isArray: false
+    - name: policy_status
+      description: Policy status.
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: policy_description
+      description: Policy description
+      required: false
+      isArray: false
+    - name: policy_order
+      description: Policy order, index of policy in the collection.
+      required: true
+      isArray: false
+    - name: policy_expiry
+      description: Policy expiry date, format MM/DD/YYYY HH:MM, e.g. 01/25/2023 08:30
+      required: false
+      isArray: false
+    - name: identification_profile_name
+      description: Valid identification profile name.
+      required: false
+      isArray: false
   - name: cisco-wsa-access-policy-update
     description: Update access policy.
     arguments:
@@ -171,6 +151,177 @@ script:
       description: Policy description to update.
       required: false
       isArray: false
+  - name: cisco-wsa-access-policy-protocols-user-agents-update
+    description: Update Protocols and User Agents policy for access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+      isArray: false
+    - name: block_custom_user_agents
+      description: |- 
+        Custom user agents to block,
+        e.g. Mozilla/.* Gecko/.* Firefox/, Mozilla/4.0 (compatible; MSIE 5.5;)
+      required: false
+      isArray: true
+    - name: allow_connect_ports
+      description: |-
+        HTTP CONNECT enables applications to tunnel outbound traffic over HTTP,
+        unless the protocol is blocked above.
+        Traffic tunneled through HTTP CONNECT will not be scanned,
+        except for SSL ports (specified on Security Services > HTTPS Proxy)
+        e.g. 1-65535,20,21
+      required: false
+      isArray: true
+    - name: block_protocols
+      description: Block protocols
+      required: false
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - ftp
+      - http
+  - name: cisco-wsa-access-policy-url-filtering-update
+    description: Update URL filtering policy for access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+      isArray: false
+    - name: predefined_categories_action
+      description: Predefined categories action.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - block
+      - monitor
+      - allow
+    - name: predefined_categories
+      description: Predefined categories.
+      required: false
+      isArray: true
+    - name: youtube_categories_action
+      description: Youtube categories action.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - block
+      - monitor
+      - allow
+    - name: youtube_categories
+      description: Youtube categories.
+      required: false
+      isArray: true
+    - name: custom_categories_action
+      description: Policy description to update.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - block
+      - monitor
+      - allow
+    - name: custom_categories
+      description: Policy description to update.
+      required: false
+      isArray: true
+    - name: uncategorized_url
+      description: Uncategorized url action
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - block
+      - monitor
+      - allow
+  - name: cisco-wsa-access-policy-applications-update
+    description: Update applications policy for access policy. only applicable for global_policy
+    arguments:
+    - name: application
+      description: Application type to perform action on.
+      required: true
+      isArray: false
+      predefined:
+      - XXXXX
+    - name: action
+      description: Application action.
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - monitor
+      - block
+    - name: values
+      description: Application values to perform action on.
+      required: true
+      isArray: true
+  - name: cisco-wsa-access-policy-objects-update
+    description: Update objects policy for access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+      isArray: false
+    - name: object_type
+      description: Object type to perform action on.
+      required: false
+      isArray: false
+      predefined:
+      - Executable Code
+      - Web Page Content
+      - Media
+      - P2P Metafiles
+      - Miscellaneous
+      - Document Types
+      - Archives
+      - Installers
+      - Inspectable Archives
+    - name: object_action
+      description: Object action, inspect option only valid if object type is Inspectable Archives.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - monitor
+      - block
+      - inspect
+    - name: object_values
+      description: Object values to perform action on.
+      required: false
+      isArray: true
+    - name: block_custom_mime_types
+      description: Block custom MIME types, e.g. audio/x-mpeg3 or audio/*.
+      required: false
+      isArray: false
+    - name: http_or_https_max_object_size_mb
+      description: HTTP/HTTPS Max Download Size.
+      required: false
+      isArray: false
+    - name: ftp_max_object_size_mb
+      description: FTP Max Download Size.
+      required: false
+      isArray: false
+  - name: cisco-wsa-access-policy-anti-malware-update
+    description: Update anti malware policy for access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+      isArray: false
+    - name: malware_action
+      description: Malware action.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - monitor
+      - block
+    - name: malware_values
+      description: Application values to perform action on.
+      required: false
+      isArray: true
   - name: cisco-wsa-access-policy-delete
     description: Delete access policy.
     arguments:
@@ -291,24 +442,26 @@ script:
     description: Create identification profile.
     arguments:
     - name: profile_name
-      description: Profile name.
+      description: Profile name to create.
       required: true
       isArray: false
     - name: status
-      description: Status.
-      required: true
+      description: Status of new identification profile.
+      defaultValue: enable
+      required: false
       isArray: false
       auto: PREDEFINED
       predefined:
       - enable
       - disable
     - name: description
-      description: Description.
+      description: Description of new identification profile.
       required: true
       isArray: false
     - name: protocols
-      description: ''
+      description: Network protocols of identification profile.
       required: false
+      defaultValue: HTTPS
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -328,11 +481,11 @@ script:
       required: true
       isArray: false
     - name: new_profile_name
-      description: New profile name.
+      description: New profile name for identification profile.
       required: false
       isArray: false
     - name: status
-      description: Status.
+      description: Updated status of identification profile.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -340,13 +493,17 @@ script:
       - enable
       - disable
     - name: description
-      description: Description.
+      description: Updated description of identification profile.
       required: false
       isArray: false
     - name: protocols
-      description: Protocols
+      description: Network protocols of identification profile.
       required: false
       isArray: false
+      auto: PREDEFINED
+      predefined:
+      - HTTPS
+      - SOCKS
     - name: order
       description: |-
         Identification profile order, index of Identification profile in the collection.

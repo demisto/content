@@ -58,7 +58,9 @@ class Client(BaseClient):
                 )
             raise e
 
-    def access_policy_list_request(self, policy_names: str = None) -> Dict[str, Any]:
+    def access_policy_list_request(
+        self, policy_names: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Access Policies list.
 
@@ -74,58 +76,278 @@ class Client(BaseClient):
             "GET", f"{V3_PREFIX}/web_security/access_policies", params=params
         )
 
-    # def access_policy_create_request(
-    #     self,
-    #     policy_status,
-    #     policy_name,
-    #     policy_order,
-    #     profile_name,
-    #     auth,
-    #     predefined,
-    #     custom,
-    #     is_inverse,
-    #     state,
-    #     allow_connect_ports,
-    #     block_protocols,
-    #     block_custom_user_agents,
-    # ):
+    def access_policy_create_request(
+        self,
+        policy_name: str,
+        policy_status: str,
+        identification_profile_name: str,
+        policy_order: Optional[str] = None,
+        policy_description: Optional[str] = None,
+        policy_expiry: Optional[str] = None,
+    ):
 
-    #     data = {
-    #         "access_policies": [
-    #             {
-    #                 "membership": {
-    #                     "identification_profiles": [
-    #                         {"auth": auth, "profile_name": profile_name}
-    #                     ],
-    #                     "user_agents": {
-    #                         "custom": custom,
-    #                         "is_inverse": is_inverse,
-    #                         "predefined": predefined,
-    #                     },
-    #                 },
-    #                 "policy_name": policy_name,
-    #                 "policy_order": policy_order,
-    #                 "policy_status": policy_status,
-    #                 "protocols_user_agents": {
-    #                     "allow_connect_ports": allow_connect_ports,
-    #                     "block_custom_user_agents": block_custom_user_agents,
-    #                     "block_protocols": block_protocols,
-    #                     "state": state,
-    #                 },
-    #             }
-    #         ]
-    #     }
-
-    #     return self._http_request(
-    #         "POST", f"{V3_PREFIX}/web_security/access_policies", json_data=data
-    #     )
-
-    def access_policy_update_request(self, policy_status, policy_name):
         data = {
             "access_policies": [
-                {"policy_name": policy_name, "policy_status": policy_status}
+                {
+                    "policy_name": policy_name,
+                    "policy_order": policy_order,
+                    "policy_status": policy_status,
+                    "policy_description": policy_description,
+                    "policy_expiry": policy_expiry,
+                    "membership": {
+                        "identification_profiles": [
+                            {
+                                "auth": "No Authentication",
+                                "profile_name": identification_profile_name,
+                            }
+                        ],
+                    },
+                }
             ]
         }
+
+        return self._http_request(
+            "POST", f"{V3_PREFIX}/web_security/access_policies", json_data=data
+        )
+
+    def access_policy_update_request(
+        self,
+        policy_name: str,
+        policy_status: Optional[str] = None,
+        policy_description: Optional[str] = None,
+        policy_order: Optional[str] = None,
+        policy_expiry: Optional[str] = None,
+    ):
+        """
+        Update access policies.
+
+        Args:
+            policy_name (str): Policy name to update.
+            policy_status (Optional[str], optional): Policy status. Defaults to None.
+            policy_description (Optional[str], optional): Policy description. Defaults to None.
+            policy_order (Optional[str], optional): Policy order. Defaults to None.
+            policy_expiry (Optional[str], optional): Policy expiry. Defaults to None.
+
+        Returns:
+            Response: API response from Cisco WSA.
+        """
+        data = remove_empty_elements(
+            {
+                "access_policies": [
+                    {
+                        "policy_name": policy_name,
+                        "policy_status": policy_status,
+                        "policy_description": policy_description,
+                        "policy_order": policy_order,
+                        "policy_expiry": policy_expiry,
+                    }
+                ]
+            }
+        )
+
+        return self._http_request(
+            "PUT",
+            f"{V3_PREFIX}/web_security/access_policies",
+            json_data=data,
+            resp_type="response",
+        )
+
+    def access_policy_url_filtering_update_request(
+        self,
+        policy_name: str,
+        predefined_categories_action: Optional[str] = None,
+        predefined_categories: Optional[List[str]] = None,
+        youtube_categories_action: Optional[str] = None,
+        youtube_categories: Optional[List[str]] = None,
+        custom_categories_action: Optional[str] = None,
+        custom_categories: Optional[List[str]] = None,
+        uncategorized_url: Optional[str] = None,
+    ):
+        data = remove_empty_elements(
+            {
+                "access_policies": [
+                    {
+                        "policy_name": policy_name,
+                        "url_filtering": {
+                            "predefined_cats": {
+                                predefined_categories_action: predefined_categories
+                            },
+                            "yt_cats": {youtube_categories_action: youtube_categories},
+                            "custom_cats": {
+                                custom_categories_action: custom_categories
+                            },
+                            "safe_search": {"status": "disable"},
+                            "content_rating": {"status": "disable"},
+                            "exception_referred_embedded_content": {"state": "disable"},
+                            "update_cats_action": "least restrictive",
+                            "uncategorized_url": uncategorized_url,
+                        },
+                    }
+                ]
+            }
+        )
+
+        return self._http_request(
+            "PUT",
+            f"{V3_PREFIX}/web_security/access_policies",
+            json_data=data,
+            resp_type="response",
+        )
+
+    def access_policy_protocols_user_agents_update_request(
+        self,
+        policy_name: str,
+        block_custom_user_agents: Optional[List[str]] = None,
+        allow_connect_ports: Optional[List[str]] = None,
+        block_protocols: Optional[List[str]] = None,
+    ):
+        data = remove_empty_elements(
+            {
+                "access_policies": [
+                    {
+                        "policy_name": policy_name,
+                        "protocols_user_agents": {
+                            "block_custom_user_agents": block_custom_user_agents,
+                            "allow_connect_ports": allow_connect_ports,
+                            "block_protocols": block_protocols,
+                            "state": "custom",
+                        },
+                    }
+                ]
+            }
+        )
+
+        return self._http_request(
+            "PUT",
+            f"{V3_PREFIX}/web_security/access_policies",
+            json_data=data,
+            resp_type="response",
+        )
+
+    def access_policy_objects_update_request(
+        self,
+        policy_name: str,
+        object_type: Optional[str] = None,
+        object_action: Optional[str] = None,
+        object_values: Optional[List[str]] = None,
+        block_custom_mime_types: Optional[List[str]] = None,
+        http_or_https_max_object_size_mb: Optional[List[str]] = None,
+        ftp_max_object_size_mb: Optional[List[str]] = None,
+    ):
+        data = remove_empty_elements(
+            {
+                "access_policies": [
+                    {
+                        "policy_name": policy_name,
+                        "objects": {
+                            "object_type": {
+                                object_type: {object_action: object_values},
+                            },
+                            "block_custom_mime_types": block_custom_mime_types,
+                            "max_object_size_mb": {
+                                "ftp": ftp_max_object_size_mb,
+                                "http_or_https": http_or_https_max_object_size_mb,
+                            },
+                            "state": "custom",
+                        },
+                    }
+                ]
+            }
+        )
+
+        return self._http_request(
+            "PUT",
+            f"{V3_PREFIX}/web_security/access_policies",
+            json_data=data,
+            resp_type="response",
+        )
+
+    def access_policy_anti_malware_update_request(
+        self,
+        policy_name: str,
+        # file_analysis: Optional[str] = None,
+        # file_reputation_action: Optional[str] = None,
+        # file_reputation_values: Optional[List[str]] = None,
+        # file_reputation_filtering: Optional[str] = None,
+        # web_reputation: Optional[str] = None,
+        # suspect_user_agent_scanning: Optional[str] = None,
+        # anti_malware_categories_action: Optional[str] = None,
+        # anti_malware_categories: Optional[List[str]] = None,
+        # anti_malware_scanning: Optional[str] = None,
+        malware_action: Optional[str] = None,
+        malware_values: Optional[List[str]] = None,
+    ):
+        data = remove_empty_elements(
+            {
+                "access_policies": [
+                    {
+                        "policy_name": policy_name,
+                        "amw_reputation": {
+                            # "adv_malware_protection": {
+                            #     "file_analysis": "enable",
+                            #     "file_reputation": {
+                            #         "monitor": ["Known Malicious and High-Risk Files"]
+                            #     },
+                            #     "file_reputation_filtering": "enable",
+                            # },
+                            # "web_reputation": {"filtering": "enable"},
+                            # -----------------------------------------------------
+                            # "adv_malware_protection": {
+                            #     "file_analysis": file_analysis,
+                            #     "file_reputation": {
+                            #         file_reputation_action: file_reputation_values
+                            #     },
+                            #     "file_reputation_filtering": file_reputation_filtering,
+                            # },
+                            # "web_reputation": {"filtering": web_reputation},
+                            "cisco_dvs_amw": {
+                                # "suspect_user_agent_scanning": "scan",
+                                # "other_categories": {
+                                #     "monitor": ["Encrypted File", "Unscannable"],
+                                #     "block": ["Outbreak Heuristics"],
+                                # },
+                                # "amw_scanning": {"amw_scan_status": "enable"},
+                                # -----------------------------------------------------
+                                # "suspect_user_agent_scanning": suspect_user_agent_scanning,
+                                # "other_categories": {
+                                #     anti_malware_categories_action: anti_malware_categories,
+                                # },
+                                # "amw_scanning": {"amw_scan_status": anti_malware_scanning},
+                                "malware_categories": {malware_action: malware_values},
+                            },
+                        },
+                    }
+                ]
+            }
+        )
+
+        return self._http_request(
+            "PUT",
+            f"{V3_PREFIX}/web_security/access_policies",
+            json_data=data,
+            resp_type="response",
+        )
+
+    def access_policy_applications_update_request(
+        self,
+        application: Optional[str] = None,
+        action: Optional[str] = None,
+        values: Optional[List[str]] = None,
+    ):
+        data = remove_empty_elements(
+            {
+                "access_policies": [
+                    {
+                        "policy_name": "global_policy",
+                        "avc": {
+                            "applications": {
+                                application: {action: {value: {} for value in values}},
+                            }
+                        },
+                    }
+                ]
+            }
+        )
 
         return self._http_request(
             "PUT",
@@ -144,7 +366,7 @@ class Client(BaseClient):
         Returns:
             Response: API response from Cisco WSA.
         """
-        params = assign_params(policy_names=policy_names)
+        params = assign_params(policy_names=",".join(policy_names))
 
         return self._http_request(
             "DELETE",
@@ -164,7 +386,20 @@ class Client(BaseClient):
             "GET", f"{V2_PREFIX}/configure/web_security/domain_map"
         )
 
-    def domain_map_create_request(self, domain_name, order, ip_addresses):
+    def domain_map_create_request(
+        self, domain_name: str, ip_addresses: List[str], order: int
+    ):
+        """
+        Create domain mapping.
+
+        Args:
+            domain_name (str): Domain name.
+            ip_addresses (List[str]): IP addresses to map to the domain.
+            order (int): Index of domain map in the collection.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco WSA.
+        """
         data = [
             {"IP_addresses": ip_addresses, "domain_name": domain_name, "order": order}
         ]
@@ -174,22 +409,49 @@ class Client(BaseClient):
         )
 
     def domain_map_update_request(
-        self, new_domain_name, domain_name, order, ip_addresses
+        self,
+        domain_name: str,
+        new_domain_name: Optional[str] = None,
+        ip_addresses: Optional[str] = None,
+        order: Optional[str] = None,
     ):
-        data = [
-            {
-                "IP_addresses": ip_addresses,
-                "domain_name": domain_name,
-                "new_domain_name": new_domain_name,
-                "order": order,
-            }
-        ]
+        """
+        Update domain map.
+
+        Args:
+            domain_name (str): Domain name to update.
+            new_domain_name (Optional[str], optional): New domain name. Defaults to None.
+            ip_addresses (Optional[str], optional): IP addresses to map. Defaults to None.
+            order (Optional[str], optional): Index of domain map. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco WSA.
+        """
+        data = remove_empty_elements(
+            [
+                {
+                    "domain_name": domain_name,
+                    "new_domain_name": new_domain_name,
+                    "IP_addresses": ip_addresses,
+                    "order": order,
+                }
+            ]
+        )
 
         return self._http_request(
             "PUT", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data
         )
 
-    def domain_map_delete_request(self, domain_name):
+    def domain_map_delete_request(self, domain_name: str):
+        """
+        Delete domain map.
+
+        Args:
+            domain_name (str): Domain name to delete.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco WSA.
+        """
         data = {"domain_name": domain_name}
 
         return self._http_request(
@@ -199,26 +461,31 @@ class Client(BaseClient):
         )
 
     def identification_profiles_list_request(
-        self, profile_names: str
-        ) -> Dict[str, Any]:
+        self, profile_names: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Get identification profiles.
+
+        Args:
+            profile_names (Optional[str], optional): Profile names to list. Defaults to None.
 
         Returns:
             Dict[str, Any]: API response from Cisco WSA.
         """
+        params = assign_params(profile_names=",".join(profile_names))
+
         return self._http_request(
-            "GET", f"{V3_PREFIX}/web_security/identification_profiles"
+            "GET", f"{V3_PREFIX}/web_security/identification_profiles", params=params
         )
 
     def identification_profiles_create_request(
         self,
-        profile_name: str = None,
-        status: str = None,
-        description: str = None,
-        protocols: str = None,
-        order: int = None,
-    ) -> Response:
+        profile_name: Optional[str] = None,
+        status: Optional[str] = None,
+        description: Optional[str] = None,
+        protocols: Optional[str] = None,
+        order: Optional[int] = None,
+    ):
         """
         Create identification profile.
 
@@ -227,7 +494,7 @@ class Client(BaseClient):
             status (str): Status - enable/disable.
             description (str): Description of identification profile.
             protocols (str): Protocols - HTTPS/SOCKS.
-            order (int): Index of Identification profile in the collection.
+            order (Optional[str]): Index of Identification profile in the collection.
 
         Returns:
             Response: API response from Cisco WSA.
@@ -259,12 +526,12 @@ class Client(BaseClient):
     def identification_profiles_update_request(
         self,
         profile_name: str,
-        new_profile_name: str = None,
-        status: str = None,
-        description: str = None,
-        protocols: str = None,
-        order: int = None,
-    ) -> Response:
+        new_profile_name: Optional[str] = None,
+        status: Optional[str] = None,
+        description: Optional[str] = None,
+        protocols: Optional[str] = None,
+        order: Optional[int] = None,
+    ):
         """
         Update identification profile.
 
@@ -338,13 +605,13 @@ class Client(BaseClient):
 
 
 def pagination(response: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]:
-    page = args.get("page")
-    page_size = args.get("page_size")
-    limit = args.get("limit")
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    limit = arg_to_number(args.get("limit"))
 
     if page and page_size:
-        offset =  (page - 1) * page_size
-        return response[offset:offset + page_size]
+        offset = (page - 1) * page_size
+        return response[offset : offset + page_size]
     elif limit:
         return response[:limit]
 
@@ -365,10 +632,18 @@ def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         "access_policies"
     )
 
+    paginated_response = pagination(response=response, args=args)
+
     readable_output = tableToMarkdown(
         name=f"Access Policies",
-        t=response,
-        headers=["policy_name", "policy_status", "policy_order", "policy_description"],
+        t=paginated_response,
+        headers=[
+            "policy_name",
+            "policy_status",
+            "policy_order",
+            "policy_description",
+            "policy_expiry",
+        ],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
@@ -377,43 +652,33 @@ def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         readable_output=readable_output,
         outputs_prefix="CiscoWSA.AccessPolicy",
         outputs_key_field="policy_name",
-        outputs=response,
-        raw_response=response,
+        outputs=paginated_response,
+        raw_response=paginated_response,
     )
 
 
-# def access_policy_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-#     policy_status = args.get('policy_status')
-#     policy_name = args.get('policy_name')
-#     policy_order = args.get('policy_order')
-#     profile_name = args.get('profile_name')
-#     auth = args.get('auth')
-#     predefined = args.get('predefined')
-#     custom = args.get('custom')
-#     is_inverse = args.get('is_inverse')
-#     state = args.get('state')
-#     allow_connect_ports = args.get('allow_connect_ports')
-#     block_protocols = args.get('block_protocols')
-#     block_custom_user_agents = args.get('block_custom_user_agents')
+def access_policy_create_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
+    policy_name = args["policy_name"]
+    policy_status = args["policy_status"]
+    policy_order = args["policy_order"]
+    identification_profile_name = args["identification_profile_name"]
+    policy_description = args.get("policy_description")
+    policy_expiry = args.get("policy_expiry")
 
-#     response = client.access_policy_create_request(
-#         policy_status,
-#         policy_name,
-#         policy_order,
-#         profile_name,
-#         auth,
-#         predefined,
-#         custom,
-#         is_inverse,
-#         state,
-#         allow_connect_ports,
-#         block_protocols,
-#         block_custom_user_agents
-#     )
+    response = client.access_policy_create_request(
+        policy_name=policy_name,
+        policy_status=policy_status,
+        policy_order=policy_order,
+        identification_profile_name=identification_profile_name,
+        policy_description=policy_description,
+        policy_expiry=policy_expiry,
+    )
 
-#     return CommandResults(
-#         # readable_output=readable_output,
-#     )
+    return CommandResults(
+        # readable_output=readable_output,
+    )
 
 
 def access_policy_update_command(
@@ -429,10 +694,205 @@ def access_policy_update_command(
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
+    policy_name = args["policy_name"]
     policy_status = args.get("policy_status")
-    policy_name = args.get("policy_name")
+    policy_description = args.get("policy_description")
+    policy_order = args.get("policy_order")
+    policy_expiry = args.get("policy_expiry")
 
-    response = client.access_policy_update_request(policy_status, policy_name)
+    response = client.access_policy_update_request(
+        policy_name=policy_name,
+        policy_status=policy_status,
+        policy_description=policy_description,
+        policy_order=policy_order,
+        policy_expiry=policy_expiry,
+    )
+
+    if response.status_code == 204:
+        readable_output = f"{policy_name} policy updated successfully."
+    else:
+        raise Exception(response.json())
+
+    return CommandResults(
+        readable_output=readable_output,
+    )
+
+
+def access_policy_protocols_user_agents_update_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
+    """
+    Update an access policy.
+
+    Args:
+        client (Client): Cisco WSA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    policy_name = args["policy_name"]
+    # policy_status = args.get("policy_status")
+    # policy_description = args.get("policy_description")
+    # policy_order = args.get("policy_order")
+    # policy_expiry = args.get("policy_expiry")
+
+    response = client.access_policy_protocols_user_agents_update_request(
+        policy_name=policy_name,
+        # policy_status=policy_status,
+        # policy_description=policy_description,
+        # policy_order=policy_order,
+        # policy_expiry=policy_expiry,
+    )
+
+    if response.status_code == 204:
+        readable_output = f"{policy_name} policy updated successfully."
+    else:
+        raise Exception(response.json())
+
+    return CommandResults(
+        readable_output=readable_output,
+    )
+
+
+def access_policy_url_filtering_update_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
+    """
+    Update an access policy.
+
+    Args:
+        client (Client): Cisco WSA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    policy_name = args["policy_name"]
+    # policy_status = args.get("policy_status")
+    # policy_description = args.get("policy_description")
+    # policy_order = args.get("policy_order")
+    # policy_expiry = args.get("policy_expiry")
+
+    response = client.access_policy_url_filtering_update_request(
+        policy_name=policy_name,
+        # policy_status=policy_status,
+        # policy_description=policy_description,
+        # policy_order=policy_order,
+        # policy_expiry=policy_expiry,
+    )
+
+    if response.status_code == 204:
+        readable_output = f"{policy_name} policy updated successfully."
+    else:
+        raise Exception(response.json())
+
+    return CommandResults(
+        readable_output=readable_output,
+    )
+
+
+def access_policy_applications_update_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
+    """
+    Update an access policy.
+
+    Args:
+        client (Client): Cisco WSA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    policy_name = args["policy_name"]
+    # policy_status = args.get("policy_status")
+    # policy_description = args.get("policy_description")
+    # policy_order = args.get("policy_order")
+    # policy_expiry = args.get("policy_expiry")
+
+    response = client.access_policy_applications_update_request(
+        policy_name=policy_name,
+        # policy_status=policy_status,
+        # policy_description=policy_description,
+        # policy_order=policy_order,
+        # policy_expiry=policy_expiry,
+    )
+
+    if response.status_code == 204:
+        readable_output = f"{policy_name} policy updated successfully."
+    else:
+        raise Exception(response.json())
+
+    return CommandResults(
+        readable_output=readable_output,
+    )
+
+
+def access_policy_objects_update_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
+    """
+    Update an access policy.
+
+    Args:
+        client (Client): Cisco WSA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    policy_name = args["policy_name"]
+    # policy_status = args.get("policy_status")
+    # policy_description = args.get("policy_description")
+    # policy_order = args.get("policy_order")
+    # policy_expiry = args.get("policy_expiry")
+
+    response = client.access_policy_objects_update_request(
+        policy_name=policy_name,
+        # policy_status=policy_status,
+        # policy_description=policy_description,
+        # policy_order=policy_order,
+        # policy_expiry=policy_expiry,
+    )
+
+    if response.status_code == 204:
+        readable_output = f"{policy_name} policy updated successfully."
+    else:
+        raise Exception(response.json())
+
+    return CommandResults(
+        readable_output=readable_output,
+    )
+
+
+def access_policy_anti_malware_update_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
+    """
+    Update an access policy.
+
+    Args:
+        client (Client): Cisco WSA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    policy_name = args["policy_name"]
+    # policy_status = args.get("policy_status")
+    # policy_description = args.get("policy_description")
+    # policy_order = args.get("policy_order")
+    # policy_expiry = args.get("policy_expiry")
+
+    response = client.access_policy_anti_malware_update_request(
+        policy_name=policy_name,
+        # policy_status=policy_status,
+        # policy_description=policy_description,
+        # policy_order=policy_order,
+        # policy_expiry=policy_expiry,
+    )
+
     if response.status_code == 204:
         readable_output = f"{policy_name} policy updated successfully."
     else:
@@ -456,9 +916,10 @@ def access_policy_delete_command(
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    policy_names = args["policy_names"]
+    policy_names = argToList(args["policy_names"])
 
     response = client.access_policy_delete_request(policy_names)
+
     if response.status_code == 204:
         readable_output = f"{policy_names} policy deleted successfully."
     else:
@@ -480,14 +941,22 @@ def domain_map_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    domain_names = args.get("domain_names")
+    domain_names = argToList(args.get("domain_names"))
 
     response = client.domain_map_list_request()
     print(response)
+    # .get("res_data", [])
+
+    if domain_names:
+        response = [
+            domain for domain in response if domain.get("domain_name") in domain_names
+        ]
+
+    paginated_response = pagination(response=response, args=args)
 
     readable_output = tableToMarkdown(
         name=f"Domain Map",
-        t=response,
+        t=paginated_response,
         headers=["domain_name", "IP_addresses", "order"],
         headerTransform=string_to_table_header,
         removeNull=True,
@@ -497,8 +966,8 @@ def domain_map_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
         readable_output=readable_output,
         outputs_prefix="CiscoWSA.DomainMap",
         outputs_key_field="domain_name",
-        outputs=response,
-        raw_response=response,
+        outputs=paginated_response,
+        raw_response=paginated_response,
     )
 
 
@@ -514,17 +983,17 @@ def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
         CommandResults: readable outputs for XSOAR.
     """
     domain_name = args.get("domain_name")
+    ip_addresses = argToList(args.get("ip_addresses"))
     order = args.get("order")
-    ip_addresses = args.get("ip_addresses")
 
-    response = client.domain_map_create_request(domain_name, order, ip_addresses)
-
-    return CommandResults(
-        outputs_prefix="CiscoWSA.DomainMapCreate",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response,
+    response = client.domain_map_create_request(
+        domain_name=domain_name,
+        ip_addresses=ip_addresses,
+        order=order,
     )
+
+    readable_output = ""
+    return CommandResults(readable_output=readable_output)
 
 
 def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -538,20 +1007,20 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
+    domain_name = args["domain_name"]
     new_domain_name = args.get("new_domain_name")
-    domain_name = args.get("domain_name")
-    order = args.get("order")
     ip_addresses = args.get("ip_addresses")
+    order = args.get("order")
 
     response = client.domain_map_update_request(
-        new_domain_name, domain_name, order, ip_addresses
+        domain_name=domain_name,
+        new_domain_name=new_domain_name,
+        ip_addresses=ip_addresses,
+        order=order,
     )
-    return CommandResults(
-        outputs_prefix="CiscoWSA.DomainMapUpdate",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response,
-    )
+
+    readable_output = ""
+    return CommandResults(readable_output=readable_output)
 
 
 def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -567,14 +1036,10 @@ def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
     """
     domain_name = args.get("domain_name")
 
-    response = client.domain_map_delete_request(domain_name)
+    response = client.domain_map_delete_request(domain_name=domain_name)
 
-    return CommandResults(
-        outputs_prefix="CiscoWSA.DomainMapDelete",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response,
-    )
+    readable_output = ""
+    return CommandResults(readable_output=readable_output)
 
 
 def identification_profiles_list_command(
@@ -590,17 +1055,17 @@ def identification_profiles_list_command(
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    profile_names = args.get("profile_names")
+    profile_names = argToList(args.get("profile_names"))
 
-    response = client.identification_profiles_list_request().get(
-        "identification_profiles", []
-    )
+    response = client.identification_profiles_list_request(
+        profile_names=profile_names
+    ).get("identification_profiles", [])
 
-    response = pagination(response, args)
-    
+    paginated_response = pagination(response, args)
+
     readable_output = tableToMarkdown(
         name=f"Identification Profiles",
-        t=response,
+        t=paginated_response,
         headers=[
             "order",
             "profile_name",
@@ -617,8 +1082,8 @@ def identification_profiles_list_command(
         readable_output=readable_output,
         outputs_prefix="CiscoWSA.IdentificationProfile",
         outputs_key_field="profile_name",
-        outputs=response,
-        raw_response=response,
+        outputs=paginated_response,
+        raw_response=paginated_response,
     )
 
 
@@ -670,13 +1135,12 @@ def identification_profiles_update_command(
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    # profile_name = args["profile_name"]
-    profile_name = args.get("profile_name")
+    profile_name = args["profile_name"]
     new_profile_name = args.get("new_profile_name")
     status = args.get("status")
     description = args.get("description")
     protocols = args.get("protocols")
-    order = args.get("order")
+    order = arg_to_number(args.get("order"))
 
     response = client.identification_profiles_update_request(
         profile_name=profile_name,
@@ -686,13 +1150,14 @@ def identification_profiles_update_command(
         protocols=protocols,
         order=order,
     )
-
-    if response.status_code == 204:
-        readable_output = f"Updated profile {profile_name} successfully."
-    else:
-        readable_output = f"ERROR: Updated profile {profile_name} successfully."
-
-    return CommandResults(readable_output=readable_output)
+    print(response)
+    print(response.json())
+    # if response.status_code == 204:
+    #     readable_output = f"Updated profile {profile_name} successfully."
+    # else:
+    #     readable_output = f"ERROR: Updated profile {profile_name} successfully."
+    # readable_output = 'test'
+    return CommandResults(readable_output="hey")
 
 
 def identification_profiles_delete_command(
@@ -742,9 +1207,8 @@ def url_categories_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     return CommandResults(
         readable_output=readable_output,
-        # outputs_prefix="CiscoWSA.UrlCategory",
-        # outputs_key_field="profile_name",
-        # outputs=response,
+        outputs_prefix="CiscoWSA.UrlCategory",
+        outputs=response,
         raw_response=response,
     )
 
@@ -772,10 +1236,16 @@ def main() -> None:
     proxy = params.get("proxy", False)
 
     command = demisto.command()
+
     commands = {
         "cisco-wsa-access-policy-list": access_policy_list_command,
-        # 'cisco-wsa-access-policy-create': access_policy_create_command,
+        "cisco-wsa-access-policy-create": access_policy_create_command,
         "cisco-wsa-access-policy-update": access_policy_update_command,
+        "cisco-wsa-access-policy-protocols-user-agents-update": access_policy_protocols_user_agents_update_command,
+        "cisco-wsa-access-policy-url-filtering-update": access_policy_url_filtering_update_command,
+        "cisco-wsa-access-policy-applications-update": access_policy_applications_update_command,
+        "cisco-wsa-access-policy-objects-update": access_policy_objects_update_command,
+        "cisco-wsa-access-policy-anti-malware-update": access_policy_anti_malware_update_command,
         "cisco-wsa-access-policy-delete": access_policy_delete_command,
         "cisco-wsa-domain-map-list": domain_map_list_command,
         "cisco-wsa-domain-map-create": domain_map_create_command,
