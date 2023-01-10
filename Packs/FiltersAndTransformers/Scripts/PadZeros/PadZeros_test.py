@@ -1,6 +1,5 @@
 from PadZeros import main
 import demistomock as demisto
-from CommonServerPython import entryTypes
 
 
 def test_pad_zeros(mocker):

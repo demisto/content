@@ -2,7 +2,7 @@ import pytest
 import dateparser
 from ModifyDateTime import apply_variation, main
 import demistomock as demisto
-from CommonServerPython import entryTypes
+
 
 @pytest.mark.parametrize('original_time, variation, expected', [
     # sanity
