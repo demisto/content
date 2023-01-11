@@ -7,6 +7,15 @@ from typing import Optional, Dict, List, Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+## Debugging
+import requests
+def debug(msg, url='https://demo.xsoar.engineer/nodered', endpoint='test'):
+    url = f'{url}/{endpoint}'
+    if type(msg) in [dict, list]:
+        return requests.post(url, json=msg)
+    return requests.post(url, data=f'{msg}')
+
+
 class OpenCVE():
     '''
     This is a Class for the OpenCVE APIs.
@@ -467,6 +476,25 @@ def parse_cve(ocve: OpenCVE, args: Dict, cve: Dict) -> Dict[str, str]:
     return parsed_cve
 
 
+def cve_to_context(parsed_cve: Dict[str, str]) -> Dict:
+    '''
+    Flattens the parsed_cve dict for context.
+
+    Args:
+        parsed_cves: A dict of a parsed_cve
+    Returns:
+        A flattened dict of the parsed_cve
+    '''
+    cve_context = {}
+    for item in parsed_cve:
+        if item != 'fields':
+            cve_context[item] = parsed_cve[item]
+        else:
+            for field_item in parsed_cve['fields']:
+                cve_context[field_item] = parsed_cve['fields'][field_item]
+    return cve_context
+
+
 def create_cves(parsed_cves: List[Dict[str, str]]):
     '''
     Creates CVEs in bulk.
@@ -510,6 +538,7 @@ def dedupe_cves(cves: List[Dict[str, str]]) -> List[Dict[str, str]]:
             deduped.append(cve)
     return deduped
 
+
 # Commands
 def test_module(ocve: OpenCVE) -> str:
     '''
@@ -522,12 +551,11 @@ def test_module(ocve: OpenCVE) -> str:
     '''
     try:
         ocve.get_my_vendors()
+        return 'ok'
 
     except Exception as e:
         if 'Read timed out.' not in str(e):
             raise
-
-    return 'ok'
 
 
 def cve_latest(ocve: OpenCVE, args: Dict) -> CommandResults:
@@ -608,9 +636,11 @@ def get_cve(ocve: OpenCVE, args: Dict) -> List[CommandResults]:
 
         pretty_results = cve_to_warroom(parsed_cve)
         readable = tableToMarkdown(parsed_cve.get('value'), pretty_results)
+        cve_context = cve_to_context(parsed_cve)
+
         results.append(CommandResults(
             outputs_prefix='OpenCVE.CVE',
-            outputs=parsed_cve,
+            outputs=cve_context,
             readable_output=readable,
             raw_response=cve_info,
             indicator=cve_to_indicator(parsed_cve)
@@ -928,7 +958,7 @@ def main():
     LOG(f'Command being called is {command}')
     try:
         if command == 'test-module':
-            return_outputs(*test_module(ocve))
+            return_results(test_module(ocve))
 
         elif command == 'cve-latest' or command == 'fetch-indicators':
             return_results(cve_latest(ocve, args))

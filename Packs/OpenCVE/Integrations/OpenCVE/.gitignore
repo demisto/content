@@ -1,2 +1,4 @@
 *.ipynb
 *.debug
+helpers.py
+jupyter_output.json
