@@ -1305,7 +1305,11 @@ def main():
     """
     # get the service API url
     base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
-    apitoken = demisto.params().get('apitoken')
+    apitoken = demisto.params().get("credentials", {}).get("password") or demisto.params().get('apitoken')
+
+    if not apitoken:
+        raise ValueError('Missing API token.')
+
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 

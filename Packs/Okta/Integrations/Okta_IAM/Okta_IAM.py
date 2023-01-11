@@ -918,7 +918,11 @@ def main():
     user_profile = None
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'), '/api/v1/')
-    token = params.get('apitoken')
+    token = params.get('credentials', {}).get('password') or params.get('apitoken')
+
+    if not token:
+        raise ValueError('Missing API token.')
+
     mapper_in = params.get('mapper-in')
     mapper_out = params.get('mapper-out')
     verify_certificate = not params.get('insecure', False)
