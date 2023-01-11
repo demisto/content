@@ -16,14 +16,14 @@
                 "item": {
                     "tags": [],
                     "vm_runtime": "data_items[82]_item_vm_runtime",
-                    "md5": "data_items[82]_item_md5",
+                    "md5": "data_md5",
                     "private": "data_items[82]_item_private",
                     "organization_id": "data_items[82]_item_organization_id",
                     "state": "data_items[82]_item_state",
-                    "login": "data_items[82]_item_login",
-                    "sha1": "data_items[82]_item_sha1",
+                    "login": "data_login",
+                    "sha1": "data_sha1",
                     "sample": "sample_id",
-                    "filename": "data_items[82]_item_filename",
+                    "filename": "data_filename",
                     "analysis": {
                         "behaviors": [],
                         "threat_score": 100,

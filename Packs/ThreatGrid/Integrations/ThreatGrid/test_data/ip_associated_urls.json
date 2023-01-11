@@ -7,11 +7,11 @@
         "urls": [
             {
                 "url": "data_urls[0]_url",
-                "details": "data_urls[0]_details"
+                "details": "data[0]_details"
             },
             {
                 "url": "data_urls[1]_url",
-                "details": "data_urls[1]_details"
+                "details": "data[1]_details"
             },
             {
                 "url": "data_urls[9]_url",

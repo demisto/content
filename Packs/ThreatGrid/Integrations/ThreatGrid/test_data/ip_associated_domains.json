@@ -7,11 +7,11 @@
         "domains": [
             {
                 "domain": "data_domains[0]_domain",
-                "details": "data_domains[0]_details"
+                "details": "data[0]_details"
             },
             {
                 "domain": "data_domains[1]_domain",
-                "details": "data_domains[1]_details"
+                "details": "data[1]_details"
             },
             {
                 "domain": "data_domains[9]_domain",

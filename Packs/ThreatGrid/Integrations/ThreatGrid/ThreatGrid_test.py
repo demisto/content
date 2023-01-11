@@ -90,7 +90,11 @@ def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
         assert result.get('filename') == f'sample_id-{args["artifact"]}'
     else:
         assert result.outputs_prefix == outputs
-        assert result.outputs['id'] == 'data_id'  # type: ignore[assignment]
+        assert result.outputs.get("id") == 'data_id'
+        assert result.outputs.get("md5") == 'data_md5'
+        assert result.outputs.get("sha1") == 'data_sha1'
+        assert result.outputs.get("status") == 'data_status'
+        assert result.outputs.get("sha256") == 'data_sha256'
 
 
 @pytest.mark.parametrize('url, args, outputs_prefix', [
@@ -145,7 +149,10 @@ def test_list_associated_samples_command(requests_mock, mock_client, url, args, 
     result = list_associated_samples_command(mock_client, args)
 
     assert result.outputs_prefix == outputs_prefix
-    assert result.outputs['samples'][0]['sha256'] == 'sha256'  # type: ignore[assignment]
+    assert result.outputs.get('samples')[0].get('sha256') == 'sha256'
+    assert result.outputs.get('samples')[0].get('filename') == 'data_samples[0]_filename'
+    assert result.outputs.get('samples')[0].get('details') == 'data_samples[0]_details'
+    assert result.outputs.get('samples')[0].get('login') == 'data_samples[0]_login'
 
 
 @pytest.mark.parametrize('url, args,outputs_prefix', [
@@ -207,6 +214,8 @@ def test_analysis_sample_command(requests_mock, mock_client, url, args, outputs_
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
     assert result.outputs['items']['network']['ip1']['ts'] == 'data_items_network_ip1_ts'
+    assert result.outputs['items']['network']['ip2']['ts'] == 'data_items_network_ip2_ts'
+    assert result.outputs['items']['network']['ip3']['ts'] == 'data_items_network_ip3_ts'
 
 
 def test_get_rate_limit_command(requests_mock, mock_client):
@@ -237,8 +246,9 @@ def test_get_rate_limit_command(requests_mock, mock_client):
     })
 
     assert result.outputs_prefix == 'ThreatGrid.RateLimit'
-    assert result.outputs[
-        'submissions-available'] == 'user_submissions-available'  # type: ignore[assignment]
+    assert result.outputs.get('submissions-available') == 'user_submissions-available'
+    assert result.outputs.get('submission-wait-seconds') == 'data_user_submission-wait-seconds'
+    assert result.outputs.get('submission-rate-limit') == []
 
 
 def test_who_am_i_command(requests_mock, mock_client):
@@ -262,7 +272,10 @@ def test_who_am_i_command(requests_mock, mock_client):
     result = who_am_i_command(mock_client, {})
 
     assert result.outputs_prefix == 'ThreatGrid.User'
-    assert result.outputs['email'] == 'data_email'  # type: ignore[assignment]
+    assert result.outputs.get('email') == 'data_email'
+    assert result.outputs.get('api_key') == 'data_api_key'
+    assert result.outputs.get('login') == 'data_login'
+    assert result.outputs.get('role') == 'data_role'
 
 
 def test_get_specific_feed_command(requests_mock, mock_client):
@@ -295,7 +308,10 @@ def test_get_specific_feed_command(requests_mock, mock_client):
     })
 
     assert result.outputs_prefix == 'ThreatGrid.Feed'
-    assert result.outputs[0]['sample'] == 'sample'  # type: ignore[assignment]
+    assert result.outputs[0].get('sample') == 'sample'
+    assert result.outputs[1].get('sample_sha256') == 'sample_sha256'
+    assert result.outputs[0].get('sample_sha1') == 'sample_sha1'
+    assert result.outputs[0].get('sample_md5') == 'sample_md5'
 
 
 @pytest.mark.parametrize('url, args, outputs_prefix', [
@@ -337,6 +353,7 @@ def test_associated_command(requests_mock, mock_client, url, args, outputs_prefi
 
     json_data = args['command_name'][12:].replace("-", "_")
     arg_name = args['command_name'].split('-')[2]
+    arg_name_2 = args['command_name'].split('-')[4]
 
     mock_response = load_mock_response(f'{json_data}.json')
 
@@ -345,7 +362,9 @@ def test_associated_command(requests_mock, mock_client, url, args, outputs_prefi
     result = associated_command(mock_client, args)
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
-    assert result.outputs[arg_name] == f'data_{arg_name}'  # type: ignore[assignment]
+    assert result.outputs.get(arg_name) == f'data_{arg_name}'
+    assert result.outputs.get(arg_name_2)[0].get('details') == 'data[0]_details'
+    assert result.outputs.get(arg_name_2)[1].get('details') == 'data[1]_details'
 
 
 @pytest.mark.parametrize('url, args, outputs_prefix', [
@@ -404,7 +423,11 @@ def test_feeds_command(requests_mock, mock_client, url, args, outputs_prefix):
     result = feeds_command(mock_client, args)
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
-    assert result.outputs[0]['ioc'] == 'data_items[0]_ioc'  # type: ignore[assignment]
+    assert result.outputs[0].get('ioc') == 'ioc'
+    assert result.outputs[0].get('confidence') == 'confidence'
+    assert result.outputs[0].get('severity') == 'severity'
+    assert result.outputs[0].get('path') == 'path'
+    assert result.outputs[0].get('sample_id') == 'sample_id'
 
 
 def test_upload_sample_command(requests_mock, mock_client):
@@ -431,7 +454,10 @@ def test_upload_sample_command(requests_mock, mock_client):
     result = upload_sample_command(mock_client, {'url': 'url'})
 
     assert result.outputs_prefix == 'ThreatGrid.Sample'
-    assert result.outputs['id'] == 'data_id'  # type: ignore[assignment]
+    assert result.outputs.get('id') == 'data_id'
+    assert result.outputs.get('sha256') == 'data_sha256'
+    assert result.outputs.get('status') == 'data_status'
+    assert result.outputs.get('state') == 'data_state'
 
 
 @pytest.mark.parametrize('url_prefix ,args, outputs_prefix', [
@@ -467,6 +493,9 @@ def test_search_command(requests_mock, mock_client, url_prefix, args, outputs_pr
 
     assert result.outputs_prefix == 'ThreatGrid.search'
     assert result.outputs_key_field == outputs_prefix
+    assert result.outputs.get('items')[0].get('result') == 'data_items[0]_result'
+    assert result.outputs.get('items')[1].get('result') == 'data_items[1]_result'
+    assert result.outputs.get('items')[2].get('result') == 'data_items[2]_result'
 
 
 def test_search_submission_command(requests_mock, mock_client):
@@ -493,28 +522,29 @@ def test_search_submission_command(requests_mock, mock_client):
     result = search_submission_command(mock_client, {})
 
     assert result.outputs_prefix == 'ThreatGrid.Sample'
-    assert result.outputs[0]['sample'] == 'sample_id'  # type: ignore[assignment]
+    assert result.outputs[0].get('sample') == 'sample_id'
+    assert result.outputs[0].get('md5') == 'data_md5'
+    assert result.outputs[0].get('sha1') == 'data_sha1'
+    assert result.outputs[0].get('filename') == 'data_filename'
 
 
-@pytest.mark.parametrize('args,outputs_prefix,outputs_key_field', [({
+@pytest.mark.parametrize('args', [({
     'command_name': 'ip',
     'ip': 'ip'
-}, 'IP', 'indicator'), ({
+}), ({
     'command_name': 'url',
     'url': 'url'
-}, 'URL', 'url'), ({
+}), ({
     'command_name': 'domain',
     'domain': 'domain'
-}, 'Domain', 'domain'), ({
+}), ({
     'command_name': 'file',
     'file': 'file'
-}, 'File', 'md5')])
+})])
 def test_reputation_command(
     requests_mock,
     mock_client,
     args,
-    outputs_prefix,
-    outputs_key_field,
 ):
     """
     Scenario: Search threat grid submissions.
@@ -605,6 +635,7 @@ def test_parse_url_indicator():
     result = parse_url_indicator('url', DBOT_SCORE)
 
     assert result.outputs_key_field == 'url'
+    assert result.outputs_prefix == 'ThreatGrid.URL'
 
 
 def test_parse_domain_indicator():
@@ -614,3 +645,4 @@ def test_parse_domain_indicator():
     result = parse_domain_indicator('domain', DBOT_SCORE)
 
     assert result.outputs_key_field == 'domain'
+    assert result.outputs_prefix == 'ThreatGrid.Domain'

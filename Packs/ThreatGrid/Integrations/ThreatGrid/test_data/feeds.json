@@ -7,13 +7,13 @@
         "index": "data_index",
         "items": [
             {
-                "sample_id": "data_items[0]_sample_id",
+                "sample_id": "sample_id",
                 "sample_sha256": "data_items[0]_sample_sha256",
                 "timestamp": "data_items[0]_timestamp",
-                "path": "data_items[0]_path",
-                "ioc": "data_items[0]_ioc",
-                "confidence": "data_items[0]_confidence",
-                "severity": "data_items[0]_severity"
+                "path": "path",
+                "ioc": "ioc",
+                "confidence": "confidence",
+                "severity": "severity"
             },
             {
                 "sample_id": "data_items[1]_sample_id",
