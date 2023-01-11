@@ -1,5 +1,6 @@
 import pytest
-from FormattedDateToEpoch import date_to_epoch
+from FormattedDateToEpoch import date_to_epoch, main
+import demistomock as demisto
 
 
 @pytest.mark.parametrize(
@@ -37,3 +38,21 @@ def test_date_to_epoch_without_timezone(date, formatter):
     ])
 def test_date_to_epoch_different_format(date, formatter, date_without_formatter):
     assert date_to_epoch(date, formatter) == date_to_epoch(date_without_formatter)
+
+
+@pytest.mark.parametrize('args', [
+    {'value': '2020-03-31T13:19:41.000', 'formatter': '%Y-%m-%dT%H:%M:%S.%f'},
+])
+def test_date_to_epoch_main(mocker, args):
+    """
+    Given:
+        value and formatter
+    When:
+        date_to_epoch
+    Then:
+        demisto.results called
+    """
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto.results.call_count == 1
