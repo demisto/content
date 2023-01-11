@@ -1,29 +1,36 @@
-# Primary Playbook to Handle ASM sourced Alerts.
-
-This playbook aims to provide enrichment of ASM alerts by searching for mentions of associated IP addresses within 
-Third-Party asset inventory tools (ServiceNow CMDB) and for vulnerability details from Vulnerability Assessment tools (Tenable.io.)
+This playbook handles ASM alerts by enriching asset information and providing a means of remediating the issue directly or through contacting service owners.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex ASM - Extract IP Indicator
-* Cortex ASM - CMDB Enrichment
-* Cortex ASM - Vulnerability Management Enrichment
+* Cortex ASM - Remediation
+* Cortex ASM - Remediation Guidance
+* Cortex ASM - Enrichment
+* Cortex ASM - Detect Service
 
 ### Integrations
-There are no integrations for this playbook.
+* ServiceNow v2
 
 ### Scripts
-There are no scripts for this playbook.
+* GenerateASMReport
+* GridFieldSetup
+* GetTime
 
 ### Commands
-There are no commands for this playbook.
+* servicenow-create-ticket
+* send-mail
+* closeInvestigation
 
 ## Playbook Inputs
 ---
-There are not inputs for this playbook.
 
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| AutomatedRemediation | Decide whether to potentially skip analyst intervention and conduct automated remediation if meeting the criteria specified here: https://cortex.marketplace.pan.dev/marketplace/details/CortexAttackSurfaceManagement/ <br/><br/>Default is "False" \(don't do automated remediation\).  Set "True" to turn this feature on. | False | Required |
+| OwnerNotificationSubject | Subject of the notification \(email or ticket\) sent to potential service owner. | A new security risk was identified on an external service owned by your team | Required |
+| OwnerNotificationBody | Body of the notification \(email or ticket\) sent to potential service owner. | Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}&lt;br&gt;&lt;br&gt;<br/>Description: ${alert.details}<br/>&lt;br&gt;&lt;br&gt;<br/><br/> | Required |
+| RemediationRule | The firewall rule that will be used for remediating internet exposures.  | Remediation-Security-Group | Required |
 
 ## Playbook Outputs
 ---
@@ -31,4 +38,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex ASM - ASM Alert](https://raw.githubusercontent.com/demisto/content/15935bbaa183dd38239aada567b1eb7cbae9b704/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ASM_Alert.png)
+![Cortex ASM - ASM Alert](../doc_files/Cortex_ASM_-_ASM_Alert.png)

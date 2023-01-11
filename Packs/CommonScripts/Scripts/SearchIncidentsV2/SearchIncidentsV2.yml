@@ -12,36 +12,31 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of incident statuses by which to filter the
-    results. For example: assigned.'
+  description: 'A comma-separated list of incident statuses by which to filter the results. For example: assigned.'
   isArray: true
   name: status
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of incident statuses to exclude from the results.  For
-    example: assigned.'
+  description: 'A comma-separated list of incident statuses to exclude from the results.  For example: assigned.'
   isArray: true
   name: notstatus
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of incident close reasons by which to filter
-    the results.
+  description: A comma-separated list of incident close reasons by which to filter the results.
   isArray: true
   name: reason
   required: false
   secret: false
 - default: false
-  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00
-    or 2006-01-02T15:04:05Z)
+  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   isArray: false
   name: fromdate
   required: false
   secret: false
 - default: false
-  description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or
-    2006-01-02T15:04:05Z)
+  description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   isArray: false
   name: todate
   required: false
@@ -95,8 +90,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Use free form query (use Lucene syntax) as filter. All other filters
-    will be ignored when this filter is used.
+  description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
   isArray: false
   name: query
   required: false
@@ -129,8 +123,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: If provided, the value of this argument will be set under the searchResultsLabel
-    context key for each incident found.
+  description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
   isArray: false
   name: searchresultslabel
   required: false
@@ -193,7 +186,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.8.37753
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

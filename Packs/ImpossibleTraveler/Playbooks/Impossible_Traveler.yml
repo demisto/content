@@ -3507,5 +3507,6 @@ outputs:
   description: Endpoint domain name
   type: string
 fromversion: 5.0.0
+toversion: 5.9.9
 tests:
 - Impossible Traveler - Test

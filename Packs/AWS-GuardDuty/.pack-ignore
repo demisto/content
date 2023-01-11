@@ -1,5 +1,15 @@
 [file:AWSGuardDuty.yml]
-ignore=IN126,BA108,BA109,IN145
+ignore=IN126,BA108,BA109,IN145,IN124
 
 [known_words]
 gd
+threatintel
+enableKubernetesLogs
+ebsVolumesMalwareProtection
+findingFrequency
+Eks
+Ebs
+Ecs
+returnRawResponse
+aws-gd-get-findings
+AWS

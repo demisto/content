@@ -1,0 +1,19 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "domain_name": "test.domain.com",
+      "created": "2022-03-21T16:30:20.012035Z",
+      "comment": "test",
+      "is_wildcard": false
+    },
+    {
+      "domain_name": "test2.domain.com",
+      "created": "2022-03-21T16:30:20.012035Z",
+      "comment": "test2",
+      "is_wildcard": false
+    }
+  ]
+}

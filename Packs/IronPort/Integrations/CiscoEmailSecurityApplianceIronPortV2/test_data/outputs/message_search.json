@@ -1,0 +1,216 @@
+{
+    "meta": {
+      "num_bad_records": 0,
+      "totalCount": 4
+    },
+    "data": [
+      {
+        "attributes": {
+          "hostName": "",
+          "friendly_from": [
+            "test@test.com"
+          ],
+          "isCompleteData": "N/A",
+          "messageStatus": {
+            "780": "Quarantined by Anti-Spam/Graymail"
+          },
+          "recipientMap": {
+            "780": [
+              "test@test.com"
+            ]
+          },
+          "senderIp": "1.1.1.1",
+          "mailPolicy": [
+            "DEFAULT"
+          ],
+          "senderGroup": "ACCEPTLIST",
+          "subject": "test",
+          "mid": [
+            780
+          ],
+          "senderDomain": "test.com",
+          "finalSubject": {
+            "780": "test"
+          },
+          "direction": "incoming",
+          "icid": 23142,
+          "morDetails": {
+            
+          },
+          "replyTo": "N/A",
+          "timestamp": "20 Sep 2022 14:54:50 (GMT +00:00)",
+          "messageID": {
+            "780": "<TEST.TEST.COM>"
+          },
+          "verdictChart": {
+            "780": "16140210"
+          },
+          "recipient": [
+            "test@test.com"
+          ],
+          "sender": "test@test.com",
+          "serialNumber": "123123-123123",
+          "allIcid": [
+            23142
+          ],
+          "sbrs": "3.5"
+        }
+      },
+      {
+        "attributes": {
+          "hostName": "",
+          "friendly_from": [
+            "test@test.com"
+          ],
+          "isCompleteData": "N/A",
+          "messageStatus": {
+            "775": "Quarantined by Anti-Spam/Graymail"
+          },
+          "recipientMap": {
+            "775": [
+              "test@test.com"
+            ]
+          },
+          "senderIp": "1.1.1.1",
+          "mailPolicy": [
+            "DEFAULT"
+          ],
+          "senderGroup": "ACCEPTLIST",
+          "subject": "test",
+          "mid": [
+            775
+          ],
+          "senderDomain": "test.com",
+          "finalSubject": {
+            "775": "test"
+          },
+          "direction": "incoming",
+          "icid": 23125,
+          "morDetails": {
+            
+          },
+          "replyTo": "N/A",
+          "timestamp": "20 Sep 2022 14:23:28 (GMT +00:00)",
+          "messageID": {
+            "775": "<TEST.TEST.COM>"
+          },
+          "verdictChart": {
+            "775": "16140210"
+          },
+          "recipient": [
+            "test@test.com"
+          ],
+          "sender": "test@test.com",
+          "serialNumber": "123123-123123",
+          "allIcid": [
+            23125
+          ],
+          "sbrs": "3.5"
+        }
+      },
+      {
+        "attributes": {
+          "hostName": "",
+          "friendly_from": [
+            "test@test.com"
+          ],
+          "isCompleteData": "N/A",
+          "messageStatus": {
+            "774": "Quarantined by Anti-Spam/Graymail"
+          },
+          "recipientMap": {
+            "774": [
+              "test@test.com"
+            ]
+          },
+          "senderIp": "1.1.1.1",
+          "mailPolicy": [
+            "DEFAULT"
+          ],
+          "senderGroup": "ACCEPTLIST",
+          "subject": "test",
+          "mid": [
+            774
+          ],
+          "senderDomain": "test.com",
+          "finalSubject": {
+            "774": "test"
+          },
+          "direction": "incoming",
+          "icid": 23124,
+          "morDetails": {
+            
+          },
+          "replyTo": "N/A",
+          "timestamp": "20 Sep 2022 14:23:22 (GMT +00:00)",
+          "messageID": {
+            "774": "<TEST.TEST.COM>"
+          },
+          "verdictChart": {
+            "774": "16140210"
+          },
+          "recipient": [
+            "test@test.com"
+          ],
+          "sender": "test@test.com",
+          "serialNumber": "123123-123123",
+          "allIcid": [
+            23124
+          ],
+          "sbrs": "3.4"
+        }
+      },
+      {
+        "attributes": {
+          "hostName": "",
+          "friendly_from": [
+            "test@test.com"
+          ],
+          "isCompleteData": "N/A",
+          "messageStatus": {
+            "773": "Quarantined by Anti-Spam/Graymail"
+          },
+          "recipientMap": {
+            "773": [
+              "test.com"
+            ]
+          },
+          "senderIp": "1.1.1.1",
+          "mailPolicy": [
+            "DEFAULT"
+          ],
+          "senderGroup": "ACCEPTLIST",
+          "subject": "test",
+          "mid": [
+            773
+          ],
+          "senderDomain": "test.com",
+          "finalSubject": {
+            "773": "test"
+          },
+          "direction": "incoming",
+          "icid": 23123,
+          "morDetails": {
+            
+          },
+          "replyTo": "N/A",
+          "timestamp": "20 Sep 2022 14:23:12 (GMT +00:00)",
+          "messageID": {
+            "773": "<TEST.TEST.COM>"
+          },
+          "verdictChart": {
+            "773": "16140210"
+          },
+          "recipient": [
+            "test.com"
+          ],
+          "sender": "test@test.com",
+          "serialNumber": "123123-123123",
+          "allIcid": [
+            23123
+          ],
+          "sbrs": "3.5"
+        }
+      }
+    ]
+  }

@@ -1,9 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-import requests
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):

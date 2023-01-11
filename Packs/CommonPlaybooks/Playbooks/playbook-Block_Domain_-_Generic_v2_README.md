@@ -13,11 +13,12 @@ Supported integrations for this playbook:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Domain - Symantec Messaging Gateway
 * Block Domain - Cisco Stealthwatch
 * Block Domain - Trend Micro Apex One
-* Block Domain - Proofpoint Threat Response
 * Block Domain - Zscaler
+* Block Domain - External Dynamic List
+* Block Domain - Proofpoint Threat Response
+* Block Domain - Symantec Messaging Gateway
 * Block Domain - FireEye Email Security
 
 ### Integrations

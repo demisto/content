@@ -1,0 +1,71 @@
+{
+  "data": {
+    "messages": {
+      "ampTgCategories": [
+        
+      ],
+      "showDLPDetails": true,
+      "direction": "outgoing",
+      "smtpAuthId": "",
+      "sender": "test@test.com",
+      "midHeader": "<test@test.com>",
+      "timestamp": "28 Aug 2022 06:56:26 (GMT)",
+      "hostName": "esa2.test.eu.iphmx.com (1.1.1.1)",
+      "mid": [
+        84
+      ],
+      "sendingHostSummary": {
+        
+      },
+      "attachments": "",
+      "messageSize": "84.56 (KB)",
+      "dlpDetails": {
+        "violationSeverity": "HIGH",
+        "dlpMatchedContent": [
+          {
+            "messagePartMatch": [
+              {
+                "classifier": "Credit Card Numbers",
+                "classifierMatch": [
+                  "CVV Code\nCountry/Currency\nResult\n\nAmex\n\n374245455400126\n\n05/2023\n\nSuccess\n\nAmex\n\n378282246310005",
+                  "Mastercard\n\n5425233430109903\n\n04/2023\n\nSuccess\n\nMastercard\n\n5425233430109903\n\n12/2004\n\nInvalid exp. date\n\nMastercard",
+                  "Discover\n\n6011000991300009\n\n12/2023\n\nUS\nUSD\n\nSuccess\n\nJCB",
+                  "Discover\n\n6011000990099818",
+                  "Visa\n\n4005562233445564\n\n03/2023\n\n212\n\n0.0\n\nNM\n\nVisa\n\n4311780000241409\n\n03/2023\n\n434\n\n0.0\n\nNP\n\nVisa",
+                  "Visa\n\n4917484589897107",
+                  "Visa\n\n4311780000241417",
+                  "Visa\n\n4263982640269299 (3 matches)",
+                  "China Union Pay\n\n6250941006528599 (2 matches)",
+                  "Discover\n\n\n\n\n6011000990099818",
+                  "Amex\n\n\n\n\n374245455400126\n\n\n\n\n05/2023\n\n\n\n\n\n\n\n\n\n\nSuccess\n\n\n\n\n\n\n\nAmex\n\n\n\n\n378282246310005",
+                  "China Union Pay\n\n\n\n\n6250941006528599 (2 matches)",
+                  "Visa\n\n\n\n\n4311780000241409",
+                  "Mastercard\n\n\n\n\n5425233430109903\n\n\n\n\n04/2023\n\n\n\n\n\n\n\n\n\n\nSuccess\n\n\n\n\n\n\n\nMastercard\n\n\n\n\n5425233430109903\n\n\n\n\n12/2004\n\n\n\n\n\n\n\n\n\n\nInvalid exp. date",
+                  "Visa\n\n\n\n\n4005562233445564",
+                  "Visa\n\n\n\n\n4917484589897107",
+                  "Discover\n\n\n\n\n6011000991300009",
+                  "Visa\n\n\n\n\n4263982640269299 (3 matches)",
+                  "Visa\n\n\n\n\n4311780000241417"
+                ]
+              }
+            ],
+            "messagePart": "Message"
+          }
+        ],
+        "mid": 84,
+        "riskFactor": 72,
+        "dlpPolicy": "PCI-DSS (Payment Card Industry Data Security Standard)"
+      },
+      "messageStatus": "Delivered",
+      "allIcid": [
+        3862
+      ],
+      "senderGroup": "RELAY_O365",
+      "recipient": [
+        "test@test.com"
+      ],
+      "headerFrom": "test@test.com",
+      "subject": "Fw: Re: "
+    }
+  }
+}

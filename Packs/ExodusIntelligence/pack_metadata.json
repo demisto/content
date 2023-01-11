@@ -10,28 +10,8 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Security",
-        "Threat Intelligence",
-        "Attack",
-        "Courses of Action",
-        "Alerts",
-        "Incident Handling",
-        "Incident Response",
-        "Malware",
-        "Network",
-        "Security"
     ],
     "useCases": [
-        "Network Security",
-        "Brute Force",
-        "Vulnerability Management",
-        "Threat Intelligence Management",
-        "Incident Response",
-        "Asset Management",
-        "Case Management",
-        "Default",
-        "Hunting",
-        "Malware"
     ],
     "keywords": [
         "Detection",

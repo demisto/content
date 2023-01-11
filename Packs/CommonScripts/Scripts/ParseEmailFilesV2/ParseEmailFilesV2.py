@@ -87,12 +87,12 @@ def extract_file_info(entry_id: str) -> tuple:
 
         file_path = result[0]['Contents']['path']
         file_name = result[0]['Contents']['name']
-        result = demisto.executeCommand('getEntry', {'id': entry_id})
-        if is_error(result):
-            return_error(get_error(result))
 
-        file_metadata = result[0]['FileMetadata']
-        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        dt_file_type = demisto.dt(demisto.context(), f"File(val.EntryID=='{entry_id}').Type")
+        if isinstance(dt_file_type, list):
+            file_type = dt_file_type[0]
+        else:
+            file_type = dt_file_type
 
     except Exception as ex:
         return_error(

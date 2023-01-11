@@ -1,0 +1,189 @@
+{
+    "resources": [
+        {
+            "added": "2016-03-04",
+            "categories": [
+                "Adobe",
+                "Adobe Acrobat/Reader",
+                "Denial of Service",
+                "Remote Execution"
+            ],
+            "cves": [
+                "CVE-2016-0931"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "M",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "P",
+                    "confidentialityImpact": "P",
+                    "exploitScore": 8.5888,
+                    "impactScore": 6.443,
+                    "integrityImpact": "P",
+                    "score": 6.8,
+                    "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "N",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 2.8353,
+                    "impactScore": 5.8731,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 8.8,
+                    "userInteraction": "R",
+                    "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Adobe Reader and Acrobat before 11.0.14, Acrobat and Acrobat Reader DC Classic before 15.006.30119, and Acrobat and Acrobat Reader DC Continuous before 15.010.20056 on Windows and OS X allow attackers to execute arbitrary code or cause a denial of service (memory corruption) via a crafted FileAttachment annotation, a different vulnerability than CVE-2016-0933, CVE-2016-0936, CVE-2016-0938, CVE-2016-0939, CVE-2016-0942, CVE-2016-0944, CVE-2016-0945, and CVE-2016-0946.</p>",
+                "text": "Adobe Reader and Acrobat before 11.0.14, Acrobat and Acrobat Reader DC Classic before 15.006.30119, and Acrobat and Acrobat Reader DC Continuous before 15.010.20056 on Windows and OS X allow attackers to execute arbitrary code or cause a denial of service (memory corruption) via a crafted FileAttachment annotation, a different vulnerability than CVE-2016-0933, CVE-2016-0936, CVE-2016-0938, CVE-2016-0939, CVE-2016-0942, CVE-2016-0944, CVE-2016-0945, and CVE-2016-0946."
+            },
+            "exploits": 0,
+            "id": "acrobat-cve-2016-0931",
+            "malwareKits": 0,
+            "modified": "2019-12-02",
+            "pci": {
+                "adjustedCVSSScore": 6,
+                "adjustedSeverityScore": 4,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2016-01-07",
+            "riskScore": 620.23,
+            "severity": "Severe",
+            "severityScore": 7,
+            "title": "Adobe Acrobat: APSB16-02 (CVE-2016-0931): Security Updates Available for Adobe Acrobat and Reader"
+        },
+        {
+            "added": "2016-03-04",
+            "categories": [
+                "Adobe",
+                "Adobe Acrobat/Reader",
+                "Remote Execution"
+            ],
+            "cves": [
+                "CVE-2016-0932"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "M",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "P",
+                    "confidentialityImpact": "P",
+                    "exploitScore": 8.5888,
+                    "impactScore": 6.443,
+                    "integrityImpact": "P",
+                    "score": 6.8,
+                    "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "N",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 2.8353,
+                    "impactScore": 5.8731,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 8.8,
+                    "userInteraction": "R",
+                    "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Use-after-free vulnerability in the Doc object implementation in Adobe Reader and Acrobat before 11.0.14, Acrobat and Acrobat Reader DC Classic before 15.006.30119, and Acrobat and Acrobat Reader DC Continuous before 15.010.20056 on Windows and OS X allows attackers to execute arbitrary code via unspecified vectors, a different vulnerability than CVE-2016-0934, CVE-2016-0937, CVE-2016-0940, and CVE-2016-0941.</p>",
+                "text": "Use-after-free vulnerability in the Doc object implementation in Adobe Reader and Acrobat before 11.0.14, Acrobat and Acrobat Reader DC Classic before 15.006.30119, and Acrobat and Acrobat Reader DC Continuous before 15.010.20056 on Windows and OS X allows attackers to execute arbitrary code via unspecified vectors, a different vulnerability than CVE-2016-0934, CVE-2016-0937, CVE-2016-0940, and CVE-2016-0941."
+            },
+            "exploits": 0,
+            "id": "acrobat-cve-2016-0932",
+            "malwareKits": 0,
+            "modified": "2019-12-02",
+            "pci": {
+                "adjustedCVSSScore": 6,
+                "adjustedSeverityScore": 4,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2016-01-07",
+            "riskScore": 620.23,
+            "severity": "Severe",
+            "severityScore": 7,
+            "title": "Adobe Acrobat: APSB16-02 (CVE-2016-0932): Security Updates Available for Adobe Acrobat and Reader"
+        },
+        {
+            "added": "2016-03-04",
+            "categories": [
+                "Adobe",
+                "Adobe Acrobat/Reader",
+                "Denial of Service",
+                "Remote Execution"
+            ],
+            "cves": [
+                "CVE-2016-0933"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "L",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "C",
+                    "confidentialityImpact": "C",
+                    "exploitScore": 9.9968,
+                    "impactScore": 10.0008,
+                    "integrityImpact": "C",
+                    "score": 10.0,
+                    "vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C"
+                },
+                "v3": {
+                    "attackComplexity": "L",
+                    "attackVector": "N",
+                    "availabilityImpact": "H",
+                    "confidentialityImpact": "H",
+                    "exploitScore": 3.887,
+                    "impactScore": 5.8731,
+                    "integrityImpact": "H",
+                    "privilegeRequired": "N",
+                    "scope": "U",
+                    "score": 9.8,
+                    "userInteraction": "N",
+                    "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>Adobe Reader and Acrobat before 11.0.14, Acrobat and Acrobat Reader DC Classic before 15.006.30119, and Acrobat and Acrobat Reader DC Continuous before 15.010.20056 on Windows and OS X allow attackers to execute arbitrary code or cause a denial of service (memory corruption) via unspecified vectors, a different vulnerability than CVE-2016-0931, CVE-2016-0936, CVE-2016-0938, CVE-2016-0939, CVE-2016-0942, CVE-2016-0944, CVE-2016-0945, and CVE-2016-0946.</p>",
+                "text": "Adobe Reader and Acrobat before 11.0.14, Acrobat and Acrobat Reader DC Classic before 15.006.30119, and Acrobat and Acrobat Reader DC Continuous before 15.010.20056 on Windows and OS X allow attackers to execute arbitrary code or cause a denial of service (memory corruption) via unspecified vectors, a different vulnerability than CVE-2016-0931, CVE-2016-0936, CVE-2016-0938, CVE-2016-0939, CVE-2016-0942, CVE-2016-0944, CVE-2016-0945, and CVE-2016-0946."
+            },
+            "exploits": 0,
+            "id": "acrobat-cve-2016-0933",
+            "malwareKits": 0,
+            "modified": "2019-12-02",
+            "pci": {
+                "adjustedCVSSScore": 10,
+                "adjustedSeverityScore": 5,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2016-01-07",
+            "riskScore": 844.07,
+            "severity": "Critical",
+            "severityScore": 10,
+            "title": "Adobe Acrobat: APSB16-02 (CVE-2016-0933): Security Updates Available for Adobe Acrobat and Reader"
+        }
+    ],
+    "page": {
+        "number": 3,
+        "size": 3,
+        "totalResources": 189102,
+        "totalPages": 63034
+    }
+}

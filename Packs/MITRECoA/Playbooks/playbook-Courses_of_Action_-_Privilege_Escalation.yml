@@ -1,0 +1,825 @@
+id: Courses of Action - Privilege Escalation
+name: Courses of Action - Privilege Escalation
+description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. It utilizes each of the sub-playbooks for specific techniques that belong to this phase (tactic) according to the MITRE ATT&CK kill chain. The sub-playbook called depends on the technique input.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n \nTactic:\n- TA0004: Privilege Escalation\n\nMITRE ATT&CK Description: \nThe adversary is trying to gain higher-level permissions.\n\nPrivilege Escalation consists of techniques that adversaries use to gain higher-level permissions on a system or network. Adversaries can often enter and explore a network with unprivileged access but require elevated permissions to follow through on their objectives. Common approaches are to take advantage of system weaknesses, misconfigurations, and vulnerabilities. Examples of elevated access include: • SYSTEM/root level• local administrator• user account with admin-like access • user accounts with access to specific system or perform specific functionThese techniques often overlap with Persistence techniques, as OS features that let an adversary persist can execute in an elevated context.\n\nPossible playbook triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+inputs:
+- description: Mitre ATT&CK ID of a technique.
+  key: technique
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the rules.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs:
+- contextPath: Handled.Techniques
+  description: The technique handled in this playbook
+  type: unknown
+- contextPath: PrivilegeEscalation.ProductList
+  description: Products used for remediation.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "8"
+      - "9"
+      - "12"
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 21a87285-b163-4fd0-8c48-91036692a8e1
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 21a87285-b163-4fd0-8c48-91036692a8e1
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1068
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9e2c77e2-3a25-480f-8f34-33a983fee615
+      iscommand: false
+      name: Exploitation for Privilege Escalation
+      description: ""
+      type: condition
+      version: -1
+    taskid: 9e2c77e2-3a25-480f-8f34-33a983fee615
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d6112d7-9d11-4c8e-8fdb-93756612a187
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6d6112d7-9d11-4c8e-8fdb-93756612a187
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1210
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1078
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab8390f5-61f1-4d07-85b5-1eaa42859566
+      iscommand: false
+      name: Valid Accounts
+      description: ""
+      type: condition
+      version: -1
+    taskid: ab8390f5-61f1-4d07-85b5-1eaa42859566
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 195
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1547
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3fe16bf2-0d5a-4a27-8457-fb6333f1543e
+      iscommand: false
+      name: Boot or Logon Autostart Execution
+      description: ""
+      type: condition
+      version: -1
+    taskid: 3fe16bf2-0d5a-4a27-8457-fb6333f1543e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 195
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 487fb8da-e6b6-4b76-84da-0438afc3baa6
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1547.001 - Registry Run Keys Startup Folder
+      playbookId: MITRE ATT&CK CoA - T1547.001 - Registry Run Keys Startup Folder
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 487fb8da-e6b6-4b76-84da-0438afc3baa6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 370
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5d911d42-1458-4935-8777-6cc5e8ceb5f6
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1543.003 - Windows Service
+      playbookId: MITRE ATT&CK CoA - T1543.003 - Windows Service
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 5d911d42-1458-4935-8777-6cc5e8ceb5f6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 370
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1547.001
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 66514c99-e128-4c3a-8213-facfacce5973
+      iscommand: false
+      name: Registry Run Keys Startup Folder
+      description: ""
+      type: condition
+      version: -1
+    taskid: 66514c99-e128-4c3a-8213-facfacce5973
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 195
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1543.003
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7d3e93c2-6297-452a-8fc5-1f20acdda92d
+      iscommand: false
+      name: Windows Service
+      description: ""
+      type: condition
+      version: -1
+    taskid: 7d3e93c2-6297-452a-8fc5-1f20acdda92d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 195
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0d6baa3c-605b-4162-8142-ecf5a94579dc
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1068 - Exploitation for Privilege Escalation
+      playbookId: MITRE ATT&CK CoA - T1068 - Exploitation for Privilege Escalation
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 0d6baa3c-605b-4162-8142-ecf5a94579dc
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 370
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8f0073c0-1ff2-458f-8238-11f850ca0b16
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1078 - Valid Accounts
+      playbookId: MITRE ATT&CK CoA - T1078 - Valid Accounts
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 8f0073c0-1ff2-458f-8238-11f850ca0b16
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ef3ff0b-6bf4-4432-8e24-7f63e3c79d33
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution
+      playbookId: MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 7ef3ff0b-6bf4-4432-8e24-7f63e3c79d33
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 370
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PrivilegeEscalation.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ba447cb0-1b6d-4a12-83a2-c7105d8c25f8
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: ba447cb0-1b6d-4a12-83a2-c7105d8c25f8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 550
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PrivilegeEscalation.Products
+      value:
+        simple: '["Cortex XSOAR","PAN-OS"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 6a7bbdf0-95d9-4900-8d86-565e98d3bdc0
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 6a7bbdf0-95d9-4900-8d86-565e98d3bdc0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 550
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PrivilegeEscalation.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 519a1458-2729-48ac-832e-43c57c0b66c2
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 519a1458-2729-48ac-832e-43c57c0b66c2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 550
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PrivilegeEscalation.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 3fc0d7ae-0a3b-4d29-89cb-0a9f0b508e1d
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 3fc0d7ae-0a3b-4d29-89cb-0a9f0b508e1d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 550
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PrivilegeEscalation.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 4e034934-66df-4d83-8d68-8c2a6bdab1e7
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 4e034934-66df-4d83-8d68-8c2a6bdab1e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 550
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      privilegeescalationremediationproducts:
+        complex:
+          root: PrivilegeEscalation
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: baf38e32-a768-4f2a-80c0-e12e267f8c82
+      iscommand: true
+      name: Set Privilege Escalation Remediation products to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: baf38e32-a768-4f2a-80c0-e12e267f8c82
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 720
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0b6a5b83-f17e-443f-81f4-ef8319daf3a6
+      iscommand: false
+      name: Set techniques information to the layout
+      description: ""
+      type: title
+      version: -1
+    taskid: 0b6a5b83-f17e-443f-81f4-ef8319daf3a6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 900
+        }
+      }
+  "24":
+    fieldMapping:
+    - incidentfield: Remediated Techniques
+      output:
+        complex:
+          root: Handled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    - incidentfield: Techniques to Handle
+      output:
+        complex:
+          root: Unhandled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Unhandled.Techniques
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: b38bb27f-d555-4557-8f31-023e05331bad
+      iscommand: false
+      name: Set techniques information to the layout
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: b38bb27f-d555-4557-8f31-023e05331bad
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1040
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_3_#default#": 0.31,
+      "1_3_#default#": 0.48,
+      "8_3_#default#": 0.34,
+      "9_3_#default#": 0.29
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1225,
+        "width": 2080,
+        "x": -600,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

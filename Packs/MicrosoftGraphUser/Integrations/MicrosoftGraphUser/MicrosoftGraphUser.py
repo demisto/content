@@ -3,10 +3,11 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
 from urllib.parse import quote
+import urllib3
 
 # disable insecure warnings
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'

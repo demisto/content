@@ -238,7 +238,7 @@ class Client(BaseClient):
 
     def build_create_action_body(self, by_host, action_name,
                                  parameters, package_id='', package_name='', action_group_id='', action_group_name='',
-                                 target_group_id='', target_group_name='', hostname='', ip_address=''):
+                                 target_group_id='', target_group_name='', hostname='', ip_address='', expire=None):
         """
         This method used to build create_action request body by host or by target group
         """
@@ -261,7 +261,7 @@ class Client(BaseClient):
             get_package_res = self.do_request('GET', 'packages/by-name/' + package_name)
             package_id = get_package_res.get('data').get('id')
 
-        expire_seconds = get_package_res.get('data').get('expire_seconds', 0)
+        expire_seconds = expire if expire else get_package_res.get('data').get('expire_seconds', 0)
 
         target_group = {}  # type: ignore
 
@@ -849,11 +849,12 @@ def create_action_by_host(client, data_args):
     parameters = data_args.get('parameters')
     ip_address = data_args.get('ip-address')
     hostname = data_args.get('hostname')
+    expire = arg_to_number(data_args.get('expiration-time'))
 
     body = client.build_create_action_body(True, action_name, parameters, package_id=package_id,
                                            package_name=package_name, action_group_id=action_group_id,
                                            action_group_name=action_group_name,
-                                           hostname=hostname, ip_address=ip_address)
+                                           hostname=hostname, ip_address=ip_address, expire=expire)
 
     raw_response = client.do_request('POST', 'actions', body)
     action = client.get_action_item(raw_response.get('data'))

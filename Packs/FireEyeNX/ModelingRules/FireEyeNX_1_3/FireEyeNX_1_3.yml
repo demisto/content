@@ -1,4 +1,3 @@
-from_xdr_version: 3.5.0
 fromversion: 6.10.0
 name: FireEye NX Modeling Rule
 id: fireeye_nx_modeling_rule
