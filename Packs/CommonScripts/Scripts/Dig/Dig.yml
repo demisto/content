@@ -1,9 +1,7 @@
 args:
-- description: The IP address or hostname of the name server to query. The default
-    value will be taken from /etc/resolv.conf e.g. 8.8.8.8
+- description: The IP address or hostname of the name server to query. The default value will be taken from /etc/resolv.conf e.g. 8.8.8.8
   name: server
-- description: Name of the resource record to look up e.g. paloaltonetworks.com. For
-    reverser lookup, provide IP address
+- description: Name of the resource record to look up e.g. paloaltonetworks.com. For reverser lookup, provide IP address
   name: name
   required: true
 - auto: PREDEFINED
@@ -18,7 +16,7 @@ comment: 'DNS lookup utility to provide ''A'' and ''PTR'' record '
 commonfields:
   id: Dig
   version: -1
-dockerimage: demisto/netutils:1.0.0.24101
+dockerimage: demisto/netutils:1.0.0.43061
 enabled: true
 name: Dig
 runonce: false
