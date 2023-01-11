@@ -1,0 +1,49 @@
+{
+    "description": "Example Incident Layout",
+    "details": {
+      "sections": [
+        {
+          "description": "More information on the access attempts ",
+          "isVisible": true,
+          "name": "Access Info",
+          "query": null,
+          "queryType": "",
+          "readOnly": false,
+          "type": ""
+        },
+        {
+          "description": "",
+          "isVisible": true,
+          "name": "Basic Information",
+          "query": null,
+          "queryType": "",
+          "readOnly": false,
+          "type": ""
+        },
+        {
+          "description": "",
+          "isVisible": true,
+          "name": "Work Plan",
+          "query": null,
+          "queryType": "",
+          "readOnly": true,
+          "type": "workplan"
+        },
+        {
+          "description": "",
+          "isVisible": true,
+          "name": "Notes",
+          "query": null,
+          "queryType": "",
+          "readOnly": true,
+          "type": "notes"
+        }
+      ]
+    },
+  "group": "incident",
+  "id": "Example Layout",
+  "name": "Example Layout",
+  "system": false,
+  "version": -1,
+  "fromVersion": "6.10.0"
+}

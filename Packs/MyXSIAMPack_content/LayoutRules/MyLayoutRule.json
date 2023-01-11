@@ -1,0 +1,17 @@
+{
+  "rule_id": "36c7e2a690b24f238bdea5620e0af09b",
+  "layout_id": "AutoFocusPolling",
+  "description": "layout rule description",
+  "rule_name": "rule name",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_source",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "FW"
+        }
+      ]
+    }
+  }
+}
