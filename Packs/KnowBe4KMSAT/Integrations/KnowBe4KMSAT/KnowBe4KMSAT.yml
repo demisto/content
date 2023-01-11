@@ -43,9 +43,39 @@ script:
   - name: get-account-info
     arguments: []
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: KMSAT Account Details
+    - contextPath: Account.Info.name
+      description: 'Account Name'
       type: String
+    - contextPath: Account.Info.type
+      description: 'Account Type'
+      type: String
+    - contextPath: Account.Info.domains
+      description: 'Account Domains'
+      type: String
+    - contextPath: Account.Info.admins.id
+      description: 'Account Admin ID'
+      type: Number
+    - contextPath: Account.Info.admins.first_name
+      description: 'Account Admin First Name'
+      type: String
+    - contextPath: Account.Info.admins.last_name
+      description: 'Account Admin Last Name'
+      type: String
+    - contextPath: Account.Info.admins.email
+      description: 'Account Admin Email'
+      type: String
+    - contextPath: Account.Info.subscription_level
+      description: 'Account Subscription Level'
+      type: String
+    - contextPath: Account.Info.subscription_end_date
+      description: 'Account Subscription End Date'
+      type: Date
+    - contextPath: Account.Info.number_of_seats
+      description: 'Number of Seats'
+      type: Number
+    - contextPath: Account.Info.current_risk_score
+      description: 'Account Risk Score'
+      type: Number    
     description: Returns KMSAT account information
   - name: get-account-risk-score-history
     arguments: []
@@ -302,8 +332,47 @@ script:
       description: Order returned events in ascending (asc) or descending (desc) order
         ("asc", "desc")
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: List of User Events base upon filter
+    - contextPath: KMSAT.UserEvent.data.id
+      description: 'Unique ID of the event'
+      type: Number
+    - contextPath: KMSAT.UserEvent.data.user.email
+      description: 'User email address'
+      type: String
+    - contextPath: KMSAT.UserEvent.data.user.id
+      description: 'KMSAT User ID'
+      type: Number
+    - contextPath: KMSAT.UserEvent.data.user.archived
+      description: 'User Archived flag'
+      type: Boolean
+    - contextPath: KMSAT.UserEvent.data.external_id
+      description: 'External ID of the event'
+      type: String
+    - contextPath: KMSAT.UserEvent.data.source
+      description: 'Source of the event'
+      type: String
+    - contextPath: KMSAT.UserEvent.data.description
+      description: 'Description of the event'
+      type: String
+    - contextPath: KMSAT.UserEvent.data.occurred_date
+      description: 'When the event occurred'
+      type: Date
+    - contextPath: KMSAT.UserEvent.data.risk.level
+      description: 'Risk Level of the event'
+      type: Number
+    - contextPath: KMSAT.UserEvent.data.risk.factor
+      description: 'Risk Factor of the event'
+      type: Number
+    - contextPath: KMSAT.UserEvent.data.risk.decay_mode
+      description: 'The Risk Level Decay Mode'
+      type: String
+    - contextPath: KMSAT.UserEvent.data.risk.expire_date
+      description: 'Risk Expire Date'
+      type: String
+    - contextPath: KMSAT.UserEvent.data.event_type.id
+      description: 'Event Type ID'
+      type: Number
+    - contextPath: KMSAT.UserEvent.data.event_type.name
+      description: 'Event Type Name'
       type: String
     description: Returns KMSAT User Events.
   isfetch: false
