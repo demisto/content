@@ -55,13 +55,12 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, client_id: str,
-                 client_secret: str, oauth_url: str, tsg_id: str, verify: bool, proxy: bool, headers: dict, **kwargs):
+                 client_secret: str, tsg_id: str, verify: bool, proxy: bool, headers: dict, **kwargs):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
 
         self.client_id = client_id
         self.client_secret = client_secret
-        self.oauth_url = oauth_url
         self.tsg_id = tsg_id
 
     def http_request(self,
@@ -691,7 +690,7 @@ class Client(BaseClient):
                 }
 
                 res = self._http_request(method='POST',
-                                         full_url=self.oauth_url,
+                                         full_url='https://auth.apps.paloaltonetworks.com/am/oauth2/access_token',
                                          auth=(self.client_id, self.client_secret),
                                          resp_type='response',
                                          headers=headers,
@@ -1698,7 +1697,6 @@ def main():
     base_url = params.get('url').strip('/')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
-    oauth_url = params.get('oauth_url')
     tsg_id = params.get('tsg_id')
 
     verify_certificate = not argToBoolean(params.get('insecure', False))
@@ -1749,7 +1747,6 @@ def main():
         base_url=base_url,
         client_id=client_id,
         client_secret=client_secret,
-        oauth_url=oauth_url,
         tsg_id=tsg_id,
         verify=verify_certificate,
         headers={
