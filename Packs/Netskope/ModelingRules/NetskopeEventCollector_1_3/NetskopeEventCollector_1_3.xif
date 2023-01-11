@@ -1,5 +1,6 @@
 [MODEL: dataset=netskope_netskope_raw]
-filter source_log_type = "page"
+// Page Logs
+filter source_log_event = "page"
 | alter
 	type_cloud = lowercase(if(traffic_type = "CloudApp", site, null)),
 	type_web = lowercase(if(traffic_type ~= "[w|W]eb", site, null)),
@@ -10,22 +11,22 @@ filter source_log_type = "page"
 	xdm.target.domain = coalesce(domain, type_web),
 	xdm.alert.severity = coalesce(severity, ccl),
 	xdm.auth.auth_method = access_method,
-	xdm.event.duration = conn_duration,
+	//xdm.event.duration = conn_duration,
 	xdm.event.type = type,
 	xdm.network.http.browser = browser,
 	xdm.network.http.url = url,
-	xdm.network.session_id = browser_session_id,
+	xdm.network.session_id = to_string(browser_session_id),
 	xdm.session_context_id = app_session_id,
 	xdm.source.application.name = app,
 	xdm.source.host.hostname = hostname,
-	xdm.source.host.ipv4_addresses = srcip,
+	xdm.source.host.ipv4_addresses = arraycreate(srcip),
 	xdm.source.host.os = coalesce(os_version, os),
 	xdm.source.host.os_family = if(lower_c ~= "android", "ANDROID", lower_c ~= "windows", "WINDOWS", lower_c ~= "mac", "MACOS", lower_c ~= "linux", "LINUX", lower_c ~= "ios", "IOS", lower_c ~= "ubuntu", "UBUNTU", lower_c ~= "debian", "DEBIAN", lower_c ~= "fedora", "FEDORA", lower_c ~= "centos", "CENTOS", lower_c ~= "chrome", "CHROMEOS", lower_c ~= "solaris", "SOLARIS", lower_c ~= "scada", "SCADA", lower_c = null, null, "UNKNOWN"),
 	xdm.source.ipv4 = userip,
 	xdm.source.location.city = src_location,
 	xdm.source.location.country = src_country,
-	xdm.source.location.latitude = src_latitude,
-	xdm.source.location.longitude = src_longitude,
+	xdm.source.location.latitude = to_float(src_latitude),
+	xdm.source.location.longitude = to_float(src_longitude),
 	xdm.source.location.region = src_region,
 	xdm.source.location.timezone = src_timezone,
 	xdm.source.sent_bytes = client_bytes,
@@ -35,17 +36,16 @@ filter source_log_type = "page"
 	xdm.target.ipv4 = dstip,
 	xdm.target.location.city = dst_location,
 	xdm.target.location.country = dst_country,
-	xdm.target.location.latitude = dst_latitude,
-	xdm.target.location.longitude = dst_longitude,
+	xdm.target.location.latitude = to_float(dst_latitude),
+    xdm.target.location.longitude = to_float(dst_longitude),
 	xdm.target.location.region = dst_region,
 	xdm.target.location.timezone = dst_timezone,
 	xdm.target.port = dstport,
 	xdm.target.sent_bytes = server_bytes,
 	xdm.target.url = page,
-	xdm.target.user.identifier = userkey
-
-
-filter source_log_type = "application"
+	xdm.target.user.identifier = userkey;
+// Application Logs
+filter source_log_event = "application"
 | alter
 	type_cloud = lowercase(if(traffic_type = "CloudApp", site, null)),
 	type_web = lowercase(if(traffic_type ~= "[w|W]eb", site, null)),
@@ -71,19 +71,20 @@ filter source_log_type = "application"
 	xdm.network.http.browser = browser,
 	xdm.network.http.referrer = referer,
 	xdm.network.http.url = url,
-	xdm.network.session_id = browser_session_id,
+	xdm.network.session_id = to_string(browser_session_id),
 	xdm.session_context_id = app_session_id,
 	xdm.source.application.name = app,
 	xdm.source.cloud.region = region_name,
 	xdm.source.host.device_id = instance_id,
 	xdm.source.host.hostname = hostname,
-	xdm.source.host.ipv4_addresses = srcip,
+	xdm.source.host.ipv4_addresses = arraycreate(srcip),
 	xdm.source.host.os = coalesce(os_version, os),
 	xdm.source.host.os_family = if(lower_c ~= "android", "ANDROID", lower_c ~= "windows", "WINDOWS", lower_c ~= "mac", "MACOS", lower_c ~= "linux", "LINUX", lower_c ~= "ios", "IOS", lower_c ~= "ubuntu", "UBUNTU", lower_c ~= "debian", "DEBIAN", lower_c ~= "fedora", "FEDORA", lower_c ~= "centos", "CENTOS", lower_c ~= "chrome", "CHROMEOS", lower_c ~= "solaris", "SOLARIS", lower_c ~= "scada", "SCADA", lower_c = null, null, "UNKNOWN"),
 	xdm.source.ipv4 = userip,
 	xdm.source.location.city = src_location,
 	xdm.source.location.country = src_country,
-	xdm.source.location.latitude = src_latitude,
+	xdm.source.location.latitude = to_float(src_latitude),
+    xdm.source.location.longitude = to_float(src_longitude),
 	xdm.source.location.region = src_region,
 	xdm.source.location.timezone = src_timezone,
 	xdm.source.process.executable.file_type = file_type,
@@ -104,16 +105,16 @@ filter source_log_type = "application"
 	xdm.target.ipv4 = dstip,
 	xdm.target.location.city = dst_location,
 	xdm.target.location.country = dst_country,
-	xdm.target.location.latitude = dst_latitude,
+	xdm.target.location.latitude = to_float(dst_latitude),
+    xdm.target.location.longitude = to_float(dst_longitude),
 	xdm.target.location.region = dst_region,
 	xdm.target.location.timezone = dst_timezone,
 	xdm.target.port = dstport,
 	xdm.target.sent_bytes = server_bytes,
 	xdm.target.url = coalesce(page, web_url),
-	xdm.target.user.identifier = userkey
-
-
-filter source_log_type = "alert"
+	xdm.target.user.identifier = userkey;
+// Alert logs
+filter source_log_event = "alert"
 | alter
 	type_cloud = lowercase(if(traffic_type = "CloudApp", site, null)),
 	type_web = lowercase(if(traffic_type ~= "[w|W]eb", site, null)),
@@ -139,19 +140,20 @@ filter source_log_type = "alert"
 	xdm.network.http.browser = browser,
 	xdm.network.http.referrer = referer,
 	xdm.network.http.url = url,
-	xdm.network.session_id = browser_session_id,
+	xdm.network.session_id = to_string(browser_session_id),
 	xdm.session_context_id = app_session_id,
 	xdm.source.application.name = app,
 	xdm.source.cloud.region = region_name,
 	xdm.source.host.device_id = instance_id,
 	xdm.source.host.hostname = hostname,
-	xdm.source.host.ipv4_addresses = srcip,
+	xdm.source.host.ipv4_addresses = arraycreate(srcip),
 	xdm.source.host.os = coalesce(os_version, os),
 	xdm.source.host.os_family = if(lower_c ~= "android", "ANDROID", lower_c ~= "windows", "WINDOWS", lower_c ~= "mac", "MACOS", lower_c ~= "linux", "LINUX", lower_c ~= "ios", "IOS", lower_c ~= "ubuntu", "UBUNTU", lower_c ~= "debian", "DEBIAN", lower_c ~= "fedora", "FEDORA", lower_c ~= "centos", "CENTOS", lower_c ~= "chrome", "CHROMEOS", lower_c ~= "solaris", "SOLARIS", lower_c ~= "scada", "SCADA", lower_c = null, null, "UNKNOWN"),
 	xdm.source.ipv4 = userip,
 	xdm.source.location.city = src_location,
 	xdm.source.location.country = src_country,
-	xdm.source.location.latitude = src_latitude,
+	xdm.source.location.latitude = to_float(src_latitude),
+    xdm.source.location.longitude = to_float(src_longitude),
 	xdm.source.location.region = src_region,
 	xdm.source.location.timezone = src_timezone,
 	xdm.source.process.executable.file_type = file_type,
@@ -172,16 +174,16 @@ filter source_log_type = "alert"
 	xdm.target.ipv4 = dstip,
 	xdm.target.location.city = dst_location,
 	xdm.target.location.country = dst_country,
-	xdm.target.location.latitude = dst_latitude,
+	xdm.target.location.latitude = to_float(dst_latitude),
+    xdm.target.location.longitude = to_float(dst_longitude),
 	xdm.target.location.region = dst_region,
 	xdm.target.location.timezone = dst_timezone,
 	xdm.target.port = dstport,
 	xdm.target.sent_bytes = server_bytes,
 	xdm.target.url = coalesce(page, web_url),
-	xdm.target.user.identifier = userkey
-
-
-filter source_log_type = "audit" or type = "admin_audit_logs"
+	xdm.target.user.identifier = userkey;
+// Audit Logs
+filter source_log_event = "audit" or type = "admin_audit_logs"
 | alter
 	xdm.event.type = type,
 	xdm.source.user.username = coalesce(user, ur_normalized),
@@ -189,10 +191,9 @@ filter source_log_type = "audit" or type = "admin_audit_logs"
 	xdm.alert.severity = coalesce(to_string(severity_level), ccl),
 	xdm.observer.action = audit_log_event,
 	xdm.alert.subcategory = if(json_extract_scalar(supporting_data, "$.data_type") = "policy", json_extract_scalar(supporting_data, "$.data_values[0]"), null),
-	xdm.event.description = details
-
-
-filter source_log_type = "network"
+	xdm.event.description = details;
+// Network Logs
+filter source_log_event = "network"
 | alter
 	type_cloud = lowercase(if(traffic_type = "CloudApp", site, null)),
 	type_web = lowercase(if(traffic_type ~= "[w|W]eb", site, null)),
@@ -207,7 +208,7 @@ filter source_log_type = "network"
 	xdm.event.type = type,
 	xdm.source.application.name = app,
 	xdm.source.host.hostname = hostname,
-	xdm.source.host.ipv4_addresses = srcip,
+	xdm.source.host.ipv4_addresses = arraycreate(srcip),
 	xdm.source.host.os = coalesce(os_version, os),
 	xdm.source.host.os_family = if(lower_c ~= "android", "ANDROID", lower_c ~= "windows", "WINDOWS", lower_c ~= "mac", "MACOS", lower_c ~= "linux", "LINUX", lower_c ~= "ios", "IOS", lower_c ~= "ubuntu", "UBUNTU", lower_c ~= "debian", "DEBIAN", lower_c ~= "fedora", "FEDORA", lower_c ~= "centos", "CENTOS", lower_c ~= "chrome", "CHROMEOS", lower_c ~= "solaris", "SOLARIS", lower_c ~= "scada", "SCADA", lower_c = null, null, "UNKNOWN"),
 	xdm.source.ipv4 = userip,
@@ -241,6 +242,6 @@ filter source_log_type = "network"
 	xdm.target.file.md5 = local_md5,
 	xdm.target.location.city = dst_location,
 	xdm.target.location.country = dst_country,
-	xdm.target.location.latitude = dst_latitude,
-	xdm.target.location.longitude = dst_longitude,
-	xdm.target.location.region = dst_region
+	xdm.target.location.latitude = to_float(dst_latitude),
+    xdm.target.location.longitude = to_float(dst_longitude),
+	xdm.target.location.region = dst_region;
