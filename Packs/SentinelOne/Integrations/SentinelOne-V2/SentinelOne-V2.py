@@ -22,6 +22,16 @@ urllib3.disable_warnings()
 IS_VERSION_2_1: bool
 OS_COUNT = 4
 
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+SENTINELONE_INCIDENT_INCOMING_ARGS = ['analystVerdict', 'incidentStatus']
+DETECTION_STATUS = {'in_progress', 'resolved', 'unresolved'}
+SENTINELONE_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident'}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -223,7 +233,7 @@ class Client(BaseClient):
 
     def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                             created_until=None, created_from=None, resolved='false', display_name=None, query=None,
-                            threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None):
+                            threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None, include_resolved_param=True):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
         params = assign_params(
@@ -233,7 +243,7 @@ class Client(BaseClient):
             createdAt__gt=created_after,
             createdAt__lte=created_until,
             createdAt__gte=created_from,
-            resolved=argToBoolean(resolved),
+            resolved=argToBoolean(resolved) if include_resolved_param else None,
             displayName__like=display_name,
             displayName=display_name,
             query=query,
@@ -261,6 +271,11 @@ class Client(BaseClient):
 
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
+
+    def get_threat_notes(self, threat_id):
+        endpoint_url = f'threats/{threat_id}/notes'
+        response = self._http_request(method='GET', url_suffix=endpoint_url)
+        return response.get('data', [])
 
     def mitigate_threat_request(self, threat_ids, action):
         endpoint_url = f'threats/mitigate/{action}'
@@ -826,6 +841,19 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
+    def get_s1_threats_information(self, threat_ids):
+        response = self._http_request(method='GET', url_suffix=f'threats?ids={threat_ids}')
+        return response.get('data', [])
+
+    def get_s1_threats_request(self, last_update):
+
+        params = assign_params(
+            updatedAt__gte=last_update,
+            limit=1000
+        )
+        demisto.debug("last update value in api call",str(params))
+        response = self._http_request(method='GET', url_suffix='threats', params=params)
+        return response.get('data', [])
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -2873,6 +2901,255 @@ def download_fetched_file(client: Client, args: dict) -> List[CommandResults]:
             fileResult(f"{path.replace('/', '_')}", file_data)]
 
 
+#############################
+
+
+#############################
+def get_mappping_fields_command():
+    """
+        Returns the list of fields to map in outgoing mirroring, for incidents.
+    """
+    mapping_response = GetMappingFieldsResponse()
+
+    incident_type_scheme = SchemeTypeMapping(type_name='SentinelOne Incident')
+    for argument, description in SENTINELONE_INCIDENT_OUTGOING_ARGS.items():
+        incident_type_scheme.add_field(name=argument, description=description)
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
+
+
+
+def update_remote_system_command(client: Client, args: dict) -> str:
+    """update-remote-system command: pushes local changes to the remote system
+
+    :type client: ``Client``
+    :param client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['data']`` the data to send to the remote system
+        ``args['entries']`` the entries to send to the remote system
+        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
+        ``args['remoteId']`` the remote incident id
+
+    :return:
+        ``str`` containing the remote incident id - really important if the incident is newly created remotely
+
+    :rtype: ``str``
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+        
+    demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n')
+    new_incident_id: str = parsed_args.remote_incident_id
+    updated_incident = {}
+    if not parsed_args.remote_incident_id or parsed_args.incident_changed:
+        if parsed_args.remote_incident_id:
+            # First, get the incident as we need the version
+            old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
+            for changed_key in parsed_args.delta.keys():
+                old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+
+            parsed_args.data = old_incident
+
+        else:
+            parsed_args.data['createInvestigation'] = True
+
+        updated_incident = client.update_incident(incident=parsed_args.data)
+        new_incident_id = updated_incident['id']
+        demisto.debug(f'Got back ID [{new_incident_id}]')
+
+    else:
+        demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
+                      f'not new nor changed.')
+
+    if parsed_args.entries:
+        for entry in parsed_args.entries:
+            demisto.debug(f'Sending entry {entry.get("id")}')
+            client.add_incident_entry(incident_id=new_incident_id, entry=entry)
+
+    # Close incident if relevant
+    if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
+        demisto.debug(f'Closing remote incident {new_incident_id}')
+        client.close_incident(
+            new_incident_id,
+            updated_incident.get('version'),  # type: ignore
+            parsed_args.data.get('closeReason'),
+            parsed_args.data.get('closeNotes')
+        )
+
+    return new_incident_id
+
+
+
+def set_xsoar_incident_entries(updated_object: dict, entries: list, remote_incident_id: str):
+    if demisto.params().get('close_incident'):
+        if updated_object.get('threatInfo').get('incidentStatus') == 'resolved':
+            close_in_xsoar(entries, remote_incident_id, 'Incident')
+        elif updated_object.get('threatInfo').get('incidentStatus') in (set(DETECTION_STATUS) - {'resolved'}):
+            reopen_in_xsoar(entries, remote_incident_id, 'Incident')
+
+def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
+    demisto.debug(f'{incident_type_name} is closed: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': f'{incident_type_name} was closed on SentinelOne'
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+
+def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
+    demisto.debug(f'{incident_type_name} is reopened: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+def set_updated_object(updated_object: dict, mirrored_data: dict, mirroring_fields: list):
+    """
+    Sets the updated object (in place) for the incident we want to mirror in, from the mirrored data, according to
+    the mirroring fields. In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so,
+    their name will have a dot in it).
+    Note that the fields that we mirror right now may have only one dot in them, so we only deal with this case.
+
+    :param updated_object: The dictionary to set its values, so it will hold the fields we want to mirror in, with their values.
+    :param mirrored_data: The data of the incident we want to mirror in.
+    :param mirroring_fields: The mirroring fields that we want to mirror in, given according to whether we want to mirror an
+        incident or a detection.
+    """
+    for field in mirroring_fields:
+        if mirrored_data.get(field):
+            updated_object[field] = mirrored_data.get(field)
+
+        # if the field is not in mirrored_data, it might be a nested field - that has a . in its name
+        elif '.' in field:
+            field_name_parts = field.split('.')
+            nested_mirrored_data = mirrored_data.get(field_name_parts[0])
+
+            if isinstance(nested_mirrored_data, list):
+                # if it is a list, it should hold a dictionary in it because it is a json structure
+                for nested_field in nested_mirrored_data:
+                    if nested_field.get(field_name_parts[1]):
+                        updated_object[field] = nested_field.get(field_name_parts[1])
+                        # finding the field in the first time it is satisfying
+                        break
+            elif isinstance(nested_mirrored_data, dict):
+                if nested_mirrored_data.get(field_name_parts[1]):
+                    updated_object[field] = nested_mirrored_data.get(field_name_parts[1])
+
+
+def get_remote_incident_data(client: Client, remote_incident_id: str):
+    """
+    Called every time get-remote-data command runs on an incident.
+    Gets the relevant incident entity from the remote system (SentinelOne). The remote system returns a list with this
+    entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+    """
+    mirrored_data_list = client.get_s1_threats_information(remote_incident_id)  # a list with one dict in it
+    mirrored_data = mirrored_data_list[0]
+
+    updated_object = {'incident_type': 'incident'}
+    mirrored_data["incident_type"] = "incident"
+    set_updated_object(updated_object, mirrored_data, SENTINELONE_INCIDENT_INCOMING_ARGS)
+    return mirrored_data, updated_object
+
+
+def get_remote_data_command(client: Client, args: dict):
+    """
+    get-remote-data command: Returns an updated remote incident.
+    Args:
+        args:
+            id: incident id to retrieve.
+            lastUpdate: when was the last time we retrieved data.
+
+    Returns:
+        GetRemoteDataResponse object, which contain the incident data to update.
+    """
+    demisto.debug("calling get remote data command")
+    # demisto.log("calling get remote data command")
+    remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = remote_args.remote_incident_id
+    
+    mirrored_data = {}
+    entries: List = []
+    try:
+        demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
+                      f'and last_update: {remote_args.last_update}')
+        mirrored_data, updated_object = get_remote_incident_data(client, remote_incident_id)
+        # demisto.log(f"after the mirrored_data: {str(mirrored_data)}, updted_object:{str(updated_object)}")
+        if mirrored_data:
+            demisto.debug(f'Update incident {remote_incident_id} with fields: {mirrored_data}')
+            set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id)  # sets in place
+        if not mirrored_data:
+            demisto.debug(f'No delta was found for detection {remote_incident_id}.')
+        demisto.log(f"mirrored data on remote_data command {str(mirrored_data)}")
+        
+        entries = [{"Contents": {"dbotIncidentClose": True, "closeReason": "some reason", "closeNotes": "Some note"}}]
+        demisto.log(f"entries on remote_data command {str(entries)}")
+        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
+
+    except Exception as e:
+        demisto.debug(f"Error in SentinelOne incoming mirror for incident: {remote_incident_id}\n"
+                      f"Error message: {str(e)}")
+
+        if not mirrored_data:
+            mirrored_data = {'id': remote_incident_id}
+        mirrored_data['in_mirror_error'] = str(e)
+
+        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+
+def get_modified_remote_data_command(client: Client, args: dict):
+    """
+    Gets the modified remote incidents.
+    Args:
+        args:
+            last_update: the last time we retrieved modified incidents.
+
+    Returns:
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
+    """
+    
+    remote_args = GetModifiedRemoteDataArgs(args)
+    demisto.log(str(remote_args))
+    last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    assert last_update_utc is not None, f"could not parse{remote_args.last_update}"
+    
+    demisto.debug(f'Remote arguments last_update in UTC is {last_update_utc}')
+    modified_ids_to_mirror = list()
+    last_update_utc = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    demisto.debug(f"last_update?_utc value= {last_update_utc} and typo {type(last_update_utc)}")
+    raw_threats = client.get_s1_threats_request(last_update=last_update_utc)
+
+    for threat in raw_threats:
+        modified_ids_to_mirror.append(threat.get("id"))
+
+    demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
+    demisto.log(f'All ids to mirror in are: {modified_ids_to_mirror}')
+
+    return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
+
+
+def get_mirroring():
+    """
+    Get tickets mirroring.
+    """
+    params = demisto.params()
+
+    return {
+        'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
+        'mirror_instance': demisto.integrationInstance()
+    }
+
+
 def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int, fetch_site_ids: str):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
@@ -2891,6 +3168,7 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
     threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string, site_ids=fetch_site_ids)
     for threat in threats:
         rank = threat.get('rank')
+        threat.update(get_mirroring())
         try:
             rank = int(rank)
         except TypeError:
@@ -2914,6 +3192,11 @@ def threat_to_incident(threat) -> dict:
     threat_info = threat.get('threatInfo', {}) if IS_VERSION_2_1 else threat
     incident = {
         'name': f'Sentinel One Threat: {threat_info.get("classification", "Not classified")}',
+        'labels': [
+                {'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
+                for _type, value in threat.items()
+            ],
+        'details': json.dumps(threat),
         'occurred': threat_info.get('createdAt'),
         'rawJSON': json.dumps(threat)}
     return incident
@@ -3029,7 +3312,18 @@ def main():
             return_results(test_module(client, params.get('isFetch'), first_fetch_time))
         if command == 'fetch-incidents':
             fetch_incidents(client, fetch_limit, first_fetch_time, fetch_threat_rank, fetch_site_ids)
+        # for incoming mirroring (S1 - XSOAR)
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(client, demisto.args()))
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, demisto.args()))
+        
 
+        # for outcoming mirroring (XSOAR - S1)
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(client, demisto.args()))
+        elif command == 'get-mapping-fields':
+            return_results(get_mappping_fields_command())
         else:
             if command in commands['common']:
                 return_results(commands['common'][command](client, demisto.args()))

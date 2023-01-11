@@ -73,6 +73,17 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
 description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
@@ -2130,8 +2141,27 @@ script:
       name: exclusion_type
     description: Remove an item from the SentinelOne exclusion list
     name: sentinelone-remove-item-from-whitelist
+  - arguments:
+    - description: The ticket ID.
+      name: id
+      required: true
+    - description: Retrieve entries that were created after lastUpdate.
+      name: lastUpdate
+      required: true
+    description: Get remote data from a remote incident. This method does not update
+      the current incident, and should be used for debugging purposes.
+    name: get-remote-data
+  - arguments:
+    - description: Retrieve entries that were created after lastUpdate.
+      name: last_update
+      required: false
+    description: get modified ids for s1
+    name: get-modified-remote-data
   dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: ''
   type: python

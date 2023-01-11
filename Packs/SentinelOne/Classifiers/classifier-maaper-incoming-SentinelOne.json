@@ -1,0 +1,59 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "2f08194c-bba2-493e-8e49-320fe9d99393",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": {
+		"SentinelOne Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Device OS Name": {
+					"simple": "agentDetectionInfo.agentOsName"
+				},
+				"Event ID": {
+					"simple": "id"
+				},
+				"Verdict": {
+					"simple": "threatInfo.analystVerdict"
+				},
+                "dbotMirrorDirection": {
+                	"simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                	"simple": "incident_id"
+                },
+                "dbotMirrorInstance": {
+                	"simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
+                }
+			}
+		}
+	},
+	"name": "SentinelOne incoming Mapper",
+	"nameRaw": "SentinelOne incoming Mapper",
+	"packID": "",
+	"packName": "SentinelOne",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
