@@ -105,6 +105,13 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2",
+            "fromversion": "6.5.0",
+            "memory_threshold": 200,
+            "timeout": 300
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
@@ -753,7 +760,13 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR Playbook",
+            "playbookID": "Test XDR execute script Playbook",
+            "fromversion": "4.1.0",
+            "timeout": 2500
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR general and file commands Playbook",
             "fromversion": "4.1.0",
             "timeout": 2500
         },
@@ -4444,13 +4457,13 @@
             "fromversion": "6.2.0",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
+                "EWSO365",
                 "Demisto REST API",
                 "CreateIncidents",
                 "Rasterize"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
+                "ewso365_dev_team",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
@@ -4474,7 +4487,6 @@
             "toversion": "6.4.9",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
                 "Demisto REST API",
                 "EWSO365",
                 "Rasterize",
@@ -4482,9 +4494,8 @@
                 "VirusTotal (API v3)"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
                 "virus_total_v3",
-                "ewso365_sec_eng_team"
+                "ewso365_dev_team"
             ],
             "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
