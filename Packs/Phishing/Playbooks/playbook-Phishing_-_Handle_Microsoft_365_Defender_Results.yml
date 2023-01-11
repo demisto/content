@@ -1406,7 +1406,7 @@ inputs:
   value:
     simple: MicrosoftGraphMail
   required: false
-  description: "In order to retrieve email files in case any emails containing malicious indicators were found, this playbook would run the \"Phishing - Get Original Email Loop\" sub-playbook that will loop in order to retrieve all of the found emails. It will run internally the \"Get Original Email - Generic v2\" playbook that will use this input in order to run the relevant \"Get Original Email\" playbook based on the selected brand. \n\nPossible values:\n- EWS v2\n- EWSO365\n- MicrosoftGraphMail\n\nDefault is \"MicrosoftGraphMail\"."
+  description: "In order to retrieve email files in case any emails containing malicious indicators were found, this playbook would run the \"Phishing - Get Original Email Loop\" sub-playbook that will loop in order to retrieve all of the found emails. It will internally run the \"Get Original Email - Generic v2\" playbook that will use this input in order to run the relevant \"Get Original Email\" playbook based on the selected brand. \n\nPossible values:\n- EWS v2\n- EWSO365\n- MicrosoftGraphMail\n\nDefault is \"MicrosoftGraphMail\"."
   playbookInputQuery:
 outputs:
 - contextPath: FileAssociation
