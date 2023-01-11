@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import dill
 from PIL import Image
 import io
+import traceback
 
 MAJOR_VERSION = 1
 MINOR_DEFAULT_VERSION = 0
