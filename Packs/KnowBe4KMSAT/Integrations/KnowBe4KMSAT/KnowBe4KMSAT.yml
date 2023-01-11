@@ -28,28 +28,245 @@ display: 'KnowBe4KMSAT'
 name: KnowBe4KMSAT
 script:
   commands:
-  - arguments: []
-    description: 'Returns KMSAT account information'
-    execution: false
-    name: get-account-info
+  - name: get-account-info
+    arguments: []
     outputs:
     - contextPath: BaseIntegration.Output
-      description: 'KMSAT Account Details'
+      description: KMSAT Account Details
       type: String
-  - arguments: []
-    description: 'Returns KMSAT Account Risk Score History.'
-    execution: false
-    name: get-account-risk-score-history
+    description: Returns KMSAT account information
+  - name: get-account-risk-score-history
+    arguments: []
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: 'List of Account risk_scores and associated date'
+    - contextPath: AccountRiskScore.History.risk_score
+      description: Account Risk score and associated date
       type: String
+    - contextPath: AccountRiskScore.History.date
+      description: Account Risk score history date
+      type: String
+    description: Returns KMSAT Account Risk Score History.
+  - name: get-groups-risk-score-history
+    arguments:
+    - name: group_id
+      required: true
+    outputs:
+    - contextPath: GroupsRiskScore.History.risk_score
+      description: Groups Risk score and associated date
+      type: String
+    - contextPath: GroupsRiskScore.History.date
+      description: Groups Risk score history date
+      type: String
+    description: Returns KMSAT Group Specific Risk Score History.
+  - name: get-user-risk-score-history
+    arguments:
+    - name: user_id
+      required: true
+    outputs:
+    - contextPath: UsersRiskScore.History.risk_score
+      description: Users Risk score and associated date
+    - contextPath: UsersRiskScore.History.date
+      description: Users Risk score history date
+    description: Returns KMSAT User Specific Risk Score History
+  - name: get-phishing-security-tests
+    arguments: []
+    outputs:
+    - contextPath: Phishing.Security.campaign_id
+      description: Phishing Security Campaign ID
+      type: number
+    - contextPath: Phishing.Security.pst_id
+      description: Phishing Security PST ID
+      type: number
+    - contextPath: Phishing.Security.status
+      description: Phishing Security Status
+      type: string
+    - contextPath: Phishing.Security.name
+      description: Phishing Security Name
+      type: string
+    - contextPath: Phishing.Security.groups
+      description: Phishing Security Groups
+    - contextPath: 'Phishing.Security.phish_prone_percentage '
+      description: Phishing Security Phishing Prone Percent
+      type: number
+    - contextPath: Phishing.Security.started_at
+      description: Phishing Security Started At Date
+      type: string
+    - contextPath: Phishing.Security.duration
+      description: Phishing Security Duration
+      type: number
+    - contextPath: 'Phishing.Security.categories '
+      description: Phishing Security Categories
+      type: unknown
+    - contextPath: Phishing.Security.template
+      description: Phishing Security Template
+    - contextPath: Phishing.Security.landing-page
+      description: Phishing Security Landing Page
+    - contextPath: Phishing.Security.scheduled_count
+      description: Phishing Security Scheduled Count
+      type: number
+    - contextPath: Phishing.Security.delivered_count
+      description: Phishing Security Delivered Count
+      type: number
+    - contextPath: Phishing.Security.opened_count
+      description: Phishing Security Opened Count
+      type: number
+    - contextPath: Phishing.Security.clicked_count
+      description: Phishing Security Clicked Count
+      type: number
+    - contextPath: Phishing.Security.replied_count
+      description: Phishing Security Replied Count
+      type: number
+    - contextPath: Phishing.Security.attachment_open_count
+      description: Phishing Security Attachment Open Count
+      type: number
+    - contextPath: Phishing.Security.macro_enabled_count
+      description: Phishing Security Macro Enabled Count
+      type: number
+    - contextPath: Phishing.Security.data_entered_count
+      description: Phishing Security Data Entered Count
+      type: number
+    - contextPath: Phishing.Security.qr_code_scanned_count
+      description: Phishing Security QA Code Scanned Count
+      type: number
+    - contextPath: Phishing.Security.reported_count
+      description: Phishing Security Reported Count
+      type: number
+    - contextPath: Phishing.Security.bounced_count
+      description: Phishing Security Bounced Count
+      type: number
+    description: Returns All Phishing Security Tests (PSTs)
+  - name: get-phishing-security-tests-recipients
+    arguments:
+    - name: pst_id
+      required: true
+    outputs:
+    - contextPath: Phishing.Security.recipient_id
+      description: Phishing Security Recipient ID
+      type: number
+    - contextPath: Phishing.Security.psd_id
+      description: Phishing Security PST ID
+      type: number
+    - contextPath: Phishing.Security.user
+      description: Phishing Security User
+    - contextPath: Phishing.Security.template
+      description: Phishing Security Template
+    - contextPath: Phishing.Security.scheduled_at
+      description: Phishing Security Scheduled At
+      type: string
+    - contextPath: Phishing.Security.delivered_at
+      description: Phishing Security Delivered At
+      type: string
+    - contextPath: Phishing.Security.opened_at
+      description: Phishing Security Opened At
+      type: string
+    - contextPath: Phishing.Security.clicked_at
+      description: Phishing Security Clicked At
+      type: string
+    - contextPath: Phishing.Security.replied_at
+      description: Phishing Security Replied At
+      type: unknown
+    - contextPath: Phishing.Security.attachment_opened_at
+      description: Phishing Security Attachment Opened At
+      type: unknown
+    - contextPath: Phishing.Security.macro_enabled_at
+      description: Phishing Security Macro Enabled At
+    - contextPath: Phishing.Security.data_entered_at
+      description: Phishing Security Date Entered At
+      type: string
+    - contextPath: Phishing.Security.qr_code_scanned
+      description: Phishing Security QR Scanned At
+      type: string
+    - contextPath: Phishing.Security.reported_at
+      description: Phishing Security Reported At
+    - contextPath: Phishing.Security.bounced_at
+      description: Phishing Security Bounced At
+    - contextPath: Phishing.Security.ip
+      description: Phishing Security IP
+      type: string
+    - contextPath: Phishing.Security.ip_location
+      description: Phishing Security IP Location
+      type: string
+    - contextPath: Phishing.Security.browser
+      description: Phishing Security Browser
+      type: string
+    - contextPath: Phishing.Security.browser_version
+      description: Phishing Security Browser Security
+      type: string
+    - contextPath: Phishing.Security.os
+      description: Phishing Security OS
+      type: string
+    description: Returns a Specific Recipient's Results
+  - name: get-training-campaigns
+    arguments: []
+    outputs:
+    - contextPath: Training.Campaigns.campaign_id
+      description: Training Campaigns Campaign ID
+      type: number
+    - contextPath: Training.Campaigns.name
+      description: Training Campaigns Name
+      type: string
+    - contextPath: Training.Campaigns.groups
+      description: Training Campaigns Groups
+    - contextPath: Training.Campaigns.status
+      description: Training Campaigns  Status
+      type: string
+    - contextPath: Training.Campaigns.content
+      description: Training Campaigns Content
+    - contextPath: Training.Campaigns.duration_type
+      description: Training Campaigns Duration Type
+      type: string
+    - contextPath: Training.Campaigns.start_date
+      description: Training Campaigns Start Date
+    - contextPath: Training.Campaigns.end_date
+      description: Training Campaigns  End Date
+    - contextPath: Training.Campaigns.relative_duration
+      description: Training Campaigns Relative Duration
+    - contextPath: Training.Campaigns.auto_enroll
+      description: Training Campaigns Auto Enroll
+      type: boolean
+    - contextPath: Training.Campaigns.allow_multiple_enrollments
+      description: Training Campaigns Allow Multiple Enrollments
+      type: boolean
+    - contextPath: Training.Campaigns.completion_percentage
+      description: Training Campaigns Completion Percentage
+      type: number
+    description: Returns all Training Campaigns
+  - name: get-training-enrollments
+    arguments: []
+    outputs:
+    - contextPath: Training.Enrollments.enrollment_id
+      description: Training Enrollments Enrollment ID
+      type: number
+    - contextPath: Training.Enrollments.content_type
+      description: Training Enrollments Content Type
+      type: string
+    - contextPath: Training.Enrollments.module_name
+      description: Training Enrollments Module Name
+      type: string
+    - contextPath: Training.Enrollments.user
+      description: Training Enrollments User
+    - contextPath: Training.Enrollments.campaign_name
+      description: Training Enrollments Campaign Name
+      type: string
+    - contextPath: Training.Enrollments.enrollment_date
+      description: Training Enrollments Enrollment Date
+    - contextPath: Training.Enrollments.start_date
+      description: Training Enrollments Start Date
+    - contextPath: Training.Enrollments.completion_date
+      description: Training Enrollments Completion Date
+    - contextPath: Training.Enrollments.status
+      description: Training Enrollments Status
+    - contextPath: Training.Enrollments.time_spent
+      description: Training Enrollments Time Spent
+    - contextPath: Training.Enrollments.policy_acknowledged
+      description: Training Enrollments Policy Acknowledged
+      type: boolean
+    description: Returns all Training Enrollments
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42008
+  dockerimage: demisto/python3:3.10.9.42476
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
