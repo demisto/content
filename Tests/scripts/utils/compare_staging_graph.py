@@ -17,7 +17,7 @@ from slack_sdk import WebClient
 
 yaml = YAML()
 
-SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml"}
+SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml", "changelog.json"}
 
 
 def sort_dict(dct: dict):
@@ -28,7 +28,12 @@ def sort_dict(dct: dict):
             try:
                 v.sort()
             except TypeError:
-                v.sort(key=lambda item: item.get("name"))
+                if v and v[0].get("id"):
+                    v.sort(key=lambda x: x["id"])
+                elif v and v[0].get("name"):
+                    v.sort(key=lambda x: x["name"])
+                else:
+                    print("Could not sort list", v)
 
 
 def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path: Path) -> bool:
@@ -125,7 +130,7 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
             with open(file1_path) as f1, open(file2_path) as f2:
                 dct1 = load_func(f1)
                 dct2 = load_func(f2)
-                remove_known_diffs(dct1, dct2, ["updated", "downloads"])
+                remove_known_diffs(dct1, dct2, ["updated", "downloads", "created"])
                 if file == "metadata.json":
                     sort_dict(dct1)
                     sort_dict(dct2)
@@ -173,9 +178,7 @@ def compare(
     shutil.make_archive(str(output_path / f"diff-{marketplace}"), "zip", output_path)
 
     if not diff_found:
-        message.insert(2, "No difference were found!")
-    else:
-        message.insert(2, f"Difference for {output_path}")
+        message.append("No difference were found!")
     return message
 
 
@@ -205,13 +208,11 @@ def main():
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
-    if not (graph_exists := collected_packs_id_set.exists()) or not (id_set_exists := collected_packs_graph.exists()):
-        message.extend(
-            [
-                f"Graph exists: {graph_exists}",
-                f"id-set exists: {id_set_exists}",
-            ]
-        )
+    if not zip_graph.exists():
+        message.append("No packs were uploaded for id_set")
+    if not zip_id_set.exists():
+        message.append("No packs were uploaded for graph")
+
     else:
         message = compare(
             marketplace,
@@ -224,10 +225,11 @@ def main():
             message,
             output_path,
         )
-    if slack_token:
+    print("\n".join(message))
+    if slack_token and (diff_output := output_path / f"diff-{marketplace}.zip"):
         slack_client = WebClient(token=slack_token)
         slack_client.files_upload(
-            file=str(output_path / f"diff-{marketplace}.zip"),
+            file=str(diff_output),
             channels="dmst-graph-tests",
             initial_comment="\n".join(message),
         )

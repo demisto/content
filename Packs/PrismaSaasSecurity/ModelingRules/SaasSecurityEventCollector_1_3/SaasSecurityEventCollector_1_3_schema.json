@@ -59,6 +59,18 @@
       "target_name": {
         "type": "string",
         "is_array": false
+      },
+      "_reporting_device_ip": {
+        "type": "string",
+        "is_array": false
+      },
+      "log_type": {
+        "type": "string",
+        "is_array": false
+      },
+      "cloud_app_instance": {
+        "type": "string",
+        "is_array": false
       }
-    }
+}
   }

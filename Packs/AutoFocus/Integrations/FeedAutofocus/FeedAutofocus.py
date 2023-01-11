@@ -339,10 +339,10 @@ class Client(BaseClient):
         Returns:
             str: The type of the indicator.
         """
-        if re.match(urlRegex, indicator):
-            return FeedIndicatorType.URL
-        elif ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
+        if ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
             return ip_type
+        elif re.match(urlRegex, indicator):
+            return FeedIndicatorType.URL
         elif re.match(sha256Regex, indicator):
             return FeedIndicatorType.File
         else:
@@ -515,7 +515,7 @@ def main():
         'autofocus-get-indicators': get_indicators_command
     }
     try:
-        auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'))
+        auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('credentials', {}).get('password') or params.get('api_key'))
         client = Client(api_key=auto_focus_key_retriever.key,
                         insecure=params.get('insecure'),
                         proxy=params.get('proxy'),

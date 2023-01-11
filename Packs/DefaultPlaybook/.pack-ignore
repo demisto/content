@@ -3,3 +3,6 @@ ignore=BA101
 
 [file:pack_metadata.json]
 ignore=PA125
+
+[file:Default_8_0.yml]
+ignore=BA101

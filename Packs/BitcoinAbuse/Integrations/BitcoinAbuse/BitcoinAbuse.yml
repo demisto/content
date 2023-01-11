@@ -136,7 +136,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: bitcoinabuse-get-indicators
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.40422
   feed: true
   isFetchSamples: true
   runonce: false

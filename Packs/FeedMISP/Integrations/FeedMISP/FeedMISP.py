@@ -16,6 +16,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
@@ -28,6 +31,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.MALWARE: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
@@ -40,6 +46,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.TOOL: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
@@ -52,6 +61,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.INTRUSION_SET: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
@@ -64,6 +76,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: {
         FeedIndicatorType.File: EntityRelationship.Relationships.RELATED_TO,
         FeedIndicatorType.IP: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.RELATED_TO,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.RELATED_TO,
         FeedIndicatorType.URL: EntityRelationship.Relationships.RELATED_TO,
         FeedIndicatorType.Email: EntityRelationship.Relationships.RELATED_TO,

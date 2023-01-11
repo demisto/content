@@ -1,0 +1,49 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "MITRE ATT\u0026CK CoA"
+    ],
+    "caseInsensitive": true,
+    "cliName": "handledtechniques",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Technique",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "technique",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 208
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "The techniques that were handled by the CoA playbooks.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_handledtechniques",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Handled Techniques",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

@@ -106,6 +106,14 @@ All HTTPS traffic that will hit the selected messaging endpoint will be directed
 
 ## Setup Video
 <video controls>
+    <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mov?raw=true
+</video>
+
+
+## Old Setup Video (Use the above video)
+<video controls>
     <source src="https://github.com/demisto/content-assets/raw/845c0d790ceb4fbac08c5c7852b2a3bed0829778/Assets/MicrosoftTeams/config.mp4"
             type="video/mp4"/>
     Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/845c0d790ceb4fbac08c5c7852b2a3bed0829778/Assets/MicrosoftTeams/config.mp4
@@ -125,10 +133,10 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 ### Create the Demisto Bot in Microsoft Teams
 
 
-#### Creating the Demisto Bot for Production environment using Microsoft Azure Portal
+#### Creating the Demisto Bot for Production environment using Microsoft Azure Portal (Recommended)
 1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
 2. In the Bot Handle field, type **Demisto Bot**.
-3. Fill in the required Subscription and Resource Group.
+3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
 4. For Type of App, select **Multi Tenant**.
 5. For Creation type, select **Create new Microsoft App ID** for Creation Type if you don't already have an app registration, otherwise, select **Use existing app registration**, and fill in you App ID.
 6. Click **Review + Create**, and wait for the validation to pass.
@@ -141,8 +149,9 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 13. Go back to the previous page, and navigate to **Channels** in the left bar.
 14. Click **Microsoft Teams** under **Available Channels**, click the checkbox, click **Agree**, then click **Apply**.
 
+Note: in step 5, if you choose **Use existing app registration**, make sure to delete the previous created bot with the same app id, remove it from the team it was added to as well.  
 
-#### Creating the Demisto Bot for development environment using the Developer Portal
+#### Creating the Demisto Bot for development environment using the Developer Portal (Recommended to use `Azure portal` method mentioned above, this method will be removed soon)
 1. Navigate to the [Tools in the Microsoft Developer Portal](https://dev.teams.microsoft.com/tools).
 2. Navigate to **Bot management**.
 3. Click the **+New Bot** button.
@@ -260,6 +269,10 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 4. In the search box, type the name of the team to which to add the bot.
 5. Click **Set up** and configure the new app.
 
+
+## Known Limitations
+---
+In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -583,8 +596,9 @@ You can send the message `help` in order to see the supported commands:
 
     If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
 
-    if you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
-
+    If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
+    
+    Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 

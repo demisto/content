@@ -9,3 +9,12 @@ ignore=BA101
 
 [file:classifier-Gsuite-gmail.json]
 ignore=BA101
+
+[file:playbook-Search-in-mailboxes_Loop_with_polling.yml]
+ignore=PB105
+
+[file:playbook-Search-all-mailboxes_with_polling.yml]
+ignore=PB105
+
+[known_words]
+subplaybook

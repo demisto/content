@@ -11,6 +11,8 @@ import shutil
 import json
 from typing import List, Set, Tuple
 from pikepdf import Pdf, PasswordError
+import contextlib
+import io
 
 URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
@@ -121,22 +123,24 @@ def run_shell_command(command: str, *args) -> bytes:
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     exit_codes = completed_process.returncode
+    error_string = completed_process.stderr.decode('utf-8')
     if exit_codes != 0:
-        error_string = completed_process.stderr.decode('utf-8')
-        if "Incorrect password" in error_string:
+        if 'PDF file is damaged' in error_string or 'Couldn\'t read xref table' in error_string:
+            raise ShellException('PDf file is damaged/corrupted.')
+        elif "Incorrect password" in error_string:
             raise PdfInvalidCredentialsException(
                 'Incorrect password. Please provide the correct password.')
-        if 'Copying of text from this document is not allowed' in error_string:
+        elif 'Copying of text from this document is not allowed' in error_string:
             raise PdfCopyingProtectedException(
                 'Copying is not permitted')
         raise ShellException(
             f'Failed with the following error code: {exit_codes}.\n'
             f' Error: {error_string}'
         )
-    elif completed_process.stderr:
+    elif error_string:
         demisto.debug(
             f"ReadPDFFilev2: exec of [{cmd}] completed with warnings: "
-            f'{completed_process.stderr.decode("utf8")}'
+            f'{error_string}'
         )
     return completed_process.stdout
 
@@ -457,31 +461,36 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     """
     all_urls: Set[str] = set()
     all_emails: Set[str] = set()
-
+    output_capture = io.StringIO()
     with open(file_path, 'rb') as pdf_file:
-        pdf = PyPDF2.PdfReader(pdf_file, strict=False)
-        pages_len = len(pdf.pages)
+        # The following context manager was added so we could redirect error messages to the server logs since
+        # PyPDF2 would sometimes return warnings on some files (warnings and not errors because strict=False), and these warnings
+        # would be flushed to stderr, and therefore they would be returned as an error message to the user instead of being
+        # flushed to the server logs.
+        with contextlib.redirect_stderr(output_capture):
+            pdf = PyPDF2.PdfReader(pdf_file, strict=False)
+            pages_len = len(pdf.pages)
 
-        # Goes over the PDF, page by page, and extracts urls and emails:
-        for page in range(pages_len):
-            page_sliced = pdf.pages[page]
-            page_object = page_sliced.get_object()
+            # Goes over the PDF, page by page, and extracts urls and emails:
+            for page in range(pages_len):
+                page_sliced = pdf.pages[page]
+                page_object = page_sliced.get_object()
 
-            # Extracts the PDF's Annots (Annotations and Commenting):
-            if annots := page_object.get('/Annots'):
-                if not isinstance(annots, PyPDF2.generic.ArrayObject):
-                    annots = [annots]
+                # Extracts the PDF's Annots (Annotations and Commenting):
+                if annots := page_object.get('/Annots'):
+                    if not isinstance(annots, PyPDF2.generic.ArrayObject):
+                        annots = [annots]
 
-                for annot in annots:
-                    annot_objects = annot.get_object()
-                    if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
-                        annot_objects = [annot_objects]
+                    for annot in annots:
+                        annot_objects = annot.get_object()
+                        if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
+                            annot_objects = [annot_objects]
 
-                    # Extracts URLs and Emails:
-                    urls_set, emails_set = extract_urls_and_emails_from_annot_objects(annot_objects)
-                    all_urls = all_urls.union(urls_set)
-                    all_emails = all_emails.union(emails_set)
-
+                        # Extracts URLs and Emails:
+                        urls_set, emails_set = extract_urls_and_emails_from_annot_objects(annot_objects)
+                        all_urls = all_urls.union(urls_set)
+                        all_emails = all_emails.union(emails_set)
+        demisto.debug(output_capture.getvalue())
     # Logging:
     if len(all_urls) == 0:
         demisto.debug('No URLs were extracted from the PDF.')

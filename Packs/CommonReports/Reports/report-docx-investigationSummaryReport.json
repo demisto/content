@@ -214,7 +214,8 @@
      "fontSize": 12,
      "marginBottom:": 12
     },
-    "format": "MMMM Do YYYY, h:mm:ss a z"
+    "format": "MMMM Do YYYY, h:mm:ss a z",
+    "useCurrentTime": true
    }
   },
   {
@@ -546,7 +547,8 @@
      "fontSize": 16,
      "marginBottom:": 12
     },
-    "format": "Do MMM YYYY"
+    "format": "Do MMM YYYY",
+    "useCurrentTime": true
    }
   },
   {
@@ -565,7 +567,8 @@
      "fontSize": 16,
      "marginBottom:": 12
     },
-    "format": "Do MMM YYYY"
+    "format": "Do MMM YYYY",
+    "useCurrentTime": true
    }
   },
   {

@@ -247,6 +247,7 @@ def search_command(proxies):
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
     query_dsl = demisto.args().get('query_dsl')
+    timestamp_field = demisto.args().get('timestamp_field')
     timestamp_range_start = demisto.args().get('timestamp_range_start')
     timestamp_range_end = demisto.args().get('timestamp_range_end')
 
@@ -256,11 +257,12 @@ def search_command(proxies):
     es = elasticsearch_builder(proxies)
     time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
-        time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end)
+        time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
+                                         time_field=timestamp_field)
 
     if query_dsl:
 
-        response = execute_raw_query(es, query_dsl)
+        response = execute_raw_query(es, query_dsl, index)
 
     else:
         que = QueryString(query=query)
@@ -270,7 +272,7 @@ def search_command(proxies):
             search = search.extra(explain=True)
 
         if time_range_dict:
-            search.filter(time_range_dict)
+            search = search.filter(time_range_dict)
 
         if fields is not None:
             fields = fields.split(',')
@@ -669,14 +671,14 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     return {'range': {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query):
+def execute_raw_query(es, raw_query, index=None):
     try:
         raw_query = json.loads(raw_query)
     except Exception as e:
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
     body = {"query": raw_query}
-    response = es.search(index=FETCH_INDEX, body=body)
+    response = es.search(index=index or FETCH_INDEX, body=body)
     return response
 
 

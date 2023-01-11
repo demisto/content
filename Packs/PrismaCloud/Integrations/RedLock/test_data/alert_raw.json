@@ -1,0 +1,345 @@
+{
+    "alertRules": [
+        {
+            "alertRuleNotificationConfig": [
+                {
+                    "customerId": 10,
+                    "dayOfMonth": 1,
+                    "daysOfWeek": [
+                        {
+                            "day": "MO",
+                            "offset": 0
+                        }
+                    ],
+                    "detailedReport": true,
+                    "enabled": true,
+                    "frequency": "as_it_happens",
+                    "frequencyFromRRule": null,
+                    "hourOfDay": null,
+                    "id": "57",
+                    "includeRemediation": false,
+                    "lastUpdated": 1597965950372,
+                    "last_sent_ts": 0,
+                    "recipients": [
+                        "15"
+                    ],
+                    "type": "microsoft_teams",
+                    "withCompression": false
+                }
+            ],
+            "allowAutoRemediate": false,
+            "createdBy": "name@company.com",
+            "delayNotificationMs": 0,
+            "deleted": false,
+            "enabled": true,
+            "lastModifiedBy": "name@company.com",
+            "lastModifiedOn": 1597965950353,
+            "name": "my-rule1",
+            "notifyOnDismissed": false,
+            "notifyOnOpen": true,
+            "notifyOnResolved": false,
+            "notifyOnSnoozed": false,
+            "policyScanConfigId": "4451b988-e15a-4d2c-878b-6bea6c8d7349",
+            "scanAll": true,
+            "target": {
+                "accountGroups": [],
+                "excludedAccounts": [],
+                "regions": [],
+                "tags": []
+            }
+        },
+        {
+            "alertRuleNotificationConfig": [
+                {
+                    "customerId": 10,
+                    "dayOfMonth": 1,
+                    "daysOfWeek": [
+                        {
+                            "day": "MO",
+                            "offset": 0
+                        }
+                    ],
+                    "detailedReport": true,
+                    "enabled": true,
+                    "frequency": "as_it_happens",
+                    "frequencyFromRRule": null,
+                    "hourOfDay": null,
+                    "id": "57",
+                    "includeRemediation": false,
+                    "lastUpdated": 1664957629774,
+                    "last_sent_ts": 0,
+                    "recipients": [
+                        "15"
+                    ],
+                    "type": "webhook",
+                    "withCompression": false
+                }
+            ],
+            "allowAutoRemediate": false,
+            "createdBy": "name@company.com",
+            "delayNotificationMs": 0,
+            "deleted": false,
+            "enabled": true,
+            "lastModifiedBy": "name@company.com",
+            "lastModifiedOn": 1664957629695,
+            "name": "my-rule2",
+            "notifyOnDismissed": false,
+            "notifyOnOpen": true,
+            "notifyOnResolved": false,
+            "notifyOnSnoozed": false,
+            "policyScanConfigId": "2ce8cf9c-44cb-4d54-a24c-0bc1276ace75",
+            "scanAll": true,
+            "target": {
+                "accountGroups": [],
+                "excludedAccounts": [],
+                "regions": [],
+                "tags": []
+            }
+        },
+        {
+            "alertRuleNotificationConfig": [
+                {
+                    "customerId": 10065,
+                    "dayOfMonth": 1,
+                    "daysOfWeek": [
+                        {
+                            "day": "MO",
+                            "offset": 0
+                        }
+                    ],
+                    "detailedReport": true,
+                    "enabled": true,
+                    "frequency": "as_it_happens",
+                    "frequencyFromRRule": null,
+                    "hourOfDay": null,
+                    "id": "57",
+                    "includeRemediation": false,
+                    "lastUpdated": 1664759354134,
+                    "last_sent_ts": 0,
+                    "recipients": [
+                        "15"
+                    ],
+                    "type": "webhook",
+                    "withCompression": false
+                }
+            ],
+            "allowAutoRemediate": false,
+            "createdBy": "name@company.com",
+            "delayNotificationMs": 0,
+            "deleted": false,
+            "enabled": true,
+            "lastModifiedBy": "name@company.com",
+            "lastModifiedOn": 1664759354065,
+            "name": "my-rule3",
+            "notifyOnDismissed": false,
+            "notifyOnOpen": true,
+            "notifyOnResolved": false,
+            "notifyOnSnoozed": false,
+            "policyScanConfigId": "e75f32d6-3339-44f7-909a-25d1e9d2945e",
+            "scanAll": true,
+            "target": {
+                "accountGroups": [],
+                "excludedAccounts": [],
+                "regions": [],
+                "tags": []
+            }
+        }
+    ],
+    "alertTime": 1668769934085,
+    "firstSeen": 1668769934085,
+    "history": [
+        {
+            "modifiedBy": "Prisma Cloud",
+            "modifiedOn": 1668855894492,
+            "reason": "NEW_ALERT",
+            "status": "open"
+        }
+    ],
+    "id": "P-1496074",
+    "lastSeen": 1668855894492,
+    "metadata": {
+        "saveSearchId": "d373d96e-ca35-418e-ba24-5fcb9d12319d"
+    },
+    "networkAnomaly": false,
+    "policy": {
+        "policyId": "c29d7ea0-3913-4635-85bd-c4e68aab0ba1",
+        "policyType": "config",
+        "remediable": false,
+        "systemDefault": true
+    },
+    "reason": "RESOURCE_UPDATED",
+    "resource": {
+        "account": "demo-project",
+        "accountId": "gcp-demo1",
+        "additionalInfo": {},
+        "cloudAccountOwners": [
+            "name@company.com"
+        ],
+        "cloudServiceName": "Google Compute Engine",
+        "cloudType": "gcp",
+        "data": {
+            "canIpForward": true,
+            "cpuPlatform": "Intel Broadwell",
+            "creationTimestamp": "2022-11-18T03:07:30.161-08:00",
+            "deletionProtection": false,
+            "disks": [
+                {
+                    "autoDelete": true,
+                    "boot": true,
+                    "deviceName": "persistent-disk-0",
+                    "diskSizeGb": "60",
+                    "guestOsFeatures": [
+                        {
+                            "type": "MULTI_IP_SUBNET"
+                        }
+                    ],
+                    "index": 0,
+                    "interface": "SCSI",
+                    "kind": "compute#attachedDisk",
+                    "licenses": [
+                        "https://www.googleapis.com/compute/v1/projects/paloaltonetworksgcp-public/global/licenses/vmseries-flex-bundle2"
+                    ],
+                    "mode": "READ_WRITE",
+                    "source": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/zones/us-central1-b/disks/vm-series-demo",
+                    "type": "PERSISTENT"
+                }
+            ],
+            "fingerprint": "42",
+            "id": "1",
+            "kind": "compute#instance",
+            "labelFingerprint": "42",
+            "labels": {
+                "vm-series-fw-template-version": "1-0-0"
+            },
+            "lastStartTimestamp": "2022-11-18T03:07:36.489-08:00",
+            "machineType": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/zones/us-central1-b/machineTypes/n1-standard-4",
+            "metadata": {
+                "fingerprint": "42",
+                "items": [
+                    {
+                        "key": "created-by",
+                        "value": "projects/73/zones/us-central1-b/instanceGroupManagers/demo-vmseries-igm-us-central1-b"
+                    },
+                    {
+                        "key": "dgname",
+                        "value": "dg-es-common-autoscale-fw"
+                    },
+                    {
+                        "key": "dhcp-accept-server-domain",
+                        "value": "yes"
+                    },
+                    {
+                        "key": "dhcp-accept-server-hostname",
+                        "value": "yes"
+                    },
+                    {
+                        "key": "dhcp-send-client-id",
+                        "value": "yes"
+                    },
+                    {
+                        "key": "dhcp-send-hostname",
+                        "value": "yes"
+                    },
+                    {
+                        "key": "instance-template",
+                        "value": "projects/73/global/instanceTemplates/demo-vmseries20220825033314171000000001"
+                    },
+                    {
+                        "key": "op-command-modes",
+                        "value": "mgmt-interface-swap"
+                    },
+                    {
+                        "key": "panorama-server",
+                        "value": "172.21.21.111"
+                    },
+                    {
+                        "key": "tplname",
+                        "value": "stack-temp-es-common-autoscale-fw"
+                    },
+                    {
+                        "key": "type",
+                        "value": "dhcp-client"
+                    },
+                    {
+                        "key": "vm-auth-key",
+                        "value": "x"
+                    }
+                ],
+                "kind": "compute#metadata"
+            },
+            "minCpuPlatform": "Intel Broadwell",
+            "name": "vm-series-demo",
+            "networkInterfaces": [
+                {
+                    "fingerprint": "42",
+                    "kind": "compute#networkInterface",
+                    "name": "nic0",
+                    "network": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/global/networks/demo-untrust-vpc",
+                    "networkIP": "10.0.1.3",
+                    "stackType": "IPV4_ONLY",
+                    "subnetwork": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/regions/us-central1/subnetworks/untrust-us-central1"
+                },
+                {
+                    "fingerprint": "42",
+                    "kind": "compute#networkInterface",
+                    "name": "nic1",
+                    "network": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/global/networks/demo-mgmt-vpc",
+                    "networkIP": "10.0.0.3",
+                    "stackType": "IPV4_ONLY",
+                    "subnetwork": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/regions/us-central1/subnetworks/mgmt-us-central1"
+                },
+                {
+                    "fingerprint": "42",
+                    "kind": "compute#networkInterface",
+                    "name": "nic2",
+                    "network": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/global/networks/demo-trust-vpc",
+                    "networkIP": "10.0.2.5",
+                    "stackType": "IPV4_ONLY",
+                    "subnetwork": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/regions/us-central1/subnetworks/trust-us-central1"
+                }
+            ],
+            "scheduling": {
+                "automaticRestart": true,
+                "onHostMaintenance": "MIGRATE",
+                "preemptible": false,
+                "provisioningModel": "STANDARD"
+            },
+            "selfLink": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/zones/us-central1-b/instances/vm-series-demo",
+            "serviceAccounts": [
+                {
+                    "email": "demo-panw-service-account@gcp-demo1.iam.gserviceaccount.com",
+                    "scopes": [
+                        "https://www.googleapis.com/auth/cloud.useraccounts.readonly",
+                        "https://www.googleapis.com/auth/compute.readonly",
+                        "https://www.googleapis.com/auth/devstorage.read_only",
+                        "https://www.googleapis.com/auth/logging.write",
+                        "https://www.googleapis.com/auth/monitoring.write"
+                    ]
+                }
+            ],
+            "startRestricted": false,
+            "status": "STOPPING",
+            "tags": {
+                "fingerprint": "42",
+                "items": [
+                    "vm-series-fw"
+                ]
+            },
+            "zone": "https://www.googleapis.com/compute/v1/projects/gcp-demo1/zones/us-central1-b"
+        },
+        "id": "1",
+        "internalResourceId": "21997981",
+        "name": "vm-series-demo",
+        "region": "GCP Iowa",
+        "regionId": "us-central1",
+        "resourceApiName": "gcloud-compute-instances-list",
+        "resourceConfigJsonAvailable": true,
+        "resourceDetailsAvailable": true,
+        "resourceTs": 1668855699874,
+        "resourceType": "INSTANCE",
+        "rrn": "rrn::instance:us-central1:gcp-demo1:example",
+        "unifiedAssetId": "example"
+    },
+    "saveSearchId": "98",
+    "status": "resolved"
+}
