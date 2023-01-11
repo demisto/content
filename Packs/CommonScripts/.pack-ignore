@@ -76,6 +76,9 @@ ignore=SC105
 [file:1_10_42.md]
 ignore=RN114
 
+[file:1_10_48.md]
+ignore=RN114
+
 [known_words]
 UnzipFile
 ZipStrings
