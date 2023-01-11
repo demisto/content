@@ -16,6 +16,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "relationship": "Relationship"
 }
 INDICATOR_TYPE_TO_SCORE = {
@@ -23,7 +24,8 @@ INDICATOR_TYPE_TO_SCORE = {
     "Attack Pattern": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
     "Course of Action": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
     "Malware": ThreatIntel.ObjectsScore.MALWARE,
-    "Tool": ThreatIntel.ObjectsScore.TOOL
+    "Tool": ThreatIntel.ObjectsScore.TOOL,
+    "Campaign": ThreatIntel.ObjectsScore.CAMPAIGN
 }
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
@@ -52,9 +54,11 @@ FILTER_OBJS = {
     "Malware": {"name": "malware", "filter": Filter("type", "=", "malware")},
     "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
+    "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
 }
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
+EXTRACT_TIMESTAMP_REGEX = r"\((.+)\)"
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
@@ -102,8 +106,11 @@ class Client:
         }
 
         indicator_obj['fields']['tags'].extend(self.tags)
+        tlp = indicator_obj['fields']['tlp']
+        if tlp != '':
+            indicator_obj['fields']['trafficlightprotocol'] = tlp
 
-        if self.tlp_color:
+        elif self.tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
 
         return indicator_obj
@@ -242,7 +249,8 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         url = external_reference.get('url', '')
         description = external_reference.get('description')
         source_name = external_reference.get('source_name')
-        publications.append({'link': url, 'title': description, 'source': source_name})
+        time_stamp = extract_timestamp_from_description(description)
+        publications.append({'link': url, 'title': description, 'source': source_name, 'timestamp': time_stamp})
 
     mitre_id = [external.get('external_id') for external in indicator_json.get('external_references', [])
                 if external.get('source_name', '') == 'mitre-attack']
@@ -252,13 +260,16 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     if indicator_type in ['Tool', 'STIX Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
+    tlp = get_tlp(indicator_json)
+
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
         'firstseenbysource': created,
         'modified': modified,
         'publications': publications,
         'mitreid': mitre_id,
-        'tags': tags
+        'tags': tags,
+        'tlp': tlp,
     }
 
     mapping_by_type = {
@@ -301,10 +312,32 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'stixaliases': indicator_json.get('x_mitre_aliases'),
             'stixdescription': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
+        },
+        "Campaign": {
+            'description': indicator_json.get('description'),
+            'aliases': indicator_json.get('aliases')
         }
     }
     generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
+
+
+def extract_timestamp_from_description(description: str) -> str:
+    if not description or 'Citation' in description or 'n.d' in description:
+        return ''
+    match = re.search(EXTRACT_TIMESTAMP_REGEX, description)
+    timestamp = match.group(1) if match else ''
+    return timestamp
+
+
+def get_tlp(indicator_json: dict) -> str:
+    object_marking_definition_list = indicator_json.get('object_marking_refs', '')
+    tlp_color: str = ''
+    for object_marking_definition in object_marking_definition_list:
+        if MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
+            tlp_color = MARKING_DEFINITION_TO_TLP.get(object_marking_definition, '')
+            break
+    return tlp_color
 
 
 def create_relationship_list(mitre_relationships_list, id_to_name):
@@ -635,6 +668,8 @@ def main():
     except Exception as e:
         return_error(e)
 
+
+from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -2326,7 +2326,7 @@ def test_get_update_args_when_not_getting_closing_user_id():
         'status': 2}
     )
     update_args = get_update_args(remote_args)
-    assert update_args.get('status') is None
+    assert update_args.get('status') == 'resolved_other'
 
 
 def test_remove_blocklist_files_command(requests_mock):

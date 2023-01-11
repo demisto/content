@@ -1,4 +1,4 @@
-This playbook uploads, detonates, and analyzes files for the CrowdStrike Falcon Intelligence Sandbox sandbox.
+This playbook uploads, detonates, and analyzes files for the CrowdStrike Falcon Intelligence Sandbox.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
