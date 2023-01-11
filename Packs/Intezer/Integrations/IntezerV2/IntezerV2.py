@@ -55,6 +55,20 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
     )
 
 
+def _arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+    if isinstance(arg, int):
+        return arg
+    raise ValueError(f'Invalid number: "{arg_name}"')
+
+
 def _get_missing_url_result(url: str, ex: ServerError = None) -> CommandResults:
     dbot = {
         'Vendor': 'Intezer',
@@ -119,7 +133,7 @@ def _get_analysis_running_result(analysis_type: str,
 ''' COMMANDS '''
 
 
-def check_is_available(intezer_api: IntezerApi, args: dict) -> str:
+def check_is_available(args: dict, intezer_api: IntezerApi) -> str:
     try:
         response = intezer_api.get_url_result(f'/{IS_AVAILABLE_URL}')
         return 'ok' if response else 'Empty response from intezer service'
@@ -131,7 +145,7 @@ def check_is_available(intezer_api: IntezerApi, args: dict) -> str:
         return f'Error connecting to Analyze Base url.\n{error}'
 
 
-def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> CommandResults:
+def analyze_by_hash_command(args: Dict[str, str], intezer_api: IntezerApi) -> PollResult:
     file_hash = args.get('file_hash')
 
     if not file_hash:
@@ -149,19 +163,26 @@ def analyze_by_hash_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Co
             'Type': 'File'
         }
 
-        return CommandResults(
-            outputs_prefix='Intezer.Analysis',
-            outputs_key_field='ID',
-            outputs=context_json,
-            readable_output='Analysis created successfully: {}'.format(analysis_id)
-        )
+        if args.get('wait_for_result'):
+            args['analysis_id'] = analysis_id
+            return get_file_analysis_result_command(args, intezer_api)
+
+        command_result = CommandResults(outputs_prefix='Intezer.Analysis',
+                                        outputs_key_field='ID',
+                                        outputs=context_json,
+                                        readable_output='Analysis created successfully: {}'.format(analysis_id))
+
+        return PollResult(continue_to_poll=False, response=command_result)
+
     except HashDoesNotExistError:
-        return _get_missing_file_result(file_hash)
+        return PollResult(response=_get_missing_file_result(file_hash),
+                          continue_to_poll=False)
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result(analysis_type='File', response=error.response)
+        return PollResult(response=_get_analysis_running_result(analysis_type='File', response=error.response),
+                          continue_to_poll=False)
 
 
-def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> CommandResults:
+def analyze_url_command(args: Dict[str, str], intezer_api: IntezerApi) -> PollResult:
     url = args.get('url')
 
     if not url:
@@ -173,31 +194,37 @@ def analyze_url_command(intezer_api: IntezerApi, args: Dict[str, str]) -> Comman
         analysis.send(requester=REQUESTER)
         analysis_id = analysis.analysis_id
 
+        if args.get('wait_for_result'):
+            args['analysis_id'] = analysis_id
+            return get_url_analysis_result_command(args, intezer_api)
+
         context_json = {
             'ID': analysis.analysis_id,
             'Status': 'Created',
             'Type': 'Url'
         }
 
-        return CommandResults(
-            outputs_prefix='Intezer.Analysis',
-            outputs_key_field='ID',
-            outputs=context_json,
-            readable_output='Analysis created successfully: {}'.format(analysis_id)
-        )
+        command_result = CommandResults(outputs_prefix='Intezer.Analysis',
+                                        outputs_key_field='ID',
+                                        outputs=context_json,
+                                        readable_output='Analysis created successfully: {}'.format(analysis_id))
+
+        return PollResult(continue_to_poll=False, response=command_result)
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result('Url', response=error.response)
+        return PollResult(response=_get_analysis_running_result('Url', response=error.response),
+                          continue_to_poll=False)
     except ServerError as ex:
-        return _get_missing_url_result(url, ex)
+        return PollResult(response=_get_missing_url_result(url, ex),
+                          continue_to_poll=False)
 
 
-def get_latest_result_command(intezer_api: IntezerApi, args: Dict[str, str]) -> CommandResults:
+def get_latest_result_command(args: Dict[str, str], intezer_api: IntezerApi) -> CommandResults:
     file_hash = args.get('file_hash')
 
     if not file_hash:
         raise ValueError('Missing file hash')
 
-    latest_analysis = FileAnalysis.from_latest_hash_analysis(file_hash=file_hash, api=intezer_api, requester=REQUESTER)
+    latest_analysis = FileAnalysis.from_latest_hash_analysis(**_get_latest_hash_analysis_options(args, intezer_api))
 
     if not latest_analysis:
         return _get_missing_file_result(file_hash)
@@ -206,13 +233,14 @@ def get_latest_result_command(intezer_api: IntezerApi, args: Dict[str, str]) -> 
     return enrich_dbot_and_display_file_analysis_results(latest_analysis.result(), file_metadata)
 
 
-def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
-    file_id = args.get('file_entry_id')
-    file_data = demisto.getFilePath(file_id)
-
+def analyze_by_uploaded_file_command(args: dict, intezer_api: IntezerApi) -> PollResult:
     try:
-        analysis = FileAnalysis(file_path=file_data['path'], file_name=file_data['name'], api=intezer_api)
+        analysis = FileAnalysis(**_get_file_analysis_options(args, intezer_api))
         analysis.send(requester=REQUESTER)
+
+        if args.get('wait_for_result'):
+            args['analysis_id'] = analysis.analysis_id
+            return get_file_analysis_result_command(args, intezer_api)
 
         context_json = {
             'ID': analysis.analysis_id,
@@ -220,17 +248,20 @@ def analyze_by_uploaded_file_command(intezer_api: IntezerApi, args: dict) -> Com
             'Type': 'File'
         }
 
-        return CommandResults(
-            outputs_prefix='Intezer.Analysis',
-            outputs_key_field='ID',
-            outputs=context_json,
-            readable_output='Analysis created successfully: {}'.format(analysis.analysis_id)
+        command_result = CommandResults(outputs_prefix='Intezer.Analysis',
+                                        outputs_key_field='ID',
+                                        outputs=context_json,
+                                        readable_output=f'Analysis created successfully: {analysis.analysis_id}')
+        return PollResult(
+            continue_to_poll=False,
+            response=command_result
         )
     except AnalysisIsAlreadyRunning as error:
-        return _get_analysis_running_result('File', response=error.response)
+        return PollResult(response=_get_analysis_running_result('File', response=error.response),
+                          continue_to_poll=False)
 
 
-def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args: dict) -> List[CommandResults]:
+def check_analysis_status_and_get_results_command(args: dict, intezer_api: IntezerApi) -> List[CommandResults]:
     analysis_type = args.get('analysis_type', 'File')
     analysis_ids = argToList(args.get('analysis_id'))
     indicator_name = args.get('indicator_name')
@@ -284,7 +315,7 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
     return command_results
 
 
-def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+def get_analysis_sub_analyses_command(args: dict, intezer_api: IntezerApi) -> CommandResults:
     analysis_id = args.get('analysis_id')
 
     try:
@@ -313,7 +344,7 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
     )
 
 
-def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+def get_analysis_code_reuse_command(args: dict, intezer_api: IntezerApi) -> CommandResults:
     analysis_id = args.get('analysis_id')
     sub_analysis_id = args.get('sub_analysis_id', 'root')
 
@@ -368,7 +399,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
     )
 
 
-def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+def get_analysis_metadata_command(args: dict, intezer_api: IntezerApi) -> CommandResults:
     analysis_id = args.get('analysis_id')
     sub_analysis_id = args.get('sub_analysis_id', 'root')
 
@@ -414,7 +445,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
     )
 
 
-def get_analysis_iocs_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+def get_analysis_iocs_command(args: dict, intezer_api: IntezerApi) -> CommandResults:
     analysis_id = args.get('analysis_id')
 
     try:
@@ -451,7 +482,7 @@ def get_analysis_iocs_command(intezer_api: IntezerApi, args: dict) -> CommandRes
     )
 
 
-def get_family_info_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+def get_family_info_command(args: dict, intezer_api: IntezerApi) -> CommandResults:
     family_id = args.get('family_id')
     family = Family(family_id, api=intezer_api)
 
@@ -475,7 +506,112 @@ def get_family_info_command(intezer_api: IntezerApi, args: dict) -> CommandResul
     )
 
 
+@polling_function(name='intezer-get-file-analysis-result',
+                  poll_message='Fetching Intezer analysis. Please wait...',
+                  polling_arg_name='wait_for_result',
+                  timeout=_arg_to_int(demisto.args().get('timeout'), arg_name='timeout'),
+                  interval=_arg_to_int(demisto.args().get('interval'), arg_name='interval'))
+def get_file_analysis_result_command(args: dict, intezer_api: IntezerApi) -> PollResult:
+    analysis_id = str(args.get('analysis_id'))
+
+    try:
+        analysis = FileAnalysis.from_analysis_id(analysis_id, api=intezer_api)
+        if not analysis:
+            return PollResult(
+                response=_get_missing_analysis_result(analysis_id=analysis_id)
+            )
+
+        analysis_result = analysis.result()
+        file_metadata = analysis.get_root_analysis().metadata
+
+        return PollResult(response=enrich_dbot_and_display_file_analysis_results(analysis_result,
+                                                                                 file_metadata))
+    except HTTPError as http_error:
+        if http_error.response.status_code == HTTPStatus.CONFLICT:
+            return PollResult(continue_to_poll=True,
+                              response=_get_analysis_running_result('File', analysis_id=analysis_id))
+
+        elif http_error.response.status_code == HTTPStatus.NOT_FOUND:
+            return PollResult(
+                response=_get_missing_analysis_result(analysis_id=analysis_id)
+            )
+        else:
+            raise http_error
+    except AnalysisIsStillRunning:
+        return PollResult(continue_to_poll=True,
+                          response=_get_analysis_running_result('File', analysis_id=analysis_id))
+
+
+@polling_function(name='intezer-get-url-analysis-result',
+                  poll_message='Fetching Intezer analysis. Please wait...',
+                  polling_arg_name='wait_for_result',
+                  timeout=_arg_to_int(demisto.args().get('timeout'), arg_name='timeout'),
+                  interval=_arg_to_int(demisto.args().get('interval'), arg_name='interval'))
+def get_url_analysis_result_command(args: dict, intezer_api: IntezerApi) -> PollResult:
+    analysis_id = str(args.get('analysis_id'))
+
+    try:
+        analysis = UrlAnalysis.from_analysis_id(analysis_id, api=intezer_api)
+        if not analysis:
+            return PollResult(
+                response=_get_missing_analysis_result(analysis_id=analysis_id)
+            )
+
+        analysis_result = analysis.result()
+
+        return PollResult(response=enrich_dbot_and_display_url_analysis_results(analysis_result, intezer_api))
+    except HTTPError as http_error:
+        if http_error.response.status_code == HTTPStatus.CONFLICT:
+            return PollResult(continue_to_poll=True,
+                              response=_get_analysis_running_result('Url', analysis_id=analysis_id))
+
+        elif http_error.response.status_code == HTTPStatus.NOT_FOUND:
+            return PollResult(
+                response=_get_missing_analysis_result(analysis_id=analysis_id)
+            )
+        else:
+            raise http_error
+    except AnalysisIsStillRunning:
+        return PollResult(continue_to_poll=True,
+                          response=_get_analysis_running_result('Url', analysis_id=analysis_id))
+
+
+@polling_function(name='intezer-get-endpoint-analysis-result',
+                  poll_message='Fetching Intezer analysis. Please wait...',
+                  polling_arg_name='wait_for_result',
+                  timeout=_arg_to_int(demisto.args().get('timeout'), arg_name='timeout'),
+                  interval=_arg_to_int(demisto.args().get('interval'), arg_name='interval'))
+def get_endpoint_analysis_result_command(args: dict, intezer_api: IntezerApi) -> PollResult:
+    analysis_id = str(args.get('analysis_id'))
+    indicator_name = args.get('indicator_name')
+
+    try:
+        analysis = EndpointAnalysis.from_analysis_id(analysis_id, api=intezer_api)
+        if not analysis:
+            return PollResult(
+                response=_get_missing_analysis_result(analysis_id=analysis_id)
+            )
+
+        analysis_result = analysis.result()
+
+        return PollResult(response=enrich_dbot_and_display_endpoint_analysis_results(analysis_result, indicator_name))
+    except HTTPError as http_error:
+        if http_error.response.status_code == HTTPStatus.CONFLICT:
+            return PollResult(continue_to_poll=True,
+                              response=_get_analysis_running_result('Endpoint', analysis_id=analysis_id))
+
+        elif http_error.response.status_code == HTTPStatus.NOT_FOUND:
+            return PollResult(
+                response=_get_missing_analysis_result(analysis_id=analysis_id)
+            )
+        else:
+            raise http_error
+    except AnalysisIsStillRunning:
+        return PollResult(continue_to_poll=True,
+                          response=_get_analysis_running_result('Endpoint', analysis_id=analysis_id))
+
 # region Enrich DBot
+
 
 def enrich_dbot_and_display_file_analysis_results(intezer_result: dict, file_metadata: dict) -> CommandResults:
     verdict = intezer_result.get('verdict')
@@ -656,6 +792,46 @@ def _refine_gene_counts(summary: dict):
     summary.pop('main_connection_classification', None)
 
 
+def _get_file_analysis_options(args: dict, intezer_api: IntezerApi) -> dict:
+    file_id = args.get('file_entry_id')
+    file_data = demisto.getFilePath(file_id)
+
+    zip_password = args.get('zip_password')
+    disable_dynamic_execution = args.get('disable_dynamic_execution')
+    disable_static_extraction = args.get('disable_static_extraction')
+    sandbox_command_line_arguments = args.get('sandbox_command_line_arguments')
+
+    analysis_options = dict(file_path=file_data['path'],
+                            file_name=file_data['name'],
+                            api=intezer_api)
+
+    if zip_password:
+        analysis_options['zip_password'] = zip_password
+
+    if disable_dynamic_execution:
+        analysis_options['disable_dynamic_execution'] = argToBoolean(disable_dynamic_execution)
+
+    if disable_static_extraction:
+        analysis_options['disable_static_extraction'] = argToBoolean(disable_static_extraction)
+
+    if sandbox_command_line_arguments:
+        analysis_options['sandbox_command_line_arguments'] = sandbox_command_line_arguments
+
+    return analysis_options
+
+
+def _get_latest_hash_analysis_options(args: dict, intezer_api: IntezerApi) -> dict:
+    latest_hash_analysis_options = dict(file_hash=args.get('file_hash'),
+                                        api=intezer_api,
+                                        requester=REQUESTER)
+
+    should_get_only_private_analysis = args.get('should_get_only_private_analysis')
+    if should_get_only_private_analysis:
+        latest_hash_analysis_options['private_only'] = argToBoolean(should_get_only_private_analysis)
+
+    return latest_hash_analysis_options
+
+
 def enrich_dbot_and_display_endpoint_analysis_results(intezer_result, indicator_name=None) -> CommandResults:
     verdict = intezer_result['verdict']
     computer_name = intezer_result['computer_name']
@@ -711,7 +887,10 @@ def main():
                                  use_ssl,
                                  user_agent=get_pack_version())
 
-        command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[List[CommandResults], CommandResults, str]]] = {
+        command_handlers: Dict[str, Callable[[IntezerApi, dict], Union[List[CommandResults],
+                                                                       CommandResults,
+                                                                       PollResult,
+                                                                       str]]] = {
             'test-module': check_is_available,
             'intezer-analyze-by-hash': analyze_by_hash_command,
             'intezer-analyze-by-file': analyze_by_uploaded_file_command,
@@ -722,12 +901,15 @@ def main():
             'intezer-get-analysis-code-reuse': get_analysis_code_reuse_command,
             'intezer-get-analysis-metadata': get_analysis_metadata_command,
             'intezer-get-analysis-iocs': get_analysis_iocs_command,
-            'intezer-get-family-info': get_family_info_command
+            'intezer-get-family-info': get_family_info_command,
+            'intezer-get-file-analysis-result': get_file_analysis_result_command,
+            'intezer-get-url-analysis-result': get_url_analysis_result_command,
+            'intezer-get-endpoint-analysis-result': get_endpoint_analysis_result_command
         }
 
         command = demisto.command()
         command_handler = command_handlers[command]
-        command_results = command_handler(intezer_api, demisto.args())
+        command_results = command_handler(demisto.args(), intezer_api)
         return_results(command_results)
 
     except Exception as e:
