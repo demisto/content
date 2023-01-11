@@ -19,17 +19,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Okta v2
 
 ### Scripts
-* MathUtil
-* Set
 * CountArraySize
+* Set
+* MathUtil
 * GetTime
 
 ### Commands
-* pan-os-get-logs
-* pan-os-query-logs
-* splunk-search
-* okta-get-logs
 * azure-log-analytics-execute-query
+* okta-get-logs
+* pan-os-query-logs
+* pan-os-get-logs
+* splunk-search
 
 ## Playbook Inputs
 ---
