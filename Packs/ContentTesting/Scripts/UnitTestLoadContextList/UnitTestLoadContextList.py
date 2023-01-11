@@ -8,6 +8,7 @@ def main():
         results = demisto.executeCommand("getList", {'listName': listName})[0]['Contents']
         if "Item not found" not in results:
             fields = json.loads(results)
+            # Set context
             for key, val in fields.items():
                 demisto.executeCommand("Set", {"key": key, "value": val})
         else:

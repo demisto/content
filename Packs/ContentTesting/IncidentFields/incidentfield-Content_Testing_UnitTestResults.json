@@ -4,11 +4,11 @@
         "UnitTesting"
     ],
     "caseInsensitive": true,
-    "cliName": "unittestresults",
+    "cliName": "contenttestingunittestresults",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Playbook or Automation",
+            "displayName": "Playbook",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -18,7 +18,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 307
+            "width": 560
         },
         {
             "displayName": "Task",
@@ -31,7 +31,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 664
+            "width": 653
         },
         {
             "displayName": "Result",
@@ -52,13 +52,16 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_unittestresults",
+    "id": "incident_contenttestingunittestresults",
     "isReadOnly": false,
     "locked": false,
-    "name": "unittestresults",
+    "name": "Content Testing UnitTestResults",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
     "required": false,
     "sla": 0,
     "system": false,

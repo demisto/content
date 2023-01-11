@@ -15,6 +15,7 @@ def main():
             while line != "":
                 words = line.split(",", 1)
                 inputs = json.loads(words[1].strip())
+                # Set context values in prep for running the subplaybook
                 for key, val in inputs.items():
                     demisto.setContext(key, val)
                 line = buf.readline()

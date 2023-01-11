@@ -241,7 +241,7 @@ def main():
             return
 
         # Add a task to display the results. Does this inside demisto locks to ensure
-        # serial updates to the unit test status grid field when test butten selection add tasks quickly.
+        # serial updates to the unit test status grid field when test butten selection add tasks quickly
         if len(cmds) > 0:
             newargs = {
                 'playbookname': "UnitTestResults",
@@ -249,7 +249,7 @@ def main():
                 'incid': incId,
                 'cmds': cmds,
                 'tasks': tasks,
-                'gridfield': "unittestresults",
+                'gridfield': "contenttestingunittestresults",
                 'status': status
             }
             RunUTResults(newargs)
@@ -263,7 +263,7 @@ def main():
             'incid': incId,
             'cmds': cmds,
             'tasks': tasks,
-            'gridfield': "unittestresults",
+            'gridfield': "contenttestingunittestresults",
             'status': status
         }
         RunUTResults(newargs)

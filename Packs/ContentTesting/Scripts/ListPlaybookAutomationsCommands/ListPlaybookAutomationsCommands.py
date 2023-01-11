@@ -50,7 +50,7 @@ def main():
             output += f"### {key}\n"
             for akey, aval in val.items():
                 output += f"{akey}\n"
-        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contentautomations": output})})
+        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contenttestingcontentautomations": output})})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f"ListPlaybookAutomationsCommands: Exception failed to execute. Error: {str(ex)}")

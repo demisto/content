@@ -14,6 +14,7 @@ def main():
                 'type': "json"
             }
         })[0]['Contents']
+        # If error set the list
         if "Script failed to run" in res:
             demisto.executeCommand("setList", {
                 'listName': listname,

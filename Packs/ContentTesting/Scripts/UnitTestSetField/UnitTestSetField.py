@@ -6,6 +6,7 @@ def main():
     try:
         key = demisto.args()['field']
         value = demisto.args()['value']
+        # Set incident field
         demisto.executeCommand("setIncident", {key: value})
     except Exception as ex:
         demisto.error(traceback.format_exc())

@@ -345,6 +345,7 @@ def UpgradeMD(upgradePacks, changes):
 
 def main():
     try:
+        # Check any packs with upgrades and potential impacts on custom content
         upgradePacks, changesPacks = GetUpgradedPacks()
         upgradeIntegs = GetUpgradedIntegrations(upgradePacks)
         upgradeTypes, customTypes = GetUpgradedIncidentTypes(upgradePacks)
@@ -355,9 +356,9 @@ def main():
         upgradeScripts = GetUpgradedScripts(changesPacks, scripts)
 
         impact = ImpactMD(upgradePacks, upgradeIntegs, upgradeTypes, customTypes, subplaybooks, upgradeScripts, fields)
-        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contentimpacts": impact})})
+        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contenttestingcontentimpacts": impact})})
         details = UpgradeMD(upgradePacks, changesPacks)
-        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contentdetails": details})})
+        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contenttestingcontentdetails": details})})
 
     except Exception as ex:
         demisto.error(traceback.format_exc())

@@ -20,6 +20,7 @@ def main():
             words = line.split("|", 1)
             testType = words[0].strip()
             datalist = words[1].strip().replace("\n", "")
+            # Process commands to load fields or context
             if testType == "LoadFields":
                 demisto.executeCommand("UnitTestLoadFieldsList", {'list': datalist})
             elif testType == "LoadContext":

@@ -9,6 +9,7 @@ def main():
         if "Item not found" not in results:
             fields = json.loads(results)
             if fields:
+                # Set each field
                 for key, val in fields.items():
                     if key != "name":
                         demisto.executeCommand("setIncident", {key: val})

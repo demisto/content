@@ -6,6 +6,7 @@ def main():
     try:
         incid = demisto.args()['id']
         incident = demisto.executeCommand("getIncidents", {"id": incid})[0]["Contents"]["data"][0]
+        # Set each incident field
         for key in incident.keys():
             if key != "name":
                 demisto.executeCommand("setIncident", {key: incident[key]})

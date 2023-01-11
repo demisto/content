@@ -20,7 +20,7 @@ def main():
         while line != "":
             words = line.split("|", 1)
             testType = words[0].strip()
-
+            # Process commands
             if testType == "Automation" or testType == "Subplaybook" or testType == "Playbook":
                 if testType == "Playbook":
                     testList = ""

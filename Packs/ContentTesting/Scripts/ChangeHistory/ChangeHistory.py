@@ -78,7 +78,7 @@ def main():
                 for entry in itypes[typekey][key]['history']:
                     output += f"{entry['action']}, {entry['message']}\n"
 
-        demisto.executeCommand("setIncident", {'customFields': json.dumps({"commithistory": output})})
+        demisto.executeCommand("setIncident", {'customFields': json.dumps({"contenttestingcommithistory": output})})
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f"ChangeHistory: Exception failed to execute. Error: {str(ex)}")
