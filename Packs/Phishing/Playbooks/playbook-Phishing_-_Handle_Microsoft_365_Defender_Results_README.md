@@ -1,9 +1,9 @@
 This playbook is used to handle the results from the "Microsoft 365 Defender - Threat Hunting Generic" playbook inside a phishing incident. It will do the following actions:
 1) Set the relevant incident fields based on the results, such as "Clicked URLs", "Malicious URL Viewed" and "Malicious URL Clicked".
-2) In case the relevant playbook inputs were configured, it will create new incidents for each email returned in the results. First, it will try to retrieve to original emails' files and then it will create an incident for each retrieved email.
+2) In case the relevant playbook inputs were configured, it will create new incidents for each email returned in the results. First, it will try to retrieve the original emails' files and then it will create an incident for each retrieved email.
 3) Link the newly created incidents to the main originating incident.
 
-Please note that this playbook should only be used inside a phishing incident and not as a main playbook.
+Note that this playbook should only be used inside a phishing incident and not as a main playbook.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -30,8 +30,8 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | RetrievedEmails | Emails retrieved by the "Microsoft 365 Defender - Threat Hunting Generic" playbook. |  | Required |
-| CreateNewIncidents | When "True", the playbook will create new phishing incidents for each email which contain one of the malicious indicators. Default is "False" | False | Optional |
-| EmailBrand | In order to retrieve email files in case any emails containing malicious indicators were found, this playbook would run the sub-playbook "Phishing - Get Original Email Loop" which will loop in order to retrieve all of the found emails. It will run internally the "Get Original Email - Generic v2" playbook which will use this input in order to run the relevant "Get Original Email" playbook based on the selected brand. <br/><br/>Possible values:<br/>- EWS v2<br/>- EWSO365<br/>- MicrosoftGraphMail<br/><br/>Default is "MicrosoftGraphMail". | MicrosoftGraphMail | Optional |
+| CreateNewIncidents | When "True", the playbook will create new phishing incidents for each email that contains one of the malicious indicators. Default is "False" | False | Optional |
+| EmailBrand | In order to retrieve email files in case any emails containing malicious indicators were found, this playbook would run the "Phishing - Get Original Email Loop" sub-playbook that will loop in order to retrieve all of the found emails. It will internally run the "Get Original Email - Generic v2" playbook that will use this input in order to run the relevant "Get Original Email" playbook based on the selected brand. <br/><br/>Possible values:<br/>- EWS v2<br/>- EWSO365<br/>- MicrosoftGraphMail<br/><br/>Default is "MicrosoftGraphMail". | MicrosoftGraphMail | Optional |
 
 ## Playbook Outputs
 ---
