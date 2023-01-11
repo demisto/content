@@ -18,28 +18,28 @@ configuration:
     type: 9
     displaypassword: Client Secret (OAuth)
   - name: creds_api_key
-    displaypassword: API Key (JWT-Deprecated. This method will be deprecated by Zoom in June 2023.)
+    displaypassword: API Key (JWT-Deprecated.) 
     required: false
     type: 9
-    additionalinfo: This authentication method is deprecated
+    additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
     hiddenusername: true
   - name: creds_api_secret
-    displaypassword: API Secret (JWT-Deprecated. This method will be deprecated by Zoom in June 2023.)
+    displaypassword: API Secret (JWT-Deprecated.)
     type: 9
     required: false
-    additionalinfo: This authentication method is deprecated
+    additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
     hiddenusername: true
-  - display: API Key (JWT-Deprecated. This method will be deprecated by Zoom in June 2023.)
+  - display: API Key (JWT-Deprecated.)
     name: apiKey
     required: false
     type: 4
-    additionalinfo: This authentication method is deprecated
+    additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
     hidden: true
-  - display: API Secret (JWT-Deprecated. This method will be deprecated by Zoom in June 2023.)
+  - display: API Secret (JWT-Deprecated.)
     name: apiSecret
     type: 4
     required: false
-    additionalinfo: This authentication method is deprecated
+    additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
     hidden: true
   - display: Use system proxy settings
     name: proxy
@@ -104,7 +104,7 @@ script:
           predefined:
             - Instant
             - Scheduled
-            - "Recurring meeting with fixed time"
+            - Recurring meeting with fixed time
           required: true
         - description: >
             For recurring meetings only.
