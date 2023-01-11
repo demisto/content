@@ -1,9 +1,6 @@
 [file:README.md]
 ignore=RM106
 
-[file:FeedAlienVaultOTXTaxii.yml]
-ignore=IN145
-
 [file:FeedAlienVaultOTXTaxii_image.png]
 ignore=IM111
 

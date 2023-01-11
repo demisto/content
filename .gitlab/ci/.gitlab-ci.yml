@@ -9,9 +9,8 @@ default:
 
 stages:
   - unittests-and-validations
-  - create-instances
+  - prepare-testing-bucket
   - run-instances
-  - stage-compare
   - upload-to-marketplace
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
@@ -43,6 +42,7 @@ variables:
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
   SDK_REF: "master" # The default sdk branch to use
   OVERRIDE_ALL_PACKS: "false"
+  TEST_UPLOAD: "true"
 
 
 include:
@@ -52,4 +52,3 @@ include:
   - local: .gitlab/ci/instance-test.yml
   - local: .gitlab/ci/sdk-nightly.yml
   - local: .gitlab/ci/miscellaneous.yml
-  - local: .gitlab/ci/staging.yml
