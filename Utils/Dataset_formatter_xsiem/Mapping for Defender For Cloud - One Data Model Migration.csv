@@ -1,0 +1,42 @@
+Name,Type,Description,XDM Field One Data Model,XDM Field - Old Data Model
+id,string,Resource Id,xdm.observer.unique_identifier,XDM.Endpoint.Observer.unique_identifier
+name,string,Resource name,xdm.observer.name,XDM.Endpoint.Observer.name
+properties.alertDisplayName,string,The display name of the alert.,xdm.alert.name,XDM.Endpoint.threat.name
+properties.alertType,string,Unique identifier for the detection logic (all alert instances from the same detection logic will have the same alertType).,xdm.alert.category,XDM.Endpoint.threat.category
+properties.compromisedEntity,string,The display name of the resource most related to this alert.,xdm.target.host.hostname,XDM.Endpoint.Target.host.hostname
+properties.description,string,Description of the suspicious activity that was detected.,xdm.alert.description,XDM.Endpoint.threat.description
+properties.entities,AlertEntity[],A list of entities related to the alert.,,"This is an array of related entities, this array can include the following values:"
+properties.entities.address,"coalesce(properties.entities.address,properties.extendedProperties.client IP Address)",,xdm.target.host.ipv4_addresses,XDM.Endpoint.Target.host.ipv4_addresses
+properties.extendedProperties.client IP Address,"coalesce(properties.entities.address,properties.extendedProperties.client IP Address)",,xdm.target.host.ipv4_addresses,XDM.Endpoint.Target.host.ipv4_addresses
+properties.entities.dnsDomain,,,xdm.target.host.fqdn,XDM.Endpoint.Target.host.fqdn
+properties.entities.hostname,,,xdm.target.host.hostname,XDM.Endpoint.Target.host.hostname
+properties.entities.azureID,,,xdm.target.host.device_id,XDM.Endpoint.Target.host.device_id
+properties.entities.OsVersion,,,xdm.target.host.os,XDM.Endpoint.Target.host.os
+properties.entities.osFamily,,,xdm.target.host.os_family,XDM.Endpoint.Target.host.os_family
+properties.entities.directory,,,xdm.target.file.path,XDM.Endpoint.Target.file.path
+properties.entities.name,,,xdm.target.file.filename,XDM.Endpoint.Target.file.filename
+properties.entities.commandLine,"coalesce(properties.entities.commandLine,properties.extendedProperties.command line)",,xdm.target.process.command_line,XDM.Endpoint.Target.process.command_line
+properties.entities.processId,,,xdm.target.process.identifier,XDM.Endpoint.Target.process.identifier
+properties.entities.$id,,,xdm.target.agent.identifier,XDM.Endpoint.Target.agent.identifier
+properties.entities.type,,,xdm.target.agent.type,XDM.Endpoint.Target.agent.type
+properties.extendedProperties,object,Custom properties for the alert.,,See All Below
+properties.extendedProperties.domain name,,,xdm.source.user.domain,XDM.Endpoint.Actor.user.domain
+properties.extendedProperties.user name,,,xdm.source.user.username,XDM.Endpoint.Actor.user.username
+properties.extendedProperties.suspicious Process Id,,,xdm.source.process.pid,XDM.Endpoint.Actor.process.pid
+properties.extendedProperties.suspicious Process,,,xdm.source.process.name,XDM.Endpoint.Actor.process.name
+properties.extendedProperties.suspicious Command Line,,,xdm.source.process.command_line,XDM.Endpoint.Actor.process.command_line
+properties.extendedProperties.killChainIntent,,,xdm.alert.mitre_tactics,XDM.Endpoint.threat.mitre_tactics
+properties.extendedProperties.attacker IP Address,,,xdm.source.host.ipv4_addresses,XDM.Endpoint.Actor.host.ipv4_addresses
+properties.extendedProperties.process name,,,xdm.target.process.name,XDM.Endpoint.Target.process.name
+properties.extendedProperties.command line,"coalesce(properties.entities.commandLine,properties.extendedProperties.command line)",,xdm.target.process.command_line,XDM.Endpoint.Target.process.command_line
+properties.extendedProperties.process id,,,xdm.target.process.pid,XDM.Endpoint.Target.process.pid
+properties.extendedProperties.parent process id,,,xdm.target.process.parent_id,XDM.Endpoint.Target.process.parent_id
+properties.productName,string,"The name of the product which published this alert (Azure Security Center, Azure ATP, Microsoft Defender ATP, O365 ATP, MCAS, and so on).",xdm.observer.product,XDM.Endpoint.Observer.product
+properties.resourceIdentifiers.id,,,xdm.target.host.device_id,XDM.Endpoint.Target.host.device_id
+properties.severity,alertSeverity,The risk level of the threat that was detected. Learn more: https://docs.microsoft.com/en-us/azure/security-center/security-center-alerts-overview#how-are-alerts-classified.,xdm.alert.severity,XDM.Endpoint.threat.severity
+properties.status,alertStatus,The life cycle status of the alert.,xdm.event.outcome,XDM.Endpoint.outcome
+properties.systemAlertId,string,Unique identifier for the alert.,xdm.alert.original_alert_id,XDM.Endpoint.threat.original_alert_id
+properties.techniques,string[],kill chain related techniques behind the alert.,xdm.alert.mitre_techniques,XDM.Endpoint.threat.mitre_techniques
+properties.vendorName,string,The name of the vendor that raises the alert.,xdm.observer.vendor,XDM.Endpoint.Observer.vendor
+properties.version,string,Schema version.,xdm.observer.version,XDM.Endpoint.Observer.version
+type,string,Resource type,xdm.observer.type,XDM.Endpoint.Observer.type

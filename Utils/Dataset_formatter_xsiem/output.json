@@ -1,0 +1,168 @@
+{
+    "microsoft_defender_for_cloud_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties.alertDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties.alertType": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties.compromisedEntity": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties.description": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties.entities": {
+            "type": "AlertEntity[]",
+            "is_array": false
+        },
+        "properties.entities.address": {
+            "type": "coalesce(properties.entities.address,properties.extendedProperties.client IP Address)",
+            "is_array": false
+        },
+        "properties.extendedProperties.client IP Address": {
+            "type": "coalesce(properties.entities.address,properties.extendedProperties.client IP Address)",
+            "is_array": false
+        },
+        "properties.entities.dnsDomain": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.hostname": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.azureID": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.OsVersion": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.osFamily": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.directory": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.name": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.commandLine": {
+            "type": "coalesce(properties.entities.commandLine,properties.extendedProperties.command line)",
+            "is_array": false
+        },
+        "properties.entities.processId": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.$id": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.entities.type": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties": {
+            "type": "object",
+            "is_array": false
+        },
+        "properties.extendedProperties.domain name": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.user name": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.suspicious Process Id": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.suspicious Process": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.suspicious Command Line": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.killChainIntent": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.attacker IP Address": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.process name": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.command line": {
+            "type": "coalesce(properties.entities.commandLine,properties.extendedProperties.command line)",
+            "is_array": false
+        },
+        "properties.extendedProperties.process id": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.extendedProperties.parent process id": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.productName": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties.resourceIdentifiers.id": {
+            "type": null,
+            "is_array": false
+        },
+        "properties.severity": {
+            "type": "alertSeverity",
+            "is_array": false
+        },
+        "properties.status": {
+            "type": "alertStatus",
+            "is_array": false
+        },
+        "properties.systemAlertId": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties.techniques": {
+            "type": "string[]",
+            "is_array": false
+        },
+        "properties.vendorName": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties.version": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
