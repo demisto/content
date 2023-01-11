@@ -1,0 +1,524 @@
+id: sumList - Test
+version: -1
+name: sumList - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 51b04300-3373-4457-8a99-a9bb9e7a68df
+    type: start
+    task:
+      id: 51b04300-3373-4457-8a99-a9bb9e7a68df
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 47186f75-2e8e-4984-837f-c6437d9c0f55
+    type: regular
+    task:
+      id: 47186f75-2e8e-4984-837f-c6437d9c0f55
+      version: -1
+      name: Set my_list
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_list
+      value:
+        simple: '[10,15,20]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c92a8381-0c09-4747-8439-de2e3e59caed
+    type: regular
+    task:
+      id: c92a8381-0c09-4747-8439-de2e3e59caed
+      version: -1
+      name: Set my_list_sum
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_list_sum
+      value:
+        complex:
+          root: my_list
+          transformers:
+          - operator: SumList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 756808aa-4506-413e-8ece-90d3916bfd67
+    type: condition
+    task:
+      id: 756808aa-4506-413e-8ece-90d3916bfd67
+      version: -1
+      name: Sanity check - list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: my_list_sum
+            iscontext: true
+          right:
+            value:
+              simple: "45"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 822d9826-1e10-4aa2-802f-11321981dd1a
+    type: title
+    task:
+      id: 822d9826-1e10-4aa2-802f-11321981dd1a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 72caa544-d426-41b7-8cea-f4d119d7c4aa
+    type: regular
+    task:
+      id: 72caa544-d426-41b7-8cea-f4d119d7c4aa
+      version: -1
+      name: Set my_int
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_int
+      value:
+        simple: "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 9b16da44-f9b9-4bfd-89e2-4449887ae22b
+    type: regular
+    task:
+      id: 9b16da44-f9b9-4bfd-89e2-4449887ae22b
+      version: -1
+      name: Set my_int_sum
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_int_sum
+      value:
+        complex:
+          root: my_int
+          transformers:
+          - operator: SumList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 0c15cd5f-d6bc-4158-857e-91d1a4d9c182
+    type: condition
+    task:
+      id: 0c15cd5f-d6bc-4158-857e-91d1a4d9c182
+      version: -1
+      name: Sanity check - int
+      description: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example for number transformer.\n "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: my_int_sum
+            iscontext: true
+          right:
+            value:
+              simple: "42"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 875b9de1-f9ea-44e3-8679-b4b3d7e80627
+    type: regular
+    task:
+      id: 875b9de1-f9ea-44e3-8679-b4b3d7e80627
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 0e01f3ae-7ba7-47bc-8701-4ff1ad2a0cfb
+    type: regular
+    task:
+      id: 0e01f3ae-7ba7-47bc-8701-4ff1ad2a0cfb
+      version: -1
+      name: Set - my_str
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_str
+      value:
+        simple: '"5"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 7e5409e4-c4ee-45d2-82cf-dd40c48a79c8
+    type: regular
+    task:
+      id: 7e5409e4-c4ee-45d2-82cf-dd40c48a79c8
+      version: -1
+      name: Set my_str_sum
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_str_sum
+      value:
+        complex:
+          root: my_str
+          transformers:
+          - operator: SumList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0d23e8b4-cf2a-4197-8632-a0b9f7e96b7d
+    type: condition
+    task:
+      id: 0d23e8b4-cf2a-4197-8632-a0b9f7e96b7d
+      version: -1
+      name: Sanity check - single str
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: my_str_sum
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 65bf4ddf-89c7-4b03-8de8-4b272039ca2b
+    type: regular
+    task:
+      id: 65bf4ddf-89c7-4b03-8de8-4b272039ca2b
+      version: -1
+      name: Set my_single_str_arr
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_single_str_arr
+      value:
+        simple: '["7"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: f1bc5d6f-191e-4123-837b-60afff07c71d
+    type: regular
+    task:
+      id: f1bc5d6f-191e-4123-837b-60afff07c71d
+      version: -1
+      name: Set my_single_str_arr_sum
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_single_str_arr_sum
+      value:
+        complex:
+          root: my_single_str_arr
+          transformers:
+          - operator: SumList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 39f491bc-5180-4cbd-8a27-1ab6fbe176a3
+    type: condition
+    task:
+      id: 39f491bc-5180-4cbd-8a27-1ab6fbe176a3
+      version: -1
+      name: Sanity check - single str arr
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: my_single_str_arr_sum
+            iscontext: true
+          right:
+            value:
+              simple: "7"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
