@@ -1,0 +1,62 @@
+                     {
+    "id": "Example Layout",
+    "group": "incident",
+    "name": "Example Layout name",
+    "description": "Example Layout",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "detailsV2": {
+        "sections": [
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Example Details",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Basic Information",
+                "type": "",
+                "isVisible": true,
+                "readOnly": false,
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Work Plan",
+                "type": "workplan",
+                "isVisible": true,
+                "readOnly": true,
+                "fields": [],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            },
+            {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Notes",
+                "type": "notes",
+                "isVisible": true,
+                "readOnly": true,
+                "fields": [],
+                "description": "",
+                "query": null,
+                "queryType": ""
+            }
+        ]
+    }
+}
