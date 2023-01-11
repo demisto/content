@@ -1,8 +1,8 @@
-Hunt indicators related to phishing with available integrations and handle the results. Handling the results will include settings relevant incident fields which will be displayed in the layout and optionally, opening new incidents according to the findings.
+Hunt indicators related to phishing with available integrations and then handle the results. Handling the results will include setting relevant incident fields that will be displayed in the layout and optionally, opening new incidents according to the findings.
 Current integration in this playbook:
-- Microsoft 365 Defender (using "Advanced Hunting")
+Microsoft 365 Defender (using "Advanced Hunting")
 
-Please note that this playbook should be used as a sub-playbook inside a phishing incident and not as a main playbook.
+Note that this playbook should be used as a sub-playbook inside a phishing incident and not as a main playbook.
 
 
 ## Dependencies
@@ -27,7 +27,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | DBotScore | The DBotScore object containing these keys:<br/>- Indicator<br/>- Type<br/>- Score | DBotScore | Optional |
-| EmailHuntingCreateNewIncidents | When "True", the sub-playbook "Phishing - Handle Microsoft 365 Defender Results" will create new phishing incidents for each email which contain one of the malicious indicators. Default is "False". | False | Optional |
+| EmailHuntingCreateNewIncidents | When "True", the "Phishing - Handle Microsoft 365 Defender Results" sub-playbook will create new phishing incidents for each email that contains one of the malicious indicators. Default is "False". | False | Optional |
 | ListenerMailbox | The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored. |  | Optional |
 
 ## Playbook Outputs
