@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def create_hash(text, hashtype):
-    """Create a sha256 hash from a given input and return it as a context output
+    """Create a hash from a given input and return it as a context outputs
 
     Args:
         text (str): input to hash
@@ -23,10 +23,10 @@ def create_hash(text, hashtype):
         h = hashlib.sha256()
         h.update(text.encode('utf-8'))
     elif hashtype == 'sha1':
-        h = hashlib.sha1()
+        h = hashlib.sha1()  # nosec
         h.update(text.encode('utf-8'))
     elif hashtype == 'md5':
-        h = hashlib.md5()
+        h = hashlib.md5()  # nosec
         h.update(text.encode('utf-8'))
     else:
         h = blake2b()
