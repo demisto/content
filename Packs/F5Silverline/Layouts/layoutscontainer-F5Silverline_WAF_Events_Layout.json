@@ -608,5 +608,6 @@
 	"id": "F5 Silverline WAF Events Layout",
 	"name": "F5 Silverline WAF Events Layout",
 	"system": false,
-	"version": -1
+	"version": -1,
+ "marketplaces": ["xsoar"]
 }

@@ -923,5 +923,6 @@
                 "version": 0
             }
         ]
-    }
+    },
+    "marketplaces": ["xsoar"]
 }
