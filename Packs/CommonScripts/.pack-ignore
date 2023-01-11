@@ -73,16 +73,14 @@ ignore=BA119
 [file:HideFieldsOnNewIncident.yml]
 ignore=SC105
 
-<<<<<<< HEAD
 [file:DBotPredictURLPhishing.yml]
 ignore=SC106
 
 [file:DBotUpdateLogoURLPhishing.yml]
 ignore=SC106
-=======
+
 [file:1_10_42.md]
-ignore=RN114
->>>>>>> origin/master
+ignore=RN114,RN113
 
 [known_words]
 UnzipFile
