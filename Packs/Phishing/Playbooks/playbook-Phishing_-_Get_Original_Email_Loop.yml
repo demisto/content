@@ -1,7 +1,7 @@
 id: Phishing - Get Original Email Loop
 version: -1
 name: Phishing - Get Original Email Loop
-description: When the playbook "Get Original Email - Generic v2" is looped, there is no actual way to distinguish which retrieved file is related to which Message-ID. In order to solve this issue, this playbook will be looped instead and will output the "FileAssociation" key with the File-MessageID association.
+description: When the "Get Original Email - Generic v2" playbook is looped, there is no actual way to distinguish which retrieved file is related to which Message-ID. In order to solve this issue, this playbook will be looped instead and will output the "FileAssociation" key with the File-MessageID association.
 starttaskid: "0"
 tasks:
   "0":
@@ -160,7 +160,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -230,7 +230,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -274,7 +274,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -333,11 +333,11 @@ tasks:
       version: -1
       name: Delete context
       description: |-
-        Delete field from context.
+        Delete a field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -408,13 +408,13 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: FileAssociation
-  description: When this playbook is looped, The EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
+  description: When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
   type: string
 - contextPath: FileAssociation.EntryID
-  description: The retrieved file EntryID. When this playbook is looped, The EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
+  description: The retrieved file EntryID. When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
   type: string
 - contextPath: FileAssociation.MessageID
-  description: The retrieved email Message-ID. When this playbook is looped, The EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
+  description: The retrieved email Message-ID. When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key.
   type: string
 - contextPath: File
   description: The original email attachments.
