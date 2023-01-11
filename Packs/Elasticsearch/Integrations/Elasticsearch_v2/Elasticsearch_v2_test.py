@@ -960,8 +960,8 @@ def test_execute_raw_query(mocker):
     import Elasticsearch_v2
     Elasticsearch_v2.FETCH_INDEX = 'index from parameter'
     mocker.patch.object(
-        Elasticsearch_v2.Elasticsearch, 'search', side_effect=[Exception('error'), ES_V7_RESPONSE]
+        Elasticsearch_v2.Elasticsearch, 'search', return_value=ES_V7_RESPONSE
     )
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
     es = Elasticsearch_v2.elasticsearch_builder({})
-    assert Elasticsearch_v2.execute_raw_query(es, {}) == ES_V7_RESPONSE
+    assert Elasticsearch_v2.execute_raw_query(es, 'dsadf') == ES_V7_RESPONSE

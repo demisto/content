@@ -676,17 +676,17 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
 def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     try:
         raw_query = json.loads(raw_query)
-    except Exception as e:
+        if raw_query.get('query'):
+            demisto.debug(f'query provided already has a query field. Sending as is')
+            body = raw_query
+        else:
+            body = {'query': raw_query}
+    except (ValueError, TypeError) as e:
+        body = {'query': raw_query}
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
-    body = {"query": raw_query}
     requested_index = index or FETCH_INDEX
-
-    try:
-        return es.search(index=requested_index, body=body, size=size, from_=page)
-    except Exception as e:
-        demisto.debug(f'got an error when searching with {body}, error:\n{e}')
-        return es.search(index=requested_index, body=raw_query, size=size, from_=page)
+    return es.search(index=requested_index, body=body, size=size, from_=page)
 
 
 def fetch_incidents(proxies):
