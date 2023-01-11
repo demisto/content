@@ -1266,7 +1266,7 @@ tasks:
     task:
       id: 686d5422-fe00-4e4e-8b0b-98223fa807cb
       version: -1
-      name: Save Matching Results - PortNumber
+      name: Remove Duplications From Matching Results
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
