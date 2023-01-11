@@ -147,7 +147,8 @@ def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
     stdout, stderr = process.communicate()
     stdout = str(stdout)
     if stderr:
-        return_error(str(stderr))
+        if str(stderr, 'UTF-8') != "tar: removing leading '/' from member names\n":
+            return_error(str(stderr))
     if "Errors" in stdout:
         return_error(f"Couldn't extract the file {file_name}.")
     return stdout
