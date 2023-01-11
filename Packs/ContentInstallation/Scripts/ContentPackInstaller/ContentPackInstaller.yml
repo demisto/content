@@ -18,6 +18,15 @@ args:
   name: pack_version_key
   required: true
   secret: false
+- name: install_dependencies
+  description: Whether to install the pack dependencies.
+  isArray: false
+  required: false
+  defaultValue: 'true'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
 commonfields:
   id: ContentPackInstaller
   version: -1
@@ -42,7 +51,7 @@ tags:
 - Content Management
 timeout: 600ns
 type: python
-dockerimage: demisto/xsoar-tools:1.0.0.25924
+dockerimage: demisto/xsoar-tools:1.0.0.42327
 tests:
 - ContentPackInstaller_Test
 fromversion: 6.0.0

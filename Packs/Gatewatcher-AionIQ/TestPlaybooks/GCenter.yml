@@ -1,30 +1,33 @@
 id: Gcenter Test Playbook
-version: -1
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
 name: Gcenter Test Playbook
-starttaskid: '0'
+description: An example playbook for each command of the GCenter integration.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: 533d4312-cfc1-485f-81fc-707e988a05f0
+  "0":
+    id: "0"
+    taskid: 4a7aaff9-1759-400e-8445-0d434c48dc6c
     type: start
     task:
-      id: 533d4312-cfc1-485f-81fc-707e988a05f0
+      id: 4a7aaff9-1759-400e-8445-0d434c48dc6c
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
-      - '7'
-      - '9'
-      - '11'
-      - '13'
-      - '15'
-      - '14'
-      - '16'
-      - '21'
+      - "3"
+      - "7"
+      - "9"
+      - "11"
+      - "13"
+      - "15"
+      - "14"
+      - "16"
+      - "21"
+      - "23"
+      - "31"
     separatecontext: false
     view: |-
       {
@@ -40,12 +43,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
-    taskid: 68839c44-4da9-4d7c-8f83-39020b65f58d
+  "3":
+    id: "3"
+    taskid: 38137d42-ad3f-42e0-838c-b74181ef742c
     type: regular
     task:
-      id: 68839c44-4da9-4d7c-8f83-39020b65f58d
+      id: 38137d42-ad3f-42e0-838c-b74181ef742c
       version: -1
       name: gw-es-query
       description: Get Elasticsearch data
@@ -62,8 +65,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": -270
+          "x": 1280,
+          "y": -230
         }
       }
     note: false
@@ -73,12 +76,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
-    taskid: 4dfe09d0-c77a-4398-8338-026cda62c6e1
+  "4":
+    id: "4"
+    taskid: 7f58378d-2450-471b-85a0-70d39c985eec
     type: regular
     task:
-      id: 4dfe09d0-c77a-4398-8338-026cda62c6e1
+      id: 7f58378d-2450-471b-85a0-70d39c985eec
       version: -1
       name: gw-send-malware
       description: Send malware
@@ -106,12 +109,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
-    taskid: 51be93c2-05b4-4035-8135-e14edaf3fa2c
+  "5":
+    id: "5"
+    taskid: 634e5f01-153e-4754-8de6-b61f2f5c7e83
     type: regular
     task:
-      id: 51be93c2-05b4-4035-8135-e14edaf3fa2c
+      id: 634e5f01-153e-4754-8de6-b61f2f5c7e83
       version: -1
       name: gw-send-powershell
       description: Send powershell
@@ -139,12 +142,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
-    taskid: 05f80d58-3f1f-41bd-8c90-b91cd8f5feb8
+  "6":
+    id: "6"
+    taskid: eed30aaa-3828-44fc-8e84-7d0f98983ab1
     type: regular
     task:
-      id: 05f80d58-3f1f-41bd-8c90-b91cd8f5feb8
+      id: eed30aaa-3828-44fc-8e84-7d0f98983ab1
       version: -1
       name: gw-send-shellcode
       description: Send shellcode
@@ -172,12 +175,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
-    taskid: 8313286d-69ee-4159-83ba-6bed677f8380
+  "7":
+    id: "7"
+    taskid: aa84939b-ca04-46e7-8098-754ef5605c89
     type: regular
     task:
-      id: 8313286d-69ee-4159-83ba-6bed677f8380
+      id: aa84939b-ca04-46e7-8098-754ef5605c89
       version: -1
       name: gw-add-dga-list-entry
       description: Add dga whitelist/blacklist entry
@@ -187,7 +190,7 @@ tasks:
       brand: GCenter
     nexttasks:
       '#none#':
-      - '8'
+      - "29"
     scriptarguments:
       domain:
         simple: malware.com
@@ -208,12 +211,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
-    taskid: de0614d1-011e-46c3-8f6d-0d6899157dd1
+  "8":
+    id: "8"
+    taskid: e3eb25c0-13e9-4aed-8eaa-5df380ce7c44
     type: regular
     task:
-      id: de0614d1-011e-46c3-8f6d-0d6899157dd1
+      id: e3eb25c0-13e9-4aed-8eaa-5df380ce7c44
       version: -1
       name: gw-del-dga-list-entry
       description: Delete dga whitelist/blacklist entry
@@ -231,7 +234,7 @@ tasks:
       {
         "position": {
           "x": -1040,
-          "y": 370
+          "y": 620
         }
       }
     note: false
@@ -241,12 +244,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
-    taskid: 11d4302c-49b8-453b-8538-e991f7f92b87
+  "9":
+    id: "9"
+    taskid: b96bbdfd-8d30-4a00-8466-19b6d10ce5bf
     type: regular
     task:
-      id: 11d4302c-49b8-453b-8538-e991f7f92b87
+      id: b96bbdfd-8d30-4a00-8466-19b6d10ce5bf
       version: -1
       name: gw-add-malcore-list-entry
       description: Add malcore whitelist/blacklist entry
@@ -256,7 +259,7 @@ tasks:
       brand: GCenter
     nexttasks:
       '#none#':
-      - '10'
+      - "28"
     scriptarguments:
       sha256:
         simple: d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e
@@ -277,12 +280,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
-    taskid: cfbc2bc0-a3cc-4fe2-826d-578207b0474f
+  "10":
+    id: "10"
+    taskid: 1a3a1cca-cdb4-4019-8598-c1a6331b2dfa
     type: regular
     task:
-      id: cfbc2bc0-a3cc-4fe2-826d-578207b0474f
+      id: 1a3a1cca-cdb4-4019-8598-c1a6331b2dfa
       version: -1
       name: gw-del-malcore-list-entry
       description: Delete malcore whitelist/blacklist entry
@@ -300,7 +303,7 @@ tasks:
       {
         "position": {
           "x": -550,
-          "y": 370
+          "y": 610
         }
       }
     note: false
@@ -310,74 +313,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
-    taskid: 9f74494a-7797-473a-8880-8a9b06fea0fa
+  "13":
+    id: "13"
+    taskid: 751c35ef-7320-47dd-8bcc-4033561f1a2a
     type: regular
     task:
-      id: 9f74494a-7797-473a-8880-8a9b06fea0fa
-      version: -1
-      name: gw-list-alerts
-      description: List all alerts
-      script: GCenter|||gw-list-alerts
-      type: regular
-      iscommand: true
-      brand: GCenter
-    nexttasks:
-      '#none#':
-      - '12'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 410,
-          "y": -365
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '12':
-    id: '12'
-    taskid: 40444156-0089-4153-86e5-716cf7212e66
-    type: regular
-    task:
-      id: 40444156-0089-4153-86e5-716cf7212e66
-      version: -1
-      name: gw-get-alert
-      description: Get an alert by it's uid
-      script: GCenter|||gw-get-alert
-      type: regular
-      iscommand: true
-      brand: GCenter
-    scriptarguments:
-      uid:
-        simple: ${GCenter.Alert.List.id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 410,
-          "y": -195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
-    taskid: c3ca95d9-59bb-4fce-86a4-321c20686c15
-    type: regular
-    task:
-      id: c3ca95d9-59bb-4fce-86a4-321c20686c15
+      id: 751c35ef-7320-47dd-8bcc-4033561f1a2a
       version: -1
       name: gw-add-ignore-asset-name
       description: Ignore asset name
@@ -387,7 +328,7 @@ tasks:
       brand: GCenter
     nexttasks:
       '#none#':
-      - '17'
+      - "24"
     scriptarguments:
       name:
         simple: test_asset
@@ -406,12 +347,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
-    taskid: 2ac0bad1-7b58-4ff2-8e56-b8b7997596d9
+  "14":
+    id: "14"
+    taskid: 354c7bbf-8247-4a3e-82bc-d71cdba51212
     type: regular
     task:
-      id: 2ac0bad1-7b58-4ff2-8e56-b8b7997596d9
+      id: 354c7bbf-8247-4a3e-82bc-d71cdba51212
       version: -1
       name: gw-add-ignore-kuser-ip
       description: Ignore kuser IP
@@ -421,7 +362,7 @@ tasks:
       brand: GCenter
     nexttasks:
       '#none#':
-      - '18'
+      - "26"
     scriptarguments:
       ip:
         simple: 10.10.10.10
@@ -440,12 +381,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
-    taskid: dcdb9c1e-5366-4925-8c8c-47637ed1c50d
+  "15":
+    id: "15"
+    taskid: c7bf126d-5731-4d85-8a3a-1a2ee97c61ae
     type: regular
     task:
-      id: dcdb9c1e-5366-4925-8c8c-47637ed1c50d
+      id: c7bf126d-5731-4d85-8a3a-1a2ee97c61ae
       version: -1
       name: gw-add-ignore-kuser-name
       description: Ignore kuser name
@@ -455,7 +396,7 @@ tasks:
       brand: GCenter
     nexttasks:
       '#none#':
-      - '19'
+      - "25"
     scriptarguments:
       name:
         simple: test_kuser_name
@@ -474,12 +415,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
-    taskid: 739ecef5-6550-4e53-8e31-258717833a15
+  "16":
+    id: "16"
+    taskid: ae955196-7fab-4bd5-8658-80d1ec488247
     type: regular
     task:
-      id: 739ecef5-6550-4e53-8e31-258717833a15
+      id: ae955196-7fab-4bd5-8658-80d1ec488247
       version: -1
       name: gw-add-ignore-mac-address
       description: Ignore mac address
@@ -489,7 +430,7 @@ tasks:
       brand: GCenter
     nexttasks:
       '#none#':
-      - '20'
+      - "27"
     scriptarguments:
       mac:
         simple: AA:BB:CC:DD:EE:FF
@@ -508,12 +449,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
-    taskid: e5b665ef-8fb9-4f89-86e0-1b0be3844073
+  "17":
+    id: "17"
+    taskid: 76442283-f163-4579-8528-d8b8ddf392d1
     type: regular
     task:
-      id: e5b665ef-8fb9-4f89-86e0-1b0be3844073
+      id: 76442283-f163-4579-8528-d8b8ddf392d1
       version: -1
       name: gw-del-ignore-asset-name
       description: Delete an ignore asset ID
@@ -529,7 +470,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 370
+          "y": 610
         }
       }
     note: false
@@ -539,12 +480,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
-    taskid: e95ee3c5-14be-4b21-89be-571b807a78c4
+  "18":
+    id: "18"
+    taskid: 7dae42af-4e81-49c0-8a15-9cd0418a69f1
     type: regular
     task:
-      id: e95ee3c5-14be-4b21-89be-571b807a78c4
+      id: 7dae42af-4e81-49c0-8a15-9cd0418a69f1
       version: -1
       name: gw-del-ignore-kuser-ip
       description: Delete an ignore kuser IP ID
@@ -560,7 +501,7 @@ tasks:
       {
         "position": {
           "x": 1090,
-          "y": 370
+          "y": 610
         }
       }
     note: false
@@ -570,12 +511,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
-    taskid: b5838214-187f-4164-86ad-585cfc6d4f57
+  "19":
+    id: "19"
+    taskid: 8532cfd4-f484-442b-84b7-b5b7bb72f681
     type: regular
     task:
-      id: b5838214-187f-4164-86ad-585cfc6d4f57
+      id: 8532cfd4-f484-442b-84b7-b5b7bb72f681
       version: -1
       name: gw-del-ignore-kuser-name
       description: Delete an ignore kuser name ID
@@ -591,7 +532,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 370
+          "y": 610
         }
       }
     note: false
@@ -601,12 +542,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
-    taskid: d0c0f1e2-6809-41a8-8352-107d70060a90
+  "20":
+    id: "20"
+    taskid: 7cf3387b-b0fe-47f5-86f9-d02c8eac818f
     type: regular
     task:
-      id: d0c0f1e2-6809-41a8-8352-107d70060a90
+      id: 7cf3387b-b0fe-47f5-86f9-d02c8eac818f
       version: -1
       name: gw-del-ignore-mac-address
       description: Delete an ignore mac address ID
@@ -622,7 +563,7 @@ tasks:
       {
         "position": {
           "x": 1510,
-          "y": 370
+          "y": 610
         }
       }
     note: false
@@ -632,12 +573,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
-    taskid: 7538f037-c13f-43c5-8f0b-f4aaab56a765
+  "21":
+    id: "21"
+    taskid: ef45c6ab-f50d-48c7-8850-fea21a7136a3
     type: regular
     task:
-      id: 7538f037-c13f-43c5-8f0b-f4aaab56a765
+      id: ef45c6ab-f50d-48c7-8850-fea21a7136a3
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -645,12 +586,12 @@ tasks:
       scriptName: FileCreateAndUpload
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
-      - '5'
-      - '6'
+      - "4"
+      - "5"
+      - "6"
     scriptarguments:
       data:
         simple: azerty
@@ -671,20 +612,284 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 43dfafb5-0b6e-4ea0-88e7-1ccb79170a72
+    type: regular
+    task:
+      id: 43dfafb5-0b6e-4ea0-88e7-1ccb79170a72
+      version: -1
+      name: gw-es-wrapper
+      description: Get Elasticsearch data using a wrapper
+      script: GCenter|||gw-es-wrapper
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      aggs_term:
+        simple: src_ip
+      index:
+        simple: malware
+      must_match:
+        simple: state=Infected
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6717460b-3f76-4765-88d8-7d4da22bebc8
+    type: regular
+    task:
+      id: 6717460b-3f76-4765-88d8-7d4da22bebc8
+      version: -1
+      name: gw-get-ignore-asset-name
+      description: Get all the ignored asset names
+      script: GCenter|||gw-get-ignore-asset-name
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 767472ff-d940-44ca-8fab-413fd87a8be5
+    type: regular
+    task:
+      id: 767472ff-d940-44ca-8fab-413fd87a8be5
+      version: -1
+      name: gw-get-ignore-kuser-name
+      description: Get all the ignored kuser name
+      script: GCenter|||gw-get-ignore-kuser-name
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: d2b28cdb-6288-4aa9-8f39-816563d893e9
+    type: regular
+    task:
+      id: d2b28cdb-6288-4aa9-8f39-816563d893e9
+      version: -1
+      name: gw-get-ignore-kuser-ip
+      description: Get all the ignored kuser IP
+      script: GCenter|||gw-get-ignore-kuser-ip
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: f557ba44-55a2-45af-8ab9-369b805a9af3
+    type: regular
+    task:
+      id: f557ba44-55a2-45af-8ab9-369b805a9af3
+      version: -1
+      name: gw-gzt-ignore-mac-address
+      description: Get all the ignored mac addresses
+      script: GCenter|||gw-get-ignore-mac-address
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: ee5758d9-72ed-4e23-86d8-c531f08b3020
+    type: regular
+    task:
+      id: ee5758d9-72ed-4e23-86d8-c531f08b3020
+      version: -1
+      name: gw-get-malcore-list-entry
+      description: Get the malcore whitelist/blacklist
+      script: GCenter|||gw-get-malcore-list-entry
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      type:
+        simple: black
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 59f7aa06-ade0-49be-8549-62292339b80b
+    type: regular
+    task:
+      id: 59f7aa06-ade0-49be-8549-62292339b80b
+      version: -1
+      name: gw-get-dga-list-entry
+      description: Get the dga whitelist/blacklist
+      script: GCenter|||gw-get-dga-list-entry
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      type:
+        simple: black
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1040,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 7cab8913-6268-47cb-8469-8f3da55edc66
+    type: regular
+    task:
+      id: 7cab8913-6268-47cb-8469-8f3da55edc66
+      version: -1
+      name: gw-get-file-infected
+      description: |-
+        Get a file from an uuid.
+        If there is no uuid, get all the files infected from a time interval.
+      script: GCenter|||gw-get-file-infected
+      type: regular
+      iscommand: true
+      brand: GCenter
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": -135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 830,
+        "height": 1055,
         "width": 3020,
         "x": -1130,
-        "y": -365
+        "y": -340
       }
     }
   }
-inputs: []
-outputs: []
+inputs:
+- key: gw-es-wrapper
+  value:
+    simple: ${File.Name}
+  required: false
+  description: 'Wrapper of es query '
+  playbookInputQuery: null
+outputs:
+- contextPath: GCenter.Dga.domain_name
+  description: Domain Name
 sourceplaybookid: fdd8cadb-08ce-492c-8963-56bfc950b03b
 fromversion: 6.2.0
-description: An example playbook for each command of the GCenter integration.

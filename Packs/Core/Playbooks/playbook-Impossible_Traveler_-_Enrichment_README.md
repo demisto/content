@@ -10,14 +10,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Account Enrichment - Generic v2.1
 
 ### Integrations
-* CortexCoreIR
 * CoreIOCs
+* CortexCoreIR
 
 ### Scripts
-* ParseJSON
-* Set
 * DeleteContext
+* Set
 * http
+* ParseJSON
 
 ### Commands
 * ip
