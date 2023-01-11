@@ -60,7 +60,7 @@
                 },
                 "params": {
                     "groupBy": [
-                        "type"
+                        "rawType"
                     ],
                     "tableColumns": [
                         {
@@ -175,7 +175,7 @@
                 },
                 "params": {
                     "groupBy": [
-                        "type"
+                        "rawType"
                     ],
                     "tableColumns": [
                         {
@@ -392,7 +392,7 @@
                 },
                 "params": {
                     "groupBy": [
-                        "type"
+                        "rawType"
                     ],
                     "tableColumns": [
                         {
