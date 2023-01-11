@@ -11,8 +11,8 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 VENDOR = 'Micrsoft'
-PRODUCT = 'Microsoft_defender_for_cloud'
-API_VERSION = '2019-01-01'
+PRODUCT = 'defender_for_cloud'
+API_VERSION = '2022-01-01'
 APP_NAME = "ms-azure-sc"
 
 ''' CLIENT CLASS '''

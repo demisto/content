@@ -53,30 +53,6 @@ name: Microsoft Defender for Cloud Event Collector
 script:
   commands:
   - arguments:
-    - default: false
-      description: OData filter
-      isArray: false
-      name: filter
-      required: false
-      secret: false
-    - default: false
-      description: OData select
-      isArray: false
-      name: select
-      required: false
-      secret: false
-    - default: false
-      description: OData expand
-      isArray: false
-      name: expand
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
-      isArray: false
-      name: subscription_id
-      required: true
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Set this argument to True to create events, otherwise the command will only display them.
@@ -86,6 +62,12 @@ script:
       - 'true'
       - 'false'
       required: true
+    - default: false
+      description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Lists alerts for the subscription according to the specified filters.
     execution: false
@@ -109,17 +91,14 @@ script:
     - contextPath: AzureSecurityCenter.Alert.ID
       description: The alert ID.
       type: string
-dockerimage: demisto/crypto:1.0.0.36225
-isfetch: false
-isfetchevents: true
-longRunning: false
-longRunningPort: false
-runonce: false
-script: '-'
-type: python
-subtype: python3
-tests:
-- No tests (auto formatted)
+  dockerimage: demisto/crypto:1.0.0.42817
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
 marketplaces:
 - marketplacev2
 fromversion: 8.0.0
+tests:
+- No tests (auto formatted)
