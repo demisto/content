@@ -1,4 +1,4 @@
-The script receives a list of fields and a context key base path. For example, Key=demisto.result List=username,user and will get all of the values from demisto.result.username and demisto.result.user.
+The script receives a list of fields and a context key base path. For example, Key=result List=username,user and will get all of the values from result.username and result.user.
 The Get field of the task must have the value ${.=[]}.
 
 ## Script Data
