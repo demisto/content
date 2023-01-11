@@ -3082,43 +3082,10 @@ Adds a tag to specified endpoint_ids
 #### Context Output
 
 There is no context output for this command.
-
-
-### xdr-get-tenant-info
-***
-Provides information about the tenant.
-
-
-#### Base Command
-
-`xdr-get-tenant-info`
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.TenantInformation.pro_per_endpoint_expiration | Date | Expiration time pro per endpoint. | 
-| PaloAltoNetworksXDR.TenantInformation.purchased_pro_per_endpoint.agents | Number | Number of endpoints agent purchased. | 
-| PaloAltoNetworksXDR.TenantInformation.data_enabled_pro_per_endpoint | Number | Enabled data per pro endpoint. | 
-| PaloAltoNetworksXDR.TenantInformation.prevent_expiration | Number | Number of prevent expiration. |
-| PaloAltoNetworksXDR.TenantInformation.purchased_prevent | Number | Number of purchased prevent. | 
-| PaloAltoNetworksXDR.TenantInformation.installed_prevent | Number | Number of installed prevent. | 
-| PaloAltoNetworksXDR.TenantInformation.pro_tb_expiration | Date | pro_tb license expiration time. | 
-| PaloAltoNetworksXDR.TenantInformation.purchased_pro_tb.tb | Number | Number of pro_tb purchased. | 
-| PaloAltoNetworksXDR.TenantInformation.installed_pro_tb | Number | Number of pro_tb installed. | 
-| PaloAltoNetworksXDR.TenantInformation.compute_unit_expiration | Date | Compute Unit expiration time. | 
-| PaloAltoNetworksXDR.TenantInformation.purchased_compute_unit | Number | Number of Compute Unit purchased. |
-| PaloAltoNetworksXDR.TenantInformation.compute_unit_is_trial | Boolean | Compute Unit is trial (True or False). |
-| PaloAltoNetworksXDR.TenantInformation.host_insights_expiration | Date | Host Insight expiration time. |
-| PaloAltoNetworksXDR.TenantInformation.enabled_host_insights | Number | Number of Host Insight enabled.  |
-| PaloAltoNetworksXDR.TenantInformation.purchased_host_insights | Number | Number of purchased Host Insight. |
-| PaloAltoNetworksXDR.TenantInformation.forensics_expiration | Date | Forensic Expiration time. |
-| PaloAltoNetworksXDR.TenantInformation.purchased_forensics | Number | Number of Forensic purchased. |
-
-
 ### xdr-endpoint-tag-remove
 ***
 Removes a tag from specified endpoint_ids.
+
 
 #### Base Command
 
@@ -3134,6 +3101,77 @@ Removes a tag from specified endpoint_ids.
 #### Context Output
 
 There is no context output for this command.
+
+### xdr-get-tenant-info
+***
+Provides information about the tenant. 
+
+
+#### Base Command
+
+`xdr-get-tenant-info`
+#### Input
+
+There are no arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.TenantInformation.pro_per_endpoint_expiration | Date | Expiration time pro per endpoint. | 
+| PaloAltoNetworksXDR.TenantInformation.purchased_pro_per_endpoint.agents | Number | Number of endpoints agent purchased. | 
+| PaloAltoNetworksXDR.TenantInformation.data_enabled_pro_per_endpoint | Number | Enabled data per pro endpoint. | 
+| PaloAltoNetworksXDR.TenantInformation.prevent_expiration | Number | Number of prevent expiration. | 
+| PaloAltoNetworksXDR.TenantInformation.purchased_prevent | Number | Number of purchased prevent. | 
+| PaloAltoNetworksXDR.TenantInformation.installed_prevent | Number | Number of installed prevent. | 
+| PaloAltoNetworksXDR.TenantInformation.pro_tb_expiration | Date | pro_tb license expiration time. | 
+| PaloAltoNetworksXDR.TenantInformation.purchased_pro_tb.tb | Number | Number of pro_tb purchased. | 
+| PaloAltoNetworksXDR.TenantInformation.installed_pro_tb | Number | Number of pro_tb installed. | 
+| PaloAltoNetworksXDR.TenantInformation.compute_unit_expiration | Date | Compute Unit expiration time. | 
+| PaloAltoNetworksXDR.TenantInformation.purchased_compute_unit | Number | Number of Compute Unit purchased. | 
+| PaloAltoNetworksXDR.TenantInformation.compute_unit_is_trial | Boolean | Compute Unit is trial \(True or False\). | 
+| PaloAltoNetworksXDR.TenantInformation.host_insights_expiration | Date | Host Insight expiration time. | 
+| PaloAltoNetworksXDR.TenantInformation.enabled_host_insights | Number | Number of Host Insight enabled. | 
+| PaloAltoNetworksXDR.TenantInformation.purchased_host_insights | Number | Number of purchased Host Insight. | 
+| PaloAltoNetworksXDR.TenantInformation.forensics_expiration | Date | Forensic Expiration time. | 
+| PaloAltoNetworksXDR.TenantInformation.purchased_forensics | Number | Number of Forensic purchased. | 
+
+#### Command example
+```!xdr-get-tenant-info```
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "TenantInformation": {
+            "compute_unit_expiration": 0,
+            "data_enabled_pro_per_endpoint": 2,
+            "forensics_expiration": 0,
+            "installed_prevent": 2,
+            "installed_pro_tb": 0,
+            "prevent_expiration": 0,
+            "pro_per_endpoint_expiration": "May 7th 2025 06:59:59",
+            "pro_tb_expiration": "May 7th 2025 06:59:59",
+            "purchased_compute_unit": 2000,
+            "purchased_prevent": 0,
+            "purchased_pro_per_endpoint": {
+                "agents": 300
+            },
+            "purchased_pro_tb": {
+                "tb": 1
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tenant Information
+>|Compute _ Unit _ Expiration|Data _ Enabled _ Pro _ Per _ Endpoint|Forensics _ Expiration|Installed _ Prevent|Installed _ Pro _ Tb|Prevent _ Expiration|Pro _ Per _ Endpoint _ Expiration|Pro _ Tb _ Expiration|Purchased _ Compute _ Unit|Purchased _ Prevent|Purchased _ Pro _ Per _ Endpoint|Purchased _ Pro _ Tb|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  |  |  |  |  |  | May 7th 2025 06:59:59 | May 7th 2025 06:59:59 |  |  | ***agents***: 300 | ***tb***: 1 |
+
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Palo Alto Networks Cortex XDR - Investigation and Response corresponding events (available from Cortex XSOAR version 6.0.0).
