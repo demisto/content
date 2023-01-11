@@ -30,6 +30,11 @@ configuration:
   type: 4
   hidden: true
   section: Connect
+- display: Member CID
+  name: member_cid
+  required: false
+  type: 0
+  section: Connect
 - defaultvalue: 'A+ - 3rd party enrichment'
   display: Source Reliability
   name: Reliability

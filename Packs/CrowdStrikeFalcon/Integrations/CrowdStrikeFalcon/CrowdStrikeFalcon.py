@@ -19,6 +19,7 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
 SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
+MEMBER_CID = demisto.params().get('member_cid', None)
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
     demisto.params()['url']
@@ -1093,6 +1094,8 @@ def get_token_request():
         'client_id': CLIENT_ID,
         'client_secret': SECRET
     }
+    if MEMBER_CID:
+        body.update({'member_cid': MEMBER_CID})
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
