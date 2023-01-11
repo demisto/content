@@ -1,4 +1,4 @@
-[MODEL: dataset="tableau_raw"]
+[MODEL: dataset="tableau_log_raw"]
 alter
     logLevel = arrayindex(regextract(_raw_log, ":\s([^\s][A-Z]{1,8})\s"),0)
 | alter

@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
 API_VERSION = '2018-06-01'
@@ -303,6 +304,34 @@ def create_nic_parameters(args, subscription_id):
     return nic
 
 
+def get_single_ip_details_from_list_of_ip_details(list_of_ip_details: list, ip_address):
+    """Finds the associated details of target IP Address from a list of PublicIPAddressListResult objects.
+
+    Args:
+        list_of_ip_details (list):  List of PublicIPAddressListResult objects.
+        ip_address (_type_): IP Address to search for in list of PublicIPAddressListResult objects.
+    """
+    def search_entry_for_ip(data, key, value):
+        if isinstance(data, list):
+            for item in data:
+                result = search_entry_for_ip(item, key, value)
+                if result:
+                    return result
+        elif isinstance(data, dict):
+            if key in data and data[key] == value:
+                return True
+            for val in data.values():
+                result = search_entry_for_ip(val, key, value)
+                if result:
+                    return result
+        return None
+
+    for entry in list_of_ip_details:
+        result = search_entry_for_ip(entry, "ipAddress", ip_address)
+        if result:
+            return entry
+
+
 class MsGraphClient:
     """
       Microsoft Graph Client enables authorized access to Create and Manage Azure Virtual Machines.
@@ -381,6 +410,22 @@ class MsGraphClient:
 
         return self.ms_client.http_request(
             method='POST', url_suffix=url_suffix, params=parameters, resp_type="response")
+
+    def get_all_public_ip_details(self):
+        """
+        List all public IPs belonging to your Azure subscription
+
+        Returns:
+            List of PublicIPAddressListResult Objects
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?tabs=HTTP
+        """
+        url_suffix = "/providers/Microsoft.Network/publicIPAddresses"
+        parameters = {'api-version': API_VERSION}
+        base_url = f"{self.server}/subscriptions/{self.subscription_id}"
+        self.ms_client._base_url = base_url
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
 
     def validate_provisioning_state(self, resource_group, vm_name):
         """
@@ -825,10 +870,12 @@ def get_network_interface_command(client: MsGraphClient, args: dict):
         'NetworkSecurityGroup': network_security_group,
         'Location': location,
         'NICType': nic_type,
+        'AttachedVirtualMachine': attached_virtual_machine
     }
 
     title = 'Properties of Network Interface "{}"'.format(interface_name)
-    table_headers = ['Name', 'ID', 'MACAddress', 'PrivateIPAddresses', 'NetworkSecurityGroup', 'Location', 'NICType']
+    table_headers = ['Name', 'ID', 'MACAddress', 'PrivateIPAddresses', 'NetworkSecurityGroup',
+                     'Location', 'NICType', 'AttachedVirtualMachine']
     human_readable = tableToMarkdown(title, human_readable_network_config, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Network.Interfaces(val.ID === obj.ID)': network_config}
     return human_readable, entry_context, response
@@ -842,17 +889,27 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
         Resource Group to which the public IP address belongs
 
     demisto parameter: (string) address_name
-        Name of the public ip address you wish to view the details of
+        The IPv4 or Name of the public ip address you wish to view the details of.
 
     returns:
         Public IP Address Object
     """
-    resource_group = args.get('resource_group')
     address_name = args.get('address_name')
-    response = client.get_public_ip_details(resource_group, address_name)
+    if args.get('resource_group') is not None:
+        resource_group = args.get('resource_group')
+        response = client.get_public_ip_details(resource_group, address_name)
+        address_id = response.get('id')
+    else:
+        response_for_all_ips = client.get_all_public_ip_details().get('value')
+        response = get_single_ip_details_from_list_of_ip_details(response_for_all_ips, address_name)
+        if not response:
+            raise ValueError(f"'{address_name}' was not found. "
+                             "Please try specifying the resource group the IP would be associated with.")
+        address_id = response.get('id')
+        resource_group = address_id.split('resourceGroups/')[1].split('/providers')[0]
+
     # Retrieve relevant properties to return to context
     properties = response.get('properties')
-    address_id = response.get('id')
     config_id = properties.get('ipConfiguration', {}).get('id')
     ip_address = properties.get('ipAddress', 'NA')
     ip_address_version = properties.get('publicIPAddressVersion', 'NA')
@@ -872,7 +929,7 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
         'PublicIPAddressVersion': ip_address_version,
         'PublicIPAddressAllocationMethod': ip_address_allocation_method,
         'PublicIPAddressDomainName': address_domain_name,
-        'PublicIPAddressFQDN': address_fqdn
+        'PublicIPAddressFQDN': address_fqdn,
     }
 
     human_readable_ip_config = {
@@ -880,15 +937,65 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
         'Location': location,
         'PublicIPAddress': ip_address,
         'PublicIPAddressVersion': ip_address_version,
-        'PublicIPAddressAllocationMethod': ip_address_allocation_method
+        'PublicIPAddressAllocationMethod': ip_address_allocation_method,
+        "ResourceGroup": resource_group
     }
 
     title = 'Properties of Public Address "{}"'.format(address_name)
     table_headers = ['PublicConfigName', 'Location', 'PublicIPAddress', 'PublicIPAddressVersion',
-                     'PublicIPAddressAllocationMethod']
+                     'PublicIPAddressAllocationMethod', 'ResourceGroup']
     human_readable = tableToMarkdown(title, human_readable_ip_config, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Network.IPConfigurations(val.PublicIPAddressID === '
                      'obj.PublicIPAddressID)': ip_config}
+    return human_readable, entry_context, response
+
+
+def get_all_public_ip_details_command(client: MsGraphClient, args: dict):
+    """
+    Get the properties of all Public IP Addresses in the configured subscription
+
+    returns:
+        List of Public IP Address Objects
+    """
+    response = client.get_all_public_ip_details()
+
+    ip_objects_list = response.get('value', [])
+
+    ips = []
+
+    for ip_object in ip_objects_list:
+        # Retrieve relevant properties to return to context
+        properties = ip_object.get('properties', {})
+        address_id = ip_object.get('id', '')
+        config_id = properties.get('ipConfiguration', {}).get('id', '')
+        ip_address = properties.get('ipAddress', 'NA')
+        ip_address_version = properties.get('publicIPAddressVersion', 'NA')
+        ip_address_allocation_method = properties.get('publicIPAllocationMethod', 'NA')
+        address_domain_name = properties.get('dnsSettings', {}).get('domainNameLabel', 'NA')
+        address_fqdn = properties.get('dnsSettings', {}).get('fqdn', 'NA')
+        config_name = ip_object.get('name')
+        location = ip_object.get('location')
+        resource_group = address_id.split('resourceGroups/')[1].split('/providers')[0]
+        ip_config = {
+            'PublicIPAddressID': address_id,
+            'PublicConfigName': config_name,
+            'Location': location,
+            'PublicConfigID': config_id,
+            'ResourceGroup': resource_group,
+            'PublicIPAddress': ip_address,
+            'PublicIPAddressVersion': ip_address_version,
+            'PublicIPAddressAllocationMethod': ip_address_allocation_method,
+            'PublicIPAddressDomainName': address_domain_name,
+            'PublicIPAddressFQDN': address_fqdn,
+        }
+        ips.append(ip_config)
+
+    title = 'Microsoft Azure - List of Virtual Machines in Subscription "{}"'.format(client.subscription_id)
+    table_headers = ['PublicConfigName', 'Location', 'PublicIPAddress', 'PublicIPAddressVersion',
+                     'PublicIPAddressAllocationMethod']
+    human_readable = tableToMarkdown(title, ips, headers=table_headers, removeNull=True)
+    entry_context = {'Azure.Network.IPConfigurations(val.PublicIPAddressID === '
+                     'obj.PublicIPAddressID)': ips}
     return human_readable, entry_context, response
 
 
@@ -1007,6 +1114,7 @@ def main():
         'azure-list-subscriptions': list_subscriptions_command,
         'azure-vm-get-nic-details': get_network_interface_command,
         'azure-vm-get-public-ip-details': get_public_ip_details_command,
+        'azure-vm-get-all-public-ip-details': get_all_public_ip_details_command,
         'azure-vm-create-nic': create_nic_command
     }
 

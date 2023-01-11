@@ -55,6 +55,7 @@ Packs/**/report_pytest.json
 
 # devcontainer folders
 .devcontainer/certs.crt
+.devcontainer/createCommand_unix.sh
 **/.devcontainer
 !/.devcontainer
 
