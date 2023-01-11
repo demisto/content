@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM112
+
+[known_words]
+CommonScripts

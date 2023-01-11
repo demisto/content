@@ -88,7 +88,9 @@ def fetch_indicators_command(
             )
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
+            last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
+                if client.last_fetched_indicator__modified \
+                else added_after
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
@@ -225,8 +227,8 @@ def main():
     is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
-    certificate = params.get('certificate', None)
-    key = params.get('key', None)
+    certificate = params.get('creds_certificate', {}).get('identifier') or params.get('certificate', None)
+    key = params.get('creds_certificate', {}).get('password') or params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root')
 
