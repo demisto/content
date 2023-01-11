@@ -127,7 +127,7 @@ configuration:
   additionalinfo: Only supported in Demisto V6.1 and above.
   section: Collect
   advanced: true
-description: Send messages and notifications to your Slack team.
+description: Deprecated. Use SlackV3 instead.
 display: Slack v2 (Deprecated)
 name: SlackV2
 script:
