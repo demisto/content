@@ -394,7 +394,8 @@ class Client(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f'/v2/{endpoint_base}/tag-assignments/bulk',
-            json_data=data
+            json_data=data,
+            retries=3
         )
 
     def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
