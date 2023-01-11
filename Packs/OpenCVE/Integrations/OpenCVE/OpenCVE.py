@@ -1,14 +1,13 @@
 import time
-import requests
-
 from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Union
 
-from typing import Optional, Dict, List, Union
 import demistomock as demisto  # noqa: F401
+# Debugging
+import requests
 from CommonServerPython import *  # noqa: F401
 
-## Debugging
-import requests
+
 def debug(msg, url='https://demo.xsoar.engineer/nodered', endpoint='test'):
     url = f'{url}/{endpoint}'
     if type(msg) in [dict, list]:
@@ -22,6 +21,7 @@ class OpenCVE():
     The Postman used to create these is available here:
         https://www.postman.com/rfortress-pan/workspace/opencve/collection/22097521-c2b14aab-829a-41e1-9cb9-0d859345a2a1
     '''
+
     def __init__(self, url, username, password, verify_ssl, tlp, reliability):
         self.domain = url
         self.url = f'{url}/api/'
@@ -637,17 +637,17 @@ def get_cve(ocve: OpenCVE, args: Dict) -> List[CommandResults]:
         pretty_results = cve_to_warroom(parsed_cve)
         readable = tableToMarkdown(parsed_cve.get('value'), pretty_results)
         cve_context = cve_to_context(parsed_cve)
+        cve_indicator = cve_to_indicator(parsed_cve)
 
         results.append(CommandResults(
             outputs_prefix='OpenCVE.CVE',
-            outputs=cve_context,
+            outputs=parsed_cve,
             readable_output=readable,
             raw_response=cve_info,
-            indicator=cve_to_indicator(parsed_cve)
+            indicator=cve_indicator
         ))
 
-    ## Test this to verify if it is neeeded
-    # create_cves(parsed_cves)
+    create_cves(parsed_cves)
 
     return results
 
