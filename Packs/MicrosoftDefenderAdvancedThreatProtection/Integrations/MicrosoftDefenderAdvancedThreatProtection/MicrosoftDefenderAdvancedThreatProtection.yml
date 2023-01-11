@@ -6685,4 +6685,4 @@ script:
 defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Microsoft Defender Advanced Threat Protection - Test
