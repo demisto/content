@@ -3,49 +3,57 @@ commonfields:
   id: SentinelOneEventCollector
   version: -1
 configuration:
-- display: Fetch events
-  name: isFetch
-  required: false
-  type: 8
 - display: Server URL (e.g., https://usea1.sentinelone.net)
   name: url
   required: true
   type: 0
+  section: Connect
 - display: ''
   name: credentials
   required: false
   type: 9
   hiddenusername: true
   displaypassword: API Token
-- defaultvalue: ACTIVITIES,THREATS,ALERTS
+  section: Connect
+- defaultvalue: ACTIVITIES, THREATS, ALERTS
   display: Fetch events of type (ACTIVITIES, THREATS, ALERTS)
   name: event_type
   options:
-  - 'ACTIVITIES'
-  - 'THREATS'
-  - 'ALERTS'
+  - ACTIVITIES
+  - THREATS
+  - ALERTS
   required: false
   type: 16
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- display: Fetch events
+  name: isFetch
+  required: false
+  type: 8
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '200'
-  display: 'Fetch limit: The maximum number of events to fetch should be between 1-1000'
-  additionalinfo: 'The limit is per event type for example if you will choose 3 event types (ACTIVITIES, THREATS, ALERTS) and limit of 100 the actually limit will be 300'
+  section: Collect
+- defaultvalue: 1000
+  display: The maximum number of alerts per fetch should be between 1-1000
+  additionalinfo: The limit is per event type for example if you will choose 3 event types (ACTIVITIES, THREATS, ALERTS) and limit of 100 the actually limit will be 300
   name: fetch_limit
   required: false
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: This is the SentinelOne xdr event collector integration for XSIAM.
+  section: Collect
+description: This is the SentinelOne event collector integration for XSIAM.
 display: SentinelOne Event Collector
 name: SentinelOneEventCollector
 script:
@@ -68,7 +76,7 @@ script:
     deprecated: false
     description: Gets events from SentinelOne.
     execution: false
-    name: sentinelone-xdr-get-events
+    name: sentinelone-get-events
   dockerimage: demisto/python3:3.10.9.42476
   isfetchevents: true
   runonce: false

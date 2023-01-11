@@ -21,7 +21,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
+    For this SentinelOne implementation, no special attributes defined
     """
 
     def __init__(self, base_url, verify=True, headers=None, proxy=False, fetch_limit=1000):
@@ -39,7 +39,7 @@ class Client(BaseClient):
         All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            from_time: Time (the incident was created) to start fetching.
+            from_time: Time (the incident was updated) to start fetching.
 
         Returns:
             list: The activities.
@@ -59,7 +59,7 @@ class Client(BaseClient):
         All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            from_time: Time (the incident was created) to start fetching.
+            from_time: Time (the incident was updated) to start fetching.
 
         Returns:
             list: The threats.
@@ -79,7 +79,7 @@ class Client(BaseClient):
         All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            from_time: Time (the incident was created) to start fetching.
+            from_time: Time (the incident was updated) to start fetching.
 
         Returns:
             list: The alerts.
@@ -112,9 +112,9 @@ def get_events(client: Client, event_type: List,
 
 def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:  # type: ignore
     return {
-        'last_activity_created': from_time,
-        'last_threat_created': from_time,
-        'last_alert_created': from_time,
+        'last_activity_updated': from_time,
+        'last_threat_updated': from_time,
+        'last_alert_updated': from_time,
     }
 
 
@@ -131,7 +131,7 @@ def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]
             event["_time"] = alert_info.get("updatedAt")
         if threat_info := event.get('threatInfo'):
             event["_time"] = threat_info.get("updatedAt")
-        else:
+        else:  # Otherwise, it's an activity.
             event["_time"] = event.get("updatedAt")
 
     return events
@@ -148,7 +148,7 @@ def test_module(client: Client, event_type: List) -> str:
     Raises exceptions if something goes wrong.
 
     Args:
-        client (Client): HelloWorld client to use.
+        client (Client): SentinelOne client to use.
         event_type (List): Integration parameters.
 
     Returns:
@@ -171,16 +171,16 @@ def get_events_command(client: Client, first_fetch_time: datetime, event_type: L
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type: list = None) -> Tuple[Dict, List]:
+def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type: Optional[List]) -> Tuple[Dict, List]:
     """
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict containing the latest event (for each event type) created time we got from last fetch.
-            For example: {'last_activity_created': '2023-01-01T00:00:00', 'last_threat_created': '2023-01-01T00:00:00'}
+        client (Client): SentinelOne client to use.
+        last_run (dict): A dict containing the latest event (for each event type) updated time we got from last fetch.
+            For example: {'last_activity_updated': '2023-01-01T00:00:00', 'last_threat_updated': '2023-01-01T00:00:00'}
         event_type (list): Event type to be fetched ['ACTIVITIES', 'THREATS', 'ALERTS']
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        list: List of events that will be updated in XSIAM.
     """
     if not event_type:
         event_type = ['ACTIVITIES', 'THREATS', 'ALERTS']
@@ -188,17 +188,17 @@ def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type
     demisto.info(f'Fetched event of type: {event_type} from time {last_run}.')
     events = []
     if 'ACTIVITIES' in event_type:
-        if activities := client.get_activities(last_run['last_activity_created']):
+        if activities := client.get_activities(last_run['last_activity_updated']):
             events.extend(activities)
-            last_run['last_activity_created'] = activities[-1].get('updatedAt')
+            last_run['last_activity_updated'] = activities[-1].get('updatedAt')
     if 'THREATS' in event_type:
-        if threats := client.get_threats(last_run['last_threat_created']):
+        if threats := client.get_threats(last_run['last_threat_updated']):
             events.extend(threats)
-            last_run['last_threat_created'] = threats[-1].get('threatInfo', {}).get('updatedAt')
+            last_run['last_threat_updated'] = threats[-1].get('threatInfo', {}).get('updatedAt')
     if 'ALERTS' in event_type:
-        if alerts := client.get_alerts(last_run['last_alert_created']):
+        if alerts := client.get_alerts(last_run['last_alert_updated']):
             events.extend(alerts)
-            last_run['last_alert_created'] = alerts[-1].get('alertInfo', {}).get('updatedAt')
+            last_run['last_alert_updated'] = alerts[-1].get('alertInfo', {}).get('updatedAt')
 
     demisto.info(f'Setting next run {last_run}.')
     return last_run, events
@@ -246,10 +246,10 @@ def main() -> None:
             result = test_module(client, event_type)
             return_results(result)
 
-        elif command in (f'{VENDOR}-{PRODUCT}-get-events', 'fetch-events'):
+        elif command in (f'{VENDOR}-get-events', 'fetch-events'):
             should_push_events = argToBoolean(args.get('should_push_events', False))
             events = []
-            if command == f'{VENDOR}-{PRODUCT}-get-events':
+            if command == f'{VENDOR}-get-events':
                 events, results = get_events_command(client, first_fetch_time, event_type)  # type: ignore
                 return_results(results)
 
