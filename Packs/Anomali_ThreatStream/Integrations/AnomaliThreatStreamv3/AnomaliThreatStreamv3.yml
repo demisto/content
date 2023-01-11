@@ -2816,8 +2816,8 @@ script:
       required: false
       secret: false
       predefined:
-        - false
-        - true
+        - 'false'
+        - 'true'
     deprecated: false
     description: Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
     execution: false
