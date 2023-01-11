@@ -3,7 +3,7 @@ from freezegun import freeze_time
 import Zoom
 import pytest
 from CommonServerPython import DemistoException
-# from unittest.mock import patch, mock_open
+import demistomock as demisto
 
 
 def mock_client_ouath(mocker):
