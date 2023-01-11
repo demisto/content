@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
 
 
-def arr_to_csv_command(array: str | list[str]) -> CommandResults:
+def arr_to_csv_command(array: list[str]) -> CommandResults:
     csv = ','.join(array)
     return CommandResults(
         readable_output=csv
