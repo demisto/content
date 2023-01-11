@@ -185,6 +185,22 @@ def handle_last_run(first_fetch: str) -> str:
     return last_run
 
 
+def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Adds the _time key to the events.
+    Args:
+        events: list, the events to add the time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    for event in events:
+        if event.get("properties").get('GeneratedTimeUtc'):
+            event["_time"] = event.get("created")
+        elif event.get("time"):
+            event["_time"] = event.get("time")
+
+    return events
+
 ''' MAIN FUNCTION '''
 
 
@@ -245,6 +261,7 @@ def main() -> None:
                 )
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)
+
 
             if should_push_events:
                 send_events_to_xsiam(
