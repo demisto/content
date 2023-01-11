@@ -507,9 +507,9 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "120"
+    simple: "180"
   required: false
-  description: The time limit in seconds for the HTTP request to run. Default is 120.
+  description: The time limit in seconds for the HTTP request to run. Default is 180.
   playbookInputQuery:
 - key: SearchTimeframe
   value:

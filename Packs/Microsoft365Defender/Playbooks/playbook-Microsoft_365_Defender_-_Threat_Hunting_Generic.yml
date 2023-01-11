@@ -241,8 +241,7 @@ inputs:
     Can be a single MessageID or an array of MessageIDs to search.
   playbookInputQuery:
 - key: Timeout
-  value:
-    simple: "300"
+  value: {}
   required: false
   description: The time limit in seconds for the HTTP request to run. Default is 180.
   playbookInputQuery:
