@@ -32,9 +32,7 @@ def main():     # pragma: no cover
         utc_time = determine_correct_format(time=time, fmt=fmt)
 
         # Convert to desired Timezone and format
-        results = convert_UTC_Timezone_command(time=utc_time, timezone=timezone, fmt=fmt)
-
-        return_results(results)
+        return_results(convert_UTC_Timezone_command(time=utc_time, timezone=timezone, fmt=fmt))
 
     except Exception as e:
         demisto.error(format_exc())

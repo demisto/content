@@ -28,6 +28,7 @@ def test_arr_to_csv_command__array_of_one_value():
     command_result = arr_to_csv_command(arr)
     assert command_result.readable_output == "mock"
 
+
 def test_arr_to_csv_command__empty_array():
     """
         Given -
