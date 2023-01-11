@@ -4,8 +4,9 @@ args:
   name: value
   required: true
 - defaultValue: '%Y-%m-%d %H:%M:%S'
-  description: Input format , the output will be in the same format (i.e "%Y-%m-%d
-    %H:%M:%S")
+  description: >
+    The requested output format. (i.e "%Y-%m-%d%H:%M:%S")
+    Note: The input should match this format as well.
   name: format
 - description: Timezone to be converted to (i.e. 'US/Eastern', 'Etc/Greenwich','Canada/Eastern').
     Review documentation on http://pytz.sourceforge.net/#helpers for what timezones
