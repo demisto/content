@@ -276,74 +276,36 @@ script:
       description: Training Enrollments Policy Acknowledged
       type: boolean
     description: Returns all Training Enrollments
-  - arguments:
-    - default: false
+  - name: get-user-events
+    arguments:
+    - name: event_type
       description: Filter by Event Type
-      isArray: false
-      name: event_type
-      required: false
-      secret: false
-    - default: false
+    - name: target_user
       description: Filter by User
-      isArray: false
-      name: target_user
-      required: false
-      secret: false
-    - default: false
+    - name: external_id
       description: Filter by External ID
-      isArray: false
-      name: external_id
-      required: false
-      secret: false
-    - default: false
+    - name: source
       description: Filter by Source
-      isArray: false
-      name: source
-      required: false
-      secret: false
-    - default: false
+    - name: occurred_date
       description: Filter by Occurred Date (YYYY-MM-DD)
-      isArray: false
-      name: occurred_date
-      required: false
-      secret: false
-    - default: false
-      description: Filter by Risk Level by entering a value from -10 (low risk) to 10 (high risk).
-      isArray: false
-      name: risk_level
-      required: false
-      secret: false
-    - default: false
+    - name: risk_level
+      description: Filter by Risk Level by entering a value from -10 (low risk) to
+        10 (high risk).
+    - name: risk_decay_mode
       description: Filter by Risk Decay Mode by entering a value of 0 or 1
-      isArray: false
-      name: risk_decay_mode
-      required: false
-      secret: false
-    - default: false
+    - name: risk_expire_date
       description: Filter by Risk Expire Date (YYYY-MM-DD)
-      isArray: false
-      name: risk_expire_date
-      required: false
-      secret: false
-    - default: false
-      description: Order returned events by ID, Event Type, or Occurred Date ("id", "event_type", "occurred_date")
-      isArray: false
-      name: order_by
-      required: false
-      secret: false
-    - default: false
-      description: Order returned events in ascending (asc) or descending (desc) order ("asc", "desc")
-      isArray: false
-      name: order_direction
-      required: false
-      secret: false
-    description: 'Returns KMSAT User Events.'
-    execution: false
-    name: get-user-events
+    - name: order_by
+      description: Order returned events by ID, Event Type, or Occurred Date ("id",
+        "event_type", "occurred_date")
+    - name: order_direction
+      description: Order returned events in ascending (asc) or descending (desc) order
+        ("asc", "desc")
     outputs:
     - contextPath: BaseIntegration.Output
-      description: 'List of User Events base upon filter'
+      description: List of User Events base upon filter
       type: String
+    description: Returns KMSAT User Events.
   isfetch: false
   runonce: false
   script: '-'

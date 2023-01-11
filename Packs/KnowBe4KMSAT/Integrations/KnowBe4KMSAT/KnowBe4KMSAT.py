@@ -365,7 +365,7 @@ def main() -> None:
         elif command == 'get-training-enrollments':
             return_results(get_training_enrollments(client))
         elif command == 'get-user-events':
-            return_results(get_user_events(userEventClient, **args))
+            return_results(get_user_events(userEventClient, args))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
