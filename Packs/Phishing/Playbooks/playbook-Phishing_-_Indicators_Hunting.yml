@@ -2,11 +2,11 @@ id: Phishing - Indicators Hunting
 version: -1
 name: Phishing - Indicators Hunting
 description: |
-  Hunt indicators related to phishing with available integrations and handle the results. Handling the results will include settings relevant incident fields which will be displayed in the layout and optionally, opening new incidents according to the findings.
+  Hunt indicators related to phishing with available integrations and then handle the results. Handling the results will include setting relevant incident fields which will be displayed in the layout and optionally, opening new incidents according to the findings.
   Current integration in this playbook:
   - Microsoft 365 Defender (using "Advanced Hunting")
 
-  Please note that this playbook should be used as a sub-playbook inside a phishing incident and not as a main playbook.
+  Note that this playbook should be used as a sub-playbook inside a phishing incident and not as a main playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -48,7 +48,7 @@ tasks:
       version: -1
       name: Microsoft 365 Defender - Threat Hunting Generic
       description: |
-        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress` and `MessageID` inputs. The output will be a unified object with all of the retrieved emails based on the sub-playbooks outputs:
+        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`, and `MessageID` inputs. The output will be a unified object with all of the retrieved emails based on the sub-playbooks outputs:
 
         - **Microsoft 365 Defender - Get Email URL clicks**:
                 Retrieves data based on URL click events.
@@ -57,7 +57,7 @@ tasks:
         - **Microsoft 365 Defender - Emails Indicators Hunt**:
                 Retrieves data based on several different email events.
 
-        Please read the playbooks descriptions in order to get the full details.
+        Read the playbooks' descriptions in order to get the full details.
       playbookName: Microsoft 365 Defender - Threat Hunting Generic
       type: playbook
       iscommand: false
@@ -190,12 +190,12 @@ tasks:
       version: -1
       name: Phishing - Handle Microsoft 365 Defender Results
       description: |-
-        This playbook is used to handle the results from the "Microsoft 365 Defender - Threat Hunting Generic" playbook inside a phishing incident. It will do the following actions:
-        1) Set the relevant incident fields based on the results, such as "Clicked URLs", "Malicious URL Viewed" and "Malicious URL Clicked".
-        2) In case the relevant playbook inputs were configured, it will create new incidents for each email returned in the results. First, it will try to retrieve to original emails' files and then it will create an incident for each retrieved email.
+        This playbook is used to handle the results from the "Microsoft 365 Defender - Threat Hunting Generic" playbook inside a phishing incident. It will perform the following actions:
+        1) Set the relevant incident fields based on the results, such as "Clicked URLs", "Malicious URL Viewed", and "Malicious URL Clicked".
+        2) In case the relevant playbook inputs were configured, it will create new incidents for each email returned in the results. First, it will try to retrieve the original emails' files and then it will create an incident for each retrieved email.
         3) Link the newly created incidents to the main originating incident.
 
-        Please note that this playbook should only be used inside a phishing incident and not as a main playbook.
+        Note that this playbook should only be used inside a phishing incident and not as a main playbook.
       playbookName: Phishing - Handle Microsoft 365 Defender Results
       type: playbook
       iscommand: false
@@ -242,7 +242,7 @@ tasks:
       id: e480e0e4-cf08-4ac6-8897-48cf53991382
       version: -1
       name: Any emails found using Microsoft 365 Defender?
-      description: Did the previous task returned any email in its output?
+      description: Did the previous task returned any emails in its output?
       type: condition
       iscommand: false
       brand: ""
@@ -337,7 +337,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: When "True", the sub-playbook "Phishing - Handle Microsoft 365 Defender Results" will create new phishing incidents for each email which contain one of the malicious indicators. Default is "False".
+  description: When "True", the "Phishing - Handle Microsoft 365 Defender Results" sub-playbook will create new phishing incidents for each email that contains one of the malicious indicators. Default is "False".
   playbookInputQuery:
 - key: ListenerMailbox
   value: {}
