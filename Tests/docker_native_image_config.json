@@ -85,7 +85,7 @@
          ]
       },
       {
-         "id":"PaloAltoNetworks_Traps",
+         "id":"Traps",
          "reason":"Integration is Deprecated.",
          "ignored_native_images":[
             "native:8.1"
