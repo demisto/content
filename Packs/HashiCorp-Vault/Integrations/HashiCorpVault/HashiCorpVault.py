@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 import hcl
 from CommonServerPython import *  # noqa: F401
 
-
 ''' GLOBAL VARIABLES '''
 
 CREDENTIALS = demisto.params().get('credentials', {})
