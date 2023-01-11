@@ -104,7 +104,7 @@ script:
           predefined:
             - Instant
             - Scheduled
-            - Recurring meeting with fixed time
+            - "Recurring meeting with fixed time"
           required: true
         - description: >
             For recurring meetings only.
