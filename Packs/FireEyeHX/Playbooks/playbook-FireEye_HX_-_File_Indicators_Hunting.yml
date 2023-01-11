@@ -1,0 +1,2304 @@
+id: FireEye HX - File Indicators Hunting
+version: -1
+name: FireEye HX - File Indicators Hunting
+description: |-
+  This playbook queries FireEye Endpoint Security (HX) for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, file paths, and file types.
+
+  Note that multiple search values should be separated by commas only (without spaces or any special characters).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a52d8420-7a8c-4987-866d-15dd05511bae
+    type: start
+    task:
+      id: a52d8420-7a8c-4987-866d-15dd05511bae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c9a4d741-cb13-4350-8973-b2514b1058e9
+    type: title
+    task:
+      id: c9a4d741-cb13-4350-8973-b2514b1058e9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: d6c06566-378b-495f-8c0e-aaa7dd6dc516
+    type: condition
+    task:
+      id: d6c06566-378b-495f-8c0e-aaa7dd6dc516
+      version: -1
+      name: Is FireEye HX enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "129"
+      - "111"
+      - "127"
+      - "123"
+      - "156"
+      - "170"
+    scriptarguments:
+      brandname:
+        simple: FireEye Endpoint Security (HX) v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 6811dd2b-2b1c-439f-8983-3a0d947f3aec
+    type: title
+    task:
+      id: 6811dd2b-2b1c-439f-8983-3a0d947f3aec
+      version: -1
+      name: FileName Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 6361f3d7-a338-448b-8f27-e01619deca10
+    type: condition
+    task:
+      id: 6361f3d7-a338-448b-8f27-e01619deca10
+      version: -1
+      name: Any file names to hunt for?
+      description: |
+        Checks whether any file names are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "139"
+      "yes":
+      - "165"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: f951e878-f8e5-41a4-85ca-2001845ca0dd
+    type: regular
+    task:
+      id: f951e878-f8e5-41a4-85ca-2001845ca0dd
+      version: -1
+      name: FireEye HX Query - FileName
+      description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "179"
+    scriptarguments:
+      exhaustive:
+        complex:
+          root: inputs.exhaustive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+      fieldSearchName:
+        simple: File Name
+      fieldSearchOperator:
+        simple: contains
+      fieldSearchValue:
+        complex:
+          root: FileNameParsed
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.hostSetName
+                iscontext: true
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.interval_in_seconds
+                iscontext: true
+      limit:
+        complex:
+          root: inputs.limits
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limits
+                iscontext: true
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: cc422476-2a50-40a6-8737-4ef6988a1c01
+    type: regular
+    task:
+      id: cc422476-2a50-40a6-8737-4ef6988a1c01
+      version: -1
+      name: FireEye HX Query - SHA256
+      description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "182"
+    scriptarguments:
+      exhaustive:
+        complex:
+          root: inputs.exhaustive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+      fieldSearchName:
+        simple: File SHA256 Hash
+      fieldSearchOperator:
+        simple: equals
+      fieldSearchValue:
+        complex:
+          root: SHA256Parsed
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.hostSetName
+                iscontext: true
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.interval_in_seconds
+                iscontext: true
+      limit:
+        complex:
+          root: inputs.limits
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limits
+                iscontext: true
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3730,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: 3b712ecd-ae80-4229-8f85-21ada9b3d795
+    type: title
+    task:
+      id: 3b712ecd-ae80-4229-8f85-21ada9b3d795
+      version: -1
+      name: SHA256 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "126"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 5caa076e-b84a-424a-8669-29e4b8c3af03
+    type: condition
+    task:
+      id: 5caa076e-b84a-424a-8669-29e4b8c3af03
+      version: -1
+      name: Any SHA1 to hunt for?
+      description: |
+        Checks whether any SHA1 hashes are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "155"
+      "yes":
+      - "167"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2840,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: a0cee128-6f56-4493-8a99-7306e640f385
+    type: condition
+    task:
+      id: a0cee128-6f56-4493-8a99-7306e640f385
+      version: -1
+      name: Any SHA256 to hunt for?
+      description: |
+        Checks whether any SHA256 hashes are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "159"
+      "yes":
+      - "168"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: ccbdf46f-1553-4d63-8ed1-9054fda0777d
+    type: title
+    task:
+      id: ccbdf46f-1553-4d63-8ed1-9054fda0777d
+      version: -1
+      name: SHA1 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "124"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2840,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: c04c6639-da7e-4f83-82ab-039a4647795f
+    type: regular
+    task:
+      id: c04c6639-da7e-4f83-82ab-039a4647795f
+      version: -1
+      name: FireEye HX Query - SHA1
+      description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "181"
+    scriptarguments:
+      exhaustive:
+        complex:
+          root: inputs.exhaustive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+      fieldSearchName:
+        simple: File SHA1 Hash
+      fieldSearchOperator:
+        simple: equals
+      fieldSearchValue:
+        complex:
+          root: SHA1Parsed
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.hostSetName
+                iscontext: true
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.interval_in_seconds
+                iscontext: true
+      limit:
+        complex:
+          root: inputs.limits
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limits
+                iscontext: true
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 99340462-0873-4433-8d7a-2647c26c453e
+    type: title
+    task:
+      id: 99340462-0873-4433-8d7a-2647c26c453e
+      version: -1
+      name: FilePath Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "130"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: 3bbb390f-2720-49d7-830d-44d987271a4e
+    type: condition
+    task:
+      id: 3bbb390f-2720-49d7-830d-44d987271a4e
+      version: -1
+      name: Any file paths to hunt for?
+      description: |
+        Checks whether any file paths are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "142"
+      "yes":
+      - "166"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: f539f679-0efd-48a9-816e-20c5e88cf4f4
+    type: regular
+    task:
+      id: f539f679-0efd-48a9-816e-20c5e88cf4f4
+      version: -1
+      name: FireEye HX Query - FilePath
+      description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "180"
+    scriptarguments:
+      exhaustive:
+        complex:
+          root: inputs.exhaustive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+      fileFullPath:
+        complex:
+          root: FilePathParsed
+      fileFullPathOperator:
+        simple: equals
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.hostSetName
+                iscontext: true
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.interval_in_seconds
+                iscontext: true
+      limit:
+        complex:
+          root: inputs.limits
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limits
+                iscontext: true
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 3b9a2d79-eed9-4a26-891d-dcf07470213d
+    type: title
+    task:
+      id: 3b9a2d79-eed9-4a26-891d-dcf07470213d
+      version: -1
+      name: Filename Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: 77d4df1d-dbb5-47ec-8e9e-b9e41d151dde
+    type: title
+    task:
+      id: 77d4df1d-dbb5-47ec-8e9e-b9e41d151dde
+      version: -1
+      name: FilePath Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "155":
+    id: "155"
+    taskid: 6074bf42-45f7-4ff0-8535-c63ca3df130a
+    type: title
+    task:
+      id: 6074bf42-45f7-4ff0-8535-c63ca3df130a
+      version: -1
+      name: SHA1 Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2840,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "156":
+    id: "156"
+    taskid: 5a7523b8-37e9-47f8-8f37-2e08aff6999d
+    type: title
+    task:
+      id: 5a7523b8-37e9-47f8-8f37-2e08aff6999d
+      version: -1
+      name: MD5 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "161"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4130,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "159":
+    id: "159"
+    taskid: 59366d3c-f7da-4564-8c19-0411f559a121
+    type: title
+    task:
+      id: 59366d3c-f7da-4564-8c19-0411f559a121
+      version: -1
+      name: SHA256 Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "160":
+    id: "160"
+    taskid: dc6db1d4-e6c7-4472-8a78-3a4003a7d0ae
+    type: title
+    task:
+      id: dc6db1d4-e6c7-4472-8a78-3a4003a7d0ae
+      version: -1
+      name: MD5 Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4130,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "161":
+    id: "161"
+    taskid: af650f41-666e-49ee-8ffb-b9343bf41e57
+    type: condition
+    task:
+      id: af650f41-666e-49ee-8ffb-b9343bf41e57
+      version: -1
+      name: Any MD5 to hunt for?
+      description: |
+        Checks whether any MD5 hashes are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "160"
+      "yes":
+      - "169"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4130,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "162":
+    id: "162"
+    taskid: 5468b390-4a09-43ee-865a-89a119b9d887
+    type: regular
+    task:
+      id: 5468b390-4a09-43ee-865a-89a119b9d887
+      version: -1
+      name: FireEye HX Query - MD5
+      description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "183"
+    scriptarguments:
+      exhaustive:
+        complex:
+          root: inputs.exhaustive
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.exhaustive
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+      fileMD5Hash:
+        complex:
+          root: MD5Parsed
+      fileMD5HashOperator:
+        simple: equals
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.hostSetName
+                iscontext: true
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.interval_in_seconds
+                iscontext: true
+      limit:
+        complex:
+          root: inputs.limits
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limits
+                iscontext: true
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4370,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "165":
+    id: "165"
+    taskid: 7c17ec93-d247-40c6-8a7d-bfcbc8b399b0
+    type: regular
+    task:
+      id: 7c17ec93-d247-40c6-8a7d-bfcbc8b399b0
+      version: -1
+      name: Set FileName search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "113"
+    scriptarguments:
+      key:
+        simple: FileNameParsed
+      value:
+        complex:
+          root: inputs.FileName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FileName
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "166":
+    id: "166"
+    taskid: 981e9df1-55b2-4c6c-865a-dc58b6f0c618
+    type: regular
+    task:
+      id: 981e9df1-55b2-4c6c-865a-dc58b6f0c618
+      version: -1
+      name: Set FilePath search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "131"
+    scriptarguments:
+      key:
+        simple: FilePathParsed
+      value:
+        complex:
+          root: inputs.FilePath
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FilePath
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "167":
+    id: "167"
+    taskid: b15e0696-dcfc-4bcf-8b98-0c945bd6b085
+    type: regular
+    task:
+      id: b15e0696-dcfc-4bcf-8b98-0c945bd6b085
+      version: -1
+      name: Set SHA1 search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "128"
+    scriptarguments:
+      key:
+        simple: SHA1Parsed
+      value:
+        complex:
+          root: inputs.SHA1
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.SHA1
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "168":
+    id: "168"
+    taskid: 9bcb1272-9294-4751-8c6c-6434e96a6bb5
+    type: regular
+    task:
+      id: 9bcb1272-9294-4751-8c6c-6434e96a6bb5
+      version: -1
+      name: Set SHA256 search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      key:
+        simple: SHA256Parsed
+      value:
+        complex:
+          root: inputs.SHA256
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3730,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "169":
+    id: "169"
+    taskid: fca0760b-e89a-4f93-85b5-862833e9ee85
+    type: regular
+    task:
+      id: fca0760b-e89a-4f93-85b5-862833e9ee85
+      version: -1
+      name: Set MD5 search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "162"
+    scriptarguments:
+      key:
+        simple: MD5Parsed
+      value:
+        complex:
+          root: inputs.MD5
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4370,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "170":
+    id: "170"
+    taskid: 528ee551-e484-4b52-8631-9b24b4f3218f
+    type: title
+    task:
+      id: 528ee551-e484-4b52-8631-9b24b4f3218f
+      version: -1
+      name: FileType Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "171"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "171":
+    id: "171"
+    taskid: 47abcd30-cb21-4b42-8ede-e4ac518e0bc1
+    type: condition
+    task:
+      id: 47abcd30-cb21-4b42-8ede-e4ac518e0bc1
+      version: -1
+      name: Any file types to hunt for?
+      description: |
+        Checks whether any file types are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "174"
+      "yes":
+      - "172"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileType
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: 61e4a7f9-6113-4556-8c45-a8e80a6f291e
+    type: regular
+    task:
+      id: 61e4a7f9-6113-4556-8c45-a8e80a6f291e
+      version: -1
+      name: Set FileType search argument
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "173"
+      - "175"
+    scriptarguments:
+      key:
+        simple: FileTypeParsed
+      value:
+        complex:
+          root: inputs.FileType
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FileType
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "173":
+    id: "173"
+    taskid: a9d92e4a-3679-4bf4-83da-4c3afde6cbd5
+    type: regular
+    task:
+      id: a9d92e4a-3679-4bf4-83da-4c3afde6cbd5
+      version: -1
+      name: FireEye HX Query - File Download Type
+      description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "177"
+    scriptarguments:
+      exhaustive:
+        simple: "no"
+      fieldSearchName:
+        simple: File Download Type
+      fieldSearchOperator:
+        simple: equals
+      fieldSearchValue:
+        complex:
+          root: FileTypeParsed
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.hostSetName
+                iscontext: true
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.interval_in_seconds
+                iscontext: true
+      limit:
+        complex:
+          root: inputs.limits
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limits
+                iscontext: true
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "174":
+    id: "174"
+    taskid: 7fb363e5-d11b-4132-84dd-7335a1c1ac05
+    type: title
+    task:
+      id: 7fb363e5-d11b-4132-84dd-7335a1c1ac05
+      version: -1
+      name: FileType Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 94ab3060-844b-4426-89bf-1764bd85997c
+    type: regular
+    task:
+      id: 94ab3060-844b-4426-89bf-1764bd85997c
+      version: -1
+      name: FireEye HX Query - Executable PE type
+      description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+      script: FireEyeHX v2|||fireeye-hx-search
+      type: regular
+      iscommand: true
+      brand: FireEyeHX v2
+    nexttasks:
+      '#none#':
+      - "176"
+    scriptarguments:
+      exhaustive:
+        simple: "yes"
+      fieldSearchName:
+        simple: Executable PE Type
+      fieldSearchOperator:
+        simple: equals
+      fieldSearchValue:
+        complex:
+          root: FileTypeParsed
+      hostSetName:
+        complex:
+          root: inputs.hostSetName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.hostSetName
+                iscontext: true
+      interval_in_seconds:
+        complex:
+          root: inputs.interval_in_seconds
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.interval_in_seconds
+                iscontext: true
+      limit:
+        complex:
+          root: inputs.limits
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limits
+                iscontext: true
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 0eb40dbb-59bd-4496-8da8-1f08dec8ea6b
+    type: regular
+    task:
+      id: 0eb40dbb-59bd-4496-8da8-1f08dec8ea6b
+      version: -1
+      name: Save Matching Results - Executable PE type
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "178"
+    scriptarguments:
+      key:
+        simple: HuntingResults2
+      value:
+        complex:
+          root: FireEyeHX.Search.results
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Full Path
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File MD5 Hash
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: 59bea744-4e32-4a75-8059-1b9779a22c31
+    type: regular
+    task:
+      id: 59bea744-4e32-4a75-8059-1b9779a22c31
+      version: -1
+      name: Save Matching Results - File Download Type
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "178"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: FireEyeHX.HuntingResults
+      value:
+        complex:
+          root: FireEyeHX.Search.results
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Full Path
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File MD5 Hash
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: eb342dbc-4308-4983-88f3-5a28cd2c1f64
+    type: regular
+    task:
+      id: eb342dbc-4308-4983-88f3-5a28cd2c1f64
+      version: -1
+      name: Remove Duplications From Matching Results
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "174"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: FireEyeHX.HuntingResults
+      value:
+        complex:
+          root: HuntingResults2
+          filters:
+          - - operator: notInList
+              left:
+                value:
+                  simple: HuntingResults2.id
+                iscontext: true
+              right:
+                value:
+                  simple: FireEyeHX.HuntingResults.id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: 0388dcc0-0a66-4e55-840d-32e4c5a509d6
+    type: regular
+    task:
+      id: 0388dcc0-0a66-4e55-840d-32e4c5a509d6
+      version: -1
+      name: Save Matching Results - FileName
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "139"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: FireEyeHX.HuntingResults
+      value:
+        complex:
+          root: FireEyeHX.Search.results
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Full Path
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File MD5 Hash
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "180":
+    id: "180"
+    taskid: fa57552e-8a5e-48a8-8921-407dcebcae29
+    type: regular
+    task:
+      id: fa57552e-8a5e-48a8-8921-407dcebcae29
+      version: -1
+      name: Save Matching Results - FilePath
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "142"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: FireEyeHX.HuntingResults
+      value:
+        complex:
+          root: FireEyeHX.Search.results
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Full Path
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File MD5 Hash
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "181":
+    id: "181"
+    taskid: 8ea3f0e7-f9ff-4be8-8955-9c35f61ac5b3
+    type: regular
+    task:
+      id: 8ea3f0e7-f9ff-4be8-8955-9c35f61ac5b3
+      version: -1
+      name: Save Matching Results - SHA1
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "155"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: FireEyeHX.HuntingResults
+      value:
+        complex:
+          root: FireEyeHX.Search.results
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Full Path
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File MD5 Hash
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "182":
+    id: "182"
+    taskid: 57beb8d8-c932-4721-81d9-1c7ed61520b4
+    type: regular
+    task:
+      id: 57beb8d8-c932-4721-81d9-1c7ed61520b4
+      version: -1
+      name: Save Matching Results - SHA256
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "159"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: FireEyeHX.HuntingResults
+      value:
+        complex:
+          root: FireEyeHX.Search.results
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Full Path
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File MD5 Hash
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3730,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "183":
+    id: "183"
+    taskid: f697cce2-bcf2-4ca5-8e9a-a0b58b1d35c7
+    type: regular
+    task:
+      id: f697cce2-bcf2-4ca5-8e9a-a0b58b1d35c7
+      version: -1
+      name: Save Matching Results - MD5
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "160"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: FireEyeHX.HuntingResults
+      value:
+        complex:
+          root: FireEyeHX.Search.results
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File Full Path
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: FireEyeHX.Search.results.File MD5 Hash
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4370,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "56_111_yes": 0.87,
+      "56_31_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 4360,
+        "x": 390,
+        "y": -360
+      }
+    }
+  }
+inputs:
+- key: FileName
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file names to search for FireEye HX logs.
+    By default, the 'contains' clause is used.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA256
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA256 file hashes to search for within FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA1
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA1 file hashes to search for within FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FilePath
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file paths to search for within FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileType
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file types to search for within FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: MD5
+  value: {}
+  required: false
+  description: |-
+    A single or multiple MD5 file hashes to search for within FireEye HX logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: hostSetName
+  value: {}
+  required: true
+  description: |-
+    The name of host set to be searched.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: exhaustive
+  value: {}
+  required: false
+  description: |-
+    Whether a search is exhaustive or quick.
+    Possible values are: yes, no. Default is yes.
+  playbookInputQuery:
+- key: interval_in_seconds
+  value: {}
+  required: false
+  description: "The interval in seconds between each poll. Default is 60.\t"
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: Limits the results count (once the limit is reached, the search is stopped).
+  playbookInputQuery:
+outputs:
+- contextPath: FireEyeHX.HuntingResults
+  description: Email message objects and fields that were retrieved from FireEye HX.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Timestamp - Event
+  description: The timestamp of the event.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.Timestamp - Accessed
+  description: The last accessed time.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.Timestamp - Modified
+  description: The time when the entry was last modified.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.File Name
+  description: The name of the file.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.File Full Path
+  description: The full path of the file.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.DNS Hostname
+  description: The name of the DNS host.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.URL
+  description: The event URL.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Username
+  description: The event username.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.File MD5 Hash
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Port
+  description: The Port.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Process ID
+  description: The ID of the process.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Local IP Address
+  description: The local IP Address.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Local Port
+  description: The local Port.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.Remote Port
+  description: The remote port.
+  type: number
+- contextPath: FireEyeHX.HuntingResults.IP Address
+  description: The IP address.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.Process Name
+  description: The process name.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.type
+  description: The type of the event.
+  type: string
+- contextPath: FireEyeHX.HuntingResults.id
+  description: The ID of the result.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
