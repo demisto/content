@@ -15,7 +15,7 @@
     "keywords": [],
     "dependencies": {
         "MicrosoftGraphListener": {
-            "mandatory": false,
+            "mandatory": true,
             "display_name": "Microsoft Graph Mail Single User"
         }
     },
