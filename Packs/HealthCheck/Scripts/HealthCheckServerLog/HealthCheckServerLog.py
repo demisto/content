@@ -73,8 +73,8 @@ knownerrors = [
     {
         "no space left on device": [
             "Error Found: `no space left on device`",
-            "Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-            "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"
+            "Free up Disk Space with Data Archiving: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
+            "Cortex-XSOAR-Administrator-Guide/Free-up-Disk-Space-with-Data-Archiving"
         ]
     },
     {

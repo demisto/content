@@ -20,14 +20,14 @@ RESOLUTION = [
     "Remove the configuration key",
     "If you are not fully aware of the implication of using XSOAR without a Docker- please contact customer support",
     "Set the session timeout: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PPsBCAW",
-    "Index War Room Entries: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/"
-    "cortex-xsoar-admin/incidents/incidents-management/war-room-overview/index-war-room-entries",
+    "Index War Room Entries: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
+    "Cortex-XSOAR-Administrator-Guide/War-Room-Indexing",
     "Make sure you are aware of the purpose of this key: Docker containers overloaded: https://docs.paloaltonetworks.com/"
     "cortex/cortex-xsoar/6-0/cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server",
     "This configuration key should be used only in rare circumstances, please contact customer support",
     "The key should be used only for debugging purposes, remove the configuration key when not in use",
-    "You should consider disabling it: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/"
-    "cortex-xsoar-admin/manage-indicators/auto-extract-indicators",
+    "You should consider disabling it: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
+    "Cortex-XSOAR-Administrator-Guide/Indicator-Extraction",
     "The key improves system performance and was added by default to version 6.1"
 ]
 
