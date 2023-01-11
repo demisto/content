@@ -33,7 +33,7 @@ def mock_client(version: str) -> Client:
         Client: Fortieweb VM Client.
     """
     client_class = ClientV1 if version == ClientV1.API_VER else ClientV2
-    client: Client = client_class("http://1.1.1.1/", "api_key", version, True, False)
+    client: Client = client_class("http://1.1.1.1/", "usn", "pwd", version, True, False)
     return client
 
 

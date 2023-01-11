@@ -1220,6 +1220,10 @@ class Client(BaseClient):
         return super()._http_request(*args, **kwargs)
 
     @abstractmethod
+    def encode_api_key(self, username: str, password: str):
+        pass
+
+    @abstractmethod
     def get_error_data(self, error: dict):
         pass
 
@@ -1361,7 +1365,6 @@ class Client(BaseClient):
             ValueError: Errors.
         """
         self.validate_ip_list_group(args)
-
 
     def validate_ip_list_member(self, args: dict[str, Any]):
         """IP list member args validator.
@@ -1827,6 +1830,10 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
+    def ip_list_group_update_request(self, group_name: str, **kwargs) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
     def ip_list_group_delete_request(self, group_name: str) -> dict[str, Any]:
         pass
 
@@ -2133,17 +2140,22 @@ class ClientV1(Client):
     COOKIE_TYPE = 3
 
     def __init__(
-        self, base_url: str, api_key: str, version: str, proxy: bool, verify: bool
+        self, base_url: str, username: str, password: str, version: str, proxy: bool, verify: bool
     ):
         endpoint_prefix = "api/v1.0/"
+        api_key = self.encode_api_key(username=username, password=password)
         super().__init__(
             base_url=base_url,
             api_key=api_key,
             version=version,
             endpoint_prefix=endpoint_prefix,
-            verify=verify,
             proxy=proxy,
+            verify=verify,
         )
+
+    def encode_api_key(self, username: str, password: str):
+        to_encode = f'{username}:{password}:root'
+        return b64_encode(to_encode)
 
     @property
     def not_exist_error_list(self) -> List[str]:
@@ -2403,6 +2415,17 @@ class ClientV1(Client):
         return self._http_request(
             method="POST", url_suffix="WebProtection/Access/IPList", json_data=data
         )
+
+    def ip_list_group_update_request(self, group_name: str, **kwargs) -> dict[str, Any]:
+        """Update an ip list group.
+
+        Args:
+            group_name (str): IP list group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
     def ip_list_group_delete_request(self, group_name: str) -> dict[str, Any]:
         """Delete a ip list group.
@@ -3378,16 +3401,30 @@ class ClientV2(Client):
     API_VER = "V2"
 
     def __init__(
-        self, base_url: str, api_key: str, version: str, proxy: bool, verify: bool
+        self, base_url: str, username: str, password: str, version: str, proxy: bool, verify: bool
     ):
+        api_key = self.encode_api_key(username=username, password=password)
         super().__init__(
             base_url=base_url,
             api_key=api_key,
             version=version,
             endpoint_prefix="api/v2.0/",
-            verify=verify,
             proxy=proxy,
+            verify=verify,
         )
+
+    def encode_api_key(self, username: str, password: str) -> str:
+        """Encode username, password to Fortiweb V2 API key.
+
+        Args:
+            username (str): Username.
+            password (str): Password.
+
+        Returns:
+            str: API key.
+        """
+        to_encode = '{' + f'"username":"{username}","password":"{password}","vdom":"root"' + '}'
+        return b64_encode(to_encode)
 
     @property
     def not_exist_error_list(self) -> List[int]:
@@ -7549,7 +7586,8 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     base_url = str(params.get("url"))
-    api_key = params.get("credentials", {}).get("password")
+    username = params.get("credentials", {}).get("identifier")
+    password = params.get("credentials", {}).get("password")
     version = params["api_version"]
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -7615,7 +7653,8 @@ def main() -> None:
         client_class = {"V1": ClientV1, "V2": ClientV2}[version]
         client: Client = client_class(
             base_url=base_url,
-            api_key=api_key,
+            username=username,
+            password=password,
             version=version,
             proxy=proxy,
             verify=verify_certificate,
