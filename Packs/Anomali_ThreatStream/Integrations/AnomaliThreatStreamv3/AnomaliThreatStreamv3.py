@@ -1184,7 +1184,7 @@ def submit_report(client: Client, submission_type, submission_value, import_indi
     """
         Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
-
+    import_indicators = argToBoolean(import_indicators)
     data = {
         'report_radio-classification': submission_classification,
         'report_radio-platform': report_platform,
