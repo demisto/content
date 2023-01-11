@@ -10,7 +10,7 @@ def arr_to_csv_command(array: list[str] | str) -> CommandResults:
     )
 
 
-def main():  # pragma: no cover
+def main():
     args = demisto.args()
     array = argToList(args.get('value'))
     try:
