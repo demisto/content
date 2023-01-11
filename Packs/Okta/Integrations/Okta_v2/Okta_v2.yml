@@ -8,13 +8,11 @@ configuration:
   required: true
   type: 0
 - name: credentials
-  required: false
   type: 9
   displaypassword: API Token (see detailed instructions)
   hiddenusername: true
 - display: API Token (see detailed instructions)
   name: apitoken
-  required: false
   type: 4
   hidden: true
 - display: Trust any certificate (not secure)
