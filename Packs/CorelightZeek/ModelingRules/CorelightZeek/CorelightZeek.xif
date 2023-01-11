@@ -1,6 +1,6 @@
 [MODEL: dataset=corelight_zeek_raw]
 // DNS Logs
-filter qtype_name != null
+filter _path = "dns"
 | alter 
     src_ip = json_extract_scalar(id, "$.orig_h"),
     src_port = json_extract_scalar(id, "$.orig_p"),
@@ -18,7 +18,7 @@ filter qtype_name != null
     xdm.target.ipv6 = t_ip_v6,
     xdm.source.port = to_integer(src_port),
     xdm.target.port = to_integer(tar_port),
-    xdm.event.type = "DNS",
+    xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.network.protocol_layers = arraycreate(proto),
     xdm.event.duration = to_integer(rtt),
@@ -30,7 +30,7 @@ filter qtype_name != null
     xdm.network.dns.dns_resource_record.value = answers,
     xdm.target.agent.identifier = trans_id;
 // HTTP Logs
-filter origin != null
+filter _path = "http"
 | alter 
     src_ip = json_extract_scalar(id, "$.orig_h"),
     src_port = json_extract_scalar(id, "$.orig_p"),
@@ -48,7 +48,7 @@ filter origin != null
     xdm.target.ipv6 = t_ip_v6,
     xdm.source.port = to_integer(src_port),
     xdm.target.port = to_integer(tar_port),
-    xdm.event.type = "HTTP",
+    xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.network.http.referrer = referrer,
     xdm.network.http.url = uri,
@@ -61,7 +61,7 @@ filter origin != null
     xdm.target.host.hostname = host,
     xdm.target.sent_bytes = to_integer(response_body_len);
 // NTLM Logs
-filter server_tree_name != null
+filter _path = "ntlm"
 | alter 
     src_ip = json_extract_scalar(id, "$.orig_h"),
     src_port = json_extract_scalar(id, "$.orig_p"),
@@ -79,7 +79,7 @@ filter server_tree_name != null
     xdm.target.ipv6 = t_ip_v6,
     xdm.source.port = to_integer(src_port),
     xdm.target.port = to_integer(tar_port),
-    xdm.event.type = "NTLM",
+    xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.auth.ntlm.user_name = username,
     xdm.auth.ntlm.hostname = hostname,
@@ -88,7 +88,7 @@ filter server_tree_name != null
     xdm.auth.ntlm.dns_three = server_tree_name,
     xdm.event.outcome = if(success = "true", "SUCCESS", success = "false", "FAILED", success = null, null, "UNKNOWN");
 // Syslogs 
-filter severity != null
+filter _path = "syslog"
 | alter 
     src_ip = json_extract_scalar(id, "$.orig_h"),
     src_port = json_extract_scalar(id, "$.orig_p"),
@@ -106,14 +106,14 @@ filter severity != null
     xdm.target.ipv6 = t_ip_v6,
     xdm.source.port = to_integer(src_port),
     xdm.target.port = to_integer(tar_port),
-    xdm.event.type = "Syslogs",
+    xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.event.description = message,
     xdm.network.protocol_layers = arraycreate(proto), 
     xdm.alert.severity = severity,
     xdm.intermediate.process.name = facility;
 // Conn Logs
-filter conn_state != null
+filter _path = "conn"
 | alter 
     src_ip = json_extract_scalar(id, "$.orig_h"),
     src_port = json_extract_scalar(id, "$.orig_p"),
@@ -131,7 +131,7 @@ filter conn_state != null
     xdm.target.ipv6 = t_ip_v6,
     xdm.source.port = to_integer(src_port),
     xdm.target.port = to_integer(tar_port),
-    xdm.event.type = "Conn",
+    xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.event.operation_sub_type = conn_state,
     xdm.network.application_protocol = service,
@@ -142,7 +142,7 @@ filter conn_state != null
     xdm.target.sent_bytes = to_integer(resp_bytes),
     xdm.target.sent_packets = to_integer(resp_pkts);
 // Kerberos
-filter request_type != null
+filter _path = "kerberos"
 | alter 
     src_ip = json_extract_scalar(id, "$.orig_h"),
     src_port = json_extract_scalar(id, "$.orig_p"),
@@ -161,7 +161,7 @@ filter request_type != null
     xdm.target.ipv6 = t_ip_v6,
     xdm.source.port = to_integer(src_port),
     xdm.target.port = to_integer(tar_port),
-    xdm.event.type = "Kerberos",
+    xdm.event.type = _path,
     xdm.event.id = uid,
     xdm.event.outcome = if(success = "true", "SUCCESS", success = "false", "FAILED", success = null, null, "UNKNOWN"),
     xdm.auth.kerberos_tgt.msg_type = if(request_type = "AS", "AS_REQ", request_type = "TGS", "TGS_REQ", request_type = "AP", "AP_REQ", request_type = "RESERVED16", "RESERVED16", request_type = "SAFE", "SAFE", request_type = "PRIV", "PRIV", request_type = "CRED", "CRED", request_type = "ERROR", "ERROR", request_type = null, null, "UNKNOWN"),
