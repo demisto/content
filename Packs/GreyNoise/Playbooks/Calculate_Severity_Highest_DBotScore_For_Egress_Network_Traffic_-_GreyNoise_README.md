@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| DBotScore | Array of all indicators associated with the incident. | DBotScore.None | Optional |
+| DBotScore | Array of all indicators associated with the incident. | DBotScore | Optional |
 
 ## Playbook Outputs
 ---

@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: urlscan.io
   version: -1
@@ -9,15 +12,17 @@ configuration:
   type: 9
   hiddenusername: true
   display: ''
-- additionalinfo: Determines the visibility level of the scan. This will override the 'public submissions' setting.
+  section: Connect
+- additionalinfo: Determines the visibility level of the scan.
   display: Scan Visibility
   name: scan_visibility
   options:
   - public
   - private
   - unlisted
-  required: false
+  required: true
   type: 15
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -32,40 +37,56 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
+  section: Collect
 - defaultvalue: '1'
   display: URL Threshold. Minimum number of positive results from urlscan.io to consider the URL malicious.
   name: url_threshold
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Enable public submissions by default.
-  name: is_public
+  section: Collect
+  advanced: true
+- display: User Agent
+  name: useragent
+  type: 0
   required: false
-  type: 8
+  additionalinfo: User Agent to perform requests
+  section: Connect
+  advanced: true
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
   required: false
   type: 8
-- display: User Agent
-  name: useragent
-  type: 0
+  section: Collect
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
-  additionalinfo: User Agent to perform requests
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- defaultvalue: 'false'
+  display: Enable public submissions by default.
+  name: is_public
+  required: false
+  type: 8
+  hidden: true
+  section: Connect
+  advanced: true
 - display: API Key (only required for scanning URLs)
   name: apikey
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
@@ -148,6 +169,14 @@ script:
       defaultValue: 'false'
     - name: useragent
       description: User agent to perform request
+    - name: use_url_as_name
+      default: false
+      description: Whether to use the URL as the file name.
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      defaultValue: "false"
     deprecated: true
     description: Deprecated. Use the url command instead.
     name: urlscan-submit
@@ -259,6 +288,14 @@ script:
       defaultValue: 'false'
     - name: useragent
       description: User agent to perform request
+    - name: use_url_as_name
+      default: false
+      description: Whether to use the URL as the file name.
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      defaultValue: "false"
     description: Submits a URL to scan.
     name: url
     outputs:
@@ -421,11 +458,10 @@ script:
     description: Returns the results page for the specified UUID.
     name: urlscan-get-result-page
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.9.42476
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test
-defaultEnabled: false

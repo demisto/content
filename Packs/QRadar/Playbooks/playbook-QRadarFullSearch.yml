@@ -194,6 +194,10 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    evidencedata:
+      customfields: { }
+      description:
+        simple: Qradar Full Search Results.
   "5":
     id: "5"
     taskid: 7160734d-90ad-4d48-8fa6-d8c7aa68bc61

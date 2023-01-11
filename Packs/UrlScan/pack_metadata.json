@@ -2,7 +2,7 @@
     "name": "URLScan.io",
     "description": "urlscan.io Web Threat Intelligence",
     "support": "partner",
-    "currentVersion": "1.1.26",
+    "currentVersion": "1.2.6",
     "author": "urlscan GmbH",
     "url": "https://urlscan.io",
     "email": "support@urlscan.io",
@@ -10,18 +10,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Relationship",
-        "Scam",
-        "Spam",
-        "Security",
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Phishing",
-        "Hunting",
-        "Threat Intelligence Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "phishing",
         "web",

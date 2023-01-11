@@ -253,7 +253,7 @@ def test_api_response_parsing():
         Tests REST API responses parsing content.
     """
     from ListUsedDockerImages import extract_dockers_from_automation_search_result, \
-        extract_dockers_from_integration_search_result, merge_result, MAX_PER_DOCKER, format_result_for_markdown
+        extract_dockers_from_integration_search_result, merge_result, format_result_for_markdown
 
     integration_response = extract_dockers_from_integration_search_result(
         INTEGRATION, False, True)
@@ -263,8 +263,8 @@ def test_api_response_parsing():
     assert len(integration_response) == 1 or len(automation_response) == 1
 
     result_dict = {}
-    result_dict = merge_result(integration_response, result_dict, MAX_PER_DOCKER)
-    result_dict = merge_result(automation_response, result_dict, MAX_PER_DOCKER)
+    result_dict = merge_result(integration_response, result_dict)
+    result_dict = merge_result(automation_response, result_dict)
 
     assert len(result_dict) == 2
 

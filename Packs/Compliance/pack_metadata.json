@@ -6,20 +6,17 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
-    "tags": [
-        "Breach",
-        "GDPR",
-        "HIPAA"
+    "categories": [
+        "Case Management"
     ],
+    "tags": [],
     "created": "2020-05-10T10:50:52Z",
-    "useCases": [
-        "Compliance"
-    ],
+    "useCases": [],
     "keywords": [
         "Compliance",
         "Breach",
         "GDPR",
+        "HIPAA",
         "US",
         "Notification",
         "Breach notification",

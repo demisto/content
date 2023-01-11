@@ -1,0 +1,31 @@
+!gitlab-version-get
+!gitlab-project-list limit=1 page=1 membership=True order_by=Name owned=True sort=desc visibillity=public with_issues_enabled=True with_merge_requests_enabled=True
+!gitlab-issue-list limit=1 page=1 assignee_id=1 assignee_username=Assignusername author_id=4 author_username=usernameAuthoe confidential=False created_after=2000-09-15T17:22:42.246Z created_before=2022-09-15T17:22:42.246Z due_date=2023-09-15T17:22:42.246Z epic_id=1 issue_type=Issue labels=label2 milestone=PR order_by=Weight
+!gitlab-issue-create description=issueDescription title=issueTitle labels=label1,label2 
+!gitlab-issue-update issue_iid=20 add_labels=label3 assignee_ids=2 confidential=False description=UpdateDesc discussion_locked=False due_date=2022-09-15T17:22:42.246Z epic_id=1 epic_iid=2 issue_type=Issue milestone_id=16 remove_labels=label1 state_event=Close title=updateTitle
+!gitlab-commit-list limit=1 page=1 commit_id=c156b66b ref_name=main created_before=2022-09-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z path=./ all=True with_stats=True first_parent=True order=Default
+!gitlab-merge-request-list limit=1 page=1 state=Opened order_by=title sort=asc milestone=Any labels=label1 created_before=2022-09-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z updated_after=2000-09-15T17:22:42.246Z updated_before=2022-09-15T17:22:42.246Z scope=All author_id=1 author_username=usernameAuthor assignee_id=1 reviewer_id=6 reviewer_username=username source_branch=sourceBranceName target_branch=main search=gitlab
+!gitlab-merge-request-create  source_branch=NewName target_branch=main title=titleName assignee_ids=1 reviewer_ids2 description=description target_project_id=3320 labels=label1 milestone_id=1 remove_source_branch=False allow_collaboration=False allow_maintainer_to_push=False approvals_before_merge=2 squash=False
+!gitlab-merge-request-update merge_request_id target_branch=NewName title=newTitle assignee_ids=1 reviewer_ids=2 description=UpdateDesc target_project_id=3003 add_labels=label2 remove_labels=label1 milestone_id=1 state_event=Close remove_source_branch=True squash=True discussion_locked=True allow_collaboration=True allow_maintainer_to_push=True
+!gitlab-issue-note-create issue_iid=4 body=body confidential=True
+!gitlab-issue-note-delete issue_iid=4 note_id=1045951925
+!gitlab-issue-note-update issue_iid=4 note_id=1045951925 body=UpdatedBody
+!gitlab-issue-note-list limit=1 page=1
+!gitlab-merge-request-note-list limit=1 page=1 merge_request_iid=5 sort=asc order_by=created_at
+!gitlab-merge-request-note-create merge_request_iid=5 body=body
+!gitlab-merge-request-note-update merge_request_iid=5 body=UpdatedBody note_id=1100241092
+!gitlab-merge-request-note-delete merge_request_iid=5 note_id=1100241092
+!gitlab-branch-list limit=1 page=1 branch_name=branchName search=searchString
+!gitlab-group-list limit=1 page=1 skip_groups=1,2 all_available=False search=string order_by=Name sort=asc owned=True min_access_level=1 top_level_only=False
+!gitlab-group-member-list group_id=1130 
+!gitlab-group-project-list limit=1 page=1 group_id=1130
+!gitlab-branch-create  branch=newBranch ref=main
+!gitlab-branch-delete branch=branch_temp_ 
+!gitlab-raw-file-get file_path=./gitlabca ref=main
+!gitlab-merged-branch-delete 
+!gitlab-file-get file_path=path ref=main
+!gitlab-file-create file_path=path branch=main entry_id=.gitlab-ci.yml author_email=email@google.com author_name=authorName file_content='cfgdfr' commit_message=addFile execute_filemode=True
+!gitlab-file-update file_path=./gitlabca branch=thisbranch start_branch=main encoding=base64 author_email=author@email.com author_name=name entry_id=.gitlab-ci.yml file_content="contant of file" commit_message=commit last_commit_id=5 execute_filemode=True
+!gitlab-file-delete branch=main file file_path=./gitlabca commit_message=deleteFile
+!gitlab-project-user-list search=DemoName limit=1 page=1
+!gitlab-code-search search=testSearch limit=1 page=1

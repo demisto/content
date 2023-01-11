@@ -1,12 +1,12 @@
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
+import urllib3
 import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BRAND_NAME = "IPinfo"  # matches context output path for faster caching
 
@@ -37,9 +37,15 @@ def test_module(client: Client) -> str:
     return 'ok'  # on any failure, an exception is raised
 
 
-def ipinfo_ip_command(client: Client, ip: str) -> List[CommandResults]:
-    response = client.ipinfo_ip(ip)
-    return parse_results(ip, response, client.reliability)
+def ipinfo_ip_command(client: Client, ip: str) -> List[List[CommandResults]]:
+    ip_lists = argToList(ip)
+    ip_results = []
+
+    for ip in ip_lists:
+        response = client.ipinfo_ip(ip)
+        ip_results.append(parse_results(ip, response, client.reliability))
+
+    return ip_results
 
 
 def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List[CommandResults]:

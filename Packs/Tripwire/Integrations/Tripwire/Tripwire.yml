@@ -1,4 +1,7 @@
-category: File Integrity Management
+category: IT Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Tripwire
   version: -1
@@ -8,48 +11,62 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Rules IDs of elements versions to fetch, comma seperated.
   display: Rule ids
   hidden: false
   name: rule_oids
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - additionalinfo: Nodes IDs of elements versions to fetch, comma seperated.
   display: Node ids
   hidden: false
   name: node_oids
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Tripwire is a file integrity management (FIM), FIM monitors files and folders on systems and is triggered when they have changed.
 display: Tripwire
 name: Tripwire
@@ -524,7 +541,7 @@ script:
     - contextPath: Tripwire.Nodes.version
       description: Versions of nodes.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: true
   longRunning: false

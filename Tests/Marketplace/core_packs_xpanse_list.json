@@ -1,0 +1,19 @@
+[
+  "Base",
+  "Core",
+  "CoreAlertFields",
+  "CortexAttackSurfaceManagement",
+  "CommonScripts",
+  "CommonPlaybooks",
+  "CommonTypes",
+  "ServiceNow",
+  "Tenable_io",
+  "AWS-Route53",
+  "AWS-IAM",
+  "AWS-EC2",
+  "GCP-IAM",
+  "GoogleKeyManagementService",
+  "GoogleCloudCompute",
+  "Rapid7_Nexpose",
+  "Nmap"
+]

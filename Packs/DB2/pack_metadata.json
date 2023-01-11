@@ -7,7 +7,9 @@
     "url": "",
     "email": "its.shubham.kaushik@gmail.com",
     "created": "2022-03-15T14:38:33Z",
-    "categories": ["Database"],
+    "categories": [
+        "Database"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

@@ -1,0 +1,377 @@
+[
+  {
+    "comments": "TZ is applied by value",
+    "args": {
+      "value": "2022-01-23 01:23:45 +09:00",
+      "time_zone": null,
+      "key": null
+    },
+    "results": {
+      "year": 2022,
+      "year_4_digit": "2022",
+      "month": 1,
+      "month_3_letter": "Jan",
+      "month_full_name": "January",
+      "month_2_digit": "01",
+      "day": 23,
+      "day_2_digit": "23",
+      "day_of_week": 0,
+      "day_of_week_3_letter": "Sun",
+      "day_of_week_full_name": "Sunday",
+      "day_of_year": 23,
+      "day_of_year_3_digit": "023",
+      "hour": 1,
+      "hour_12_clock": 1,
+      "hour_2_digit_24_clock": "01",
+      "hour_2_digit_12_clock": "01",
+      "hour_of_day": 1.3958333333333333,
+      "minute": 23,
+      "minute_2_digit": "23",
+      "minute_of_day": 47.75,
+      "second": 45,
+      "second_2_digit": "45",
+      "second_of_day": 2865,
+      "millisecond": 0,
+      "period_12_clock": "AM",
+      "time_zone_hhmm": "+0900",
+      "time_zone_offset": 540.0,
+      "time_zone_abbreviations": ["JST", "KST", "WIT"],
+      "unix_epoch_time": 1642868625,
+      "iso_8601": "2022-01-23T01:23:45+09:00",
+      "y-m-d": "2022-1-23",
+      "yyyy-mm-dd": "2022-01-23",
+      "h:m:s": "1:23:45",
+      "H:m:s": "1:23:45",
+      "hh:mm:ss": "01:23:45",
+      "HH:mm:ss": "01:23:45"
+    }
+  },
+  {
+    "comments": "TZ is applied by time_zone (UTC-4)",
+    "args": {
+      "value": "2022-01-23 01:23:45 +09:00",
+      "time_zone": "UTC-4",
+      "key": null
+    },
+    "results": {
+      "year": 2022,
+      "year_4_digit": "2022",
+      "month": 1,
+      "month_3_letter": "Jan",
+      "month_full_name": "January",
+      "month_2_digit": "01",
+      "day": 22,
+      "day_2_digit": "22",
+      "day_of_week": 6,
+      "day_of_week_3_letter": "Sat",
+      "day_of_week_full_name": "Saturday",
+      "day_of_year": 22,
+      "day_of_year_3_digit": "022",
+      "hour": 12,
+      "hour_12_clock": 12,
+      "hour_2_digit_24_clock": "12",
+      "hour_2_digit_12_clock": "12",
+      "hour_of_day": 12.395833333333332,
+      "minute": 23,
+      "minute_2_digit": "23",
+      "minute_of_day": 311.75,
+      "second": 45,
+      "second_2_digit": "45",
+      "second_of_day": 18705,
+      "millisecond": 0,
+      "period_12_clock": "PM",
+      "time_zone_hhmm": "-0400",
+      "time_zone_offset": -240.0,
+      "time_zone_abbreviations": ["AST"],
+      "unix_epoch_time": 1642868625,
+      "iso_8601": "2022-01-22T12:23:45-04:00",
+      "y-m-d": "2022-1-22",
+      "yyyy-mm-dd": "2022-01-22",
+      "h:m:s": "12:23:45",
+      "H:m:s": "12:23:45",
+      "hh:mm:ss": "12:23:45",
+      "HH:mm:ss": "12:23:45"
+    }
+  },
+  {
+    "comments": "TZ is applied by time_zone (UTC)",
+    "args": {
+      "value": "2022-01-23 01:23:45 +09:00",
+      "time_zone": "UTC",
+      "key": null
+    },
+    "results": {
+      "year": 2022,
+      "year_4_digit": "2022",
+      "month": 1,
+      "month_3_letter": "Jan",
+      "month_full_name": "January",
+      "month_2_digit": "01",
+      "day": 22,
+      "day_2_digit": "22",
+      "day_of_week": 6,
+      "day_of_week_3_letter": "Sat",
+      "day_of_week_full_name": "Saturday",
+      "day_of_year": 22,
+      "day_of_year_3_digit": "022",
+      "hour": 16,
+      "hour_12_clock": 4,
+      "hour_2_digit_24_clock": "16",
+      "hour_2_digit_12_clock": "04",
+      "hour_of_day": 16,
+      "minute": 23,
+      "minute_2_digit": "23",
+      "minute_of_day": 407,
+      "second": 45,
+      "second_2_digit": "45",
+      "second_of_day": 24465,
+      "millisecond": 0,
+      "period_12_clock": "PM",
+      "time_zone_hhmm": "+0000",
+      "time_zone_offset": 0,
+      "time_zone_abbreviations": ["GMT", "UTC", "WET"],
+      "unix_epoch_time": 1642868625,
+      "iso_8601": "2022-01-22T16:23:45+00:00",
+      "y-m-d": "2022-1-22",
+      "yyyy-mm-dd": "2022-01-22",
+      "h:m:s": "16:23:45",
+      "H:m:s": "4:23:45",
+      "hh:mm:ss": "04:23:45",
+      "HH:mm:ss": "16:23:45"
+    }
+  },
+  {
+    "comments": "Value is handled as UTC",
+    "args": {
+      "value": "2022-01-23 01:23:45",
+      "time_zone": null,
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T01:23:45+00:00"
+  },
+  {
+    "comments": "Parse epoch time in second",
+    "args": {
+      "value": 1642868625,
+      "time_zone": null,
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45+00:00"
+  },
+  {
+    "comments": "Parse epoch time in millisecond",
+    "args": {
+      "value": 1642868625000,
+      "time_zone": null,
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45+00:00"
+  },
+  {
+    "comments": "time_zone = Z",
+    "args": {
+      "value": "2022-01-23 01:23:45 +09:00",
+      "time_zone": "Z",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45+00:00"
+  },
+  {
+    "comments": "time_zone = +H",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "+9",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = +HMM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "+900",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = +HHMM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "+0900",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = +H:MM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "+9:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = +HH:MM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "+09:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = -H",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "-9",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = -HMM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "-900",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = -HHMM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "-0900",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = -H:MM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "-9:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = -HH:MM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "-09:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = UTC+H",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC+9",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = UTC+HMM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC+900",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = UTC+HHMM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC+0900",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = UTC+H:MM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC+9:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = UTC+HH:MM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC+09:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = UTC-H",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC-9",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = UTC-HMM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC-900",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = UTC-HHMM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC-0900",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = UTC-H:MM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC-9:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = UTC-HH:MM",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "UTC-09:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-22T16:23:45-09:00"
+  },
+  {
+    "comments": "time_zone = zone info",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "Asia/Tokyo",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  },
+  {
+    "comments": "time_zone = time string",
+    "args": {
+      "value": "2022-01-23 01:23:45 +00:00",
+      "time_zone": "2000-01-01 00:00:00 +09:00",
+      "key": "iso_8601"
+    },
+    "results": "2022-01-23T10:23:45+09:00"
+  }
+]

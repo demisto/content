@@ -1,0 +1,38 @@
+{
+    "id": "incident_zendesktickettype",
+    "version": -1,
+    "modified": "2022-07-06T13:26:28.941005+03:00",
+    "name": "Zendesk Ticket Type",
+    "ownerOnly": false,
+    "description": "Zendesk Ticket Type",
+    "cliName": "zendesktickettype",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "problem",
+        "incident",
+        "question",
+        "task"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Zendesk Ticket"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}
