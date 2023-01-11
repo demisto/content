@@ -1,16 +1,61 @@
-repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-    -   id: check-yaml
-        exclude: .gitlab/ci/|.circleci/
-    -   id: check-json
-        exclude: .devcontainer/|.vscode|Pipfile.lock
-    -   id: check-ast
-    -   id: check-toml
-    -   id: check-xml
+exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/
 
--   repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.10.1
-    hooks:
-    -   id: validate-pyproject
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-json
+  - id: check-yaml
+  - id: check-ast
+  - id: debug-statements
+    language_version: python3
+  - id: name-tests-test
+
+
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: "v2.0.1"
+  hooks:
+  - id: autopep8
+
+- repo: https://github.com/hadialqattan/pycln
+  rev: v2.1.2
+  hooks:
+  - id: pycln
+    args: ["--skip-imports=CommonServerPython,CommonServerUserPython,demisto"]
+
+
+- repo: https://github.com/timothycrosley/isort
+  rev: v5.11.3
+  hooks:
+  - id: isort
+
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.3.1
+  hooks:
+  - id: pyupgrade
+    args: [--py310-plus]
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v0.982
+  hooks:
+  - id: mypy
+    language: system
+    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition, --python-version=3.10]
+- repo: https://github.com/pycqa/flake8
+  rev: "6.0.0"
+  hooks:
+  - id: flake8
+
+- repo: https://gitlab.com/smop/pre-commit-hooks
+  rev: v1.0.0
+  hooks:
+  - id: check-poetry
+
+- repo: https://github.com/demisto/demisto-sdk
+  rev: c3ce05cd7e9b07be5eada94ff328c865bb536a29
+  hooks:
+        # - id: content-test-runner
+        # - id: format
+  - id: validate

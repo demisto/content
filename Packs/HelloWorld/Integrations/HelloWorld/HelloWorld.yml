@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: HelloWorld
+  id: HelloWorld dev
   version: -1
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
