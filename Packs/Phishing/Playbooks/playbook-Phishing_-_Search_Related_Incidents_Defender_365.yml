@@ -3,7 +3,7 @@ version: -1
 name: Phishing - Search Related Incidents (Defender 365)
 description: |-
   This playbook should only be used as a sub-playbook inside the "Phishing - Handle Microsoft 365 Defender Results" playbook.
-  Searches through existing XSOAR incidents based on retrieved email message IDs. Returns data only for emails which does not found in existing incidents.
+  It searches through existing Cortex XSOAR incidents based on retrieved email message IDs and returns data only for emails that are not found in existing incidents.
 starttaskid: "0"
 tasks:
   "0":
@@ -50,7 +50,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: GetIncidentsByQuery
       type: regular
       iscommand: false
@@ -136,7 +136,7 @@ tasks:
       id: 65998436-285c-46b8-8f08-7d8768ac7bfa
       version: -1
       name: Load results data as json
-      description: Loads a json from string input, and returns a json object result
+      description: Loads a JSON from a string input, and returns a JSON object result.
       scriptName: LoadJSON
       type: regular
       iscommand: false
@@ -177,7 +177,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -265,7 +265,7 @@ tasks:
       id: 5f38004d-8185-4495-8c34-3e131bd99dd7
       version: -1
       name: Extract emails without an incident (EmailFilesRetrieval)
-      description: This task will go over the "RetrievedEmails" playbook input and will filter out emails which already have an existing incident in XSOAR.
+      description: This task will go over the "RetrievedEmails" playbook input and will filter out emails that already have an existing incident in Cortex XSOAR.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -319,10 +319,10 @@ tasks:
         Eventually, for each email it will return these fields:
 
         - Subject --> The new incident name.
-        - InternetMessageId --> Thew new incident "Reported Email Message ID".
+        - InternetMessageId --> The new incident "Reported Email Message ID".
         - RecipientEmailAddress --> The new incident email attachment which will be investigated.
 
-        These values will be used later on in the parent playbook in order to retrieve the original EML files (if it was configured in the relevant playbook input).
+        These values will be used later in the parent playbook in order to retrieve the original EML files (if it was configured in the relevant playbook input).
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -382,7 +382,7 @@ outputs:
   description: The recipient email address of the emails to be retrieved.
   type: string
 - contextPath: EmailFilesRetrieval
-  description: An object containing the subject, internet message ID and recipient email address of the emails to be retrieved.
+  description: An object containing the subject, internet message ID, and recipient email address of the emails to be retrieved.
   type: string
 quiet: true
 tests:
