@@ -17,16 +17,30 @@ configuration:
   required: false
   type: 9
   displaypassword: Client Secret (OAuth)
+- name: creds_api_key
+  displaypassword: API Key (JWT-Deprecated)
+  required: false
+  type: 9
+  additionalinfo: This authentication method is deprecated.
+  hiddenusername: true
+- name: creds_api_secret
+  displaypassword: API Secret (JWT-Deprecated)
+  required: false
+  type: 9
+  additionalinfo: This authentication method is deprecated.
+  hiddenusername: true
 - display: API Key (JWT-Deprecated)
   name: api_key
   required: false
   type: 4
   additionalinfo: This authentication method is deprecated.
+  hidden: true
 - display: API Secret (JWT-Deprecated)
   name: api_secret
   required: false
   type: 4
   additionalinfo: This authentication method is deprecated.
+  hidden: true
 - display: Use system proxy settings
   name: proxy
   required: false

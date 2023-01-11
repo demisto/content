@@ -21,7 +21,8 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "IndicatorFormatterFilterTest"
+            "playbookID": "IndicatorFormatterFilterTest",
+            "timeout": 1200
         },
         {
             "integrations": "FeedURLhaus",
@@ -102,6 +103,13 @@
             "integrations": "Bitbucket",
             "playbookID": "Test_Bitbucket",
             "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2",
+            "fromversion": "6.5.0",
+            "memory_threshold": 200,
+            "timeout": 300
         },
         {
             "playbookID": "Generic Polling Test",
@@ -607,6 +615,7 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
+            "timeout": 600,
             "instance_names": "ms_graph_mail_dev"
         },
         {
@@ -752,9 +761,16 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR Playbook",
+            "playbookID": "Test XDR execute script Playbook",
             "fromversion": "4.1.0",
             "timeout": 2500
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR general and file commands Playbook",
+            "fromversion": "4.1.0",
+            "timeout": 2500,
+            "is_mockable": false
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -3583,7 +3599,8 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout" : 600
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -4391,7 +4408,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 100,
+            "memory_threshold": 130,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4400,7 +4417,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 100,
+            "memory_threshold": 130,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -4442,13 +4459,13 @@
             "fromversion": "6.2.0",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
+                "EWSO365",
                 "Demisto REST API",
                 "CreateIncidents",
                 "Rasterize"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
+                "ewso365_dev_team",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
@@ -4472,7 +4489,6 @@
             "toversion": "6.4.9",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
                 "Demisto REST API",
                 "EWSO365",
                 "Rasterize",
@@ -4480,9 +4496,8 @@
                 "VirusTotal (API v3)"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
                 "virus_total_v3",
-                "ewso365_sec_eng_team"
+                "ewso365_dev_team"
             ],
             "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
@@ -4538,23 +4553,14 @@
             ]
         },
         {
-            "playbookID": "playbook-feodoteackerhash_test",
-            "fromversion": "5.5.0",
-            "integrations": [
-                "Feodo Tracker IP Blocklist Feed",
-                "Feodo Tracker Hashes Feed"
-            ],
-            "instance_names": [
-                "feodo_tracker_ip_currently__active",
-                "feodo_tracker_ip_30_days"
-            ]
-        },
-        {
             "playbookID": "playbook-feodotrackeripblock_test",
             "fromversion": "5.5.0",
             "integrations": [
-                "Feodo Tracker IP Blocklist Feed",
-                "Feodo Tracker Hashes Feed"
+                "Feodo Tracker IP Blocklist Feed"
+            ],
+             "instance_names": [
+                "feodo_tracker_ip_currently__active",
+                "feodo_tracker_ip_30_days"
             ]
         },
         {
@@ -5400,6 +5406,7 @@
         "GCS - Test": "No instance",
         "GCS Object Policy (ACL) - Test": "No instance",
         "GCS Bucket Policy (ACL) - Test": "No instance",
+        "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
@@ -5754,7 +5761,7 @@
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
-                "pid_threshold": 11
+                "pid_threshold": 18
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
