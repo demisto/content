@@ -237,3 +237,26 @@ def test_get_password_invalid():
         get_password(ARGS_BOTH_PASSWORDS_NOT_IDENTICAL)
         if not e:
             assert False
+
+
+def test_archive_with_slash_in_path():
+    """
+    Given
+    - valid tar.gz file slash in path
+    - empty folder _dir
+    When
+    - run extract on the tar file and export the internal files to _dir
+    Then
+    - ensure no error was returned
+    """
+    zipped_file_object = {
+        'name': 'Archive_with_slash_in_path.tar.gz',
+        'path': 'data_test/Archive_with_slash_in_path.tar.gz'
+    }
+    # - empty folder _di
+    _dir = mkdtemp()
+    # When
+    # - run extract on that zip file and export the internal files to _dir
+    excluded_dirs, excluded_files = extract(zipped_file_object, _dir)
+    # Then
+    assert excluded_dirs
