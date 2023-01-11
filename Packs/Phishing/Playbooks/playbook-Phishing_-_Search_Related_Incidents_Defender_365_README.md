@@ -1,5 +1,5 @@
 This playbook should only be used as a sub-playbook inside the "Phishing - Handle Microsoft 365 Defender Results" playbook.
-Searches through existing XSOAR incidents based on retrieved email message IDs. Returns data only for emails which does not found in existing incidents.
+It searches through existing Cortex XSOAR incidents based on retrieved email message IDs and returns data only for emails that ares not found in existing incidents.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -34,7 +34,7 @@ This playbook does not use any commands.
 | EmailFilesRetrieval.Subject | The subject of the emails to be retrieved.                                                                             | string |
 | EmailFilesRetrieval.InternetMessageId | The Message-ID of the emails to be retrieved.                                                                          | string |
 | EmailFilesRetrieval.RecipientEmailAddress | The recipient email address of the emails to be retrieved.                                                             | string |
-| EmailFilesRetrieval | An object containing the subject, internet message ID and recipient email address of the emails to be retrieved. | string |
+| EmailFilesRetrieval | An object containing the subject, internet message ID, and recipient email address of the emails to be retrieved. | string |
 
 ## Playbook Image
 ---
