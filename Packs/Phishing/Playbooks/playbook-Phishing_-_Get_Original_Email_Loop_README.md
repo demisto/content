@@ -1,10 +1,10 @@
-When the playbook "Get Original Email - Generic v2" is looped, there is no actual way to distinguish which retrieved file is related to which Message-ID. In order to solve this issue, this playbook will be looped instead and will output the "FileAssociation" key with the File-MessageID association.
+When the **Get Original Email - Generic v2** playbook is looped, there is no actual way to distinguish which retrieved file is related to which Message-ID. In order to solve this issue, this playbook will be looped instead and will output the "FileAssociation" key with the File-MessageID association.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get Original Email - Generic v2
+Get Original Email - Generic v2
 
 ### Integrations
 This playbook does not use any integrations.
@@ -30,9 +30,9 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| FileAssociation | When this playbook is looped, The EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key. | string |
-| FileAssociation.EntryID | The retrieved file EntryID. When this playbook is looped, The EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key. | string |
-| FileAssociation.MessageID | The retrieved email Message-ID. When this playbook is looped, The EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key. | string |
+| FileAssociation | When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key. | string |
+| FileAssociation.EntryID | The retrieved file EntryID. When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key. | string |
+| FileAssociation.MessageID | The retrieved email Message-ID. When this playbook is looped, the EntryID of each retrieved eml file would be saved alongside the associated Message-ID inside the "FileAssociation" context key. | string |
 | File | The original email attachments. | string |
 
 ## Playbook Image
