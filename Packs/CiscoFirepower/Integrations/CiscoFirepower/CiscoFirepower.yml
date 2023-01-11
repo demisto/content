@@ -48,7 +48,7 @@ script:
       description: 'Boolean identifier to validate or import rules. True is the default value.'
       required: false
       isArray: false
-      defaultvalue: 'True'
+      defaultValue: 'True'
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -343,7 +343,7 @@ script:
       description: 'Update method to use in the command. Can be "MERGE" or "OVERRIDE". If MERGE, will append new rule groups. If OVERRIDE, will override old rule groups.'
       required: false
       isArray: false
-      defaultvalue: OVERRIDE
+      defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
       - MERGE
@@ -439,7 +439,7 @@ script:
       description: 'Boolean value if the count of rules should be calculated in the response.'
       required: false
       isArray: false
-      defaultvalue: 'False'
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -448,7 +448,7 @@ script:
       description: 'If set to true, the response displays a list of objects with additional attributes.'
       required: false
       isArray: false
-      defaultvalue: 'False'
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -1881,7 +1881,7 @@ script:
     - name: update_strategy
       description: Update method to use in the command. Can be "MERGE" or "OVERRIDE". If merge, will add the changes requested to the existing rule. If override, will override the fields with the inputs provided and will delete any fields that were not provided.
       required: false
-      defaultvalue: OVERRIDE
+      defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
       - MERGE
@@ -3202,7 +3202,7 @@ script:
     - name: update_strategy
       description: Update method to use in the command. Can be "MERGE" or "OVERRIDE". If merge, will add the changes requested to the existing rule. If override, will override the fields with the inputs provided and will delete any fields that were not provided.
       required: false
-      defaultvalue: OVERRIDE
+      defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
       - MERGE
@@ -3420,7 +3420,7 @@ script:
     - name: update_strategy
       description: Update method to use in the command. Can be "MERGE" or "OVERRIDE". If merge, will add the changes requested to the existing rule. If override, will override the fields with the inputs provided and will delete any fields that were not provided.
       required: false
-      defaultvalue: OVERRIDE
+      defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
       - MERGE
