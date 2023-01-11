@@ -22,7 +22,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.10.9.42476
 enabled: true
 name: ConvertTimezoneFromUTC
 runas: DBotWeakRole
