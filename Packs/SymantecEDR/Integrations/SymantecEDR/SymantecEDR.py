@@ -44,7 +44,7 @@ INCIDENT_STATUS: dict[str, str] = {
     '1': 'Open',
     '2': 'Waiting',
     '3': 'In-Progress',
-    '4': 'Close'
+    '4': 'Closed'
 }
 
 INCIDENT_RESOLUTION: dict[str, str] = {
@@ -107,7 +107,7 @@ class Client(BaseClient):
     """
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
                  first_fetch: str = '3 days', fetch_limit: int = 50, is_incident_event: bool = False,
-                 is_fetch_attachment: bool = False, fetch_status: list = None, fetch_priority: list = None):
+                 is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None):
         super().__init__(
             base_url=base_url,
             verify=verify,
@@ -120,7 +120,7 @@ class Client(BaseClient):
         self.first_fetch = first_fetch
         self.fetch_limit = fetch_limit
         self.is_incident_event = is_incident_event
-        self.is_fetch_attachment = is_fetch_attachment
+        self.is_fetch_comment = is_fetch_comment
         self.fetch_status = fetch_status
         self.fetch_priority = fetch_priority
 
@@ -580,7 +580,7 @@ def endpoint_instance_readable_output(results: list[dict], title: str) -> str:
     return markdown
 
 
-def incident_readable_output(results: list[dict], title: str):
+def incident_readable_output(results: list[dict], title: Optional[str] = None):
     """
     Convert to User Readable output for Incident resources
     Args:
@@ -666,14 +666,14 @@ def audit_event_readable_output(results: list[dict], title: str):
     return markdown, context_data
 
 
-def incident_event_readable_output(results: list[dict], title: str):
+def incident_event_readable_output(results: list[dict], title: Optional[str] = None):
     """
     Convert to User Readable output for Event for Incident resources
     Args:
         results (list): Symantec Association Results data
         title (str): Title string
     Returns:
-        markdown: A string representation of the Markdown table
+        A string representation of the Markdown table and context Data
         summary_data : Formatting response data
     """
     context_data: list[dict[str, Any]] = []
@@ -822,7 +822,7 @@ def get_incident_filter_query(args: dict[str, Any]) -> str:
     Returns:
         Return string.
     """
-    incident_status_dict: dict[str, int] = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Close': 4}
+    incident_status_dict: dict[str, int] = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Closed': 4}
     incident_severity_dict: dict[str, int] = {'Low': 1, 'Medium': 2, 'High': 3}
     # Incident Parameters
     ids = arg_to_number(args.get('incident_id'))
@@ -1495,6 +1495,7 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
     )
 
     result = raw_response.get('result')
+    demisto.debug(f'Command Query payload: {incident_id}, {uuid}, {payload}, Total Rows : {raw_response.get("total")}')
     page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
     context_data = None
     if page_result:
@@ -1921,6 +1922,9 @@ def fetch_incidents(client: Client) -> list:
     state_list: list[str] = [rev_incident_state.get(i) for i in client.fetch_status]
     state = state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
 
+    last_run = demisto.getLastRun()
+    demisto.debug(f'Last Run Object : {last_run}')
+
     payload = {
         "verb": "query",
         "limit": client.fetch_limit,
@@ -1928,79 +1932,93 @@ def fetch_incidents(client: Client) -> list:
     }
 
     # demisto.getLastRun() will returns an obj with the previous run in it.
-    last_run = demisto.getLastRun()
-
     # set First Fetch starting time in case running first time or reset
     start_time = iso_creation_date(client.first_fetch)
+    start_time_n, end_time = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=client.first_fetch)
 
-    if last_run and 'start_time' in last_run:
-        start_time = last_run.get('start_time')
+    if last_run and 'time' in last_run:
+        start_time_lastrun = iso_creation_date(last_run.get('time'))
 
-    payload['start_time'] = start_time
-
-    response = client.query_request_api('/atpapi/v2/incidents', payload, 'POST')
-    datasets = response.get("result", [])
+    payload['start_time'] = start_time if not last_run else start_time_lastrun
+    results = client.query_request_api('/atpapi/v2/incidents', payload, 'POST').get('result', [])
 
     incidents = []  # type:List
 
     # Map severity to Demisto severity for incident creation
-    xsoar_severity_map = {'1': 3, '2': 2, '3': 1}
+    xsoar_severity_map = {'High': 3, 'Medium': 2, 'Low': 1}
 
-    if datasets:
-        for data in datasets:
-            incident_id = data.get('atp_incident_id')
-            # incident_uuid = data.get("uuid")
-            file_entries = []
-            file_names = []
-            if client.is_fetch_attachment:
-                comments = get_incident_comments_command(client, args={'incident_id': incident_id, 'start_time': start_time})
-                if comments := comments.outputs:
-                    file_entries.append(fileResult(f'comment_{incident_id}', str(comments)))
+    incidents_count = 0
+    if results:
+        _, incidents_context = incident_readable_output(results)
+        for incident in incidents_context:
+            incident_id = incident.get('incident_id')
+            incident_uuid = incident.get("incident_uuid")
 
-                for file_result in file_entries:
-                    if file_result['Type'] != entryTypes['error']:
-                        file_names.append({
-                            'path': file_result.get('FileID', ''),
-                            'name': file_result.get('File', '')
-                        })
-
-            incidents.append({
-                # name is required field, must be set
-                'name': f'SEDR Incident {incident_id} - {data.get("summary")}',
-                # must be string of a format ISO8601
-                'occurred': data.get('device_time'),
-                # the ID of the incident in the third-party product
-                'dbotMirrorId': str(data.get('atp_incident_id')),
-                'details': json.dumps(data),
-                'severity': xsoar_severity_map.get(str(data.get('priority_level')), 0),
-                'rawJSON': json.dumps(data),
-                'attachment': file_names
-            })
+            # Get Incidents Comments if set as true
+            if client.is_fetch_comment:
+                payload = {
+                    "verb": "query",
+                    "start_time": start_time
+                } if not last_run else {"verb": "query"}
+                comments_result = client.query_request_api(f'/atpapi/v2/incidents/{incident_uuid}/comments', payload, 'POST').get('result', [])
 
             # Fetch incident for event if set as true
             if client.is_incident_event:
-                #    '1': 'Info', '2': 'Warning', '3': 'Minor', '4': 'Major', '5': 'Critical', '6': 'Fatal'
                 payload = {
                     "verb": "query",
-                    "query": f'incident: {data.get("uuid")}',
+                    "query": f'incident: {incident_uuid}',
                     "start_time": start_time
                 }
-                response = client.query_request_api('/atpapi/v2/incidentevents', payload)
-                results = response.get('result')
+                events_result = client.query_request_api('/atpapi/v2/incidentevents', payload).get('result', [])
 
-                if len(results) > 1:
-                    for event in results:
-                        incidents.append({
-                            'name': f'SEDR Event {incident_id}, {event.get("event_uuid")} - {event.get("type_id")}',
-                            'occurred': event.get('device_time'),
-                            'dbotMirrorId': str(event.get('event_uuid')),
-                            'details': json.dumps(event),
-                            'rawJSON': json.dumps(event),
-                        })
+            # Incidents Data
+            incidents.append({
+                'name': f'SEDR Incident {incident_id}',
+                'details': incident.get("description"),
+                'severity': xsoar_severity_map.get(str(incident.get('priority')), 0),
+                'occurred': incident.get('incident_created'),
+                'rawJSON': json.dumps(
+                    {
+                        'incident': incident,
+                        'comments': comments_result,
+                        'events': events_result
+                    }
+                )
+            })
+            incidents_count += 1
 
-    now_iso = iso_creation_date('now')
-    demisto.setLastRun({'start_time': now_iso})
+    # # remove duplicate incidents which were already fetched
+    incidents = filter_incidents_by_duplicates_and_limit(
+        incidents_res=incidents, last_run=last_run, fetch_limit=client.fetch_limit, id_field='name'
+    )
+
+    end_time = iso_creation_date('now')
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=incidents,
+        fetch_limit=client.fetch_limit,
+        start_fetch_time=start_time_n,
+        end_fetch_time=end_time,
+        look_back=30,
+        created_time_field='occurred',
+        id_field='name',
+        date_format=SYMANTEC_ISO_DATE_FORMAT
+    )
+
+    demisto.debug(f'last run at the end of the incidents fetching {last_run},'
+                  f'incident count : {incidents_count},'
+                  f'Incident insert: {len(incidents)}')
+    demisto.setLastRun(last_run)
     return incidents
+
+
+# name is required field, must be set
+# must be string of a format ISO8601
+# 'occurred': data.get('device_time'),
+# the ID of the incident in the third-party product
+# 'dbotMirrorId': str(incident_id),
+# 'attachment': file_names
 
 
 ''' POLLING CODE '''
@@ -2302,13 +2320,13 @@ def main() -> None:
         first_fetch_time = params.get('first_fetch', '3 days').strip()
         fetch_limit = int(params.get('fetch_limit', 10))
         fetch_incident_event = params.get('isIncidentsEvent', False)
-        fetch_attachment = params.get('isIncidentComment', False)
+        fetch_comments = params.get('isIncidentComment', False)
         fetch_status = argToList(params.get('fetch_status', 'New'))
         fetch_priority = argToList(params.get('fetch_priority', 'High,Medium'))
 
         client = Client(base_url=server_url, verify=verify_certificate, proxy=proxy, client_id=client_id,
                         client_secret=client_secret, first_fetch=first_fetch_time, fetch_limit=fetch_limit,
-                        is_incident_event=fetch_incident_event, is_fetch_attachment=fetch_attachment,
+                        is_incident_event=fetch_incident_event, is_fetch_comment=fetch_comments,
                         fetch_status=fetch_status, fetch_priority=fetch_priority)
 
         demisto.debug(f'Command being called is {demisto.command()}')

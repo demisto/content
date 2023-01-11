@@ -1374,7 +1374,7 @@ script:
       - Open
       - Waiting
       - In-progress
-      - Close
+      - Closed
       required: false
       secret: false
     deprecated: false
