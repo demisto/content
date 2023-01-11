@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
 
 
-def arr_to_csv_command(array: str) -> CommandResults:
+def arr_to_csv_command(array: str | list[str]) -> CommandResults:
     csv = ','.join(array)
     return CommandResults(
         readable_output=csv
@@ -14,8 +14,7 @@ def main():  # pragma: no cover
     args = demisto.args()
     array = argToList(args.get('value'))
     try:
-        results = arr_to_csv_command(array=array)
-        return_results(results)
+        return_results(arr_to_csv_command(array=array))
     except Exception as e:
         demisto.error(format_exc())
         return_error(f'ArrToCSV command failed. Error: {e}')
