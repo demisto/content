@@ -768,7 +768,8 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR general and file commands Playbook",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 2500,
+            "is_mockable": false
         },
         {
             "integrations": "Cortex XDR - IOC",
