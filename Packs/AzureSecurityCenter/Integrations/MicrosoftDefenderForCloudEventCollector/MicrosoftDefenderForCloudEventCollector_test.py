@@ -5,8 +5,8 @@ import json
 import random
 import copy
 
-ALL_ALERTS_JSON_PATH = 'test_data/all_alerts.json'
-ALERTS_TO_SORT = 'test_data/alerts_to_sort.json'
+ALERTS_API_RAW = 'test_data/ListAlerts.json'
+ALERTS_TO_SORT = 'test_data/AlertsToSort.json'
 
 client = MsClient(
     server="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", app_name="APP_NAME", verify="verify",
@@ -32,7 +32,7 @@ def test_find_next_run_with_no_new_events():
         Then:
         - Check that the last_run reamains as before
     """
-    events = {'value': []}
+    events = []
     last_run = '2023-01-01T15:36:50.6288854Z'
     assert find_next_run(events, last_run=last_run) == last_run
 
@@ -48,10 +48,10 @@ def test_find_next_run_with_new_events():
         Then:
         - Check that the last_run is set to be the latest detectedTimeUTC 
     """
-    events = [{'properties': {'detectedTimeUtc': '2023-01-01T15:35:50.6288854Z'}},
-              {'properties': {'detectedTimeUtc': '2023-01-01T15:37:50.62866664Z'}},
-              {'properties': {'detectedTimeUtc': '2023-01-01T15:38:50.6222254Z'}},
-              {'properties': {'detectedTimeUtc': '2023-01-01T15:33:50.6281114Z'}}]
+    events = [{'properties': {'timeGeneratedUtc': '2023-01-01T15:35:50.6288854Z'}},
+              {'properties': {'timeGeneratedUtc': '2023-01-01T15:37:50.62866664Z'}},
+              {'properties': {'timeGeneratedUtc': '2023-01-01T15:38:50.6222254Z'}},
+              {'properties': {'timeGeneratedUtc': '2023-01-01T15:33:50.6281114Z'}}]
     last_run = '2023-01-01T15:36:50.6288854Z'
     assert find_next_run(events, last_run=last_run) == '2023-01-01T15:38:50.6222254Z'
 
@@ -98,10 +98,10 @@ def test_get_events(mocker):
         Then:
         - Check that the correct amount of events is returned and that the proper CommandResults is returned.  
     """
-    mocker.patch.object(MsClient, 'get_event_list', return_value=read_json_util(ALL_ALERTS_JSON_PATH))
+    mocker.patch.object(MsClient, 'get_event_list', return_value=read_json_util(ALERTS_API_RAW))
     limit = 30
     events, cr = get_events(client, 'fake_last_run', {'limit': limit})
-    assert len(events) == 80
+    assert len(events) == 81
     assert len(cr.outputs) == 30
     assert f'Microsft Defender For Cloud - List Alerts {limit} latests events' in cr.readable_output
 
@@ -115,10 +115,17 @@ def test_sort_events(mocker):
         - The events don't arrive in a correct order
 
         Then:
-        - Check that the list is sorted properly by the detectedTimeUTC field. 
+        - Check that the list is sorted properly by the timeGeneratedUtc field. 
     """
     alerts_list = read_json_util(ALERTS_TO_SORT)
     backup_list = copy.deepcopy(alerts_list)
     random.shuffle(alerts_list)
     sort_events(alerts_list)
     assert alerts_list == backup_list
+
+
+def test_add_time_key_to_events(mocker):
+    events = read_json_util(ALERTS_TO_SORT)
+    events_with_time = add_time_key_to_events(events)
+    for event in events_with_time:
+        assert '_time' in event

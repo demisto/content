@@ -90,10 +90,8 @@ def get_events(client: MsClient, last_run: str, args:dict):
                 {
                     "DisplayName": properties.get("alertDisplayName"),
                     "CompromisedEntity": properties.get("compromisedEntity"),
-                    "DetectedTime": properties.get("detectedTimeUtc"),
-                    "ReportedSeverity": properties.get("reportedSeverity"),
-                    "State": properties.get("state"),
-                    "ActionTaken": properties.get("actionTaken"),
+                    "DetectedTime": properties.get("timeGeneratedUtc"),
+                    "ReportedSeverity": properties.get("severity"),
                     "Description": properties.get("description"),
                     "ID": alert.get("name"),
                 }
@@ -107,8 +105,6 @@ def get_events(client: MsClient, last_run: str, args:dict):
             "CompromisedEntity",
             "DetectedTime",
             "ReportedSeverity",
-            "State",
-            "ActionTaken",
             "Description",
             "ID",
         ],
@@ -130,16 +126,16 @@ def find_next_run(events_list : list, last_run: str) -> str:
         # No new events fetched we will keep the previos last_run.
         return last_run
     else:
-        # New events fetched set the latest detected time for next run.
+        # New events fetched set the latest timeGeneratedUtc for next run.
         sort_events(events_list)
-        return events_list[0].get('properties').get('detectedTimeUtc')
+        return events_list[0].get('properties').get('timeGeneratedUtc')
 
 
 def sort_events(events: list) -> None:
     """
-    Sorts the list inplace by the detectedTimeUtc
+    Sorts the list inplace by the timeGeneratedUtc
     """
-    return events.sort(reverse=True, key=lambda event: event.get('properties').get('detectedTimeUtc'))
+    return events.sort(reverse=True, key=lambda event: event.get('properties').get('timeGeneratedUtc'))
   
 
 def fetch_events(client: MsClient, last_run: str) -> list:
@@ -185,7 +181,7 @@ def handle_last_run(first_fetch: str) -> str:
     return last_run
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_events(events: list) -> list:
     """
     Adds the _time key to the events.
     Args:
@@ -194,11 +190,7 @@ def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]
         list: The events with the _time key.
     """
     for event in events:
-        if event.get("properties").get('GeneratedTimeUtc'):
-            event["_time"] = event.get("created")
-        elif event.get("time"):
-            event["_time"] = event.get("time")
-
+        event["_time"] = event.get("properties").get('timeGeneratedUtc')
     return events
 
 ''' MAIN FUNCTION '''
@@ -262,7 +254,8 @@ def main() -> None:
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)
 
-
+            evetns = add_time_key_to_events(events)
+        
             if should_push_events:
                 send_events_to_xsiam(
                     events,
