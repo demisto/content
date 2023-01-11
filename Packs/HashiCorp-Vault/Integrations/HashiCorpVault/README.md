@@ -297,7 +297,7 @@ There is no context output for this command.
 ```!hashicorp-seal-vault```
 ### hashicorp-unseal-vault
 ***
-Use a single master key share to unseal the vault. If the master key shares threshold is met, the vault will attempt to unseal the vault. Otherwise, this API must be called until the threshold is met.
+Use a single master key share to unseal the vault. If the master key shares threshold is met, the key will attempt to unseal the vault. Otherwise, this API must be called until the threshold is met.
 
 
 #### Base Command

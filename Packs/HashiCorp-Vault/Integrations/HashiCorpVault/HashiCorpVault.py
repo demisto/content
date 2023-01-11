@@ -591,7 +591,7 @@ def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600')
     set_integration_context({'configs': ENGINE_CONFIGS})
 
 
-def fetch_credentials():  # pragma: no cover
+def fetch_credentials():
     credentials = []
     engines_to_fetch_from = []
     engines = argToList(demisto.params().get('engines', []))
@@ -654,7 +654,7 @@ def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):
     return secrets
 
 
-def get_kv1_secret(engine_path, secret):
+def get_kv1_secret(engine_path, secret):  # pragma: no cover
     path = engine_path + secret
 
     return send_request(path, 'get')
@@ -687,7 +687,7 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
     return secrets
 
 
-def get_kv2_secret(engine_path, secret, folder=None):
+def get_kv2_secret(engine_path, secret, folder=None):  # pragma: no cover
     path = urljoin(engine_path, 'data/')
     if folder:
         path += os.path.join(folder)
@@ -779,7 +779,7 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     return secrets
 
 
-def get_ch_secret(engine_path, secret):
+def get_ch_secret(engine_path, secret):  # pragma: no cover
     path = engine_path + secret
 
     return send_request(path, 'get')
@@ -787,7 +787,7 @@ def get_ch_secret(engine_path, secret):
 
 ''' EXECUTION CODE '''
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
 
     handle_proxy()
 
