@@ -25,7 +25,7 @@ def main():
         delim = args.get("delimiter")
         return_results(cut(value, fields, delim))
     except Exception as e:
-        return_error('Failed to execute Cut. Error: {str(e)}', e)
+        return_error(f'Failed to execute Cut. Error: {str(e)}', e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
