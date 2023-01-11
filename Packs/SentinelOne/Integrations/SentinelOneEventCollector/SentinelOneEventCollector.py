@@ -45,9 +45,9 @@ class Client(BaseClient):
             list: The activities.
         """
         params = {
-            'createdAt__gt': from_time,
+            'updatedAt__gt': from_time,
             'limit': self.limit,
-            'sortBy': 'createdAt',
+            'sortBy': 'updatedAt',
             'sortOrder': 'asc',
         }
         result = self._http_request('GET', url_suffix='/activities', params=params)
@@ -65,9 +65,9 @@ class Client(BaseClient):
             list: The threats.
         """
         params = {
-            'createdAt__gt': from_time,
+            'updatedAt__gt': from_time,
             'limit': self.limit,
-            'sortBy': 'createdAt',
+            'sortBy': 'updatedAt',
             'sortOrder': 'asc',
         }
         result = self._http_request('GET', url_suffix='/threats', params=params)
@@ -86,8 +86,8 @@ class Client(BaseClient):
         """
         params = {
             'limit': self.limit,
-            'createdAt__gt': from_time,
-            'sortBy': 'alertInfoCreatedAt',
+            'updatedAt__gt': from_time,
+            'sortBy': 'alertInfoupdatedAt',
             'sortOrder': 'asc',
         }
         result = self._http_request('GET', url_suffix='/cloud-detection/alerts', params=params)
@@ -97,7 +97,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_events(client: Client, event_type: List, from_time: datetime = arg_to_datetime('3 days')) -> List:  # type: ignore
+def get_events(client: Client, event_type: List,
+               from_time: datetime = arg_to_datetime('3 days')) -> List:  # type: ignore
     events = []
     if 'ACTIVITIES' in event_type:
         events.extend(client.get_activities(from_time))
@@ -115,6 +116,25 @@ def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:  # type:
         'last_threat_created': from_time,
         'last_alert_created': from_time,
     }
+
+
+def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Adds the _time key to the events.
+    Args:
+        events: list, the events to add the time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    for event in events:
+        if alert_info := event.get('alertInfo'):
+            event["_time"] = alert_info.get("updatedAt")
+        if threat_info := event.get('threatInfo'):
+            event["_time"] = threat_info.get("updatedAt")
+        else:
+            event["_time"] = event.get("updatedAt")
+
+    return events
 
 
 ''' COMMAND FUNCTIONS '''
@@ -170,15 +190,15 @@ def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type
     if 'ACTIVITIES' in event_type:
         if activities := client.get_activities(last_run['last_activity_created']):
             events.extend(activities)
-            last_run['last_activity_created'] = activities[-1].get('createdAt')
+            last_run['last_activity_created'] = activities[-1].get('updatedAt')
     if 'THREATS' in event_type:
         if threats := client.get_threats(last_run['last_threat_created']):
             events.extend(threats)
-            last_run['last_threat_created'] = threats[-1].get('threatInfo', {}).get('createdAt')
+            last_run['last_threat_created'] = threats[-1].get('threatInfo', {}).get('updatedAt')
     if 'ALERTS' in event_type:
         if alerts := client.get_alerts(last_run['last_alert_created']):
             events.extend(alerts)
-            last_run['last_alert_created'] = alerts[-1].get('alertInfo', {}).get('createdAt')
+            last_run['last_alert_created'] = alerts[-1].get('alertInfo', {}).get('updatedAt')
 
     demisto.info(f'Setting next run {last_run}.')
     return last_run, events
@@ -228,6 +248,7 @@ def main() -> None:
 
         elif command in (f'{VENDOR}-{PRODUCT}-get-events', 'fetch-events'):
             should_push_events = argToBoolean(args.get('should_push_events', False))
+            events = []
             if command == f'{VENDOR}-{PRODUCT}-get-events':
                 events, results = get_events_command(client, first_fetch_time, event_type)  # type: ignore
                 return_results(results)
@@ -238,7 +259,8 @@ def main() -> None:
                 next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
                 demisto.setLastRun(next_run)
 
-            if should_push_events:
+            if events and should_push_events:
+                add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
