@@ -33,25 +33,27 @@ class Client:
     """
 
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
-                 database: str, connect_parameters: str, ssl_connect: bool, use_pool=False, pool_ttl=DEFAULT_POOL_TTL):
+                 database: str, connect_parameters: str, ssl_connect: bool, use_pool=False, verify_certificate=True,
+                 pool_ttl=DEFAULT_POOL_TTL):
         self.dialect = dialect
         self.host = host
         self.username = username
         self.password = password
         self.port = port
         self.dbname = database
-        self.connect_parameters = self.parse_connect_parameters(connect_parameters, dialect)
+        self.connect_parameters = self.parse_connect_parameters(connect_parameters, dialect, verify_certificate)
         self.ssl_connect = ssl_connect
         self.use_pool = use_pool
         self.pool_ttl = pool_ttl
         self.connection = self._create_engine_and_connect()
 
     @staticmethod
-    def parse_connect_parameters(connect_parameters: str, dialect: str) -> dict:
+    def parse_connect_parameters(connect_parameters: str, dialect: str, verify_certificate: bool) -> dict:
         """
         Parses a string of the form key1=value1&key2=value2 etc. into a dict with matching keys and values.
         In addition adds a driver key in accordance to the given 'dialect'
         Args:
+            verify_certificate: False - Trust any certificate (not secure), otherwise secure
             connect_parameters: The string with query parameters
             dialect: Should be one of MySQL, PostgreSQL, Microsoft SQL Server, Oracle, Microsoft SQL Server - MS ODBC Driver
 
@@ -66,7 +68,8 @@ class Client:
             connect_parameters_dict['driver'] = 'FreeTDS'
         elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
             connect_parameters_dict['driver'] = 'ODBC Driver 18 for SQL Server'
-            connect_parameters_dict['TrustServerCertificate'] = 'yes'
+            if not verify_certificate:
+                connect_parameters_dict['TrustServerCertificate'] = 'yes'
         return connect_parameters_dict
 
     @staticmethod
@@ -266,6 +269,7 @@ def main():
         ssl_connect = params.get('ssl_connect')
         connect_parameters = params.get('connect_parameters')
         use_pool = params.get('use_pool', False)
+        verify_certificate: bool = not params.get('insecure', False)
         pool_ttl = int(params.get('pool_ttl') or DEFAULT_POOL_TTL)
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
@@ -273,7 +277,8 @@ def main():
         LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
-                        ssl_connect=ssl_connect, use_pool=use_pool, pool_ttl=pool_ttl)
+                        ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
+                        pool_ttl=pool_ttl)
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,
@@ -285,7 +290,12 @@ def main():
         else:
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
     except Exception as err:
-        return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
+        if type(err).__name__ == 'OperationalError':
+            return_error(f"Unexpected error: certificate verify failed, unable to get local issuer certificate."
+                         f"Try selecting 'Trust any certificate' checkbox in the integration configuration")
+        else:
+            return_error(
+                f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
     finally:
         try:
             if client.connection:
