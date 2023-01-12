@@ -283,7 +283,7 @@ def test_module(client, *_):
         os.unlink(test_file.name)
 
 
-def main():
+def main():  # pragma: no cover
 
     public_key: str = demisto.params().get('public_key', '')
     private_key: str = demisto.params().get('private_key', '')
