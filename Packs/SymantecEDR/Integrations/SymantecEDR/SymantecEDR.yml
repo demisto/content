@@ -59,7 +59,7 @@ configuration:
   type: 0
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch
-  name: max_fetch
+  name: fetch_limit
   required: false
   type: 0
 - display: Trust any certificate (not secure)

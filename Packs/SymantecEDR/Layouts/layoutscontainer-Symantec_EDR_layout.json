@@ -1,5 +1,5 @@
 {
-	"cacheVersn": 0,
+	"cacheVersion": 0,
 	"close": {
 		"sections": [
 			{
@@ -531,7 +531,7 @@
 				"sections": [
 					{
 						"displayType": "ROW",
-						"h": 3,
+						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-41315820-9036-11ed-ac73-3d1316395319",
 						"items": [
@@ -580,11 +580,11 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 5
+						"y": 2
 					},
 					{
 						"displayType": "ROW",
-						"h": 4,
+						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-e161a9e0-909e-11ed-b387-af52064dec1f",
 						"items": [
@@ -596,15 +596,6 @@
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "eventactoruser",
-								"height": 22,
-								"id": "3a818780-925b-11ed-be47-a18865dec4be",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
 							}
 						],
 						"maxW": 3,
@@ -614,7 +605,7 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 11
+						"y": 8
 					},
 					{
 						"displayType": "ROW",
@@ -641,7 +632,7 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 9
+						"y": 6
 					},
 					{
 						"displayType": "ROW",
@@ -666,41 +657,7 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 7
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-1c865ff0-9254-11ed-890f-85547f0dbe02",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "eventactoruser",
-								"height": 106,
-								"id": "32abee30-9254-11ed-890f-85547f0dbe02",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "eventactorfile",
-								"height": 106,
-								"id": "c98fdc30-9254-11ed-890f-85547f0dbe02",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 2
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Event Actor File \u0026 User Detail",
-						"static": false,
-						"w": 3,
-						"x": 0,
-						"y": 3
+						"y": 4
 					}
 				],
 				"showEmptyFields": true,

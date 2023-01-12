@@ -85,7 +85,7 @@ EVENT_ATPNODE_ROLE: dict[str, str] = {
 SANDBOX_STATE: dict[str, str] = {
     '0': 'Completed',
     '1': 'In Progress',
-    '2': 'Error'
+    '2': 'Unknown'
 }
 
 DOMAIN_DISPOSITION_STATUS: dict[str, str] = {
@@ -1919,6 +1919,7 @@ def fetch_incidents(client: Client) -> list:
     seperator = ' OR '
     priority_list: list[str] = [rev_incident_priority.get(i) for i in client.fetch_priority]
     priority = priority_list[0] if len(priority_list) == 1 else seperator.join(map(str, priority_list))
+
     state_list: list[str] = [rev_incident_state.get(i) for i in client.fetch_status]
     state = state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
 
@@ -1930,12 +1931,11 @@ def fetch_incidents(client: Client) -> list:
         "limit": client.fetch_limit,
         "query": f'priority_level: ({priority}) AND state: ({state})'
     }
-
+    demisto.debug(f'limit: {client.fetch_limit}, priority_level: ({priority}) AND state: ({state})')
     # demisto.getLastRun() will returns an obj with the previous run in it.
     # set First Fetch starting time in case running first time or reset
     start_time = iso_creation_date(client.first_fetch)
-    start_time_n, end_time = get_fetch_run_time_range(
-        last_run=last_run, first_fetch=client.first_fetch)
+    start_time_n, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=client.first_fetch)
 
     if last_run and 'time' in last_run:
         start_time_lastrun = iso_creation_date(last_run.get('time'))
@@ -1943,8 +1943,8 @@ def fetch_incidents(client: Client) -> list:
     payload['start_time'] = start_time if not last_run else start_time_lastrun
     results = client.query_request_api('/atpapi/v2/incidents', payload, 'POST').get('result', [])
 
-    incidents = []  # type:List
-
+    #incidents = []  # type:List
+    incidents, events_result, comments_result = [], [], []  # type:List
     # Map severity to Demisto severity for incident creation
     xsoar_severity_map = {'High': 3, 'Medium': 2, 'Low': 1}
 
@@ -2013,14 +2013,6 @@ def fetch_incidents(client: Client) -> list:
     return incidents
 
 
-# name is required field, must be set
-# must be string of a format ISO8601
-# 'occurred': data.get('device_time'),
-# the ID of the incident in the third-party product
-# 'dbotMirrorId': str(incident_id),
-# 'attachment': file_names
-
-
 ''' POLLING CODE '''
 
 
@@ -2067,7 +2059,11 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> str:
              result.
     """
     command_id = args.get('command_id')
-    endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
+    try:
+        endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
+    except Exception as e:
+        # f'Failed to execute {demisto.command()} command.\nError: {e}'
+        return_error(message='File not found.', error=f'Unknown..{e}', outputs={'message': 'File Not found', 'status': 'Unknown'})
 
     response = client.query_request_api(endpoint, {}, 'GET')
     # Query Sandbox Command Status
@@ -2318,7 +2314,7 @@ def main() -> None:
 
         # Fetches Incident Parameters
         first_fetch_time = params.get('first_fetch', '3 days').strip()
-        fetch_limit = int(params.get('fetch_limit', 10))
+        fetch_limit = arg_to_number(params.get('fetch_limit'))
         fetch_incident_event = params.get('isIncidentsEvent', False)
         fetch_comments = params.get('isIncidentComment', False)
         fetch_status = argToList(params.get('fetch_status', 'New'))
