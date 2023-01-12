@@ -263,10 +263,11 @@ def get_user_events(client: UserEventClient, args: dict) -> CommandResults:
     return_results(response)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include user event `data`.', res=response)
+    data: List[Dict] = response.get('data') or []
     return CommandResults(outputs_prefix='KMSAT_User_Events_Returned',
-                          outputs_key_field='',
+                          outputs_key_field='id',
                           raw_response=response,
-                          readable_output=tableToMarkdown(name='KMSAT_User_Events', t=response))
+                          readable_output=tableToMarkdown(name='KMSAT_User_Events', t=data))
 
 
 def get_user_event_types(client: UserEventClient, args: dict) -> CommandResults:
@@ -274,10 +275,11 @@ def get_user_event_types(client: UserEventClient, args: dict) -> CommandResults:
     return_results(response)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include user event types`data`.', res=response)
+    data: List[Dict] = response.get('data') or []
     return CommandResults(outputs_prefix='KMSAT_User_Event_Types_Returned',
-                          outputs_key_field='',
+                          outputs_key_field='id',
                           raw_response=response,
-                          readable_output=tableToMarkdown(name='KMSAT_User_Event_Types', t=response))
+                          readable_output=tableToMarkdown(name='KMSAT_User_Event_Types', t=data))
 
 
 def test_module(client: Client) -> str:

@@ -381,13 +381,16 @@ script:
       description: Filter by name of the event type
     outputs:
     - contextPath: UserEvent.Types.data.id
-      description: ''
+      description: 'ID of the Event Type'
+      type: Number
+    - contextPath: UserEvent.Types.account_id
+      description: 'Account ID'
       type: Number
     - contextPath: UserEvent.Types.data.name
-      description: ''
+      description: 'Name of the Event Type'
       type: String
     - contextPath: UserEvent.Types.data.description
-      description: ''
+      description: 'Description of Event Type'
       type: String
     description: Returns all KMSAT User Event Types
   isfetch: false
