@@ -677,7 +677,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     try:
         raw_query = json.loads(raw_query)
         if raw_query.get('query'):
-            demisto.debug(f'query provided already has a query field. Sending as is')
+            demisto.debug('query provided already has a query field. Sending as is')
             body = raw_query
         else:
             body = {'query': raw_query}
