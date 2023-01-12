@@ -1,10 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
+import urllib3
 import requests
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
