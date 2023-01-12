@@ -1701,6 +1701,7 @@ script:
       - enable
       - disable
       required: false
+      description: Enable to configure FortiWeb to use the source IP address of the client that originated the request when it connects to a back-end server on behalf of that client.
     - description: 'An IP address or address range to directly connect to the back-end server. Required when: client_real_ip = "enable". Supports API version 2 only.'
       isArray: false
       name: ip_range
