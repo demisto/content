@@ -1,6 +1,5 @@
 from PadZeros import main
 import demistomock as demisto
-from CommonServerPython import entryTypes
 
 
 def test_pad_zeros(mocker):
@@ -10,5 +9,4 @@ def test_pad_zeros(mocker):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['Contents'] == '0000somanyzeros'
+    assert results[0] == '0000somanyzeros'
