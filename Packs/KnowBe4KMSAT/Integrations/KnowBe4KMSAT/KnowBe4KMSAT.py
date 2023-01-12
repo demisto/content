@@ -49,17 +49,18 @@ class Client(BaseClient):
     def kmsat_account_risk_score_history(self):
         return self._http_request(method='GET', url_suffix='/account/risk_score_history', resp_type='json', ok_codes=(200,))
 
-    def kmsat_groups_risk_score_history(self, params):
-        return self._http_request(method='GET', url_suffix='/groups/{group_id}/risk_score_history', resp_type='json', ok_codes=(200,), params=params)
-
-    def kmsat_users_risk_score_history(self, params):
-        return self._http_request(method='GET', url_suffix='/users/{user_id}/risk_score_history', resp_type='json', ok_codes=(200,), params=params)
+    # Test Group ID: 3774629
+    def kmsat_groups_risk_score_history(self, group_id):
+        return self._http_request(method='GET', url_suffix=f"/groups/{group_id}/risk_score_history", resp_type='json', ok_codes=(200,))
+    # Test User ID: 79158807
+    def kmsat_users_risk_score_history(self, user_id):
+        return self._http_request(method='GET', url_suffix=f"/users/{user_id}/risk_score_history", resp_type='json', ok_codes=(200,))
 
     def kmsat_phishing_security_tests(self):
         return self._http_request(method='GET', url_suffix='/phishing', resp_type='json', ok_codes=(200,))
-
-    def kmsat_phishing_security_tests_recipients(self, params):
-        return self._http_request(method='GET', url_suffix='/phishing/security_tests/{pst_id}/recipients', resp_type='json', ok_codes=(200,), params=params)
+    # Test PST ID: 8430044
+    def kmsat_phishing_security_tests_recipients(self, pst_id):
+        return self._http_request(method='GET', url_suffix=f"/phishing/security_tests/{pst_id}/recipients", resp_type='json', ok_codes=(200,))
 
     def kmsat_training_campaigns(self):
         return self._http_request(method='GET', url_suffix='/training/campaigns', resp_type='json', ok_codes=(200,))
@@ -99,10 +100,16 @@ class UserEventClient(BaseClient):
 
 ''' COMMAND FUNCTIONS '''
 
+def get_pagination(args: dict):
+     params = remove_empty_elements({
+            'page': args.get('page'),
+            'per_page': args.get('per_page')
+        })
+     return params
+
 
 def get_account_info(client: Client) -> CommandResults:
     response = client.kmsat_account_info()
-    return_results(response)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include `account_info`.', res=response)
     return CommandResults(outputs_prefix='KMSAT_Account_Info_Returned',
@@ -113,7 +120,6 @@ def get_account_info(client: Client) -> CommandResults:
 
 def get_account_risk_score_history(client: Client) -> CommandResults:
     response = client.kmsat_account_risk_score_history()
-    return_results(response)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include `account_risk_score_history`.', res=response)
     markdown = '### Risk Score\n'
@@ -125,8 +131,8 @@ def get_account_risk_score_history(client: Client) -> CommandResults:
 
 
 def get_groups_risk_score_history(client: Client, args: dict) -> CommandResults:
-    response = client.kmsat_groups_risk_score_history()
-    return_results(response)
+    group_id = remove_empty_elements(args.get('group_id'))
+    response = client.kmsat_groups_risk_score_history(group_id)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include `groups_risk_score_history`.', res=response)
     return CommandResults(outputs_prefix='KMSAT_Groups_Risk_Score_History_Returned',
@@ -136,8 +142,8 @@ def get_groups_risk_score_history(client: Client, args: dict) -> CommandResults:
 
 
 def get_users_risk_score_history(client: Client, args: dict) -> CommandResults:
-    response = client.kmsat_users_risk_score_history()
-    return_results(response)
+    user_id = remove_empty_elements(args.get('user_id'))
+    response = client.kmsat_users_risk_score_history(user_id)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include `users_risk_score_history`.', res=response)
     return CommandResults(outputs_prefix='KMSAT_Users_Risk_Score_History_Returned',
@@ -146,9 +152,8 @@ def get_users_risk_score_history(client: Client, args: dict) -> CommandResults:
                           readable_output=tableToMarkdown(name='Users_Risk_Score_History', t=response))
 
 
-def get_phishing_security_tests(client: Client, args: dict) -> CommandResults:
+def get_phishing_security_tests(client: Client) -> CommandResults:
     response = client.kmsat_phishing_security_tests()
-    return_results(response)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include `phishing_security_tests`.', res=response)
     return CommandResults(outputs_prefix='KMSAT_Phishing_Security_Tests',
@@ -158,9 +163,8 @@ def get_phishing_security_tests(client: Client, args: dict) -> CommandResults:
 
 
 def get_phishing_security_tests_recipients(client: Client, args) -> CommandResults:
-    params = remove_empty_elements({'event_type': args.get('pst_id')})
-    response = client.kmsat_phishing_security_tests_recipients(params)
-    return_results(response)
+    pst_id = remove_empty_elements(args.get('pst_id'))
+    response = client.kmsat_phishing_security_tests_recipients(client, pst_id)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include `phishing_security_tests_recipients`.', res=response)
     return CommandResults(outputs_prefix='KMSAT_Phishing_Security_Tests_Recipients',
@@ -357,7 +361,7 @@ def main() -> None:
         elif command == 'get-users-risk-score-history':
             return_results(get_users_risk_score_history(client, args))
         elif command == 'get-phishing-security-tests':
-            return_results(get_phishing_security_tests(client, args))
+            return_results(get_phishing_security_tests(client))
         elif command == 'get-phishing-security-tests-recipients':
             return_results(get_phishing_security_tests_recipients(client, args))
         elif command == 'get-training-campaigns':
