@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-import sys
 import jinja2
 
 """
@@ -11,18 +9,6 @@ GenerateAsBuilt
 Uses the XSOAR API to query for custom content, configuration, and statistics, then generates
 a HTML and Markdown output based on this.
 """
-DEMISTO_INTEGRATIONS_PATH = "/settings/integration/search"
-DEMISTO_INSTALLED_PATH = "/contentpacks/metadata/installed"
-DEMISTO_PLAYBOOKS_PATH = "/playbook/search"
-DEMISTO_AUTOMATIONS_PATH = "/automation/search"
-DEMISTO_CONFIG_PATH = "/system/config"
-DEMISTO_INCIDENTS_PATH = "/incidents/search"
-DEMISTO_INCIDENT_TYPE_PATH = "/incidenttype"
-DEMISTO_DEPENDENCIES_PATH = "/itemsdependencies"
-DEMISTO_REPORTS_PATH = "/reports"
-DEMISTO_DASHBOARDS_PATH = "/dashboards"
-MAX_REQUEST_SIZE = demisto.args().get("size", 1000)
-MAX_DAYS = demisto.args().get("days", 7)
 HTML_TABLE_TEMPLATE = """
 <h3>{{ name }}</h3>
 <table class="table">
@@ -430,24 +416,26 @@ class NoneTableData:
 
 class UseCaseDocument:
     """
-    Generates a "use case" document, that is, a document that collates the dependencies and requiremnts of a
+    Generates a "use case" document, that is, a document that collates the dependencies and requirements of a
     given playbook ("use case") within a running XSOAR environment.
     """
 
     def __init__(
             self,
             playbook_name,
-            dependencies
-    ):
+            dependencies,
+            author,
+            customer
+    ):  # pragma: no cover
         self.playbook_name = playbook_name
         self.automations = dependencies.get("automation", NoneTableData())
         self.integrations = dependencies.get("integration", NoneTableData())
         self.playbooks = dependencies.get("playbook", NoneTableData())
         self.incidentfields = dependencies.get("incidentfield", NoneTableData())
         self.incidenttypes = dependencies.get("incidenttype", NoneTableData())
-        self.author = demisto.args().get("author")
+        self.author = author
         self.date = datetime.now().strftime("%m/%d/%Y")
-        self.customer = demisto.args().get("customer")
+        self.customer = customer
 
     def markdown(self):
         template = jinja2.Template(USECASE_MD_DOCUMENT_TEMPLATE)
@@ -482,8 +470,10 @@ class Document:
             closed_incidents,
             playbook_stats,
             reports,
-            dashboards
-    ):
+            dashboards,
+            author,
+            customer
+    ):  # pragma: no cover
         self.template = template
         self.integrations_table = integrations_table
         self.installed_packs_table = installed_packs_table
@@ -493,9 +483,9 @@ class Document:
         self.open_incidents = open_incidents
         self.closed_incidents = closed_incidents
         self.playbook_stats = playbook_stats
-        self.author = demisto.args().get("author")
+        self.author = author
         self.date = datetime.now().strftime("%m/%d/%Y")
-        self.customer = demisto.args().get("customer")
+        self.customer = customer
         self.reports = reports
         self.dashboards = dashboards
 
@@ -552,6 +542,15 @@ def build_document(
 
 
 def post_api_request(url, body):
+    """Post API request.
+
+    Args:
+        url (str): request url path
+        body (Dict): integration command / script arguments
+
+    Returns:
+        Dict: dictionary representation of the response
+    """
     api_args = {
         "uri": url,
         "body": body
@@ -563,10 +562,18 @@ def post_api_request(url, body):
     except KeyError:
         return_error(f'API Request failed, no response from API call to {url}')
     except TypeError:
-        return_error(f'API Request failed, failedto {raw_res}')
+        return_error(f'API Request failed, failed to {raw_res}')
 
 
 def get_api_request(url):
+    """Get API request.
+
+    Args:
+        url (str): request url path
+
+    Returns:
+        Dict: dictionary representation of the response
+    """
     api_args = {
         "uri": url
     }
@@ -583,6 +590,15 @@ def get_api_request(url):
 
 
 def get_all_incidents(days=7, size=1000):
+    """Get all incidents from API request.
+
+    Args:
+        days (int): number of days. Defaults to 7.
+        size (int): number of incidents. Defaults to 1000.
+
+    Returns:
+        Dict: incidents returned from the API request
+    """
     body = {
         "userFilter": False,
         "filter": {
@@ -601,11 +617,20 @@ def get_all_incidents(days=7, size=1000):
             }
         }
     }
-    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    r = post_api_request("/incidents/search", body)
     return r.get("data")
 
 
 def get_open_incidents(days=7, size=1000):
+    """Get open incidents from API.
+
+    Args:
+        days (int): number of days. Defaults to 7.
+        size (int): number of incidents. Defaults to 1000.
+
+    Returns:
+        SingleFieldData: SingleFieldData object representing open incidents
+    """
     body = {
         "userFilter": False,
         "filter": {
@@ -624,13 +649,22 @@ def get_open_incidents(days=7, size=1000):
             }
         }
     }
-    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    r = post_api_request("/incidents/search", body)
     total = r.get("total")
     rd = SingleFieldData(f"Open Incidents {days} days", total)
     return rd
 
 
 def get_closed_incidents(days=7, size=1000):
+    """Get closed incidents from API.
+
+    Args:
+        days (int): number of days. Defaults to 7.
+        size (int): number of incidents. Defaults to 1000.
+
+    Returns:
+        SingleFieldData: SingleFieldData object representing closed incidents
+    """
     body = {
         "userFilter": False,
         "filter": {
@@ -649,18 +683,22 @@ def get_closed_incidents(days=7, size=1000):
             }
         }
     }
-    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    r = post_api_request("/incidents/search", body)
     total = r.get("total")
     rd = SingleFieldData(f"Closed Incidents {days} days", total)
     return rd
 
 
-def get_enabled_integrations():
+def get_enabled_integrations(max_request_size: int):
+    """Retrieve all the running instances.
+
+    Args:
+        max_request_size (int): maximum number of instances to retrieve.
+
+    Returns:
+        SortedTableData: TableData object with the enabled instances.
     """
-    Retrieve all the running instances.
-    :return: TableData
-    """
-    r = post_api_request(DEMISTO_INTEGRATIONS_PATH, {"size": MAX_REQUEST_SIZE})
+    r = post_api_request("/settings/integration/search", {"size": max_request_size})
     instances = r.get("instances")
     enabled_instances = []
     for instance in instances:
@@ -673,12 +711,13 @@ def get_enabled_integrations():
 
 
 def get_installed_packs():
-    """
-    Get all the installed Content Packs
-    :return: TableData
+    """Get all the installed Content Packs
+
+    Returns:
+        SortedTableData: TableData object with the installed Content Packs.
     """
     # if tis doesn't work, return nothing.
-    r = get_api_request(DEMISTO_INSTALLED_PATH)
+    r = get_api_request("/contentpacks/metadata/installed")
     if not r:
         return NoneTableData()
     else:
@@ -686,11 +725,12 @@ def get_installed_packs():
 
 
 def get_custom_playbooks():
+    """Return all the custom playbooks installed in XSOAR
+
+    Returns:
+        SortedTableData: TableData object with the custom playbooks.
     """
-    Return all the custom playbooks installed in XSOAR>
-    :return: TableData
-    """
-    r = post_api_request(DEMISTO_PLAYBOOKS_PATH, {"query": "system:F AND hidden:F"}).get("playbooks")
+    r = post_api_request("/playbook/search", {"query": "system:F AND hidden:F"}).get("playbooks")
     for pb in r:
         pb["TotalTasks"] = len(pb.get("tasks", []))
     rd = SortedTableData(r, "Custom Playbooks", "name")
@@ -702,7 +742,7 @@ def get_custom_reports():
     Return all the custom reports installed in XSOAR.
     :return: TableData
     """
-    r = get_api_request(DEMISTO_REPORTS_PATH)
+    r = get_api_request("/reports")
     reports = []
     for report in r:
         # Check it's not an inbuilt (system) report
@@ -713,11 +753,12 @@ def get_custom_reports():
 
 
 def get_custom_dashboards():
+    """Return all the custom dashboards configured in XSOAR
+
+    Returns:
+        TableData: TableData object with the custom dashboards.
     """
-    Return all the custom dashboards configured in XSOAR
-    :return: TableData
-    """
-    r = get_api_request(DEMISTO_DASHBOARDS_PATH)
+    r = get_api_request("/dashboards")
     dashboards = []
     for dashboard in r.values():
         # Check it's not an inbuilt (system) dashboard
@@ -728,11 +769,12 @@ def get_custom_dashboards():
 
 
 def get_all_playbooks():
+    """Return all the custom playbooks installed in XSOAR
+
+    Returns:
+        TableData: TableData object with the custom playbooks.
     """
-    Return all the custom playbooks installed in XSOAR>
-    :return: TableData
-    """
-    r = post_api_request(DEMISTO_PLAYBOOKS_PATH, {"query": "hidden:F"}).get("playbooks")
+    r = post_api_request("/playbook/search", {"query": "hidden:F"}).get("playbooks")
     for pb in r:
         pb["TotalTasks"] = len(pb.get("tasks", []))
     rd = TableData(r, "All Playbooks")
@@ -740,11 +782,16 @@ def get_all_playbooks():
 
 
 def get_playbook_stats(playbooks, days=7, size=1000):
-    """
-    Pull all the incident types and assoociated playbooks,
+    """Pull all the incident types and associated playbooks,
     then join this with the incident stats to determine how often each playbook has been used.
 
-    :param playbooks (TableData): Table Data of Playbooks
+    Args:
+        playbooks (SortedTableData): TableData object with the custom playbooks.
+        days (int, optional): max number of days. Defaults to 7.
+        size (int, optional): max request size. Defaults to 1000.
+
+    Returns:
+        Dict: Dictionary of playbook stats.
     """
     # incident_types = get_api_request(DEMISTO_INCIDENT_TYPE_PATH)
     incidents = get_all_incidents(days, size)
@@ -776,14 +823,18 @@ def get_playbook_stats(playbooks, days=7, size=1000):
 
 
 def get_playbook_dependencies(playbook_name):
-    """
-    Given a playbook name, searches for all dependencies.
+    """Given a playbook name, searches for all dependencies.
+
+    Args:
+        playbook_name (string): name of the playbook.
+
+    Returns:
+        Dict[SortedTableData]: Dictionary of TableData objects.
     """
     playbooks = get_all_playbooks()
     playbook = playbooks.search("name", playbook_name)
     if not playbook:
         return_error(f"Playbook {playbook_name} not found.")
-        sys.exit()
     playbook_id = playbook.get("id")
     body = {
         "items": [
@@ -794,7 +845,7 @@ def get_playbook_dependencies(playbook_name):
         ],
         "dependencyLevel": "optional"
     }
-    dependencies = post_api_request(DEMISTO_DEPENDENCIES_PATH, body).get("existing").get("playbook").get(playbook_id)
+    dependencies = post_api_request("/itemsdependencies", body).get("existing").get("playbook").get(playbook_id)
     if not dependencies:
         return_error(f"Failed to retrieve dependencies for {playbook_id}")
 
@@ -824,42 +875,55 @@ def get_playbook_dependencies(playbook_name):
 
 
 def get_custom_automations():
-    r = post_api_request(DEMISTO_AUTOMATIONS_PATH, {"query": "system:F AND hidden:F"}).get("scripts")
+    r = post_api_request("/automation/search", {"query": "system:F AND hidden:F"}).get("scripts")
     rd = SortedTableData(r, "Custom Automations", "name")
     return rd
 
 
 def get_system_config():
-    r = get_api_request(DEMISTO_CONFIG_PATH).get("defaultMap")
+    r = get_api_request("/system/config").get("defaultMap")
     rd = TableData(r, "System Configuration")
     return rd
 
 
-def main():
-    if demisto.args().get("playbook"):
-        # If we get a playbook, we generate a use case document, instead of teh platform as build
-        r = get_playbook_dependencies(demisto.args().get("playbook"))
-        doc = UseCaseDocument(
-            playbook_name=demisto.args().get("playbook"),
-            dependencies=r
-        )
-        fr = fileResult("usecase.html", doc.html(), file_type=EntryType.ENTRY_INFO_FILE)
-        return_results(fr)
-        return_results(CommandResults(
-            readable_output=doc.markdown(),
-        ))
-        return
+def playbook_use_case(playbook: str, author: str, customer: str):
+    """Given a playbook, generate a use case document.
 
-    # If no playbook is passed, we generate a platform as built.
-    open_incidents = get_open_incidents(MAX_DAYS, MAX_REQUEST_SIZE)
-    closed_incidents = get_closed_incidents(MAX_DAYS, MAX_REQUEST_SIZE)
+    Args:
+        playbook (str): playbook name
+        author (str): author name
+        customer (str): company name
+    """
+    r = get_playbook_dependencies(playbook)
+    doc = UseCaseDocument(
+        playbook_name=playbook,
+        dependencies=r,
+        author=author,
+        customer=customer,
+    )
+    fr = fileResult("usecase.html", doc.html(), file_type=EntryType.ENTRY_INFO_FILE)
+    return_results(fr)
+    return_results(CommandResults(readable_output=doc.markdown(),))
+
+
+def platform_as_built_use_case(max_request_size: int, max_days: int, author: str, customer: str):
+    """Generate a platform as built use case document.
+
+    Args:
+        max_request_size (int): max request size
+        max_days (int): max number of days
+        author (str): author name
+        customer (str): company name
+    """
+    open_incidents = get_open_incidents(max_days, max_request_size)
+    closed_incidents = get_closed_incidents(max_days, max_request_size)
 
     system_config = get_system_config()
-    integrations = get_enabled_integrations()
+    integrations = get_enabled_integrations(max_request_size)
     installed_packs = get_installed_packs()
     playbooks = get_custom_playbooks()
     automations = get_custom_automations()
-    playbook_stats = get_playbook_stats(playbooks, MAX_DAYS, MAX_REQUEST_SIZE)
+    playbook_stats = get_playbook_stats(playbooks, max_days, max_request_size)
 
     reports = get_custom_reports()
     dashboards = get_custom_dashboards()
@@ -875,13 +939,32 @@ def main():
         closed_incidents=closed_incidents,
         playbook_stats=playbook_stats,
         reports=reports,
-        dashboards=dashboards
+        dashboards=dashboards,
+        author=author,
+        customer=customer
+
     )
     fr = fileResult("asbuilt.html", d.html(), file_type=EntryType.ENTRY_INFO_FILE)
     return_results(CommandResults(
         readable_output=d.markdown(),
     ))
     return_results(fr)
+
+
+def main():  # pragma: no cover
+    args = demisto.args()
+    author = args.get("author")
+    customer = args.get("customer")
+
+    # Given a playbook is passed, we generate a use case document, instead of the platform as build.
+    if playbook := args.get("playbook"):
+        playbook_use_case(playbook, author, customer)
+
+    else:
+        # If no playbook is passed, we generate a platform as built.
+        max_request_size = args.get("size", 1000)
+        max_days = args.get("days", 7)
+        platform_as_built_use_case(max_request_size, max_days, author, customer)
 
 
 if __name__ in ('__builtin__', 'builtins'):
