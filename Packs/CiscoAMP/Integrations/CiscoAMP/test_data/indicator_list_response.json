@@ -1,0 +1,127 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self",
+            "next": "metadata_links_next"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": [
+        {
+            "name": "data[0]_name",
+            "description": "data[0]_description",
+            "guid": "data[0]_guid",
+            "observed_compromises": "data[0]_observed_compromises",
+            "severity": "data[0]_severity",
+            "links": {
+                "indicator": "data[0]_links_indicator"
+            }
+        },
+        {
+            "name": "data[1]_name",
+            "description": "data[1]_description",
+            "guid": "data[1]_guid",
+            "observed_compromises": "data[1]_observed_compromises",
+            "severity": "data[1]_severity",
+            "links": {
+                "indicator": "data[1]_links_indicator"
+            }
+        },
+        {
+            "name": "data[2]_name",
+            "description": "data[2]_description",
+            "guid": "data[2]_guid",
+            "observed_compromises": "data[2]_observed_compromises",
+            "severity": "data[2]_severity",
+            "links": {
+                "indicator": "data[2]_links_indicator"
+            }
+        },
+        {
+            "name": "data[3]_name",
+            "description": "data[3]_description",
+            "guid": "data[3]_guid",
+            "observed_compromises": "data[3]_observed_compromises",
+            "severity": "data[3]_severity",
+            "links": {
+                "indicator": "data[3]_links_indicator"
+            }
+        },
+        {
+            "name": "data[4]_name",
+            "description": "data[4]_description",
+            "guid": "data[4]_guid",
+            "observed_compromises": "data[4]_observed_compromises",
+            "severity": "data[4]_severity",
+            "links": {
+                "indicator": "data[4]_links_indicator"
+            }
+        },
+        {
+            "name": "data[5]_name",
+            "description": "data[5]_description",
+            "guid": "data[5]_guid",
+            "observed_compromises": "data[5]_observed_compromises",
+            "severity": "data[5]_severity",
+            "links": {
+                "indicator": "data[5]_links_indicator"
+            }
+        },
+        {
+            "name": "data[6]_name",
+            "description": "data[6]_description",
+            "guid": "data[6]_guid",
+            "observed_compromises": "data[6]_observed_compromises",
+            "severity": "data[6]_severity",
+            "links": {
+                "indicator": "data[6]_links_indicator"
+            }
+        },
+        {
+            "name": "data[7]_name",
+            "description": "data[7]_description",
+            "guid": "data[7]_guid",
+            "observed_compromises": "data[7]_observed_compromises",
+            "severity": "data[7]_severity",
+            "links": {
+                "indicator": "data[7]_links_indicator"
+            }
+        },
+        {
+            "name": "data[8]_name",
+            "description": "data[8]_description",
+            "guid": "data[8]_guid",
+            "observed_compromises": "data[8]_observed_compromises",
+            "severity": "data[8]_severity",
+            "links": {
+                "indicator": "data[8]_links_indicator"
+            }
+        },
+        {
+            "name": "data[9]_name",
+            "description": "data[9]_description",
+            "guid": "data[9]_guid",
+            "observed_compromises": "data[9]_observed_compromises",
+            "severity": "data[9]_severity",
+            "links": {
+                "indicator": "data[9]_links_indicator"
+            }
+        },
+        {
+            "name": "data[10]_name",
+            "description": "data[10]_description",
+            "guid": "data[10]_guid",
+            "observed_compromises": "data[10]_observed_compromises",
+            "severity": "data[10]_severity",
+            "links": {
+                "indicator": "data[10]_links_indicator"
+            }
+        }
+    ]
+}
