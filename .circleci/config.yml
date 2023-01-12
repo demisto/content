@@ -83,10 +83,6 @@ references:
       when: always
       command: |
         poetry --version
-
-        curl -sSL https://install.python-poetry.org | python3 - --uninstall
-        curl -sSL https://install.python-poetry.org | python3 -
-
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
         ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
