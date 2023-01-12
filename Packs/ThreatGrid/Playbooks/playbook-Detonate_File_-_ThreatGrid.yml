@@ -1,6 +1,5 @@
 id: 06f52f43-59cb-4a1e-8492-5ecd612302a7
 version: 43
-vcShouldKeepItemLegacyProdMachine: false
 name: Detonate File - ThreatGrid
 starttaskid: "0"
 tasks:
@@ -10,6 +9,7 @@ tasks:
     type: start
     task:
       id: f850e557-f46a-44e6-87f6-e63960e54b3c
+      description: start
       version: -1
       name: ""
       iscommand: false
@@ -39,6 +39,7 @@ tasks:
     type: condition
     task:
       id: e942d3a4-1890-46b5-8a3a-f25caa8ef11d
+      description: condition
       version: -1
       name: Is ThreatGrid enabled?
       type: condition
@@ -97,6 +98,7 @@ tasks:
     type: condition
     task:
       id: cb4900e3-374f-4192-8d5a-cb6c95e80471
+      description: condition
       version: -1
       name: Is there a file to detonate?
       type: condition
@@ -139,6 +141,7 @@ tasks:
     type: title
     task:
       id: ce5638fa-87ef-4436-8286-910e797bce62
+      description: title
       version: -1
       name: Done
       type: title
@@ -303,6 +306,7 @@ tasks:
     type: condition
     task:
       id: 23811c43-493a-4db8-8450-5a100168958e
+      description: Check if the file size bigger than 0
       version: -1
       name: Is the file size bigger than 0?
       type: condition
@@ -371,3 +375,5 @@ outputs:
   description: File Extension
   type: string
 quiet: true
+fromversion: 5.0.0
+description: REAL

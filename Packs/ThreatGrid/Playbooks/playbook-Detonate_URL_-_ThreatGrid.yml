@@ -1,6 +1,5 @@
 id: 8e8c55b0-3330-4d07-8678-9e542cb921e9
 version: 19
-vcShouldKeepItemLegacyProdMachine: false
 name: Detonate URL - ThreatGrid
 starttaskid: "0"
 tasks:
@@ -10,6 +9,7 @@ tasks:
     type: start
     task:
       id: a40217c5-eb07-4e3b-885d-36424a2c5a85
+      description: start
       version: -1
       name: ""
       iscommand: false
@@ -75,6 +75,7 @@ tasks:
     type: condition
     task:
       id: e613cd86-2870-4227-8a23-ec5d4f41fc8d
+      description: condition
       version: -1
       name: Is ThreatGrid enabled?
       type: condition
@@ -136,6 +137,7 @@ tasks:
     type: title
     task:
       id: 805f6930-a82e-438d-88ef-c30ae9d8f3c8
+      description: title
       version: -1
       name: Done
       type: title
@@ -163,6 +165,7 @@ tasks:
     type: condition
     task:
       id: f47a7d0e-7291-47d5-8111-b8d7d686f159
+      description: condition
       version: -1
       name: Is there a URL to detonate?
       type: condition
@@ -220,3 +223,5 @@ inputs:
   playbookInputQuery: null
 outputs: []
 quiet: true
+fromversion: 5.0.0
+description: REAL
