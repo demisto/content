@@ -3,12 +3,12 @@ from ArrayToCSV import arr_to_csv_command
 
 def test_arr_to_csv_command__array_of_two_values():
     """
-        Given -
-           an array
-        When -
-            array contains a list of two str objects
-        Then -
-            the function will return the strings comma seperated
+        Given:
+           A list with 2 values
+        When:
+           converting list to a string representing a csv
+        Then:
+            the function will return the string as is (which is a valid csv format)
     """
     arr = ["mock", "mocker"]
     command_result = arr_to_csv_command(arr)
@@ -17,12 +17,12 @@ def test_arr_to_csv_command__array_of_two_values():
 
 def test_arr_to_csv_command__array_of_one_value():
     """
-        Given -
-           an array
-        When -
-            array contains a list of one str objects
-        Then -
-            the function will return the string as is.
+        Given:
+            A list with one value
+        When:
+            converting list to a string representing a csv
+        Then:
+            validate the result is valid csv
     """
     arr = ["mock"]
     command_result = arr_to_csv_command(arr)
@@ -31,12 +31,12 @@ def test_arr_to_csv_command__array_of_one_value():
 
 def test_arr_to_csv_command__empty_array():
     """
-        Given -
-           an array
-        When -
-            array contains nothing
-        Then -
-            the function will return ''
+        Given:
+           An empty list
+        When:
+           converting list to a string representing a csv
+        Then:
+            The result is an empty string (which is a valid csv format)
     """
     arr = ""
     command_result = arr_to_csv_command(arr)
