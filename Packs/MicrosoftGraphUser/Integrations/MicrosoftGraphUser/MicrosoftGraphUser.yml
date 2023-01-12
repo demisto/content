@@ -22,7 +22,6 @@ configuration:
   hiddenusername: true
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
-  required: false
   type: 4
   hidden: true
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
