@@ -1388,16 +1388,20 @@ class Client(BaseClient):
             "Info",
         ]:
             raise ValueError(ErrorMessage.SEVERITY.value)
-        ip_v4_regex = ipv4Regex.replace('$', '')
-        ip_v4_range_regex = ip_v4_regex + r'-' + ip_v4_regex + r'$'
-        ip_v6_regex = ipv6Regex.replace('$', '')
-        ip_v6_range_regex = ip_v6_regex + r'-' + ip_v6_regex + r'$'
+        ip: str = args.get("ip_address", "")
         if (
-            (ip := args.get("ip_address"))
+            ip
             and not re.match(ipv4Regex, ip)
             and not re.match(ipv6Regex, ip)
-            and not re.match(ip_v4_range_regex, ip)
-            and not re.match(ip_v6_range_regex, ip)
+        ):
+            raise ValueError(f"{ip} {ErrorMessage.IP.value}")
+        ips = ip.split('-')
+        if (
+            len(ips) == 2
+            and not re.match(ipv4Regex, ips[0])
+            and not re.match(ipv4Regex, ips[1])
+            and not re.match(ipv6Regex, ips[0])
+            and not re.match(ipv6Regex, ips[1])
         ):
             raise ValueError(f"{ip} {ErrorMessage.IP.value}")
 
