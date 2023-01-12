@@ -19,6 +19,7 @@ from IntezerV2 import get_latest_result_command
 from IntezerV2 import get_file_analysis_result_command
 from IntezerV2 import get_endpoint_analysis_result_command
 from IntezerV2 import get_url_analysis_result_command
+from IntezerV2 import check_is_available
 from intezer_sdk import consts
 from intezer_sdk.api import IntezerApi
 
@@ -1649,6 +1650,38 @@ def test_get_family_info_command_analysis_doesnt_exist(requests_mock):
 
 # endregion
 
+# region check_is_available
+def test_check_is_available_success(requests_mock):
+    requests_mock.get(
+        f'{full_url}/is-available',
+        json={'ok': 'ok'},
+    )
+
+    requests_mock.post(
+        f'{full_url}/get-access-token',
+        json={'result': 'some_token'},
+    )
+
+    response = check_is_available({}, intezer_api)
+    assert response == 'ok'
+
+
+def test_check_is_available_http_error(requests_mock):
+    requests_mock.get(
+        f'{full_url}/is-available',
+        status_code=HTTPStatus.BAD_REQUEST
+    )
+
+    requests_mock.post(
+        f'{full_url}/get-access-token',
+        json={'result': 'some_token'},
+    )
+
+    response = check_is_available({}, intezer_api)
+    assert 'Error occurred when reaching Intezer Analyze. Please check Analyze Base URL.' in response
+# endregion
+
+
 # region analyze_url_command
 def test_analyze_url_command_success(requests_mock):
     # Arrange
@@ -1721,5 +1754,21 @@ def test_analyze_url_command_missing_url(requests_mock):
     # Assert
     assert command_results.response.readable_output == ('The Url 123test was not found on Intezer. '
                                                         'Error Server returned bad request error: Bad url. Error:Bad url')
+
+
+def test_analyze_url_command_url_not_found(requests_mock):
+    # Arrange
+    _setup_access_token(requests_mock)
+    requests_mock.post(
+        f'{full_url}/url',
+        status_code=HTTPStatus.BAD_REQUEST,
+        json=dict(error='Bad url')
+    )
+
+    args = dict(analysis_type='Url')
+
+    # Act
+    with pytest.raises(ValueError):
+        analyze_url_command(args, intezer_api)
 
 # endregion
