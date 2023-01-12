@@ -23,6 +23,12 @@ script:
       name: message_body
       required: true
       secret: false
+    - auto: PREDEFINED
+      description: Set 'true' to use content transfer encoding.
+      name: use_transport_encoding
+      predefined:
+      - 'false'
+      - 'true'
     deprecated: false
     description: Retrieves items from the service.
     execution: false
