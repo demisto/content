@@ -3,6 +3,7 @@ import demistomock as demisto  # noqa: F401
 import jwt
 from CommonServerPython import *  # noqa: F401
 from datetime import timedelta
+from traceback import format_exc
 
 import dateparser
 
@@ -423,7 +424,7 @@ def zoom_list_users_command(client, **args) -> CommandResults:
             minimal_needed_info = remove_extra_info_list_users(limit, raw_data)
 
             md = tableToMarkdown('Users', minimal_needed_info, ['id', 'email',
-                                                                'type', 'pmi', 'verified','created_at', 'status', 'role_id'])
+                                                                'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
             md += '\n' + tableToMarkdown('Metadata', [raw_data][0][0], ['total_records'])
             raw_data = raw_data[0]
     else:
@@ -810,6 +811,7 @@ def main():  # pragma: no cover
 
     except DemistoException as e:
         # For any other integration command exception, return an error
+        demisto.error(format_exc())
         return_error(f'Failed to execute {command} command. Error: {str(e)}.')
 
 
