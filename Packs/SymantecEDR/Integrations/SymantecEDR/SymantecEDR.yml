@@ -15,18 +15,18 @@ configuration:
   displaypassword: Client Secret
   required: true
   type: 9
-- defaultvalue: 'true'
+- defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Retrieve incident related events from EDR database
-  display: Fetch incidents Events
+- additionalinfo: Retrieve incident related events from EDR database. Additional API Call will be made for each fetched incident.
+  display: Fetch incidents alerts
   name: isIncidentsEvent
   required: false
   type: 8
-- additionalinfo: Retrieve incident comments for each fetch incident when checked
-  display: Get incident comments
+- additionalinfo: Retrieve incident comments for each fetch incident when checked. Additional API Call will be made for each fetched incident.
+  display: Fetch incident comments
   name: isIncidentComment
   required: false
   type: 8
