@@ -55,6 +55,20 @@ db-dtypes = "^1.0.1"
 google-cloud-secret-manager = "^2.13.0"
 json5 = "^0.9.10"
 
+[tool.ruff]
+line-length = 120
+ignore = ["F405"]
+src = ["Packs/Base/Scripts/CommonServerPython", "Tests/demistomock", "Packs/ApiModules/Scripts/*"]
+
+[tool.mypy]
+python_version = "3.10"
+check_untyped_defs = true
+ignore_missing_imports = true
+show_error_codes = true
+follow_imports = "silent"
+pretty = true
+allow_redefinition = true
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
