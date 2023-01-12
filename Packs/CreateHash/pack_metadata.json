@@ -6,6 +6,7 @@
     "author": "Joerg Stephan",
     "url": "",
     "email": "",
+    "hidden": true,
     "created": "2021-12-06T11:19:01Z",
     "categories": [
         "Utilities"
