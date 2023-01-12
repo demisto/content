@@ -169,7 +169,7 @@ tasks:
       id: c4c52399-7b7b-4c50-8ebc-6a07a42afefe
       version: -1
       name: Rapid7 InsightIDR - HTTP Requests Indicators Hunting
-      description: "This playbook queries Rapid7 InsightIDR SIEM for indicators associated with HTTP requests, including HTTP request methods, user agents, URIs, and Ja3.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). "
+      description: "This playbook queries Rapid7 InsightIDR SIEM for indicators associated with HTTP requests, including HTTP request methods, user agents, URIs, and JA3.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). "
       playbookName: Rapid7 InsightIDR - HTTP Requests Indicators Hunting
       type: playbook
       iscommand: false
@@ -1083,7 +1083,7 @@ inputs:
 - key: InsightIDRCommandLine
   value: {}
   required: false
-  description: The name of the fields, in Rapid7 InsightIDR, in which to find the command's lines.
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the command lines.
   playbookInputQuery:
 - key: ProcessName
   value: {}
@@ -1123,7 +1123,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple Ja3s to search for within Rapid7 InsightIDR logs.
+    A single or multiple JA3s to search for within Rapid7 InsightIDR logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
 
@@ -1132,7 +1132,7 @@ inputs:
 - key: InsightIDRJa3
   value: {}
   required: false
-  description: The name of the fields, in Rapid7 InsightIDR, in which to find the Ja3s.
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the JA3s.
   playbookInputQuery:
 - key: LogSetId
   value: {}
@@ -1143,7 +1143,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Specify the timeframe in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
+    Specify the time frame in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
     The 'start_time' and 'end_time' inputs should not be used if the time_range input is specified.
 
     Supported time units (case insensitive):
@@ -1187,7 +1187,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Rapid7InsightIDR.Event
-  description: Events log objects containing relevant fields.
+  description: Event log objects containing relevant fields.
   type: string
 - contextPath: Rapid7InsightIDR.Event.log_id
   description: The ID of the log the event appears in.
