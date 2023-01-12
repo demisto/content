@@ -2,9 +2,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
+import urllib3
+
 # IMPORTS
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -1305,7 +1307,11 @@ def main():
     """
     # get the service API url
     base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
-    apitoken = demisto.params().get('apitoken')
+    apitoken = demisto.params().get("credentials", {}).get("password", '') or demisto.params().get('apitoken', '')
+
+    if not apitoken:
+        raise ValueError('Missing API token.')
+
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
