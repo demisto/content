@@ -10,6 +10,7 @@ urllib3.disable_warnings()
 DEFAULT_SEARCH_LIMIT = 100
 MAX_ALERTS = 100  # max alerts per fetch
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+URL_SUFFIX = "/public_api/v1"
 
 
 class Client(BaseClient):
@@ -555,7 +556,7 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def test_module(client: Client) -> None:
+def test_module(client: Client, params: Dict[str, Any], first_fetch_time: Optional[int]) -> None:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -564,12 +565,25 @@ def test_module(client: Client) -> None:
 
     Args:
         client (Client): CortexXpanse client to use.
+        params (Dict): Integration parameters.
+        first_fetch_time (int): The first fetch time as configured in the integration params.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        client.list_external_service_request([])
+        if params.get('isFetch'):  # Tests fetch incident:
+            severity = params.get('severity')
+            max_fetch = int(params.get('max_fetch', 10))
+            fetch_incidents(
+                client=client,
+                max_fetch=max_fetch,
+                last_run={},
+                first_fetch_time=first_fetch_time,
+                severity=severity
+            )
+        else:
+            client.list_external_service_request([])
     except DemistoException as e:
         if 'Forbidden' in str(e):
             raise DemistoException('Authorization Error: make sure API Key is correctly set')
@@ -591,7 +605,7 @@ def main() -> None:
     try:
         first_fetch_time = arg_to_datetime(
             arg=params.get('first_fetch', '3 days'),
-            arg_name='First fetch time',
+            arg_name='First fetch timestamp',
             required=True
         )
         first_fetch_timestamp = int(first_fetch_time.timestamp()) * 1000 if first_fetch_time else None
@@ -610,10 +624,9 @@ def main() -> None:
         handle_proxy()
         verify_certificate = not params.get('insecure', False)
 
-        url_suffix = "/public_api/v1"
         url = params.get('url', '')
         add_sensitive_log_strs(api)
-        base_url = urljoin(url, url_suffix)
+        base_url = urljoin(url, URL_SUFFIX)
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -632,7 +645,7 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            test_module(client)
+            test_module(client, params, first_fetch_timestamp)
         if command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
                 client=client,
