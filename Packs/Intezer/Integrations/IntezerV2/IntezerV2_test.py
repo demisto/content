@@ -54,11 +54,13 @@ def test_analyze_by_hash_command_success(requests_mock):
     assert command_results.response.outputs['ID'] == analysis_id
 
 
-def test_analyze_by_hash_command_success_polling_true(requests_mock):
+def test_analyze_by_hash_command_success_polling_true(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis-id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.post(
         f'{full_url}/analyze-by-hash',
         status_code=HTTPStatus.CREATED,
@@ -233,6 +235,8 @@ def test_analyze_by_uploaded_file_command_polling_true(requests_mock, mocker):
     analysis_id = 'analysis-id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.post(
         f'{full_url}/analyze',
         status_code=HTTPStatus.CREATED,
@@ -754,7 +758,7 @@ def test_get_analysis_sub_analyses_command_analysis_doesnt_exist(requests_mock):
 # endregion
 
 # region get_file_analysis_result_command
-def test_get_file_analysis_result_command_success(requests_mock):
+def test_get_file_analysis_result_command_success(requests_mock, mocker):
     # Arrange
     sha256 = 'sha256'
     md5 = 'md5'
@@ -762,6 +766,8 @@ def test_get_file_analysis_result_command_success(requests_mock):
     analysis_id = 'analysis_id'
     root_sub_analysis = 'root_sub_analysis'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.get(
         f'{full_url}/analyses/{analysis_id}',
         json={
@@ -808,10 +814,12 @@ def test_get_file_analysis_result_command_success(requests_mock):
     assert all(indicator in indicators for indicator in [sha256, md5, sha1])
 
 
-def test_get_url_analysis_still_running_polling(requests_mock):
+def test_get_url_analysis_still_running_polling(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.get(
         f'{full_url}/url/{analysis_id}',
         json={
@@ -833,12 +841,12 @@ def test_get_url_analysis_still_running_polling(requests_mock):
     assert command_result.scheduled_command._args['wait_for_result']
 
 
-def test_get_url_analysis_result_command_analysis_failed(requests_mock):
+def test_get_url_analysis_result_command_analysis_failed(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
 
     _setup_access_token(requests_mock)
-
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
     requests_mock.get(
         f'{full_url}/url/{analysis_id}',
         status_code=HTTPStatus.NOT_FOUND,
@@ -856,10 +864,12 @@ def test_get_url_analysis_result_command_analysis_failed(requests_mock):
 
 
 # region get_endpoint_analysis_result_command
-def test_get_endpoint_analysis_still_running_polling(requests_mock):
+def test_get_endpoint_analysis_still_running_polling(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.get(
         f'{full_url}/endpoint-analyses/{analysis_id}',
         json={
@@ -881,10 +891,12 @@ def test_get_endpoint_analysis_still_running_polling(requests_mock):
     assert command_result.scheduled_command._args['wait_for_result']
 
 
-def test_get_endpoint_analysis_queued_polling(requests_mock):
+def test_get_endpoint_analysis_queued_polling(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.get(
         f'{full_url}/endpoint-analyses/{analysis_id}',
         json={
@@ -906,10 +918,12 @@ def test_get_endpoint_analysis_queued_polling(requests_mock):
     assert command_result.scheduled_command._args['wait_for_result']
 
 
-def test_get_endpoint_analysis_polling_false(requests_mock):
+def test_get_endpoint_analysis_polling_false(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.get(
         f'{full_url}/endpoint-analyses/{analysis_id}',
         status_code=HTTPStatus.CONFLICT
@@ -925,10 +939,11 @@ def test_get_endpoint_analysis_polling_false(requests_mock):
     assert command_result.outputs == {'ID': analysis_id, 'Status': 'InProgress', 'Type': 'Endpoint'}
 
 
-def test_get_endpoint_analysis_result_command_analysis_missing(requests_mock):
+def test_get_endpoint_analysis_result_command_analysis_missing(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     requests_mock.get(
         f'{full_url}/endpoint-analyses/{analysis_id}',
@@ -943,11 +958,12 @@ def test_get_endpoint_analysis_result_command_analysis_missing(requests_mock):
     assert command_result.readable_output == f'Could not find the endpoint analysis \'{analysis_id}\''
 
 
-def test_get_endpoint_analysis_result_command_polling(requests_mock):
+def test_get_endpoint_analysis_result_command_polling_true(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     requests_mock.get(
         f'{full_url}/endpoint-analyses/{analysis_id}',
@@ -964,11 +980,13 @@ def test_get_endpoint_analysis_result_command_polling(requests_mock):
     assert command_result.scheduled_command._args['hide_polling_output']
 
 
-def test_get_endpoint_analysis_result_success(requests_mock):
+def test_get_endpoint_analysis_result_success(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
     computer_name = 'matan-pc'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.get(
         f'{full_url}/endpoint-analyses/{analysis_id}',
         json={
@@ -1014,7 +1032,7 @@ def test_get_endpoint_analysis_result_http_error(requests_mock):
 
 
 # region get_url_analysis_result_command
-def test_get_url_analysis_result_command_success(requests_mock):
+def test_get_url_analysis_result_command_success(requests_mock, mocker):
     # Arrange
     sha256 = 'sha256'
     url = 'https://foo.com'
@@ -1026,6 +1044,7 @@ def test_get_url_analysis_result_command_success(requests_mock):
     file_root_analysis_id = 'file_root_analysis_id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     requests_mock.get(
         f'{full_url}/url/{analysis_id}',
@@ -1137,11 +1156,12 @@ def test_get_url_analysis_result_command_success(requests_mock):
     assert all(dbot['Score'] == 3 for dbot in command_result.outputs[outputPaths['dbotscore']])
 
 
-def test_get_url_analysis_result_command_failed(requests_mock):
+def test_get_url_analysis_result_command_failed(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     requests_mock.get(
         f'{full_url}/url/{analysis_id}',
@@ -1157,11 +1177,12 @@ def test_get_url_analysis_result_command_failed(requests_mock):
     assert command_result.readable_output == f'The Analysis {analysis_id} was not found on Intezer Analyze'
 
 
-def test_get_url_analysis_result_command_polling(requests_mock):
+def test_get_url_analysis_result_command_polling(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     requests_mock.get(
         f'{full_url}/url/{analysis_id}',
@@ -1178,10 +1199,12 @@ def test_get_url_analysis_result_command_polling(requests_mock):
     assert command_result.scheduled_command._args['hide_polling_output']
 
 
-def test_get_file_analysis_polling_false(requests_mock):
+def test_get_file_analysis_polling_false(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.get(
         f'{full_url}/analyses/{analysis_id}',
         status_code=HTTPStatus.CONFLICT
@@ -1197,11 +1220,12 @@ def test_get_file_analysis_polling_false(requests_mock):
     assert command_result.outputs == {'ID': analysis_id, 'Status': 'InProgress', 'Type': 'File'}
 
 
-def test_get_file_analysis_result_command_analysis_failed(requests_mock):
+def test_get_file_analysis_result_command_analysis_failed(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     requests_mock.get(
         f'{full_url}/analyses/{analysis_id}',
@@ -1233,10 +1257,12 @@ def test_get_file_analysis_result_http_error(requests_mock):
         get_file_analysis_result_command(args, intezer_api)
 
 
-def test_get_file_analysis_still_running_polling(requests_mock):
+def test_get_file_analysis_still_running_polling(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.get(
         f'{full_url}/analyses/{analysis_id}',
         json={
@@ -1258,11 +1284,12 @@ def test_get_file_analysis_still_running_polling(requests_mock):
     assert command_result.scheduled_command._args['wait_for_result']
 
 
-def test_get_file_analysis_result_command_polling(requests_mock):
+def test_get_file_analysis_result_command_polling(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis_id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     requests_mock.get(
         f'{full_url}/analyses/{analysis_id}',
@@ -1643,11 +1670,13 @@ def test_analyze_url_command_success(requests_mock):
     assert command_results.response.outputs['ID'] == analysis_id
 
 
-def test_analyze_url_command_success_polling_true(requests_mock):
+def test_analyze_url_command_success_polling_true(requests_mock, mocker):
     # Arrange
     analysis_id = 'analysis-id'
 
     _setup_access_token(requests_mock)
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
     requests_mock.post(
         f'{full_url}/url',
         status_code=HTTPStatus.CREATED,
