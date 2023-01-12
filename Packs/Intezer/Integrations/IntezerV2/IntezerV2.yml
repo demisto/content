@@ -335,4 +335,4 @@ script:
   subtype: python3
 tests:
 - Intezer Testing v2
-fromversion: 5.0.0
+fromversion: 6.2.0
