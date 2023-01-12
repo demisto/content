@@ -88,6 +88,8 @@ def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
 
     if isinstance(result, dict):
         assert result.get('filename') == f'sample_id-{args["artifact"]}'
+        assert result.get('data').get('id') == 'id'
+        assert result.get('data').get('data').get('md5') == 'data_md5'
     else:
         assert result.outputs_prefix == outputs
         assert result.outputs.get("id") == 'data_id'
