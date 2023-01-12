@@ -295,6 +295,8 @@ tasks:
         complex:
           root: incident
           accessor: reporteremailaddress
+      using:
+        simple: ${inputs.SendMailInstance}
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -2122,6 +2124,8 @@ tasks:
         complex:
           root: incident
           accessor: reporteremailaddress
+      using:
+        simple: ${inputs.SendMailInstance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2232,6 +2236,8 @@ tasks:
         complex:
           root: incident
           accessor: reporteremailaddress
+      using:
+        simple: ${inputs.SendMailInstance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
