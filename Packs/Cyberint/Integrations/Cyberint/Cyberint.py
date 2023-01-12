@@ -569,7 +569,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                         'rawJSON': json.dumps(alert),
                         'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
                         'attachment': incident_attachments,
-                        'csv': incident_csv
+                        # 'csv': incident_csv
                     }
                     incidents.append(incident)
                     index += 1
