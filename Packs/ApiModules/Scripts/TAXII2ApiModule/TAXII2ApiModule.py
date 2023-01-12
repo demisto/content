@@ -10,6 +10,7 @@ import types
 import urllib3
 from taxii2client import v20, v21
 from taxii2client.common import TokenAuth, _HTTPConnection
+from taxii2client.exceptions import InvalidJSONError
 import tempfile
 
 # disable insecure warnings
@@ -1020,8 +1021,14 @@ class Taxii2FeedClient:
         page_size = self.get_page_size(limit, limit)
         if page_size <= 0:
             return []
-        envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-        indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+
+        try:
+            envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
+            indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+        except InvalidJSONError as e:
+            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
+            # raised when the response is empty, because {} is parsed into '筽'
+            indicators = []
 
         return indicators
 
