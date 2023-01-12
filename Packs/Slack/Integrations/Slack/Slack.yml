@@ -1,4 +1,8 @@
 category: Messaging
+deprecated: true
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: SlackV2
   version: -1
@@ -17,85 +21,114 @@ configuration:
   name: access_token
   required: false
   type: 4
+  section: Connect
   hidden: true
 - display: Slack API bot token
   name: bot_token
   required: false
   type: 4
+  section: Connect
   hidden: true
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - defaultvalue: 'true'
   display: Send notifications about incidents to the dedicated channel
   name: notify_incidents
   required: false
   type: 8
-- display: Minimum incident severity to send messages to slack by
+  section: Connect
+  advanced: true
+- defaultvalue: Low
+  display: Minimum incident severity to send messages to slack by
   name: min_severity
   required: false
   type: 15
-  defaultvalue: Low
   options:
   - Unknown
   - Low
   - Medium
   - High
   - Critical
-- display: Type of incidents created in Slack
+  section: Collect
+  advanced: true
+- defaultvalue: Unclassified
+  display: Type of incidents created in Slack
   name: incidentType
   required: false
   type: 13
-  defaultvalue: Unclassified
+  section: Connect
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
-- display: Long running instance. Required for investigation mirroring and direct messages.
+  section: Connect
+  advanced: true
+- defaultvalue: 'true'
+  display: Long running instance. Required for investigation mirroring and direct messages.
+  hidden: true
   name: longRunning
   required: false
   type: 8
-  defaultvalue: 'true'
-  hidden: true
+  section: Connect
+  advanced: true
 - display: Bot display name in Slack (Cortex XSOAR by default)
   name: bot_name
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   required: false
   type: 0
-- display: Maximum time to wait for a rate limiting call in seconds
+  section: Connect
+  advanced: true
+- defaultvalue: '60'
+  display: Maximum time to wait for a rate limiting call in seconds
   name: max_limit_time
   required: false
   type: 0
-  defaultvalue: '60'
-- display: Number of objects to return in each paginated call
+  section: Connect
+  advanced: true
+- defaultvalue: '200'
+  display: Number of objects to return in each paginated call
   name: paginated_count
   required: false
   type: 0
-  defaultvalue: '200'
+  section: Collect
+  advanced: true
 - display: Proxy URL to use in Slack API calls
   name: proxy_url
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Comma separated list of tags To filter the messages sent from demisto.
   hidden: false
   name: filtered_tags
   required: false
   type: 0
   additionalinfo: Only supported in Demisto V6.1 and above.
-description: Send messages and notifications to your Slack team.
-display: Slack v2
+  section: Collect
+  advanced: true
+description: Deprecated. Use SlackV3 instead.
+display: Slack v2 (Deprecated)
 name: SlackV2
 script:
   commands:
@@ -220,7 +253,7 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Mirrors the investigation between Slack and the Demisto War Room.
     execution: false
     name: mirror-investigation
@@ -272,7 +305,7 @@ script:
       name: blocks
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Sends a message to a user, group, or channel.
     execution: false
     name: send-notification
@@ -343,7 +376,7 @@ script:
       name: channel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Archives a Slack channel.
     execution: false
     name: close-channel
@@ -384,7 +417,7 @@ script:
       name: comment
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).
     execution: false
     name: slack-send-file
@@ -401,7 +434,7 @@ script:
       name: topic
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Sets the topic for a channel.
     execution: false
     name: slack-set-channel-topic
@@ -429,7 +462,7 @@ script:
       name: users
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a channel in Slack.
     execution: false
     name: slack-create-channel
@@ -446,7 +479,7 @@ script:
       name: channel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Invites users to join a channel.
     execution: false
     name: slack-invite-to-channel
@@ -463,7 +496,7 @@ script:
       name: channel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Removes users from the specified channel.
     execution: false
     name: slack-kick-from-channel
@@ -480,7 +513,7 @@ script:
       name: channel
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Renames a channel in Slack.
     execution: false
     name: slack-rename-channel
@@ -491,7 +524,7 @@ script:
       name: user
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Get details about a specified user.
     execution: false
     name: slack-get-user-details
@@ -565,7 +598,7 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns a list of channels matching criteria
     execution: false
     name: slack-filter-channels
