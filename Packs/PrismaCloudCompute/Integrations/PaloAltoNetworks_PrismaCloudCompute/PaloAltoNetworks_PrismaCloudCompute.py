@@ -1726,7 +1726,7 @@ def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> Comman
         txt = f"Error: {res.status_code} - {res.text}"
     
     entry = CommandResults(
-        human_readable=txt
+        readable_output=txt
     )
     return entry
 
