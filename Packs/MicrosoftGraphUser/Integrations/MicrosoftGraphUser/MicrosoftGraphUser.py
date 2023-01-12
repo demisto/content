@@ -464,9 +464,9 @@ def revoke_user_session_command(client: MsGraphClient, args: Dict):
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('creds_tenant_id', {}).get('password') or params.get('tenant_id')
-    auth_and_token_url = params.get('creds_auth_id', {}).get('password') or params.get('auth_id', '')
-    enc_key = params.get('creds_enc_key', {}).get('password') or params.get('enc_key')
+    tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id', '')
+    enc_key = params.get('creds_enc_key', {}).get('password', '') or params.get('enc_key', '')
     verify = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
     redirect_uri = params.get('redirect_uri', '')
