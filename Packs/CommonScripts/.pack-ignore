@@ -76,7 +76,16 @@ ignore=SC105
 [file:1_10_42.md]
 ignore=RN114
 
+[file:1_11_0.md]
+ignore=RN114
+
+[file:1_10_47.md]
+ignore=RN114
+
 [file:1_10_44.md]
+ignore=RN114
+
+[file:1_10_50.md]
 ignore=RN114
 
 [file:1_10_43.md]
@@ -108,6 +117,25 @@ ActiveDirectoryQuery
 GenericPolling
 VirusTotal
 keysToKeep
+ExportToXLSX
+xlsx
+CVSSCalculator
+HIPAA
+CVSS
+regex
+BreachConfirmationHTML
+SIG](https://www.first.org/cvss
+Docs](https://xsoar.pan.dev/docs
+DPO
+GDPR
+DPIA
+PII
+CISO
+CIDRBiggerThanPrefix
+GreaterCidrNumAddresses
+InRange
+AfterRelativeDate
+CheckIfSubdomain
 BetweenDates
 FiltersAndTransformers
 ConvertAllExcept
