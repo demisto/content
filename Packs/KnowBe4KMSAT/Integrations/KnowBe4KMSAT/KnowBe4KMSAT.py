@@ -94,6 +94,12 @@ class UserEventClient(BaseClient):
         })
         return self._http_request(method='GET', url_suffix='/events', resp_type='json', ok_codes=(200,), params=params)
 
+    def user_event_types(self, args: dict):
+        params = remove_empty_elements({
+            'nane': args.get('name')
+        })
+        return self._http_request(method='GET', url_suffix='/event_types', resp_type='json', ok_codes=(200,), params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -263,6 +269,17 @@ def get_user_events(client: UserEventClient, args: dict) -> CommandResults:
                           readable_output=tableToMarkdown(name='KMSAT_User_Events', t=response))
 
 
+def get_user_event_types(client: UserEventClient, args: dict) -> CommandResults:
+    response = client.user_event_types(args)
+    return_results(response)
+    if response is None:
+        raise DemistoException('Translation failed: the response from server did not include user event types`data`.', res=response)
+    return CommandResults(outputs_prefix='KMSAT_User_Event_Types_Returned',
+                          outputs_key_field='',
+                          raw_response=response,
+                          readable_output=tableToMarkdown(name='KMSAT_User_Event_Types', t=response))
+
+
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
@@ -366,6 +383,8 @@ def main() -> None:
             return_results(get_training_enrollments(client))
         elif command == 'get-user-events':
             return_results(get_user_events(userEventClient, args))
+        elif command == 'get-user-event-types':
+            return_results(get_user_event_types(userEventClient, args))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
