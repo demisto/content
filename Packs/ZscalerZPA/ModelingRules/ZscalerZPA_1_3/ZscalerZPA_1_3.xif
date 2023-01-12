@@ -3,7 +3,7 @@ filter
     cat in ("ZPA User Status", "ZPA User Activity")
 | alter
     xdm.network.rule = policy,
-    xdm.target.port = to_integer(dstPort),
+    xdm.target.port = to_integer(0),
     xdm.source.port=to_integer(0),
     xdm.target.ipv4 = dst,
     xdm.source.ipv4 = src,
