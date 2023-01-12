@@ -28,9 +28,8 @@ from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.scripts.utils import logging_wrapper as logging
 
-PACK_PATH_VERSION_REGEX = re.compile(
-    fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
-    r'+\.zip$')
+PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
+                                     r'+\.zip$')
 SUCCESS_FLAG = True
 
 
@@ -665,6 +664,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             pool.submit(search_pack_and_its_dependencies,
                         client, pack_id, packs_to_install, installation_request_body, lock)
 
-    install_packs(client, host, installation_request_body, request_timeout=600)
+    request_timeout = 1800 if host and host.startswith('qa2-test') else 999999   # hot-fix for xsiam packs install issue
+
+    install_packs(client, host, installation_request_body, request_timeout)
 
     return packs_to_install, SUCCESS_FLAG

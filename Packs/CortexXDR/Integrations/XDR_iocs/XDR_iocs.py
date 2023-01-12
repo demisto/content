@@ -92,7 +92,9 @@ class Client:
 
         try:
             return res.json()
-        except json.decoder.JSONDecodeError as e:
+        # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError when it is not
+        # possible to load json.
+        except (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError) as e:
             raise DemistoException(f'Could not parse json out of {res.content.decode()}', exception=e, res=res)
 
     @property
