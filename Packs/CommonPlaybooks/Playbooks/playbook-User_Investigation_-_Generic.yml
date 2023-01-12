@@ -1631,6 +1631,7 @@ tasks:
       id: b0ca1cf1-882c-4524-8345-349196d24b59
       version: -1
       name: Search for Related alerts from Cortex XDR?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1721,6 +1722,7 @@ tasks:
       id: f3703a99-a8bd-4d6c-858d-98d60beb9103
       version: -1
       name: Found results from QRadar?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -1765,6 +1767,7 @@ tasks:
       id: bf8ade55-9896-42f8-8618-945ffbc9ae66
       version: -1
       name: Found results from Splunk?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2576,6 +2579,7 @@ tasks:
       id: daa9ebb2-fd50-4354-86c8-407cf70841e9
       version: -1
       name: Is Cortex XDR integration enabled?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
