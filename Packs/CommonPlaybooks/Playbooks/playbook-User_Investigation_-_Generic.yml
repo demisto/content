@@ -137,37 +137,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 429d288f-ebcb-48f2-8aa5-430b754ea8ec
-    type: title
-    task:
-      id: 429d288f-ebcb-48f2-8aa5-430b754ea8ec
-      version: -1
-      name: Manually search
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 720,
-          "y": 740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: d03a6d37-76b9-40dd-83ac-a9d3e48de6da
@@ -182,7 +151,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+      - "28"
       Azure Log Analytics:
       - "14"
       Qradar:
@@ -275,12 +244,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d3f0aa8d-651f-493f-8084-ed98d5e99160
+    taskid: dfbef6b4-637f-4020-8b40-139386376a43
     type: playbook
     task:
-      id: d3f0aa8d-651f-493f-8084-ed98d5e99160
+      id: dfbef6b4-637f-4020-8b40-139386376a43
       version: -1
-      name: QRadarFullSearch
+      name: Search for failed logon attempts using Splunk
       description: This playbook runs a QRadar query and returns its results to the context.
       playbookName: QRadarFullSearch
       type: playbook
@@ -317,53 +286,15 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: b442475d-f619-4492-862c-2ae9c627071d
-    type: regular
-    task:
-      id: b442475d-f619-4492-862c-2ae9c627071d
-      version: -1
-      name: Manually search for related events
-      description: |
-        Search for Windows event IDs 4771 and 4625 with Logon Type 2,7,10.
-        Search for message="Failed password" OR message="FAILED LOGIN" OR message="Invalid user" on Linux logs.
-        Search for Treat logs on the user.
-        Search for Related XDR Alerts.
-        Search for the user's permanent location.
-        Search for a failed logon event in Okta.
-        Search for suspicious activities such as MFA bypass attempts or reset password attempts.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 720,
-          "y": 875
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 369240fc-bb32-4b29-8f83-b378ae4dd770
+    taskid: 4c046e71-59e8-447c-86c7-77f3f3f8cc4c
     type: regular
     task:
-      id: 369240fc-bb32-4b29-8f83-b378ae4dd770
+      id: 4c046e71-59e8-447c-86c7-77f3f3f8cc4c
       version: -1
-      name: Search for failed logon from the user
-      description: Search for failed logon events.
+      name: Search for failed logon attempts using Splunk
+      description: Search for failed logon events
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -445,7 +376,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+      - "28"
       "yes":
       - "44"
     separatecontext: false
@@ -490,12 +421,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 399d0faf-325a-4c18-8dac-69b2a952fc26
+    taskid: e0fcae6a-4dcc-4493-86d3-4f7252cfede7
     type: regular
     task:
-      id: 399d0faf-325a-4c18-8dac-69b2a952fc26
+      id: e0fcae6a-4dcc-4493-86d3-4f7252cfede7
       version: -1
-      name: Check for failed logon attempts from the user
+      name: Search for failed logon attempts using OKTA
       description: Gets logs on failed logon events.
       script: Okta v2|||okta-get-logs
       type: regular
@@ -571,13 +502,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: a16e3aaf-599b-4b68-8d6f-55efeef8def1
+    taskid: 5cac4ebd-18f3-425d-8016-ddee992057d4
     type: regular
     task:
-      id: a16e3aaf-599b-4b68-8d6f-55efeef8def1
+      id: 5cac4ebd-18f3-425d-8016-ddee992057d4
       version: -1
-      name: Azure Log Analytics search for failed logon from the user
-      description: Executes an analytics query for failed logon events.
+      name: Search for failed logon attempts using Azure Log Analytics
+      description: Executes an Analytics query for failed logon events.
       script: '|||azure-log-analytics-execute-query'
       type: regular
       iscommand: true
@@ -687,7 +618,7 @@ tasks:
       {
         "position": {
           "x": 1900,
-          "y": 930
+          "y": 950
         }
       }
     note: false
@@ -756,10 +687,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: dbb65bbf-ed33-4787-8db0-20cecf327ab0
+    taskid: 5fb75868-b70b-4518-8e1b-6f5053856ded
     type: regular
     task:
-      id: dbb65bbf-ed33-4787-8db0-20cecf327ab0
+      id: 5fb75868-b70b-4518-8e1b-6f5053856ded
       version: -1
       name: Set not a permanent country
       description: Set a value in context under the key you entered.
@@ -774,7 +705,7 @@ tasks:
       key:
         simple: PermanentCountry
       value:
-        simple: "No"
+        simple: "False"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -793,10 +724,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: ee038b4a-7d1c-4409-8415-2eab74ee06ae
+    taskid: 0f2698d2-a025-44a8-897f-23bba8bb10d4
     type: regular
     task:
-      id: ee038b4a-7d1c-4409-8415-2eab74ee06ae
+      id: 0f2698d2-a025-44a8-897f-23bba8bb10d4
       version: -1
       name: Set permanent country
       description: Set a value in context under the key you entered.
@@ -811,13 +742,13 @@ tasks:
       key:
         simple: PermanentCountry
       value:
-        simple: "Yes"
+        simple: "True"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1680,
+          "x": 1690,
           "y": 1495
         }
       }
@@ -830,10 +761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: b93855ac-03c3-4e1f-81c0-fa1d989acf58
+    taskid: 0d6d80de-9648-40ab-8748-6b8882e1b483
     type: regular
     task:
-      id: b93855ac-03c3-4e1f-81c0-fa1d989acf58
+      id: 0d6d80de-9648-40ab-8748-6b8882e1b483
       version: -1
       name: Count failed logon from Azure Log Analytics logs
       description: Count an array size.
@@ -872,13 +803,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: add2888c-09b9-428d-8567-9a5eed75e91f
+    taskid: 24e8df5c-b791-4f93-8dfb-b825c3d54496
     type: regular
     task:
-      id: add2888c-09b9-428d-8567-9a5eed75e91f
+      id: 24e8df5c-b791-4f93-8dfb-b825c3d54496
       version: -1
-      name: count Okta failed logon
-      description: Count an array size.
+      name: Count Okta failed logon
+      description: Count an array size
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -928,8 +859,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1940
+          "x": 730,
+          "y": 2050
         }
       }
     note: false
@@ -941,10 +872,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 8d5f4d57-bdb3-4f0e-835b-de06e784a823
+    taskid: c5ca5fdf-8b7b-47f0-8253-9dbdc76f5b4b
     type: regular
     task:
-      id: 8d5f4d57-bdb3-4f0e-835b-de06e784a823
+      id: c5ca5fdf-8b7b-47f0-8253-9dbdc76f5b4b
       version: -1
       name: Count failed logon from QRadar logs
       description: Count an array size.
@@ -1028,7 +959,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+      - "28"
       "yes":
       - "43"
     separatecontext: false
@@ -1099,7 +1030,7 @@ tasks:
       {
         "position": {
           "x": 1200,
-          "y": 930
+          "y": 950
         }
       }
     note: false
@@ -1111,12 +1042,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 912dcc74-cd17-454e-8ea2-695af8a14e4b
+    taskid: 41b8ee9d-eecb-46a3-8946-778cc405d540
     type: regular
     task:
-      id: 912dcc74-cd17-454e-8ea2-695af8a14e4b
+      id: 41b8ee9d-eecb-46a3-8946-778cc405d540
       version: -1
-      name: count Threat logs for the user from Panorama logs
+      name: Count Threat logs for the user from Panorama logs
       description: Count an array size.
       scriptName: CountArraySize
       type: regular
@@ -1179,7 +1110,7 @@ tasks:
       {
         "position": {
           "x": 1200,
-          "y": 1105
+          "y": 1115
         }
       }
     note: false
@@ -1334,12 +1265,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 490591b6-0fa6-42df-8a2a-78a52f6ef169
+    taskid: 3046faa5-f6ef-426d-8bca-2f4db8a124d2
     type: regular
     task:
-      id: 490591b6-0fa6-42df-8a2a-78a52f6ef169
+      id: 3046faa5-f6ef-426d-8bca-2f4db8a124d2
       version: -1
-      name: count failed logon from Splunk logs
+      name: Count failed logon from Splunk logs
       description: Count an array size.
       scriptName: CountArraySize
       type: regular
@@ -1387,7 +1318,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+      - "28"
       "yes":
       - "42"
     separatecontext: false
@@ -1537,7 +1468,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "68"
+      - "72"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1694,13 +1625,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 588f6e7b-b39f-42ec-8053-568d9aeb1cea
+    taskid: b0ca1cf1-882c-4524-8345-349196d24b59
     type: condition
     task:
-      id: 588f6e7b-b39f-42ec-8053-568d9aeb1cea
+      id: b0ca1cf1-882c-4524-8345-349196d24b59
       version: -1
-      name: Search for Related alerts from XDR?
-      description: ''
+      name: Search for Related alerts from Cortex XDR?
       type: condition
       iscommand: false
       brand: ""
@@ -1785,13 +1715,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: c2915499-93da-4080-8583-98c9f60bccf8
+    taskid: f3703a99-a8bd-4d6c-858d-98d60beb9103
     type: condition
     task:
-      id: c2915499-93da-4080-8583-98c9f60bccf8
+      id: f3703a99-a8bd-4d6c-858d-98d60beb9103
       version: -1
-      name: Does the result from QRadar exist?
-      description: ''
+      name: Found results from QRadar?
       type: condition
       iscommand: false
       brand: ""
@@ -1830,13 +1759,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 46fdfc73-7f2c-445f-860b-c239a93963e6
+    taskid: bf8ade55-9896-42f8-8618-945ffbc9ae66
     type: condition
     task:
-      id: 46fdfc73-7f2c-445f-860b-c239a93963e6
+      id: bf8ade55-9896-42f8-8618-945ffbc9ae66
       version: -1
-      name: Does the result from Splunk exist?
-      description: ''
+      name: Found results from Splunk?
       type: condition
       iscommand: false
       brand: ""
@@ -1856,6 +1784,8 @@ tasks:
                 root: SplunkFailedLogonLogs
                 accessor: _raw
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1873,12 +1803,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 49054f44-d793-4785-8203-540913eee25c
+    taskid: 29b8a958-f235-43fc-8e0d-0ddd36fea704
     type: condition
     task:
-      id: 49054f44-d793-4785-8203-540913eee25c
+      id: 29b8a958-f235-43fc-8e0d-0ddd36fea704
       version: -1
-      name: Does the result from Azure Log Analytics exist?
+      name: Found results from Azure Log Analytics?
       description: ''
       type: condition
       iscommand: false
@@ -1899,6 +1829,8 @@ tasks:
                 root: AzureFailedLogonLogs.tables.rows.[0]
                 accessor: '[0]'
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1916,12 +1848,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 1481235c-ae5e-4914-81fd-f2bceaaef0f7
+    taskid: b6c17c60-37ad-40dc-8bad-59966f325937
     type: condition
     task:
-      id: 1481235c-ae5e-4914-81fd-f2bceaaef0f7
+      id: b6c17c60-37ad-40dc-8bad-59966f325937
       version: -1
-      name: Does the result from Okta exist?
+      name: Found results from Okta?
       description: ''
       type: condition
       iscommand: false
@@ -1942,6 +1874,8 @@ tasks:
                 root: OktaFailedLogonLogs
                 accessor: displayMessage
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1959,12 +1893,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 3268fbf0-932b-4996-8338-4bdaf6beb90c
+    taskid: d3fe462b-e1b9-4d60-8160-0df21d2b7b90
     type: condition
     task:
-      id: 3268fbf0-932b-4996-8338-4bdaf6beb90c
+      id: d3fe462b-e1b9-4d60-8160-0df21d2b7b90
       version: -1
-      name: Does the result from PAN-OS exist?
+      name: Found results from PAN-OS?
       description: ''
       type: condition
       iscommand: false
@@ -1992,7 +1926,7 @@ tasks:
       {
         "position": {
           "x": 1200,
-          "y": 1280
+          "y": 1310
         }
       }
     note: false
@@ -2004,12 +1938,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 71126b4d-d9b4-4e9a-8dfd-ce659b08882b
+    taskid: bb81aafa-c811-40f0-8f4f-da642f5a291a
     type: regular
     task:
-      id: 71126b4d-d9b4-4e9a-8dfd-ce659b08882b
+      id: bb81aafa-c811-40f0-8f4f-da642f5a291a
       version: -1
-      name: Set Count to zero
+      name: Set count to zero
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2041,12 +1975,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 31ac3906-a6f9-4ab0-8bb8-f6d977a4f705
+    taskid: 38037e76-2879-4170-869f-e4a4b974e072
     type: regular
     task:
-      id: 31ac3906-a6f9-4ab0-8bb8-f6d977a4f705
+      id: 38037e76-2879-4170-869f-e4a4b974e072
       version: -1
-      name: Set Count to zero
+      name: Set count to zero
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2078,12 +2012,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: cf3e9886-5c4e-4aae-8183-6bb253958c3d
+    taskid: 5f20844e-5466-4c73-8e53-9d39125f78b5
     type: condition
     task:
-      id: cf3e9886-5c4e-4aae-8183-6bb253958c3d
+      id: 5f20844e-5466-4c73-8e53-9d39125f78b5
       version: -1
-      name: Does the result from Okta exist?
+      name: Found results from Okta?
       description: ''
       type: condition
       iscommand: false
@@ -2104,12 +2038,14 @@ tasks:
                 root: countrysuccessLogs
                 accessor: displayMessage
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1900,
-          "y": 1105
+          "y": 1115
         }
       }
     note: false
@@ -2210,7 +2146,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+      - "28"
       "yes":
       - "64"
     separatecontext: false
@@ -2325,7 +2261,7 @@ tasks:
       {
         "position": {
           "x": 2520,
-          "y": 930
+          "y": 950
         }
       }
     note: false
@@ -2337,12 +2273,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 494f0207-1df4-40e8-87d2-ba106bc3890c
+    taskid: c43b0d05-89cc-4426-8241-deb4e51b53a8
     type: condition
     task:
-      id: 494f0207-1df4-40e8-87d2-ba106bc3890c
+      id: c43b0d05-89cc-4426-8241-deb4e51b53a8
       version: -1
-      name: Does the result from Okta exist?
+      name: Found results from Okta?
       description: ''
       type: condition
       iscommand: false
@@ -2363,12 +2299,14 @@ tasks:
                 root: OktaFailedLogonLogs
                 accessor: displayMessage
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2520,
-          "y": 1095
+          "y": 1115
         }
       }
     note: false
@@ -2380,10 +2318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: ce6aaf59-b4be-454f-8456-c8bf916285fc
+    taskid: e11c0d9f-9fbe-4552-82ce-4f0235359a69
     type: regular
     task:
-      id: ce6aaf59-b4be-454f-8456-c8bf916285fc
+      id: e11c0d9f-9fbe-4552-82ce-4f0235359a69
       version: -1
       name: Count Okta Suspicious activity
       description: Count an array size.
@@ -2421,10 +2359,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 917e8db5-c814-4cf0-869e-415782186a11
+    taskid: f6436823-f79a-419a-86ae-bccdda73167e
     type: playbook
     task:
-      id: 917e8db5-c814-4cf0-869e-415782186a11
+      id: f6436823-f79a-419a-86ae-bccdda73167e
       version: -1
       name: Cortex XDR - Get entity alerts by MITRE tactics
       description: |-
@@ -2443,6 +2381,8 @@ tasks:
       HuntCnCTechniques:
         simple: "True"
       HuntCollectionTechniques:
+        simple: "True"
+      HuntCredentialAccessTechniques:
         simple: "True"
       HuntDefenseEvasionTechniques:
         simple: "True"
@@ -2492,10 +2432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: e099cc07-7f34-410a-8f57-6b9b3bd63c8f
+    taskid: ace6ab7d-28ef-47f9-8d19-8a254463c305
     type: regular
     task:
-      id: e099cc07-7f34-410a-8f57-6b9b3bd63c8f
+      id: ace6ab7d-28ef-47f9-8d19-8a254463c305
       version: -1
       name: Check for Suspicious user agent access app
       description: Gets logs by providing optional filters.
@@ -2532,7 +2472,7 @@ tasks:
       {
         "position": {
           "x": 2920,
-          "y": 930
+          "y": 950
         }
       }
     note: false
@@ -2544,12 +2484,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 17f8b17a-f224-4e43-84fa-910cd989c0f4
+    taskid: d4ab024b-ae8a-43db-8640-b6fffb3fa1d6
     type: condition
     task:
-      id: 17f8b17a-f224-4e43-84fa-910cd989c0f4
+      id: d4ab024b-ae8a-43db-8640-b6fffb3fa1d6
       version: -1
-      name: Does the result from Okta exist?
+      name: Found results from Okta?
       description: ''
       type: condition
       iscommand: false
@@ -2577,7 +2517,7 @@ tasks:
       {
         "position": {
           "x": 2920,
-          "y": 1095
+          "y": 1115
         }
       }
     note: false
@@ -2589,10 +2529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: f52e02c4-020e-470e-8bdd-8b783886b4f7
+    taskid: 06b12992-8a2f-49cc-8744-bd2ec4137f04
     type: regular
     task:
-      id: f52e02c4-020e-470e-8bdd-8b783886b4f7
+      id: 06b12992-8a2f-49cc-8744-bd2ec4137f04
       version: -1
       name: Count Okta Suspicious User Agent
       description: Count an array size.
@@ -2628,14 +2568,70 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: daa9ebb2-fd50-4354-86c8-407cf70841e9
+    type: condition
+    task:
+      id: daa9ebb2-fd50-4354-86c8-407cf70841e9
+      version: -1
+      name: Is Cortex XDR integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3360,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "12_4_#default#": 0.15,
+      "12_28_#default#": 0.1,
       "22_24_#default#": 0.65,
       "22_25_yes": 0.63,
-      "32_4_#default#": 0.39,
-      "41_4_#default#": 0.37,
+      "32_28_#default#": 0.14,
+      "41_28_#default#": 0.18,
       "48_1_yes": 0.54,
       "48_28_#default#": 0.15,
       "49_28_#default#": 0.17,
@@ -2653,18 +2649,19 @@ view: |-
       "56_59_#default#": 0.29,
       "57_28_#default#": 0.28,
       "57_34_yes": 0.56,
-      "5_4_#default#": 0.18,
+      "5_28_#default#": 0.24,
       "60_28_#default#": 0.17,
       "61_28_#default#": 0.1,
-      "63_4_#default#": 0.11,
+      "63_28_#default#": 0.1,
       "66_28_#default#": 0.11,
       "66_67_yes": 0.61,
       "70_28_#default#": 0.1,
-      "70_71_yes": 0.59
+      "70_71_yes": 0.59,
+      "72_28_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2805,
+        "height": 2915,
         "width": 5090,
         "x": -1350,
         "y": -800
