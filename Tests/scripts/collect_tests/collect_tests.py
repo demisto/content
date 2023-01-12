@@ -1061,7 +1061,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
             for test in self.conf['test_marketplacev2']
         ))
 
-    def _collect(self) -> Optional[CollectionResult]:
+    def _col
+        lect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
             self._collect_all_marketplace_compatible_packs(),
