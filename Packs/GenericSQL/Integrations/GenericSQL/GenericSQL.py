@@ -291,8 +291,8 @@ def main():
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
     except Exception as err:
         if type(err).__name__ == 'OperationalError':
-            return_error(f"Unexpected error: certificate verify failed, unable to get local issuer certificate."
-                         f"Try selecting 'Trust any certificate' checkbox in the integration configuration")
+            return_error("Unexpected error: certificate verify failed, unable to get local issuer certificate. "
+                         "Try selecting 'Trust any certificate' checkbox in the integration configuration.")
         else:
             return_error(
                 f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
