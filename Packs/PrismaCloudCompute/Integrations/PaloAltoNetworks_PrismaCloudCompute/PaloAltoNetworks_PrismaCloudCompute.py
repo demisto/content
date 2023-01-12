@@ -8,6 +8,7 @@ from CommonServerPython import *
 import urllib3
 import ipaddress
 import dateparser
+import datetime
 import tempfile
 from typing import Tuple
 
@@ -1639,32 +1640,35 @@ def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandRe
         CommandResults: command-results object.
     """
     policies = client.get_waas_policies()
+    entry = []
+    for rule in policies.get("rules"):
+        for spec in rule.get("applicationsSpec"):
+            formatted_waas_policy = {
+                "SQLInjection": spec.get("sqli").get("effect"),
+                "CrossSiteScriptingXSS": spec.get("xss").get("effect"),
+                "OSCommandInjetion": spec.get("cmdi").get("effect"),
+                "CodeInjection": spec.get("codeInjection").get("effect"),
+                "LocalFileInclusion": spec.get("lfi").get("effect"),
+                "AttackToolsAndVulnScanners": spec.get("attackTools").get("effect"),
+                "Shellshock": spec.get("shellshock").get("effect"),
+                "MalformedHTTPRequest": spec.get("malformedReq").get("effect"),
+                "ATP": spec.get("networkControls").get("advancedProtectionEffect"),
+                "DetectInformationLeakage": spec.get("intelGathering").get("infoLeakageEffect")
+            }
+            data = {
+                "Name": rule.get("name"),
+                "WaasPolicy": formatted_waas_policy
+            }
 
-    rules = policies["rules"][0]["applicationsSpec"][0]
-    formatted_waas_policy = [{
-        "SQLInjection": rules.get("sqli").get("effect"),
-        "CrossSiteScriptingXSS": rules.get("xss").get("effect"),
-        "OSCommandInjetion": rules.get("cmdi").get("effect"),
-        "CodeInjection": rules.get("codeInjection").get("effect"),
-        "LocalFileInclusion": rules.get("lfi").get("effect"),
-        "AttackToolsAndVulnScanners": rules.get("attackTools").get("effect"),
-        "Shellshock": rules("shellshock").get("effect"),
-        "MalformedHTTPRequest": rules.get("malformedReq").get("effect"),
-        "ATP": rules.get("networkControls").get("advancedProtectionEffect"),
-        "DetectInformationLeakage": rules.get("intelGathering").get("infoLeakageEffect")
-    }]
-    data = {
-        "Name": "dvwa",
-        "WaasPolicy": formatted_waas_policy
-    }
+            entry.append(CommandResults(
+                outputs_prefix="PrismaCloudCompute.Policies",
+                outputs_key_field="Name",
+                outputs=data,
+                readable_output=tableToMarkdown(data["Name"], data["WaasPolicy"]),
+                raw_response=policies
+            ))
 
-    return CommandResults(
-        outputs_prefix="PrismaCloudCompute.Policies",
-        outputs_key_field="Name",
-        outputs=data,
-        readable_output=tableToMarkdown(data["Name"], data["WaasPolicy"]),
-        raw_response=policies
-    )
+    return entry
 
 
 def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -1689,14 +1693,6 @@ def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> Comman
         policy["rules"][index]["applicationsSpec"][0][args.get("attack_type")] = {"effect": args.get("action") }
 
     res = client.update_waas_policies(policy)
-    #if res.status_code == 200:
-    #    demisto.results("Successfully updated the WaaS policy")
-    #else:
-    #    txt = f"Error: {res.status_code} - {res.text}"
-    #    entry = CommandResults(
-    #        human_readable=txt
-    #    )
-    #    demisto.results("Something went wrong...")
 
     txt = "Successfully updated the WaaS policy"
     if res.status_code != 200:
