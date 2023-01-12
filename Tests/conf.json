@@ -5225,7 +5225,12 @@
         },
         {
             "integrations": "FortinetFortiwebVM",
-            "playbookID": "playbook-FortiwebVM_V1_Test or playbook-FortiwebVM_V2_Test",
+            "playbookID": "playbook-FortiwebVM_V1_Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "FortinetFortiwebVM",
+            "playbookID": "playbook-FortiwebVM_V2_Test",
             "fromversion": "6.2.0"
         },
         {
