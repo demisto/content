@@ -18,7 +18,6 @@ configuration:
   required: true
   type: 0
 - name: creds_token
-  required: false
   type: 9
   displaypassword: User's key to access the API (for legacy method)
   hiddenusername: true
