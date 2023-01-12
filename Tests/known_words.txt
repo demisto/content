@@ -220,5 +220,6 @@ subplaybook
 IAMApiModule
 Salesforce
 Atlassian
+PTR
 ssh
 YAML
