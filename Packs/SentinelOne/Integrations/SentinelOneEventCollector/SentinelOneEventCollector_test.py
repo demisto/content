@@ -6,12 +6,12 @@ import requests_mock
 
 ''' CONSTANTS '''
 
-ACTIVITIES_MOCK_URL = 'https://test.com/web/api/v2.1/activities?updatedAt__gt=2022-01-04+00%3A00%3A00&limit=1000&sortBy=updatedAt&sortOrder=asc'  # noqa: E501
-ACTIVITIES_SECOND_MOCK_URL = 'https://test.com/web/api/v2.1/activities?updatedAt__gt=2022-09-06T20%3A37%3A55.912951Z&limit=1000&sortBy=updatedAt&sortOrder=asc'  # noqa: E501
-THREATS_MOCK_URL = 'https://test.com/web/api/v2.1/threats?updatedAt__gt=2022-01-04+00%3A00%3A00&limit=1000&sortBy=updatedAt&sortOrder=asc'  # noqa: E501
-THREATS_SECOND_MOCK_URL = 'https://test.com/web/api/v2.1/threats?updatedAt__gt=2022-12-20T15%3A51%3A17.514437Z&limit=1000&sortBy=updatedAt&sortOrder=asc'  # noqa: E501
-ALERTS_MOCK_URL = 'https://test.com/web/api/v2.1/cloud-detection/alerts?limit=1000&updatedAt__gt=2022-01-04+00%3A00%3A00&sortBy=alertInfoupdatedAt&sortOrder=asc'  # noqa: E501
-ALERTS_SECOND_MOCK_URL = 'https://test.com/web/api/v2.1/cloud-detection/alerts?limit=1000&updatedAt__gt=2022-12-20T13%3A54%3A43.027000Z&sortBy=alertInfoupdatedAt&sortOrder=asc'  # noqa: E501
+ACTIVITIES_MOCK_URL = 'https://test.com/web/api/v2.1/activities?createdAt__gt=2022-01-04+00%3A00%3A00&limit=1000&sortBy=createdAt&sortOrder=asc'  # noqa: E501
+ACTIVITIES_SECOND_MOCK_URL = 'https://test.com/web/api/v2.1/activities?createdAt__gt=2022-09-06T20%3A37%3A55.912951Z&limit=1000&sortBy=createdAt&sortOrder=asc'  # noqa: E501
+THREATS_MOCK_URL = 'https://test.com/web/api/v2.1/threats?createdAt__gt=2022-01-04+00%3A00%3A00&limit=1000&sortBy=createdAt&sortOrder=asc'  # noqa: E501
+THREATS_SECOND_MOCK_URL = 'https://test.com/web/api/v2.1/threats?createdAt__gt=2022-12-20T15%3A51%3A17.514437Z&limit=1000&sortBy=createdAt&sortOrder=asc'  # noqa: E501
+ALERTS_MOCK_URL = 'https://test.com/web/api/v2.1/cloud-detection/alerts?limit=1000&createdAt__gt=2022-01-04+00%3A00%3A00&sortBy=alertInfoCreatedAt&sortOrder=asc'  # noqa: E501
+ALERTS_SECOND_MOCK_URL = 'https://test.com/web/api/v2.1/cloud-detection/alerts?limit=1000&createdAt__gt=2022-12-20T13%3A54%3A43.027000Z&sortBy=alertInfoCreatedAt&sortOrder=asc'  # noqa: E501
 
 ''' HELPER FUNCTIONS '''
 
@@ -88,14 +88,14 @@ def test_fetch_events():
 
         next_run, events = fetch_events(client, last_run, ['ACTIVITIES', 'THREATS', 'ALERTS'])
 
-        assert next_run.get('last_activity_updated') == '2022-09-06T20:37:55.912951Z'
-        assert next_run.get('last_alert_updated') == '2022-12-20T13:54:43.027000Z'
+        assert next_run.get('last_activity_created') == '2022-09-06T20:37:55.912951Z'
+        assert next_run.get('last_alert_created') == '2022-12-20T13:54:43.027000Z'
         assert len(events) == 6
 
         next_run, events = fetch_events(client, last_run, ['ACTIVITIES', 'THREATS', 'ALERTS'])
 
-        assert next_run.get('last_activity_updated') == '2022-09-06T20:39:15.445218Z'
-        assert next_run.get('last_alert_updated') == '2022-12-20T13:54:43.027000Z'
+        assert next_run.get('last_activity_created') == '2022-09-06T20:39:15.445218Z'
+        assert next_run.get('last_alert_created') == '2022-12-20T13:54:43.027000Z'
         assert len(events) == 2
 
 
@@ -128,6 +128,6 @@ def test_main(mocker):
         main()
 
     assert len(events.call_args[0][0]) == 6
-    assert events.call_args[0][0][0].get('_time') == events.call_args[0][0][0].get('updatedAt')
+    assert events.call_args[0][0][0].get('_time') == events.call_args[0][0][0].get('createdAt')
     assert events.call_args[1].get('vendor') == VENDOR
     assert events.call_args[1].get('product') == PRODUCT

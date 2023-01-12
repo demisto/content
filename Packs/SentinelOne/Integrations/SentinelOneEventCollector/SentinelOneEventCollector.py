@@ -39,15 +39,15 @@ class Client(BaseClient):
         All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            from_time: Time (the incident was updated) to start fetching.
+            from_time: Time (the incident was created) to start fetching.
 
         Returns:
             list: The activities.
         """
         params = {
-            'updatedAt__gt': from_time,
+            'createdAt__gt': from_time,
             'limit': self.limit,
-            'sortBy': 'updatedAt',
+            'sortBy': 'createdAt',
             'sortOrder': 'asc',
         }
         result = self._http_request('GET', url_suffix='/activities', params=params)
@@ -59,15 +59,15 @@ class Client(BaseClient):
         All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            from_time: Time (the incident was updated) to start fetching.
+            from_time: Time (the incident was created) to start fetching.
 
         Returns:
             list: The threats.
         """
         params = {
-            'updatedAt__gt': from_time,
+            'createdAt__gt': from_time,
             'limit': self.limit,
-            'sortBy': 'updatedAt',
+            'sortBy': 'createdAt',
             'sortOrder': 'asc',
         }
         result = self._http_request('GET', url_suffix='/threats', params=params)
@@ -79,15 +79,15 @@ class Client(BaseClient):
         All the parameters are passed directly to the API as HTTP GET parameters in the request
 
         Args:
-            from_time: Time (the incident was updated) to start fetching.
+            from_time: Time (the incident was created) to start fetching.
 
         Returns:
             list: The alerts.
         """
         params = {
             'limit': self.limit,
-            'updatedAt__gt': from_time,
-            'sortBy': 'alertInfoupdatedAt',
+            'createdAt__gt': from_time,
+            'sortBy': 'alertInfoCreatedAt',
             'sortOrder': 'asc',
         }
         result = self._http_request('GET', url_suffix='/cloud-detection/alerts', params=params)
@@ -112,9 +112,9 @@ def get_events(client: Client, event_type: List,
 
 def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:  # type: ignore
     return {
-        'last_activity_updated': from_time,
-        'last_threat_updated': from_time,
-        'last_alert_updated': from_time,
+        'last_activity_created': from_time,
+        'last_threat_created': from_time,
+        'last_alert_created': from_time,
     }
 
 
@@ -128,11 +128,11 @@ def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]
     """
     for event in events:
         if alert_info := event.get('alertInfo'):
-            event["_time"] = alert_info.get("updatedAt")
+            event["_time"] = alert_info.get("createdAt")
         if threat_info := event.get('threatInfo'):
-            event["_time"] = threat_info.get("updatedAt")
+            event["_time"] = threat_info.get("createdAt")
         else:  # Otherwise, it's an activity.
-            event["_time"] = event.get("updatedAt")
+            event["_time"] = event.get("createdAt")
 
     return events
 
@@ -175,12 +175,12 @@ def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type
     """
     Args:
         client (Client): SentinelOne client to use.
-        last_run (dict): A dict containing the latest event (for each event type) updated time we got from last fetch.
-            For example: {'last_activity_updated': '2023-01-01T00:00:00', 'last_threat_updated': '2023-01-01T00:00:00'}
+        last_run (dict): A dict containing the latest event (for each event type) created time we got from last fetch.
+            For example: {'last_activity_created': '2023-01-01T00:00:00', 'last_threat_created': '2023-01-01T00:00:00'}
         event_type (list): Event type to be fetched ['ACTIVITIES', 'THREATS', 'ALERTS']
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be updated in XSIAM.
+        list: List of events that will be created in XSIAM.
     """
     if not event_type:
         event_type = ['ACTIVITIES', 'THREATS', 'ALERTS']
@@ -188,17 +188,17 @@ def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type
     demisto.info(f'Fetched event of type: {event_type} from time {last_run}.')
     events = []
     if 'ACTIVITIES' in event_type:
-        if activities := client.get_activities(last_run['last_activity_updated']):
+        if activities := client.get_activities(last_run['last_activity_created']):
             events.extend(activities)
-            last_run['last_activity_updated'] = activities[-1].get('updatedAt')
+            last_run['last_activity_created'] = activities[-1].get('createdAt')
     if 'THREATS' in event_type:
-        if threats := client.get_threats(last_run['last_threat_updated']):
+        if threats := client.get_threats(last_run['last_threat_created']):
             events.extend(threats)
-            last_run['last_threat_updated'] = threats[-1].get('threatInfo', {}).get('updatedAt')
+            last_run['last_threat_created'] = threats[-1].get('threatInfo', {}).get('createdAt')
     if 'ALERTS' in event_type:
-        if alerts := client.get_alerts(last_run['last_alert_updated']):
+        if alerts := client.get_alerts(last_run['last_alert_created']):
             events.extend(alerts)
-            last_run['last_alert_updated'] = alerts[-1].get('alertInfo', {}).get('updatedAt')
+            last_run['last_alert_created'] = alerts[-1].get('alertInfo', {}).get('createdAt')
 
     demisto.info(f'Setting next run {last_run}.')
     return last_run, events

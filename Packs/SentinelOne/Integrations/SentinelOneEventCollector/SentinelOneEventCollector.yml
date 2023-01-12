@@ -47,7 +47,7 @@ configuration:
   type: 0
   section: Collect
 - defaultvalue: 1000
-  display: The maximum number of alerts per fetch should be between 1-1000
+  display: The maximum number of events per fetch should be between 1-1000
   additionalinfo: The limit is per event type for example if you will choose 3 event types (ACTIVITIES, THREATS, ALERTS) and limit of 100 the actually limit will be 300
   name: fetch_limit
   required: false
