@@ -5223,6 +5223,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "CiscoAMP",
+            "playbookID": "CiscoAMP",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "XSOAR EDL Checker",
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
@@ -5502,6 +5507,7 @@
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
         "CiscoSMA": "No instance - developed by Qmasters",
+        "CiscoAMP": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
