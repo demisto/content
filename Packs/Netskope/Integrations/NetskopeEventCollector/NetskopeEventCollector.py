@@ -69,7 +69,7 @@ class Client(BaseClient):
         if response.get('status') == 'success':
             results = response.get('data', [])
             for event in results:
-                event['log_source_type'] = 'alert'
+                populate_modeling_rule_fields(event, 'alert')
             return results
         return []
 
@@ -104,6 +104,15 @@ def create_last_run(events: list, last_run: dict) -> dict:  # type: ignore
     return last_run
 
 
+def populate_modeling_rule_fields(event: dict, event_type: str):
+    event['source_log_event'] = event_type
+    try:
+        event['_time'] = timestamp_to_datestring(event['timestamp'] * 1000)
+    except TypeError:
+        # modeling rule will default on ingestion time if _time is missing
+        pass
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -129,8 +138,7 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
         if response.get('status') == 'success':
             results = response.get('data', [])
             for event in results:
-                event['source_log_event'] = event_type
-                event['_time'] = timestamp_to_datestring(event['timestamp'])
+                populate_modeling_rule_fields(event, event_type)
             events.extend(results)
 
     return events
@@ -176,8 +184,7 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
         if response.get('ok') == 1:
             results = response.get('result', [])
             for event in results:
-                event['source_log_event'] = event_type
-                event['_time'] = timestamp_to_datestring(event['timestamp'])
+                populate_modeling_rule_fields(event, event_type)
             events.extend(results)
     return events
 

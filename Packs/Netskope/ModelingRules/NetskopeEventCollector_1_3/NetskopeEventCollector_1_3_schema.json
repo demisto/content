@@ -131,6 +131,18 @@
     "sha256": {
       "type": "string",
       "is_array": false
+    },
+    "app_session_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "malware_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "malware_name": {
+      "type": "string",
+      "is_array": false
     }
   }
 }
