@@ -1,6 +1,7 @@
 import pytest
 import dateparser
-from ModifyDateTime import apply_variation
+from ModifyDateTime import apply_variation, main
+import demistomock as demisto
 
 
 @pytest.mark.parametrize('original_time, variation, expected', [
@@ -26,3 +27,23 @@ from ModifyDateTime import apply_variation
 def test_apply_variation(original_time, variation, expected):
     results = apply_variation(dateparser.parse(original_time), variation)
     assert results == (dateparser.parse(expected))
+
+
+@pytest.mark.parametrize('args', [
+    {'value': '2020/01/01', 'variation': 'in 1 day'},
+])
+def test_modify_date_time_main(mocker, args):
+    """
+    Given:
+        Value and variation.
+    When:
+        Running ModifyDateTime script.
+    Then:
+        demisto.results called.
+    """
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    assert demisto.results.call_count == 1
+    assert results[0] == '2020-01-02T00:00:00'
