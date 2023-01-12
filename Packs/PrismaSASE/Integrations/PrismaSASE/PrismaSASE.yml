@@ -3,1404 +3,1602 @@ commonfields:
   id: Prisma SASE
   version: -1
 configuration:
-  - name: url
-    display: API Gateway URL
-    required: true
-    defaultvalue: https://api.sase.paloaltonetworks.com
-    type: 0
-    additionalinfo: null
-  - name: credentials
-    display: API Client ID
-    required: true
-    defaultvalue: null
-    type: 9
-    additionalinfo: null
-    displaypassword: ""
-    hiddenusername: false
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    defaultvalue: "false"
-    type: 8
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    defaultvalue: "false"
-    type: 8
+- defaultvalue: https://api.sase.paloaltonetworks.com
+  display: API Gateway URL
+  name: url
+  required: true
+  type: 0
+- display: API Client ID
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
+  display: Tenant Services Group ID
+  name: tsg_id
+  required: true
+  type: 0
+- additionalinfo: URL used to obtain the OAUTH2 access token.
+  defaultvalue: https://auth.apps.paloaltonetworks.com/am/oauth2/access_token
+  display: Prisma API OAUTH URL
+  name: oauth_url
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 description: Provides commands for interaction with Prisma SASE API.
 display: Prisma SASE
 name: Prisma SASE
 script:
   commands:
-    - arguments:
-        - name: folder
-          description: Prisma SASE folder location for the rule.
-          required: true
-          isArray: false
-          defaultValue: Shared
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-        - auto: PREDEFINED
-          default: false
-          defaultValue: pre
-          description: Rule position.
-          isArray: false
-          name: position
-          predefined:
-            - pre
-            - post
-          required: true
-        - name: name
-          description: Name of the rule.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - auto: PREDEFINED
-          default: false
-          description: Rule action.
-          isArray: false
-          name: action
-          predefined:
-            - deny
-            - allow
-            - drop
-            - reset client
-            - reset server
-            - reset both client and server
-          required: true
-        - default: false
-          description: Rule description.
-          isArray: false
-          name: description
-          required: false
-        - default: false
-          description: Rule log setting.
-          isArray: false
-          name: log_setting
-          required: false
-        - default: false
-          defaultValue: any
-          description: A comma-separated list of applications.
-          isArray: true
-          name: application
-          required: false
-        - default: false
-          defaultValue: any
-          description: A comma-separated list of categories. You can get category values
-            by running the prisma-sase-custom-url-category-list command.
-          isArray: true
-          name: category
-          required: false
-        - name: destination
-          description: A comma-separated list of destination networks.
-          required: false
-          isArray: true
-          defaultValue: any
-          predefined:
-            - ""
-        - name: destination_hip
-          description: A comma-separated list of destination HIPs.
-          required: false
-          isArray: true
-          defaultValue: ""
-          predefined:
-            - ""
-        - default: false
-          description: Security profiles to apply to the traffic.
-          isArray: false
-          name: profile_setting
-          required: false
-        - default: false
-          defaultValue: any
-          description: Services the rule applies to.
-          name: service
-          isArray: false
-          required: false
-        - default: false
-          defaultValue: any
-          description: A comma-separated list of source networks.
-          isArray: true
-          name: source
-          required: false
-        - name: source_hip
-          description: A comma-separated list of source HIPs.
-          required: false
-          isArray: true
-          defaultValue: ""
-          predefined:
-            - ""
-        - default: false
-          defaultValue: any
-          description: A semi-colon (;) separated list of source users or groups.
-          isArray: true
-          name: source_user
-          required: false
-        - default: false
-          description: A comma-separated list of rule tags.
-          isArray: true
-          name: tag
-          required: false
-        - default: false
-          defaultValue: any
-          description: A comma-separated list of source zones.
-          isArray: true
-          name: from
-          required: false
-        - default: false
-          defaultValue: any
-          description: A comma-separated list of destination zones.
-          isArray: true
-          name: to
-          required: false
-        - default: false
-          description: Whether the rule is disabled.
-          isArray: false
-          name: disabled
-          required: false
-        - default: false
-          description: Negate the source.
-          isArray: false
-          name: negate_source
-          required: false
-        - default: false
-          description: Negate the destination.
-          isArray: false
-          name: negate_destination
-          required: false
-      deprecated: false
-      description: Create a new security rule.
-      execution: false
-      name: prisma-sase-security-rule-create
-      outputs:
-        - contextPath: PrismaSase.SecurityRule.action
-          description: Security rule action.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.application
-          description: Security rule application.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.category
-          description: Security rule category.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.description
-          description: Security rule description.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.destination
-          description: Security rule destination.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.folder
-          description: Security rule folder.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.from
-          description: Security rule from field (source zone(s)).
-          type: String
-        - contextPath: PrismaSase.SecurityRule.id
-          description: Security rule ID.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.name
-          description: Security rule name.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.position
-          description: Security rule position.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.profile_setting.group
-          description: Security rule group.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.service
-          description: Security rule service.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.source
-          description: Security rule source.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.source_user
-          description: Security rule source user.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.to
-          description: Security rule to field (destination zone(s)).
-          type: String
-    - arguments:
-        - name: folder
-          description: Prisma SASE folder location for the rule.
-          required: true
-          isArray: false
-          defaultValue: Shared
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-        - auto: PREDEFINED
-          default: false
-          defaultValue: pre
-          description: Security rule position.
-          isArray: false
-          name: position
-          predefined:
-            - pre
-            - post
-          required: true
-        - auto: PREDEFINED
-          default: false
-          defaultValue: "50"
-          description: The maximum number of results to return. Default is 50.
-          isArray: false
-          name: limit
-          required: false
-        - name: page
-          description: Page number you would like to view. Each page contains page_size
-            values. Must be used along with page_size.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: page_size
-          description: Number of results per page to display.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - default: false
-          description: A specific security rule to return. If not specified, all security
-            rules will be returned.
-          isArray: false
-          name: rule_id
-          required: false
-      deprecated: false
-      description: List the security rules.
-      execution: false
-      name: prisma-sase-security-rule-list
-      outputs:
-        - contextPath: PrismaSase.SecurityRule.action
-          description: Security rule action.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.application
-          description: Security rule application.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.category
-          description: Security rule category.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.description
-          description: Security rule description.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.destination
-          description: Security rule destination.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.folder
-          description: Security rule folder.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.from
-          description: Security rule from field (source zone(s)).
-          type: String
-        - contextPath: PrismaSase.SecurityRule.id
-          description: Security rule ID.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.log_setting
-          description: Security rule log setting.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.name
-          description: Security rule name.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.position
-          description: Security rule position.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.service
-          description: Security rule service.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.source
-          description: Security rule source.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.source_user
-          description: Security rule source user.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.tag
-          description: Security rule tag.
-          type: String
-        - contextPath: PrismaSase.SecurityRule.to
-          description: Security rule to field (destination zone(s)).
-          type: String
-        - contextPath: PrismaSase.SecurityRule.negate_destination
-          description: Security rule negate destination.
-          type: Boolean
-    - arguments:
-        - default: false
-          description: Comma-separated list of targets (Remote Networks, Mobile Users,
-            Service Connections).
-          isArray: false
-          name: folders
-          required: true
-        - default: false
-          description: Configuration push job description.
-          isArray: false
-          name: description
-          required: false
-      deprecated: false
-      description: Push the candidate configuration.
-      execution: false
-      name: prisma-sase-candidate-config-push
-      outputs:
-        - contextPath: PrismaSase.CandidateConfig.job_id
-          description: Configuration job ID.
-          type: String
-        - contextPath: PrismaSase.CandidateConfig.message
-          description: Configuration job message.
-          type: String
-        - contextPath: PrismaSase.CandidateConfig.success
-          description: Whether the configuration job was successful.
-          type: Boolean
-    - name: prisma-sase-security-rule-update
-      description: Update an existing security rule.
-      deprecated: false
-      arguments:
-        - null
-        - name: folder
-          description: Folder Location for the Object.
-          required: true
-          isArray: false
-          defaultValue: Shared
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-      outputs: []
-    - name: prisma-sase-address-object-update
-      description: Update an existing address object
-      deprecated: false
-      arguments:
-        - name: object_id
-          description: ID of the address object to update.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: folder
-          description: Prisma SASE folder location for the address.
-          required: true
-          isArray: false
-          defaultValue: Shared
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-        - name: description
-          description: Address Object description.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: type
-          description: The type of the address.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ip_netmask
-            - ip_range
-            - ip_wildcard
-            - fqdn
-      outputs:
-        - null
-        - null
-        - null
-        - null
-        - contextPath: PrismaSase.Address.type
-          description: Address type.
-          type: String
-        - contextPath: PrismaSase.Address.value
-          description: Address value.
-          type: String
-        - contextPath: PrismaSase.Address.name
-          description: Address name.
-          type: Unknown
-    - arguments:
-        - default: false
-          description: Query data
-          isArray: false
-          name: query_data
-          required: false
-        - default: false
-          description: "Aggregate monitor URI to query (for example:
-            mt/monitor/v1/agg/threats)."
-          isArray: false
-          name: uri
-          required: true
-      deprecated: false
-      description: Query the aggregate monitor API.
-      execution: false
-      name: prisma-sase-query-agg-monitor-api
-      outputs:
-        - contextPath: PrismaSASE.AggregateQueryResponse
-          description: Aggregate query response.
-          type: Unknown
-        - contextPath: PrismaSASE.AggregateQueryResponse.header.dataCount
-          description: Query response data count.
-          type: Number
-    - arguments:
-        - default: false
-          description: A specific config job to return. If not specified, all config jobs
-            will be returned.
-          isArray: false
-          name: job_id
-          required: false
-        - default: false
-          defaultValue: "200"
-          description: The maximum number of results to return.
-          isArray: false
-          name: limit
-          required: false
-      deprecated: false
-      description: List configuration jobs.
-      execution: false
-      name: prisma-sase-config-job-list
-      outputs:
-        - contextPath: PrismaSase.ConfigJob
-          description: Configuration job details.
-          type: Unknown
-        - contextPath: PrismaSase.ConfigJob.description
-          description: Configuration job description.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.end_ts
-          description: Configuration job end timestamp.
-          type: Date
-        - contextPath: PrismaSase.ConfigJob.id
-          description: Configuration job ID.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.job_result
-          description: Configuration job result.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.job_status
-          description: Configuration job status.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.job_type
-          description: Configuration job type.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.parent_id
-          description: Configuration job parent ID.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.percent
-          description: Configuration job percent.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.result_str
-          description: Configuration job result string.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.start_ts
-          description: Configuration job start timestamp.
-          type: Date
-        - contextPath: PrismaSase.ConfigJob.status_str
-          description: Configuration job status string.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.summary
-          description: Configuration job summary.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.type_str
-          description: Configuration job type string.
-          type: String
-        - contextPath: PrismaSase.ConfigJob.uname
-          description: Configuration job uname.
-          type: String
-    - arguments:
-        - name: rule_id
-          description: The ID of the rule to be deleted.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      deprecated: false
-      description: Delete a security rule.
-      execution: false
-      name: prisma-sase-security-rule-delete
-      outputs: []
-    - name: prisma-sase-address-object-create
-      description: Create a new address object.
-      deprecated: false
-      arguments:
-        - name: folder
-          description: Prisma SASE folder location for the address object.
-          required: true
-          isArray: false
-          defaultValue: Shared
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-        - name: name
-          description: Name for the address object.
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      outputs:
-        - null
-        - null
-        - null
-        - null
-        - contextPath: PrismaSase.Address.type
-          description: Address type.
-          type: String
-        - contextPath: Path.To.Context
-          description: description
-          type: Unknown
-    - arguments:
-        - default: false
-          description: ID of the address object to delete.
-          isArray: false
-          name: object_id
-          required: true
-      deprecated: false
-      description: Delete address object
-      execution: false
-      name: prisma-sase-address-object-delete
-      outputs: []
-    - arguments:
-        - default: false
-          description: The specific address object to return. If not specified, all
-            addresses will be returned.
-          isArray: false
-          name: object_id
-          required: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          description: Prisma access folder location for the object.
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - auto: PREDEFINED
-          default: false
-          defaultValue: "50"
-          description: The maximum number of results to return. Default is 50.
-          isArray: false
-          name: limit
-          required: false
-        - name: page
-          description: Page number you would like to view. Each page contains page_size
-            values. Must be used along with page_size.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: page_size
-          description: Number of results per page to display.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      deprecated: false
-      description: List address objects.
-      execution: false
-      name: prisma-sase-address-object-list
-      outputs:
-        - contextPath: PrismaSase.Address
-          description: Found security rule.
-          type: Unknown
-        - contextPath: PrismaSase.Address.description
-          description: Address description.
-          type: String
-        - contextPath: PrismaSase.Address.folder
-          description: Address folder.
-          type: String
-        - contextPath: PrismaSase.Address.fqdn
-          description: Address FQDN.
-          type: String
-        - contextPath: PrismaSase.Address.id
-          description: Address ID.
-          type: String
-        - contextPath: PrismaSase.Address.name
-          description: Address name.
-          type: String
-        - contextPath: PrismaSase.Address.ip_netmask
-          description: Address IP netmask.
-          type: String
-    - arguments:
-        - default: false
-          description: A specific tag to return. If not specified, all tags will be
-            returned.
-          isArray: false
-          name: tag_id
-          required: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          description: Prisma sase folder location for the tag.
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - auto: PREDEFINED
-          default: false
-          defaultValue: "50"
-          description: The maximum number of results to return.
-          isArray: false
-          name: limit
-          required: false
-        - name: page
-          description: Page number you would like to view. Each page contains page_size
-            values. Must be used along with page_size.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - default: false
-          isArray: false
-          name: page_size
-          required: false
-      deprecated: false
-      description: List tags.
-      execution: false
-      name: prisma-sase-tag-list
-      outputs:
-        - contextPath: PrismaSase.Tag
-          description: Found security rule.
-          type: Unknown
-        - contextPath: PrismaSase.Tag.id
-          description: Address description.
-          type: String
-        - contextPath: PrismaSase.Tag.name
-          description: Address folder.
-          type: String
-        - contextPath: PrismaSase.Tag.folder
-          description: Address FQDN.
-          type: String
-        - contextPath: PrismaSase.Tag.comments
-          description: Address ID.
-          type: String
-    - arguments:
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          description: Prisma sase folder location for the tag.
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - default: false
-          description: Tag unique name.
-          isArray: false
-          name: name
-          required: true
-        - auto: PREDEFINED
-          default: false
-          description: Tag color.
-          isArray: false
-          name: color
-          predefined:
-            - Red
-            - Green
-            - Blue
-            - Yellow
-            - Copper
-            - Orange
-            - Purple
-            - Gray
-            - Light Green
-            - Cyan
-            - Light Gray
-            - Blue Gray
-            - Lime
-            - Black
-            - Gold
-            - Brown
-            - Olive
-            - Maroon
-            - Red-Orange
-            - Yellow-Orange
-            - Forest Green
-            - Turquoise Blue
-            - Azure Blue
-            - Cerulean Blue
-            - Midnight Blue
-            - Medium Blue
-            - Cobalt Blue
-            - Violet Blue
-            - Blue Violet
-            - Medium Violet
-            - Medium Rose
-            - Lavender
-            - Orchid
-            - Thistle
-            - Peach
-            - Salmon
-            - Magenta
-            - Red Violet
-            - Mahogany
-            - Burnt Sienna
-            - Chestnut
-          required: false
-        - default: false
-          description: Tag comments
-          isArray: false
-          name: comments
-          required: false
-      deprecated: false
-      description: Create a tag.
-      execution: false
-      name: prisma-sase-tag-create
-      outputs:
-        - contextPath: PrismaSase.Tag
-          type: Unknown
-        - contextPath: PrismaSase.Tag.id
-          type: Unknown
-        - contextPath: PrismaSase.Tag.name
-          type: Unknown
-        - contextPath: PrismaSase.Tag.folder
-          type: Unknown
-        - contextPath: PrismaSase.Tag.color
-          type: Unknown
-        - contextPath: comments
-          type: Unknown
-    - arguments:
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - default: false
-          description: The tag ID
-          isArray: false
-          name: tag_id
-          required: true
-        - auto: PREDEFINED
-          default: false
-          description: Tag color.
-          isArray: false
-          name: color
-          predefined:
-            - Red
-            - Green
-            - Blue
-            - Yellow
-            - Copper
-            - Orange
-            - Purple
-            - Gray
-            - Light Green
-            - Cyan
-            - Light Gray
-            - Blue Gray
-            - Lime
-            - Black
-            - Gold
-            - Brown
-            - Olive
-            - Maroon
-            - Red-Orange
-            - Yellow-Orange
-            - Forest Green
-            - Turquoise Blue
-            - Azure Blue
-            - Cerulean Blue
-            - Midnight Blue
-            - Medium Blue
-            - Cobalt Blue
-            - Violet Blue
-            - Blue Violet
-            - Medium Violet
-            - Medium Rose
-            - Lavender
-            - Orchid
-            - Thistle
-            - Peach
-            - Salmon
-            - Magenta
-            - Red Violet
-            - Mahogany
-            - Burnt Sienna
-            - Chestnut
-          required: false
-        - default: false
-          description: Tag comments.
-          isArray: false
-          name: comments
-          required: false
-      deprecated: false
-      description: Uptade tag
-      execution: false
-      name: prisma-sase-tag-update
-      outputs:
-        - contextPath: PrismaSase.Tag
-          type: String
-        - contextPath: PrismaSase.Tag.id
-          type: String
-        - contextPath: PrismaSase.Tag.name
-          type: String
-        - contextPath: PrismaSase.Tag.folder
-          type: String
-        - contextPath: PrismaSase.Tag.color
-          type: String
-        - contextPath: PrismaSase.Tag.comments
-          type: String
-    - arguments:
-        - default: false
-          description: The specific tag to delete
-          isArray: false
-          name: tag_id
-          required: true
-      deprecated: false
-      description: Delete a specific tag.
-      execution: false
-      name: prisma-sase-tag-delete
-      outputs: []
-    - arguments:
-        - default: false
-          description: A specific address group to return. If not specified, all address
-            groups will be returned.
-          isArray: false
-          name: group_id
-          required: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - name: limit
-          description: The maximum number of results to return. Default is 50.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: page
-          description: Page number you would like to view. Each page contains page_size
-            values. Must be used along with page_size.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: page_size
-          description: Number of results per page to display.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      deprecated: false
-      execution: false
-      name: prisma-sase-address-group-list
-      outputs:
-        - contextPath: PrismaSase.AddressGroup
-          type: String
-        - contextPath: PrismaSase.AddressGroup.id
-          type: String
-        - contextPath: PrismaSase.AddressGroup.name
-          type: String
-        - contextPath: PrismaSase.AddressGroup.description
-          type: String
-        - contextPath: PrismaSase.AddressGroup.addresses
-          type: String
-        - contextPath: PrismaSase.AddressGroup.dynamic_filter
-          type: String
-    - arguments:
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - auto: PREDEFINED
-          default: false
-          isArray: false
-          name: type
-          predefined:
-            - static
-            - dynamic
-          required: true
-        - default: false
-          description: static addresses for the address group. If the type is static,
-            value must be provided.
-          isArray: false
-          name: static_addresses
-          required: false
-        - default: false
-          description: dynamic filter for the address group. If the type is dynamic, value
-            must be provided.
-          isArray: false
-          name: dynamic_filter
-          required: false
-        - default: false
-          isArray: false
-          name: description
-          required: false
-        - default: false
-          isArray: false
-          name: name
-          required: false
-      deprecated: false
-      execution: false
-      name: prisma-sase-address-group-create
-      outputs:
-        - contextPath: PrismaSase.AddressGroup
-          type: String
-        - contextPath: PrismaSase.AddressGroup.id
-          type: String
-        - contextPath: PrismaSase.AddressGroup.name
-          type: String
-        - contextPath: PrismaSase.AddressGroup.folder
-          type: String
-        - contextPath: PrismaSase.AddressGroup.description
-          type: String
-        - contextPath: PrismaSase.AddressGroup.addresses
-          type: String
-        - contextPath: PrismaSase.AddressGroup.dynamic_filter
-          type: String
-    - arguments:
-        - default: false
-          isArray: false
-          name: group_id
-          required: true
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - default: false
-          isArray: false
-          name: static_addresses
-          required: false
-        - default: false
-          isArray: false
-          name: dynamic_filter
-          required: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: "false"
-          isArray: false
-          name: overwrite
-          predefined:
-            - true
-            - false
-          required: false
-        - default: false
-          isArray: false
-          name: description
-          required: false
-        - auto: PREDEFINED
-          default: false
-          isArray: false
-          name: type
-          predefined:
-            - dynamic
-            - static
-          required: false
-      deprecated: false
-      execution: false
-      name: prisma-sase-address-group-update
-      outputs: []
-    - arguments:
-        - default: false
-          isArray: false
-          name: group_id
-          required: true
-      deprecated: false
-      execution: false
-      name: prisma-sase-address-group-delete
-      outputs: []
-    - arguments:
-        - default: false
-          description: A specific url category to return. If not specified, all url
-            categories will be returned.
-          isArray: false
-          name: id
-          required: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - name: limit
-          description: The maximum number of results to return. Default is 50.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: page
-          description: Page number you would like to view. Each page contains page_size
-            values. Must be used along with page_size.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: page_size
-          description: Number of results per page to display.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      deprecated: false
-      execution: false
-      name: prisma-sase-custom-url-category-list
-      outputs:
-        - contextPath: PrismaSase.CustomURLCategory
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.id
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.name
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.folder
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.type
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.match
-          type: String
-    - arguments:
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - auto: PREDEFINED
-          default: false
-          isArray: false
-          name: type
-          predefined:
-            - URL List
-            - Category Match
-          required: true
-        - default: false
-          description: If the type is url list the value will be a comma separated array
-            of url addresses. If the type is Category Match the value will be a
-            comma separated array of categories name. The user can get the names
-            by running prisma-sase-url-access-profile-list.
-          isArray: true
-          name: value
-          required: true
-        - default: false
-          isArray: false
-          name: description
-          required: false
-        - default: false
-          isArray: false
-          name: name
-          required: true
-      deprecated: false
-      execution: false
-      name: prisma-sase-custom-url-category-create
-      outputs:
-        - contextPath: PrismaSase.CustomURLCategory
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.id
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.name
-          type: String
-        - contextPath: PrismaSase.AddressGroup.folder
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.type
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.match
-          type: String
-    - arguments:
-        - default: false
-          isArray: false
-          name: id
-          required: true
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - default: false
-          isArray: false
-          name: value
-          required: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: "false"
-          isArray: false
-          name: overwrite
-          predefined:
-            - true
-            - false
-          required: false
-        - default: false
-          isArray: false
-          name: description
-          required: false
-        - auto: PREDEFINED
-          default: false
-          isArray: false
-          name: type
-          predefined:
-            - URL List
-            - Category Match
-          required: false
-      deprecated: false
-      execution: false
-      name: prisma-sase-custom-url-category-update
-      outputs:
-        - contextPath: PrismaSase.CustomURLCategory
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.id
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.name
-          type: String
-        - contextPath: PrismaSase.AddressGroup.folder
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.type
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.match
-          type: String
-    - arguments:
-        - default: false
-          isArray: false
-          name: id
-          required: true
-      deprecated: false
-      execution: false
-      name: prisma-sase-custom-url-category-delete
-      outputs: []
-    - arguments:
-        - default: false
-          description: A specific external dynamic list to return. If not specified, all
-            external dynamic lists will be returned.
-          isArray: false
-          name: id
-          required: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - name: limit
-          description: The maximum number of results to return. Default is 50.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: page
-          description: Page number you would like to view. Each page contains page_size
-            values. Must be used along with page_size.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: page_size
-          description: Number of results per page to display.
-          required: false
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-      deprecated: false
-      execution: false
-      name: prisma-sase-external-dynamic-list-list
-      outputs:
-        - contextPath: PrismaSase.ExternalDynamicList
-          type: String
-        - contextPath: PrismaSase.ExternalDynamicList.id
-          description: External Dynamic List id
-          type: String
-        - contextPath: PrismaSase.ExternalDynamicList.name
-          description: External Dynamic List name
-          type: String
-        - contextPath: PrismaSase.ExternalDynamicList.folder
-          description: External Dynamic List folder
-          type: String
-        - contextPath: PrismaSase.ExternalDynamicList.description
-          description: External Dynamic List description
-          type: String
-        - contextPath: PrismaSase.ExternalDynamicList.source
-          description: External Dynamic List source
-          type: String
-        - contextPath: PrismaSase.ExternalDynamicList.frequency
-          description: External Dynamic List frequency
-          type: String
-    - name: prisma-sase-external-dynamic-list-create
-      description: Creates a new external dynamic list
-      deprecated: false
-      arguments: []
-      outputs: []
-    - arguments:
-        - default: false
-          isArray: false
-          name: id
-          required: true
-        - auto: PREDEFINED
-          default: false
-          defaultValue: Shared
-          isArray: false
-          name: folder
-          predefined:
-            - Shared
-            - Mobile Users
-            - Remote Networks
-            - Service Connections
-            - Mobile Users Container
-            - Mobile Users Explicit Proxy
-          required: true
-        - default: false
-          isArray: false
-          name: value
-          required: false
-        - auto: PREDEFINED
-          default: false
-          defaultValue: "false"
-          isArray: false
-          name: overwrite
-          predefined:
-            - true
-            - false
-          required: false
-        - default: false
-          isArray: false
-          name: description
-          required: false
-        - auto: PREDEFINED
-          default: false
-          isArray: false
-          name: type
-          predefined:
-            - URL List
-            - Category Match
-          required: false
-      deprecated: false
-      execution: false
-      name: prisma-sase-external-dynamic-list-update
-      outputs:
-        - contextPath: PrismaSase.CustomURLCategory
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.id
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.name
-          type: String
-        - contextPath: PrismaSase.AddressGroup.folder
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.type
-          type: String
-        - contextPath: PrismaSase.CustomURLCategory.match
-          type: String
-    - arguments:
-        - default: false
-          isArray: false
-          name: id
-          required: true
-      deprecated: false
-      execution: false
-      name: prisma-sase-external-dynamic-list-delete
-      outputs: []
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Prisma access folder location for the rule.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pre
+      description: Rule position.
+      isArray: false
+      name: position
+      predefined:
+      - pre
+      - post
+      required: true
+    - default: false
+      description: Friendly name of the rule.
+      isArray: false
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: Rule action.
+      isArray: false
+      name: action
+      predefined:
+      - deny
+      - allow
+      - drop
+      - reset client
+      - reset server
+      - reset both client and server
+      required: true
+    - default: false
+      description: Rule description.
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      description: Rule log setting.
+      isArray: false
+      name: log_setting
+      required: false
+    - default: false
+      defaultValue: any
+      description: A comma-separated list of applications.
+      isArray: true
+      name: application
+      required: false
+    - default: false
+      defaultValue: any
+      description: A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
+      isArray: true
+      name: category
+      required: false
+    - default: false
+      defaultValue: any
+      description: A comma-separated list of destination networks.
+      isArray: false
+      name: destination
+      required: false
+    - default: false
+      description: A comma-separated list of destination HIPs.
+      isArray: false
+      name: destination_hip
+      required: false
+    - default: false
+      description: Security profiles to apply to the traffic.
+      isArray: false
+      name: profile_setting
+      required: false
+    - default: false
+      defaultValue: any
+      description: Services the rule applies to.
+      name: service
+      isArray: false
+      required: false
+    - default: false
+      defaultValue: any
+      description: A comma-separated list of source networks.
+      isArray: true
+      name: source
+      required: false
+    - default: false
+      description: A comma-separated list of source HIPs.
+      isArray: false
+      name: source_hip
+      required: false
+    - default: false
+      defaultValue: any
+      description: A semi-colon (;) separated list of source users or groups.
+      isArray: true
+      name: source_user
+      required: false
+    - default: false
+      description: A comma-separated list of rule tags.
+      isArray: true
+      name: tag
+      required: false
+    - default: false
+      defaultValue: any
+      description: A comma-separated list of source zones.
+      isArray: true
+      name: from
+      required: false
+    - default: false
+      defaultValue: any
+      description: A comma-separated list of destination zones.
+      isArray: true
+      name: to
+      required: false
+    - default: false
+      description: Whether the rule is disabled.
+      isArray: false
+      name: disabled
+      required: false
+    - default: false
+      description: Negate the source.
+      isArray: false
+      name: negate_source
+      required: false
+    - default: false
+      description: Negate the destination.
+      isArray: false
+      name: negate_destination
+      required: false
+    deprecated: false
+    description: Create a new security rule.
+    execution: false
+    name: prisma-sase-security-rule-create
+    outputs:
+    - contextPath: PrismaSase.SecurityRule
+      description: Created security rule.
+      type: Unknown
+    - contextPath: PrismaSase.SecurityRule.action
+      description: Security rule action.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.application
+      description: Security rule application.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.category
+      description: Security rule category.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.destination
+      description: Security rule destination.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.folder
+      description: Security rule folder.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.from
+      description: Security rule from field (source zone(s)).
+      type: String
+    - contextPath: PrismaSase.SecurityRule.id
+      description: Security rule ID.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.position
+      description: Security rule position.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.profile_setting.group
+      description: Security rule group.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.service
+      description: Security rule service.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source
+      description: Security rule source.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source_user
+      description: Security rule source user.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.to
+      description: Security rule to field (destination zone(s)).
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Prisma access folder location for the rule.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: pre
+      description: Security rule position.
+      isArray: false
+      name: position
+      predefined:
+      - pre
+      - post
+      required: true
+    - default: false
+      description: Name of the security rule.
+      isArray: false
+      name: name
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: page_size
+      required: false
+    - default: false
+      description: A specific security rule to return. If not specified, all security rules will be returned.
+      isArray: false
+      name: rule_id
+      required: false
+    deprecated: false
+    description: List the security rules.
+    execution: false
+    name: prisma-sase-security-rule-list
+    outputs:
+    - contextPath: PrismaSase.SecurityRule
+      description: Found security rule.
+      type: Unknown
+    - contextPath: PrismaSase.SecurityRule.action
+      description: Security rule action.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.application
+      description: Security rule application.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.category
+      description: Security rule category.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.destination
+      description: Security rule destination.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.folder
+      description: Security rule folder.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.from
+      description: Security rule from field (source zone(s)).
+      type: String
+    - contextPath: PrismaSase.SecurityRule.id
+      description: Security rule ID.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.log_setting
+      description: Security rule log setting.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.position
+      description: Security rule position.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.service
+      description: Security rule service.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source
+      description: Security rule source.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source_user
+      description: Security rule source user.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.tag
+      description: Security rule tag.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.to
+      description: Security rule to field (destination zone(s)).
+      type: String
+    - contextPath: PrismaSase.SecurityRule.negate_destination
+      description: Security rule negate destination.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Comma-separated list of targets (Remote Networks, Mobile Users, Service Connections).
+      isArray: false
+      name: folders
+      required: true
+    - default: false
+      description: Configuration push job description.
+      isArray: false
+      name: description
+      required: false
+    deprecated: false
+    description: Push the candidate configuration.
+    execution: false
+    name: prisma-sase-candidate-config-push
+    outputs:
+    - contextPath: PrismaSase.CandidateConfig
+      description: Configuration job information.
+      type: Unknown
+    - contextPath: PrismaSase.CandidateConfig.job_id
+      description: Configuration job ID.
+      type: String
+    - contextPath: PrismaSase.CandidateConfig.message
+      description: Configuration job message.
+      type: String
+    - contextPath: PrismaSase.CandidateConfig.success
+      description: Whether the configuration job was successful.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: ID of the rule to be changed.
+      isArray: false
+      name: rule_id
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Folder Location for the Object.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: Rule action.
+      isArray: false
+      name: action
+      predefined:
+      - deny
+      - allow
+      - drop
+      - reset client
+      - reset server
+      - reset both client and server
+      required: true
+    - default: false
+      description: Rule description.
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      description: Rule log setting.
+      isArray: false
+      name: log_setting
+      required: false
+    - default: false
+      description: A comma-separated list of applications.
+      isArray: false
+      name: application
+      required: false
+    - default: false
+      description: A comma-separated list of categories.
+      isArray: true
+      name: category
+      required: false
+    - default: false
+      description: A comma-separated list of destination networks.
+      isArray: false
+      name: destination
+      required: false
+    - default: false
+      description: A comma-separated list of destination HIPs.
+      isArray: false
+      name: destination_hip
+      required: false
+    - default: false
+      description: Security profiles to apply to the traffic.
+      isArray: false
+      name: profile_setting
+      required: false
+    - default: false
+      description: Services the rule applies to.
+      isArray: false
+      name: service
+      required: false
+    - default: false
+      description: A comma-separated list of source networks.
+      isArray: true
+      name: source
+      required: false
+    - default: false
+      description: A comma-separated list of source HIPs.
+      isArray: false
+      name: source_hip
+      required: false
+    - default: false
+      description: A semi-colon (;) separated list of source user(s).
+      isArray: false
+      name: source_user
+      required: false
+    - default: false
+      description: A comma-separated list of rule tags.
+      isArray: true
+      name: tag
+      required: false
+    - default: false
+      description: A comma-separated list of source zones.
+      isArray: true
+      name: from
+      required: false
+    - default: false
+      description: A comma-separated list of destination zones.
+      isArray: true
+      name: to
+      required: false
+    - default: false
+      description: Whether the rule is disabled.
+      isArray: false
+      name: disabled
+      required: false
+    - default: false
+      description: Negate source
+      isArray: false
+      name: negate_source
+      required: false
+    - default: false
+      description: Negate the destination.
+      isArray: false
+      name: negate_destination
+      required: false
+    - default: false
+      defaultValue: 'false'
+      description: This argument specifies rather to append or overwrite the....
+      isArray: false
+      name: overwrite
+      required: false
+    deprecated: false
+    description: Edit an existing security rule.
+    execution: false
+    name: prisma-sase-security-rule-update
+    outputs:
+    - contextPath: PrismaSase.SecurityRule
+      description: Edited security rule.
+      type: Unknown
+    - contextPath: PrismaSase.SecurityRule.action
+      description: Security rule action.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.application
+      description: Security rule application.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.category
+      description: Security rule category.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.destination
+      description: Security rule destination.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.folder
+      description: Security rule folder.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.from
+      description: Security rule from field (source zone(s)).
+      type: String
+    - contextPath: PrismaSase.SecurityRule.id
+      description: Security rule ID.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.profile_setting.group
+      description: Security rule profile setting.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.service
+      description: Security rule service.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source
+      description: Security rule source.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source_user
+      description: Security rule source user.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.to
+      description: Security rule to field (destination zone(s)).
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the address object to edit.
+      isArray: false
+      name: object_id
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Folder Location for the Object.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      description: Address Object description
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the address
+      isArray: false
+      name: type
+      predefined:
+      - ip_netmask
+      - ip_range
+      - ip_wildcard
+      - fqdn
+      required: true
+    - default: false
+      description: The address value (should match the type)
+      isArray: false
+      name: address_value
+      required: true
+    - default: false
+      description: A comma-separated list of address object tags.
+      isArray: true
+      name: tag
+      required: false
+    deprecated: false
+    description: Edit address object
+    execution: false
+    name: prisma-sase-address-object-update
+    outputs:
+    - contextPath: PrismaSase.Address
+      description: Edited address object.
+      type: Unknown
+    - contextPath: PrismaSase.Address.description
+      description: Address description.
+      type: String
+    - contextPath: PrismaSase.Address.folder
+      description: Address folder.
+      type: String
+    - contextPath: PrismaSase.Address.id
+      description: Address ID.
+      type: String
+    - contextPath: PrismaSase.Address.ip_netmask
+      description: Address IP netmask.
+      type: String
+    - contextPath: PrismaSase.Address.name
+      description: Address name.
+      type: String
+  - arguments:
+    - default: false
+      description: Query data
+      isArray: false
+      name: query_data
+      required: false
+    - default: false
+      description: 'Aggregate monitor URI to query (for example: mt/monitor/v1/agg/threats).'
+      isArray: false
+      name: uri
+      required: true
+    deprecated: false
+    description: Query the aggregate monitor API.
+    execution: false
+    name: prisma-sase-query-agg-monitor-api
+    outputs:
+    - contextPath: PrismaSASE.AggregateQueryResponse
+      description: Aggregate query response.
+      type: Unknown
+    - contextPath: PrismaSASE.AggregateQueryResponse.header.dataCount
+      description: Query response data count.
+      type: Number
+  - arguments:
+    - default: false
+      description: A specific config job to return. If not specified, all config jobs will be returned.
+      isArray: false
+      name: job_id
+      required: false
+    - default: false
+      defaultValue: '200'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+    deprecated: false
+    description: List configuration jobs.
+    execution: false
+    name: prisma-sase-config-job-list
+    outputs:
+    - contextPath: PrismaSase.ConfigJob
+      description: Configuration job details.
+      type: Unknown
+    - contextPath: PrismaSase.ConfigJob.description
+      description: Configuration job description.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.end_ts
+      description: Configuration job end timestamp.
+      type: Date
+    - contextPath: PrismaSase.ConfigJob.id
+      description: Configuration job ID.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.job_result
+      description: Configuration job result.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.job_status
+      description: Configuration job status.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.job_type
+      description: Configuration job type.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.parent_id
+      description: Configuration job parent ID.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.percent
+      description: Configuration job percent.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.result_str
+      description: Configuration job result string.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.start_ts
+      description: Configuration job start timestamp.
+      type: Date
+    - contextPath: PrismaSase.ConfigJob.status_str
+      description: Configuration job status string.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.summary
+      description: Configuration job summary.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.type_str
+      description: Configuration job type string.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.uname
+      description: Configuration job uname.
+      type: String
+  - arguments:
+    - default: false
+      description: Rule ID of the rule to be deleted.
+      isArray: false
+      name: rule_id
+      required: true
+    deprecated: false
+    description: Delete a security rule.
+    execution: false
+    name: prisma-sase-security-rule-delete
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Prisma Access Folder Location for the Object
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      description: Friendly name of the address object.
+      isArray: false
+      name: name
+      required: true
+    - default: false
+      description: Address object description.
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the address.
+      isArray: false
+      name: type
+      predefined:
+      - ip_netmask
+      - ip_range
+      - ip_wildcard
+      - fqdn
+      required: true
+    - default: false
+      description: A comma-separated list of address object tags.
+      isArray: true
+      name: tag
+      required: false
+    - default: false
+      description: The address value (should match the type)
+      isArray: false
+      name: address_value
+      required: true
+    deprecated: false
+    description: Create a new address object
+    execution: false
+    name: prisma-sase-address-object-create
+    outputs:
+    - contextPath: PrismaSase.Address
+      description: Created address object.
+      type: Unknown
+    - contextPath: PrismaSase.Address.description
+      description: Address description.
+      type: String
+    - contextPath: PrismaSase.Address.folder
+      description: Address folder.
+      type: String
+    - contextPath: PrismaSase.Address.id
+      description: Address ID.
+      type: String
+    - contextPath: PrismaSase.Address.ip_netmask
+      description: Address IP netmask.
+      type: String
+    - contextPath: PrismaSase.Address.name
+      description: Address name.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the address object to delete.
+      isArray: false
+      name: object_id
+      required: true
+    deprecated: false
+    description: Delete address object
+    execution: false
+    name: prisma-sase-address-object-delete
+  - arguments:
+    - default: false
+      description: The specific address object to return. If not specified, all addresses will be returned.
+      isArray: false
+      name: object_id
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Prisma access folder location for the object.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: page_size
+      required: false
+    deprecated: false
+    description: List address objects.
+    execution: false
+    name: prisma-sase-address-object-list
+    outputs:
+    - contextPath: PrismaSase.Address
+      description: Found security rule.
+      type: Unknown
+    - contextPath: PrismaSase.Address.description
+      description: Address description.
+      type: String
+    - contextPath: PrismaSase.Address.folder
+      description: Address folder.
+      type: String
+    - contextPath: PrismaSase.Address.fqdn
+      description: Address FQDN.
+      type: String
+    - contextPath: PrismaSase.Address.id
+      description: Address ID.
+      type: String
+    - contextPath: PrismaSase.Address.name
+      description: Address name.
+      type: String
+    - contextPath: PrismaSase.Address.ip_netmask
+      description: Address IP netmask.
+      type: String
+  - arguments:
+    - default: false
+      description: A specific tag to return. If not specified, all tags will be returned.
+      isArray: false
+      name: tag_id
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Prisma sase folder location for the tag.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '50'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      isArray: false
+      name: page_size
+      required: false
+    deprecated: false
+    description: List tags.
+    execution: false
+    name: prisma-sase-tag-list
+    outputs:
+    - contextPath: PrismaSase.Tag
+      description: Found security rule.
+      type: Unknown
+    - contextPath: PrismaSase.Tag.id
+      description: Address description.
+      type: String
+    - contextPath: PrismaSase.Tag.name
+      description: Address folder.
+      type: String
+    - contextPath: PrismaSase.Tag.folder
+      description: Address FQDN.
+      type: String
+    - contextPath: PrismaSase.Tag.comments
+      description: Address ID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Prisma sase folder location for the tag.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      description: Tag unique name.
+      isArray: false
+      name: name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: Tag color.
+      isArray: false
+      name: color
+      predefined:
+      - Red
+      - Green
+      - Blue
+      - Yellow
+      - Copper
+      - Orange
+      - Purple
+      - Gray
+      - Light Green
+      - Cyan
+      - Light Gray
+      - Blue Gray
+      - Lime
+      - Black
+      - Gold
+      - Brown
+      - Olive
+      - Maroon
+      - Red-Orange
+      - Yellow-Orange
+      - Forest Green
+      - Turquoise Blue
+      - Azure Blue
+      - Cerulean Blue
+      - Midnight Blue
+      - Medium Blue
+      - Cobalt Blue
+      - Violet Blue
+      - Blue Violet
+      - Medium Violet
+      - Medium Rose
+      - Lavender
+      - Orchid
+      - Thistle
+      - Peach
+      - Salmon
+      - Magenta
+      - Red Violet
+      - Mahogany
+      - Burnt Sienna
+      - Chestnut
+      required: false
+    - default: false
+      description: Tag comments
+      isArray: false
+      name: comments
+      required: false
+    deprecated: false
+    description: Create a tag.
+    execution: false
+    name: prisma-sase-tag-create
+    outputs:
+    - contextPath: PrismaSase.Tag
+      type: Unknown
+    - contextPath: PrismaSase.Tag.id
+      type: Unknown
+    - contextPath: PrismaSase.Tag.name
+      type: Unknown
+    - contextPath: PrismaSase.Tag.folder
+      type: Unknown
+    - contextPath: PrismaSase.Tag.color
+      type: Unknown
+    - contextPath: comments
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      description: The tag ID
+      isArray: false
+      name: tag_id
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: Tag color.
+      isArray: false
+      name: color
+      predefined:
+      - Red
+      - Green
+      - Blue
+      - Yellow
+      - Copper
+      - Orange
+      - Purple
+      - Gray
+      - Light Green
+      - Cyan
+      - Light Gray
+      - Blue Gray
+      - Lime
+      - Black
+      - Gold
+      - Brown
+      - Olive
+      - Maroon
+      - Red-Orange
+      - Yellow-Orange
+      - Forest Green
+      - Turquoise Blue
+      - Azure Blue
+      - Cerulean Blue
+      - Midnight Blue
+      - Medium Blue
+      - Cobalt Blue
+      - Violet Blue
+      - Blue Violet
+      - Medium Violet
+      - Medium Rose
+      - Lavender
+      - Orchid
+      - Thistle
+      - Peach
+      - Salmon
+      - Magenta
+      - Red Violet
+      - Mahogany
+      - Burnt Sienna
+      - Chestnut
+      required: false
+    - default: false
+      description: Tag comments.
+      isArray: false
+      name: comments
+      required: false
+    deprecated: false
+    description: Uptade tag
+    execution: false
+    name: prisma-sase-tag-update
+    outputs:
+    - contextPath: PrismaSase.Tag
+      type: String
+    - contextPath: PrismaSase.Tag.id
+      type: String
+    - contextPath: PrismaSase.Tag.name
+      type: String
+    - contextPath: PrismaSase.Tag.folder
+      type: String
+    - contextPath: PrismaSase.Tag.color
+      type: String
+    - contextPath: PrismaSase.Tag.comments
+      type: String
+  - arguments:
+    - default: false
+      description: The specific tag to delete
+      isArray: false
+      name: tag_id
+      required: true
+    deprecated: false
+    description: Delete a specific tag.
+    execution: false
+    name: prisma-sase-tag-delete
+  - arguments:
+    - default: false
+      description: A specific address group to return. If not specified, all address groups will be returned.
+      isArray: false
+      name: group_id
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      isArray: false
+      name: page_size
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-address-group-list
+    outputs:
+    - contextPath: PrismaSase.AddressGroup
+      type: String
+    - contextPath: PrismaSase.AddressGroup.id
+      type: String
+    - contextPath: PrismaSase.AddressGroup.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.description
+      type: String
+    - contextPath: PrismaSase.AddressGroup.addresses
+      type: String
+    - contextPath: PrismaSase.AddressGroup.dynamic_filter
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - static
+      - dynamic
+      required: true
+    - default: false
+      description: static addresses for the address group. If the type is static, value must be provided.
+      isArray: false
+      name: static_addresses
+      required: false
+    - default: false
+      description: dynamic filter for the address group. If the type is dynamic, value must be provided.
+      isArray: false
+      name: dynamic_filter
+      required: false
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      isArray: false
+      name: name
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-address-group-create
+    outputs:
+    - contextPath: PrismaSase.AddressGroup
+      type: String
+    - contextPath: PrismaSase.AddressGroup.id
+      type: String
+    - contextPath: PrismaSase.AddressGroup.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.AddressGroup.description
+      type: String
+    - contextPath: PrismaSase.AddressGroup.addresses
+      type: String
+    - contextPath: PrismaSase.AddressGroup.dynamic_filter
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: group_id
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: static_addresses
+      required: false
+    - default: false
+      isArray: false
+      name: dynamic_filter
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: overwrite
+      predefined:
+      - true
+      - false
+      required: false
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - dynamic
+      - static
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-address-group-update
+  - arguments:
+    - default: false
+      isArray: false
+      name: group_id
+      required: true
+    deprecated: false
+    execution: false
+    name: prisma-sase-address-group-delete
+  - arguments:
+    - default: false
+      description: A specific url category to return. If not specified, all url categories will be returned.
+      isArray: false
+      name: id
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      isArray: false
+      name: page_size
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-custom-url-category-list
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+      required: true
+    - default: false
+      description: If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list.
+      isArray: true
+      name: value
+      required: true
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      isArray: false
+      name: name
+      required: true
+    deprecated: false
+    execution: false
+    name: prisma-sase-custom-url-category-create
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: value
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: overwrite
+      predefined:
+      - true
+      - false
+      required: false
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-custom-url-category-update
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: true
+    deprecated: false
+    execution: false
+    name: prisma-sase-custom-url-category-delete
+  - arguments:
+    - default: false
+      description: A specific external dynamic list to return. If not specified, all external dynamic lists will be returned.
+      isArray: false
+      name: id
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      isArray: false
+      name: page
+      required: false
+    - default: false
+      isArray: false
+      name: page_size
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-external-dynamic-list-list
+    outputs:
+    - contextPath: PrismaSase.ExternalDynamicList
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.id
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.name
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.folder
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.description
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.source
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.frequency
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - predefined_ip
+      - predefined_url
+      - ip
+      - domain
+      - url
+      required: true
+    - default: false
+      description: If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list.
+      isArray: true
+      name: value
+      required: true
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      isArray: false
+      name: name
+      required: true
+    deprecated: false
+    execution: false
+    name: prisma-sase-external-dynamic-list-create
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: true
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+      required: true
+    - default: false
+      isArray: false
+      name: value
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: overwrite
+      predefined:
+      - true
+      - false
+      required: false
+    - default: false
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+      required: false
+    deprecated: false
+    execution: false
+    name: prisma-sase-external-dynamic-list-update
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.id
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.match
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: true
+    deprecated: false
+    execution: false
+    name: prisma-sase-external-dynamic-list-delete
   dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: "-"
+  script: '-'
   subtype: python3
   type: python
 tests:
-  - PrismaSASE Test
+- PrismaSASE Test
 sectionOrder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 fromversion: 6.5.0

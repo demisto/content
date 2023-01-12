@@ -77,7 +77,7 @@ class Client(BaseClient):
                                   headers=headers)
 
     @staticmethod
-    def build_security_rule(args: Dict[str, Any]) -> dict:
+    def build_security_rule(args: dict) -> dict:
         """Build a dictionary of security rule parameters to be used to create or edit a rule
         Args:
             args: demisto.args()
@@ -1561,8 +1561,8 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
-    if url_category_id := args.get('id'):
-        raw_response = client.get_external_dynamic_list_by_id(query_params, url_category_id)
+    if external_dynamic_list_id := args.get('id'):
+        raw_response = client.get_external_dynamic_list_by_id(query_params, external_dynamic_list_id)
         outputs = [raw_response]
     else:
         page = arg_to_number(args.get('page')) or 1
@@ -1578,11 +1578,11 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
         outputs = raw_response.get('data')
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Custom Url Categories', outputs,
-                                        headers=['id', 'name', 'folder', 'type', 'list'],
+        readable_output=tableToMarkdown('External Dynamic Lists', outputs,
+                                        headers=['id', 'name', 'folder', 'type', 'description', 'source', 'frequency'],
                                         headerTransform=string_to_table_header),
         raw_response=raw_response
     )
@@ -1616,10 +1616,12 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     raw_response = client.create_external_dynamic_list(query_params, custom_url_category)  # type: ignore
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
         outputs_key_field='id',
         outputs=raw_response,
-        readable_output=tableToMarkdown('Custom URrl Category Created', raw_response, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown('External Dynamic List Created',
+                                        raw_response,
+                                        headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -1659,10 +1661,12 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Custom Url Category updated', outputs, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown('External Dynamic List updated',
+                                        outputs,
+                                        headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -1680,7 +1684,7 @@ def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     raw_response = client.delete_external_dynamic_list(args.get('id'))  # type: ignore
 
     return CommandResults(
-        readable_output=f'Custom Url Category with id {raw_response.get("id", "")} '
+        readable_output=f'External Dynamic List with id {raw_response.get("id", "")} '
                         f'and name {raw_response.get("name", "")} was deleted successfully',
         raw_response=raw_response
     )
