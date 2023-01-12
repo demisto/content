@@ -1392,8 +1392,8 @@ class Client(BaseClient):
             (ip := args.get("ip_address"))
             and not re.match(ipv4Regex, ip)
             and not re.match(ipv6Regex, ip)
-            and not re.match(ipv4Regex + "-" + ipv4Regex, ip)
-            and not re.match(ipv6Regex + "-" + ipv6Regex, ip)
+            and not re.match(ipv4Regex + r"-" + ipv4Regex, ip)
+            and not re.match(ipv6Regex + r"-" + ipv6Regex, ip)
         ):
             raise ValueError(f"{ip} {ErrorMessage.IP.value}")
 
