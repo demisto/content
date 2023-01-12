@@ -1,4 +1,5 @@
 Get the final verdict from the DBotScore of the context.
+Provided that it has all of the latest source verdict, this script gives you the right final verdict.
 
 ## Script Data
 ---
