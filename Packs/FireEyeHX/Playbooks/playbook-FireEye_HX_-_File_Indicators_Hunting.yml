@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 2570,
-          "y": 1100
+          "y": 930
         }
       }
     note: false
@@ -157,7 +157,7 @@ tasks:
       '#default#':
       - "139"
       "yes":
-      - "165"
+      - "113"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: f951e878-f8e5-41a4-85ca-2001845ca0dd
+    taskid: 9fc5f1d9-48d1-4a75-868b-5100917794d1
     type: regular
     task:
-      id: f951e878-f8e5-41a4-85ca-2001845ca0dd
+      id: 9fc5f1d9-48d1-4a75-868b-5100917794d1
       version: -1
       name: FireEye HX Query - FileName
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -228,7 +228,14 @@ tasks:
         simple: contains
       fieldSearchValue:
         complex:
-          root: FileNameParsed
+          root: inputs.FileName
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -263,8 +270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
-          "y": 525
+          "x": 1430,
+          "y": 265
         }
       }
     note: false
@@ -276,10 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "122":
     id: "122"
-    taskid: cc422476-2a50-40a6-8737-4ef6988a1c01
+    taskid: 962406cc-8a4c-4f23-8681-4ef0c08f4e89
     type: regular
     task:
-      id: cc422476-2a50-40a6-8737-4ef6988a1c01
+      id: 962406cc-8a4c-4f23-8681-4ef0c08f4e89
       version: -1
       name: FireEye HX Query - SHA256
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -317,7 +324,14 @@ tasks:
         simple: equals
       fieldSearchValue:
         complex:
-          root: SHA256Parsed
+          root: inputs.SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -352,8 +366,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3730,
-          "y": 525
+          "x": 3720,
+          "y": 265
         }
       }
     note: false
@@ -411,7 +425,7 @@ tasks:
       '#default#':
       - "155"
       "yes":
-      - "167"
+      - "128"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -456,7 +470,7 @@ tasks:
       '#default#':
       - "159"
       "yes":
-      - "168"
+      - "122"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -517,10 +531,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "128":
     id: "128"
-    taskid: c04c6639-da7e-4f83-82ab-039a4647795f
+    taskid: b42874a2-a99e-413d-8ed2-6ba028ea0a03
     type: regular
     task:
-      id: c04c6639-da7e-4f83-82ab-039a4647795f
+      id: b42874a2-a99e-413d-8ed2-6ba028ea0a03
       version: -1
       name: FireEye HX Query - SHA1
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -558,7 +572,14 @@ tasks:
         simple: equals
       fieldSearchValue:
         complex:
-          root: SHA1Parsed
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -593,8 +614,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3090,
-          "y": 525
+          "x": 3080,
+          "y": 265
         }
       }
     note: false
@@ -652,7 +673,7 @@ tasks:
       '#default#':
       - "142"
       "yes":
-      - "166"
+      - "131"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -682,10 +703,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "131":
     id: "131"
-    taskid: f539f679-0efd-48a9-816e-20c5e88cf4f4
+    taskid: 683a1df9-3920-47bd-8fe8-307ec85d633f
     type: regular
     task:
-      id: f539f679-0efd-48a9-816e-20c5e88cf4f4
+      id: 683a1df9-3920-47bd-8fe8-307ec85d633f
       version: -1
       name: FireEye HX Query - FilePath
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -719,7 +740,14 @@ tasks:
                   simple: "no"
       fileFullPath:
         complex:
-          root: FilePathParsed
+          root: inputs.FilePath
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       fileFullPathOperator:
         simple: equals
       hostSetName:
@@ -756,8 +784,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2050,
-          "y": 525
+          "x": 2040,
+          "y": 265
         }
       }
     note: false
@@ -788,7 +816,7 @@ tasks:
       {
         "position": {
           "x": 1680,
-          "y": 955
+          "y": 695
         }
       }
     note: false
@@ -819,7 +847,7 @@ tasks:
       {
         "position": {
           "x": 2300,
-          "y": 955
+          "y": 695
         }
       }
     note: false
@@ -850,7 +878,7 @@ tasks:
       {
         "position": {
           "x": 2840,
-          "y": 955
+          "y": 695
         }
       }
     note: false
@@ -912,7 +940,7 @@ tasks:
       {
         "position": {
           "x": 3490,
-          "y": 955
+          "y": 695
         }
       }
     note: false
@@ -943,7 +971,7 @@ tasks:
       {
         "position": {
           "x": 4130,
-          "y": 955
+          "y": 695
         }
       }
     note: false
@@ -970,7 +998,7 @@ tasks:
       '#default#':
       - "160"
       "yes":
-      - "169"
+      - "162"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1000,10 +1028,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "162":
     id: "162"
-    taskid: 5468b390-4a09-43ee-865a-89a119b9d887
+    taskid: ecd8cb4f-3766-4a02-819b-7ec10c5819cc
     type: regular
     task:
-      id: 5468b390-4a09-43ee-865a-89a119b9d887
+      id: ecd8cb4f-3766-4a02-819b-7ec10c5819cc
       version: -1
       name: FireEye HX Query - MD5
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -1037,7 +1065,14 @@ tasks:
                   simple: "no"
       fileMD5Hash:
         complex:
-          root: MD5Parsed
+          root: inputs.MD5
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       fileMD5HashOperator:
         simple: equals
       hostSetName:
@@ -1074,288 +1109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4370,
-          "y": 525
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "165":
-    id: "165"
-    taskid: 7c17ec93-d247-40c6-8a7d-bfcbc8b399b0
-    type: regular
-    task:
-      id: 7c17ec93-d247-40c6-8a7d-bfcbc8b399b0
-      version: -1
-      name: Set FileName search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "113"
-    scriptarguments:
-      key:
-        simple: FileNameParsed
-      value:
-        complex:
-          root: inputs.FileName
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.FileName
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1440,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "166":
-    id: "166"
-    taskid: 981e9df1-55b2-4c6c-865a-dc58b6f0c618
-    type: regular
-    task:
-      id: 981e9df1-55b2-4c6c-865a-dc58b6f0c618
-      version: -1
-      name: Set FilePath search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "131"
-    scriptarguments:
-      key:
-        simple: FilePathParsed
-      value:
-        complex:
-          root: inputs.FilePath
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.FilePath
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2050,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "167":
-    id: "167"
-    taskid: b15e0696-dcfc-4bcf-8b98-0c945bd6b085
-    type: regular
-    task:
-      id: b15e0696-dcfc-4bcf-8b98-0c945bd6b085
-      version: -1
-      name: Set SHA1 search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "128"
-    scriptarguments:
-      key:
-        simple: SHA1Parsed
-      value:
-        complex:
-          root: inputs.SHA1
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.SHA1
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3090,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "168":
-    id: "168"
-    taskid: 9bcb1272-9294-4751-8c6c-6434e96a6bb5
-    type: regular
-    task:
-      id: 9bcb1272-9294-4751-8c6c-6434e96a6bb5
-      version: -1
-      name: Set SHA256 search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "122"
-    scriptarguments:
-      key:
-        simple: SHA256Parsed
-      value:
-        complex:
-          root: inputs.SHA256
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.SHA256
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3730,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "169":
-    id: "169"
-    taskid: fca0760b-e89a-4f93-85b5-862833e9ee85
-    type: regular
-    task:
-      id: fca0760b-e89a-4f93-85b5-862833e9ee85
-      version: -1
-      name: Set MD5 search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "162"
-    scriptarguments:
-      key:
-        simple: MD5Parsed
-      value:
-        complex:
-          root: inputs.MD5
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.MD5
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 4370,
-          "y": 270
+          "x": 4360,
+          "y": 265
         }
       }
     note: false
@@ -1413,7 +1168,8 @@ tasks:
       '#default#':
       - "174"
       "yes":
-      - "172"
+      - "173"
+      - "175"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1441,69 +1197,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "172":
-    id: "172"
-    taskid: 61e4a7f9-6113-4556-8c45-a8e80a6f291e
-    type: regular
-    task:
-      id: 61e4a7f9-6113-4556-8c45-a8e80a6f291e
-      version: -1
-      name: Set FileType search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "173"
-      - "175"
-    scriptarguments:
-      key:
-        simple: FileTypeParsed
-      value:
-        complex:
-          root: inputs.FileType
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.FileType
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 590,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "173":
     id: "173"
-    taskid: a9d92e4a-3679-4bf4-83da-4c3afde6cbd5
+    taskid: 0dcb34af-3da8-4f3a-884d-796904770e72
     type: regular
     task:
-      id: a9d92e4a-3679-4bf4-83da-4c3afde6cbd5
+      id: 0dcb34af-3da8-4f3a-884d-796904770e72
       version: -1
       name: FireEye HX Query - File Download Type
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -1523,7 +1222,14 @@ tasks:
         simple: equals
       fieldSearchValue:
         complex:
-          root: FileTypeParsed
+          root: inputs.FileType
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -1559,7 +1265,7 @@ tasks:
       {
         "position": {
           "x": 800,
-          "y": 430
+          "y": 260
         }
       }
     note: false
@@ -1590,7 +1296,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": 955
+          "y": 785
         }
       }
     note: false
@@ -1602,10 +1308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "175":
     id: "175"
-    taskid: 94ab3060-844b-4426-89bf-1764bd85997c
+    taskid: 07fc7a64-0b1b-44a4-89d0-763d67bf64c8
     type: regular
     task:
-      id: 94ab3060-844b-4426-89bf-1764bd85997c
+      id: 07fc7a64-0b1b-44a4-89d0-763d67bf64c8
       version: -1
       name: FireEye HX Query - Executable PE type
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -1625,7 +1331,14 @@ tasks:
         simple: equals
       fieldSearchValue:
         complex:
-          root: FileTypeParsed
+          root: inputs.FileType
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -1661,7 +1374,7 @@ tasks:
       {
         "position": {
           "x": 390,
-          "y": 430
+          "y": 260
         }
       }
     note: false
@@ -1720,7 +1433,7 @@ tasks:
       {
         "position": {
           "x": 390,
-          "y": 610
+          "y": 440
         }
       }
     note: false
@@ -1781,7 +1494,7 @@ tasks:
       {
         "position": {
           "x": 800,
-          "y": 610
+          "y": 440
         }
       }
     note: false
@@ -1836,7 +1549,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": 780
+          "y": 610
         }
       }
     note: false
@@ -1896,8 +1609,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
-          "y": 780
+          "x": 1430,
+          "y": 520
         }
       }
     note: false
@@ -1957,8 +1670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2050,
-          "y": 780
+          "x": 2040,
+          "y": 520
         }
       }
     note: false
@@ -2018,8 +1731,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3090,
-          "y": 780
+          "x": 3080,
+          "y": 520
         }
       }
     note: false
@@ -2079,8 +1792,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3730,
-          "y": 780
+          "x": 3720,
+          "y": 520
         }
       }
     note: false
@@ -2140,8 +1853,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4370,
-          "y": 780
+          "x": 4360,
+          "y": 520
         }
       }
     note: false
@@ -2159,8 +1872,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1525,
-        "width": 4360,
+        "height": 1355,
+        "width": 4350,
         "x": 390,
         "y": -360
       }

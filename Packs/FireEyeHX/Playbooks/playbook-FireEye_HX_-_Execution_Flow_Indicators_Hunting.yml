@@ -57,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
+          "x": 2050,
           "y": -40
         }
       }
@@ -86,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 1750,
-          "y": 1080
+          "y": 910
         }
       }
     note: false
@@ -155,7 +155,7 @@ tasks:
       '#default#':
       - "133"
       "yes":
-      - "146"
+      - "108"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -172,7 +172,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
+          "x": 2050,
           "y": 90
         }
       }
@@ -185,10 +185,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "108":
     id: "108"
-    taskid: 2d839537-1fe6-4c2c-8499-7b6e88efc065
+    taskid: 1cf825f5-39f9-4fa2-8871-f2c467e2b037
     type: regular
     task:
-      id: 2d839537-1fe6-4c2c-8499-7b6e88efc065
+      id: 1cf825f5-39f9-4fa2-8871-f2c467e2b037
       version: -1
       name: FireEye HX Query - Applications
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -208,7 +208,14 @@ tasks:
         simple: contains
       fieldSearchValue:
         complex:
-          root: ApplicationParsed
+          root: inputs.Application
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -237,8 +244,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2020,
-          "y": 515
+          "x": 2290,
+          "y": 265
         }
       }
     note: false
@@ -268,7 +275,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3300,
+          "x": 2690,
           "y": -40
         }
       }
@@ -296,7 +303,8 @@ tasks:
       '#default#':
       - "145"
       "yes":
-      - "147"
+      - "121"
+      - "120"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -313,7 +321,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3300,
+          "x": 2690,
           "y": 90
         }
       }
@@ -326,10 +334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "120":
     id: "120"
-    taskid: 4eeef9f1-42bf-417a-8080-1c666f246aa1
+    taskid: 8fba3425-49a8-4862-82ff-9c2e40427d90
     type: regular
     task:
-      id: 4eeef9f1-42bf-417a-8080-1c666f246aa1
+      id: 8fba3425-49a8-4862-82ff-9c2e40427d90
       version: -1
       name: FireEye HX Query - Parent Process Name
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -349,7 +357,14 @@ tasks:
         simple: contains
       fieldSearchValue:
         complex:
-          root: ProcessNameParsed
+          root: inputs.ProcessName
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -384,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2650,
-          "y": 430
+          "x": 2930,
+          "y": 260
         }
       }
     note: false
@@ -397,10 +412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "121":
     id: "121"
-    taskid: 41be33b2-ab3e-4a2a-81bd-eb99e7a16b58
+    taskid: 6de10b58-7f29-4eaa-80d6-4f301f161304
     type: regular
     task:
-      id: 41be33b2-ab3e-4a2a-81bd-eb99e7a16b58
+      id: 6de10b58-7f29-4eaa-80d6-4f301f161304
       version: -1
       name: FireEye HX Query - Process Name
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -438,7 +453,14 @@ tasks:
         simple: contains
       fieldSearchValue:
         complex:
-          root: ProcessNameParsed
+          root: inputs.ProcessName
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -473,8 +495,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
-          "y": 430
+          "x": 3360,
+          "y": 260
         }
       }
     note: false
@@ -504,8 +526,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2260,
-          "y": 940
+          "x": 2050,
+          "y": 600
         }
       }
     note: false
@@ -535,121 +557,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3300,
-          "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "146":
-    id: "146"
-    taskid: 80b37720-c644-4f9d-83ca-80275b43777b
-    type: regular
-    task:
-      id: 80b37720-c644-4f9d-83ca-80275b43777b
-      version: -1
-      name: Set Application search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "108"
-    scriptarguments:
-      key:
-        simple: ApplicationParsed
-      value:
-        complex:
-          root: inputs.Application
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.Application
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2020,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "147":
-    id: "147"
-    taskid: 7669eb5e-7c65-4d03-8088-afa24035585e
-    type: regular
-    task:
-      id: 7669eb5e-7c65-4d03-8088-afa24035585e
-      version: -1
-      name: Set ProcessName search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "120"
-      - "121"
-    scriptarguments:
-      key:
-        simple: ProcessNameParsed
-      value:
-        complex:
-          root: inputs.ProcessName
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.ProcessName
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2860,
-          "y": 260
+          "x": 2690,
+          "y": 770
         }
       }
     note: false
@@ -699,8 +608,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2020,
-          "y": 770
+          "x": 2290,
+          "y": 425
         }
       }
     note: false
@@ -753,8 +662,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
-          "y": 600
+          "x": 3360,
+          "y": 430
         }
       }
     note: false
@@ -808,8 +717,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2860,
-          "y": 770
+          "x": 3140,
+          "y": 600
         }
       }
     note: false
@@ -864,8 +773,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2650,
-          "y": 600
+          "x": 2930,
+          "y": 430
         }
       }
     note: false
@@ -877,10 +786,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "154":
     id: "154"
-    taskid: 2901d3ce-f6af-4b0c-8cc9-750d34f8056d
+    taskid: 29083988-db00-4fe7-83f2-ab36c0f2c436
     type: regular
     task:
-      id: 2901d3ce-f6af-4b0c-8cc9-750d34f8056d
+      id: 29083988-db00-4fe7-83f2-ab36c0f2c436
       version: -1
       name: FireEye HX Query - RegistryValue
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -918,7 +827,14 @@ tasks:
         simple: contains
       fieldSearchValue:
         complex:
-          root: RegistryValueParsed
+          root: inputs.RegistryValue
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -947,8 +863,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 515
+          "x": 1230,
+          "y": 265
         }
       }
     note: false
@@ -978,7 +894,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
+          "x": 1470,
           "y": -40
         }
       }
@@ -1009,7 +925,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
+          "x": 830,
           "y": -40
         }
       }
@@ -1037,7 +953,7 @@ tasks:
       '#default#':
       - "160"
       "yes":
-      - "158"
+      - "154"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1054,64 +970,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
+          "x": 1470,
           "y": 90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "158":
-    id: "158"
-    taskid: b20bb0ff-07b4-4765-8f2a-e2857ff3a181
-    type: regular
-    task:
-      id: b20bb0ff-07b4-4765-8f2a-e2857ff3a181
-      version: -1
-      name: Set RegistryValue search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "154"
-    scriptarguments:
-      key:
-        simple: RegistryValueParsed
-      value:
-        complex:
-          root: inputs.RegistryValue
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.RegistryValue
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1170,
-          "y": 260
         }
       }
     note: false
@@ -1161,8 +1021,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 770
+          "x": 1230,
+          "y": 425
         }
       }
     note: false
@@ -1192,8 +1052,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 940
+          "x": 1470,
+          "y": 600
         }
       }
     note: false
@@ -1220,7 +1080,7 @@ tasks:
       '#default#':
       - "165"
       "yes":
-      - "162"
+      - "163"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1237,64 +1097,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
+          "x": 830,
           "y": 90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "162":
-    id: "162"
-    taskid: ec3dc510-fbab-4211-8438-03460b040114
-    type: regular
-    task:
-      id: ec3dc510-fbab-4211-8438-03460b040114
-      version: -1
-      name: Set RegistryValue search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "163"
-    scriptarguments:
-      key:
-        simple: RegistryKeyParsed
-      value:
-        complex:
-          root: inputs.RegistryKey
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.RegistryKey
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 260
         }
       }
     note: false
@@ -1306,10 +1110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: fdaa3477-1c38-4cba-89ab-e7abbd16ce67
+    taskid: c1f6dbab-77b0-4a2a-8642-b13d15b806e4
     type: regular
     task:
-      id: fdaa3477-1c38-4cba-89ab-e7abbd16ce67
+      id: c1f6dbab-77b0-4a2a-8642-b13d15b806e4
       version: -1
       name: FireEye HX Query - RegistryKey
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -1347,7 +1151,14 @@ tasks:
         simple: equals
       fieldSearchValue:
         complex:
-          root: RegistryKeyParsed
+          root: inputs.RegistryKey
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -1376,8 +1187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 515
+          "x": 590,
+          "y": 265
         }
       }
     note: false
@@ -1427,8 +1238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 770
+          "x": 590,
+          "y": 425
         }
       }
     note: false
@@ -1458,8 +1269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 940
+          "x": 830,
+          "y": 600
         }
       }
     note: false
@@ -1478,9 +1289,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1485,
-        "width": 3170,
-        "x": 510,
+        "height": 1315,
+        "width": 3150,
+        "x": 590,
         "y": -340
       }
     }

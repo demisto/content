@@ -173,10 +173,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: e356e260-198c-4bbb-8c3c-127f661da892
+    taskid: 9e1e414c-a541-40cd-8180-3eb81cfbb159
     type: regular
     task:
-      id: e356e260-198c-4bbb-8c3c-127f661da892
+      id: 9e1e414c-a541-40cd-8180-3eb81cfbb159
       version: -1
       name: FireEye ETP Query - Domain
       description: Search for messages that include specified message attributes that are accessible in he ETP portal.
@@ -190,7 +190,14 @@ tasks:
     scriptarguments:
       domain:
         complex:
-          root: DomainParsed
+          root: inputs.Domain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       from_accepted_date_time:
         complex:
           root: inputs.from_accepted_date_time
@@ -340,7 +347,7 @@ tasks:
       {
         "position": {
           "x": -900,
-          "y": 435
+          "y": 155
         }
       }
     note: false
@@ -366,7 +373,7 @@ tasks:
       '#default#':
       - "122"
       "yes":
-      - "128"
+      - "100"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -410,7 +417,7 @@ tasks:
       '#default#':
       - "123"
       "yes":
-      - "130"
+      - "131"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -454,7 +461,8 @@ tasks:
       '#default#':
       - "124"
       "yes":
-      - "133"
+      - "134"
+      - "136"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -501,7 +509,7 @@ tasks:
       {
         "position": {
           "x": -670,
-          "y": 900
+          "y": 490
         }
       }
     note: false
@@ -532,7 +540,7 @@ tasks:
       {
         "position": {
           "x": -40,
-          "y": 900
+          "y": 490
         }
       }
     note: false
@@ -563,7 +571,7 @@ tasks:
       {
         "position": {
           "x": 1240,
-          "y": 900
+          "y": 660
         }
       }
     note: false
@@ -591,63 +599,7 @@ tasks:
       {
         "position": {
           "x": 290,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "128":
-    id: "128"
-    taskid: 54ac126a-7788-4dbd-8e0e-013ea72cee0a
-    type: regular
-    task:
-      id: 54ac126a-7788-4dbd-8e0e-013ea72cee0a
-      version: -1
-      name: Set Domain search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "100"
-    scriptarguments:
-      key:
-        simple: DomainParsed
-      value:
-        complex:
-          root: inputs.Domain
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.Domain
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -900,
-          "y": 160
+          "y": 800
         }
       }
     note: false
@@ -698,63 +650,7 @@ tasks:
       {
         "position": {
           "x": -900,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "130":
-    id: "130"
-    taskid: b2968c24-281a-48be-8210-e0cf1e836e40
-    type: regular
-    task:
-      id: b2968c24-281a-48be-8210-e0cf1e836e40
-      version: -1
-      name: Set IPAddress search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "131"
-    scriptarguments:
-      key:
-        simple: IPAddressParsed
-      value:
-        complex:
-          root: inputs.IPAddress
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.IPAddress
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -270,
-          "y": 160
+          "y": 320
         }
       }
     note: false
@@ -766,10 +662,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "131":
     id: "131"
-    taskid: 282cf584-f297-4efd-88d7-5ec5c6e148b7
+    taskid: fa989afd-9326-4229-83ba-eec8e4929008
     type: regular
     task:
-      id: 282cf584-f297-4efd-88d7-5ec5c6e148b7
+      id: fa989afd-9326-4229-83ba-eec8e4929008
       version: -1
       name: FireEye ETP Query - IPAddress
       description: Search for messages that include specified message attributes that are accessible in he ETP portal.
@@ -875,7 +771,14 @@ tasks:
           - operator: uniq
       sender_ip:
         complex:
-          root: IPAddressParsed
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       status:
         complex:
           root: inputs.status
@@ -933,7 +836,7 @@ tasks:
       {
         "position": {
           "x": -270,
-          "y": 435
+          "y": 155
         }
       }
     note: false
@@ -984,64 +887,7 @@ tasks:
       {
         "position": {
           "x": -270,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "133":
-    id: "133"
-    taskid: 7d4de6bd-616b-4abe-805b-feee9c98cb43
-    type: regular
-    task:
-      id: 7d4de6bd-616b-4abe-805b-feee9c98cb43
-      version: -1
-      name: Set EmailAddress search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "134"
-      - "136"
-    scriptarguments:
-      key:
-        simple: EmailAddressParsed
-      value:
-        complex:
-          root: inputs.EmailAddress
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.EmailAddress
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 160
+          "y": 320
         }
       }
     note: false
@@ -1053,10 +899,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: 77ef2273-7058-48d3-8e85-c680ea7c9def
+    taskid: 3c5241a2-4aaf-4f65-83a9-a4d4458b94be
     type: regular
     task:
-      id: 77ef2273-7058-48d3-8e85-c680ea7c9def
+      id: 3c5241a2-4aaf-4f65-83a9-a4d4458b94be
       version: -1
       name: FireEye ETP Query - Sender EmailAddress
       description: Search for messages that include specified message attributes that are accessible in he ETP portal.
@@ -1073,7 +919,14 @@ tasks:
           root: inputs.from_accepted_date_time
       from_email:
         complex:
-          root: EmailAddressParsed
+          root: inputs.EmailAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       from_email_not_in:
         complex:
           root: inputs.from_email_not_in
@@ -1219,8 +1072,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 340
+          "x": 610,
+          "y": 160
         }
       }
     note: false
@@ -1275,8 +1128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 535
+          "x": 610,
+          "y": 320
         }
       }
     note: false
@@ -1288,10 +1141,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "136":
     id: "136"
-    taskid: 3d9bdac4-a0d0-4e38-8bc2-fa59f1c8e292
+    taskid: 91b3ddf9-55ca-411c-8e50-427b671846fd
     type: regular
     task:
-      id: 3d9bdac4-a0d0-4e38-8bc2-fa59f1c8e292
+      id: 91b3ddf9-55ca-411c-8e50-427b671846fd
       version: -1
       name: FireEye ETP Query - Recipient EmailAddress
       description: Search for messages that include specified message attributes that are accessible in he ETP portal.
@@ -1365,7 +1218,14 @@ tasks:
                   simple: "100"
       recipients:
         complex:
-          root: EmailAddressParsed
+          root: inputs.EmailAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       recipients_not_in:
         complex:
           root: inputs.recipients_not_in
@@ -1454,8 +1314,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 340
+          "x": 1010,
+          "y": 160
         }
       }
     note: false
@@ -1510,8 +1370,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 535
+          "x": 1010,
+          "y": 320
         }
       }
     note: false
@@ -1565,8 +1425,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 730
+          "x": 810,
+          "y": 490
         }
       }
     note: false
@@ -1581,7 +1441,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1575,
+        "height": 1335,
         "width": 2520,
         "x": -900,
         "y": -470

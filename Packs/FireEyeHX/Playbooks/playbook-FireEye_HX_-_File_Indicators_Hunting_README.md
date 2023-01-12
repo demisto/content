@@ -12,8 +12,8 @@ This playbook does not use any sub-playbooks.
 * FireEyeHX v2
 
 ### Scripts
-* IsIntegrationAvailable
 * SetAndHandleEmpty
+* IsIntegrationAvailable
 
 ### Commands
 * fireeye-hx-search

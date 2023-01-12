@@ -86,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 2540,
-          "y": 1080
+          "y": 910
         }
       }
     note: false
@@ -185,7 +185,7 @@ tasks:
       '#default#':
       - "136"
       "yes":
-      - "137"
+      - "110"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -215,10 +215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: f85f75f8-0edd-43ec-8f71-cb0494984f8c
+    taskid: 26093a84-edbc-4cb9-8b4a-9c7b8d5c3147
     type: regular
     task:
-      id: f85f75f8-0edd-43ec-8f71-cb0494984f8c
+      id: 26093a84-edbc-4cb9-8b4a-9c7b8d5c3147
       version: -1
       name: FireEye HX Query - IP Address
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -238,7 +238,14 @@ tasks:
         simple: equals
       fieldSearchValue:
         complex:
-          root: IPAddressParsed
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -268,7 +275,7 @@ tasks:
       {
         "position": {
           "x": 2000,
-          "y": 525
+          "y": 260
         }
       }
     note: false
@@ -295,7 +302,8 @@ tasks:
       '#default#':
       - "152"
       "yes":
-      - "153"
+      - "116"
+      - "115"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -325,10 +333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "115":
     id: "115"
-    taskid: 3715465a-d2e8-40d7-8f2c-73030bdf6440
+    taskid: 5b68ccf4-ecea-4356-8577-00ccaeca2adb
     type: regular
     task:
-      id: 3715465a-d2e8-40d7-8f2c-73030bdf6440
+      id: 5b68ccf4-ecea-4356-8577-00ccaeca2adb
       version: -1
       name: FireEye HX Query - Port
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -348,7 +356,14 @@ tasks:
         simple: equals
       fieldSearchValue:
         complex:
-          root: PortsParsed
+          root: inputs.PortNumber
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -384,7 +399,7 @@ tasks:
       {
         "position": {
           "x": 3070,
-          "y": 430
+          "y": 260
         }
       }
     note: false
@@ -396,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "116":
     id: "116"
-    taskid: 849ba0a6-3621-4dfc-88ef-662524ecc44c
+    taskid: aca40fd6-2e7c-4344-86a1-3cad78b5d833
     type: regular
     task:
-      id: 849ba0a6-3621-4dfc-88ef-662524ecc44c
+      id: aca40fd6-2e7c-4344-86a1-3cad78b5d833
       version: -1
       name: FireEye HX Query - Remote Ports
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -419,7 +434,14 @@ tasks:
         simple: equals
       fieldSearchValue:
         complex:
-          root: PortsParsed
+          root: inputs.PortNumber
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -455,7 +477,7 @@ tasks:
       {
         "position": {
           "x": 3480,
-          "y": 430
+          "y": 260
         }
       }
     note: false
@@ -486,62 +508,7 @@ tasks:
       {
         "position": {
           "x": 2230,
-          "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "137":
-    id: "137"
-    taskid: bc557b33-65d7-454d-85f4-3a8085f7c53a
-    type: regular
-    task:
-      id: bc557b33-65d7-454d-85f4-3a8085f7c53a
-      version: -1
-      name: Set IPAddress search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "110"
-    scriptarguments:
-      key:
-        simple: IPAddressParsed
-      value:
-        complex:
-          root: inputs.IPAddress
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.IPAddress
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2000,
-          "y": 260
+          "y": 770
         }
       }
     note: false
@@ -572,63 +539,7 @@ tasks:
       {
         "position": {
           "x": 2850,
-          "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "153":
-    id: "153"
-    taskid: 23a5728f-aecc-4d10-8599-7d8239a0d407
-    type: regular
-    task:
-      id: 23a5728f-aecc-4d10-8599-7d8239a0d407
-      version: -1
-      name: Set PortNumber search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "115"
-      - "116"
-    scriptarguments:
-      key:
-        simple: PortsParsed
-      value:
-        complex:
-          root: inputs.PortNumber
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.PortNumber
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3270,
-          "y": 260
+          "y": 770
         }
       }
     note: false
@@ -686,7 +597,8 @@ tasks:
       '#default#':
       - "159"
       "yes":
-      - "157"
+      - "160"
+      - "158"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -714,68 +626,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "157":
-    id: "157"
-    taskid: 3ee0223a-a3cc-4d76-8533-d25f0bdaaf56
-    type: regular
-    task:
-      id: 3ee0223a-a3cc-4d76-8533-d25f0bdaaf56
-      version: -1
-      name: Set URLDomain search argument
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "158"
-      - "160"
-    scriptarguments:
-      key:
-        simple: URLDomainParsed
-      value:
-        complex:
-          root: inputs.URLDomain
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.URLDomain
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1170,
-          "y": 260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "158":
     id: "158"
-    taskid: 1d7e8824-f562-4494-8f1f-fe46ec372937
+    taskid: 0ca5a124-6ea0-4e56-895a-990fe26952d6
     type: regular
     task:
-      id: 1d7e8824-f562-4494-8f1f-fe46ec372937
+      id: 0ca5a124-6ea0-4e56-895a-990fe26952d6
       version: -1
       name: FireEye HX Query - File Download Referrer
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -795,7 +651,14 @@ tasks:
         simple: contains
       fieldSearchValue:
         complex:
-          root: URLDomainParsed
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -825,7 +688,7 @@ tasks:
       {
         "position": {
           "x": 1380,
-          "y": 430
+          "y": 260
         }
       }
     note: false
@@ -856,7 +719,7 @@ tasks:
       {
         "position": {
           "x": 1610,
-          "y": 940
+          "y": 770
         }
       }
     note: false
@@ -868,10 +731,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "160":
     id: "160"
-    taskid: 43e0c456-44c9-407f-87d0-ec18c40d7a8d
+    taskid: c77dc555-884e-4662-8932-13c0890e9743
     type: regular
     task:
-      id: 43e0c456-44c9-407f-87d0-ec18c40d7a8d
+      id: c77dc555-884e-4662-8932-13c0890e9743
       version: -1
       name: FireEye HX Query - HTTP Header
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
@@ -891,7 +754,14 @@ tasks:
         simple: contains
       fieldSearchValue:
         complex:
-          root: URLDomainParsed
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       hostSetName:
         complex:
           root: inputs.hostSetName
@@ -921,7 +791,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 430
+          "y": 260
         }
       }
     note: false
@@ -972,7 +842,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 595
+          "y": 425
         }
       }
     note: false
@@ -1021,7 +891,7 @@ tasks:
       {
         "position": {
           "x": 1380,
-          "y": 595
+          "y": 425
         }
       }
     note: false
@@ -1076,7 +946,7 @@ tasks:
       {
         "position": {
           "x": 1170,
-          "y": 770
+          "y": 600
         }
       }
     note: false
@@ -1127,7 +997,7 @@ tasks:
       {
         "position": {
           "x": 2000,
-          "y": 770
+          "y": 425
         }
       }
     note: false
@@ -1188,7 +1058,7 @@ tasks:
       {
         "position": {
           "x": 3070,
-          "y": 595
+          "y": 425
         }
       }
     note: false
@@ -1249,7 +1119,7 @@ tasks:
       {
         "position": {
           "x": 3480,
-          "y": 595
+          "y": 425
         }
       }
     note: false
@@ -1261,10 +1131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "167":
     id: "167"
-    taskid: 686d5422-fe00-4e4e-8b0b-98223fa807cb
+    taskid: fb9ccec6-aa09-48f5-8a76-41fe7671234c
     type: regular
     task:
-      id: 686d5422-fe00-4e4e-8b0b-98223fa807cb
+      id: fb9ccec6-aa09-48f5-8a76-41fe7671234c
       version: -1
       name: Remove Duplications From Matching Results
       description: |-
@@ -1304,7 +1174,7 @@ tasks:
       {
         "position": {
           "x": 3280,
-          "y": 770
+          "y": 600
         }
       }
     note: false
@@ -1318,12 +1188,11 @@ view: |-
   {
     "linkLabelsPosition": {
       "109_136_#default#": 0.14,
-      "109_137_yes": 0.62,
       "114_152_#default#": 0.14
     },
     "paper": {
       "dimensions": {
-        "height": 1505,
+        "height": 1335,
         "width": 2900,
         "x": 960,
         "y": -360
