@@ -423,9 +423,8 @@ def zoom_list_users_command(client, **args) -> CommandResults:
             minimal_needed_info = remove_extra_info_list_users(limit, raw_data)
 
             md = tableToMarkdown('Users', minimal_needed_info, ['id', 'email',
-                                                                'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
-            md += '\n' + tableToMarkdown('Metadata',
-                                         [raw_data][0][0], ['total_records'])
+                                                                'type', 'pmi', 'verified','created_at', 'status', 'role_id'])
+            md += '\n' + tableToMarkdown('Metadata', [raw_data][0][0], ['total_records'])
             raw_data = raw_data[0]
     else:
         # only one request is needed
@@ -618,13 +617,12 @@ def zoom_fetch_recording_command(client: Client, **args):
         url_suffix=f'meetings/{meeting_id}/recordings'
     )
     recording_files = data.get('recording_files')
-    # getting the audio and video files
+    # Getting the audio and video files which are contained in every recording.
     for file in recording_files:
         download_url = file.get('download_url')
         try:
             # download the file
-            demisto.debug(
-                f"Trying to download the files of meeting {meeting_id}")
+            demisto.debug(f"Trying to download the files of meeting {meeting_id}")
             record = client.zoom_fetch_recording(
                 method='GET',
                 full_url=download_url,
@@ -634,6 +632,7 @@ def zoom_fetch_recording_command(client: Client, **args):
             # save the file
             filename = f'recording_{meeting_id}_{file.get("id")}.mp4'
             with open(filename, 'wb') as f:
+                # Saving the content of the file locally.
                 record.raw.decode_content = True
                 shutil.copyfileobj(record.raw, f)
 
@@ -651,7 +650,7 @@ def zoom_fetch_recording_command(client: Client, **args):
                         resp_type='response'
                     )
                     results.append(CommandResults(
-                        readable_output=f"The file {filename} was successfully removed from the cloud"))
+                        readable_output=f"The file {filename} was successfully removed from the cloud."))
                 except DemistoException as e:
                     results.append(CommandResults(
                         readable_output=f"Failed to delete file {filename}. {e}"))
@@ -810,8 +809,6 @@ def main():  # pragma: no cover
         return_results(results)
 
     except DemistoException as e:
-        if e.res:
-            return_results(e.res)
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}.')
 
