@@ -9,7 +9,6 @@ def main():
 
     s: str = str(args.get('value'))
     length: int = int(args.get('length', 0))
-
     demisto.results(s.zfill(length))
 
 
