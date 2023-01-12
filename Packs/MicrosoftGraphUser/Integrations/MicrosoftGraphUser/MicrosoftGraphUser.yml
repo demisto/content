@@ -58,7 +58,6 @@ configuration:
   required: false
   type: 0
 - name: creds_auth_code
-  required: false
   type: 9
   displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
   hiddenusername: true
