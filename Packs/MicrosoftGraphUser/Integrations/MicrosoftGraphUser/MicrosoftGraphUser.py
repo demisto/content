@@ -470,7 +470,7 @@ def main():
     verify = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
     redirect_uri = params.get('redirect_uri', '')
-    auth_code = params.get('creds_auth_id', {}).get('password') or params.get('auth_code', '')
+    auth_code = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_code', '')
     proxy = params.get('proxy', False)
     handle_error = argToBoolean(params.get('handle_error', 'true'))
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
