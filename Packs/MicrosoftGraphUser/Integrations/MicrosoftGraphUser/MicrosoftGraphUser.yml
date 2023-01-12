@@ -13,7 +13,6 @@ configuration:
   displaypassword: ID (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
 - name: creds_tenant_id
-  required: false
   type: 9
   displaypassword: Token (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
