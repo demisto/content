@@ -59,9 +59,9 @@ def test_post_api_request(mocker):
     Then:
         - validate the response is as expected
     """
-    from GenerateAsBuilt import post_api_request, DEMISTO_INCIDENTS_PATH
+    from GenerateAsBuilt import post_api_request
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': {'response': 'ok'}}])
-    assert post_api_request(DEMISTO_INCIDENTS_PATH, {}) == 'ok'
+    assert post_api_request("/incidents/search", {}) == 'ok'
 
 
 @pytest.mark.parametrize('res, expected',
@@ -78,9 +78,9 @@ def test_get_api_request(mocker, res, expected):
     Then:
         - validate the response is as expected
     """
-    from GenerateAsBuilt import get_api_request, DEMISTO_INCIDENTS_PATH
+    from GenerateAsBuilt import get_api_request
     mocker.patch.object(demisto, 'executeCommand', return_value=res)
-    assert get_api_request(DEMISTO_INCIDENTS_PATH) == expected
+    assert get_api_request("/incidents/search") == expected
 
 
 def test_get_all_incidents(mocker):

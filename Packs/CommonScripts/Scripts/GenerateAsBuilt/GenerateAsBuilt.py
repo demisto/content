@@ -9,16 +9,6 @@ GenerateAsBuilt
 Uses the XSOAR API to query for custom content, configuration, and statistics, then generates
 a HTML and Markdown output based on this.
 """
-DEMISTO_INTEGRATIONS_PATH = "/settings/integration/search"
-DEMISTO_INSTALLED_PATH = "/contentpacks/metadata/installed"
-DEMISTO_PLAYBOOKS_PATH = "/playbook/search"
-DEMISTO_AUTOMATIONS_PATH = "/automation/search"
-DEMISTO_CONFIG_PATH = "/system/config"
-DEMISTO_INCIDENTS_PATH = "/incidents/search"
-DEMISTO_INCIDENT_TYPE_PATH = "/incidenttype"
-DEMISTO_DEPENDENCIES_PATH = "/itemsdependencies"
-DEMISTO_REPORTS_PATH = "/reports"
-DEMISTO_DASHBOARDS_PATH = "/dashboards"
 HTML_TABLE_TEMPLATE = """
 <h3>{{ name }}</h3>
 <table class="table">
@@ -627,7 +617,7 @@ def get_all_incidents(days=7, size=1000):
             }
         }
     }
-    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    r = post_api_request("/incidents/search", body)
     return r.get("data")
 
 
@@ -659,7 +649,7 @@ def get_open_incidents(days=7, size=1000):
             }
         }
     }
-    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    r = post_api_request("/incidents/search", body)
     total = r.get("total")
     rd = SingleFieldData(f"Open Incidents {days} days", total)
     return rd
@@ -693,7 +683,7 @@ def get_closed_incidents(days=7, size=1000):
             }
         }
     }
-    r = post_api_request(DEMISTO_INCIDENTS_PATH, body)
+    r = post_api_request("/incidents/search", body)
     total = r.get("total")
     rd = SingleFieldData(f"Closed Incidents {days} days", total)
     return rd
@@ -708,7 +698,7 @@ def get_enabled_integrations(max_request_size: int):
     Returns:
         SortedTableData: TableData object with the enabled instances.
     """
-    r = post_api_request(DEMISTO_INTEGRATIONS_PATH, {"size": max_request_size})
+    r = post_api_request("/settings/integration/search", {"size": max_request_size})
     instances = r.get("instances")
     enabled_instances = []
     for instance in instances:
@@ -727,7 +717,7 @@ def get_installed_packs():
         SortedTableData: TableData object with the installed Content Packs.
     """
     # if tis doesn't work, return nothing.
-    r = get_api_request(DEMISTO_INSTALLED_PATH)
+    r = get_api_request("/contentpacks/metadata/installed")
     if not r:
         return NoneTableData()
     else:
@@ -740,7 +730,7 @@ def get_custom_playbooks():
     Returns:
         SortedTableData: TableData object with the custom playbooks.
     """
-    r = post_api_request(DEMISTO_PLAYBOOKS_PATH, {"query": "system:F AND hidden:F"}).get("playbooks")
+    r = post_api_request("/playbook/search", {"query": "system:F AND hidden:F"}).get("playbooks")
     for pb in r:
         pb["TotalTasks"] = len(pb.get("tasks", []))
     rd = SortedTableData(r, "Custom Playbooks", "name")
@@ -752,7 +742,7 @@ def get_custom_reports():
     Return all the custom reports installed in XSOAR.
     :return: TableData
     """
-    r = get_api_request(DEMISTO_REPORTS_PATH)
+    r = get_api_request("/reports")
     reports = []
     for report in r:
         # Check it's not an inbuilt (system) report
@@ -768,7 +758,7 @@ def get_custom_dashboards():
     Returns:
         TableData: TableData object with the custom dashboards.
     """
-    r = get_api_request(DEMISTO_DASHBOARDS_PATH)
+    r = get_api_request("/dashboards")
     dashboards = []
     for dashboard in r.values():
         # Check it's not an inbuilt (system) dashboard
@@ -784,7 +774,7 @@ def get_all_playbooks():
     Returns:
         TableData: TableData object with the custom playbooks.
     """
-    r = post_api_request(DEMISTO_PLAYBOOKS_PATH, {"query": "hidden:F"}).get("playbooks")
+    r = post_api_request("/playbook/search", {"query": "hidden:F"}).get("playbooks")
     for pb in r:
         pb["TotalTasks"] = len(pb.get("tasks", []))
     rd = TableData(r, "All Playbooks")
@@ -855,7 +845,7 @@ def get_playbook_dependencies(playbook_name):
         ],
         "dependencyLevel": "optional"
     }
-    dependencies = post_api_request(DEMISTO_DEPENDENCIES_PATH, body).get("existing").get("playbook").get(playbook_id)
+    dependencies = post_api_request("/itemsdependencies", body).get("existing").get("playbook").get(playbook_id)
     if not dependencies:
         return_error(f"Failed to retrieve dependencies for {playbook_id}")
 
@@ -885,13 +875,13 @@ def get_playbook_dependencies(playbook_name):
 
 
 def get_custom_automations():
-    r = post_api_request(DEMISTO_AUTOMATIONS_PATH, {"query": "system:F AND hidden:F"}).get("scripts")
+    r = post_api_request("/automation/search", {"query": "system:F AND hidden:F"}).get("scripts")
     rd = SortedTableData(r, "Custom Automations", "name")
     return rd
 
 
 def get_system_config():
-    r = get_api_request(DEMISTO_CONFIG_PATH).get("defaultMap")
+    r = get_api_request("/system/config").get("defaultMap")
     rd = TableData(r, "System Configuration")
     return rd
 
