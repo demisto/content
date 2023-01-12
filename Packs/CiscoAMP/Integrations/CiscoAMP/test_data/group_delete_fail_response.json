@@ -1,0 +1,12 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "deleted": false,
+        "group_guid": "data_group_guid"
+    }
+}
