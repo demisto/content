@@ -252,4 +252,4 @@ def test_mysql_integration():
     ('arg1=value1&arg2=value2', 'Microsoft SQL Server - MS ODBC Driver',
      {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 18 for SQL Server', 'TrustServerCertificate': 'yes'})])
 def test_parse_connect_parameters(connect_parameters, dialect, expected_response):
-    assert Client.parse_connect_parameters(connect_parameters, dialect) == expected_response
+    assert Client.parse_connect_parameters(connect_parameters, dialect, False) == expected_response
