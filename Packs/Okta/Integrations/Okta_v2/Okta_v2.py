@@ -1308,7 +1308,7 @@ def main():
     apitoken = demisto.params().get('apitoken')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
-
+    # Test
     LOG(f'Command being called is {demisto.command()}')
 
     commands = {
