@@ -21,7 +21,8 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers):
+                 proxy: bool, headers: dict, api_key: str = None):
+        self.validate_authentication_params(username=username, password=password, api_key=api_key)
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
@@ -29,11 +30,11 @@ class Client(BaseClient):
         self.session.headers = headers
         if not proxy:
             self.session.trust_env = False
-        if self.username != TOKEN_INPUT_IDENTIFIER:
+        if self.username and self.username != TOKEN_INPUT_IDENTIFIER and self.password:
             self._login()
 
     def __del__(self):
-        if self.username != TOKEN_INPUT_IDENTIFIER:
+        if self.username and self.username != TOKEN_INPUT_IDENTIFIER and self.password:
             self._logout()
         super().__del__()
 
@@ -54,6 +55,14 @@ class Client(BaseClient):
             self._http_request('GET', full_url=f'{self._base_url}/api/auth/logout')
         except Exception as err:
             demisto.debug(f'An error occurred during the logout.\n{str(err)}')
+
+    def validate_authentication_params(self, username: str = None, password: str = None, api_key: str = None):
+        if not password and not api_key:
+            raise ValueError('Using a password or token is necessary.')
+        if not username and not api_key:
+            raise ValueError('When you do not use with API Token an username parameter is necessary.')
+        if password and api_key:
+            raise ValueError('You cannot use both a password and a token at the same time.')
 
     def test_module_request(self):
         """
@@ -707,10 +716,13 @@ class Client(BaseClient):
                                   headers=headers)
 
     def get_incidents(self, query: dict[str, Any]):
-
+        headers = self._headers
+        if not self.password:
+            headers = headers | {'EXA_USERNAME': self.username}
         return self._http_request(
             'POST',
             url_suffix='/ir/api/incidents/search',
+            headers=headers,
             json_data=query,
         )
 
@@ -1186,6 +1198,10 @@ def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
     Returns:
         ok if successful
     """
+    if argToBoolean(params.get('isFetch')):
+        if not client.username or client.username == TOKEN_INPUT_IDENTIFIER:
+            demisto.results('IN order to use the “Fetch Incident” functionality,'
+                            'the username must be provided in the “Username” parameter.')
 
     client.test_module_request()
     demisto.results('ok')
@@ -2119,12 +2135,13 @@ def main():
     args = demisto.args()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
+    api_key = params.get('api_token')
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-    if username == TOKEN_INPUT_IDENTIFIER:
-        headers['ExaAuthToken'] = password
+    if username == TOKEN_INPUT_IDENTIFIER or not password:
+        headers['ExaAuthToken'] = password or api_key
 
     commands = {
         'get-notable-users': get_notable_users,
@@ -2169,7 +2186,7 @@ def main():
 
     try:
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
-                        password=password, proxy=proxy, headers=headers)
+                        password=password, proxy=proxy, headers=headers, api_key=api_key)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':

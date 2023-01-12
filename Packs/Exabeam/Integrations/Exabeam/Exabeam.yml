@@ -7,11 +7,15 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: In order to authenticate with a Cluster Authentication Token, insert `__token` in the "Username" textbox, and the token itself in the "Password" textbox.
-  display: Username
+- display: Username
   name: credentials
-  required: true
+  required: false
   type: 9
+- additionalinfo: Cluster Authentication Token
+  display: API Token
+  name: api_token
+  required: false
+  type: 4
 - defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials,
     cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage,
     malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
