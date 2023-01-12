@@ -12,12 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "EWS": {
-            "mandatory": true,
-            "display_name": "EWS"
-        }
-    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"

@@ -13,6 +13,12 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "dependencies": {
+        "MicrosoftExchangeOnPremise": {
+            "mandatory": true,
+            "display_name": "Microsoft Exchange On-Premise"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
