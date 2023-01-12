@@ -282,7 +282,7 @@ def get_user_event_types(client: UserEventClient, args: dict) -> CommandResults:
                           readable_output=tableToMarkdown(name='KMSAT_User_Event_Types', t=data))
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, userEventClient: UserEventClient) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -302,7 +302,16 @@ def test_module(client: Client) -> str:
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set' + str(client._headers)
+            message = 'Authorization Error: make sure Reporting API Key is correctly set' + str(client._headers)
+        else:
+            raise e
+
+    try:
+        userEventClient.user_event_types()
+        message = 'ok'
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+            message = 'Authorization Error: make sure User Event API Key is correctly set' + str(client._headers)
         else:
             raise e
     return message
@@ -363,7 +372,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, userEventClient)
             return_results(result)
         elif command == 'fetch-incidents':
             fetch_incidents_command(client)
