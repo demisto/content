@@ -14,7 +14,7 @@ from requests.models import HTTPError
 
 """CONSTANTS"""
 USER_AGENT = "TMV1CortexXSOARApp/1.1"
-VENDOR_NAME = "TrendMicroVisionOneV3"
+VENDOR_NAME = "TrendMicroVisionOne"
 URL = "url"
 POST = "post"
 GET = "get"
