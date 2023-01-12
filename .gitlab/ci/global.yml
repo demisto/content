@@ -232,6 +232,7 @@
       fi
     - section_end "Test Infrastructure"
     - section_start "Create id set"
+    - demisto-sdk pre-commit -a
     - *create-id-set
     - section_end "Create id set"
     - section_start "Run Unit Testing and Lint"
