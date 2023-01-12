@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 32e35d59-6f5b-4a98-8d0c-68713eca62cd
+    taskid: 4175123a-5408-4f2a-8db3-b0622a0fb173
     type: regular
     task:
-      id: 32e35d59-6f5b-4a98-8d0c-68713eca62cd
+      id: 4175123a-5408-4f2a-8db3-b0622a0fb173
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -123,7 +123,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRApp} CONTAINS-ANY [${ApplicationParsed}])
+        simple: where(${inputs.InsightIDRAppField} CONTAINS-ANY [${ApplicationParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -190,7 +190,7 @@ tasks:
       id: fb5cd1e8-9f1f-4324-8ad1-20611359bdea
       version: -1
       name: Is Rapid7 InsightIDR enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -228,10 +228,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: ec0b218b-45cc-4d40-8b70-b6f56df4e8c4
+    taskid: 1e94657e-22c8-4fc6-8ea4-5a8dd44200ec
     type: regular
     task:
-      id: ec0b218b-45cc-4d40-8b70-b6f56df4e8c4
+      id: 1e94657e-22c8-4fc6-8ea4-5a8dd44200ec
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -284,7 +284,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRApp} CONTAINS-ANY [${RegistryValueParsed}])
+        simple: where(${inputs.InsightIDRRegistryValueField} CONTAINS-ANY [${RegistryValueParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -345,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 51be1dc8-8ec5-4943-8c09-b8a2c3192487
+    taskid: 5d03d46a-f85a-4f32-8599-9baf0b9cfd00
     type: regular
     task:
-      id: 51be1dc8-8ec5-4943-8c09-b8a2c3192487
+      id: 5d03d46a-f85a-4f32-8599-9baf0b9cfd00
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -401,7 +401,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRApp} CONTAINS-ANY [${RegistryHivesParsed}])
+        simple: where(${inputs.InsightIDRRegistryHivesField} CONTAINS-ANY [${RegistryHivesParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -462,10 +462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: accc3ecc-1817-43f9-8210-c233ab063397
+    taskid: 521405c1-19c5-48ba-88cd-8d8e9c2970f7
     type: regular
     task:
-      id: accc3ecc-1817-43f9-8210-c233ab063397
+      id: 521405c1-19c5-48ba-88cd-8d8e9c2970f7
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -518,7 +518,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRApp} CONTAINS-ANY [${RegistryKeyParsed}])
+        simple: where(${inputs.InsightIDRRegistryKeyField} CONTAINS-ANY [${RegistryKeyParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -672,10 +672,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 3a1a7c0d-e037-4a9d-8ed6-423cf9c7b836
+    taskid: 9bd6f4ec-f188-4fdc-89e3-528747dbf7de
     type: regular
     task:
-      id: 3a1a7c0d-e037-4a9d-8ed6-423cf9c7b836
+      id: 9bd6f4ec-f188-4fdc-89e3-528747dbf7de
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -728,7 +728,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRApp} CONTAINS-ANY [${CommandLineParsed}])
+        simple: where(${inputs.InsightIDRCommandLineField} CONTAINS-ANY [${CommandLineParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -789,10 +789,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 50937e1c-ff4a-428e-8802-6c918138b017
+    taskid: 17dccc30-45a9-42b7-861a-f616ff4d49a8
     type: regular
     task:
-      id: 50937e1c-ff4a-428e-8802-6c918138b017
+      id: 17dccc30-45a9-42b7-861a-f616ff4d49a8
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -845,7 +845,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRApp} CONTAINS-ANY [${ProcessNameParsed}])
+        simple: where(${inputs.InsightIDRProcessNameField} CONTAINS-ANY [${ProcessNameParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -1435,7 +1435,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1491,7 +1491,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1547,7 +1547,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1603,7 +1603,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1659,7 +1659,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1715,7 +1715,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1809,7 +1809,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRApp
+- key: InsightIDRAppField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the application names.
@@ -1822,7 +1822,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRRegistryValue
+- key: InsightIDRRegistryValueField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry values.
@@ -1835,7 +1835,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRRegistryKey
+- key: InsightIDRRegistryKeyField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry keys.
@@ -1849,7 +1849,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRRegistryHives
+- key: InsightIDRRegistryHivesField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry hives.
@@ -1862,10 +1862,10 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRCommandLine
+- key: InsightIDRCommandLineField
   value: {}
   required: false
-  description: The name of the fields, in Rapid7 InsightIDR, in which to find the command lines.
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the command's lines.
   playbookInputQuery:
 - key: ProcessName
   value: {}
@@ -1875,7 +1875,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRProcessName
+- key: InsightIDRProcessNameField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the process names.
@@ -1889,7 +1889,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Specify the time frame in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
+    Specify the timeframe in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
     The 'start_time' and 'end_time' inputs should not be used if the time_range input is specified.
 
     Supported time units (case insensitive):
@@ -1903,7 +1903,7 @@ inputs:
 - key: logs_per_page
   value: {}
   required: false
-  description: Specify the maximum number of log entries to return per page. Max is 500. Default is 50.
+  description: Specify the maximum number of log entries to return per page, up to 500 (the maximum allowed). By default, 50 is set.
   playbookInputQuery:
 - key: sequence_number
   value: {}
@@ -1911,7 +1911,7 @@ inputs:
   description: |-
     The earliest sequence number of a log entry to start searching.
 
-    If this query parameter is included, the query results will additionally include all log entries received in the 'start_time' millisecond that have sequence numbers larger than the one specified.
+    If this query parameter is included, the query results will additionally include all log entries received in the 'start_time' millisecond which have sequence numbers larger than the one specified.
 
     Sequence numbers are identifiers used to distinguish between log entries received in the same millisecond. If a log entry was split up into several log entries during ingestion, then those chunks are ordered by sequence number.
   playbookInputQuery:
@@ -1933,7 +1933,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Rapid7InsightIDR.Event
-  description: Event log objects containing relevant fields.
+  description: Events log objects containing relevant fields.
   type: string
 - contextPath: Rapid7InsightIDR.Event.log_id
   description: The ID of the log the event appears in.

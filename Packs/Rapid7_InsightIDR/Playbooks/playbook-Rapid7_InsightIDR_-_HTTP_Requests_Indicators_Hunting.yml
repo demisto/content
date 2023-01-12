@@ -98,10 +98,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: bd5d7fa0-9683-401e-87c3-0dade86739c8
+    taskid: 680515a1-0866-49fc-80d8-ebff17b8579e
     type: regular
     task:
-      id: bd5d7fa0-9683-401e-87c3-0dade86739c8
+      id: 680515a1-0866-49fc-80d8-ebff17b8579e
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -154,7 +154,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRUserAgent} CONTAINS-ANY [${UserAgentParsed}])
+        simple: where(${inputs.InsightIDRUserAgentField} CONTAINS-ANY [${UserAgentParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -215,10 +215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: fcbd2d81-a4e3-4ae6-8bce-c486ff69e084
+    taskid: 5eff9dde-e0fd-4dc7-8953-877dd2ab650e
     type: regular
     task:
-      id: fcbd2d81-a4e3-4ae6-8bce-c486ff69e084
+      id: 5eff9dde-e0fd-4dc7-8953-877dd2ab650e
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -271,7 +271,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRURI} CONTAINS-ANY [${URIParsed}])
+        simple: where(${inputs.InsightIDRURIField} CONTAINS-ANY [${URIParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -363,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: feeeb3eb-80d2-43aa-8187-a20888df7a41
+    taskid: db0ff194-663c-4e1e-8cad-29dcf17979f8
     type: regular
     task:
-      id: feeeb3eb-80d2-43aa-8187-a20888df7a41
+      id: db0ff194-663c-4e1e-8cad-29dcf17979f8
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -419,7 +419,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRHttpMethods} CONTAINS-ANY [${RequestMethodsParsed}])
+        simple: where(${inputs.InsightIDRHttpMethodsField} CONTAINS-ANY [${RequestMethodsParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -486,7 +486,7 @@ tasks:
       id: fb5cd1e8-9f1f-4324-8ad1-20611359bdea
       version: -1
       name: Is Rapid7 InsightIDR enabled?
-      description: Returns 'yes' if an integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -522,10 +522,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: d4447f76-cfa6-42dc-8399-986c5a5599ef
+    taskid: f5db55b2-e7be-4c7e-806c-10f6143c6912
     type: regular
     task:
-      id: d4447f76-cfa6-42dc-8399-986c5a5599ef
+      id: f5db55b2-e7be-4c7e-806c-10f6143c6912
       version: -1
       name: Rapid7 InsightIDR query
       description: Queries within a log set for certain values.
@@ -578,7 +578,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRUserAgent} CONTAINS-ANY [${Ja3Parsed}])
+        simple: where(${inputs.InsightIDRJa3Field} CONTAINS-ANY [${Ja3Parsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -934,9 +934,9 @@ tasks:
     task:
       id: 79966b80-a5f1-4b1c-84d1-ef36b31d515f
       version: -1
-      name: Any JA3 to hunt for?
+      name: Any Ja3 to hunt for?
       description: |
-        Checks whether any JA3s are available for threat hunting.
+        Checks whether any Ja3 are available for threat hunting.
       type: condition
       iscommand: false
       brand: ""
@@ -985,7 +985,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1041,7 +1041,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1097,7 +1097,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1153,7 +1153,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1247,7 +1247,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRUserAgent
+- key: InsightIDRUserAgentField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the user agents.
@@ -1260,7 +1260,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRURI
+- key: InsightIDRURIField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the URIs.
@@ -1273,7 +1273,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRHttpMethods
+- key: InsightIDRHttpMethodsField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the HTTP request methods.
@@ -1282,16 +1282,16 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple JA3s to search for within Rapid7 InsightIDR logs.
+    A single or multiple Ja3s to search for within Rapid7 InsightIDR logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
 
     JA3 is a method for creating SSL/TLS client fingerprints that should be easy to produce on any platform and can be easily shared for threat intelligence.
   playbookInputQuery:
-- key: InsightIDRJa3
+- key: InsightIDRJa3Field
   value: {}
   required: false
-  description: The name of the fields, in Rapid7 InsightIDR, in which to find the JA3s.
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the Ja3s.
   playbookInputQuery:
 - key: LogSetId
   value: {}
@@ -1302,7 +1302,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Specify the time frame in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
+    Specify the timeframe in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
     The 'start_time' and 'end_time' inputs should not be used if the time_range input is specified.
 
     Supported time units (case insensitive):
@@ -1316,7 +1316,7 @@ inputs:
 - key: logs_per_page
   value: {}
   required: false
-  description: Specify the maximum number of log entries to return per page. Max is 500. BDefault is 50.
+  description: Specify the maximum number of log entries to return per page, up to 500 (the maximum allowed). By default, 50 is set.
   playbookInputQuery:
 - key: sequence_number
   value: {}
@@ -1346,7 +1346,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Rapid7InsightIDR.Event
-  description: Event log objects containing relevant fields.
+  description: Events log objects containing relevant fields.
   type: string
 - contextPath: Rapid7InsightIDR.Event.log_id
   description: ID of the log the event appears in.

@@ -1,6 +1,6 @@
-id: Rapid7 InsightIDR - Indicator Hunting
+id: Rapid7 InsightIDR - Indicators Hunting
 version: -1
-name: Rapid7 InsightIDR - Indicator Hunting
+name: Rapid7 InsightIDR - Indicators Hunting
 description: "This playbook facilitates threat hunting and detection of IOCs within Rapid7 InsightIDR SIEM logs utilizing four sub-playbooks. The sub-playbooks query Rapid7 InsightIDR SIEM for different indicators including files, traffic, HTTP requests, and execution flows indicators.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). \n\nSupported IOCs for this playbook:\n- MD5\n- SHA1\n- SHA256\n- IP Address\n- URLDomain\n- Registry Value\n- Registry Key\n- Registry Hives\n- Command Line\n- File Name\n- Process Name\n- HTTP Request Methods\n- User Agent\n- Port Number\n- File Path\n- Geolocation\n- Email Address\n- CIDR\n- URI\n- Ja3\n- FileType"
 starttaskid: "0"
 tasks:
@@ -163,13 +163,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: c4c52399-7b7b-4c50-8ebc-6a07a42afefe
+    taskid: b73107ea-ba31-46f9-8cf3-2f8642208024
     type: playbook
     task:
-      id: c4c52399-7b7b-4c50-8ebc-6a07a42afefe
+      id: b73107ea-ba31-46f9-8cf3-2f8642208024
       version: -1
       name: Rapid7 InsightIDR - HTTP Requests Indicators Hunting
-      description: "This playbook queries Rapid7 InsightIDR SIEM for indicators associated with HTTP requests, including HTTP request methods, user agents, URIs, and JA3.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). "
+      description: "This playbook queries Rapid7 InsightIDR SIEM for indicators associated with HTTP requests, including HTTP request methods, user agents, URIs, and Ja3.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). "
       playbookName: Rapid7 InsightIDR - HTTP Requests Indicators Hunting
       type: playbook
       iscommand: false
@@ -181,18 +181,18 @@ tasks:
       HTTPRequestMethods:
         complex:
           root: inputs.HTTPRequestMethods
-      InsightIDRHttpMethods:
+      InsightIDRHttpMethodsField:
         complex:
-          root: inputs.InsightIDRHttpMethods
-      InsightIDRJa3:
+          root: inputs.InsightIDRHttpMethodsField
+      InsightIDRJa3Field:
         complex:
-          root: inputs.InsightIDRJa3
-      InsightIDRURI:
+          root: inputs.InsightIDRJa3Field
+      InsightIDRURIField:
         complex:
-          root: inputs.InsightIDRURI
-      InsightIDRUserAgent:
+          root: inputs.InsightIDRURIField
+      InsightIDRUserAgentField:
         complex:
-          root: inputs.InsightIDRUserAgent
+          root: inputs.InsightIDRUserAgentField
       Ja3:
         complex:
           root: inputs.Ja3
@@ -308,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 99e36e0a-d804-4cc3-8c50-e89d56d0f805
+    taskid: 2f3ba7ea-52a6-4341-8806-3d44270ca1c9
     type: playbook
     task:
-      id: 99e36e0a-d804-4cc3-8c50-e89d56d0f805
+      id: 2f3ba7ea-52a6-4341-8806-3d44270ca1c9
       version: -1
       name: Rapid7 InsightIDR - File Indicators Hunting
       description: |-
@@ -335,24 +335,24 @@ tasks:
       FileType:
         complex:
           root: inputs.FileType
-      InsightIDRFileName:
+      InsightIDRFileNameField:
         complex:
-          root: inputs.InsightIDRFileName
-      InsightIDRFilePath:
+          root: inputs.InsightIDRFileNameField
+      InsightIDRFilePathField:
         complex:
-          root: inputs.InsightIDRFilePath
-      InsightIDRFileType:
+          root: inputs.InsightIDRFilePathField
+      InsightIDRFileTypeField:
         complex:
-          root: inputs.InsightIDRFileType
-      InsightIDRMD5:
+          root: inputs.InsightIDRFileTypeField
+      InsightIDRMD5Field:
         complex:
-          root: inputs.InsightIDRMD5
-      InsightIDRSHA1:
+          root: inputs.InsightIDRMD5Field
+      InsightIDRSHA1Field:
         complex:
-          root: inputs.InsightIDRSHA1
-      InsightIDRSHA256:
+          root: inputs.InsightIDRSHA1Field
+      InsightIDRSHA256Field:
         complex:
-          root: inputs.InsightIDRSHA256
+          root: inputs.InsightIDRSHA256Field
       LogSetId:
         complex:
           root: inputs.LogSetId
@@ -468,14 +468,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: af6ebbed-12c2-4729-864d-a09483a4d73f
+    taskid: 1591aa93-06af-4ff0-8916-e362dd92808b
     type: playbook
     task:
-      id: af6ebbed-12c2-4729-864d-a09483a4d73f
+      id: 1591aa93-06af-4ff0-8916-e362dd92808b
       version: -1
-      name: 'Rapid7 InsightIDR - Execution Flow Indicators Hunting '
+      name: 'Rapid7 InsightIDR - Execution Flow Indicators Hunting'
       description: "This playbook queries Rapid7 InsightIDR SIEM for execution flow indicators, including registry values, registry keys, registry hives, commands, processes name, and applications. \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
-      playbookName: 'Rapid7 InsightIDR - Execution Flow Indicators Hunting '
+      playbookName: Rapid7 InsightIDR - Execution Flow Indicators Hunting
       type: playbook
       iscommand: false
       brand: ""
@@ -489,24 +489,24 @@ tasks:
       CommandLine:
         complex:
           root: inputs.CommandLine
-      InsightIDRApp:
+      InsightIDRAppField:
         complex:
-          root: inputs.InsightIDRApp
-      InsightIDRCommandLine:
+          root: inputs.InsightIDRAppField
+      InsightIDRCommandLineField:
         complex:
-          root: inputs.InsightIDRCommandLine
-      InsightIDRProcessName:
+          root: inputs.InsightIDRCommandLineField
+      InsightIDRProcessNameField:
         complex:
-          root: inputs.InsightIDRProcessName
-      InsightIDRRegistryHives:
+          root: inputs.InsightIDRProcessNameField
+      InsightIDRRegistryHivesField:
         complex:
-          root: inputs.InsightIDRRegistryHives
-      InsightIDRRegistryKey:
+          root: inputs.InsightIDRRegistryHivesField
+      InsightIDRRegistryKeyField:
         complex:
-          root: inputs.InsightIDRRegistryKey
-      InsightIDRRegistryValue:
+          root: inputs.InsightIDRRegistryKeyField
+      InsightIDRRegistryValueField:
         complex:
-          root: inputs.InsightIDRRegistryValue
+          root: inputs.InsightIDRRegistryValueField
       LogSetId:
         complex:
           root: inputs.LogSetId
@@ -653,17 +653,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 49d1cd9b-faf5-4870-8355-b8143d11984a
+    taskid: da4d566b-a15a-4a7e-8bcb-bf98aed13699
     type: playbook
     task:
-      id: 49d1cd9b-faf5-4870-8355-b8143d11984a
+      id: da4d566b-a15a-4a7e-8bcb-bf98aed13699
       version: -1
       name: Rapid7 InsightIDR - Traffic Indicators Hunting
+      description: "This playbook queries Rapid7 InsightIDR SIEM for traffic indicators, including URLs, domains, ports, IP addresses, IP ranges (CIDR), email addresses, geolocations, \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
       playbookName: Rapid7 InsightIDR - Traffic Indicators Hunting
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "65"
@@ -680,33 +680,33 @@ tasks:
       IPAddress:
         complex:
           root: inputs.IPAddress
-      InsightIDRRecipient:
+      InsightIDRRecipientField:
         complex:
-          root: inputs.InsightIDRRecipient
-      InsightIDRSdstGeolocation:
+          root: inputs.InsightIDRRecipientField
+      InsightIDRSdstGeolocationField:
         complex:
-          root: inputs.InsightIDRSdstGeolocation
-      InsightIDRSender:
+          root: inputs.InsightIDRSdstGeolocationField
+      InsightIDRSenderField:
         complex:
-          root: inputs.InsightIDRSender
-      InsightIDRURLDomain:
+          root: inputs.InsightIDRSenderField
+      InsightIDRURLDomainField:
         complex:
-          root: inputs.InsightIDRURLDomain
-      InsightIDRdstIP:
+          root: inputs.InsightIDRURLDomainField
+      InsightIDRdstIPField:
         complex:
-          root: inputs.InsightIDRdstIP
-      InsightIDRdstPort:
+          root: inputs.InsightIDRdstIPField
+      InsightIDRdstPortField:
         complex:
-          root: inputs.InsightIDRdstPort
-      InsightIDRsrcGeolocation:
+          root: inputs.InsightIDRdstPortField
+      InsightIDRsrcGeolocationField:
         complex:
-          root: inputs.InsightIDRsrcGeolocation
-      InsightIDRsrcIP:
+          root: inputs.InsightIDRsrcGeolocationField
+      InsightIDRsrcIPField:
         complex:
-          root: inputs.InsightIDRsrcIP
-      InsightIDRsrcPort:
+          root: inputs.InsightIDRsrcIPField
+      InsightIDRsrcPortField:
         complex:
-          root: inputs.InsightIDRsrcPort
+          root: inputs.InsightIDRsrcPortField
       LogSetId:
         complex:
           root: inputs.LogSetId
@@ -838,12 +838,12 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRdstIP
+- key: InsightIDRdstIPField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination IPs.
   playbookInputQuery:
-- key: InsightIDRsrcIP
+- key: InsightIDRsrcIPField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the source IPs.
@@ -856,7 +856,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRApp
+- key: InsightIDRAppField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the application names.
@@ -869,12 +869,12 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRsrcPort
+- key: InsightIDRsrcPortField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the source ports.
   playbookInputQuery:
-- key: InsightIDRdstPort
+- key: InsightIDRdstPortField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination ports.
@@ -887,12 +887,12 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRsrcGeolocation
+- key: InsightIDRsrcGeolocationField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the source geolocations.
   playbookInputQuery:
-- key: InsightIDRSdstGeolocation
+- key: InsightIDRSdstGeolocationField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the destination geolocations.
@@ -905,7 +905,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRUserAgent
+- key: InsightIDRUserAgentField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the user agents.
@@ -918,7 +918,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRFileType
+- key: InsightIDRFileTypeField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the file types.
@@ -931,7 +931,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRFileName
+- key: InsightIDRFileNameField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the file names.
@@ -944,7 +944,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRURLDomain
+- key: InsightIDRURLDomainField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the URLs or domains.
@@ -957,7 +957,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRURI
+- key: InsightIDRURIField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the URIs.
@@ -970,12 +970,12 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRSender
+- key: InsightIDRSenderField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the sender's email addresses.
   playbookInputQuery:
-- key: InsightIDRRecipient
+- key: InsightIDRRecipientField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the recipient's email addresses.
@@ -988,7 +988,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRHttpMethods
+- key: InsightIDRHttpMethodsField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the HTTP request methods.
@@ -1001,7 +1001,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRMD5
+- key: InsightIDRMD5Field
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the MD5 hashes.
@@ -1014,7 +1014,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRSHA256
+- key: InsightIDRSHA256Field
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the SHA256 hashes.
@@ -1027,7 +1027,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRSHA1
+- key: InsightIDRSHA1Field
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the SHA1 hashes.
@@ -1040,7 +1040,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRRegistryValue
+- key: InsightIDRRegistryValueField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry values.
@@ -1053,7 +1053,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRRegistryKey
+- key: InsightIDRRegistryKeyField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry keys.
@@ -1067,7 +1067,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRRegistryHives
+- key: InsightIDRRegistryHivesField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the registry hives.
@@ -1080,10 +1080,10 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRCommandLine
+- key: InsightIDRCommandLineField
   value: {}
   required: false
-  description: The name of the fields, in Rapid7 InsightIDR, in which to find the command lines.
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the command's lines.
   playbookInputQuery:
 - key: ProcessName
   value: {}
@@ -1093,7 +1093,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRProcessName
+- key: InsightIDRProcessNameField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the process names.
@@ -1106,7 +1106,7 @@ inputs:
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
-- key: InsightIDRFilePath
+- key: InsightIDRFilePathField
   value: {}
   required: false
   description: The name of the fields, in Rapid7 InsightIDR, in which to find the file paths.
@@ -1123,16 +1123,16 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple JA3s to search for within Rapid7 InsightIDR logs.
+    A single or multiple Ja3s to search for within Rapid7 InsightIDR logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
 
     JA3 is a method for creating SSL/TLS client fingerprints that should be easy to produce on any platform and can be easily shared for threat intelligence.
   playbookInputQuery:
-- key: InsightIDRJa3
+- key: InsightIDRJa3Field
   value: {}
   required: false
-  description: The name of the fields, in Rapid7 InsightIDR, in which to find the JA3s.
+  description: The name of the fields, in Rapid7 InsightIDR, in which to find the Ja3s.
   playbookInputQuery:
 - key: LogSetId
   value: {}
@@ -1143,7 +1143,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Specify the time frame in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
+    Specify the timeframe in which the Rapid7 InsightIDR logs will be searched. Most start with 'last' (e.g., last 2 months, last 10 minutes).
     The 'start_time' and 'end_time' inputs should not be used if the time_range input is specified.
 
     Supported time units (case insensitive):
@@ -1187,7 +1187,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Rapid7InsightIDR.Event
-  description: Event log objects containing relevant fields.
+  description: Events log objects containing relevant fields.
   type: string
 - contextPath: Rapid7InsightIDR.Event.log_id
   description: The ID of the log the event appears in.
