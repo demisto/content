@@ -392,31 +392,31 @@ script:
     description: Get a list of all your ASM alerts filtered by alert IDs, severity and/or creation time. Can also sort by creation time or severity. Maximum result limit is 100 assets.
     name: asm-list-alerts
     outputs:
-    - contextPath: ASM.Alerts.alert_id
+    - contextPath: ASM.Alert.alert_id
       description: A unique identfier that Cortex XSIAM assigns to each alert.
       type: String
-    - contextPath: ASM.Alerts.severity
+    - contextPath: ASM.Alert.severity
       description: The severity that was assigned to this alert when it was triggered (Options are Informatonal, Low, Medium, High, Critical, or Unknown).
       type: String
-    - contextPath: ASM.Alerts.external_id
+    - contextPath: ASM.Alert.external_id
       description: The alert ID as recorded in the detector from which this alert was sent.
       type: String
-    - contextPath: ASM.Alerts.name
+    - contextPath: ASM.Alert.name
       description: Summary of the ASM internet exposure alert.
       type: String
-    - contextPath: ASM.Alerts.description
+    - contextPath: ASM.Alert.description
       description: More detailed explanation of internet exposure alert.
       type: String
-    - contextPath: ASM.Alerts.host_name
+    - contextPath: ASM.Alert.host_name
       description: The hostname of the endpoint or server on which this alert triggered.
       type: String
-    - contextPath: ASM.Alerts.dynamic_fields
+    - contextPath: ASM.Alert.dynamic_fields
       description: Alert fields pulled from XSOAR context.
       type: Unknown
-    - contextPath: ASM.Alerts.events
+    - contextPath: ASM.Alert.events
       description: Individual events the comprise the alert.
       type: Unknown
-    - contextPath: ASM.Alerts.detection_timestamp
+    - contextPath: ASM.Alert.detection_timestamp
       description: Date the alert was created.
       type: Date
   dockerimage: demisto/python3:3.10.9.42476

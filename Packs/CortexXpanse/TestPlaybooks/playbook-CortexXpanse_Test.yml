@@ -875,7 +875,7 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: Alerts
+                accessor: Alert
                 root: ASM
           operator: isNotEmpty
           right:

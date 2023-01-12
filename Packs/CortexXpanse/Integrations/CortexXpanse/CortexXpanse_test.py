@@ -49,8 +49,7 @@ def test_list_external_service_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
 
     args = {
         'domain': 'testdomain.com',
@@ -89,8 +88,7 @@ def test_get_external_service_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
 
     args = {
         'service_id': '94232f8a-f001-3292-aa65-63fa9d981427'
@@ -129,8 +127,7 @@ def test_list_external_ip_address_range_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {}
 
     response = list_external_ip_address_range_command(client, args)
@@ -166,8 +163,7 @@ def test_get_external_ip_address_range_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {
         'range_id': '1093124c-ce26-33ba-8fb8-937fecb4c7b6'
     }
@@ -205,8 +201,7 @@ def test_list_asset_internet_exposure_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {
         'name': 'testdomain.com'
     }
@@ -244,8 +239,7 @@ def test_get_asset_internet_exposure_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {
         'asm_id': 'testdomain.com'
     }
@@ -283,8 +277,7 @@ def test_list_alerts_command(requests_mock):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
     args = {
         'limit': '2',
         'severity': 'high',
@@ -294,7 +287,7 @@ def test_list_alerts_command(requests_mock):
     response = list_alerts_command(client, args)
 
     assert response.outputs == LIST_ALERTS_RESULTS
-    assert response.outputs_prefix == 'ASM.Alerts'
+    assert response.outputs_prefix == 'ASM.Alert'
     assert response.outputs_key_field == 'alert_id'
 
 
@@ -324,8 +317,7 @@ def test_fetch_incidents(requests_mock, mocker):
             "Authorizatio": "THISISAFAKEKEY",
             "Content-Type": "application/json"
         },
-        proxy=False,
-        auth=None)
+        proxy=False)
 
     last_run = {'last_fetch': 1659452708759}
     next_run, incidents = fetch_incidents(

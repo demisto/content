@@ -11,6 +11,13 @@ DEFAULT_SEARCH_LIMIT = 100
 MAX_ALERTS = 100  # max alerts per fetch
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 URL_SUFFIX = "/public_api/v1"
+SEVERITY_DICT = {
+    'informational': IncidentSeverity.INFO,
+    'low': IncidentSeverity.LOW,
+    'medium': IncidentSeverity.MEDIUM,
+    'high': IncidentSeverity.HIGH,
+    'critical': IncidentSeverity.CRITICAL
+}
 
 
 class Client(BaseClient):
@@ -18,11 +25,11 @@ class Client(BaseClient):
     Client class to interact with the service API.
     """
 
-    def __init__(self, base_url, verify, proxy, headers, auth):
+    def __init__(self, base_url, verify, proxy, headers):
         """
         Class initialization.
         """
-        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
 
     def list_alerts_request(self, request_data: Dict) -> Dict[str, Any]:
         """Get a list of all asm alerts '/alerts/get_alerts/' endpoint.
@@ -33,10 +40,8 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of external services.
         """
-        headers = self._headers
 
-        response = self._http_request('POST', '/alerts/get_alerts/',
-                                      json_data=request_data, headers=headers)
+        response = self._http_request('POST', '/alerts/get_alerts/', json_data=request_data)
 
         return response
 
@@ -50,10 +55,8 @@ class Client(BaseClient):
             dict: dict containing list of external services.
         """
         data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_services/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_services/', json_data=data)
 
         return response
 
@@ -67,10 +70,8 @@ class Client(BaseClient):
             dict: dict containing information on single external service.
         """
         data = {"request_data": {"service_id_list": service_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_service',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_service', json_data=data)
 
         return response
 
@@ -81,10 +82,8 @@ class Client(BaseClient):
             dict: dict containing list of external ip address ranges.
         """
         data = {"request_data": {"search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/', json_data=data)
 
         return response
 
@@ -98,10 +97,8 @@ class Client(BaseClient):
             dict: dict containing information on external ip address range.
         """
         data = {"request_data": {"range_id_list": range_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_range/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_ip_address_range/', json_data=data)
 
         return response
 
@@ -115,10 +112,8 @@ class Client(BaseClient):
             dict: dict containing list of internet exposure assets.
         """
         data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_assets_internet_exposure/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_assets_internet_exposure/', json_data=data)
 
         return response
 
@@ -132,10 +127,8 @@ class Client(BaseClient):
             dict: dict containing information on an internet exposure asset.
         """
         data = {"request_data": {"asm_id_list": asm_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_asset_internet_exposure/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_asset_internet_exposure/', json_data=data)
 
         return response
 
@@ -160,31 +153,6 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
                 entry['asm_ids'] = entry['asm_ids'][0]
 
     return formatted_response
-
-
-def convert_to_demisto_severity(severity: str) -> float:
-    """
-    Maps Xpander severity to Cortex XSOAR severity.
-    Converts the Xpander alert severity level ('informational', 'low', 'medium', 'high', 'critical') to Cortex XSOAR incident
-    severity (1 to 4).
-
-    Args:
-        severity (str): severity as returned from the ASM API.
-
-    Returns:
-        int: Cortex XSOAR Severity (1 to 4)
-    """
-
-    # In this case the mapping is straightforward, but more complex mappings
-    # might be required in your integration, so a dedicated function is
-    # recommended. This mapping should also be documented.
-    return {
-        'informational': IncidentSeverity.INFO,
-        'low': IncidentSeverity.LOW,
-        'medium': IncidentSeverity.MEDIUM,
-        'high': IncidentSeverity.HIGH,
-        'critical': IncidentSeverity.CRITICAL
-    }[severity]
 
 
 ''' COMMAND FUNCTIONS '''
@@ -262,7 +230,7 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     parsed = response.get('reply', {}).get('alerts')
     markdown = tableToMarkdown('ASM Alerts', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
-        outputs_prefix='ASM.Alerts',
+        outputs_prefix='ASM.Alert',
         outputs_key_field='alert_id',
         outputs=parsed,
         raw_response=response,
@@ -544,7 +512,7 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
             'details': item['description'],
             'occurred': timestamp_to_datestring(incident_created_time),
             'rawJSON': json.dumps(item),
-            'severity': convert_to_demisto_severity(item.get('severity', 'Low'))
+            'severity': SEVERITY_DICT[item.get('severity', 'Low')]
         }
 
         incidents.append(incident)
@@ -631,8 +599,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy,
-            auth=None)
+            proxy=proxy)
 
         commands = {
             'asm-list-external-service': list_external_service_command,

@@ -1088,15 +1088,15 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.Alerts.alert_id | String | A unique identfier that Cortex XSIAM assigns to each alert. | 
-| ASM.Alerts.severity | String | The severity that was assigned to this alert when it was triggered \(Options are Informatonal, Low, Medium, High, Critical, or Unknown\). | 
-| ASM.Alerts.external_id | String | The alert ID as recorded in the detector from which this alert was sent. | 
-| ASM.Alerts.name | String | Summary of the ASM internet exposure alert. | 
-| ASM.Alerts.description | String | More detailed explanation of internet exposure alert. | 
-| ASM.Alerts.host_name | String | The hostname of the endpoint or server on which this alert triggered. | 
-| ASM.Alerts.dynamic_fields | Unknown | Alert fields pulled from XSOAR context. | 
-| ASM.Alerts.events | Unknown | Individual events the comprise the alert. | 
-| ASM.Alerts.detection_timestamp | Date | Date the alert was created. | 
+| ASM.Alert.alert_id | String | A unique identfier that Cortex XSIAM assigns to each alert. | 
+| ASM.Alert.severity | String | The severity that was assigned to this alert when it was triggered \(Options are Informatonal, Low, Medium, High, Critical, or Unknown\). | 
+| ASM.Alert.external_id | String | The alert ID as recorded in the detector from which this alert was sent. | 
+| ASM.Alert.name | String | Summary of the ASM internet exposure alert. | 
+| ASM.Alert.description | String | More detailed explanation of internet exposure alert. | 
+| ASM.Alert.host_name | String | The hostname of the endpoint or server on which this alert triggered. | 
+| ASM.Alert.dynamic_fields | Unknown | Alert fields pulled from XSOAR context. | 
+| ASM.Alert.events | Unknown | Individual events the comprise the alert. | 
+| ASM.Alert.detection_timestamp | Date | Date the alert was created. | 
 
 #### Command example
 ```!asm-list-alerts limit=2 severity=high sort_by_creation_time=asc```
