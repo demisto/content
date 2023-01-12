@@ -1,0 +1,18 @@
+{
+    "name": "Squid",
+    "description": "This pack contains instruction on how to ingest Squid logs into XSIAM. The pack also contains Modeling Rules to map the logs to \"One Model\" and Parsing Rules to extract _time field.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
