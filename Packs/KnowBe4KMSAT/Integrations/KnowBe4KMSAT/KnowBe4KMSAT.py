@@ -153,6 +153,31 @@ class UserEventClient(BaseClient):
             params=params,
         )
 
+    def create_user_event(self, args: dict, page: int = None, page_size: int = None):
+        params = remove_empty_elements(
+            {
+                "target_user": args.get("target_user"),
+                "event_type": args.get("event_type"),                
+                "external_id": args.get("external_id"),
+                "source": args.get("source"),
+                "description": args.get("description"),
+                "occurred_date": args.get("occurred_date"),
+                "risk_decay_mode": args.get("risk_decay_mode"),
+                "risk_expire_date": args.get("risk_expire_date")
+            }
+        )
+        
+        if not args.get("risk_level"):
+            risk_level: int = int(args["risk_level"])
+            params["risk_level"] = risk_level
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/events",
+            resp_type="json",
+            ok_codes=(201,),
+            json_data=params
+        )
 
 """ HELPER FUNCTIONS """
 
@@ -415,7 +440,7 @@ def fetch_incidents_command(client: Client) -> None:
 
 
 def get_user_events(client: UserEventClient, args: dict) -> CommandResults:
-    response = client.user_events(args, 1, 100)
+    response = client.user_events(args, 1, 100) #TODO: paging
     return_results(response)
     if response is None:
         raise DemistoException(
@@ -445,6 +470,23 @@ def get_user_event_types(client: UserEventClient, args: dict) -> CommandResults:
         outputs_key_field="id",
         raw_response=response,
         readable_output=tableToMarkdown(name="KMSAT_User_Event_Types", t=data),
+    )
+
+
+def post_user_event(client: UserEventClient, args: dict) -> CommandResults:
+    response = client.create_user_event(args)
+    return_results(response)
+    if response is None:
+        raise DemistoException(
+            "Translation failed: the response from server did not include user event types`data`.",
+            res=response,
+        )
+    data: List[Dict] = response.get("data") or []
+    return CommandResults(
+        outputs_prefix="KMSAT_Create_User_EvenReturned",
+        outputs_key_field="id",
+        raw_response=response,
+        readable_output=tableToMarkdown(name="KMSAT_Create_User_Event", t=data),
     )
 
 
@@ -582,6 +624,8 @@ def main() -> None:
             return_results(get_user_events(userEventClient, args))
         elif command == "get-user-event-types":
             return_results(get_user_event_types(userEventClient, args))
+        elif command == "post-user-event":
+            return_results(post_user_event(userEventClient, args))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 

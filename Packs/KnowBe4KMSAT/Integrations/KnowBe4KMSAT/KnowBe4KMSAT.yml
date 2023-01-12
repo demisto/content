@@ -322,8 +322,35 @@ script:
           description:
             Filter by Risk Level by entering a value from -10 (low risk) to
             10 (high risk).
+          auto: PREDEFINED
+          predefined:
+            - "-10"
+            - "-9"
+            - "-8"
+            - "-7"
+            - "-6"
+            - "-5"
+            - "-4"
+            - "-3"
+            - "-2"
+            - "-1"
+            - "-0"
+            - "1"
+            - "2"
+            - "3"
+            - "4"
+            - "5"
+            - "6"
+            - "7"
+            - "8"
+            - "9"
+            - "10"
         - name: risk_decay_mode
           description: Filter by Risk Decay Mode by entering a value of 0 or 1
+          auto: PREDEFINED
+          predefined:
+            - "0"
+            - "1"
         - name: risk_expire_date
           description: Filter by Risk Expire Date (YYYY-MM-DD)
         - name: order_by
@@ -335,46 +362,46 @@ script:
             Order returned events in ascending (asc) or descending (desc) order
             ("asc", "desc")
       outputs:
-        - contextPath: KMSAT.UserEvent.data.id
+        - contextPath: UserEvent.data.id
           description: "Unique ID of the event"
           type: Number
-        - contextPath: KMSAT.UserEvent.data.user.email
+        - contextPath: UserEvent.data.user.email
           description: "User email address"
           type: String
-        - contextPath: KMSAT.UserEvent.data.user.id
-          description: "KMSAT User ID"
+        - contextPath: UserEvent.data.user.id
+          description: "User ID"
           type: Number
-        - contextPath: KMSAT.UserEvent.data.user.archived
+        - contextPath: UserEvent.data.user.archived
           description: "User Archived flag"
           type: Boolean
-        - contextPath: KMSAT.UserEvent.data.external_id
+        - contextPath: UserEvent.data.external_id
           description: "External ID of the event"
           type: String
-        - contextPath: KMSAT.UserEvent.data.source
+        - contextPath: UserEvent.data.source
           description: "Source of the event"
           type: String
-        - contextPath: KMSAT.UserEvent.data.description
+        - contextPath: UserEvent.data.description
           description: "Description of the event"
           type: String
-        - contextPath: KMSAT.UserEvent.data.occurred_date
+        - contextPath: UserEvent.data.occurred_date
           description: "When the event occurred"
           type: Date
-        - contextPath: KMSAT.UserEvent.data.risk.level
+        - contextPath: UserEvent.data.risk.level
           description: "Risk Level of the event"
           type: Number
-        - contextPath: KMSAT.UserEvent.data.risk.factor
+        - contextPath: UserEvent.data.risk.factor
           description: "Risk Factor of the event"
           type: Number
-        - contextPath: KMSAT.UserEvent.data.risk.decay_mode
+        - contextPath: UserEvent.data.risk.decay_mode
           description: "The Risk Level Decay Mode"
           type: String
-        - contextPath: KMSAT.UserEvent.data.risk.expire_date
+        - contextPath: UserEvent.data.risk.expire_date
           description: "Risk Expire Date"
           type: String
-        - contextPath: KMSAT.UserEvent.data.event_type.id
+        - contextPath: UserEvent.data.event_type.id
           description: "Event Type ID"
           type: Number
-        - contextPath: KMSAT.UserEvent.data.event_type.name
+        - contextPath: UserEvent.data.event_type.name
           description: "Event Type Name"
           type: String
       description: Returns KMSAT User Events.
@@ -396,6 +423,61 @@ script:
           description: "Description of Event Type"
           type: String
       description: Returns all KMSAT User Event Types
+    - name: post-user-event
+      arguments:
+        - name: target_user
+          description: User's email address
+          required: true
+        - name: event_type
+          description: If the event type does not already exist, the value entered here will be used to create a new event type.
+          required: true
+        - name: external_id
+          description: Include a custom External ID.
+        - name: source
+          description: Include a custom Source
+        - name: description
+          description: Description of the Event
+        - name: occurred_date
+          description: (YYYY-MM-DD) If a date is not set, this field will default to the current time (UTC).
+        - name: risk_level
+          description:
+            Assign a value from -10 (low risk) to 10 (high risk).
+          auto: PREDEFINED
+          predefined:
+            - "-10"
+            - "-9"
+            - "-8"
+            - "-7"
+            - "-6"
+            - "-5"
+            - "-4"
+            - "-3"
+            - "-2"
+            - "-1"
+            - "-0"
+            - "1"
+            - "2"
+            - "3"
+            - "4"
+            - "5"
+            - "6"
+            - "7"
+            - "8"
+            - "9"
+            - "10"
+        - name: risk_decay_mode
+          auto: PREDEFINED
+          description: Assign a value of 0 or 1.
+          predefined:
+            - '0'
+            - '1'
+        - name: risk_expire_date
+          description: (YYYY-MM-DD) If a date is not set, this field will default to the occurred_date plus one (1) month.
+      outputs:
+        - contextPath: UserEvent.data.id
+          description: "Unique ID of the event"
+          type: Number
+      description: Adds a User Event
   isfetch: false
   runonce: false
   script: "-"
