@@ -1,0 +1,21 @@
+{
+    "name": "Recorded Future Attack Surface Intelligence",
+    "prevName": "Recorded Future ASI",
+    "description": "Helps you take risk prioritization to the next level by helping you identify the biggest weaknesses within your attack surface.",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Recorded Future",
+    "url": "",
+    "email": "support@recordedfuture.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}

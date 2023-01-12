@@ -16,6 +16,12 @@ configuration:
   name: credentials
   required: true
   type: 9
+- display: The amount of time (in seconds) that a request will wait for a client to
+    establish a connection to a remote machine before a timeout occurs.
+  name: timeout
+  defaultvalue: "10"
+  type: 0
+  required: false
 - display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
     consider the indicator malicious.
   name: threshold
@@ -27,7 +33,7 @@ configuration:
   - medium
   - high
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Fairly reliable
+  defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integrationReliability
   options:
@@ -40,6 +46,21 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -49,7 +70,7 @@ configuration:
   type: 8
   required: false
 script:
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37753
   type: python
   subtype: python3
   script: '-'

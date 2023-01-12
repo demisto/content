@@ -5,7 +5,8 @@ from tempfile import mkdtemp
 from AnomaliThreatStreamv3 import main, get_indicators, \
     REPUTATION_COMMANDS, Client, DEFAULT_INDICATOR_MAPPING, \
     FILE_INDICATOR_MAPPING, INDICATOR_EXTENDED_MAPPING, get_model_description, import_ioc_with_approval, \
-    import_ioc_without_approval, create_model, update_model, submit_report, add_tag_to_model, file_name_to_valid_string
+    import_ioc_without_approval, create_model, update_model, submit_report, add_tag_to_model, file_name_to_valid_string, \
+    get_intelligence, search_intelligence
 from CommonServerPython import *
 import pytest
 
@@ -56,6 +57,28 @@ class TestReputationCommands:
     Group the Reputation commands test
     """
 
+    def mocked_http_request_ioc(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
+                                resp_type='json'):
+        if 'associated_with_intelligence' in url_suffix:
+            if 'actor' in url_suffix:
+                mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
+                return mocked_actor_result
+            else:
+                mocked_empty_result = util_load_json('test_data/mocked_empty_response.json')
+                return mocked_empty_result
+        else:
+            if params.get('type', '') == DBotScoreType.IP:
+                mocked_ioc_file_path = 'test_data/mocked_ip_response.json'
+            elif params.get('type', '') == "md5":
+                mocked_ioc_file_path = 'test_data/mocked_file_response.json'
+            elif params.get('type', '') == DBotScoreType.DOMAIN:
+                mocked_ioc_file_path = 'test_data/mocked_domain_response.json'
+            else:
+                mocked_ioc_file_path = 'test_data/mocked_url_response.json'
+
+            mocked_ioc_result = util_load_json(mocked_ioc_file_path)
+            return mocked_ioc_result
+
     @pytest.mark.parametrize(
         argnames="ioc_type,ioc_value,ioc_context_key",
         argvalues=[
@@ -82,8 +105,10 @@ class TestReputationCommands:
         command = value_key = ioc_type.lower()
         mocked_ioc_file_path = f'test_data/mocked_{command}_response.json'
         mocked_ioc_result = util_load_json(mocked_ioc_file_path)
-        mocker.patch.object(Client, 'http_request', return_value=mocked_ioc_result)
-        mocker.patch.object(demisto, 'args', return_value={value_key: ioc_value, 'status': 'active'})
+
+        mocker.patch.object(Client, 'http_request', side_effect=self.mocked_http_request_ioc)
+        mocker.patch.object(demisto, 'args', return_value={value_key: ioc_value, 'status': 'active',
+                                                           'threat_model_association': 'True'})
         mocker.patch.object(demisto, 'command', return_value=command)
         mocker.patch.object(demisto, 'results')
 
@@ -103,6 +128,74 @@ class TestReputationCommands:
             assert all(expected_value in threat_stream_context for expected_value in expected_values)
             assert f'{ioc_type} reputation for: {iocs[i]}' in human_readable
             assert mocked_ioc == contents
+            assert isinstance(command_result['Relationships'], list)
+            for entry in command_result['Relationships']:
+                assert entry.get('entityBType') == 'Threat Actor'
+
+    def mocked_http_request(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
+                            resp_type='json'):
+        if 'actor' in url_suffix:
+            mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
+            return mocked_actor_result
+        else:
+            mocked_empty_result = util_load_json('test_data/mocked_empty_response.json')
+            return mocked_empty_result
+
+    def test_get_intelligence_command(self, mocker):
+        """
+        Given:
+            - Client, indicator, and indicator type
+
+        When:
+            - Call the get_intelligence command
+
+
+        Then:
+            - Validate that the outputs and the relationship were created
+        """
+
+        # prepare
+        mocker.patch.object(Client, 'http_request', side_effect=self.mocked_http_request)
+        client = mock_client()
+
+        # run
+        intelligence_relationships, outputs = get_intelligence(client, INDICATOR[0], FeedIndicatorType.URL)
+
+        # validate
+        assert outputs.get('Actor')
+        assert not outputs.get('Campaign')
+        assert intelligence_relationships
+
+    @pytest.mark.parametrize("should_create_relationships", [(True), (False)])
+    def test_get_intelligence_with_false_create_relationships(self, mocker, should_create_relationships):
+        """
+        Given:
+            - Client with should_create_relationships=False, indicator, and indicator type
+
+        When:
+            - Call the get_intelligence command
+
+        Then:
+            - Validate that the relatiionships list contains only EntityRelationship objects
+        """
+
+        # prepare
+        mocker.patch.object(Client, 'http_request', side_effect=self.mocked_http_request)
+        client = Client(base_url='',
+                        user_name='',
+                        api_key='',
+                        proxy=False,
+                        should_create_relationships=should_create_relationships,
+                        verify=False,
+                        reliability='B - Usually reliable')
+
+        # run
+        intelligence_relationships, _ = get_intelligence(client, INDICATOR[0], FeedIndicatorType.URL)
+
+        # validate
+        assert isinstance(intelligence_relationships, list)
+        for entry in intelligence_relationships:
+            assert isinstance(entry, EntityRelationship)
 
     @pytest.mark.parametrize(
         argnames='confidence, threshold, exp_dbot_score',
@@ -840,3 +933,31 @@ class TestGetIndicators:
         results = get_indicators(client, limit='7000')
 
         assert len(results.outputs) == 7000
+
+
+def test_search_intelligence(mocker):
+    """
+    Given:
+        - Various parameters to search intelligence by
+
+    When:
+        - Call search_intelligence command
+
+    Then:
+        - Validate the expected values was returned
+    """
+
+    # prepare
+
+    mocked_ip_result = util_load_json('test_data/mocked_ip_response.json')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_ip_result)
+
+    args = {'uuid': '9807794e-3de0-4340-91ca-cd82dd7b6d24',
+            'itype': 'apt_ip'}
+    client = mock_client()
+
+    # run
+    result = search_intelligence(client, **args)
+
+    assert result.outputs[0].get('itype') == 'c2_ip'
+    assert result.outputs_prefix == 'ThreatStream.Intelligence'

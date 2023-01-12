@@ -1,0 +1,234 @@
+id: Block Domain - Cisco Stealthwatch
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Block Domain - Cisco Stealthwatch
+description: |-
+  This playbook blocks domains using Cisco Stealthwatch.
+  The playbook checks whether the Cisco Stealthwatch integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b124cfe7-a56f-4490-880b-78cf3274b99b
+    type: start
+    task:
+      id: b124cfe7-a56f-4490-880b-78cf3274b99b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+        - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1268fa81-6e6d-4d75-8f22-f6893af3cb9c
+    type: condition
+    task:
+      id: 1268fa81-6e6d-4d75-8f22-f6893af3cb9c
+      version: -1
+      name: Is Cisco Stealthwatch enabled?
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "4"
+      "yes":
+        - "3"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: modules
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.brand
+                            iscontext: true
+                          right:
+                            value:
+                              simple: Stealthwatch Cloud
+                          ignorecase: true
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.state
+                            iscontext: true
+                          right:
+                            value:
+                              simple: Active
+                          ignorecase: true
+                    accessor: brand
+                iscontext: true
+              right:
+                value: {}
+              ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 951938f0-4b63-46e8-8fdc-7e6a26bbf853
+    type: regular
+    task:
+      id: 951938f0-4b63-46e8-8fdc-7e6a26bbf853
+      version: -1
+      name: Block Domain
+      description: Add a domain or IP to the block list
+      script: Stealthwatch Cloud|||sw-block-domain-or-ip
+      type: regular
+      iscommand: true
+      brand: Stealthwatch Cloud
+    nexttasks:
+      "#none#":
+        - "4"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 897a00db-2a04-48d5-8630-e55b5443f0b9
+    type: title
+    task:
+      id: 897a00db-2a04-48d5-8630-e55b5443f0b9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cfdef7e9-5188-4715-8a20-4cf22f75f1ee
+    type: condition
+    task:
+      id: cfdef7e9-5188-4715-8a20-4cf22f75f1ee
+      version: -1
+      name: Check if Domain input was provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+        - "4"
+      "yes":
+        - "2"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  complex:
+                    root: inputs.Domain
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_yes": 0.53,
+      "2_4_#default#": 0.27,
+      "5_2_yes": 0.61,
+      "5_4_#default#": 0.77
+    },
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 450,
+        "y": -100
+      }
+    }
+  }
+inputs:
+  - key: Domain
+    value: {}
+    required: false
+    description: The Domain to block.
+    playbookInputQuery:
+outputs: []
+tests:
+  - No tests (auto formatted)
+fromversion: 6.5.0

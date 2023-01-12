@@ -256,6 +256,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
+DEFAULT_INDICATORS_THRESHOLD = 65
 HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
@@ -274,11 +275,11 @@ class Client(BaseClient):
     def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
         """Gets the IP reputation using the '/ip' API endpoint
 
-        :type ip: ``str``
-        :param ip: IP address to get the reputation for
+        Args:
+            ip (str): IP address to get the reputation for.
 
-        :return: dict containing the IP reputation as returned from the API
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict: dict containing the IP reputation as returned from the API
         """
 
         return self._http_request(
@@ -290,13 +291,14 @@ class Client(BaseClient):
         )
 
     def get_domain_reputation(self, domain: str) -> Dict[str, Any]:
-        """Gets the Domain reputation using the '/domain' API endpoint
+        """
+        Gets the Domain reputation using the '/domain' API endpoint.
 
-        :type domain: ``str``
-        :param domain: domain name to get the reputation for
+        Args:
+            domain (str): Domain name to get the reputation for.
 
-        :return: dict containing the domain reputation as returned from the API
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict: dict containing the domain reputation as returned from the API.
         """
 
         return self._http_request(
@@ -310,29 +312,20 @@ class Client(BaseClient):
     def search_alerts(self, alert_status: Optional[str], severity: Optional[str],
                       alert_type: Optional[str], max_results: Optional[int],
                       start_time: Optional[int]) -> List[Dict[str, Any]]:
-        """Searches for HelloWorld alerts using the '/get_alerts' API endpoint
-
+        """
+        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
 
-        :type alert_status: ``Optional[str]``
-        :param alert_status: status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'
+        Args:
+            alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'
+            severity (str): severity of the alert to search for. Comma-separated values. Options are: "Low", "Medium",
+                "High", "Critical".
+            alert_type (str): type of alerts to search for. There is no list of predefined types.
+            max_results (int): maximum number of results to return.
+            start_time (int): start timestamp (epoch in seconds) for the alert search.
 
-        :type severity: ``Optional[str]``
-        :param severity:
-            severity of the alert to search for. Comma-separated values.
-            Options are: "Low", "Medium", "High", "Critical"
-
-        :type alert_type: ``Optional[str]``
-        :param alert_type: type of alerts to search for. There is no list of predefined types
-
-        :type max_results: ``Optional[int]``
-        :param max_results: maximum number of results to return
-
-        :type start_time: ``Optional[int]``
-        :param start_time: start timestamp (epoch in seconds) for the alert search
-
-        :return: list containing the found HelloWorld alerts as dicts
-        :rtype: ``List[Dict[str, Any]]``
+        Returns:
+            list: list of HelloWorld alerts as dicts.
         """
 
         request_params: Dict[str, Any] = {}
@@ -359,13 +352,14 @@ class Client(BaseClient):
         )
 
     def get_alert(self, alert_id: str) -> Dict[str, Any]:
-        """Gets a specific HelloWorld alert by id
+        """
+        Gets a specific HelloWorld alert by id.
 
-        :type alert_id: ``str``
-        :param alert_id: id of the alert to return
+        Args:
+            alert_id (str): ID of the alert to return.
 
-        :return: dict containing the alert as returned from the API
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict: dict containing the alert as returned from the API.
         """
 
         return self._http_request(
@@ -377,16 +371,15 @@ class Client(BaseClient):
         )
 
     def update_alert_status(self, alert_id: str, alert_status: str) -> Dict[str, Any]:
-        """Changes the status of a specific HelloWorld alert
+        """
+        Changes the status of a specific HelloWorld alert.
 
-        :type alert_id: ``str``
-        :param alert_id: id of the alert to return
+        Args:
+            alert_id (str): ID of the alert to return.
+            alert_status (str): new alert status. Options are: 'ACTIVE' or 'CLOSED'.
 
-        :type alert_status: ``str``
-        :param alert_status: new alert status. Options are: 'ACTIVE' or 'CLOSED'
-
-        :return: dict containing the alert as returned from the API
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict: dict containing the scan status as returned from the API.
         """
 
         return self._http_request(
@@ -399,13 +392,14 @@ class Client(BaseClient):
         )
 
     def scan_start(self, hostname: str) -> Dict[str, Any]:
-        """Starts a HelloWorld scan on a specific hostname
+        """
+        Starts a HelloWorld scan on a specific hostname.
 
-        :type hostname: ``str``
-        :param hostname: hostname of the machine to scan
+        Args:
+            hostname (str): hostname of the machine to scan.
 
-        :return: dict containing the scan status as returned from the API
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict: dict containing the scan status as returned from the API.
         """
 
         return self._http_request(
@@ -417,13 +411,14 @@ class Client(BaseClient):
         )
 
     def scan_status(self, scan_id: str) -> Dict[str, Any]:
-        """Gets the status of a HelloWorld scan
+        """
+        Gets the status of a HelloWorld scan.
 
-        :type scan_id: ``str``
-        :param scan_id: ID of the scan to retrieve status for
+        Args:
+            scan_id (str): ID of the scan to retrieve results for.
 
-        :return: dict containing the scan status as returned from the API
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict: dict containing the scan status as returned from the API.
         """
 
         return self._http_request(
@@ -437,11 +432,11 @@ class Client(BaseClient):
     def scan_results(self, scan_id: str) -> Dict[str, Any]:
         """Gets the results of a HelloWorld scan
 
-        :type scan_id: ``str``
-        :param scan_id: ID of the scan to retrieve results for
+        Args:
+            scan_id (str): ID of the scan to retrieve results for.
 
-        :return: dict containing the scan results as returned from the API
-        :rtype: ``Dict[str, Any]``
+        Returns:
+            dict: dict containing the scan results as returned from the API.
         """
 
         return self._http_request(
@@ -453,13 +448,14 @@ class Client(BaseClient):
         )
 
     def say_hello(self, name: str) -> str:
-        """Returns 'Hello {name}'
+        """
+        Returns a string: 'Hello {name}'
 
-        :type name: ``str``
-        :param name: name to append to the 'Hello' string
+        Args:
+            name (str): name to append to the 'Hello' string.
 
-        :return: string containing 'Hello {name}'
-        :rtype: ``str``
+        Returns:
+            str: string containing 'Hello {name}'
         """
 
         return f'Hello {name}'
@@ -469,18 +465,18 @@ class Client(BaseClient):
 
 
 def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
-    """Converts whois date format to an ISO8601 string
-
+    """
+    Converts whois date format to an ISO8601 string.
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
     in a datetime. If a list is returned with multiple elements, takes only
     the first one.
 
-    :type domain_date: ``Union[List[str],str]``
-    :param date_format:
-        a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
+    Args:
+        domain_date (str/list): a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
+        date_format (int): The format date to which the function will convert the given date.
 
-    :return: Parsed time in ISO8601 format
-    :rtype: ``Optional[str]``
+    Returns:
+        str: Parsed time, default in ISO8601 format.
     """
 
     if isinstance(domain_date, str):
@@ -498,17 +494,17 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
 
 
 def convert_to_demisto_severity(severity: str) -> int:
-    """Maps HelloWorld severity to Cortex XSOAR severity
+    """
+    Maps HelloWorld severity to Cortex XSOAR severity.
+    Converts the HelloWorld alert severity level ('Low', 'Medium', 'High', 'Critical') to Cortex XSOAR incident
+    severity (1 to 4).
 
-    Converts the HelloWorld alert severity level ('Low', 'Medium',
-    'High', 'Critical') to Cortex XSOAR incident severity (1 to 4)
-    for mapping.
+    Args:
+        severity (str): severity as returned from the HelloWorld API.
+        first_fetch_time (int): The first fetch time as configured in the integration params.
 
-    :type severity: ``str``
-    :param severity: severity as returned from the HelloWorld API (str)
-
-    :return: Cortex XSOAR Severity (1 to 4)
-    :rtype: ``int``
+    Returns:
+        int: Cortex XSOAR Severity (1 to 4)
     """
 
     # In this case the mapping is straightforward, but more complex mappings
@@ -525,21 +521,20 @@ def convert_to_demisto_severity(severity: str) -> int:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
+def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+    """
+    Tests API connectivity and authentication'
+    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
+    successful.
     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        params (Dict): Integration parameters.
+        first_fetch_time (int): The first fetch time as configured in the integration params.
 
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Returns:
+        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -552,32 +547,44 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
     try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
-                             severity=None)
+        if params.get('isFetch'):  # Tests fetch incident:
+            alert_status = params.get('alert_status', None)
+            alert_type = params.get('alert_type', None)
+            min_severity = params.get('min_severity', None)
+
+            fetch_incidents(
+                client=client,
+                max_results=1,
+                last_run={},
+                first_fetch_time=first_fetch_time,
+                alert_status=alert_status,
+                min_severity=min_severity,
+                alert_type=alert_type
+            )
+        else:
+            client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
+                                 severity=None)
+
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
+
     return 'ok'
 
 
 def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """helloworld-say-hello command: Returns Hello {somename}
+    """
+    helloworld-say-hello command: Returns Hello {somename}
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['name']`` is used as input name.
 
-    :type args: ``str``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['name']`` is used as input name
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains the hello world message
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that hello world message.
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -616,52 +623,26 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                     first_fetch_time: Optional[int], alert_status: Optional[str],
                     min_severity: str, alert_type: Optional[str]
                     ) -> Tuple[Dict[str, int], List[dict]]:
-    """This function retrieves new alerts every interval (default is 1 minute).
+    """
+    This function retrieves new alerts every interval (default is 1 minute).
+    It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
+    By default it's invoked by XSOAR every minute. It will use last_run to save the timestamp of the last incident it
+    processed. If last_run is not provided, it should use the integration parameter first_fetch_time to determine when
+    to start fetching the first time.
 
-    This function has to implement the logic of making sure that incidents are
-    fetched only onces and no incidents are missed. By default it's invoked by
-    XSOAR every minute. It will use last_run to save the timestamp of the last
-    incident it processed. If last_run is not provided, it should use the
-    integration parameter first_fetch_time to determine when to start fetching
-    the first time.
-
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type max_results: ``int``
-    :param max_results: Maximum numbers of incidents per fetch
-
-    :type last_run: ``Optional[Dict[str, int]]``
-    :param last_run:
-        A dict with a key containing the latest incident created time we got
-        from last fetch
-
-    :type first_fetch_time: ``Optional[int]``
-    :param first_fetch_time:
-        If last_run is None (first time we are fetching), it contains
-        the timestamp in milliseconds on when to start fetching incidents
-
-    :type alert_status: ``Optional[str]``
-    :param alert_status:
-        status of the alert to search for. Options are: 'ACTIVE'
-        or 'CLOSED'
-
-    :type min_severity: ``str``
-    :param min_severity:
-        minimum severity of the alert to search for.
-        Options are: "Low", "Medium", "High", "Critical"
-
-    :type alert_type: ``Optional[str]``
-    :param alert_type:
-        type of alerts to search for. There is no list of predefined types
-
-    :return:
-        A tuple containing two elements:
-            next_run (``Dict[str, int]``): Contains the timestamp that will be
-                    used in ``last_run`` on the next fetch.
-            incidents (``List[dict]``): List of incidents that will be created in XSOAR
-
-    :rtype: ``Tuple[Dict[str, int], List[dict]]``
+    Args:
+        client (Client): HelloWorld client to use.
+        max_results (int): Maximum numbers of incidents per fetch.
+        last_run (dict): A dict with a key containing the latest incident created time we got from last fetch.
+        first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
+            milliseconds on when to start fetching incidents.
+        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+        min_severity (str): minimum severity of the alert to search for. Options are: "Low", "Medium", "High" and
+            "Critical".
+        alert_type (str): type of alerts to search for. There is no list of predefined types.
+    Returns:
+        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
+        list: List of incidents that will be created in XSOAR.
     """
 
     # Get the last fetch time, if exists
@@ -751,31 +732,20 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
 def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
                           reliability: DBotScoreReliability) -> List[CommandResults]:
-    """ip command: Returns IP reputation for a list of IPs
+    """
+    ip command: Returns IP reputation for a list of IPs
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['ip']`` is a list of IPs or a single IP.
+            ``args['threshold']`` threshold to determine whether an IP is malicious.
+        default_threshold (int): default threshold to determine whether an IP is malicious if threshold is not
+            specified in the XSOAR arguments.
+        reliability (DBotScoreReliability): reliability of the source providing the intelligence data.
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['ip']`` is a list of IPs or a single IP
-        ``args['threshold']`` threshold to determine whether an IP is malicious
-
-    :type default_threshold: ``int``
-    :param default_threshold:
-        default threshold to determine whether an IP is malicious
-        if threshold is not specified in the XSOAR arguments
-
-    :type reliability: ``DBotScoreReliability``
-    :param reliability:
-        reliability of the source providing the intelligence data.
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains IPs
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPs.
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -800,6 +770,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     command_results: List[CommandResults] = []
 
     for ip in ips:
+        if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
+            raise ValueError(f'IP "{ip}" is not valid')
         ip_data = client.get_ip_reputation(ip)
         ip_data['ip'] = ip
 
@@ -824,7 +796,6 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         # We are using Common.DBotScore as macros to simplify
         # the mapping.
 
-        score = 0
         reputation = int(ip_data.get('score', 0))
         if reputation == 0:
             score = Common.DBotScore.NONE  # unknown
@@ -902,32 +873,20 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
 
 def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
                               reliability: DBotScoreReliability) -> List[CommandResults]:
-    """domain command: Returns domain reputation for a list of domains
+    """
+    domain command: Returns domain reputation for a list of domains.
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['domain']`` list of domains or a single domain.
+            ``args['threshold']`` threshold to determine whether a domain is malicious.
+        default_threshold (int): default threshold to determine whether a domain is malicious if threshold is not
+            specified in the XSOAR arguments.
+        reliability (DBotScoreReliability): reliability of the source providing the intelligence data.
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['domain']`` list of domains or a single domain
-        ``args['threshold']`` threshold to determine whether a domain is malicious
-
-    :type default_threshold: ``int``
-    :param default_threshold:
-        default threshold to determine whether an domain is malicious
-        if threshold is not specified in the XSOAR arguments
-
-    :type reliability: ``DBotScoreReliability``
-    :param reliability:
-        reliability of the source providing the intelligence data.
-
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains Domains
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains Domains.
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -1031,25 +990,20 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
 
 
 def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """helloworld-search-alerts command: Search alerts in HelloWorld
+    """
+    helloworld-search-alerts command: Search alerts in HelloWorld
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['status']`` alert status. Options are 'ACTIVE' or 'CLOSED'.
+            ``args['severity']`` alert severity CSV.
+            ``args['alert_type']`` alert type.
+            ``args['start_time']``  start time as ISO8601 date or seconds since epoch.
+            ``args['max_results']`` maximum number of results to return.
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['status']`` alert status. Options are 'ACTIVE' or 'CLOSED'
-        ``args['severity']`` alert severity CSV
-        ``args['alert_type']`` alert type
-        ``args['start_time']``  start time as ISO8601 date or seconds since epoch
-        ``args['max_results']`` maximum number of results to return
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains alerts
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an alerts.
     """
 
     status = args.get('status')
@@ -1108,21 +1062,16 @@ def search_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 
 def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """helloworld-get-alert command: Returns a HelloWorld alert
+    """
+    helloworld-get-alert command: Returns a HelloWorld alert.
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            `args['alert_id']`` alert ID to return.
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['alert_id']`` alert ID to return
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains an alert
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an alert.
     """
 
     alert_id = args.get('alert_id', None)
@@ -1151,24 +1100,20 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def update_alert_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """helloworld-update-alert-status command: Changes the status of an alert
-
+    """
+    helloworld-update-alert-status command: Changes the status of an alert.
     Changes the status of a HelloWorld alert and returns the updated alert info
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['alert_id']`` alert ID to update.
+            ``args['status']`` new status, either ACTIVE or CLOSED.
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['alert_id']`` alert ID to update
-        ``args['status']`` new status, either ACTIVE or CLOSED
 
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains an updated alert
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+            alert.
     """
 
     alert_id = args.get('alert_id', None)
@@ -1201,21 +1146,18 @@ def update_alert_status_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """helloworld-start-scan command: Starts a HelloWorld scan
+    """
+    helloworld-start-scan command: Starts a HelloWorld scan.
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['hostname']`` hostname to run the scan on
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['hostname']`` hostname to run the scan on
 
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains a scan job
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains a scan job
+        status.
     """
 
     hostname = args.get('hostname', None)
@@ -1244,21 +1186,17 @@ def scan_start_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """helloworld-scan-status command: Returns status for HelloWorld scans
+    """
+    helloworld-scan-status command: Returns status for HelloWorld scans.
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['scan_id']`` list of scan IDs or single scan ID.
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['scan_id']`` list of scan IDs or single scan ID
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains a scan status
-
-    :rtype: ``CommandResults``
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains a scan
+        status.
     """
 
     scan_id_list = argToList(args.get('scan_id', []))
@@ -1282,24 +1220,19 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def scan_results_command(client: Client, args: Dict[str, Any]) ->\
         Union[Dict[str, Any], CommandResults, List[CommandResults]]:
-    """helloworld-scan-results command: Returns results for a HelloWorld scan
+    """
+    helloworld-scan-results command: Returns results for a HelloWorld scan.
 
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
+    Args:
+        client (Client): HelloWorld client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['scan_id']`` scan ID to retrieve results.
+            ``args['format']`` format of the results. Options are 'file' or 'json'.
 
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['scan_id']`` scan ID to retrieve results
-        ``args['format']`` format of the results. Options are 'file' or 'json'
-
-    :return:
-        A ``CommandResults`` compatible to return ``return_results()``,
-        that contains a scan result when json format is selected, or
-        A Dict of entries also compatible to ``return_results()`` that
-        contains the output file when file format is selected.
-
-    :rtype: ``Union[Dict[str, Any],CommandResults]``
+    Returns:
+        CommandResults/dict: A ``CommandResults`` compatible to return ``return_results()``, that contains a scan result
+        when json format is selected, or a Dict of entries also compatible to ``return_results()`` that contains the
+        output file when file format is selected.
     """
 
     scan_id = args.get('scan_id', None)
@@ -1366,25 +1299,27 @@ def scan_results_command(client: Client, args: Dict[str, Any]) ->\
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
+    """
+    main function, parses params and runs command functions
     """
 
-    api_key = demisto.params().get('apikey')
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+
+    api_key = params.get('apikey')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(params.get('url'), '/api/v1')
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(
-        arg=demisto.params().get('first_fetch', '3 days'),
+        arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
     )
@@ -1394,11 +1329,11 @@ def main() -> None:
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
     # Integration that implements reputation commands (e.g. url, ip, domain,..., etc) must have
     # a reliability score of the source providing the intelligence data.
-    reliability = demisto.params().get('integrationReliability', DBotScoreReliability.C)
+    reliability = params.get('integrationReliability', DBotScoreReliability.C)
 
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
@@ -1406,7 +1341,7 @@ def main() -> None:
     # level on the server configuration
     # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
         headers = {
             'Authorization': f'Bearer {api_key}'
@@ -1417,20 +1352,20 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_timestamp)
+            result = test_module(client, params, first_fetch_timestamp)
             return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            alert_status = demisto.params().get('alert_status', None)
-            alert_type = demisto.params().get('alert_type', None)
-            min_severity = demisto.params().get('min_severity', None)
+            alert_status = params.get('alert_status', None)
+            alert_type = params.get('alert_type', None)
+            min_severity = params.get('min_severity', None)
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(
-                arg=demisto.params().get('max_fetch'),
+                arg=params.get('max_fetch'),
                 arg_name='max_fetch',
                 required=False
             )
@@ -1453,38 +1388,42 @@ def main() -> None:
             # of incidents to create
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'ip':
-            default_threshold_ip = int(demisto.params().get('threshold_ip', '65'))
-            return_results(ip_reputation_command(client, demisto.args(), default_threshold_ip, reliability))
+        elif command == 'ip':
+            default_threshold_ip = arg_to_number(params.get('threshold_ip')) or DEFAULT_INDICATORS_THRESHOLD
+            return_results(ip_reputation_command(client, args, default_threshold_ip, reliability))
 
-        elif demisto.command() == 'domain':
-            default_threshold_domain = int(demisto.params().get('threshold_domain', '65'))
-            return_results(domain_reputation_command(client, demisto.args(), default_threshold_domain, reliability))
+        elif command == 'domain':
+            default_threshold_domain = \
+                arg_to_number(params.get('threshold_domain')) or DEFAULT_INDICATORS_THRESHOLD
+            return_results(domain_reputation_command(client, args, default_threshold_domain, reliability))
 
-        elif demisto.command() == 'helloworld-say-hello':
-            return_results(say_hello_command(client, demisto.args()))
+        elif command == 'helloworld-say-hello':
+            return_results(say_hello_command(client, args))
 
-        elif demisto.command() == 'helloworld-search-alerts':
-            return_results(search_alerts_command(client, demisto.args()))
+        elif command == 'helloworld-search-alerts':
+            return_results(search_alerts_command(client, args))
 
-        elif demisto.command() == 'helloworld-get-alert':
-            return_results(get_alert_command(client, demisto.args()))
+        elif command == 'helloworld-get-alert':
+            return_results(get_alert_command(client, args))
 
-        elif demisto.command() == 'helloworld-update-alert-status':
-            return_results(update_alert_status_command(client, demisto.args()))
+        elif command == 'helloworld-update-alert-status':
+            return_results(update_alert_status_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-start':
-            return_results(scan_start_command(client, demisto.args()))
+        elif command == 'helloworld-scan-start':
+            return_results(scan_start_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-status':
-            return_results(scan_status_command(client, demisto.args()))
+        elif command == 'helloworld-scan-status':
+            return_results(scan_status_command(client, args))
 
-        elif demisto.command() == 'helloworld-scan-results':
-            return_results(scan_results_command(client, demisto.args()))
+        elif command == 'helloworld-scan-results':
+            return_results(scan_results_command(client, args))
+
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented')
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

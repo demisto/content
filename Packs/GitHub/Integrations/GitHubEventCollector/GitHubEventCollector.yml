@@ -37,11 +37,6 @@ configuration:
   - all
   - web
   - git
-- display: The product corresponding to the integration that originated the events.
-  name: product
-  type: 0
-  defaultvalue: 'github-audit'
-  required: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -61,14 +56,14 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
     deprecated: false
     description: Manual command to fetch events and display them.
     execution: false
     name: github-get-events
-  dockerimage: demisto/fastapi:1.0.0.29406
+  dockerimage: demisto/fastapi:1.0.0.32142
   runonce: false
   isfetchevents: true
   subtype: python3

@@ -48,19 +48,18 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Related Incidents",
                         "readOnly": true,
                         "static": false,
                         "type": "relatedIncidents",
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
-                        "y": 5
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                         "isVisible": true,
@@ -77,12 +76,32 @@
                                 "startCol": 0
                             },
                             {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "b8b51310-81ae-11ec-a247-cfbd25dcdbb6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                            },
+                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
-                                "index": 0,
+                                "index": 2,
                                 "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -92,87 +111,28 @@
                                 "fieldId": "action",
                                 "height": 22,
                                 "id": "83dcdda0-a81d-11eb-8bae-034332f83c9b",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "modified",
-                                "height": 22,
-                                "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
-                                "index": 2,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 22,
-                                "id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
                                 "index": 3,
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Course of Action Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "h": 3,
-                        "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Timeline",
-                        "static": false,
-                        "type": "indicatorTimeline",
-                        "w": 1,
-                        "x": 2,
-                        "y": 5
-                    },
-                    {
-                        "h": 3,
-                        "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Comments",
-                        "static": false,
-                        "type": "comments",
-                        "w": 1,
-                        "x": 2,
-                        "y": 8
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": false,
-                        "hideName": false,
-                        "i": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
-                        "items": [
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
+                                "index": 4,
+                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "tags",
-                                "height": 53,
+                                "height": 22,
                                 "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
-                                "index": 0,
+                                "index": 5,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -185,23 +145,12 @@
                                 },
                                 "endCol": 1,
                                 "fieldId": "",
-                                "height": 53,
+                                "height": 44,
                                 "id": "f1f63340-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 1,
+                                "index": 6,
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
                                 "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "trafficlightprotocol",
-                                "height": 53,
-                                "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 2,
-                                "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
-                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
@@ -213,9 +162,9 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
-                                "height": 53,
+                                "height": 44,
                                 "id": "fb499720-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 1,
+                                "index": 6,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
@@ -225,13 +174,40 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
-                        "name": "Tags and TLP",
+                        "name": "Course of Action Details",
                         "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
                         "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
                     },
                     {
                         "displayType": "ROW",
@@ -242,7 +218,7 @@
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "description",
                                 "height": 106,
                                 "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
@@ -254,51 +230,11 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Course of Action Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2
-                    },
-                    {
-                        "columns": [
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "sources-field",
-                                "width": 150
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "reliability",
-                                "width": 150
-                            },
-                            {
-                                "displayed": true,
-                                "key": "First Seen By Source",
-                                "width": 153
-                            },
-                            {
-                                "displayed": true,
-                                "key": "Last Seen By Source",
-                                "width": 200
-                            }
-                        ],
-                        "h": 2,
-                        "i": "main-3e18b0f0-979c-11eb-a8d1-098e2c945225",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Sources Data",
-                        "static": false,
-                        "type": "sources",
-                        "w": 1,
-                        "x": 1,
                         "y": 0
                     },
                     {
@@ -307,35 +243,42 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
-                        "type": "relationshipsTable",
                         "w": 2,
-                        "x": 1,
-                        "y": 2
-                    },
+                        "x": 0,
+                        "y": 3,
+                        "type": "relationshipsTable"
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "il5xkxnxip",
+                "name": "Publications and notes",
+                "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 9,
                         "hideName": false,
-                        "i": "main-30c4afd0-a818-11eb-8bae-034332f83c9b",
+                        "i": "il5xkxnxip-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
                         "items": [
                             {
-                                "endCol": 4,
-                                "fieldId": "communitynotes",
+                                "endCol": 6,
+                                "fieldId": "publications",
                                 "height": 106,
-                                "id": "3f518280-a818-11eb-8bae-034332f83c9b",
+                                "id": "f6abcbb0-7ebf-11ec-b7e4-a70f28a44ba6",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 4,
-                                "fieldId": "publications",
+                                "endCol": 6,
+                                "fieldId": "communitynotes",
                                 "height": 106,
-                                "id": "4ee60130-a818-11eb-8bae-034332f83c9b",
+                                "id": "f8eb5b70-7ebf-11ec-b7e4-a70f28a44ba6",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -343,13 +286,12 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
-                        "name": "Publications",
+                        "name": "Publications and notes",
                         "static": false,
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
-                        "y": 8
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -363,51 +305,16 @@
                 "name": "Info",
                 "sections": [
                     {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideItemTitleOnlyOne": false,
-                        "i": "indicator-quick-view-info-tags-section",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 22,
-                                "id": "indicator-quick-view-info-tags-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "trafficlightprotocol",
-                                "height": 22,
-                                "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Tags and TLP",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
                         "h": 2,
                         "i": "indicator-quick-view-info-relatedIncidents",
                         "maxW": 3,
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
-                        "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 4,
+                        "type": "relatedIncidents"
                     },
                     {
                         "h": 2,
@@ -419,31 +326,27 @@
                         "type": "comments",
                         "w": 1,
                         "x": 0,
-                        "y": 7
+                        "y": 6
                     },
                     {
-                        "displayType": "ROW",
                         "h": 2,
-                        "hideName": false,
                         "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Course of Action Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2,
+                        "displayType": "ROW",
+                        "hideName": false,
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "stixid",
+                                "fieldId": "timestamp",
                                 "height": 22,
-                                "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
+                                "id": "48a68170-84ed-11ec-a589-e73aadc98c9a",
                                 "index": 0,
-                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "action",
-                                "height": 22,
-                                "id": "9909b400-a81d-11eb-8bae-034332f83c9b",
-                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -453,35 +356,57 @@
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
+                                "index": 1,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
                                 "index": 2,
                                 "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "firstseen",
+                                "fieldId": "action",
                                 "height": 22,
-                                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
+                                "id": "9909b400-a81d-11eb-8bae-034332f83c9b",
                                 "index": 3,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Course of Action Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
+                        "minH": 1
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
                         "items": [
@@ -497,13 +422,13 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Course of Action Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2
+                        "y": 0,
+                        "hideItemTitleOnlyOne": true
                     }
                 ],
                 "type": "custom"
@@ -514,12 +439,11 @@
                 "name": "Relationships",
                 "sections": [
                     {
-                        "h": 4,
+                        "h": 8,
                         "i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Relationships",
                         "static": false,

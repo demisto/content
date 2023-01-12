@@ -1,7 +1,7 @@
-id: Detonate URL - CrowdStrike Falcon X
+id: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
 version: -1
-name: Detonate URL - CrowdStrike Falcon X
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
+description: Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration.
   This playbook returns relevant reports to the War Room and file reputations to the
   context data.
 starttaskid: "0"
@@ -40,7 +40,7 @@ tasks:
     task:
       id: fc1f205f-4605-402d-805d-57b7d4b4cef7
       version: -1
-      name: Is CrowdStrike Falcon X enabled?
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: |
         Verify that there is a valid instance of CrowdStrike enabled.
       type: condition
@@ -125,7 +125,7 @@ tasks:
     task:
       id: 9ab16bf8-de8e-4201-8561-992345b51280
       version: -1
-      name: CrowdStrike Falcon X Get Report
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report
       description: Get a full version of a sandbox report.
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
       type: regular
@@ -157,7 +157,7 @@ tasks:
     task:
       id: 251b7acf-b9ad-4122-8968-788528be9bc1
       version: -1
-      name: CrowdStrike Falcon X Submit URL
+      name: CrowdStrike Falcon Intelligence Sandbox Submit URL
       description: Submit a URL or FTP for sandbox analysis.
       script: '|||cs-fx-submit-url'
       type: regular
@@ -310,13 +310,6 @@ inputs:
       accessor: Data
   required: false
   description: URL to detonate.
-  playbookInputQuery:
-- key: EnvironmentID
-  value:
-    simple: "100"
-  required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
-    command.
   playbookInputQuery:
 - key: Interval
   value:

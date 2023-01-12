@@ -36,13 +36,11 @@ def load_host_url():
 
 def hash_file(filename):
     '''Calculate the SHA1 of a file'''
+    # The function was taken from here:
+    # https://stackoverflow.com/questions/3431825/generating-an-md5-checksum-of-a-file#answer-3431838
     h = hashlib.sha1()  # nosec
     with open(filename, 'rb') as f:
-        chunk = ''
-        while True:
-            chunk = f.read(1024)
-            if not chunk:
-                break
+        for chunk in iter(lambda: f.read(1024), b""):
             h.update(chunk)
     return h.hexdigest()
 

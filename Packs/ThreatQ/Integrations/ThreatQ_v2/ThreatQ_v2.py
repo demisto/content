@@ -91,6 +91,13 @@ CONTEXT_PATH = {
     'attachment': 'ThreatQ.File(val.ID === obj.ID)'
 }
 
+TABLE_TLP = {
+    4: "WHITE",
+    3: "GREEN",
+    2: "AMBER",
+    1: "RED"
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -144,6 +151,34 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
         return errors_string
 
     return str()  # Service did not provide any errors.
+
+
+def get_tlp_from_indicator(sources):
+    if not sources:
+        return None
+    tlp = 0
+    for source in sources:
+        try:
+            tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
+        except Exception as e:
+            demisto.debug(f"Failed getting TLP from {source.get('Name')} source:\n{str(e)}")
+            continue
+
+    return TABLE_TLP.get(tlp)
+
+
+def get_generic_context(indicator, generic_context=None):
+
+    tlp = get_tlp_from_indicator(indicator.get('Source'))
+    if tlp:
+        if generic_context:
+            generic_context['TrafficLightProtocol'] = tlp
+        else:
+            generic_context = {'Data': indicator.get('Value'), 'TrafficLightProtocol': tlp}
+    else:
+        generic_context = generic_context or {'Data': indicator.get('Value')}
+
+    return generic_context
 
 
 def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True):
@@ -301,6 +336,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
     indicators = indicators or [{'Value': value, 'TQScore': -1}]
+
     entry_context = aggregate_search_results(
         indicators=indicators,
         default_indicator_type=indicator_type,
@@ -350,7 +386,8 @@ def create_dbot_context(indicator, ind_type, ind_score):
     ret = {
         'Vendor': 'ThreatQ v2',
         'Indicator': indicator,
-        'Type': ind_type
+        'Type': ind_type,
+        'Reliability': demisto.params().get('integrationReliability')
     }
 
     if ind_score >= THRESHOLD:
@@ -678,10 +715,11 @@ def get_indicator_type_id(indicator_name: str) -> str:
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
     entry_context = []
     for i in indicators:
+        generic_context = get_generic_context(i, generic_context)
         entry_context.append(set_indicator_entry_context(
             indicator_type=i.get('Type') or default_indicator_type,
             indicator=i,
-            generic_context=generic_context or {'Data': i.get('Value')}
+            generic_context=generic_context
         ))
 
     aggregated: Dict = {}

@@ -1,0 +1,260 @@
+description: This playbook tracks the user responses and  resends the emails to recipients who have not responded
+id: xsoar-data-collection-response-tracking
+inputs:
+- description: 'Data collection Job uuid '
+  key: Jobuuid
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The file id of the attachment to send to the recipient
+  key: FileAttachments
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Mail Subject
+  key: EmailSubject
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The amount of time between two scheduled commands that poll the response
+  key: PollingTimebetweenRuns
+  playbookInputQuery:
+  required: false
+  value: {}
+name: xsoar-data-collection-response-tracking
+outputs:
+- contextPath: WSActionStatus(val.job_uuid==obj.job_uuid)
+  description: "Merges the output to the main playbook"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 78f010aa-291b-4af4-8db9-46ba1c20e744
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 78f010aa-291b-4af4-8db9-46ba1c20e744
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 60
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2b7d1e64-264a-4e0b-8338-7544f6d22b1f
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+      description: ''
+    taskid: 2b7d1e64-264a-4e0b-8338-7544f6d22b1f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 915
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      emailsendcounter:
+        complex:
+          accessor: emailsendcounter
+          root: incident
+          transformers:
+          - args:
+              by:
+                value:
+                  simple: "1"
+            operator: addition
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: d67d1cc1-9bca-4022-8717-a7a7626565b2
+      iscommand: true
+      name: IncrementCounter
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d67d1cc1-9bca-4022-8717-a7a7626565b2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      uuid:
+        simple: ${inputs.Jobuuid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets the current status of an action that was setup; Used to track if the user responded to the action.
+      id: 26053a5f-0441-4305-822a-4b1237a5293c
+      iscommand: true
+      name: Get the status of the job
+      script: '|||xsoar-ws-get-action-status'
+      type: regular
+      version: -1
+    taskid: 26053a5f-0441-4305-822a-4b1237a5293c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachIDs:
+        simple: ${inputs.FileAttachments}
+      emailsubject:
+        simple: test subject
+      uuid:
+        simple: ${inputs.Jobuuid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: To parse the context data after running  xsoar-ws-get-action-status and resend emails to recipients who have not responded
+      id: a50d5167-5931-446a-8e24-8417a967d278
+      iscommand: false
+      name: Response Status parsing
+      scriptName: xsoar-ws-parse-context
+      type: regular
+      version: -1
+    taskid: a50d5167-5931-446a-8e24-8417a967d278
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 350
+        }
+      }
+  "11":
+    continueonerror: true
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      timebetweenruns:
+        simple: ${inputs.PollingTimebetweenRuns}
+      timeout:
+        simple: ${inputs.PollingTimeout}
+      uuid:
+        simple: ${inputs.Jobuuid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Companion automation to XSOAR-Web-Server that polls a certain UUID for user response.
+        The automation returns a scheduledcommand if the user has not responded to the action url
+      id: 84e2bf73-3b56-483a-88c3-0fc2a777ad5d
+      iscommand: false
+      name: Schedule Polling
+      scriptName: xsoar-ws-poll-status
+      tags:
+      - EmailTimeout
+      type: regular
+      version: -1
+    taskid: 84e2bf73-3b56-483a-88c3-0fc2a777ad5d
+    timertriggers:
+    - action: start
+      fieldname: emailusersla
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 530
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 920,
+        "width": 380,
+        "x": 50,
+        "y": 60
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

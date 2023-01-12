@@ -14,7 +14,6 @@ This integration was integrated and tested with Github REST API V3
     | Number of incidents to fetch per fetch. |  | False |
     | First fetch time interval |  | False |
     | The event types to include. | web - returns web \(non-Git\) events, git - returns Git events, all - returns both web and Git events. | False |
-    | The product corresponding to the integration that originated the events. |  | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 

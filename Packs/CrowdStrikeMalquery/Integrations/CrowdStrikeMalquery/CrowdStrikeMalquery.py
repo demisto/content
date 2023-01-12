@@ -2,8 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -302,7 +303,8 @@ def get_file_metadata_command(client: Client, args: dict):
             indicator=sha256,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
-            score=DBOT_SCORE[file_label]
+            score=DBOT_SCORE[file_label],
+            reliability=demisto.params().get('integrationReliability')
         )
         file_entry = Common.File(sha256=sha256, md5=file.get('md5'), sha1=file.get('sha1'), dbot_score=dbot_score)
         table_name = f'{VENDOR_NAME} File reputation for: {sha256}'

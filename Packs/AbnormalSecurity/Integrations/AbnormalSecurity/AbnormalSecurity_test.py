@@ -11,7 +11,8 @@ from AbnormalSecurity import Client, check_the_status_of_an_action_requested_on_
     get_a_list_of_campaigns_submitted_to_abuse_mailbox_command, get_details_of_an_abuse_mailbox_campaign_command, \
     get_employee_identity_analysis_genome_data_command, get_employee_information_command, \
     get_employee_login_information_for_last_30_days_in_csv_format_command, \
-    provides_the_analysis_and_timeline_details_of_a_case_command
+    provides_the_analysis_and_timeline_details_of_a_case_command, submit_false_negative_report_command, \
+    submit_false_positive_report_command
 from CommonServerPython import DemistoException
 
 from test_data.fixtures \
@@ -206,6 +207,40 @@ def test_submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_secur
 
     results = submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command(client, args)
     assert results.outputs_prefix == 'AbnormalSecurity.SubmitInquiry'
+
+
+def test_submit_a_false_negative_command(mocker):
+    """
+        When:
+            - Submit a FN command
+        Then
+            - Assert output prefix data is as expected
+    """
+    client = mock_client(mocker, "Thank you for your feedback! We have sent your inquiry to our support staff.")
+    args = {
+        "sender_email": "abc@def.com",
+        "recipient_email": "abc@def.com",
+        "subject": "test"
+    }
+
+    results = submit_false_negative_report_command(client, args)
+    assert results.readable_output == 'Thank you for your feedback! We have sent your inquiry to our support staff.'
+
+
+def test_submit_a_false_positive_command(mocker):
+    """
+        When:
+            - Submit a FP command
+        Then
+            - Assert output prefix data is as expected
+    """
+    client = mock_client(mocker, "Thank you for your feedback! We have sent your inquiry to our support staff.")
+    args = {
+        "portal_link": "https://portal.abnormalsecurity.com/home/threat-center/remediation-history/12345",
+    }
+
+    results = submit_false_positive_report_command(client, args)
+    assert results.readable_output == 'Thank you for your feedback! We have sent your inquiry to our support staff.'
 
 
 def test_get_the_latest_threat_intel_feed_command(mocker):

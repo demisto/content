@@ -839,11 +839,8 @@ tasks:
         simple: "False"
       FileRemediation:
         simple: Quarantine
-      HostAutoContainment:
-        complex:
-          root: inputs.PreHostContainment
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       IP:
         complex:
           root: ExtractedIndicators
@@ -930,10 +927,8 @@ tasks:
             - operator: uniq
         FileRemediation:
           simple: Quarantine
-        HostAutoContainment:
-          simple: "false"
         IAMUserDomain:
-          simple: '@demisto.com'
+          simple: ''
         UserContainment:
           simple: "False"
         Username:
@@ -1035,9 +1030,6 @@ tasks:
       FileRemediation:
         complex:
           root: inputs.FileRemediation
-      HostAutoContainment:
-        complex:
-          root: inputs.HostAutoContainment
           transformers:
           - operator: SetIfEmpty
             args:
@@ -1103,11 +1095,8 @@ tasks:
         FileRemediation:
           complex:
             root: inputs.FileRemediation
-        HostAutoContainment:
-          complex:
-            root: inputs.HostAutoContainment
         IAMUserDomain:
-          simple: '@demisto.com'
+          simple: ''
         UserContainment:
           simple: "False"
       exitCondition: ""
@@ -1203,12 +1192,6 @@ inputs:
   required: false
   description: "Whether to execute automatically or manually the containment plan tasks:\n* Block indicators\n* Quarantine file\n* Disable user "
   playbookInputQuery:
-- key: PreHostContainment
-  value:
-    simple: "True"
-  required: false
-  description: Isolate the host after the Analysis phase (command-line analysis)
-  playbookInputQuery:
 - key: FileRemediation
   value: {}
   required: false
@@ -1218,3 +1201,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
+contentitemexportablefields:
+  contentitemfields: {}

@@ -1016,7 +1016,7 @@ Provides the analysis and timeline details of a case
 >| 2021-07-14T22:41:54Z | Sign In | Suspicious Failed Sign In Attempt | ip_address: rare,<br/>proxy<br/>operating_system: legacy | 127.0.0.1 | Suspicious Failed Sign In Attempt for test@lamronba.com | country: Ireland |  |  | Suspicious Failed Sign In Attempt |  |
 
 
-### abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
+### [Deprecated] abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
 ***
 Submit an Inquiry to request a report on misjudgement by Abnormal Security
 
@@ -1053,6 +1053,63 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
     }
 }
 ```
+
+#### Human Readable Output
+
+>### Results
+>|detail|
+>|---|
+>| Thank you for your feedback! We have sent your inquiry to our support staff. |
+
+### abnormal-security-submit-false-negative-report
+***
+Submit a False Negative Report
+
+
+#### Base Command
+
+`abnormal-security-submit-false-negative-report`
+#### Input
+
+| **Argument Name** | **Description**                 | **Required** |
+|-------------------|---------------------------------| --- |
+| sender_email      | Email address of the sender.    | Required | 
+| recipient_email   | Email address of the recipient. | Required | 
+| subject           | Email subject.                  | Required |
+
+
+#### Command Example
+```!abnormal-security-submit-false-negative-report recipient_email=abc@def.com sender_email=def@def.com subject=hello```
+
+
+#### Human Readable Output
+
+>### Results
+>|detail|
+>|---|
+>| Thank you for your feedback! We have sent your inquiry to our support staff. |
+
+
+
+### abnormal-security-submit-false-positive-report
+***
+Submit a False Positive Report
+
+
+#### Base Command
+
+`abnormal-security-submit-false-positive-report`
+#### Input
+
+| **Argument Name** | **Description**                 | **Required** |
+|-------------------|---------------------------------| --- |
+| portal_link       | URL link of threat log in abnormal security portal           | Required |
+
+
+
+#### Command Example
+```!abnormal-security-submit-false-positive-report portal_link=https://portal.abnormalsecurity.com/home/threat-center/remediation-history/123455667```
+
 
 #### Human Readable Output
 

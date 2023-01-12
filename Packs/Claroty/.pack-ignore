@@ -12,3 +12,6 @@ ignore=IM111
 
 [file:classifier-Claroty.json]
 ignore=BA101
+
+[known_words]
+Claroty

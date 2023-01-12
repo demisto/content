@@ -1,0 +1,5 @@
+!triage-submit-sample data="4@1" kind="file"
+!triage-get-sample-summary sample_id="220807-d5sxnaebbx"
+!triage-get-static-report sample_id="220807-d5sxnaebbx"
+!triage-get-report-triage sample_id="220807-d5sxnaebbx" task_id="behavioral1"
+!triage-query-search query="tag:stealer AND tag:spyware"

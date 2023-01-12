@@ -260,4 +260,235 @@ def test_add_hash_to_blocklist(mocker, requests_mock):
     outputs = call[0].args[0].outputs
 
     assert outputs['hash'] == 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
-    assert outputs['status'] == 'Added to blocklist'
+    assert outputs['status'] == 'Added to scoped blocklist'
+
+
+def test_remove_item_from_whitelist(mocker, requests_mock):
+    """
+    When:
+        A hash is removed from the whitelist
+    Return:
+        Status that it has been removed from the whitelist
+    """
+    raw_whitelist_response = util_load_json('test_data/remove_item_from_whitelist.json')
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/exclusions?osTypes=windows&type=white_hash"
+                      "&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2&"
+                      "includeChildren=True&includeParents=True&limit=5",
+                      json=raw_whitelist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/exclusions", json={"data": []})
+
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-remove-item-from-whitelist')
+    mocker.patch.object(demisto, 'args', return_value={
+        # 'sha1': 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
+        'item': "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
+        'exclusion_type': "white_hash", 'os_type': "windows"
+    })
+
+    mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs['item'] == 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
+    assert outputs['status'] == 'Removed 1 entries from whitelist'
+
+
+def test_update_threat_analyst_verdict(mocker, requests_mock):
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/threats/analyst-verdict", json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-update-threats-verdict')
+    mocker.patch.object(demisto, 'args', return_value={
+        'threat_ids': '1234567890',
+        'verdict': 'true_positive'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Update': {'Action': 'true_positive'}}]
+
+
+def test_update_alert_analyst_verdict(mocker, requests_mock):
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/alerts/analyst-verdict",
+                       json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-update-alerts-verdict')
+    mocker.patch.object(demisto, 'args', return_value={
+        'alert_ids': '1234567890',
+        'verdict': 'true_positive'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Update': {'Action': 'true_positive'}}]
+
+
+def test_update_threat_status(mocker, requests_mock):
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/threats/incident", json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-update-threats-status')
+    mocker.patch.object(demisto, 'args', return_value={
+        'threat_ids': '1234567890',
+        'status': 'in_progress'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Status': 'in_progress'}]
+
+
+def test_update_alert_status(mocker, requests_mock):
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/alerts/incident",
+                       json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-update-alerts-status')
+    mocker.patch.object(demisto, 'args', return_value={
+        'alert_ids': '1234567890',
+        'status': 'in_progress'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'ID': '1234567890', 'Updated': True, 'Status': 'in_progress'}]
+
+
+def test_create_star_rule(mocker, requests_mock):
+    raw_star_rule_response = util_load_json('test_data/create_star_rule_response.json')
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/rules", json=raw_star_rule_response)
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-create-star-rule')
+    mocker.patch.object(demisto, 'args', return_value={
+        'name': 'sample',
+        'description': 'description',
+        'query': 'sample query',
+        'query_type': 'events',
+        'rule_severity': 'Low',
+        'account_ids': '1234567890',
+        'group_ids': '1234567890',
+        'site_ids': '123456789',
+        'expiration_mode': 'Permanent',
+        'expiration_date': '',
+        'network_quarantine': "true",
+        'treatAsThreat': 'suspicious'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == {}
+
+
+def test_enable_star_rules(mocker, requests_mock):
+    requests_mock.put("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/rules/enable", json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-enable-star-rules')
+    mocker.patch.object(demisto, 'args', return_value={
+        'rule_ids': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'ID': '1234567890', 'Enabled': True}]
+
+
+def test_disable_star_rules(mocker, requests_mock):
+    requests_mock.put("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/rules/disable", json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-disable-star-rules')
+    mocker.patch.object(demisto, 'args', return_value={
+        'rule_ids': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'ID': '1234567890', 'Disabled': True}]
+
+
+def test_delete_star_rule(mocker, requests_mock):
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/rules", json={"data": {"affected": 1}})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-delete-star-rule')
+    mocker.patch.object(demisto, 'args', return_value={
+        'rule_ids': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'ID': '1234567890', 'Deleted': True}]
+
+
+def test_get_events(mocker, requests_mock):
+    """
+    Given:
+    When: run get events
+    Then: ensure the context output are as expected and contained the 'ProcessID' and 'EventID' as id keys
+    """
+    from CommonServerPython import CommandResults
+
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/dv/events", json={'data': [
+        {'ProcessID': 'ProcessID_1', 'EventID': 'EventID_1'},
+        {'ProcessID': 'ProcessID_2', 'EventID': 'EventID_2'}
+    ]})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-events')
+    mocker.patch.object(demisto, 'args', return_value={
+        'query_id': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    expected_context = CommandResults(
+        outputs_prefix='SentinelOne.Event',
+        outputs_key_field=['ProcessID', 'EventID'],
+        outputs=[{}]).to_context().get('EntryContext', {})
+
+    call = sentinelone_v2.return_results.call_args_list
+    context_outputs = call[0].args[0].outputs
+    assert all(key in context_outputs.keys() for key in expected_context.keys())

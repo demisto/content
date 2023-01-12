@@ -132,16 +132,36 @@ configuration:
   - tool
   - threat-actor
   - infrastructure
+  - autonomous-system
+  - domain-name
+  - email-addr
+  - file
+  - ipv4-addr
+  - ipv6-addr
+  - mutex
+  - url
+  - user-account
+  - windows-registry-key
+  - identity
+  - location
+  - vulnerability
+- display: Certificate File as Text
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Key File as Text
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: certificate
   required: false
   type: 12
+  hidden: true
 - additionalinfo: Add a key file as text to connect to the TAXII server
   display: Key File as Text
   name: key
   required: false
   type: 4
+  hidden: true
 - additionalinfo: Set the number of stix object that will be requested with each taxii
     poll (http request). A single fetch is made of several taxii polls. Changing this
     setting can help speed up fetches, or fix issues on slower networks. Please note
@@ -175,6 +195,11 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead.
+  display: Default API Root to use
+  name: default_api_root
   required: false
   type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
@@ -239,7 +264,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.23423
+  dockerimage: demisto/taxii2:1.0.0.42974
   feed: true
   isfetch: false
   longRunning: false

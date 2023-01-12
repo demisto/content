@@ -1,5 +1,6 @@
-name: DropboxEventCollector
-id: DropboxEventCollector
 fromversion: 3.3.0
+id: DropboxEventCollector
+name: DropboxEventCollector
 rules: ''
 schema: ''
+toversion: 6.9.9

@@ -11,25 +11,43 @@ API_VERSION = '2021-09-01'
 
 class AKSClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com', tenant_id: str = None,
+                 enc_key: str = None, auth_type: str = 'Device Code', redirect_uri: str = None, auth_code: str = None):
+        AUTH_TYPES_DICT: dict[str, Any] = {
+            'Authorization Code': {
+                'grant_type': AUTHORIZATION_CODE,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
+            },
+            'Device Code': {
+                'grant_type': DEVICE_CODE,
+                'resource': 'https://management.core.windows.net',
+                'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+            }
+        }
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.ms_client = MicrosoftClient(
+        client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
+            grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),
             base_url=f'https://management.azure.com/subscriptions/{subscription_id}',
             verify=verify,
             proxy=proxy,
-            resource='https://management.core.windows.net',
-            scope='https://management.azure.com/user_impersonation offline_access user.read',
-            azure_ad_endpoint=azure_ad_endpoint
+            resource=AUTH_TYPES_DICT.get(auth_type, {}).get('resource'),
+            scope=AUTH_TYPES_DICT.get(auth_type, {}).get('scope'),
+            azure_ad_endpoint=azure_ad_endpoint,
+            tenant_id=tenant_id,
+            enc_key=enc_key,
+            redirect_uri=redirect_uri,
+            auth_code=auth_code,
         )
+        self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
 
@@ -145,13 +163,29 @@ def complete_auth(client: AKSClient) -> str:
 
 
 def test_connection(client: AKSClient) -> str:
-    client.ms_client.get_access_token()
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return '✅ Success!'
 
 
 def reset_auth() -> str:
     set_integration_context({})
     return 'Authorization was reset successfully. Run **!azure-ks-auth-start** to start the authentication process.'
+
+
+@logger
+def test_module(client):
+    """
+    Performs basic GET request to check if the API is reachable and authentication is successful.
+    Returns ok if successful.
+    """
+    if demisto.params().get('auth_type') == 'Device Code':
+        raise Exception("When using device code flow configuration, "
+                        "Please enable the integration and run `!azure-ks-auth-start` and `!azure-ks-auth-complete` to "
+                        "log in. You can validate the connection by running `!azure-ks-auth-test`\n"
+                        "For more details press the (?) button.")
+    elif demisto.params().get('auth_type') == 'Authorization Code':
+        raise Exception("When using user auth flow configuration, "
+                        "Please enable the integration and run the !azure-ks-auth-test command in order to test it")
 
 
 def main() -> None:
@@ -162,6 +196,11 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = AKSClient(
+            tenant_id=params.get('tenant_id'),
+            auth_type=params.get('auth_type', 'Device Code'),
+            auth_code=params.get('auth_code', {}).get('password'),
+            redirect_uri=params.get('redirect_uri'),
+            enc_key=params.get('credentials', {}).get('password'),
             app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
@@ -171,7 +210,7 @@ def main() -> None:
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
         if command == 'test-module':
-            return_results('The test module is not functional, run the azure-ks-auth-start command instead.')
+            return_results(test_module(client))
         elif command == 'azure-ks-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-ks-auth-complete':

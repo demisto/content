@@ -1,0 +1,61 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "asmrelated",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "type",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Link",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "link",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "Related or duplicate objects",
+    "editForm": true,
+    "group": 0,
+    "hidden": true,
+    "id": "incident_asmrelated",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ASM - Related",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

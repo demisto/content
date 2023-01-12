@@ -22,7 +22,7 @@
   ],
   "ContentsFormat": "json",
   "ReadableContentsFormat": "markdown",
-  "HumanReadable": "### Users (1)\n|adminUser|deleted|department|email|groups|id|isNonEditable|name|\n|---|---|---|---|---|---|---|---|\n| false | false | id: 12<br>name: \"test_user\" | user@test.com | {u'id': 11, u'name': u'TEST'} | 28831971 | false | test.user.com |\n",
+  "HumanReadable": "### Users (1)\n|adminUser|deleted|department|email|groups|id|isNonEditable|name|\n|---|---|---|---|---|---|---|---|\n| false | false | id: 12<br>name: \"test_user\" | user@test.com | {'id': 11, 'name': 'TEST'} | 28831971 | false | test.user.com |\n",
   "EntryContext": {
     "Zscaler.Users": [
       {

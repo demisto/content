@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Pull Request Creation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cicdpullrequesttitle",
+    "closeForm": false,
+    "content": true,
+    "description": "The title of the pull request.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cicdpullrequesttitle",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "CI/CD Pull Request Title",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "placeholder": "Set your pull request title here",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

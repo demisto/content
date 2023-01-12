@@ -1,0 +1,29 @@
+!gw-get-alert uid="d7e612cb-567a-431b-a14b-9f9f4e88c9a4"
+!gw-add-malcore-list-entry type="white" sha256="d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e"
+!gw-del-malcore-list-entry type="white" sha256="d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e"
+!gw-add-malcore-list-entry type="black" sha256="d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e"
+!gw-del-malcore-list-entry type="black" sha256="d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e"
+!gw-add-dga-list-entry type="white" domain="test.domain.com"
+!gw-del-dga-list-entry type="white" domain="test.domain.com"
+!gw-add-dga-list-entry type="black" domain="test.domain.com"
+!gw-del-dga-list-entry type="black" domain="test.domain.com"
+!gw-es-query index="suricata" query="{}"
+!gw-es-wrapper index="malware" aggs_term="src_ip" must_match="state=Infected" timerange="240" formatted="True"
+!gw-get-file-infected timerange="1440"
+!gw-get-ignore-kuser-ip
+!gw-get-ignore-kuser-name
+!gw-get-ignore-mac-address
+!gw-get-dga-list-entry type="white"
+!gw-get-malcore-list-entry type="white"
+!gw-get-ignore-asset-name
+!gw-add-ignore-asset-name name="test_asset"
+!gw-add-ignore-kuser-ip ip="10.10.10.0"
+!gw-add-ignore-kuser-name name="test_kuser"
+!gw-add-ignore-mac-address mac="50:50:50:50:50:50"
+!gw-del-ignore-asset-name ignore_id=1
+!gw-del-ignore-kuser-ip ignore_id=1
+!gw-del-ignore-kuser-name ignore_id=1
+!gw-del-ignore-mac-address ignore_id=1
+!gw-send-malware filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"
+!gw-send-powershell filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"
+!gw-send-shellcode filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5" deep=false timeout=120

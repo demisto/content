@@ -1,0 +1,8 @@
+!ksm-list-credentials
+!ksm-list-records
+!ksm-get-field notation="keeper://<UID>/field/login"
+!ksm-list-files
+!ksm-get-file file_uid="<UID>"
+!ksm-get-infofile file_uid="<UID>"
+!ksm-find-records title="Title text"
+!ksm-find-files file_name="filename.ext"

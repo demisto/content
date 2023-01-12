@@ -1,9 +1,10 @@
 import demistomock as demisto  # noqa: F401
 import jwt
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'

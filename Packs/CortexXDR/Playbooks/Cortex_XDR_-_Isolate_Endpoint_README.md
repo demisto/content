@@ -4,24 +4,24 @@ This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Ne
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-GenericPolling
+* GenericPolling
 
 ### Integrations
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-get-endpoints
 * xdr-isolate-endpoint
+* xdr-get-endpoints
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| endpoint_id | The endpoint ID \(string\) to isolate. You can retrieve the ID using the xdr-get-endpoints command. | PaloAltoNetworksXDR.Endpoint.endpoint_id | Optional |
+| endpoint_id | The endpoint ID \(string\) to isolate. You can retrieve the ID using the xdr-get-endpoints command. |  | Optional |
 | hostname | A comma-separated list of hostnames. | Endpoint.Hostname | Optional |
 | ip_list | A comma-separated list of IP addresses. | IP.Address | Optional |
 
@@ -39,4 +39,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR - Isolate Endpoint](https://github.com/demisto/content/raw/ee07059dc8769d6f5652a4a07b668d63266cafaf/Packs/CortexXDR/doc_files/Cortex_XDR_-_Isolate_Endpoint.png)
+![Cortex XDR - Isolate Endpoint](../doc_files/Cortex_XDR_-_Isolate_Endpoint.png)

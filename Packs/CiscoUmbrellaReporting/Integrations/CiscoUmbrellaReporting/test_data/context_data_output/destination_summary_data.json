@@ -1,0 +1,24 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "domain": "dummy_domain.com",
+            "summary": {
+                "applications": 0,
+                "domains": 1,
+                "requestsblocked": 0,
+                "filetypes": 0,
+                "requests": 636,
+                "policycategories": 0,
+                "requestsallowed": 636,
+                "categories": 3,
+                "identitytypes": 2,
+                "applicationsblocked": 0,
+                "files": 0,
+                "identities": 2,
+                "policyrequests": 0,
+                "applicationsallowed": 0
+            }
+        }
+    ]
+}

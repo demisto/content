@@ -1,0 +1,29 @@
+{
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Varonis DSP Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "varonisdatasecurityplatformnumberofevents",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_varonisdatasecurityplatformnumberofevents",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Varonis Data Security Platform Number of Events",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false
+}

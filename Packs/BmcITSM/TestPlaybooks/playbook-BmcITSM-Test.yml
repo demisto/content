@@ -1,0 +1,1620 @@
+id: playbook-BmcITSM-Test
+version: -1
+name: playbook-BmcITSM-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2311fe3e-a420-41eb-8a7e-664914785089
+    type: start
+    task:
+      id: 2311fe3e-a420-41eb-8a7e-664914785089
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1c81e08c-956f-4c72-8eb6-0bb565e9b622
+    type: regular
+    task:
+      id: 1c81e08c-956f-4c72-8eb6-0bb565e9b622
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5f01d264-d5bb-4e8d-8c0b-0ef5604eaacf
+    type: regular
+    task:
+      id: 5f01d264-d5bb-4e8d-8c0b-0ef5604eaacf
+      version: -1
+      name: bmc-itsm-user-list
+      script: BmcITSM|||bmc-itsm-user-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2995c51c-7248-441b-86fb-4f81e87c2f20
+    type: condition
+    task:
+      id: 2995c51c-7248-441b-86fb-4f81e87c2f20
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.User.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.User.FirstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.User.LastName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 298c6acc-3a82-42f8-8958-e6b364645a3d
+    type: regular
+    task:
+      id: 298c6acc-3a82-42f8-8958-e6b364645a3d
+      version: -1
+      name: bmc-itsm-company-list
+      script: BmcITSM|||bmc-itsm-company-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ff95654d-3420-481c-83a3-34e315d50b17
+    type: condition
+    task:
+      id: ff95654d-3420-481c-83a3-34e315d50b17
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Company.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Company.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Company.Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5925286f-4733-49c6-898c-79eeef1c7037
+    type: regular
+    task:
+      id: 5925286f-4733-49c6-898c-79eeef1c7037
+      version: -1
+      name: bmc-itsm-ticket-list
+      script: BmcITSM|||bmc-itsm-ticket-list
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "9"
+    scriptarguments:
+      limit:
+        simple: "1"
+      ticket_type:
+        simple: change request
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 892e155a-5e13-4729-892a-69d082eb21cd
+    type: condition
+    task:
+      id: 892e155a-5e13-4729-892a-69d082eb21cd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.RequestID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.InstanceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Submitter
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Impact
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Urgency
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.Summary
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: BmcITSM.Ticket.Details
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Ticket.CreateDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 52df6fe4-ede4-4a0c-831f-7e7cb7cadfa7
+    type: regular
+    task:
+      id: 52df6fe4-ede4-4a0c-831f-7e7cb7cadfa7
+      version: -1
+      name: bmc-itsm-service-request-create
+      script: BmcITSM|||bmc-itsm-service-request-create
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "11"
+    scriptarguments:
+      srd_instance_id:
+        simple: ${BmcITSM.ServiceRequestDefinition.InstanceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 53b94ce6-0b7b-46f5-88e7-dd3525ba5382
+    type: condition
+    task:
+      id: 53b94ce6-0b7b-46f5-88e7-dd3525ba5382
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequest.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequest.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequest.CreateDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 21b650de-1745-4d63-8502-8e69767a82e8
+    type: regular
+    task:
+      id: 21b650de-1745-4d63-8502-8e69767a82e8
+      version: -1
+      name: bmc-itsm-service-request-update
+      script: BmcITSM|||bmc-itsm-service-request-update
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "31"
+    scriptarguments:
+      impact:
+        simple: 1-Extensive/Widespread
+      service_request_id:
+        simple: ${BmcITSM.ServiceRequest.RequestID}
+      urgency:
+        simple: 2-High
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 3a09433e-9970-4623-8ad7-9f948610863a
+    type: regular
+    task:
+      id: 3a09433e-9970-4623-8ad7-9f948610863a
+      version: -1
+      name: bmc-itsm-incident-update
+      script: BmcITSM|||bmc-itsm-incident-update
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "14"
+    scriptarguments:
+      request_id:
+        simple: ${BmcITSM.Incident.RequestID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f1aa567b-0981-48d5-8dab-109af4822c54
+    type: regular
+    task:
+      id: f1aa567b-0981-48d5-8dab-109af4822c54
+      version: -1
+      name: bmc-itsm-ticket-delete
+      script: BmcITSM|||bmc-itsm-ticket-delete
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "29"
+    scriptarguments:
+      ticket_ids:
+        simple: ${BmcITSM.Incident.RequestID}
+      ticket_type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3fd950fe-9a70-4a89-8cf5-86efc8b28ef4
+    type: regular
+    task:
+      id: 3fd950fe-9a70-4a89-8cf5-86efc8b28ef4
+      version: -1
+      name: bmc-itsm-incident-create
+      script: BmcITSM|||bmc-itsm-incident-create
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "16"
+    scriptarguments:
+      details:
+        simple: Details
+      first_name:
+        simple: Allen
+      impact:
+        simple: 1-Extensive/Widespread
+      last_name:
+        simple: Allbrook
+      service_type:
+        simple: User Service Request
+      status:
+        simple: New
+      summary:
+        simple: Summary
+      template_instance_id:
+        simple: ${BmcITSM.IncidentTemplate.InstanceID}
+      urgency:
+        simple: 3-Medium
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 204a53be-81e5-4d3d-8815-02ea5cea933e
+    type: condition
+    task:
+      id: 204a53be-81e5-4d3d-8815-02ea5cea933e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Incident.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Incident.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Incident.CreateDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 32e0fce7-bdd5-40a5-8263-38c6b48a4839
+    type: regular
+    task:
+      id: 32e0fce7-bdd5-40a5-8263-38c6b48a4839
+      version: -1
+      name: bmc-itsm-change-request-create
+      script: BmcITSM|||bmc-itsm-change-request-create
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "18"
+    scriptarguments:
+      first_name:
+        simple: Allen
+      last_name:
+        simple: Allbrook
+      template_id:
+        simple: ${BmcITSM.ChangeRequestTemplate.InstanceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2bf81aac-fd0d-45cf-8d8f-710042fa2b52
+    type: condition
+    task:
+      id: 2bf81aac-fd0d-45cf-8d8f-710042fa2b52
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequest.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequest.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequest.CreateDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d2b49cce-3054-4851-8a97-3031e8e3d258
+    type: regular
+    task:
+      id: d2b49cce-3054-4851-8a97-3031e8e3d258
+      version: -1
+      name: bmc-itsm-change-request-update
+      script: BmcITSM|||bmc-itsm-change-request-update
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "33"
+    scriptarguments:
+      request_id:
+        simple: ${BmcITSM.ChangeRequest.RequestID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 5702b4fe-1b37-4ba5-876b-e620d0096989
+    type: regular
+    task:
+      id: 5702b4fe-1b37-4ba5-876b-e620d0096989
+      version: -1
+      name: bmc-itsm-task-create
+      script: BmcITSM|||bmc-itsm-task-create
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "21"
+    scriptarguments:
+      details:
+        simple: Details
+      location_company:
+        simple: Calbro Services
+      priority:
+        simple: Critical
+      root_request_id:
+        simple: ${BmcITSM.ChangeRequest.RequestID}
+      root_ticket_type:
+        simple: change request
+      status:
+        simple: Assigned
+      summary:
+        simple: sumary
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: d11de6b3-79ab-481b-8b17-655176d5e087
+    type: condition
+    task:
+      id: d11de6b3-79ab-481b-8b17-655176d5e087
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Task.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Task.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.Task.CreateDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a87366fe-5f4b-4ee9-8e1b-db3d5e01c7f8
+    type: regular
+    task:
+      id: a87366fe-5f4b-4ee9-8e1b-db3d5e01c7f8
+      version: -1
+      name: bmc-itsm-task-update
+      script: BmcITSM|||bmc-itsm-task-update
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "38"
+    scriptarguments:
+      summary:
+        simple: Updated Summary
+      task_id:
+        simple: ${BmcITSM.Task.RequestID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 29bbca84-6bc5-4e49-8384-d77c9d9dcc8b
+    type: regular
+    task:
+      id: 29bbca84-6bc5-4e49-8384-d77c9d9dcc8b
+      version: -1
+      name: bmc-itsm-problem-investigation-create
+      script: BmcITSM|||bmc-itsm-problem-investigation-create
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "24"
+    scriptarguments:
+      first_name:
+        simple: Allen
+      impact:
+        simple: 1-Extensive/Widespread
+      investigation_driver:
+        simple: High Impact Incident
+      last_name:
+        simple: Allbrook
+      status:
+        simple: Draft
+      summary:
+        simple: Summary
+      urgency:
+        simple: 1-Critical
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1daa3cd4-43a0-4412-853b-4f17eb02dda4
+    type: condition
+    task:
+      id: 1daa3cd4-43a0-4412-853b-4f17eb02dda4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ProblemInvestigation.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ProblemInvestigation.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ProblemInvestigation.CreateDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 1c5c4555-d78a-43cb-8d92-35960855c551
+    type: regular
+    task:
+      id: 1c5c4555-d78a-43cb-8d92-35960855c551
+      version: -1
+      name: bmc-itsm-problem-investigation-update
+      script: BmcITSM|||bmc-itsm-problem-investigation-update
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "41"
+    scriptarguments:
+      problem_investigation_id:
+        simple: ${BmcITSM.ProblemInvestigation.RequestID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f9f2378c-3342-4913-8934-399e0ddbb652
+    type: regular
+    task:
+      id: f9f2378c-3342-4913-8934-399e0ddbb652
+      version: -1
+      name: bmc-itsm-known-error-create
+      script: BmcITSM|||bmc-itsm-known-error-create
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "27"
+    scriptarguments:
+      company:
+        simple: Calbro Services
+      details:
+        simple: Details
+      impact:
+        simple: 1-Extensive/Widespread
+      status:
+        simple: Assigned
+      summary:
+        simple: Summary
+      target_resolution_date:
+        simple: in 12 hours
+      urgency:
+        simple: 1-Critical
+      view_access:
+        simple: Public
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 3c04847a-e1a1-4e94-83a8-e09edf7b90c5
+    type: condition
+    task:
+      id: 3c04847a-e1a1-4e94-83a8-e09edf7b90c5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.KnownError.RequestID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.KnownError.DisplayID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.KnownError.CreateDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 60a5415f-2fee-4c08-8565-02566d4b00bb
+    type: regular
+    task:
+      id: 60a5415f-2fee-4c08-8565-02566d4b00bb
+      version: -1
+      name: bmc-itsm-known-error-update
+      script: BmcITSM|||bmc-itsm-known-error-update
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "40"
+    scriptarguments:
+      known_error_id:
+        simple: ${BmcITSM.KnownError.RequestID}
+      summary:
+        simple: Updated summary
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 2430e1df-8068-430b-8913-ad8a5f5496d4
+    type: regular
+    task:
+      id: 2430e1df-8068-430b-8913-ad8a5f5496d4
+      version: -1
+      name: bmc-itsm-change-request-template-list
+      script: BmcITSM|||bmc-itsm-change-request-template-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d022a667-0877-4947-8bbb-dc29e2e6c583
+    type: condition
+    task:
+      id: d022a667-0877-4947-8bbb-dc29e2e6c583
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequestTemplate.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequestTemplate.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ChangeRequestTemplate.InstanceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 756836d2-285e-4bbd-83c5-e21968298596
+    type: regular
+    task:
+      id: 756836d2-285e-4bbd-83c5-e21968298596
+      version: -1
+      name: bmc-itsm-incident-template-list
+      script: BmcITSM|||bmc-itsm-incident-template-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a7839dae-afd4-43cf-8eb9-92fb79397e7a
+    type: condition
+    task:
+      id: a7839dae-afd4-43cf-8eb9-92fb79397e7a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.IncidentTemplate.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.IncidentTemplate.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.IncidentTemplate.InstanceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 0d77f04d-f14d-4048-85e4-8f1cd69ba678
+    type: regular
+    task:
+      id: 0d77f04d-f14d-4048-85e4-8f1cd69ba678
+      version: -1
+      name: bmc-itsm-task-template-list
+      script: BmcITSM|||bmc-itsm-task-template-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: e57ec82e-996a-4060-85aa-7d2f14a2b4da
+    type: condition
+    task:
+      id: e57ec82e-996a-4060-85aa-7d2f14a2b4da
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.TaskTemplate.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.TaskTemplate.TaskName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.TaskTemplate.InstanceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 8d80a865-6f40-402c-8a8c-46fb39d9c470
+    type: title
+    task:
+      id: 8d80a865-6f40-402c-8a8c-46fb39d9c470
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 9cfb3771-f225-402d-89d7-5e4f191b55f1
+    type: regular
+    task:
+      id: 9cfb3771-f225-402d-89d7-5e4f191b55f1
+      version: -1
+      name: bmc-itsm-service-request-definition-list
+      script: BmcITSM|||bmc-itsm-service-request-definition-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 8a93b7a3-8d93-4446-8286-af407d987332
+    type: condition
+    task:
+      id: 8a93b7a3-8d93-4446-8286-af407d987332
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      yes:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequestDefinition.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequestDefinition.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BmcITSM.ServiceRequestDefinition.InstanceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 6f7cdeb9-b83e-4acc-8564-342a84bfe7fd
+    type: regular
+    task:
+      id: 6f7cdeb9-b83e-4acc-8564-342a84bfe7fd
+      version: -1
+      name: bmc-itsm-ticket-delete
+      script: BmcITSM|||bmc-itsm-ticket-delete
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "39"
+    scriptarguments:
+      ticket_ids:
+        simple: ${BmcITSM.Task.RequestID}
+      ticket_type:
+        simple: task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 6be0bbb9-8066-48ec-8d2b-326d501c54bf
+    type: regular
+    task:
+      id: 6be0bbb9-8066-48ec-8d2b-326d501c54bf
+      version: -1
+      name: bmc-itsm-ticket-delete
+      script: BmcITSM|||bmc-itsm-ticket-delete
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "23"
+    scriptarguments:
+      ticket_ids:
+        simple: ${BmcITSM.ChangeRequest.RequestID}
+      ticket_type:
+        simple: change request
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: bb211bd4-29eb-40dd-8be6-63a194b56fad
+    type: regular
+    task:
+      id: bb211bd4-29eb-40dd-8be6-63a194b56fad
+      version: -1
+      name: bmc-itsm-ticket-delete
+      script: BmcITSM|||bmc-itsm-ticket-delete
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "35"
+    scriptarguments:
+      ticket_ids:
+        simple: ${BmcITSM.KnownError.RequestID}
+      ticket_type:
+        simple: known error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 596ffa9d-ec66-49fe-8576-7c71b2acedfe
+    type: regular
+    task:
+      id: 596ffa9d-ec66-49fe-8576-7c71b2acedfe
+      version: -1
+      name: bmc-itsm-ticket-delete
+      script: BmcITSM|||bmc-itsm-ticket-delete
+      type: regular
+      iscommand: true
+      brand: BmcITSM
+    nexttasks:
+      "#none#":
+      - "26"
+    scriptarguments:
+      ticket_ids:
+        simple: ${BmcITSM.ProblemInvestigation.RequestID}
+      ticket_type:
+        simple: problem investigation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: Bmc ITSM test playbook

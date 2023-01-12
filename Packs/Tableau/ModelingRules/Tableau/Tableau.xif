@@ -1,0 +1,30 @@
+[MODEL:model="Audit", dataset="tableau_log_raw"]
+alter logLevel= arrayindex( regextract(_raw_log, ":\s([^\s][A-Z]{1,8})\s"),0)
+|alter tokenPayload= arrayindex(regextract(_raw_log, "\(([^\)]*)\)"),0)
+|alter tokenPayloadNew= split(tokenPayload,",")
+|alter tokenPayload1=arrayindex(tokenPayloadNew,0),
+tokenPayload2=arrayindex(tokenPayloadNew,1), 
+sessionID=arrayindex(tokenPayloadNew,2), 
+RequestID=arrayindex(tokenPayloadNew,3), 
+tokenPayload5=arrayindex(tokenPayloadNew,4),
+tokenPayload6=arrayindex(tokenPayloadNew,5),
+serviceName=arrayindex(regextract(_raw_log, "^(?:[^:\n]*:){6}\s+\w+\s+([^ ]+)"),0),
+requestStatus=arrayindex(regextract(_raw_log, "^(?:[^\.\n]*\.){5}\w+\s+\-\s+(\w+\s+\w+)"),0)
+|alter message=arrayindex(regextract(_raw_log, "\s\-\s(.*)"),0),
+messageID=arrayindex(regextract(_raw_log, "^[^=\n]*=([^ ]+)"),0),
+hostname=arrayindex(regextract(_raw_log, "^(?:[^,\n]*,){8}\w+=([^,]+)"),0)
+|alter requestPayload=arrayindex(regextract(_raw_log, "Request\s([^\$]*)"),0)
+|alter requestType=arrayindex(regextract(requestPayload, "([^\s]\S+):"),0), 
+requestStatusCode=arrayindex(regextract(requestPayload, "status\s([^\$][\d]{1,3})"),0), 
+datetime=arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}"),0) 
+|alter timestamp=parse_timestamp("%Y-%m-%d %H:%M:%S", datetime)
+|alter XDM.Audit.threat.severity=logLevel,
+XDM.Audit.original_event_description=message,
+XDM.Audit.event_timestamp=timestamp,
+XDM.Audit.outcome=requestStatus,
+XDM.Audit.operation_type=requestType,
+XDM.Audit.session_context_id=coalesce(sessionID,requestPayload),
+XDM.Audit.TriggeredBy.identity.type=serviceName,
+XDM.Audit.original_event_id=coalesce(RequestID,messageID),
+XDM.Audit.TriggeredBy.identity.name=hostname,
+XDM.Audit.operation=requestStatusCode;

@@ -97,6 +97,8 @@ EVENT_FIELDS = [
     'SyncResult',
     'SessionId',
 ]
+PRODUCT = 'identity'
+VENDOR = 'cyberark'
 
 
 class CyberArkIdentityEventsOptions(IntegrationOptions):
@@ -208,8 +210,8 @@ def main(command: str, demisto_params: dict):
             events = get_events.run()
 
             if command == 'fetch-events' or demisto_params.get('should_push_events'):
-                send_events_to_xsiam(events, vendor=demisto_params.get('vendor', 'cyberark'),
-                                     product=demisto_params.get('product', 'identity'))
+                send_events_to_xsiam(events, vendor=VENDOR,
+                                     product=PRODUCT)
                 if events:
                     last_run = get_events.get_last_run(events)
                     demisto.debug(f'Set last run to {last_run}')

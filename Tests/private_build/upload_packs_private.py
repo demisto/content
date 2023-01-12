@@ -85,6 +85,7 @@ def add_private_pack(private_packs, private_pack_metadata, changed_pack_id):
             'vendorId': private_pack_metadata.get('vendorId', ""),
             'partnerId': private_pack_metadata.get('partnerId', ""),
             'partnerName': private_pack_metadata.get('partnerName', ""),
+            'disableMonthly': private_pack_metadata.get('disableMonthly', False),
             'contentCommitHash': private_pack_metadata.get('contentCommitHash', "")
         })
     return private_packs
@@ -310,7 +311,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
         pack.cleanup()
         return
 
-    task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
+    task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(index_folder_path, build_number)
     if not task_status:
         pack.status = PackStatus.FAILED_RELEASE_NOTES.name
         pack.cleanup()
@@ -378,7 +379,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
 
     task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name,
                                       pack_path=pack.path, pack_version=pack.latest_version,
-                                      hidden_pack=pack.hidden)
+                                      hidden_pack=pack.hidden, pack_versions_to_keep=pack_versions_to_keep)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
         pack.cleanup()
@@ -553,7 +554,7 @@ def main():
                                 current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, _, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)

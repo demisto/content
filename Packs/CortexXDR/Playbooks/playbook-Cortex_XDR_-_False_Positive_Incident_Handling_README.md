@@ -5,30 +5,30 @@ This playbook handles false-positive incident closures for Cortex XDR - Malware 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Cortex XDR - Unisolate Endpoint
+* Cortex XDR - Unisolate Endpoint
 
 ### Integrations
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-allowlist-files
-* setIndicators
 * closeInvestigation
+* setIndicators
+* xdr-allowlist-files
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Comment | Add a comment to close this incident. | XSOAR Incident #${incident.id} | Optional |
-| Reason | Possible values:<br/> * Unknown <br/>* TruePositive<br/>* FalsePositive | FalsePositive | Optional |
+| Comment | Add comment to close this incident. | XSOAR Incident #${incident.id} | Optional |
+| Reason | Choose From - "Unknown" / "TruePositive" / "FalsePositive" | FalsePositive | Optional |
 | AllowTag | The approving tag name for found indicators. | AllowTag | Optional |
-| AutoUnisolation | Whether automatic un-isolation is allowed. | False | Optional |
+| AutoUnisolation | Whether automatic unisolation is allowed. | False | Optional |
 | HostID | The ID of the host for running an un-isolation process. | ${incident.deviceid} | Optional |
-| FileSha256 | The file SHA256 you want to block. | ${incident.filesha256} | Optional |
+| FileSha256 | The File SHA256 you want to block. | ${incident.filesha256} | Optional |
 
 ## Playbook Outputs
 ---

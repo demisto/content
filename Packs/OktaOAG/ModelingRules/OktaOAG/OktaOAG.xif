@@ -1,0 +1,69 @@
+[MODEL:model="Auth", dataset="okta_oag_raw"]
+alter time=parse_timestamp("%FT%H:%M:%E*S",arrayindex(regextract(_raw_log,"^([^ ]+)-"),0)),
+hostname=arrayindex(regextract(_raw_log,"^[^ \n]* ([^ ]+)"),0),
+application=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){2}([^ ]+)"),0),
+proc_id=arrayindex(regextract(_raw_log,"^(?:[^\.\n]*\.){3}\w+\s+\w+_\w+\s+(\w+)"),0),
+component=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){4}(\w+)"),0),
+logLevel= if(_raw_log in("LOG_DOWNLOAD_STATUS","LOG_PREPARE_OPERATION"),arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){5}([^ ]+)"),0),_raw_log contains "CHECK_HOST",arrayindex(regextract(_raw_log,"CHECK_HOST\s*\S*\s*([A-Z]+)\s*"),0),_raw_log contains "CHECK_CONNECTION",arrayindex(regextract(_raw_log,"CHECK_CONNECTION\s*\S*\s*([A-Z]+)\s*"),0),_raw_log contains "SCRIPT",arrayindex(regextract(_raw_log,"SCRIPT\s*([A-Z]+)\s*"),0),arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){6}(\w+)"),0)),
+event=if(_raw_log contains "CHECK_CONNECTION",arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){6}(\w+)"),0),arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){7}([^ ]+)"),0)),
+description=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){8}(.+)"),0),
+sessionID=arrayindex(regextract(_raw_log,"SESSION\_ID\=\"([\w]+)\""),0),
+subject=arrayindex(regextract(_raw_log,"SUBJECT\=\"([^\"]+)\""),0),
+auditedApp=arrayindex(regextract(_raw_log,"APP\=\"([^\"]+)\""),0),
+result=arrayindex(regextract(_raw_log,"RESULT\=\"([\w]+)\""),0),
+reason=arrayindex(regextract(_raw_log,"REASON\=\"([\w]+)\""),0),
+remoteIP=arrayindex(regextract(_raw_log,"REMOTE\_IP\=\"([^\"]+)\""),0),
+userAgent=arrayindex(regextract(_raw_log,"USER_AGENT\=\"([^\"]+)\""),0)
+|alter XDM.Auth.Client.host.hostname=hostname,
+XDM.Auth.event_timestamp=time,
+XDM.Auth.original_event_type=event,
+XDM.Auth.original_event_description=description,
+XDM.Auth.Target.application.name=application,
+XDM.Auth.original_event_sub_type=component,
+XDM.Auth.threat.severity=logLevel,
+XDM.Auth.session_context_id=sessionID,
+XDM.Auth.Client.user.username=subject,
+XDM.Auth.Target.application.name=auditedApp,
+XDM.Auth.outcome=result,
+XDM.Auth.reason=reason,
+XDM.Auth.Target.ipv4=remoteIP,
+XDM.Auth.Client.user_agent=userAgent;
+
+
+[MODEL:model="Audit", dataset="okta_oag_raw"]
+alter time=parse_timestamp("%FT%H:%M:%E*S",arrayindex(regextract(_raw_log,"^([^ ]+)-"),0)),
+hostname=arrayindex(regextract(_raw_log,"^[^ \n]* ([^ ]+)"),0),
+application=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){2}([^ ]+)"),0),
+proc_id=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){3}(\w+)"),0),
+component=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){4}(\w+)"),0),
+logLevel=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){5}(\w+)"),0),
+event=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){6}(\w+)"),0),
+description=arrayindex(regextract(_raw_log,"^[^\]\n]*\]\s+(.+)"),0)
+|alter XDM.Audit.identity.name=hostname,
+XDM.Audit.event_timestamp=time,
+XDM.Audit.operation=event,
+XDM.Audit.original_event_description=description,
+XDM.Audit.audited_resource.name=application,
+XDM.Audit.audited_resource.sub_type=component,
+XDM.Audit.threat.severity=logLevel;
+
+
+[MODEL:model="Network", dataset="okta_oag_raw"]
+alter time=parse_timestamp("%FT%H:%M:%E*S",arrayindex(regextract(_raw_log,"^([^ ]+)-"),0)),
+hostname=arrayindex(regextract(_raw_log,"^[^ \n]* ([^ ]+)"),0),
+appHostname=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){3}([a-z]+\-[a-z]+\.[a-z]+\.[a-z]+)"),0),
+appHostname2=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){3}(\w+\.\w+\.\w+)"),0),
+clientIP=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){4}([^ ]+)"),0),
+status=arrayindex(regextract(_raw_log,"^(?:[^ \n]* ){10}(?P<status>\d+)"),0),
+userAgent=arrayindex(regextract(_raw_log,"\"([^\"]+)\""),2), 
+requestPayload=arrayindex(regextract(_raw_log,"\"([^\"]+)\""),0),
+requestUrl=arrayindex(regextract(_raw_log,"\"([^\"]+)\""),1)
+|alter httpMethod=arrayindex(regextract(requestPayload,"(\w+)\s"),0)
+|alter XDM.Network.event_timestamp=time,
+XDM.Network.Destination.host.hostname=coalesce(appHostname2,appHostname),
+XDM.Network.Source.host.hostname=hostname,
+XDM.Network.Source.ipv4=clientIP,
+XDM.Network.http.response_code=status,
+XDM.Network.http.method=httpMethod,
+XDM.Network.http.user_agent=userAgent,
+XDM.Network.http.url=requestUrl;

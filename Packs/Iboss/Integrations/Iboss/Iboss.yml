@@ -24,6 +24,19 @@ configuration:
   type: 8
   required: false
   defaultvalue: 'false'
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
 script:
   commands:
   - deprecated: false
@@ -218,16 +231,16 @@ script:
       default: true
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: Domain.Malicious.Description
       description: The indicator context description
@@ -367,16 +380,16 @@ script:
       default: true
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: IP.Malicious.Description
       description: The indicator context description
@@ -600,16 +613,16 @@ script:
       default: true
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: URL.Malicious.Description
       description: The indicator context description
@@ -737,10 +750,192 @@ script:
     - contextPath: iboss.URL.webRequestHeuristicSupport
       description: Whether web request heuristic support enabled.
       type: Number
+  - deprecated: false
+    description: Add entity to policy layer list.
+    name: iboss-add-entity-to-policy-layer-list
+    arguments:
+    - name: policy_layer_name
+      isArray: false
+      description: Policy layer name to lookup.
+      required: true
+      secret: false
+      default: false
+    - name: entity
+      isArray: true
+      description: Entity to add to policy layer list.
+      required: true
+      secret: false
+      default: true
+    - name: start_port
+      isArray: false
+      description: Which start port(s) to match; 0 indicates all ports.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: end_port
+      isArray: false
+      description: Which end port(s) to match; 0 indicates all ports.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: direction
+      isArray: false
+      description: Which direction(s) to match.
+      required: false
+      secret: false
+      defaultValue: '2'
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+    - name: do_dlp_scan
+      isArray: false
+      description: Whether to perform DLP scanning.
+      required: false
+      secret: false
+      defaultValue: '1'
+      predefined:
+      - '0'
+      - '1'
+    - name: do_malware_scan
+      isArray: false
+      description: Whether to perform malware scanning.
+      required: false
+      secret: false
+      defaultValue: '1'
+      predefined:
+      - '0'
+      - '1'
+    - name: priority
+      isArray: false
+      description: Priority of entry (higher number takes precedence) when conflicting entry in the block list.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: time_url_expires_in_seconds
+      isArray: false
+      description: The expiration time in seconds for the entry (0 indicates an entry that does not expire).
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: note
+      isArray: false
+      description: Note added to the entry.
+      required: false
+      secret: false
+    - name: is_regex
+      isArray: false
+      description: Whether entity consists of a regex pattern.
+      required: false
+      secret: false
+      defaultValue: '0'
+      predefined:
+      - '0'
+      - '1'
+    - name: upsert
+      isArray: false
+      description: Update entity if it already exists.
+      required: false
+      secret: false
+      defaultValue: '0'
+      predefined:
+      - '0'
+      - '1'
+    outputs:
+    - contextPath: iboss.AddEntityToPolicyLayerList.message
+      description: Operation result.
+      type: String
+
+  - deprecated: false
+    description: Remove entity from policy layer list.
+    name: iboss-remove-entity-from-policy-layer-list
+    arguments:
+    - name: policy_layer_name
+      isArray: false
+      description: Policy layer name to lookup.
+      required: true
+      secret: false
+      default: false
+    - name: entity
+      isArray: true
+      description: Entity to add to policy layer list.
+      required: true
+      secret: false
+      default: true
+    - name: start_port
+      isArray: false
+      description: Which start port(s) to match; 0 indicates all ports.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: end_port
+      isArray: false
+      description: Which end port(s) to match; 0 indicates all ports.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: direction
+      isArray: false
+      description: Which direction(s) to match.
+      required: false
+      secret: false
+      defaultValue: '2'
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+    - name: do_dlp_scan
+      isArray: false
+      description: Whether to perform DLP scanning.
+      required: false
+      secret: false
+      defaultValue: '1'
+      predefined:
+      - '0'
+      - '1'
+    - name: do_malware_scan
+      isArray: false
+      description: Whether to perform malware scanning.
+      required: false
+      secret: false
+      defaultValue: '1'
+      predefined:
+      - '0'
+      - '1'
+    - name: priority
+      isArray: false
+      description: Priority of entry (higher number takes precedence) when conflicting entry in the block list.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: time_url_expires_in_seconds
+      isArray: false
+      description: The expiration time in seconds for the entry (0 indicates an entry that does not expire).
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: note
+      isArray: false
+      description: Note added to the entry.
+      required: false
+      secret: false
+    - name: is_regex
+      isArray: false
+      description: Whether entity consists of a regex pattern.
+      required: false
+      secret: false
+      defaultValue: '0'
+      predefined:
+      - '0'
+      - '1'
+    outputs:
+    - contextPath: iboss.RemoveEntityFromPolicyLayerList.message
+      description: Operation result.
+      type: String
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.6.33415
   feed: false
   isfetch: false
   runonce: false

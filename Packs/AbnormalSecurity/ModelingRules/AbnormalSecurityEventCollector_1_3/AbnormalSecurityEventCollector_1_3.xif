@@ -1,0 +1,23 @@
+[MODEL: dataset="abnormal_security_email_protection_raw"]
+alter
+	attachmentNames = arraystring(arraycreate(attachmentNames), ","),
+	ccEmails = arraycreate(ccEmails),
+	summaryInsights = arraystring(arraycreate(summaryInsights), ","),
+    toAddresses = arraycreate(toAddresses),
+    senderIpAddress = coalesce(arraycreate(senderIpAddress))
+| alter
+    xdm.event.id = threatId,
+    xdm.event.outcome = remediationStatus,
+    xdm.email.recipients = toAddresses,
+    xdm.email.attachment.filename = attachmentNames,
+    xdm.email.subject = subject,
+    xdm.email.cc = ccEmails,
+    xdm.email.sender = fromAddress,
+    xdm.email.return_path = returnPath,
+    xdm.email.message_id = internetMessageId,
+    xdm.alert.category = attackType,
+    xdm.alert.name = attackStrategy,
+    xdm.alert.description = summaryInsights,
+    xdm.observer.product = abxPortalUrl,
+    xdm.observer.unique_identifier = to_string(abxMessageId),
+    xdm.target.host.ipv4_addresses = senderIpAddress;

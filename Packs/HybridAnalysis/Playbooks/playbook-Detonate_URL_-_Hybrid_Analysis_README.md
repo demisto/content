@@ -1,3 +1,5 @@
+Deprecated. Use cs-falcon-sandbox-submit-url with polling=true instead.
+
 Detonating URL with Hybrid Analysis
 
 ## Dependencies

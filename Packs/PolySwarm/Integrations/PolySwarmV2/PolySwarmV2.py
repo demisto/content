@@ -115,7 +115,8 @@ class PolyswarmConnector():
         dbot_score = Common.DBotScore(indicator=md5,
                                       indicator_type=DBotScoreType.FILE,
                                       integration_name='PolySwarm',
-                                      score=self.get_score(polyscore))
+                                      score=self.get_score(polyscore),
+                                      reliability=demisto.params().get('integrationReliability'))
 
         indicator = Common.File(md5=md5,
                                 sha1=sha1,
@@ -282,7 +283,8 @@ class PolyswarmConnector():
             dbot_score = Common.DBotScore(indicator=artifact,
                                           indicator_type=dbot_score_type,
                                           integration_name='PolySwarm',
-                                          score=self.get_score(polyscore))
+                                          score=self.get_score(polyscore),
+                                          reliability=demisto.params().get('integrationReliability'))
 
             indicator = None
             if artifact_type == 'ip':

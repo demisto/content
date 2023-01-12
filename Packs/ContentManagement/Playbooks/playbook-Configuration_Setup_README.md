@@ -23,7 +23,10 @@ Playbook for the Cֹonfiguration Setup incident type.
 
 ## Playbook Inputs
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| InstanceName | Demisto REST API instance name to use. |  | Optional |
 
 ## Playbook Outputs
 ---

@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from typing import Callable, Tuple
 
@@ -170,7 +171,24 @@ class Client:
                 return res
 
             try:
-                return res.json()
+                if 'image' in res.headers.get('Content-Type', '') or 'text' in res.headers.get('Content-Type', ''):
+                    filename_from_headers = res.headers.get('Content-Disposition', '')
+                    if 'filename=' in filename_from_headers:
+                        filename = filename_from_headers.split('filename=')[-1]
+                    else:
+                        filename = str(uuid.uuid4())
+                    stored_file = fileResult(filename, res.content)
+                    file_type = 'image' if 'image' in res.headers.get('Content-Type', '') else 'file'
+                    file_entry = {
+                        'Type': entryTypes[file_type],
+                        'ContentsFormat': formats['text'],
+                        'File': stored_file['File'],
+                        'FileID': stored_file['FileID'],
+                        'Contents': ''
+                    }
+                    return file_entry
+                else:  # handle the response as json
+                    return res.json()
             except ValueError as exception:
                 raise DemistoException("Failed to parse json object from response:" + str(res.content), exception)
         except requests.exceptions.ConnectTimeout as exception:
@@ -523,7 +541,7 @@ def parse_file_results(report_to_results: Dict[str, RawCommandResults]) -> List[
                 continue
 
             result.indicator = max_indicators.get(sha256)
-            readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+            readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output)
             added_hashes.add(sha256)
 
         else:  # no output for this report_id
@@ -778,7 +796,7 @@ def upload_file_command(  # type: ignore[return]
             outputs_key_field='sha256',
             outputs_prefix=OUTPUTS_PREFIX,
             outputs=result.output,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
             raw_response=response,
         )
 
@@ -829,7 +847,7 @@ def send_uploaded_file_to_sandbox_analysis_command(
         outputs_key_field='submitted_id',
         outputs_prefix=OUTPUTS_PREFIX,
         outputs=result.output,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
         raw_response=result.response,
         indicator=result.indicator
     )
@@ -874,7 +892,7 @@ def send_url_to_sandbox_analysis_command(
         outputs_key_field='submitted_id',
         outputs_prefix=OUTPUTS_PREFIX,
         outputs=result.output,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
         raw_response=response,
         indicator=result.indicator)
 
@@ -931,10 +949,10 @@ def get_full_report_command(
     for result in results:
         if result.output:
             if human_readable_values := filter_dictionary(result.output, hr_fields, sort_by_field_list=True):
-                readable_output = tableToMarkdown("CrowdStrike Falcon X response:",
+                readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:",
                                                   t=human_readable_values, headers=hr_fields)
             else:
-                readable_output = tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+                readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output)
         else:
             readable_output = 'There are no results yet for this sample, its analysis might not have been completed. ' \
                               'Please wait to download the report.\n' \
@@ -1016,7 +1034,7 @@ def get_report_summary_command(
                 outputs_key_field='id',
                 outputs_prefix=OUTPUTS_PREFIX,
                 outputs=result.output,
-                readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output)
+                readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output)
                 if result.output else no_outputs_msg,
                 raw_response=result.response,
                 indicator=result.indicator
@@ -1047,7 +1065,7 @@ def get_analysis_status_command(
             CommandResults(outputs_key_field='id',
                            outputs_prefix=OUTPUTS_PREFIX,
                            outputs=result.output,
-                           readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+                           readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
                            raw_response=result.response,
                            # not returning indicator
                            )
@@ -1060,7 +1078,7 @@ def download_ioc_command(
         id: str,
         name: str = "",
         accept_encoding: str = ""
-) -> CommandResults:
+) -> Union[CommandResults, dict]:
     """Download IOC packs, PCAP files, and other analysis artifacts.
     :param client: the client object with an access token
     :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
@@ -1071,13 +1089,17 @@ def download_ioc_command(
     response: Optional[dict] = None
     try:
         response = client.download_ioc(id, name, accept_encoding)
-        return CommandResults(
-            outputs_prefix=OUTPUTS_PREFIX,
-            outputs_key_field='ioc',
-            outputs=response,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
-            raw_response=response
-        )
+        # In case the returned response is a file, output the file to the war room.
+        if isinstance(response, dict) and response.get('File'):
+            return response
+        else:
+            return CommandResults(
+                outputs_prefix=OUTPUTS_PREFIX,
+                outputs_key_field='ioc',
+                outputs=response,
+                readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", response),
+                raw_response=response
+            )
     except Exception as e:
         demisto.debug(f'Download ioc exception {e}')
         raise DemistoException(f'Download ioc encountered an exception: {e}', exception=e, res=response)
@@ -1099,7 +1121,7 @@ def check_quota_status_command(
         CommandResults(
             outputs_prefix=OUTPUTS_PREFIX,
             outputs_key_field='id',
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
             raw_response=response,
             outputs=result.output
         )
@@ -1146,7 +1168,7 @@ def find_sandbox_reports_command(
             'FindReport': found_reports,
         }
 
-        readable_output = tableToMarkdown("CrowdStrike Falcon X response:", {'resource': all_report_ids}) \
+        readable_output = tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", {'resource': all_report_ids}) \
             if all_report_ids else f'No reports found for hashes {hashes}.'
         return CommandResults(
             outputs_key_field='id',
@@ -1166,7 +1188,7 @@ def find_sandbox_reports_command(
             outputs_key_field='id',
             outputs_prefix=OUTPUTS_PREFIX,
             outputs=result.output,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+            readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
             raw_response=result.response,
         )
 
@@ -1193,7 +1215,7 @@ def find_submission_id_command(
         outputs_key_field='id',
         outputs_prefix=OUTPUTS_PREFIX,
         outputs=result.output,
-        readable_output=tableToMarkdown("CrowdStrike Falcon X response:", result.output),
+        readable_output=tableToMarkdown("CrowdStrike Falcon Intelligence Sandbox response:", result.output),
         raw_response=result.response,
     )
 

@@ -698,3 +698,24 @@ def test_fail_to_add_email_object(mocker):
     with pytest.raises(DemistoException) as exception_info:
         add_email_object(demisto_args)
     assert "'errors': (404" in str(exception_info.value)
+
+
+def test_add_msg_email_object(mocker):
+    """
+    Given:
+    - an msg email file.
+    When:
+    - Running add_email_object command.
+    Then:
+    - Ensure Demisto exception is raised with the correct error.
+    """
+    from MISPV3 import add_email_object
+    event_id = 1231
+    demisto_args: dict = {'entry_id': "", 'event_id': event_id}
+    mocker.patch.object(demisto, "getFilePath", return_value={
+                        "name": "test_add_email_object_case_1.msg",
+                        "path": "test_data/test_add_email_object_case_1.msg"
+                        })
+    with pytest.raises(DemistoException) as exception_info:
+        add_email_object(demisto_args)
+    assert 'misp-add-email-object command does not support *.msg files' in str(exception_info.value)

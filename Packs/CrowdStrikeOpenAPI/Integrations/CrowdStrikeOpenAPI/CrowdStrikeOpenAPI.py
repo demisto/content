@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+import urllib3
 
 # flake8: noqa: E501
 
@@ -1006,7 +1007,7 @@ class Client:
 
         headers = self.cs_client._headers
 
-        response = self.cs_client.http_request('get', 'devices/entities/devices/v1', params=params, headers=headers)
+        response = self.cs_client.http_request('get', 'devices/entities/devices/v2', params=params, headers=headers)
 
         return response
 
@@ -8560,7 +8561,7 @@ def rtr_execute_active_responder_command_command(client, args):
     domain_commandexecuterequest_base_command = str(args.get('domain_commandexecuterequest_base_command', ''))
     domain_commandexecuterequest_command_string = str(args.get('domain_commandexecuterequest_command_string', ''))
     domain_commandexecuterequest_device_id = str(args.get('domain_commandexecuterequest_device_id', ''))
-    domain_commandexecuterequest_id = args.get('domain_commandexecuterequest_id', None)
+    domain_commandexecuterequest_id = int(args.get('domain_commandexecuterequest_id', None))
     domain_commandexecuterequest_persist = argToBoolean(args.get('domain_commandexecuterequest_persist', False))
     domain_commandexecuterequest_session_id = str(args.get('domain_commandexecuterequest_session_id', ''))
 
@@ -9575,7 +9576,9 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        # Disable insecure warnings
+        urllib3.disable_warnings()
+
         client = Client(params)
 
         commands = {

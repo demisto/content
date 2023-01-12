@@ -4,17 +4,17 @@ import uuid
 import sys
 
 SERVER_ERROR_MARKER = '[ERROR-fd5a7750-7182-4b38-90ba-091824478903]'
-INTEGRATION = 'Integration'
-SCRIPT = 'Script'
 
 
 class Demisto:
     """Wrapper class to interface with the Demisto server via stdin, stdout"""
+    INTEGRATION = 'Integration'
+    SCRIPT = 'Script'
 
     def __init__(self, context):
         self.callingContext = context
         self.is_integration = self.callingContext['integration']
-        self.item_type = INTEGRATION if self.is_integration else SCRIPT
+        self.item_type = self.INTEGRATION if self.is_integration else self.SCRIPT
         self.is_debug = False
         self._args = dict(self.callingContext.get(u'args', {}))
         if 'demisto_machine_learning_magic_key' in self._args:
@@ -48,7 +48,7 @@ class Demisto:
             self.__stdout_lock = Lock()
 
     def long_running_heartbeat_thread(self, enable=True):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'long_running_heartbeat_thread')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'long_running_heartbeat_thread')
         if self._heartbeat_enabled == enable:
             # nothing to do as state hasn't changed
             return
@@ -95,15 +95,15 @@ class Demisto:
             return self.incidents()[0]
 
     def alerts(self):
-        self.raise_exception_if_not_implemented(SCRIPT, 'alerts')
+        self.raise_exception_if_not_implemented(self.SCRIPT, 'alerts')
         return self.incidents()
 
     def get_incidents(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'get_incidents')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'get_incidents')
         return self.callingContext[u'context'][u'Incidents']
 
     def get_alerts(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'get_alerts')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'get_alerts')
         return self.get_incidents()
 
     def alert(self):
@@ -116,7 +116,7 @@ class Demisto:
         return self.callingContext[u'context'][u'ExecutionContext']
 
     def integrationInstance(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'integrationInstance')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'integrationInstance')
         return self.callingContext[u'context'][u'IntegrationInstance']
 
     def args(self):
@@ -129,19 +129,19 @@ class Demisto:
         return self.__do({'type': 'getFileByEntryID', 'command': 'getFilePath', 'args': {'id': id}})
 
     def getLastRun(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'getLastRun')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'getLastRun')
         return self.__do({'type': 'executeCommand', 'command': 'getLastRun', 'args': {}})
 
     def setLastRun(self, value):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'setLastRun')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'setLastRun')
         return self.__do({'type': 'executeCommand', 'command': 'setLastRun', 'args': {'value': value}})
 
     def getLastMirrorRun(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'getLastMirrorRun')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'getLastMirrorRun')
         return self.__do({'type': 'executeCommand', 'command': 'getLastMirrorRun', 'args': {}})
 
     def setLastMirrorRun(self, value):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'setLastMirrorRun')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'setLastMirrorRun')
         return self.__do({'type': 'executeCommand', 'command': 'setLastMirrorRun', 'args': {'value': value}})
 
     def internalHttpRequest(self, method, uri, body=None):
@@ -149,22 +149,22 @@ class Demisto:
                           'args': {'method': method, 'uri': uri, 'body': body}})
 
     def getIntegrationContext(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'getIntegrationContext')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'getIntegrationContext')
         resObj = self.__do({'type': 'executeCommand', 'command': 'getIntegrationContext', 'args': {'refresh': False}})
         return resObj['context']
 
     def setIntegrationContext(self, value):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'setIntegrationContext')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'setIntegrationContext')
         return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext',
                           'args': {'value': value, 'version': {"version": -1, "sequenceNumber": -1, "primaryTerm": -1},
                                    'sync': False}})
 
     def getIntegrationContextVersioned(self, refresh=False):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'getIntegrationContextVersioned')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'getIntegrationContextVersioned')
         return self.__do({'type': 'executeCommand', 'command': 'getIntegrationContext', 'args': {'refresh': refresh}})
 
     def setIntegrationContextVersioned(self, value, version, sync=False):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'setIntegrationContextVersioned')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'setIntegrationContextVersioned')
         return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext',
                           'args': {'value': value, 'version': version, 'sync': sync}})
 
@@ -175,17 +175,17 @@ class Demisto:
         return self.__do({'type': 'executeCommand', 'command': 'getLicenseID', 'args': {}})['id']
 
     def createIncidents(self, incidents, lastRun=None, userID=None):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'createIncidents')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'createIncidents')
         return self.__do({'type': 'executeCommand', 'command': 'createIncidents',
                           'args': {'incidents': incidents, 'lastRun': lastRun, 'userID': userID}})
 
     def createAlerts(self, alerts, lastRun=None, userID=None):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'createAlerts')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'createAlerts')
         return self.__do({'type': 'executeCommand', 'command': 'createAlerts',
                           'args': {'alerts': alerts, 'lastRun': lastRun, 'userID': userID}})
 
     def createIndicators(self, indicators, lastRun=None, noUpdate=False):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'createIndicators')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'createIndicators')
         return self.__do({'type': 'executeCommand', 'command': 'createIndicators',
                           'args': {'indicators': indicators, 'lastRun': lastRun, 'noUpdate': noUpdate}})
 
@@ -197,22 +197,22 @@ class Demisto:
                                    'populateFields': populateFields}})
 
     def getIndexHash(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'getIndexHash')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'getIndexHash')
         return self.__do({'type': 'executeCommand', 'command': 'getIndexHash'})
 
     def updateModuleHealth(self, err, is_error=False):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'updateModuleHealth')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'updateModuleHealth')
         return self.__do(
             {'type': 'executeCommand', 'command': 'updateModuleHealth', 'args': {'err': err, 'isError': is_error}})
 
     def addEntry(self, id, entry, username=None, email=None, footer=None):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'addEntry')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'addEntry')
         return self.__do({'type': 'executeCommand', 'command': 'addEntry', 'args': {'id': id, 'username': username,
                                                                                     'email': email, 'entry': entry,
                                                                                     'footer': footer}})
 
     def directMessage(self, message, username=None, email=None, anyoneCanOpenIncidents=None):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'directMessage')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'directMessage')
         tmp = self.__do({'type': 'executeCommand', 'command': 'directMessage',
                          'args': {'message': message,
                                   'username': username,
@@ -223,18 +223,18 @@ class Demisto:
             return tmp["res"]
 
     def mirrorInvestigation(self, id, mirrorType, autoClose=False):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'mirrorInvestigation')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'mirrorInvestigation')
         return self.__do({'type': 'executeCommand', 'command': 'mirrorInvestigation', 'args': {'id': id,
                                                                                                'mirrorType': mirrorType,
                                                                                                'autoClose': autoClose}})
 
     def findUser(self, username="", email=""):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'findUser')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'findUser')
         return self.__do(
             {'type': 'executeCommand', 'command': 'findUser', 'args': {'username': username, 'email': email}})
 
     def handleEntitlementForUser(self, incidentID, guid, email, content, taskID=""):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'handleEntitlementForUser')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'handleEntitlementForUser')
         return self.__do({'type': 'executeCommand', 'command': 'handleEntitlementForUser',
                           'args': {'incidentID': incidentID, 'alertID': incidentID,
                                    'guid': guid, 'taskID': taskID, 'email': email, 'content': content}})
@@ -254,7 +254,7 @@ class Demisto:
             return resObj['value']
 
     def _apiCall(self, name, params=None, data=None):
-        self.raise_exception_if_not_implemented(INTEGRATION, '_apiCall')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, '_apiCall')
         return self.__do(
             {'type': 'executeCommand', 'command': '_apiCall', 'args': {'name': name, 'params': params, 'data': data}})
 
@@ -265,11 +265,11 @@ class Demisto:
             return {}
 
     def command(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'command')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'command')
         return self.callingContext.get(u'command', '')
 
     def isFetch(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'isFetch')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'isFetch')
         """ used to encapsulate/hide 'fetch-incident' command from the code """
         return self.command() == 'fetch-incidents'
 
@@ -290,11 +290,11 @@ class Demisto:
         return self.get(self.callingContext, 'args.' + arg, defaultParam)
 
     def execute(self, module, command, args):
-        self.raise_exception_if_not_implemented(SCRIPT, 'execute')
+        self.raise_exception_if_not_implemented(self.SCRIPT, 'execute')
         return self.__do({'type': 'execute', 'module': module, 'command': command.strip(), 'args': args})
 
     def executeCommand(self, command, args):
-        self.raise_exception_if_not_implemented(SCRIPT, 'executeCommand')
+        self.raise_exception_if_not_implemented(self.SCRIPT, 'executeCommand')
         return self.__do({'type': 'executeCommand', 'command': command.strip(), 'args': args})
 
     def demistoUrls(self):
@@ -304,7 +304,7 @@ class Demisto:
         return self.__do({'type': 'demistoVersion'})
 
     def heartbeat(self, msg):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'heartbeat')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'heartbeat')
         return self.__do_no_res({'type': 'executeCommand', 'command': 'heartbeat', 'args': {'message': msg}})
 
     def info(self, *args):
@@ -318,7 +318,7 @@ class Demisto:
         self.__do({'type': 'log', 'command': 'error', 'args': argsObj})
 
     def exception(self, ex):
-        self.raise_exception_if_not_implemented(SCRIPT, 'exception')
+        self.raise_exception_if_not_implemented(self.SCRIPT, 'exception')
         return self.__do({'type': 'exception', 'command': 'exception', 'args': ex})
 
     def debug(self, *args):
@@ -327,23 +327,23 @@ class Demisto:
         self.__do({'type': 'log', 'command': 'debug', 'args': argsObj})
 
     def getAllSupportedCommands(self):
-        self.raise_exception_if_not_implemented(SCRIPT, 'getAllSupportedCommands')
+        self.raise_exception_if_not_implemented(self.SCRIPT, 'getAllSupportedCommands')
         return self.__do({'type': 'getAllModulesSupportedCmds'})
 
     def getModules(self):
-        self.raise_exception_if_not_implemented(SCRIPT, 'getModules')
+        self.raise_exception_if_not_implemented(self.SCRIPT, 'getModules')
         return self.__do({'type': 'getAllModules'})
 
     def setContext(self, name, value):
-        self.raise_exception_if_not_implemented(SCRIPT, 'setContext')
+        self.raise_exception_if_not_implemented(self.SCRIPT, 'setContext')
         return self.__do({'type': 'setContext', 'name': name, 'value': value})
 
     def getParam(self, p):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'getParam')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'getParam')
         return self.get(self.callingContext, 'params.' + p)
 
     def dt(self, data, q):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'dt')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'dt')
         return self.__do({'type': 'dt', 'name': q, 'value': data})['result']
 
     def __do_lock(self, lock, timeout):
@@ -396,7 +396,7 @@ class Demisto:
 
     def convert(self, results):
         """ Convert whatever result into entry """
-        self.raise_exception_if_not_implemented(SCRIPT, 'convert')
+        self.raise_exception_if_not_implemented(self.SCRIPT, 'convert')
         if type(results) is dict:
             if 'Contents' in results and 'ContentsFormat' in results:
                 return results
@@ -413,7 +413,7 @@ class Demisto:
 
     def __convert(self, results):
         """ Convert whatever result into entry """
-        self.raise_exception_if_not_implemented(INTEGRATION, '__convert')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, '__convert')
         if type(results) is dict:
             if 'Contents' in results and 'ContentsFormat' in results:
                 return results
@@ -443,11 +443,11 @@ class Demisto:
 
     def fetchResults(self, incidents_or_alerts):
         """ used to encapsulate/hide 'incidents' from the code """
-        self.raise_exception_if_not_implemented(INTEGRATION, 'fetchResults')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'fetchResults')
         self.incidents(incidents_or_alerts)
 
     def credentials(self, credentials):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'credentials')
+        self.raise_exception_if_not_implemented(self.INTEGRATION, 'credentials')
         self.results({'Type': 1, 'Contents': json.dumps(credentials), 'ContentsFormat': 'json'})
 
 

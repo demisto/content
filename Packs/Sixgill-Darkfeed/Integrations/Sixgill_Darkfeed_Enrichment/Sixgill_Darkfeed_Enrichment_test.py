@@ -15,13 +15,15 @@ def util_load_json(path):
 
 
 class MockedResponse(object):
-    def __init__(self, status_code, text, reason=None, url=None, method=None):
+    def __init__(self, status_code, text, reason=None, url=None, method=None, headers=None):
         self.status_code = status_code
         self.text = text
         self.reason = reason
         self.url = url
         self.request = requests.Request("GET")
         self.ok = True if self.status_code == 200 else False
+        self.method = method
+        self.headers = {} if not headers else headers
 
     def json(self):
         return json.loads(self.text)

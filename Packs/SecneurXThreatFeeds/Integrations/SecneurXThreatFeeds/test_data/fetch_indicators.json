@@ -1,272 +1,71 @@
-[
-    {
-        "value": "autodiscover.wall-meer.com",
-        "type": "Domain",
-        "rawJson": {
+{
+    "type": "bundle",
+    "id": "bundle--d2355c6f-592a-41d8-95e2-0c09a00fa043",
+    "objects": [ 
+        {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--a54b7ee7-2078-4fe3-a138-f693ff6944b8",
+            "created": "2022-07-06T14:11:10.248694Z",
+            "modified": "2022-07-06T14:11:10.248694Z",
+            "name": "PDF Phishing",
+            "description": "PDF Phishing is a phishing-trojan - a document file that is designed to look legitimate, but actually serves as a delivery vehicle for harmful programs.",
+            "malware_types": [
+                "unknown"
+            ],
+            "is_family": false
+        },
+        {
             "type": "indicator",
             "spec_version": "2.1",
-            "id": "indicator--ac842719-47c2-4fcb-8938-b905c0eed69e",
-            "created": "2022-06-27T05:26:39.337Z",
-            "modified": "2022-06-27T05:26:39.337Z",
+            "id": "indicator--e5fc9298-c750-4f8e-a37b-17933c55964a",
+            "created": "2022-07-07T20:14:35.892Z",
+            "modified": "2022-07-26T13:03:40.5723Z",
+            "name": "Malicious Url",
+            "description": "PDF Phishing",
             "indicator_types": [
-                "malicious-activity"
+                "compromised"
             ],
-            "pattern": "[domain-name:value = 'autodiscover.wall-meer.com']",
+            "pattern": "[url:value = 'http://www.hkqi.com/wp-content/plugins/formcraft/file-upload/server/content/files/16087a94379ccb---78452952514.pdf']",
             "pattern_type": "stix",
             "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:26:39.337Z",
-            "confidence": 45
+            "valid_from": "2022-07-07T20:14:35.892Z",
+            "confidence": 90
         },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:26:39Z",
-            "indicatoridentification": "indicator--ac842719-47c2-4fcb-8938-b905c0eed69e",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:26:39Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "78535.cc",
-        "type": "Domain",
-        "rawJson": {
-            "type": "indicator",
+        {
+            "type": "attack-pattern",
             "spec_version": "2.1",
-            "id": "indicator--d0b89592-215b-4fbe-99ad-28e95efb7ea7",
-            "created": "2022-06-27T05:26:36.253Z",
-            "modified": "2022-06-27T05:26:36.253Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[domain-name:value = '78535.cc']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:26:36.253Z",
-            "confidence": 45
+            "id": "attack-pattern--0c7b5b88-8ff7-4a4d-aa9d-feb398cd2244",
+            "created": "2016-05-12T08:17:27.000Z",
+            "modified": "2016-05-12T08:17:27.000Z",
+            "name": "PDF Phishing",
+            "description": "PDF Phishing is a phishing-trojan - a document file that is designed to look legitimate, but actually serves as a delivery vehicle for harmful programs.",
+            "external_references": [
+              {
+                "source_name": "capec",
+                "external_id": "CAPEC-163"
+              }
+            ]
         },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:26:36Z",
-            "indicatoridentification": "indicator--d0b89592-215b-4fbe-99ad-28e95efb7ea7",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:26:36Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "email.wall-meer.com",
-        "type": "Domain",
-        "rawJson": {
-            "type": "indicator",
+        {
+            "type": "relationship",
             "spec_version": "2.1",
-            "id": "indicator--fca75372-4ef8-4d41-a233-839cb22e903c",
-            "created": "2022-06-27T05:26:19.444Z",
-            "modified": "2022-06-27T05:26:19.444Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[domain-name:value = 'email.wall-meer.com']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:26:19.444Z",
-            "confidence": 45
+            "id": "relationship--727e8765-8d1c-4c47-9148-c6fde24c0670",
+            "created": "2022-08-08T10:56:18.757325Z",
+            "modified": "2022-08-08T10:56:18.757325Z",
+            "relationship_type": "Indicates",
+            "source_ref": "indicator--e5fc9298-c750-4f8e-a37b-17933c55964a",
+            "target_ref": "attack-pattern--0c7b5b88-8ff7-4a4d-aa9d-feb398cd2244"
         },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:26:19Z",
-            "indicatoridentification": "indicator--fca75372-4ef8-4d41-a233-839cb22e903c",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:26:19Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "xvode.com",
-        "type": "Domain",
-        "rawJson": {
-            "type": "indicator",
+        {
+            "type": "relationship",
             "spec_version": "2.1",
-            "id": "indicator--7819b630-cbe6-432a-9d88-8b994968c957",
-            "created": "2022-06-27T05:26:17.321Z",
-            "modified": "2022-06-27T05:26:17.321Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[domain-name:value = 'xvode.com']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:26:17.321Z",
-            "confidence": 45
-        },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:26:17Z",
-            "indicatoridentification": "indicator--7819b630-cbe6-432a-9d88-8b994968c957",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:26:17Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "jckbcnews.id",
-        "type": "Domain",
-        "rawJson": {
-            "type": "indicator",
-            "spec_version": "2.1",
-            "id": "indicator--5554fe9d-2dae-4cf2-b0d2-6f1e19c9f075",
-            "created": "2022-06-27T05:25:58.788Z",
-            "modified": "2022-06-27T05:25:58.788Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[domain-name:value = 'jckbcnews.id']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:25:58.788Z",
-            "confidence": 45
-        },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:25:58Z",
-            "indicatoridentification": "indicator--5554fe9d-2dae-4cf2-b0d2-6f1e19c9f075",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:25:58Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "vieillirsanssouffrir.com",
-        "type": "Domain",
-        "rawJson": {
-            "type": "indicator",
-            "spec_version": "2.1",
-            "id": "indicator--371cf8aa-9a83-4db4-ab1f-c470f7025de2",
-            "created": "2022-06-27T05:25:54.341Z",
-            "modified": "2022-06-27T05:25:54.341Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[domain-name:value = 'vieillirsanssouffrir.com']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:25:54.341Z",
-            "confidence": 45
-        },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:25:54Z",
-            "indicatoridentification": "indicator--371cf8aa-9a83-4db4-ab1f-c470f7025de2",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:25:54Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "mail2.wacanan.com",
-        "type": "Domain",
-        "rawJson": {
-            "type": "indicator",
-            "spec_version": "2.1",
-            "id": "indicator--5fb83d55-319c-47ad-bb27-195703bf0552",
-            "created": "2022-06-27T05:25:51.156Z",
-            "modified": "2022-06-27T05:25:51.156Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[domain-name:value = 'mail2.wacanan.com']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:25:51.156Z",
-            "confidence": 45
-        },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:25:51Z",
-            "indicatoridentification": "indicator--5fb83d55-319c-47ad-bb27-195703bf0552",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:25:51Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "jacksondoughtie.com",
-        "type": "Domain",
-        "rawJson": {
-            "type": "indicator",
-            "spec_version": "2.1",
-            "id": "indicator--77e02a45-056d-4e93-8a19-3f4fb60d9cf1",
-            "created": "2022-06-27T05:25:38.254Z",
-            "modified": "2022-06-27T05:25:38.254Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[domain-name:value = 'jacksondoughtie.com']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:25:38.254Z",
-            "confidence": 45
-        },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:25:38Z",
-            "indicatoridentification": "indicator--77e02a45-056d-4e93-8a19-3f4fb60d9cf1",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:25:38Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "mailgate.wall-meer.com",
-        "type": "Domain",
-        "rawJson": {
-            "type": "indicator",
-            "spec_version": "2.1",
-            "id": "indicator--a85818c7-deda-4dfc-b182-8b91788a4910",
-            "created": "2022-06-27T05:25:19.871Z",
-            "modified": "2022-06-27T05:25:19.871Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[domain-name:value = 'mailgate.wall-meer.com']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:25:19.871Z",
-            "confidence": 45
-        },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:25:19Z",
-            "indicatoridentification": "indicator--a85818c7-deda-4dfc-b182-8b91788a4910",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:25:19Z",
-            "reportedby": "SecneurX ThreatFeeds"
-        }
-    },
-    {
-        "value": "http: //lutanedukasi.co.id/wp-includes/maxlin.exe",
-        "type": "URL",
-        "rawJson": {
-            "type": "indicator",
-            "spec_version": "2.1",
-            "id": "indicator--2550a3cc-14f1-44cf-8117-8d20b6b86947",
-            "created": "2022-06-27T05:24:56.856Z",
-            "modified": "2022-06-27T05:24:56.856Z",
-            "indicator_types": [
-                "malicious-activity"
-            ],
-            "pattern": "[url:value = 'http: //lutanedukasi.co.id/wp-includes/maxlin.exe']",
-            "pattern_type": "stix",
-            "pattern_version": "2.1",
-            "valid_from": "2022-06-27T05:24:56.856Z",
-            "confidence": 45
-        },
-        "fields": {
-            "firstseenbysource": "2022-06-27T05:24:56Z",
-            "indicatoridentification": "indicator--2550a3cc-14f1-44cf-8117-8d20b6b86947",
-            "verdict": "Malicious",
-            "tags": [],
-            "modified": "2022-06-27T05:24:56Z",
-            "reportedby": "SecneurX Threat Feeds"
-        }
-    }
-]
+            "id": "relationship--d48263b6-0438-4130-9289-e6c2ca7ac842",
+            "created": "2022-07-26T13:03:40.5723Z",
+            "modified": "2022-07-26T13:03:40.5723Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--e5fc9298-c750-4f8e-a37b-17933c55964a",
+            "target_ref": "malware--a54b7ee7-2078-4fe3-a138-f693ff6944b8"
+        }        
+    ]
+}

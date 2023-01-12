@@ -1,0 +1,23 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "BMC ITSM Classifier",
+    "keyTypeMap": {
+        "change request": "BMC Change-Request",
+        "incident": "BMC Incident",
+        "known error": "BMC Problem – Known Error",
+        "problem investigation": "BMC Problem Investigation incident",
+        "service request": "BMC Service Request",
+        "task": "BMC Task"
+    },
+    "name": "BMC ITSM Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "Type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

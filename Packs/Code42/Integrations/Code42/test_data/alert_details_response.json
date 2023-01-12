@@ -1,0 +1,228 @@
+{
+  "type$": "ALERT_DETAILS_RESPONSE",
+  "alerts": [
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "tenant-abc-123",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Departing Employee Alert",
+      "description": "Cortex XSOAR is cool.",
+      "actor": "user1@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "HIGH",
+      "riskSeverity": "CRITICAL",
+      "ruleId": "rule-id-abc-123",
+      "ruleSource": "Alerting",
+      "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
+      "createdAt": "2019-10-02T17:02:23.5867670Z",
+      "state": "OPEN",
+      "observations": [
+        {
+          "type$": "OBSERVATION",
+          "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
+          "observedAt": "2020-05-28T12:50:00.0000000Z",
+          "type": "FedEndpointExfiltration",
+          "data": {
+            "type$": "OBSERVED_ENDPOINT_ACTIVITY",
+            "id": "240526fc-3a32-4755-85ab-c6ee6e7f31ce",
+            "sources": [
+              "Endpoint"
+            ],
+            "exposureTypes": [
+              "ApplicationRead"
+            ],
+            "firstActivityAt": "2020-05-28T12:50:00.0000000Z",
+            "lastActivityAt": "2020-05-28T12:50:00.0000000Z",
+            "fileCount": 3,
+            "totalFileSize": 533846,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "SourceCode",
+                "fileCount": 3,
+                "totalFileSize": 533846,
+                "isSignificant": true
+              },
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Pdf",
+                "fileCount": 3,
+                "totalFileSize": 533846,
+                "isSignificant": true
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_tenant-abc-123_935873453596901068_956171635867906205_5",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "Customers.jpg",
+                "category": "Image",
+                "size": 265122
+              },
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_tenant-abc-123_935873453596901068_956171635867906205_6",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "data.png",
+                "category": "Image",
+                "size": 129129
+              },
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "0_tenant-abc-123_935873453596901068_956171635867906205_7",
+                "path": "C:/Users/QA/Downloads/",
+                "name": "company_secrets.ps",
+                "category": "Image",
+                "size": 139595
+              }
+            ],
+            "syncToServices": [],
+            "sendingIpAddresses": [
+              "127.0.0.1"
+            ]
+          }
+        },
+        {
+          "type$": "OBSERVATION",
+          "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+          "observedAt": "2020-06-11T20:20:00.0000000Z",
+          "type": "FedCloudSharePermissions",
+          "data": {
+            "type$": "OBSERVED_CLOUD_SHARE_ACTIVITY",
+            "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+            "sources": [
+              "GoogleDrive"
+            ],
+            "exposureTypes": [
+              "SharedOutsideTrustedDomain"
+            ],
+            "firstActivityAt": "2020-06-11T20:20:00.0000000Z",
+            "lastActivityAt": "2020-06-11T20:25:00.0000000Z",
+            "fileCount": 1,
+            "totalFileSize": 182554405,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 1,
+                "totalFileSize": 182554405,
+                "isSignificant": false
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "14FnN9-YOhVUO_Tv8Mu-hEgevc2K4l07l_5_9e633ffd-9329-4cf4-8645-27a23b83ebc0",
+                "name": "Code42CrashPlan_8.0.0_1525200006800_778_Mac.dmg",
+                "category": "Archive",
+                "size": 182554405
+              }
+            ],
+            "outsideTrustedDomainsEmails": [
+              "user1@example.com"
+            ],
+            "outsideTrustedDomainsEmailsCount": 1,
+            "outsideTrustedDomainsCounts": [
+              {
+                "type$": "OBSERVED_DOMAIN_INFO",
+                "domain": "gmail.com",
+                "count": 1
+              }
+            ],
+            "outsideTrustedDomainsTotalDomainCount": 1,
+            "outsideTrustedDomainsTotalDomainCountTruncated": false
+          }
+        },
+        {
+          "type$": "OBSERVATION",
+          "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+          "observedAt": "2020-06-11T20:20:00.0000000Z",
+          "type": "FedCloudSharePermissions",
+          "data": {
+            "type$": "OBSERVED_CLOUD_SHARE_ACTIVITY",
+            "id": "7f4d125d-c7ca-4264-83fe-fa442bf270b6",
+            "sources": [
+              "GoogleDrive"
+            ],
+            "exposureTypes": [
+              "UnknownExposureTypeThatWeDontSupportYet"
+            ],
+            "firstActivityAt": "2020-06-11T20:20:00.0000000Z",
+            "lastActivityAt": "2020-06-11T20:25:00.0000000Z",
+            "fileCount": 1,
+            "totalFileSize": 182554405,
+            "fileCategories": [
+              {
+                "type$": "OBSERVED_FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 1,
+                "totalFileSize": 182554405,
+                "isSignificant": false
+              }
+            ],
+            "files": [
+              {
+                "type$": "OBSERVED_FILE",
+                "eventId": "14FnN9-YOhVUO_Tv8Mu-hEgevc2K4l07l_5_9e633ffd-9329-4cf4-8645-27a23b83ebc0",
+                "name": "Code42CrashPlan_8.0.0_1525200006800_778_Mac.dmg",
+                "category": "Archive",
+                "size": 182554405
+              }
+            ],
+            "outsideTrustedDomainsEmails": [
+              "user1@example.com"
+            ],
+            "outsideTrustedDomainsEmailsCount": 1,
+            "outsideTrustedDomainsCounts": [
+              {
+                "type$": "OBSERVED_DOMAIN_INFO",
+                "domain": "gmail.com",
+                "count": 1
+              }
+            ],
+            "outsideTrustedDomainsTotalDomainCount": 1,
+            "outsideTrustedDomainsTotalDomainCountTruncated": false
+          }
+        }
+      ]
+    },
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "tenant-abc-123",
+      "type": "FED_CLOUD_SHARE_PERMISSIONS",
+      "name": "High-Risk Employee Alert",
+      "description": "Cortex XSOAR is 2cool.",
+      "actor": "user2@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "MEDIUM",
+      "riskSeverity": "MODERATE",
+      "ruleId": "rule-id-abc-123",
+      "ruleSource": "Alerting",
+      "id": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
+      "createdAt": "2019-10-02T17:02:24.2071980Z",
+      "state": "OPEN",
+      "observations": []
+    },
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "tenant-abc-123",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Custom Alert 1",
+      "description": "Cortex XSOAR is 3cool.",
+      "actor": "user3@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "LOW",
+      "riskSeverity": "LOW",
+      "ruleId": "rule-id-abc-123",
+      "ruleSource": "Alerting",
+      "id": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
+      "createdAt": "2019-10-02T17:03:28.2885720Z",
+      "state": "OPEN",
+      "observations": []
+    }
+  ]
+}

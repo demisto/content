@@ -42,9 +42,9 @@ args:
   - 'incident attachment'
   required: false
   secret: false
-comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
+comment: Deprecated. Use UploadFileV2 instead.
 subtype: python3
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.10.6.33415
 system: false
 tags:
 - DemistoAPI
@@ -56,3 +56,4 @@ dependson:
   - demisto-api-multipart
 tests:
 - No tests (auto formatted)
+deprecated: true

@@ -75,7 +75,17 @@ class McAfeeESMClient(BaseClient):
         self._http_request('DELETE', 'logout', resp_type='response')
 
     def test_module(self) -> Tuple[str, Dict, str]:
+        params = demisto.params()
+
+        # check credentials
         self.get_organization_list(raw=True)
+
+        # check fetch parameters
+        if params.get('isFetch'):
+            start_id = params.get('startingFetchID', '0')
+            if not start_id.isdigit():
+                raise DemistoException(f'Invalid startingFetchID value. Expected: numeric value, Received "{start_id}"')
+
         return 'ok', {}, 'ok'
 
     def __username_and_id(self, user_name: str = None, user_id: str = None) -> Dict:
@@ -410,6 +420,7 @@ class McAfeeESMClient(BaseClient):
                 }
             }
 
+        demisto.debug(f'sending request to fetch alarms with {start_time=}, {end_time=}')
         raw_response = self.__request(path, data=data, params=params)
         result = raw_response
 
@@ -646,11 +657,14 @@ class McAfeeESMClient(BaseClient):
         _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_time, raw=True)
         all_alarms = filtering_incidents(all_alarms, start_id=start_id, limit=limit)
         if all_alarms:
-            current_run['time'] = all_alarms[0].get('triggeredDate', current_time)
+            current_run['time'] = all_alarms[0].get('triggeredDate', start_time)
             current_run['id'] = all_alarms[0]['id']
+            current_run_time = current_run['time']
+            demisto.debug(f'{len(all_alarms)=}, setting current time to {current_run_time=}')
         else:
-            current_run['time'] = current_time
+            current_run['time'] = start_time
             current_run['id'] = start_id
+            demisto.debug(f'No alarms were found, setting current time to {start_time=}')
         all_alarms = create_incident(all_alarms, alarms=True)
         return all_alarms, current_run
 
@@ -815,12 +829,22 @@ def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
     :param limit: limit
     :return: the filtered incidents
     """
-    incidents_list = [incident for incident in incidents_list if int(incident.get('id', 0)) > start_id]
-    incidents_list.sort(key=lambda case: int(case.get('id', 0)), reverse=True)
+    filtered_incident = []
+    ignored_incident_ids = []
+    for incident in incidents_list:
+        if int(incident.get('id', 0)) > start_id:
+            filtered_incident.append(incident)
+        else:
+            ignored_incident_ids.append(incident.get('id'))
+
+    demisto.debug(f'filtered {len(ignored_incident_ids)} incidents by {start_id=}.\n{ignored_incident_ids=}')
+
+    filtered_incident.sort(key=lambda incident: int(incident.get('id', 0)), reverse=True)
     if limit != 0:
-        cases_size = min(limit, len(incidents_list))
-        incidents_list = incidents_list[-cases_size:]
-    return incidents_list
+        incidents_size = min(limit, len(filtered_incident))
+        filtered_incident = filtered_incident[-incidents_size:]
+
+    return filtered_incident
 
 
 def expected_errors(error: DemistoException) -> bool:

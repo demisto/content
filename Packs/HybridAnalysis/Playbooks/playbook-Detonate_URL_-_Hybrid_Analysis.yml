@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Detonate URL - Hybrid Analysis
-description: Detonating URL with Hybrid Analysis.
+description: Deprecated. Use cs-falcon-sandbox-submit-url with polling=true instead.
 starttaskid: '0'
 tasks:
   '0':
@@ -401,5 +401,6 @@ outputs:
   description: Placeholder for scanner data.
   type: unknown
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
 fromversion: 6.2.0
+deprecated: true

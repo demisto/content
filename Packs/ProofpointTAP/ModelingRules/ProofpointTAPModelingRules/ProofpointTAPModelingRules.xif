@@ -1,0 +1,17 @@
+[MODEL: dataset=proofpoint_tap_raw, model=Email]
+alter XDM.Email.cc = json_extract_array(ccAddresses ,"$."),
+XDM.Email.sender = fromAddress,
+XDM.Email.original_event_id = GUID,
+XDM.Email.message_id = messageID,
+XDM.Email.attachment.filename = arraystring(arraymap (json_extract_array (messageParts ,"$."), json_extract_scalar ("@element", "$.filename")), ","),
+XDM.Email.attachment.md5 = arraystring(arraymap (json_extract_array (messageParts ,"$."), json_extract_scalar ("@element", "$.md5")), ","),
+XDM.Email.attachment.sha256 = arraystring(arraymap (json_extract_array (messageParts ,"$."), json_extract_scalar ("@element", "$.sha256")), ","),
+XDM.Email.delivery_timestamp = messageTime,
+XDM.Email.recipients = json_extract_array(recipient,"$."),
+XDM.Email.return_path = sender,
+XDM.Email.Server.host.ipv4_addresses = json_extract_array(senderIP,"$."),
+XDM.Email.subject = subject,
+XDM.Email.threat.original_threat_id = arraystring(arraymap (json_extract_array (threatsInfoMap ,"$."), json_extract_scalar ("@element", "$.threatID")), ","),
+XDM.Email.threat.subcategory  = arraystring(arraymap (json_extract_array (threatsInfoMap ,"$."), json_extract_scalar ("@element", "$.threatType")), ","),
+XDM.Email.observation_timestamp = clickTime,
+XDM.Email.Client.host.ipv4_addresses = json_extract_array(clickIP,"$.");

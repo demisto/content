@@ -1,0 +1,30 @@
+[MODEL: dataset="safenet_trusted_access_raw", model="Audit"]
+filter json_extract_scalar(details, "$.type") in ("AUDIT")
+| alter
+    XDM.Audit.original_event_id = id,
+    XDM.Audit.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", timeStamp),
+    XDM.Audit.TriggeredBy.ipv4 = json_extract_scalar(context, "$.originatingAddress"),
+    XDM.Audit.TriggeredBy.identity.name = json_extract_scalar(context, "$.principalId"),
+    XDM.Audit.original_event_type = json_extract_scalar(details, "$.type"),
+    XDM.Audit.original_event_description = json_extract_scalar(details, "$.description"),
+    XDM.Audit.operation_type = json_extract_scalar(details, "$.operationType"),
+    XDM.Audit.audited_resource.type = json_extract_scalar(details, "$.operationObjectType"),
+    XDM.Audit.audited_resource.name = json_extract_scalar(details, "$.operationObjectName");
+
+
+[MODEL: dataset="safenet_trusted_access_raw", model="Auth"]
+filter json_extract_scalar(details, "$.type") in ("AUTHENTICATION", "ACCESS_REQUEST")
+| alter
+    XDM.Auth.original_event_id = id,
+    XDM.Auth.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", timeStamp),
+    XDM.Auth.session_context_id = json_extract_scalar(context, "$.sessionId"),
+    XDM.Auth.application_protocol = coalesce(json_extract_scalar(context, "$.applicationType"), json_extract_scalar(details, "$.credentialType")),
+    XDM.Auth.Client.application.name = json_extract_scalar(context, "$.applicationName"),
+    XDM.Auth.original_event_type = json_extract_scalar(details, "$.type"),
+    XDM.Auth.outcome = coalesce(json_extract_scalar(details, "$.state"), json_extract_scalar(details, "$.resultText")),
+    XDM.Auth.reason = json_extract_scalar(details, "$.reason"),
+    XDM.Auth.original_event_sub_type = json_extract_scalar(details, "$.actionText"),
+    XDM.Auth.Observer.unique_identifier = json_extract_scalar(details, "$.agentId"),
+    XDM.Auth.original_event_description = json_extract_scalar(details, "$.message"),
+    XDM.Auth.Client.user.username = json_extract_scalar(details, "$.usedName");
+

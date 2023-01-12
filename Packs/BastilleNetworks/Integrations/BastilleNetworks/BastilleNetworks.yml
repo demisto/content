@@ -339,7 +339,7 @@ script:
     description: Command to remove tag from an existing device
     execution: false
     name: bastille-remove-device-tag
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
   longRunning: false

@@ -1,0 +1,14 @@
+{
+    "values": {
+        "SysRequestID": "000000000000118",
+        "Request Number": "REQ000000000124",
+        "Submit Date": "2022-03-30T08:50:36.000+0000"
+    },
+    "_links": {
+        "self": [
+            {
+                "href": "https://lb-bmc-remedy-itsm-1790109711.eu-west-1.elb.amazonaws.com:9443/api/arsys/v1/entry/SRM:RequestInterface_Create"
+            }
+        ]
+    }
+}

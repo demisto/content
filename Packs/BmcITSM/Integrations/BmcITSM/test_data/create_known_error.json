@@ -1,0 +1,14 @@
+{
+    "values": {
+        "Request ID": "000000000000302",
+        "Known Error ID": "PKE000000000230",
+        "Create Date": "2022-07-03T15:13:09.000+0000"
+    },
+    "_links": {
+        "self": [
+            {
+                "href": "https://lb-bmc-remedy-itsm-1790109711.eu-west-1.elb.amazonaws.com:9443/api/arsys/v1/entry/PBM:ProblemInterface_Create"
+            }
+        ]
+    }
+}

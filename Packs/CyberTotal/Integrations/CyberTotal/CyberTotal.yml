@@ -51,6 +51,35 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 script:
   script: ''
   type: python
@@ -853,7 +882,7 @@ script:
       description: If this domain is expired
       type: boolean
     description: Return domain whois information
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   subtype: python3
 fromversion: 5.0.0

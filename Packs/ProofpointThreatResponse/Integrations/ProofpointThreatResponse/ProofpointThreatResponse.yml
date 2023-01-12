@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Network Security
 commonfields:
   id: Proofpoint Threat Response
   version: -1
@@ -7,19 +7,25 @@ configuration:
   name: url
   required: true
   type: 0
+- name: credentials
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: API Key
   name: apikey
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  defaultvalue: 'false'
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -28,25 +34,24 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
-  defaultvalue: 12 hours
+- defaultvalue: '12 hours'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch
   required: false
   type: 0
+  additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
+  hidden: false
 - defaultvalue: '50'
   display: Fetch limit - maximum number of incidents per fetch
   name: fetch_limit
   required: false
   type: 0
-- defaultvalue: '6 hours'
-  additionalinfo: The time range between create_after and created_before that is sent to the API when fetching
-    older incidents. If timeout errors occur, consider changing this value.
-  display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
+- display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
   name: fetch_delta
   required: false
   type: 0
+  defaultvalue: 6 hours
+  additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
 - display: Fetch incidents with specific event sources. Can be a list of comma separated values.
   name: event_sources
   required: false
@@ -57,14 +62,14 @@ configuration:
   type: 0
 - display: Fetch incident with specific states.
   name: states
+  required: false
+  type: 16
   options:
   - new
   - open
   - assigned
   - closed
   - ignored
-  required: false
-  type: 16
 - additionalinfo: You can find this value by navigating to Sources -> JSON event source -> POST URL.
   display: POST URL of the JSON alert source.
   hidden: false
@@ -867,25 +872,25 @@ script:
     execution: false
     name: proofpoint-tr-ingest-alert
   - arguments:
-      - description: The message ID of the email.
-        name: message_id
-        isArray: false
-        required: true
-        secret: false
-      - description: The recipient of the email.
-        name: recipient
-        isArray: false
-        required: true
-        secret: false
-      - description: The reception time of the email.
-        name: time
-        isArray: false
-        required: true
-        secret: false
+    - description: The message ID of the email.
+      name: message_id
+      isArray: false
+      required: true
+      secret: false
+    - description: The recipient of the email.
+      name: recipient
+      isArray: false
+      required: true
+      secret: false
+    - description: 'The reception time of the email in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      name: time
+      isArray: false
+      required: true
+      secret: false
     outputs:
-      - contextPath: ProofPointTRAP.Quarantine
-        description: Results of the email quarantine operation.
-        type: String
+    - contextPath: ProofPointTRAP.Quarantine
+      description: Results of the email quarantine operation.
+      type: String
     description: Verify if an email has been quarantined.
     name: proofpoint-tr-verify-quarantine
   feed: false
@@ -896,7 +901,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.9.42476
 tests:
 - No test - beta_integration
 beta: true

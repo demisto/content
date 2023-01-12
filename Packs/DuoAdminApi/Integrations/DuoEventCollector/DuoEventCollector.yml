@@ -10,8 +10,7 @@ configuration:
   name: host
   type: 0
   required: true
-- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
-    3 months, 1 year)
+- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: after
   type: 0
   required: true
@@ -20,7 +19,7 @@ configuration:
   name: integration_key
   type: 0
   required: true
-- displaypassword:  Secret key
+- displaypassword: Secret key
   name: secret_key
   hiddenusername: true
   type: 9
@@ -35,16 +34,18 @@ configuration:
   type: 0
   defaultvalue: 5
   required: false
-- display: The vendor corresponding to the integration that originated the events
-  name: vendor
+- additionalinfo: A comma-delimited string that specifies the initial order and type in which to get logs from the available APIs. Possible values are AUTHENTICATION, ADMINISTRATION, and TELEPHONY.
+  display: APIs to use
+  name: logs_type_array
   type: 0
-  defaultvalue: duo
+  defaultvalue: AUTHENTICATION,ADMINISTRATION,TELEPHONY
   required: false
-- display: The product corresponding to the integration that originated the events
-  name: product
+- additionalinfo: The version to use for the authentication events API(possible values are 1 or 2).
+  display: Authentication events API.
+  name: auth_api_version
+  defaultvalue: 1
+  required: false
   type: 0
-  defaultvalue: duo
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -60,14 +61,14 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
     deprecated: false
     description: Manual command to fetch events and display them.
     execution: false
     name: duo-get-events
-  dockerimage: demisto/duoadmin3:1.0.0.29891
+  dockerimage: demisto/duoadmin3:1.0.0.43094
   runonce: false
   isfetchevents: true
   subtype: python3

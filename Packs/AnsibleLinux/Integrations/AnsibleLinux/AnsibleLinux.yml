@@ -1821,8 +1821,7 @@ script:
     - defaultValue: Reboot initiated by Ansible
       description: Message to display to users before reboot.
       name: msg
-    - defaultValue: '[''/sbin'', ''/usr/sbin'', ''/usr/local/sbin'']'
-      description: 'Paths to search on the remote machine for the `shutdown` command.
+    - description: 'Paths to search on the remote machine for the `shutdown` command.
         `Only` these paths will be searched for the `shutdown` command. `PATH` is
         ignored in the remote node when searching for the `shutdown` command.'
       isArray: true
