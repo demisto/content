@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: cyberint
+  id: cyberint1
   version: -1
 configuration:
 - display: Incident type
@@ -17,6 +17,10 @@ configuration:
   name: environment
   required: true
   type: 0
+- display: Assign all alert CSV files to the incident
+  name: assign_multiple
+  required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -118,7 +122,7 @@ description: Cyberint provides intelligence-driven digital risk protection. This
   will help your enterprise effectively consume actionable cyber alerts to increase
   your security posture.
 display: Cyberint
-name: cyberint
+name: cyberint1
 script:
   commands:
   - arguments:
