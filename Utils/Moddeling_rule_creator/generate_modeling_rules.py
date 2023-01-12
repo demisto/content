@@ -1,8 +1,10 @@
 import pandas as pd 
 import json
+import functools
 
-outputfile_schema = '/Users/okarkkatz/dev/demisto/content/Packs/AzureSecurityCenter/Integrations/ModelingRules/' + 'output.json'
-outputfile_xif = '/Users/okarkkatz/dev/demisto/content/Packs/AzureSecurityCenter/Integrations/ModelingRules/' + 'output.xif'
+base_path = '/Users/okarkkatz/dev/demisto/content/Utils/Moddeling_rule_creator/'
+outputfile_schema = base_path + 'output.json'
+outputfile_xif = base_path + 'output.xif'
 VENDOR = "microsoft"
 PRODUCT = "defender_for_cloud"
 DATASET_NAME = f'{VENDOR.lower()}_{PRODUCT.lower()}_raw'
@@ -15,18 +17,29 @@ def create_xif_file(names : list , xdms : list):
         for (name, xdm) in zip (names, xdms):
             if not isinstance(xdm, str):
                 xdm = None
+            if not isinstance(name, str):
+                xdm = None
+            if '.' in name:
+                dict_keys = name.split('.')
+                prefix = dict_keys[0]
+                suffix = '.'.join(dict_keys[1:])
+                name = f'json_extract_scalar({prefix}, "$.{suffix}")'
+                
             f.write(f'\t{xdm} = {name},\n')
 
 
 def create_scheme_file(names_list : list, types_list : list):
     name_type_dict = {}
     for (name , field_type) in zip(names_list, types_list):
+        keys_list = name.split('.')
+        name = keys_list[0]
         if not isinstance(field_type, str):
             field_type = None
-        name_type_dict[name] = {
-            "type" : field_type,
-            "is_array" : False,
-        }
+        if name not in name_type_dict:
+            name_type_dict[name] = {
+                "type" : field_type,
+                "is_array" : False,
+            }
     modeling_rules_xif = {DATASET_NAME : name_type_dict}
 
     with open(outputfile_schema, 'w') as f: 
@@ -35,7 +48,7 @@ def create_scheme_file(names_list : list, types_list : list):
 
 
 def main():
-    df = pd.read_csv("/Users/okarkkatz/dev/demisto/content/Packs/AzureSecurityCenter/Integrations/ModelingRules/Mapping for Defender For Cloud - One Data Model Migration.csv")
+    df = pd.read_csv("/Users/okarkkatz/dev/demisto/content/Utils/Moddeling_rule_creator/Mapping for Defender For Cloud - One Data Model Migration.csv")
 
     name_columen=df["Name"]
     type_columen=df["Type"]
