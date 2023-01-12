@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-VENDOR = 'Micrsoft'
+VENDOR = 'micrsoft'
 PRODUCT = 'defender_for_cloud'
 API_VERSION = '2022-01-01'
 APP_NAME = "ms-azure-sc"
@@ -52,16 +52,14 @@ class MsClient:
         return events
 
 
-def test_module(client: MsClient):
+def test_module(client: MsClient, last_run: str):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
        """
-    if client.subscription_id:
-        client.list_locations()
-    else:
-        client.list_sc_subscriptions()
-    demisto.results('ok')
+    evetns_res = client.get_event_list(last_run)
+    if 'value' in evetns_res:
+        demisto.results('ok')
 
 
 def get_events(client: MsClient, last_run: str, args:dict):
@@ -110,7 +108,7 @@ def get_events(client: MsClient, last_run: str, args:dict):
         ],
         removeNull=True,
     )
-    cr =  CommandResults(outputs_prefix="Microsoft-Defender-For-Cloud.Alerts", outputs=outputs, readable_output=md, raw_response=events)
+    cr =  CommandResults(outputs_prefix="MicrosoftDefenderForCloud.Alerts", outputs=outputs, readable_output=md, raw_response=events)
     return events, cr
 
 
@@ -230,15 +228,15 @@ def main() -> None:
                           server=server, verify=use_ssl, self_deployed=False, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
+        first_fetch = params.get('first_fetch', '3 days')
+        last_run = handle_last_run(first_fetch)
+
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            test_module(client)
+            test_module(client, last_run)
 
         elif command in ('ms-defender-for-cloud-get-events', 'fetch-events'):
             
-            first_fetch = params.get('first_fetch', '3 days')
-            last_run = handle_last_run(first_fetch)
-
             if command == 'ms-defender-for-cloud-get-events':
                 should_push_events = argToBoolean(args.pop('should_push_events'))
                 events, results = get_events(client, last_run, args)
@@ -248,8 +246,7 @@ def main() -> None:
                 should_push_events = True
                 next_run, events = fetch_events(
                     client=client,
-                    last_run=last_run,
-                    args=args
+                    last_run=last_run
                 )
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)

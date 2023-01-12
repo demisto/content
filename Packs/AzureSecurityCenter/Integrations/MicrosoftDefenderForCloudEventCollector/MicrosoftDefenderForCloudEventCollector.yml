@@ -2,9 +2,6 @@ category: Analytics & SIEM
 commonfields:
   id: Microsoft Defender for Cloud Event Collector
   version: -1
-description: XSIAM collector for Microsoft Defender for Cloud alerts. 
-display: Microsoft Defender for Cloud Event Collector
-name: Microsoft Defender for Cloud Event Collector
 configuration:
 - defaultvalue: https://management.azure.com/
   display: Microsoft Azure Management URL
@@ -12,17 +9,20 @@ configuration:
   required: false
   type: 0
   section: Connect
-- display: ID (received from the admin consent - see Detailed Instructions (?)
+- display: ID 
+  required: true
+  additionalinfo: received from the admin consent - see Detailed Instructions
+  type: 4
+  section: Connect
   name: auth_id
-  required: true
-  type: 4
-  section: Connect
-- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+- display: Token
   name: tenant_id
+  additionalinfo: received from the admin consent - see Detailed Instructions section
   required: true
   type: 4
   section: Connect
-- display: Key (received from the admin consent - see Detailed Instructions (?)
+- display: Key
+  additionalinfo: received from the admin consent - see Detailed Instructions
   name: enc_key
   required: false
   type: 4
@@ -41,8 +41,8 @@ configuration:
   section: Connect
 - display: Subscription ID to use
   name: sub_id
-  required: false
   type: 4
+  required: true
   section: Connect
 - defaultvalue: 3 days
   display: First fetch time
@@ -60,6 +60,9 @@ configuration:
   required: false
   type: 8
   section: Collect
+description: XSIAM collector for Microsoft Defender for Cloud alerts. 
+display: Microsoft Defender for Cloud Event Collector
+name: Microsoft Defender for Cloud Event Collector
 script:
   commands:
   - arguments:
@@ -83,22 +86,22 @@ script:
     execution: false
     name: ms-defender-for-cloud-get-events
     outputs:
-    - contextPath: AzureSecurityCenter.Alert.AlertDisplayName
+    - contextPath: MicrosoftDefenderForCloud.Alert.AlertDisplayName
       description: The display name of the alert.
       type: string
-    - contextPath: AzureSecurityCenter.Alert.CompromisedEntity
+    - contextPath: MicrosoftDefenderForCloud.Alert.CompromisedEntity
       description: The entity on which the incident occurred.
       type: string
-    - contextPath: AzureSecurityCenter.Alert.DetectedTimeUtc
+    - contextPath: MicrosoftDefenderForCloud.Alert.DetectedTimeUtc
       description: The time the vendor detected the incident.
       type: date
-    - contextPath: AzureSecurityCenter.Alert.ReportedSeverity
+    - contextPath: MicrosoftDefenderForCloud.Alert.ReportedSeverity
       description: The estimated severity of this alert.
       type: string
-    - contextPath: AzureSecurityCenter.Alert.State
+    - contextPath: MicrosoftDefenderForCloud.Alert.State
       description: The alert state (Active, Dismissed, etc.).
       type: string
-    - contextPath: AzureSecurityCenter.Alert.ID
+    - contextPath: MicrosoftDefenderForCloud.Alert.ID
       description: The alert ID.
       type: string
   dockerimage: demisto/crypto:1.0.0.42817
@@ -109,6 +112,6 @@ script:
   type: python
 marketplaces:
 - marketplacev2
-fromversion: 8.0.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
