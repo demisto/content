@@ -9,7 +9,6 @@ configuration:
   required: true
   type: 0
 - name: creds_auth_id
-  required: false
   type: 9
   displaypassword: ID (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
