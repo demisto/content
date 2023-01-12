@@ -1,6 +1,5 @@
 [file:Zoom_IAM.yml]
-ignore = BA108, BA109
+ignore=BA108,BA109
 
 [file:Zoom_IAM_image.png]
-ignore = IM111
-
+ignore=IM111

@@ -89,12 +89,10 @@ class Client(BaseClient):
         self.account_id = account_id
         self.client_id = client_id
         self.client_secret = client_secret
-        is_jwt = (api_key and api_secret) and not (
-            client_id and client_secret and account_id)
+        is_jwt = (api_key and api_secret) and not (client_id and client_secret and account_id)
         if is_jwt:
             # the user has chosen to use the JWT authentication method (deprecated)
-            self.access_token: str | None = get_jwt_token(
-                api_key, api_secret)  # type: ignore[arg-type]
+            self.access_token: str | None = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
         else:
             # the user has chosen to use the OAUTH authentication method.
             try:
@@ -132,8 +130,7 @@ class Client(BaseClient):
             oauth_token = self.generate_oauth_token()
             ctx = {}
         else:
-            generation_time = dateparser.parse(
-                ctx.get('token_info').get('generation_time'))
+            generation_time = dateparser.parse(ctx.get('token_info').get('generation_time'))
             if generation_time:
                 time_passed = now - generation_time
             else:
@@ -145,8 +142,7 @@ class Client(BaseClient):
                 # token expired
                 oauth_token = self.generate_oauth_token()
 
-        ctx.update({'token_info': {'oauth_token': oauth_token,
-                   'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
+        ctx.update({'token_info': {'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
         set_integration_context(ctx)
         return oauth_token
 
@@ -462,8 +458,7 @@ def zoom_create_user_command(client, **args) -> CommandResults:
     first_name = args.get('first_name')
     last_name = args.get('last_name')
     user_type_num = USER_TYPE_MAPPING.get(user_type)
-    raw_data = client.zoom_create_user(
-        user_type_num, email, first_name, last_name)
+    raw_data = client.zoom_create_user(user_type_num, email, first_name, last_name)
     return CommandResults(
         outputs_prefix='Zoom.User',
         readable_output=f"User created successfully with ID: {raw_data.get('id')}",
@@ -494,8 +489,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     auto_record_meeting = args.get('auto_record_meeting')
     encryption_type = args.get('encryption_type')
     join_before_host = argToBoolean(args.get('join_before_host', False))
-    meeting_authentication = argToBoolean(
-        args.get('meeting_authentication', False))
+    meeting_authentication = argToBoolean(args.get('meeting_authentication', False))
     waiting_room = argToBoolean(args.get('waiting_room', False))
     end_date_time = args.get('end_date_time')
     end_times = arg_to_number(args.get('end_times', 1))
@@ -549,8 +543,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
 
     # special section for recurring meeting with fixed time
     if type == RECURRING_WITH_TIME:
-        recurrence_type_num = MONTHLY_RECURRING_TYPE_MAPPING.get(
-            recurrence_type)
+        recurrence_type_num = MONTHLY_RECURRING_TYPE_MAPPING.get(recurrence_type)
         json_all_data.update({"recurrence": {
             "end_date_time": end_date_time,
             "end_times": end_times,
@@ -580,14 +573,11 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     json_data = remove_None_values_from_dict(json_all_data)
     url_suffix = f"users/{user_id}/meetings"
     # call the API
-    raw_data = client.zoom_create_meeting(
-        url_suffix=url_suffix, json_data=json_data)
+    raw_data = client.zoom_create_meeting(url_suffix=url_suffix, json_data=json_data)
     # parsing the response
     if type == "Recurring meeting with fixed time":
-        raw_data.update({'start_time': raw_data.get(
-            "occurrences")[0].get('start_time')})
-        raw_data.update({'duration': raw_data.get(
-            "occurrences")[0].get('duration')})
+        raw_data.update({'start_time': raw_data.get("occurrences")[0].get('start_time')})
+        raw_data.update({'duration': raw_data.get("occurrences")[0].get('duration')})
 
     md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
                                                          'type', 'status', 'start_time', 'duration',
@@ -667,11 +657,9 @@ def zoom_meeting_get_command(client, **args) -> CommandResults:
     client = client
     meeting_id = args.get('meeting_id')
     occurrence_id = args.get('occurrence_id')
-    show_previous_occurrences = argToBoolean(
-        args.get('show_previous_occurrences'))
+    show_previous_occurrences = argToBoolean(args.get('show_previous_occurrences'))
 
-    raw_data = client.zoom_meeting_get(
-        meeting_id, occurrence_id, show_previous_occurrences)
+    raw_data = client.zoom_meeting_get(meeting_id, occurrence_id, show_previous_occurrences)
     # parsing the response
     md = tableToMarkdown('Meeting details', raw_data, ['uuid', 'id', 'host_id', 'host_email', 'topic',
                                                        'type', 'status', 'start_time', 'duration',
@@ -708,15 +696,13 @@ def zoom_meeting_list_command(client, **args) -> CommandResults:
             raw_data = manual_meeting_list_pagination(client=client, user_id=user_id, next_page_token=next_page_token,
                                                       limit=limit, type=type)
 
-            minimal_needed_info = remove_extra_info_meeting_list(
-                limit=limit, raw_data=raw_data)
+            minimal_needed_info = remove_extra_info_meeting_list(limit=limit, raw_data=raw_data)
 
             md = tableToMarkdown("Meeting list", minimal_needed_info, ['uuid', 'id',
                                                                        'host_id', 'topic', 'type', 'start time', 'duration',
                                                                        'timezone', 'created_at', 'join_url'
                                                                        ])
-            md += "\n" + tableToMarkdown('Metadata',
-                                         [raw_data][0][0], ['total_records'])
+            md += "\n" + tableToMarkdown('Metadata', [raw_data][0][0], ['total_records'])
             raw_data = raw_data[0]
 
     else:
@@ -728,8 +714,7 @@ def zoom_meeting_list_command(client, **args) -> CommandResults:
                                                                         'host_id', 'topic', 'type', 'start_time', 'duration',
                                                                         'timezone', 'created_at', 'join_url'
                                                                         ])
-        md += "\n" + tableToMarkdown('Metadata', [raw_data], [
-                                     'next_page_token', 'page_size', 'page_number', 'total_records'])
+        md += "\n" + tableToMarkdown('Metadata', [raw_data], ['next_page_token', 'page_size', 'page_number', 'total_records'])
 
     return CommandResults(
         outputs_prefix='Zoom',
@@ -756,10 +741,8 @@ def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     base_url = params.get('url')
-    api_key = params.get('creds_api_key', {}).get(
-        'password') or params.get('apiKey')
-    api_secret = params.get('creds_api_secret', {}).get(
-        'password') or params.get('apiSecret')
+    api_key = params.get('creds_api_key', {}).get('password') or params.get('apiKey')
+    api_secret = params.get('creds_api_secret', {}).get('password') or params.get('apiSecret')
     account_id = params.get('account_id')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
@@ -771,8 +754,7 @@ def main():  # pragma: no cover
     args = {key.replace('-', '_'): val for key, val in args.items()}
 
     try:
-        check_authentication_type_parameters(
-            api_key, api_secret, account_id, client_id, client_secret)
+        check_authentication_type_parameters(api_key, api_secret, account_id, client_id, client_secret)
 
         client = Client(
             base_url=base_url,
