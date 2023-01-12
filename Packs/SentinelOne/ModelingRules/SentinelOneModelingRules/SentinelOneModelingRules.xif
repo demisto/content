@@ -1,0 +1,87 @@
+[MODEL: dataset=sentinelone_xdr_raw]
+filter _raw_log contains "activityType"
+alter
+    xdm.source.user.identifier = accountId
+    xdm.source.user.username = accountName
+    xdm.event.id = activityType
+    xdm.source.agent.identifier = agentId
+    xdm.source.agent.version = agentUpdatedVersion
+    xdm.source.user.groups = groupName
+    xdm.session_context_id = id
+    xdm.source.host.os_family = osFamily
+    xdm.event.description = primaryDescription
+    xdm.alert.original_threat_id = threatId
+    xdm.source.user.employee_id = userId
+    xdm.target.user.identifier = json_extract_scalar(data, "$.accountId")
+    xdm.target.user.username = json_extract_scalar(data, "$.username")
+    xdm.target.user.groups = json_extract_scalar(data, "$.role")
+
+filter _raw_log contains "threatInfo"
+alter
+    xdm.source.user.identifier = json_extract_scalar(agentDetectionInfo, "$.accountId")
+    xdm.source.user.username = json_extract_scalar(agentDetectionInfo, "$.accountName")
+     = json_extract_scalar(agentDetectionInfo, "$.agentDetectionState")
+    xdm.source.user.domain = json_extract_scalar(agentDetectionInfo, "$.agentDomain")
+    xdm.source.ipv4 = json_extract_scalar(agentDetectionInfo, "$.agentIpV4")
+    xdm.source.ipv6 = json_extract_scalar(agentDetectionInfo, "$.agentIpV6")
+    xdm.source.host.os = json_extract_scalar(agentDetectionInfo, "$.agentOsName")
+    xdm.source.agent.identifier = json_extract_scalar(agentDetectionInfo, "$.agentUuid")
+    xdm.source.agent.version = json_extract_scalar(agentDetectionInfo, "$.agentVersion")
+    xdm.source.host.ipv4_addresses = json_extract_scalar(agentDetectionInfo, "$.externalIp")
+    xdm.source.user.groups = json_extract_scalar(agentDetectionInfo, "$.groupName")
+    xdm.source.user.identifier = json_extract_scalar(agentRealtimeInfo, "$.accountId")
+    xdm.source.user.username = json_extract_scalar(agentRealtimeInfo, "$.accountName")
+    xdm.source.host.hostname = json_extract_scalar(agentRealtimeInfo, "$.agentComputerName")
+    xdm.source.host.device_id = json_extract_scalar(agentRealtimeInfo, "$.agentId")
+    xdm.observer.type = json_extract_scalar(agentRealtimeInfo, "$.agentMachineType")
+    xdm.source.host.os_family = json_extract_scalar(agentRealtimeInfo, "$.agentOsType")
+    xdm.source.user.groups = json_extract_scalar(agentRealtimeInfo, "$.groupName")
+    xdm.source.host.mac_addresses = json_extract_scalar(agentRealtimeInfo, "$.networkInterfaces.0.physical")
+    xdm.source.location.region = json_extract_scalar(agentRealtimeInfo, "$.siteName")
+    xdm.source.process.container_id = json_extract_scalar(containerInfo, "$.id")
+    xdm.alert.original_threat_id = id
+    xdm.alert.original_threat_name = json_extract(indicators, "$.0.category")
+    xdm.alert.description = json_extract(indicators, "$.0.description")
+    xdm.alert.mitre_techniques = json_extract(indicators, "$.0.tactics.0.techniques")
+    xdm.observer.action = json_extract_scalar(mitigationStatus, "$.action")
+    xdm.source.process.executable.path = json_extract_scalar(threatInfo, "$.filePath")
+    xdm.source.process.executable.md5 = json_extract_scalar(threatInfo, "$.md5")
+    xdm.source.process.executable.sha256 = json_extract_scalar(threatInfo, "$.sha256")
+    xdm.alert.original_threat_name = json_extract_scalar(threatInfo, "$.threatName")
+
+filter _raw_log contains "alertInfo"
+alter
+    xdm.source.host.hostname = json_extract_scalar(agentDetectionInfo, "$.name")
+    xdm.source.host.os_family = json_extract_scalar(agentDetectionInfo, "$.osFamily")
+    xdm.source.host.os = json_extract_scalar(agentDetectionInfo, "$.osName")
+    xdm.source.agent.identifier = json_extract_scalar(agentDetectionInfo, "$.uuid")
+    xdm.source.agent.version = json_extract_scalar(agentDetectionInfo, "$.version")
+    xdm.alert.original_alert_id = json_extract_scalar(alertInfo, "$.alertId")
+    xdm.network.dns.dns_resource_record.value = json_extract_scalar(alertInfo, "$.dnsResponse")
+    xdm.network.http.url = json_extract_scalar(alertInfo, "$.dnsRequest")
+    xdm.target.ipv4 = json_extract_scalar(alertInfo, "$.dstIp")
+    xdm.target.port = json_extract_scalar(alertInfo, "$.dstPort")
+    xdm.event.type = json_extract_scalar(alertInfo, "$.eventType")
+    xdm.source.user.domain = json_extract_scalar(alertInfo, "$.loginAccountDomain")
+    xdm.source.user.identifier = json_extract_scalar(alertInfo, "$.loginAccountSid")
+    xdm.logon.type = json_extract_scalar(alertInfo, "$.loginType")
+    xdm.source.user.username = json_extract_scalar(alertInfo, "$.loginsUserName")
+    xdm.source.ipv4 = json_extract_scalar(alertInfo, "$.srcIp")
+    xdm.source.port = json_extract_scalar(alertInfo, "$.srcPort")
+    xdm.source.process.container_id = json_extract_scalar(containerInfo, "$.id")
+    xdm.event.description = json_extract_scalar(ruleInfo, "$.description")
+    xdm.alert.severity = json_extract_scalar(ruleInfo, "$.severity")
+    xdm.source.process.command_line = json_extract_scalar(sourceProcessInfo, "$.commandline")
+    xdm.source.process.executable.md5 = json_extract_scalar(sourceProcessInfo, "$.fileHashMd5")
+    xdm.source.process.executable.sha256 = json_extract_scalar(sourceProcessInfo, "$.fileHashSha256")
+    xdm.source.process.executable.path = json_extract_scalar(sourceProcessInfo, "$.filePath")
+    xdm.source.process.name = json_extract_scalar(sourceProcessInfo, "$.name")
+    xdm.source.process.pid = json_extract_scalar(sourceProcessInfo, "$.pid")
+    xdm.source.process.parent_id = json_extract_scalar(sourceParentProcessInfo, "$.pid")
+    xdm.target.process.executable.sha256 = json_extract_scalar(targetProcessInfo, "$.tgtFileHashSha256")
+    xdm.target.file.path = json_extract_scalar(targetProcessInfo, "$.tgtFilePath")
+    xdm.target.file_before.path = json_extract_scalar(targetProcessInfo, "$.tgtFileOldPath")
+    xdm.target.process.command_line = json_extract_scalar(targetProcessInfo, "$.tgtProcCmdLine")
+    xdm.target.process.executable.filename = json_extract_scalar(targetProcessInfo, "$.tgtProcName")
+    xdm.target.process.integrity_level = json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel")
+    xdm.target.process.pid = json_extract_scalar(targetProcessInfo, "$.tgtProcPid")
