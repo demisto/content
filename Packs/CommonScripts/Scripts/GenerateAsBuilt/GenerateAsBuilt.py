@@ -473,7 +473,7 @@ class Document:
             dashboards,
             author,
             customer
-    ): # pragma: no cover
+    ):  # pragma: no cover
         self.template = template
         self.integrations_table = integrations_table
         self.installed_packs_table = installed_packs_table
