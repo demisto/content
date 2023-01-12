@@ -11,14 +11,21 @@ configuration:
   name: credentials
   required: true
   type: 9
+- name: creds_key
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: API Key
   name: key
-  required: true
   type: 4
+  hidden: true
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Fairly reliable
+  defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: reliability
+  required: false
+  type: 15
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -27,20 +34,18 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
-  required: false
 - additionalinfo: If enabled, the integration will log out after executing each command.
   defaultvalue: 'true'
   display: Auto Logout
   name: auto_logout
   required: false
   type: 8
-- additionalinfo: If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes.
-  defaultvalue: 'true'
-  display: Auto Activate Changes
+- display: Auto Activate Changes
   name: auto_activate
   required: false
   type: 8
+  additionalinfo: If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes.
+  defaultvalue: 'true'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -471,7 +476,7 @@ script:
   runonce: false
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.9.42476
   type: python
 fromversion: 5.0.0
 tests:
