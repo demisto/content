@@ -2,7 +2,8 @@ id: PAN-OS Commit Configuration
 version: -1
 name: PAN-OS Commit Configuration
 fromversion: 5.0.0
-description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
+description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as
+  Panorama, it also pushes the Policies to the specified Device Group in the instance.
 starttaskid: "0"
 tasks:
   "0":
@@ -226,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: aaa91fe8-a230-491c-8de5-c28b897e9ddc
+    taskid: 73cbf069-2f98-42f8-8ed2-7780618b954c
     type: regular
     task:
-      id: aaa91fe8-a230-491c-8de5-c28b897e9ddc
+      id: 73cbf069-2f98-42f8-8ed2-7780618b954c
       version: -1
       name: Push rules to the Panorama device group
       description: Push rules from Palo Alto Panorama to the Palo Alto configured
@@ -243,14 +244,7 @@ tasks:
       - "11"
     scriptarguments:
       device-group:
-        complex:
-          root: inputs.device-group
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.device-group
-                iscontext: true
+        simple: ${inputs.device-group}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -796,6 +790,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -822,7 +817,7 @@ inputs:
 - key: device-group
   value: {}
   required: false
-  description: "Use device-group as input in case needed to override the device-group in panorama instance configuration."
+  description: ""
   playbookInputQuery: null
 outputs:
 - contextPath: Panorama.Commit.Warnings
