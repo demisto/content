@@ -65,11 +65,11 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
 )
 
 ''' HANDLE PROXY '''
-# if not PROXY:  # pragma: no cover
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
+if not PROXY:  # pragma: no cover
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 ''' HELPER CLASSES '''
 
