@@ -436,7 +436,7 @@ class UseCaseDocument:
             dependencies,
             author,
             customer
-    ):  # pragma: no cover
+    ):
         self.playbook_name = playbook_name
         self.automations = dependencies.get("automation", NoneTableData())
         self.integrations = dependencies.get("integration", NoneTableData())
@@ -483,7 +483,7 @@ class Document:
             dashboards,
             author,
             customer
-    ):  # pragma: no cover
+    ):
         self.template = template
         self.integrations_table = integrations_table
         self.installed_packs_table = installed_packs_table
