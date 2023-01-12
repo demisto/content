@@ -473,8 +473,8 @@ def main():
     auth_code = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_code', '')
     proxy = params.get('proxy', False)
     handle_error = argToBoolean(params.get('handle_error', 'true'))
-    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
-    private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or params.get('certificate_thumbprint', '')
+    private_key = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
