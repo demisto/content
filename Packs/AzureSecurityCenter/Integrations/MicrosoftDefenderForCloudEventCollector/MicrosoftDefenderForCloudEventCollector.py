@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 VENDOR = 'micrsoft'
 PRODUCT = 'defender_for_cloud'
 API_VERSION = '2022-01-01'
+OLD_API_VERSION = "2019-01-01"
 APP_NAME = "ms-azure-sc"
 
 ''' CLIENT CLASS '''
@@ -44,10 +45,13 @@ class MsClient:
             dict: contains response body with events
         """
         cmd_url = "/providers/Microsoft.Security/alerts"
-        params = {'api-version': API_VERSION}
+        params = {'api-version': OLD_API_VERSION}
         # example = f'Properties/reportedTimeUtc gt 2023-01-01T15:36:50.6288854Z'
-        filter_query = f'Properties/reportedTimeUtc gt {last_run}'
+        filter_query = f'Properties/reportedTimeUtc ge {last_run}'
         params['$filter'] = filter_query
+        # data = { 'filters' : "Properties.timeGeneratedUtc" : {
+        #         "gt": last_run
+        #     }}
         events = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
         return events
 
@@ -170,7 +174,7 @@ def handle_last_run(first_fetch: str) -> str:
         arg_name='First fetch time',
         required=True
     )
-    last_run = demisto.getLastRun()
+    last_run = demisto.getLastRun().get('time')
     if not last_run:
         # here we would convert the first fetch time to be compatible with the microsoft api
         last_run = first_fetch_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -249,7 +253,7 @@ def main() -> None:
                     last_run=last_run
                 )
                 # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun(next_run)
+                demisto.setLastRun({'time' : next_run})
 
             evetns = add_time_key_to_events(events)
         
