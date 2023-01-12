@@ -27,6 +27,8 @@ urllib3.disable_warnings()
 
 IS_AVAILABLE_URL = 'is-available'
 REQUESTER = 'xsoar'
+DEFAULT_POLLING_TIMEOUT = 600
+DEFAULT_POLLING_INTERVAL = 30
 
 dbot_score_by_verdict = {
     'malicious': 3,
@@ -509,8 +511,8 @@ def get_family_info_command(args: dict, intezer_api: IntezerApi) -> CommandResul
 @polling_function(name='intezer-get-file-analysis-result',
                   poll_message='Fetching Intezer analysis. Please wait...',
                   polling_arg_name='wait_for_result',
-                  timeout=_arg_to_int(demisto.args().get('timeout'), arg_name='timeout'),
-                  interval=_arg_to_int(demisto.args().get('interval'), arg_name='interval'))
+                  timeout=_arg_to_int(demisto.args().get('timeout', DEFAULT_POLLING_TIMEOUT), arg_name='timeout'),
+                  interval=_arg_to_int(demisto.args().get('interval', DEFAULT_POLLING_INTERVAL), arg_name='interval'))
 def get_file_analysis_result_command(args: dict, intezer_api: IntezerApi) -> PollResult:
     analysis_id = str(args.get('analysis_id'))
 
@@ -545,13 +547,14 @@ def get_file_analysis_result_command(args: dict, intezer_api: IntezerApi) -> Pol
 @polling_function(name='intezer-get-url-analysis-result',
                   poll_message='Fetching Intezer analysis. Please wait...',
                   polling_arg_name='wait_for_result',
-                  timeout=_arg_to_int(demisto.args().get('timeout'), arg_name='timeout'),
-                  interval=_arg_to_int(demisto.args().get('interval'), arg_name='interval'))
+                  timeout=_arg_to_int(demisto.args().get('timeout', DEFAULT_POLLING_TIMEOUT), arg_name='timeout'),
+                  interval=_arg_to_int(demisto.args().get('interval', DEFAULT_POLLING_INTERVAL), arg_name='interval'))
 def get_url_analysis_result_command(args: dict, intezer_api: IntezerApi) -> PollResult:
     analysis_id = str(args.get('analysis_id'))
 
     try:
         analysis = UrlAnalysis.from_analysis_id(analysis_id, api=intezer_api)
+
         if not analysis:
             return PollResult(
                 response=_get_missing_analysis_result(analysis_id=analysis_id)
@@ -579,8 +582,8 @@ def get_url_analysis_result_command(args: dict, intezer_api: IntezerApi) -> Poll
 @polling_function(name='intezer-get-endpoint-analysis-result',
                   poll_message='Fetching Intezer analysis. Please wait...',
                   polling_arg_name='wait_for_result',
-                  timeout=_arg_to_int(demisto.args().get('timeout'), arg_name='timeout'),
-                  interval=_arg_to_int(demisto.args().get('interval'), arg_name='interval'))
+                  timeout=_arg_to_int(demisto.args().get('timeout', DEFAULT_POLLING_TIMEOUT), arg_name='timeout'),
+                  interval=_arg_to_int(demisto.args().get('interval', DEFAULT_POLLING_INTERVAL), arg_name='interval'))
 def get_endpoint_analysis_result_command(args: dict, intezer_api: IntezerApi) -> PollResult:
     analysis_id = str(args.get('analysis_id'))
     indicator_name = args.get('indicator_name')
@@ -589,7 +592,7 @@ def get_endpoint_analysis_result_command(args: dict, intezer_api: IntezerApi) ->
         analysis = EndpointAnalysis.from_analysis_id(analysis_id, api=intezer_api)
         if not analysis:
             return PollResult(
-                response=_get_missing_analysis_result(analysis_id=analysis_id)
+                response=_get_missing_endpoint_analysis_result(analysis_id=analysis_id)
             )
 
         analysis_result = analysis.result()
@@ -602,7 +605,7 @@ def get_endpoint_analysis_result_command(args: dict, intezer_api: IntezerApi) ->
 
         elif http_error.response.status_code == HTTPStatus.NOT_FOUND:
             return PollResult(
-                response=_get_missing_analysis_result(analysis_id=analysis_id)
+                response=_get_missing_endpoint_analysis_result(analysis_id=analysis_id)
             )
         else:
             raise http_error
