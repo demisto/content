@@ -28,7 +28,6 @@ configuration:
   hidden: true
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
-  required: false
   type: 4
   hidden: true
 - display: Key (received from the admin consent - see Detailed Instructions (?)
