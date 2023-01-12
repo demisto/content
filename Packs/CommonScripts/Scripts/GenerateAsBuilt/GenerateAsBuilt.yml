@@ -42,6 +42,6 @@ system: false
 timeout: '0'
 type: python
 fromversion: 6.0.0
-dockerimage: demisto/teams:1.0.0.43058
+dockerimage: demisto/teams:1.0.0.43500
 tests:
 - No tests (auto formatted)
