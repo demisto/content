@@ -480,5 +480,5 @@
 			}
 		]
 	},
- "marketplaces": ["xsoar"]
+ 	"marketplaces": ["xsoar"]
 }

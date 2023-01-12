@@ -328,5 +328,5 @@
 	"id": "Sophos Central Event Layout",
 	"name": "Sophos Central Event Layout",
 	"version": -1,
- "marketplaces": ["xsoar"]
+ 	"marketplaces": ["xsoar"]
 }

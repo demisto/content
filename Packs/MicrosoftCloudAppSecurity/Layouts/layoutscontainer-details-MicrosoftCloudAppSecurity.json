@@ -462,5 +462,5 @@
 	"quickView": {},
 	"system": false,
 	"version": -1,
- "marketplaces": ["xsoar"]
+ 	"marketplaces": ["xsoar"]
 }

@@ -463,5 +463,5 @@
 	"name": "OTSecurity Rogue Device Found",
 	"system": false,
 	"version": -1,
- "marketplaces": ["xsoar"]
+ 	"marketplaces": ["xsoar"]
 }

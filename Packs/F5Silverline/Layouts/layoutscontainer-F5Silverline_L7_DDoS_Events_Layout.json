@@ -481,5 +481,5 @@
 	"name": "F5 Silverline L7 DDoS Events Layout",
 	"system": false,
 	"version": -1,
- "marketplaces": ["xsoar"]
+ 	"marketplaces": ["xsoar"]
 }
