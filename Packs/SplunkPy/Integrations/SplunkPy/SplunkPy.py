@@ -1934,6 +1934,8 @@ def build_search_kwargs(args, polling=False):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
+    if argToBoolean(args.get('fast_mode', False)):
+        kwargs_normalsearch['adhoc_search_level'] = "fast"
     if polling:
         kwargs_normalsearch['exec_mode'] = "normal"
     else:
@@ -2066,11 +2068,6 @@ def splunk_search_command(service: client.Service) -> CommandResults:
     job_sid = args.get("sid")
     search_job = None
     interval_in_secs = int(args.get('interval_in_seconds', 30))
-    fast_mode = argToBoolean(args.get('fast_mode', False))
-    print(fast_mode)
-    print('query alone: ' + query)
-    if fast_mode:
-        print('query alone: ' + query + '&adhoc_search_level=fast')
     if not job_sid or not polling:
         # create a new job to search the query.
         search_job = service.jobs.create(query, **search_kwargs)
