@@ -3,402 +3,405 @@ commonfields:
   id: KnowBe4KMSAT
   version: -1
 configuration:
-- defaultvalue: https://us.api.knowbe4.com
-  display: Your Reporting Server URL
-  name: url
-  required: true
-  type: 0
-  additionalinfo: URL of the Reporting API endpoint, only FQDN is required, e.g. https://us.api.knowbe4.com
-- displaypassword: Reporting API Key
-  additionalinfo: The Reporting API Key to use for connection
-  name: apikey
-  required: true
-  hiddenusername: true
-  type: 9
-- defaultvalue: https://api.events.knowbe4.com
-  display: Your User Events Server URL
-  name: userEventsUrl
-  required: true
-  type: 0
-  additionalinfo: URL of the User Events API endpoint, only FQDN is required, e.g. https://api.events.knowbe4.com
-- displaypassword: User Events API Key
-  additionalinfo: The User Events API Key to use for connection
-  name: userEventsApiKey
-  required: true
-  hiddenusername: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: 'KnowBe4 KMSAT integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments'
-display: 'KnowBe4KMSAT'
+  - defaultvalue: https://us.api.knowbe4.com
+    display: Your Reporting Server URL
+    name: url
+    required: true
+    type: 0
+    additionalinfo: URL of the Reporting API endpoint, only FQDN is required, e.g. https://us.api.knowbe4.com
+  - displaypassword: Reporting API Key
+    additionalinfo: The Reporting API Key to use for connection
+    name: apikey
+    required: true
+    hiddenusername: true
+    type: 9
+  - defaultvalue: https://api.events.knowbe4.com
+    display: Your User Events Server URL
+    name: userEventsUrl
+    required: true
+    type: 0
+    additionalinfo: URL of the User Events API endpoint, only FQDN is required, e.g. https://api.events.knowbe4.com
+  - displaypassword: User Events API Key
+    additionalinfo: The User Events API Key to use for connection
+    name: userEventsApiKey
+    required: true
+    hiddenusername: true
+    type: 9
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+description: "KnowBe4 KMSAT integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments"
+display: "KnowBe4KMSAT"
 name: KnowBe4KMSAT
 script:
   commands:
-  - name: get-account-info
-    arguments: []
-    outputs:
-    - contextPath: Account.Info.name
-      description: 'Account Name'
-      type: String
-    - contextPath: Account.Info.type
-      description: 'Account Type'
-      type: String
-    - contextPath: Account.Info.domains
-      description: 'Account Domains'
-      type: String
-    - contextPath: Account.Info.admins.id
-      description: 'Account Admin ID'
-      type: Number
-    - contextPath: Account.Info.admins.first_name
-      description: 'Account Admin First Name'
-      type: String
-    - contextPath: Account.Info.admins.last_name
-      description: 'Account Admin Last Name'
-      type: String
-    - contextPath: Account.Info.admins.email
-      description: 'Account Admin Email'
-      type: String
-    - contextPath: Account.Info.subscription_level
-      description: 'Account Subscription Level'
-      type: String
-    - contextPath: Account.Info.subscription_end_date
-      description: 'Account Subscription End Date'
-      type: Date
-    - contextPath: Account.Info.number_of_seats
-      description: 'Number of Seats'
-      type: Number
-    - contextPath: Account.Info.current_risk_score
-      description: 'Account Risk Score'
-      type: Number    
-    description: Returns KMSAT account information
-  - name: get-account-risk-score-history
-    arguments: []
-    outputs:
-    - contextPath: AccountRiskScore.History.risk_score
-      description: Account Risk score and associated date
-      type: String
-    - contextPath: AccountRiskScore.History.date
-      description: Account Risk score history date
-      type: String
-    description: Returns KMSAT Account Risk Score History.
-  - name: get-groups-risk-score-history
-    arguments:
-    - name: group_id
-      required: true
-      description: Group ID
-    outputs:
-    - contextPath: GroupsRiskScore.History.risk_score
-      description: Groups Risk score and associated date
-      type: String
-    - contextPath: GroupsRiskScore.History.date
-      description: Groups Risk score history date
-      type: String
-    description: Returns KMSAT Group Specific Risk Score History.
-  - name: get-user-risk-score-history
-    arguments:
-    - name: user_id
-      required: true
-      description: User ID
-    outputs:
-    - contextPath: UsersRiskScore.History.risk_score
-      description: Users Risk score and associated date
-    - contextPath: UsersRiskScore.History.date
-      description: Users Risk score history date
-    description: Returns KMSAT User Specific Risk Score History
-  - name: get-phishing-security-tests
-    arguments: []
-    outputs:
-    - contextPath: Phishing.Security.campaign_id
-      description: Phishing Security Campaign ID
-      type: number
-    - contextPath: Phishing.Security.pst_id
-      description: Phishing Security PST ID
-      type: number
-    - contextPath: Phishing.Security.status
-      description: Phishing Security Status
-      type: string
-    - contextPath: Phishing.Security.name
-      description: Phishing Security Name
-      type: string
-    - contextPath: Phishing.Security.groups
-      description: Phishing Security Groups
-    - contextPath: 'Phishing.Security.phish_prone_percentage '
-      description: Phishing Security Phishing Prone Percent
-      type: number
-    - contextPath: Phishing.Security.started_at
-      description: Phishing Security Started At Date
-      type: string
-    - contextPath: Phishing.Security.duration
-      description: Phishing Security Duration
-      type: number
-    - contextPath: 'Phishing.Security.categories '
-      description: Phishing Security Categories
-      type: unknown
-    - contextPath: Phishing.Security.template
-      description: Phishing Security Template
-    - contextPath: Phishing.Security.landing-page
-      description: Phishing Security Landing Page
-    - contextPath: Phishing.Security.scheduled_count
-      description: Phishing Security Scheduled Count
-      type: number
-    - contextPath: Phishing.Security.delivered_count
-      description: Phishing Security Delivered Count
-      type: number
-    - contextPath: Phishing.Security.opened_count
-      description: Phishing Security Opened Count
-      type: number
-    - contextPath: Phishing.Security.clicked_count
-      description: Phishing Security Clicked Count
-      type: number
-    - contextPath: Phishing.Security.replied_count
-      description: Phishing Security Replied Count
-      type: number
-    - contextPath: Phishing.Security.attachment_open_count
-      description: Phishing Security Attachment Open Count
-      type: number
-    - contextPath: Phishing.Security.macro_enabled_count
-      description: Phishing Security Macro Enabled Count
-      type: number
-    - contextPath: Phishing.Security.data_entered_count
-      description: Phishing Security Data Entered Count
-      type: number
-    - contextPath: Phishing.Security.qr_code_scanned_count
-      description: Phishing Security QA Code Scanned Count
-      type: number
-    - contextPath: Phishing.Security.reported_count
-      description: Phishing Security Reported Count
-      type: number
-    - contextPath: Phishing.Security.bounced_count
-      description: Phishing Security Bounced Count
-      type: number
-    description: Returns All Phishing Security Tests (PSTs)
-  - name: get-phishing-security-tests-recipients
-    arguments:
-    - name: pst_id
-      required: true
-      description: PST ID
-    outputs:
-    - contextPath: Phishing.Security.recipient_id
-      description: Phishing Security Recipient ID
-      type: number
-    - contextPath: Phishing.Security.psd_id
-      description: Phishing Security PST ID
-      type: number
-    - contextPath: Phishing.Security.user
-      description: Phishing Security User
-    - contextPath: Phishing.Security.template
-      description: Phishing Security Template
-    - contextPath: Phishing.Security.scheduled_at
-      description: Phishing Security Scheduled At
-      type: string
-    - contextPath: Phishing.Security.delivered_at
-      description: Phishing Security Delivered At
-      type: string
-    - contextPath: Phishing.Security.opened_at
-      description: Phishing Security Opened At
-      type: string
-    - contextPath: Phishing.Security.clicked_at
-      description: Phishing Security Clicked At
-      type: string
-    - contextPath: Phishing.Security.replied_at
-      description: Phishing Security Replied At
-      type: unknown
-    - contextPath: Phishing.Security.attachment_opened_at
-      description: Phishing Security Attachment Opened At
-      type: unknown
-    - contextPath: Phishing.Security.macro_enabled_at
-      description: Phishing Security Macro Enabled At
-    - contextPath: Phishing.Security.data_entered_at
-      description: Phishing Security Date Entered At
-      type: string
-    - contextPath: Phishing.Security.qr_code_scanned
-      description: Phishing Security QR Scanned At
-      type: string
-    - contextPath: Phishing.Security.reported_at
-      description: Phishing Security Reported At
-    - contextPath: Phishing.Security.bounced_at
-      description: Phishing Security Bounced At
-    - contextPath: Phishing.Security.ip
-      description: Phishing Security IP
-      type: string
-    - contextPath: Phishing.Security.ip_location
-      description: Phishing Security IP Location
-      type: string
-    - contextPath: Phishing.Security.browser
-      description: Phishing Security Browser
-      type: string
-    - contextPath: Phishing.Security.browser_version
-      description: Phishing Security Browser Security
-      type: string
-    - contextPath: Phishing.Security.os
-      description: Phishing Security OS
-      type: string
-    description: Returns a Specific Recipient's Results
-  - name: get-training-campaigns
-    arguments: []
-    outputs:
-    - contextPath: Training.Campaigns.campaign_id
-      description: Training Campaigns Campaign ID
-      type: number
-    - contextPath: Training.Campaigns.name
-      description: Training Campaigns Name
-      type: string
-    - contextPath: Training.Campaigns.groups
-      description: Training Campaigns Groups
-    - contextPath: Training.Campaigns.status
-      description: Training Campaigns  Status
-      type: string
-    - contextPath: Training.Campaigns.content
-      description: Training Campaigns Content
-    - contextPath: Training.Campaigns.duration_type
-      description: Training Campaigns Duration Type
-      type: string
-    - contextPath: Training.Campaigns.start_date
-      description: Training Campaigns Start Date
-    - contextPath: Training.Campaigns.end_date
-      description: Training Campaigns  End Date
-    - contextPath: Training.Campaigns.relative_duration
-      description: Training Campaigns Relative Duration
-    - contextPath: Training.Campaigns.auto_enroll
-      description: Training Campaigns Auto Enroll
-      type: boolean
-    - contextPath: Training.Campaigns.allow_multiple_enrollments
-      description: Training Campaigns Allow Multiple Enrollments
-      type: boolean
-    - contextPath: Training.Campaigns.completion_percentage
-      description: Training Campaigns Completion Percentage
-      type: number
-    description: Returns all Training Campaigns
-  - name: get-training-enrollments
-    arguments: []
-    outputs:
-    - contextPath: Training.Enrollments.enrollment_id
-      description: Training Enrollments Enrollment ID
-      type: number
-    - contextPath: Training.Enrollments.content_type
-      description: Training Enrollments Content Type
-      type: string
-    - contextPath: Training.Enrollments.module_name
-      description: Training Enrollments Module Name
-      type: string
-    - contextPath: Training.Enrollments.user
-      description: Training Enrollments User
-    - contextPath: Training.Enrollments.campaign_name
-      description: Training Enrollments Campaign Name
-      type: string
-    - contextPath: Training.Enrollments.enrollment_date
-      description: Training Enrollments Enrollment Date
-    - contextPath: Training.Enrollments.start_date
-      description: Training Enrollments Start Date
-    - contextPath: Training.Enrollments.completion_date
-      description: Training Enrollments Completion Date
-    - contextPath: Training.Enrollments.status
-      description: Training Enrollments Status
-    - contextPath: Training.Enrollments.time_spent
-      description: Training Enrollments Time Spent
-    - contextPath: Training.Enrollments.policy_acknowledged
-      description: Training Enrollments Policy Acknowledged
-      type: boolean
-    description: Returns all Training Enrollments
-  - name: get-user-events
-    arguments:
-    - name: event_type
-      description: Filter by Event Type
-    - name: target_user
-      description: Filter by User
-    - name: external_id
-      description: Filter by External ID
-    - name: source
-      description: Filter by Source
-    - name: occurred_date
-      description: Filter by Occurred Date (YYYY-MM-DD)
-    - name: risk_level
-      description: Filter by Risk Level by entering a value from -10 (low risk) to
-        10 (high risk).
-    - name: risk_decay_mode
-      description: Filter by Risk Decay Mode by entering a value of 0 or 1
-    - name: risk_expire_date
-      description: Filter by Risk Expire Date (YYYY-MM-DD)
-    - name: order_by
-      description: Order returned events by ID, Event Type, or Occurred Date ("id",
-        "event_type", "occurred_date")
-    - name: order_direction
-      description: Order returned events in ascending (asc) or descending (desc) order
-        ("asc", "desc")
-    outputs:
-    - contextPath: KMSAT.UserEvent.data.id
-      description: 'Unique ID of the event'
-      type: Number
-    - contextPath: KMSAT.UserEvent.data.user.email
-      description: 'User email address'
-      type: String
-    - contextPath: KMSAT.UserEvent.data.user.id
-      description: 'KMSAT User ID'
-      type: Number
-    - contextPath: KMSAT.UserEvent.data.user.archived
-      description: 'User Archived flag'
-      type: Boolean
-    - contextPath: KMSAT.UserEvent.data.external_id
-      description: 'External ID of the event'
-      type: String
-    - contextPath: KMSAT.UserEvent.data.source
-      description: 'Source of the event'
-      type: String
-    - contextPath: KMSAT.UserEvent.data.description
-      description: 'Description of the event'
-      type: String
-    - contextPath: KMSAT.UserEvent.data.occurred_date
-      description: 'When the event occurred'
-      type: Date
-    - contextPath: KMSAT.UserEvent.data.risk.level
-      description: 'Risk Level of the event'
-      type: Number
-    - contextPath: KMSAT.UserEvent.data.risk.factor
-      description: 'Risk Factor of the event'
-      type: Number
-    - contextPath: KMSAT.UserEvent.data.risk.decay_mode
-      description: 'The Risk Level Decay Mode'
-      type: String
-    - contextPath: KMSAT.UserEvent.data.risk.expire_date
-      description: 'Risk Expire Date'
-      type: String
-    - contextPath: KMSAT.UserEvent.data.event_type.id
-      description: 'Event Type ID'
-      type: Number
-    - contextPath: KMSAT.UserEvent.data.event_type.name
-      description: 'Event Type Name'
-      type: String
-    description: Returns KMSAT User Events.
-  - name: get-user-event-types
-    arguments:
-    - name: name
-      description: Filter by name of the event type
-    outputs:
-    - contextPath: UserEvent.Types.data.id
-      description: 'ID of the Event Type'
-      type: Number
-    - contextPath: UserEvent.Types.account_id
-      description: 'Account ID'
-      type: Number
-    - contextPath: UserEvent.Types.data.name
-      description: 'Name of the Event Type'
-      type: String
-    - contextPath: UserEvent.Types.data.description
-      description: 'Description of Event Type'
-      type: String
-    description: Returns all KMSAT User Event Types
+    - name: get-account-info
+      arguments: []
+      outputs:
+        - contextPath: Account.Info.name
+          description: "Account Name"
+          type: String
+        - contextPath: Account.Info.type
+          description: "Account Type"
+          type: String
+        - contextPath: Account.Info.domains
+          description: "Account Domains"
+          type: String
+        - contextPath: Account.Info.admins.id
+          description: "Account Admin ID"
+          type: Number
+        - contextPath: Account.Info.admins.first_name
+          description: "Account Admin First Name"
+          type: String
+        - contextPath: Account.Info.admins.last_name
+          description: "Account Admin Last Name"
+          type: String
+        - contextPath: Account.Info.admins.email
+          description: "Account Admin Email"
+          type: String
+        - contextPath: Account.Info.subscription_level
+          description: "Account Subscription Level"
+          type: String
+        - contextPath: Account.Info.subscription_end_date
+          description: "Account Subscription End Date"
+          type: Date
+        - contextPath: Account.Info.number_of_seats
+          description: "Number of Seats"
+          type: Number
+        - contextPath: Account.Info.current_risk_score
+          description: "Account Risk Score"
+          type: Number
+      description: Returns KMSAT account information
+    - name: get-account-risk-score-history
+      arguments: []
+      outputs:
+        - contextPath: AccountRiskScore.History.risk_score
+          description: Account Risk score and associated date
+          type: String
+        - contextPath: AccountRiskScore.History.date
+          description: Account Risk score history date
+          type: String
+      description: Returns KMSAT Account Risk Score History.
+    - name: get-groups-risk-score-history
+      arguments:
+        - name: group_id
+          required: true
+          description: Group ID
+      outputs:
+        - contextPath: GroupsRiskScore.History.risk_score
+          description: Groups Risk score and associated date
+          type: String
+        - contextPath: GroupsRiskScore.History.date
+          description: Groups Risk score history date
+          type: String
+      description: Returns KMSAT Group Specific Risk Score History.
+    - name: get-users-risk-score-history
+      arguments:
+        - name: user_id
+          required: true
+          description: User ID
+      outputs:
+        - contextPath: UsersRiskScore.History.risk_score
+          description: Users Risk score and associated date
+        - contextPath: UsersRiskScore.History.date
+          description: Users Risk score history date
+      description: Returns KMSAT User Specific Risk Score History
+    - name: get-phishing-security-tests
+      arguments: []
+      outputs:
+        - contextPath: Phishing.Security.campaign_id
+          description: Phishing Security Campaign ID
+          type: number
+        - contextPath: Phishing.Security.pst_id
+          description: Phishing Security PST ID
+          type: number
+        - contextPath: Phishing.Security.status
+          description: Phishing Security Status
+          type: string
+        - contextPath: Phishing.Security.name
+          description: Phishing Security Name
+          type: string
+        - contextPath: Phishing.Security.groups
+          description: Phishing Security Groups
+        - contextPath: "Phishing.Security.phish_prone_percentage "
+          description: Phishing Security Phishing Prone Percent
+          type: number
+        - contextPath: Phishing.Security.started_at
+          description: Phishing Security Started At Date
+          type: string
+        - contextPath: Phishing.Security.duration
+          description: Phishing Security Duration
+          type: number
+        - contextPath: "Phishing.Security.categories "
+          description: Phishing Security Categories
+          type: unknown
+        - contextPath: Phishing.Security.template
+          description: Phishing Security Template
+        - contextPath: Phishing.Security.landing-page
+          description: Phishing Security Landing Page
+        - contextPath: Phishing.Security.scheduled_count
+          description: Phishing Security Scheduled Count
+          type: number
+        - contextPath: Phishing.Security.delivered_count
+          description: Phishing Security Delivered Count
+          type: number
+        - contextPath: Phishing.Security.opened_count
+          description: Phishing Security Opened Count
+          type: number
+        - contextPath: Phishing.Security.clicked_count
+          description: Phishing Security Clicked Count
+          type: number
+        - contextPath: Phishing.Security.replied_count
+          description: Phishing Security Replied Count
+          type: number
+        - contextPath: Phishing.Security.attachment_open_count
+          description: Phishing Security Attachment Open Count
+          type: number
+        - contextPath: Phishing.Security.macro_enabled_count
+          description: Phishing Security Macro Enabled Count
+          type: number
+        - contextPath: Phishing.Security.data_entered_count
+          description: Phishing Security Data Entered Count
+          type: number
+        - contextPath: Phishing.Security.qr_code_scanned_count
+          description: Phishing Security QA Code Scanned Count
+          type: number
+        - contextPath: Phishing.Security.reported_count
+          description: Phishing Security Reported Count
+          type: number
+        - contextPath: Phishing.Security.bounced_count
+          description: Phishing Security Bounced Count
+          type: number
+      description: Returns All Phishing Security Tests (PSTs)
+    - name: get-phishing-security-tests-recipients
+      arguments:
+        - name: pst_id
+          required: true
+          description: PST ID
+      outputs:
+        - contextPath: Phishing.Security.recipient_id
+          description: Phishing Security Recipient ID
+          type: number
+        - contextPath: Phishing.Security.psd_id
+          description: Phishing Security PST ID
+          type: number
+        - contextPath: Phishing.Security.user
+          description: Phishing Security User
+        - contextPath: Phishing.Security.template
+          description: Phishing Security Template
+        - contextPath: Phishing.Security.scheduled_at
+          description: Phishing Security Scheduled At
+          type: string
+        - contextPath: Phishing.Security.delivered_at
+          description: Phishing Security Delivered At
+          type: string
+        - contextPath: Phishing.Security.opened_at
+          description: Phishing Security Opened At
+          type: string
+        - contextPath: Phishing.Security.clicked_at
+          description: Phishing Security Clicked At
+          type: string
+        - contextPath: Phishing.Security.replied_at
+          description: Phishing Security Replied At
+          type: unknown
+        - contextPath: Phishing.Security.attachment_opened_at
+          description: Phishing Security Attachment Opened At
+          type: unknown
+        - contextPath: Phishing.Security.macro_enabled_at
+          description: Phishing Security Macro Enabled At
+        - contextPath: Phishing.Security.data_entered_at
+          description: Phishing Security Date Entered At
+          type: string
+        - contextPath: Phishing.Security.qr_code_scanned
+          description: Phishing Security QR Scanned At
+          type: string
+        - contextPath: Phishing.Security.reported_at
+          description: Phishing Security Reported At
+        - contextPath: Phishing.Security.bounced_at
+          description: Phishing Security Bounced At
+        - contextPath: Phishing.Security.ip
+          description: Phishing Security IP
+          type: string
+        - contextPath: Phishing.Security.ip_location
+          description: Phishing Security IP Location
+          type: string
+        - contextPath: Phishing.Security.browser
+          description: Phishing Security Browser
+          type: string
+        - contextPath: Phishing.Security.browser_version
+          description: Phishing Security Browser Security
+          type: string
+        - contextPath: Phishing.Security.os
+          description: Phishing Security OS
+          type: string
+      description: Returns a Specific Recipient's Results
+    - name: get-training-campaigns
+      arguments: []
+      outputs:
+        - contextPath: Training.Campaigns.campaign_id
+          description: Training Campaigns Campaign ID
+          type: number
+        - contextPath: Training.Campaigns.name
+          description: Training Campaigns Name
+          type: string
+        - contextPath: Training.Campaigns.groups
+          description: Training Campaigns Groups
+        - contextPath: Training.Campaigns.status
+          description: Training Campaigns  Status
+          type: string
+        - contextPath: Training.Campaigns.content
+          description: Training Campaigns Content
+        - contextPath: Training.Campaigns.duration_type
+          description: Training Campaigns Duration Type
+          type: string
+        - contextPath: Training.Campaigns.start_date
+          description: Training Campaigns Start Date
+        - contextPath: Training.Campaigns.end_date
+          description: Training Campaigns  End Date
+        - contextPath: Training.Campaigns.relative_duration
+          description: Training Campaigns Relative Duration
+        - contextPath: Training.Campaigns.auto_enroll
+          description: Training Campaigns Auto Enroll
+          type: boolean
+        - contextPath: Training.Campaigns.allow_multiple_enrollments
+          description: Training Campaigns Allow Multiple Enrollments
+          type: boolean
+        - contextPath: Training.Campaigns.completion_percentage
+          description: Training Campaigns Completion Percentage
+          type: number
+      description: Returns all Training Campaigns
+    - name: get-training-enrollments
+      arguments: []
+      outputs:
+        - contextPath: Training.Enrollments.enrollment_id
+          description: Training Enrollments Enrollment ID
+          type: number
+        - contextPath: Training.Enrollments.content_type
+          description: Training Enrollments Content Type
+          type: string
+        - contextPath: Training.Enrollments.module_name
+          description: Training Enrollments Module Name
+          type: string
+        - contextPath: Training.Enrollments.user
+          description: Training Enrollments User
+        - contextPath: Training.Enrollments.campaign_name
+          description: Training Enrollments Campaign Name
+          type: string
+        - contextPath: Training.Enrollments.enrollment_date
+          description: Training Enrollments Enrollment Date
+        - contextPath: Training.Enrollments.start_date
+          description: Training Enrollments Start Date
+        - contextPath: Training.Enrollments.completion_date
+          description: Training Enrollments Completion Date
+        - contextPath: Training.Enrollments.status
+          description: Training Enrollments Status
+        - contextPath: Training.Enrollments.time_spent
+          description: Training Enrollments Time Spent
+        - contextPath: Training.Enrollments.policy_acknowledged
+          description: Training Enrollments Policy Acknowledged
+          type: boolean
+      description: Returns all Training Enrollments
+    - name: get-user-events
+      arguments:
+        - name: event_type
+          description: Filter by Event Type
+        - name: target_user
+          description: Filter by User
+        - name: external_id
+          description: Filter by External ID
+        - name: source
+          description: Filter by Source
+        - name: occurred_date
+          description: Filter by Occurred Date (YYYY-MM-DD)
+        - name: risk_level
+          description:
+            Filter by Risk Level by entering a value from -10 (low risk) to
+            10 (high risk).
+        - name: risk_decay_mode
+          description: Filter by Risk Decay Mode by entering a value of 0 or 1
+        - name: risk_expire_date
+          description: Filter by Risk Expire Date (YYYY-MM-DD)
+        - name: order_by
+          description:
+            Order returned events by ID, Event Type, or Occurred Date ("id",
+            "event_type", "occurred_date")
+        - name: order_direction
+          description:
+            Order returned events in ascending (asc) or descending (desc) order
+            ("asc", "desc")
+      outputs:
+        - contextPath: KMSAT.UserEvent.data.id
+          description: "Unique ID of the event"
+          type: Number
+        - contextPath: KMSAT.UserEvent.data.user.email
+          description: "User email address"
+          type: String
+        - contextPath: KMSAT.UserEvent.data.user.id
+          description: "KMSAT User ID"
+          type: Number
+        - contextPath: KMSAT.UserEvent.data.user.archived
+          description: "User Archived flag"
+          type: Boolean
+        - contextPath: KMSAT.UserEvent.data.external_id
+          description: "External ID of the event"
+          type: String
+        - contextPath: KMSAT.UserEvent.data.source
+          description: "Source of the event"
+          type: String
+        - contextPath: KMSAT.UserEvent.data.description
+          description: "Description of the event"
+          type: String
+        - contextPath: KMSAT.UserEvent.data.occurred_date
+          description: "When the event occurred"
+          type: Date
+        - contextPath: KMSAT.UserEvent.data.risk.level
+          description: "Risk Level of the event"
+          type: Number
+        - contextPath: KMSAT.UserEvent.data.risk.factor
+          description: "Risk Factor of the event"
+          type: Number
+        - contextPath: KMSAT.UserEvent.data.risk.decay_mode
+          description: "The Risk Level Decay Mode"
+          type: String
+        - contextPath: KMSAT.UserEvent.data.risk.expire_date
+          description: "Risk Expire Date"
+          type: String
+        - contextPath: KMSAT.UserEvent.data.event_type.id
+          description: "Event Type ID"
+          type: Number
+        - contextPath: KMSAT.UserEvent.data.event_type.name
+          description: "Event Type Name"
+          type: String
+      description: Returns KMSAT User Events.
+    - name: get-user-event-types
+      arguments:
+        - name: name
+          description: Filter by name of the event type
+      outputs:
+        - contextPath: UserEvent.Types.data.id
+          description: "ID of the Event Type"
+          type: Number
+        - contextPath: UserEvent.Types.account_id
+          description: "Account ID"
+          type: Number
+        - contextPath: UserEvent.Types.data.name
+          description: "Name of the Event Type"
+          type: String
+        - contextPath: UserEvent.Types.data.description
+          description: "Description of Event Type"
+          type: String
+      description: Returns all KMSAT User Event Types
   isfetch: false
   runonce: false
-  script: '-'
+  script: "-"
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.9.43882
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)

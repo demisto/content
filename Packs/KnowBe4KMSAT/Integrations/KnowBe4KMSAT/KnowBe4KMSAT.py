@@ -23,11 +23,11 @@ from typing import Dict
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -39,39 +39,79 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this  implementation, no special attributes defined
     """
+
     def __init__(self, base_url, verify, proxy, headers=None, max_fetch=None):
         self.max_fetch = max_fetch
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def kmsat_account_info(self):
-        return self._http_request(method='GET', url_suffix='/account', resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="GET", url_suffix="/account", resp_type="json", ok_codes=(200,)
+        )
 
     def kmsat_account_risk_score_history(self):
-        return self._http_request(method='GET', url_suffix='/account/risk_score_history', resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="GET",
+            url_suffix="/account/risk_score_history",
+            resp_type="json",
+            ok_codes=(200,),
+        )
 
     # Test Group ID: 3774629
     def kmsat_groups_risk_score_history(self, group_id):
-        return self._http_request(method='GET', url_suffix=f"/groups/{group_id}/risk_score_history", resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/groups/{group_id}/risk_score_history",
+            resp_type="json",
+            ok_codes=(200,),
+        )
+
     # Test User ID: 79158807
     def kmsat_users_risk_score_history(self, user_id):
-        return self._http_request(method='GET', url_suffix=f"/users/{user_id}/risk_score_history", resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/users/{user_id}/risk_score_history",
+            resp_type="json",
+            ok_codes=(200,),
+        )
 
     def kmsat_phishing_security_tests(self):
-        return self._http_request(method='GET', url_suffix='/phishing', resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="GET",
+            url_suffix="/phishing/security_tests",
+            resp_type="json",
+            ok_codes=(200,),
+        )
+
     # Test PST ID: 8430044
     def kmsat_phishing_security_tests_recipients(self, pst_id):
-        return self._http_request(method='GET', url_suffix=f"/phishing/security_tests/{pst_id}/recipients", resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/phishing/security_tests/{pst_id}/recipients",
+            resp_type="json",
+            ok_codes=(200,),
+        )
 
     def kmsat_training_campaigns(self):
-        return self._http_request(method='GET', url_suffix='/training/campaigns', resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="GET",
+            url_suffix="/training/campaigns",
+            resp_type="json",
+            ok_codes=(200,),
+        )
 
     def kmsat_training_enrollments(self):
-        return self._http_request(method='GET', url_suffix='/training/enrollments', resp_type='json', ok_codes=(200,))
+        return self._http_request(
+            method="GET",
+            url_suffix="/training/enrollments",
+            resp_type="json",
+            ok_codes=(200,),
+        )
 
 
 class UserEventClient(BaseClient):
-    """Client class to interact with the KMSAT User EventAPI
-    """
+    """Client class to interact with the KMSAT User EventAPI"""
+
     def __init__(self, base_url, verify, proxy, headers=None, max_fetch=None):
         self.max_fetch = max_fetch
 
@@ -79,126 +119,237 @@ class UserEventClient(BaseClient):
 
     def user_events(self, args: dict, page: int = None, page_size: int = None):
 
-        params = remove_empty_elements({
-            'event_type': args.get('event_type'),
-            'target_user': args.get('target_user'),
-            'external_id': args.get('external_id'),
-            'source': args.get('source'),
-            'occurred_date': args.get('occurred_date'),
-            'risk_level': args.get('risk_level'),
-            'risk_decay_mode': args.get('risk_decay_mode'),
-            'risk_expire_date': args.get('risk_expire_date'),
-            'order_by': args.get('order_by'),
-            'order_direction': args.get('order_direction'),
-            'page': page,
-            'per_page': page_size
-        })
-        return self._http_request(method='GET', url_suffix='/events', resp_type='json', ok_codes=(200,), params=params)
+        params = remove_empty_elements(
+            {
+                "event_type": args.get("event_type"),
+                "target_user": args.get("target_user"),
+                "external_id": args.get("external_id"),
+                "source": args.get("source"),
+                "occurred_date": args.get("occurred_date"),
+                "risk_level": args.get("risk_level"),
+                "risk_decay_mode": args.get("risk_decay_mode"),
+                "risk_expire_date": args.get("risk_expire_date"),
+                "order_by": args.get("order_by"),
+                "order_direction": args.get("order_direction"),
+                "page": page,
+                "per_page": page_size,
+            }
+        )
+        return self._http_request(
+            method="GET",
+            url_suffix="/events",
+            resp_type="json",
+            ok_codes=(200,),
+            params=params,
+        )
 
     def user_event_types(self, args: dict):
-        params = remove_empty_elements({
-            'nane': args.get('name')
-        })
-        return self._http_request(method='GET', url_suffix='/event_types', resp_type='json', ok_codes=(200,), params=params)
+        params = remove_empty_elements({"nane": args.get("name")})
+        return self._http_request(
+            method="GET",
+            url_suffix="/event_types",
+            resp_type="json",
+            ok_codes=(200,),
+            params=params,
+        )
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
+
 
 def get_pagination(args: dict):
-     params = remove_empty_elements({
-            'page': args.get('page'),
-            'per_page': args.get('per_page')
-        })
-     return params
+    params = remove_empty_elements(
+        {"page": args.get("page"), "per_page": args.get("per_page")}
+    )
+    return params
 
 
 def get_account_info(client: Client) -> CommandResults:
     response = client.kmsat_account_info()
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include `account_info`.', res=response)
-    return CommandResults(outputs_prefix='KMSAT_Account_Info_Returned',
-                          outputs_key_field='',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='Account_Info', t=response))
+        raise DemistoException(
+            "Translation failed: the response from server did not include `account_info`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="Account.Info",
+        outputs_key_field="name",
+        raw_response=response,
+        readable_output=tableToMarkdown(name="Account Info", t=response),
+    )
 
 
 def get_account_risk_score_history(client: Client) -> CommandResults:
     response = client.kmsat_account_risk_score_history()
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include `account_risk_score_history`.', res=response)
-    markdown = '### Risk Score\n'
-    markdown += tableToMarkdown('Account Risk Score History', response, headers=['risk_score', 'date'])
-    return CommandResults(outputs_prefix='AccountRiskScore.History',
-                          outputs_key_field='',
-                          raw_response=response,
-                          readable_output=markdown)
+        raise DemistoException(
+            "Translation failed: the response from server did not include `account_risk_score_history`.",
+            res=response,
+        )
+    markdown = tableToMarkdown(
+        "Account Risk Score History", response, ["risk_score", "date"]
+    )
+    return CommandResults(
+        outputs_prefix="AccountRiskScore.History",
+        outputs_key_field="",
+        raw_response=response,
+        readable_output=markdown,
+    )
 
 
 def get_groups_risk_score_history(client: Client, args: dict) -> CommandResults:
-    group_id = remove_empty_elements(args.get('group_id'))
+    group_id = remove_empty_elements(args.get("group_id"))
     response = client.kmsat_groups_risk_score_history(group_id)
+    markdown = tableToMarkdown(
+        "Groups Risk Score History", response, headers=["risk_score", "date"]
+    )
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include `groups_risk_score_history`.', res=response)
-    return CommandResults(outputs_prefix='KMSAT_Groups_Risk_Score_History_Returned',
-                          outputs_key_field='',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='Groups_Risk_Score_History', t=response))
+        raise DemistoException(
+            "Translation failed: the response from server did not include `groups_risk_score_history`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="GroupsRiskScore.History",
+        outputs_key_field="id",
+        raw_response=response,
+        readable_output=markdown,
+    )
 
 
 def get_users_risk_score_history(client: Client, args: dict) -> CommandResults:
-    user_id = remove_empty_elements(args.get('user_id'))
+    user_id = remove_empty_elements(args.get("user_id"))
     response = client.kmsat_users_risk_score_history(user_id)
+    markdown = tableToMarkdown(
+        "Users Risk Score History", response, headers=["risk_score", "date"]
+    )
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include `users_risk_score_history`.', res=response)
-    return CommandResults(outputs_prefix='KMSAT_Users_Risk_Score_History_Returned',
-                          outputs_key_field='',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='Users_Risk_Score_History', t=response))
+        raise DemistoException(
+            "Translation failed: the response from server did not include `users_risk_score_history`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="UsersRiskScore.History",
+        outputs_key_field="",
+        raw_response=response,
+        readable_output=markdown,
+    )
 
 
 def get_phishing_security_tests(client: Client) -> CommandResults:
     response = client.kmsat_phishing_security_tests()
+    markdown = tableToMarkdown(
+        "Phishing Security Tests",
+        response,
+        headers=[
+            "campaign_id",
+            "pst_id",
+            "status",
+            "name",
+            "groups",
+            "phish_prone_percentage",
+            "started_at",
+            "duration",
+            "categories",
+            "template",
+            "landing-page",
+            "scheduled_count",
+            "delivered_count",
+            "opened_count",
+            "clicked_count",
+            "replied_count",
+            "attachment_open_count",
+            "macro_enabled_count",
+            "data_entered_count",
+            "qr_code_scanned_count",
+            "reported_count",
+            "bounced_count",
+        ],
+    )
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include `phishing_security_tests`.', res=response)
-    return CommandResults(outputs_prefix='KMSAT_Phishing_Security_Tests',
-                          outputs_key_field='',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='Phishing_Security_Tests', t=response))
+        raise DemistoException(
+            "Translation failed: the response from server did not include `phishing_security_tests`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="Phishing.Security",
+        outputs_key_field="campaign_id",
+        raw_response=response,
+        readable_output=markdown,
+    )
 
 
 def get_phishing_security_tests_recipients(client: Client, args) -> CommandResults:
-    pst_id = remove_empty_elements(args.get('pst_id'))
-    response = client.kmsat_phishing_security_tests_recipients(client, pst_id)
+    pst_id = remove_empty_elements(args.get("pst_id"))
+    response = client.kmsat_phishing_security_tests_recipients(pst_id)
+    markdown = tableToMarkdown(
+        "Phishing Security Tests Recipients",
+        response,
+        headers=[
+            "recipient_id",
+            "pst_id",
+            "user",
+            "template",
+            "scheduled_at",
+            "delivered_at",
+            "opened_at",
+            "clicked_at",
+            "replied_at",
+            "attachment_opened_at",
+            "macro_enabled_at",
+            "data_entered_at",
+            "qr_code_scanned",
+            "reported_at",
+            "bounced_at",
+            "ip",
+            "ip_location",
+            "browser",
+            "browser_version",
+            "os",
+        ],
+    )
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include `phishing_security_tests_recipients`.', res=response)
-    return CommandResults(outputs_prefix='KMSAT_Phishing_Security_Tests_Recipients',
-                          outputs_key_field='',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='Phishing_Security_Tests_Recipients', t=response))
+        raise DemistoException(
+            "Translation failed: the response from server did not include `phishing_security_tests_recipients`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="Phishing.Security",
+        outputs_key_field="recipient_id",
+        raw_response=response,
+        readable_output=markdown,
+    )
 
 
 def get_training_campaigns(client: Client) -> CommandResults:
     response = client.kmsat_training_campaigns()
-    return_results(response)
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include `training_campaigns`.', res=response)
-    return CommandResults(outputs_prefix='KMSAT_Training_Campaigns',
-                          outputs_key_field='',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='Training_Campaigns', t=response))
+        raise DemistoException(
+            "Translation failed: the response from server did not include `training_campaigns`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="Training.Campaigns",
+        outputs_key_field="campaign_id",
+        raw_response=response,
+        readable_output=tableToMarkdown(name="Training_Campaigns", t=response),
+    )
 
 
 def get_training_enrollments(client: Client) -> CommandResults:
     response = client.kmsat_training_enrollments()
-    return_results(response)
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include `training_enrollments`.', res=response)
-    return CommandResults(outputs_prefix='KMSAT_Training_Enrollments',
-                          outputs_key_field='',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='Training_Enrollments', t=response))
+        raise DemistoException(
+            "Translation failed: the response from server did not include `training_enrollments`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="Training.Enrollments",
+        outputs_key_field="enrollment_id",
+        raw_response=response,
+        readable_output=tableToMarkdown(name="Training_Enrollments", t=response),
+    )
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
@@ -215,7 +366,7 @@ def fetch_incidents(client, last_run, first_fetch_time):
         incidents: Incidents that will be created in Cortex XSOAR
     """
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = last_run.get("last_fetch")
 
     # Handle first time fetch
     if last_fetch is None:
@@ -227,11 +378,11 @@ def fetch_incidents(client, last_run, first_fetch_time):
     incidents = []
     items = client.list_incidents()
     for item in items:
-        incident_created_time = dateparser.parse(item['created_time'])
+        incident_created_time = dateparser.parse(item["created_time"])
         incident = {
-            'name': item['description'],
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(item)
+            "name": item["description"],
+            "occurred": incident_created_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "rawJSON": json.dumps(item),
         }
 
         incidents.append(incident)
@@ -240,7 +391,7 @@ def fetch_incidents(client, last_run, first_fetch_time):
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
 
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
+    next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 
@@ -257,8 +408,9 @@ def fetch_incidents_command(client: Client) -> None:
         client=client,
         last_run=demisto.getLastRun(),
         first_fetch_time=first_fetch_time,
-        max_fetch=fetch_limit)  # type: ignore
-    demisto.setLastRun({'last_fetch': next_run})
+        max_fetch=fetch_limit,
+    )  # type: ignore
+    demisto.setLastRun({"last_fetch": next_run})
     demisto.incidents(incidents)
 
 
@@ -266,24 +418,34 @@ def get_user_events(client: UserEventClient, args: dict) -> CommandResults:
     response = client.user_events(args, 1, 100)
     return_results(response)
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include user event `data`.', res=response)
-    data: List[Dict] = response.get('data') or []
-    return CommandResults(outputs_prefix='KMSAT_User_Events_Returned',
-                          outputs_key_field='id',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='KMSAT_User_Events', t=data))
+        raise DemistoException(
+            "Translation failed: the response from server did not include user event `data`.",
+            res=response,
+        )
+    data: List[Dict] = response.get("data") or []
+    return CommandResults(
+        outputs_prefix="KMSAT_User_Events_Returned",
+        outputs_key_field="id",
+        raw_response=response,
+        readable_output=tableToMarkdown(name="KMSAT_User_Events", t=data),
+    )
 
 
 def get_user_event_types(client: UserEventClient, args: dict) -> CommandResults:
     response = client.user_event_types(args)
     return_results(response)
     if response is None:
-        raise DemistoException('Translation failed: the response from server did not include user event types`data`.', res=response)
-    data: List[Dict] = response.get('data') or []
-    return CommandResults(outputs_prefix='KMSAT_User_Event_Types_Returned',
-                          outputs_key_field='id',
-                          raw_response=response,
-                          readable_output=tableToMarkdown(name='KMSAT_User_Event_Types', t=data))
+        raise DemistoException(
+            "Translation failed: the response from server did not include user event types`data`.",
+            res=response,
+        )
+    data: List[Dict] = response.get("data") or []
+    return CommandResults(
+        outputs_prefix="KMSAT_User_Event_Types_Returned",
+        outputs_key_field="id",
+        raw_response=response,
+        readable_output=tableToMarkdown(name="KMSAT_User_Event_Types", t=data),
+    )
 
 
 def test_module(client: Client, userEventClient: UserEventClient) -> str:
@@ -297,32 +459,40 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
     :param Client: client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    :return type: ``str``
     """
 
-    message: str = ''
+    message: str = ""
     try:
         client.kmsat_account_info()
-        message = 'ok'
+        message = "ok"
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure Reporting API Key is correctly set' + str(client._headers)
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
         else:
             raise e
 
     try:
         params: Dict = {}
         userEventClient.user_event_types(params)
-        message = 'ok'
+        message = "ok"
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure User Event API Key is correctly set' + str(client._headers)
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure User Event API Key is correctly set"
+                + str(client._headers)
+            )
         else:
             raise e
     return message
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -333,73 +503,84 @@ def main() -> None:
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/v1')
-    userEvents_base_url =demisto.params()['userEventsUrl']
+    base_url = urljoin(demisto.params()["url"], "/v1")
+    userEvents_base_url = demisto.params()["userEventsUrl"]
 
-    # verify api key or creds are specified
-    if not params.get('apikey') or not (key := params.get('apikey', {}).get('password')):
-        raise DemistoException('Missing Reporting API Key. Fill in a valid key in the integration configuration.')
+    # verify api key or credentials are specified
+    if not params.get("apikey") or not (
+        key := params.get("apikey", {}).get("password")
+    ):
+        raise DemistoException(
+            "Missing Reporting API Key. Fill in a valid key in the integration configuration."
+        )
 
-    # verify User Events api key or creds are specified
-    if not params.get('userEventsApiKey') or not (userEventsApiKey := params.get('userEventsApiKey', {}).get('password')):
-        raise DemistoException('Missing User Events API Key. Fill in a valid key in the integration configuration.')
+    # verify User Events api key or credentials are specified
+    if not params.get("userEventsApiKey") or not (
+        userEventsApiKey := params.get("userEventsApiKey", {}).get("password")
+    ):
+        raise DemistoException(
+            "Missing User Events API Key. Fill in a valid key in the integration configuration."
+        )
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not demisto.params().get("insecure", False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = demisto.params().get("proxy", False)
 
     try:
 
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers= {
-            'Authorization': 'Bearer ' + key,
-            'Content-Type': 'application/json'
+            headers={
+                "Authorization": "Bearer " + key,
+                "Content-Type": "application/json",
             },
-            proxy=proxy)
+            proxy=proxy,
+        )
 
-        userEventClient = UserEventClient(base_url=userEvents_base_url,
+        userEventClient = UserEventClient(
+            base_url=userEvents_base_url,
             verify=verify_certificate,
-            headers= {
-            'Authorization': 'Bearer ' + userEventsApiKey,
-            'Content-Type': 'application/json'
+            headers={
+                "Authorization": "Bearer " + userEventsApiKey,
+                "Content-Type": "application/json",
             },
-            proxy=proxy)
+            proxy=proxy,
+        )
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client, userEventClient)
             return_results(result)
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             fetch_incidents_command(client)
-        elif command == 'get-account-info':
+        elif command == "get-account-info":
             return_results(get_account_info(client))
-        elif command == 'get-account-risk-score-history':
+        elif command == "get-account-risk-score-history":
             return_results(get_account_risk_score_history(client))
-        elif command == 'get-groups-risk-score-history':
+        elif command == "get-groups-risk-score-history":
             return_results(get_groups_risk_score_history(client, args))
-        elif command == 'get-users-risk-score-history':
+        elif command == "get-users-risk-score-history":
             return_results(get_users_risk_score_history(client, args))
-        elif command == 'get-phishing-security-tests':
+        elif command == "get-phishing-security-tests":
             return_results(get_phishing_security_tests(client))
-        elif command == 'get-phishing-security-tests-recipients':
+        elif command == "get-phishing-security-tests-recipients":
             return_results(get_phishing_security_tests_recipients(client, args))
-        elif command == 'get-training-campaigns':
+        elif command == "get-training-campaigns":
             return_results(get_training_campaigns(client))
-        elif command == 'get-training-enrollments':
+        elif command == "get-training-enrollments":
             return_results(get_training_enrollments(client))
-        elif command == 'get-user-events':
+        elif command == "get-user-events":
             return_results(get_user_events(userEventClient, args))
-        elif command == 'get-user-event-types':
+        elif command == "get-user-event-types":
             return_results(get_user_event_types(userEventClient, args))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
@@ -407,11 +588,13 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+        )
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
