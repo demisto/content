@@ -375,7 +375,7 @@ script:
       description: 'Event Type Name'
       type: String
     description: Returns KMSAT User Events.
-  - name: get-user-events-types
+  - name: get-user-event-types
     arguments:
     - name: name
       description: Filter by name of the event type
