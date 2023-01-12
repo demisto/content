@@ -2761,7 +2761,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: PermanentCountry
-  description: True, if the user works from a permanent country. False, otherwise.
+  description: True, if the user works from a permanent country. Otherwise, False.
   type: unknown
 - contextPath: NumOfFailedLogon
   description: Number of failed login from SIEM.
@@ -2772,7 +2772,7 @@ outputs:
   description: XDR alerts.
   type: unknown
 - contextPath: ArraySize
-  description: Number of XDR alert for the user.
+  description: Number of XDR alerts for the user.
 - contextPath: NumOfOktaSuspiciousActivities
   description: Number of Suspicious Activities for the user from Okta.
   type: unknown
