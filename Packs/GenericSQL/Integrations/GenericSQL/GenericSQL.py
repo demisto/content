@@ -65,7 +65,8 @@ class Client:
         if dialect == "Microsoft SQL Server":
             connect_parameters_dict['driver'] = 'FreeTDS'
         elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
-            connect_parameters_dict['driver'] = 'ODBC Driver 17 for SQL Server'
+            connect_parameters_dict['driver'] = 'ODBC Driver 18 for SQL Server'
+            connect_parameters_dict['TrustServerCertificate'] = 'yes'
         return connect_parameters_dict
 
     @staticmethod
@@ -152,12 +153,12 @@ class Client:
 def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
     """
     In case no port was chosen, a default port will be chosen according to the SQL db type. Only return a port for
-    Microsoft SQL Server and ODBC Driver 17 for SQL Server where it seems to be required.
+    Microsoft SQL Server and ODBC Driver 18 for SQL Server where it seems to be required.
     For the other drivers a None port is supported
     :param dialect: sql db type
     :return: default port needed for connection
     """
-    if dialect in {'Microsoft SQL Server', 'ODBC Driver 17 for SQL Server'}:
+    if dialect in {'Microsoft SQL Server', 'ODBC Driver 18 for SQL Server'}:
         return "1433"
     return None
 
