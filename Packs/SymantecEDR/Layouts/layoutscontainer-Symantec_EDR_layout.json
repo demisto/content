@@ -1656,7 +1656,7 @@
 	"itemVersion": "",
 	"locked": false,
 	"mobile": null,
-	"name": "Symantec EDR layout",
+	"name": "Symantec EDR Incident layout",
 	"packID": "",
 	"packName": "",
 	"propagationLabels": [
