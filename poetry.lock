@@ -171,14 +171,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.48"
+version = "1.26.49"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.48,<1.30.0"
+botocore = ">=1.29.49,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -187,7 +187,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.48"
+version = "1.29.49"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -519,8 +519,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "e51da0a0e1b731a1c91ca48fbcdecfb74ab52aba"
-resolved_reference = "e51da0a0e1b731a1c91ca48fbcdecfb74ab52aba"
+reference = "8e51a4c5a0edeb78ebbf78c58f45048d93f31b13"
+resolved_reference = "8e51a4c5a0edeb78ebbf78c58f45048d93f31b13"
 
 [[package]]
 name = "deprecated"
@@ -2452,7 +2452,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "8dede6ba6409b45507cc7caf81f65dd7b466d69c666526773ee3595a926b47f8"
+content-hash = "2f007b57c7ea45c47391ae252e3c4e025e97e864de9ca6c8f93f70aa232ef43f"
 
 [metadata.files]
 aiohttp = [
@@ -2627,12 +2627,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.48-py3-none-any.whl", hash = "sha256:a23fe87e9bafca736620dd9d7e5977eeaaa27c3abf5800f7d8b7b7d08b4ad736"},
-    {file = "boto3-1.26.48.tar.gz", hash = "sha256:8aa3fd453a815240b85c01190ed0d9924622a1a061c93423b1443379eadd3c43"},
+    {file = "boto3-1.26.49-py3-none-any.whl", hash = "sha256:2260cb121b202c9f3483e1c5fabff2009a160369824f6da5608261e7c232a75c"},
+    {file = "boto3-1.26.49.tar.gz", hash = "sha256:6c9628f71d0723bf16b5ae4d4e78bbde53da80577e74b17762f3aea17c3c0f85"},
 ]
 botocore = [
-    {file = "botocore-1.29.48-py3-none-any.whl", hash = "sha256:17eeb963b3ae4a3ea4a972bdf78c9925c3efd9e2232875bfc19043640d3dac14"},
-    {file = "botocore-1.29.48.tar.gz", hash = "sha256:c5f57c1f694e67c29c870426c0a7ebffce90099e794025e3d283db7f1ad7a65b"},
+    {file = "botocore-1.29.49-py3-none-any.whl", hash = "sha256:1d93d602fdc3512c4e1db6f418f274a3f5758fc3bd6dea1d6f9ea29bcfe32ae7"},
+    {file = "botocore-1.29.49.tar.gz", hash = "sha256:0a198d33a426fc8b3342ce238c6bccb7f5d3b0b6a33f624170f1c11aa2483a15"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
