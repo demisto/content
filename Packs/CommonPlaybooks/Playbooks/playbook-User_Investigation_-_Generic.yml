@@ -2,12 +2,12 @@ id: User Investigation - Generic
 version: -1
 name: User Investigation - Generic
 description: |-
-  This playbook performs an investigation on a specific user, using queries and logs from Siem, Identities management systems, XDR, and Firewalls.
+  This playbook performs an investigation on a specific user, using queries and logs from SIEM, Identity management systems, XDR, and firewalls.
 
   Supported Integrations:
   -Okta
   -Splunk
-  -Qradar
+  -QRadar
   -Azure Log Analytics
   -PAN-OS
   -XDR By Palo Alto Networks
@@ -281,7 +281,7 @@ tasks:
       id: d3f0aa8d-651f-493f-8084-ed98d5e99160
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the context.
+      description: This playbook runs a QRadar query and returns its results to the context.
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -326,12 +326,12 @@ tasks:
       version: -1
       name: Manually search for related events
       description: |
-        Search for the windows event IDs 4771 and 4625 with Logon Type 2,7,10.
+        Search for Windows event IDs 4771 and 4625 with Logon Type 2,7,10.
         Search for message="Failed password" OR message="FAILED LOGIN" OR message="Invalid user" on Linux logs.
         Search for Treat logs on the user.
         Search for Related XDR Alerts.
         Search for the user's permanent location.
-        Search for failed logon event on Okta.
+        Search for a failed logon event in Okta.
         Search for suspicious activities such as MFA bypass attempts or reset password attempts.
       type: regular
       iscommand: false
@@ -363,7 +363,7 @@ tasks:
       id: 369240fc-bb32-4b29-8f83-b378ae4dd770
       version: -1
       name: Search for failed logon from the user
-      description: Search for failed logon events
+      description: Search for failed logon events.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -407,7 +407,7 @@ tasks:
     task:
       id: b717a94b-5c66-4564-8057-2dac08c917ee
       version: -1
-      name: Permanent Location  Check
+      name: Permanent Location Check
       type: title
       iscommand: false
       brand: ""
@@ -577,7 +577,7 @@ tasks:
       id: a16e3aaf-599b-4b68-8d6f-55efeef8def1
       version: -1
       name: Azure Log Analytics search for failed logon from the user
-      description: Executes an Analytics query for failed logon events.
+      description: Executes an analytics query for failed logon events.
       script: '|||azure-log-analytics-execute-query'
       type: regular
       iscommand: true
@@ -835,8 +835,8 @@ tasks:
     task:
       id: b93855ac-03c3-4e1f-81c0-fa1d989acf58
       version: -1
-      name: count failed logon from Azure Log Analytics logs
-      description: Count an array size
+      name: Count failed logon from Azure Log Analytics logs
+      description: Count an array size.
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -878,7 +878,7 @@ tasks:
       id: add2888c-09b9-428d-8567-9a5eed75e91f
       version: -1
       name: count Okta failed logon
-      description: Count an array size
+      description: Count an array size.
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -946,8 +946,8 @@ tasks:
     task:
       id: 8d5f4d57-bdb3-4f0e-835b-de06e784a823
       version: -1
-      name: count failed logon from Qradar logs
-      description: Count an array size
+      name: Count failed logon from QRadar logs
+      description: Count an array size.
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -1117,7 +1117,7 @@ tasks:
       id: 912dcc74-cd17-454e-8ea2-695af8a14e4b
       version: -1
       name: count Threat logs for the user from Panorama logs
-      description: Count an array size
+      description: Count an array size.
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -1159,7 +1159,7 @@ tasks:
       id: 0052792a-2852-4549-816d-9cedc0aef435
       version: -1
       name: PAN-OS get logs
-      description: Retrieves the data of a logs query.
+      description: Retrieves the data of a log query.
       script: '|||pan-os-get-logs'
       type: regular
       iscommand: true
@@ -1340,7 +1340,7 @@ tasks:
       id: 490591b6-0fa6-42df-8a2a-78a52f6ef169
       version: -1
       name: count failed logon from Splunk logs
-      description: Count an array size
+      description: Count an array size.
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -1748,7 +1748,7 @@ tasks:
       name: Failed logon count
       description: |
         Script will run the provided mathematical action on 2 provided values and produce a result.
-        The result can be stored on the context using the contextKey argument
+        The result can be stored on the context using the contextKey argument.
       scriptName: MathUtil
       type: regular
       iscommand: false
@@ -1790,7 +1790,7 @@ tasks:
     task:
       id: c2915499-93da-4080-8583-98c9f60bccf8
       version: -1
-      name: Does the result from Qradar exist?
+      name: Does the result from QRadar exist?
       description: ''
       type: condition
       iscommand: false
@@ -2385,8 +2385,8 @@ tasks:
     task:
       id: ce6aaf59-b4be-454f-8456-c8bf916285fc
       version: -1
-      name: count Okta Suspicious activity
-      description: Count an array size
+      name: Count Okta Suspicious activity
+      description: Count an array size.
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -2428,7 +2428,7 @@ tasks:
       version: -1
       name: Cortex XDR - Get entity alerts by MITRE tactics
       description: |-
-        This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
+        This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given time frame, based on MITRE tactics.
         Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
       playbookName: Cortex XDR - Get entity alerts by MITRE tactics
       type: playbook
@@ -2594,8 +2594,8 @@ tasks:
     task:
       id: f52e02c4-020e-470e-8bdd-8b783886b4f7
       version: -1
-      name: count Okta Suspicious User Agent
-      description: Count an array size
+      name: Count Okta Suspicious User Agent
+      description: Count an array size.
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -2693,7 +2693,7 @@ inputs:
 - key: UserEmail
   value: {}
   required: false
-  description: User Email.
+  description: User email.
   playbookInputQuery:
 - key: Username
   value: {}
@@ -2703,7 +2703,7 @@ inputs:
 - key: LoginCountry
   value: {}
   required: false
-  description: The Country from which the user logged in.
+  description: The country from which the user logged in.
   playbookInputQuery:
 - key: CurrentTime
   value:
@@ -2711,7 +2711,7 @@ inputs:
       root: TimeNow
       accessor: '[0]'
   required: false
-  description: 'Date/Time Format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
+  description: 'Date/Time format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
   playbookInputQuery:
 - key: TimeLast1Day
   value:
@@ -2719,7 +2719,7 @@ inputs:
       root: TimeNow
       accessor: '[1]'
   required: false
-  description: 'Date/Time Format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
+  description: 'Date/Time format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
   playbookInputQuery:
 - key: TimeLast7Days
   value:
@@ -2727,52 +2727,52 @@ inputs:
       root: TimeNow
       accessor: '[2]'
   required: false
-  description: 'Date/Time Format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
+  description: 'Date/Time format profile of ISO 8601. For example: 2022-05-13T16:22:18Z.'
   playbookInputQuery:
 - key: FailedLogonSearch
   value:
     simple: "True"
   required: false
-  description: Whether to search for failed logon logs from Siem? Can be False or True.
+  description: Whether to search for failed logon logs from SIEM. Can be True or False.
   playbookInputQuery:
 - key: ThreatLogSearch
   value:
     simple: "True"
   required: false
-  description: Whether to search for threat logs from PAN-OS? Can be False or True.
+  description: Whether to search for threat logs from PAN-OS. Can be True or False.
   playbookInputQuery:
 - key: LocationSearch
   value:
     simple: "True"
   required: false
-  description: Whether to search for the user's permanent location? Can be False or True.
+  description: Whether to search for the user's permanent location. Can be True or False.
   playbookInputQuery:
 - key: XdrAlertSearch
   value:
     simple: "True"
   required: false
-  description: Whether to search for Related alerts from XDR? Can be False or True.
+  description: Whether to search for Related alerts from XDR. Can be True or False.
   playbookInputQuery:
 - key: OktaSuspiciousactivitySearch
   value:
     simple: "True"
   required: false
-  description: Whether to search for Suspicious activities from Okta? Can be False or True.
+  description: Whether to search for Suspicious activities from Okta. Can be True or False.
   playbookInputQuery:
 outputs:
 - contextPath: PermanentCountry
-  description: True if the user work from a permanent country. False if else.
+  description: True, if the user works from a permanent country. False, otherwise.
   type: unknown
 - contextPath: NumOfFailedLogon
-  description: Number of failed login from Siem.
+  description: Number of failed login from SIEM.
 - contextPath: NumOfThreatLogs
-  description: Number of Threat Logs for the user from Panorama.
+  description: Number of Threat logs for the user from Panorama.
   type: unknown
 - contextPath: PaloAltoNetworksXDR.Alert
-  description: XDR Alerts.
+  description: XDR alerts.
   type: unknown
 - contextPath: ArraySize
-  description: Number of xdr alert for the user.
+  description: Number of XDR alert for the user.
 - contextPath: NumOfOktaSuspiciousActivities
   description: Number of Suspicious Activities for the user from Okta.
   type: unknown
