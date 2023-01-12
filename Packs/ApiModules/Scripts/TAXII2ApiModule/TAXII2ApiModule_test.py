@@ -195,7 +195,7 @@ class TestBuildIterator:
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
         mocker.patch.object(mock_client, 'collection_to_fetch', spec=v21.Collection)
-        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=InvalidJSONError)
+        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=InvalidJSONError('Invalid JSON'))
 
         iocs = mock_client.build_iterator()
         assert iocs == []
