@@ -1,7 +1,7 @@
 args:
 - name: key
   required: true
-  description: The base context path under which to find the fields. For example Demisto.Results.
+  description: The base context path under which to find the fields. For example Test.Results.
 - name: list
   required: true
   description: The list of fields to retrieve from context. The list can contain comma seperated values. For example key1,key1
@@ -16,14 +16,14 @@ name: GetValuesOfMultipleFields
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.9.42476
 runas: DBotWeakRole
 script: '-'
 system: false
 tags:
 - transformer
 comment: |-
-  The script receives a list of fields and a context key base path. For example, Key=demisto.result List=username,user and will get all of the values from demisto.result.username and demisto.result.user.
+  The script receives a list of fields and a context key base path. For example, Key=Test.result List=username,user and will get all of the values from Test.result.username and Test.result.user.
   The Get field of the task must have the value ${.=[]}.
 enabled: true
 timeout: '0'
