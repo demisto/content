@@ -1,0 +1,17 @@
+{
+  "rule_id": "layout_rule_id",
+  "layout_id": "Example Layout",
+  "description": "Example Layout Rule",
+  "rule_name": "Example Layout Rule",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_source",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "TRAPS"
+        }
+      ]
+    }
+  }
+}
