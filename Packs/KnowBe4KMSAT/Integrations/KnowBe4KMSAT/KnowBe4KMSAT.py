@@ -95,6 +95,12 @@ class UserEventClient(BaseClient):
         })
         return self._http_request(method='GET', url_suffix='/events', resp_type='json', ok_codes=(200,), params=params)
 
+    def user_event_types(self, args: dict):
+        params = remove_empty_elements({
+            'nane': args.get('name')
+        })
+        return self._http_request(method='GET', url_suffix='/event_types', resp_type='json', ok_codes=(200,), params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -261,13 +267,26 @@ def get_user_events(client: UserEventClient, args: dict) -> CommandResults:
     return_results(response)
     if response is None:
         raise DemistoException('Translation failed: the response from server did not include user event `data`.', res=response)
+    data: List[Dict] = response.get('data') or []
     return CommandResults(outputs_prefix='KMSAT_User_Events_Returned',
-                          outputs_key_field='',
+                          outputs_key_field='id',
                           raw_response=response,
-                          readable_output=tableToMarkdown(name='KMSAT_User_Events', t=response))
+                          readable_output=tableToMarkdown(name='KMSAT_User_Events', t=data))
 
 
-def test_module(client: Client) -> str:
+def get_user_event_types(client: UserEventClient, args: dict) -> CommandResults:
+    response = client.user_event_types(args)
+    return_results(response)
+    if response is None:
+        raise DemistoException('Translation failed: the response from server did not include user event types`data`.', res=response)
+    data: List[Dict] = response.get('data') or []
+    return CommandResults(outputs_prefix='KMSAT_User_Event_Types_Returned',
+                          outputs_key_field='id',
+                          raw_response=response,
+                          readable_output=tableToMarkdown(name='KMSAT_User_Event_Types', t=data))
+
+
+def test_module(client: Client, userEventClient: UserEventClient) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -286,8 +305,18 @@ def test_module(client: Client) -> str:
         client.kmsat_account_info()
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set' + str(client._headers)
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+            message = 'Authorization Error: make sure Reporting API Key is correctly set' + str(client._headers)
+        else:
+            raise e
+
+    try:
+        params: Dict = {}
+        userEventClient.user_event_types(params)
+        message = 'ok'
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+            message = 'Authorization Error: make sure User Event API Key is correctly set' + str(client._headers)
         else:
             raise e
     return message
@@ -348,7 +377,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, userEventClient)
             return_results(result)
         elif command == 'fetch-incidents':
             fetch_incidents_command(client)
@@ -370,6 +399,8 @@ def main() -> None:
             return_results(get_training_enrollments(client))
         elif command == 'get-user-events':
             return_results(get_user_events(userEventClient, args))
+        elif command == 'get-user-event-types':
+            return_results(get_user_event_types(userEventClient, args))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 

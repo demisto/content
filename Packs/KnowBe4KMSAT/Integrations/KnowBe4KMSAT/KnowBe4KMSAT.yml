@@ -375,12 +375,30 @@ script:
       description: 'Event Type Name'
       type: String
     description: Returns KMSAT User Events.
+  - name: get-user-event-types
+    arguments:
+    - name: name
+      description: Filter by name of the event type
+    outputs:
+    - contextPath: UserEvent.Types.data.id
+      description: 'ID of the Event Type'
+      type: Number
+    - contextPath: UserEvent.Types.account_id
+      description: 'Account ID'
+      type: Number
+    - contextPath: UserEvent.Types.data.name
+      description: 'Name of the Event Type'
+      type: String
+    - contextPath: UserEvent.Types.data.description
+      description: 'Description of Event Type'
+      type: String
+    description: Returns all KMSAT User Event Types
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.43882
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
