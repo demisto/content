@@ -1,7 +1,7 @@
 id: Trend Micro CAS - Indicators Hunting
 version: -1
 name: Trend Micro CAS - Indicators Hunting
-description: In this playbook, the 'trendmicro-cas-email-sweep' command is used to automatically hunt for and detect IOCs within email messages protected by Cloud App Security (CAS). \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters).\n\nSupported IOCs for this playbook:\n- IP Addresses\n- CIDR\n- File Name\n- File Type\n- SHA1\n- URL\n- Domain\n- Email Addresses"
+description: "In this playbook, the 'trendmicro-cas-email-sweep' command is used to automatically hunt for and detect IOCs within email messages protected by Cloud App Security (CAS). \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters).\n\nSupported IOCs for this playbook:\n- IP Addresses\n- CIDR\n- File Name\n- File Type\n- SHA1\n- URL\n- Domain\n- Email Addresses"
 starttaskid: "0"
 tasks:
   "0":
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 3820,
-          "y": 80
+          "y": 270
         }
       }
     note: false
@@ -48,7 +48,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "3"
       "yes":
       - "32"
@@ -69,7 +69,7 @@ tasks:
       {
         "position": {
           "x": 3820,
-          "y": 220
+          "y": 400
         }
       }
     note: false
@@ -97,7 +97,7 @@ tasks:
       {
         "position": {
           "x": 3820,
-          "y": 1530
+          "y": 1520
         }
       }
     note: false
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 0e097da8-54e1-43a9-891e-c68541900b59
+    taskid: 49c693b1-ecb6-47b3-8f63-bfd4abe0f8bb
     type: regular
     task:
-      id: 0e097da8-54e1-43a9-891e-c68541900b59
+      id: 49c693b1-ecb6-47b3-8f63-bfd4abe0f8bb
       version: -1
       name: TrendMicro CAS Query - IPAddress
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -196,7 +196,14 @@ tasks:
                 iscontext: true
       source_ip:
         complex:
-          root: IPAddressParsed
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       start:
         complex:
           root: inputs
@@ -222,7 +229,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
+          "x": 1400,
           "y": 870
         }
       }
@@ -253,8 +260,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 400
+          "x": 1640,
+          "y": 570
         }
       }
     note: false
@@ -304,7 +311,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
+          "x": 1400,
           "y": 1040
         }
       }
@@ -335,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2060,
-          "y": 400
+          "x": 2280,
+          "y": 570
         }
       }
     note: false
@@ -366,8 +373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2780,
-          "y": 400
+          "x": 2930,
+          "y": 570
         }
       }
     note: false
@@ -397,8 +404,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3510,
-          "y": 400
+          "x": 3560,
+          "y": 570
         }
       }
     note: false
@@ -428,8 +435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4420,
-          "y": 400
+          "x": 4090,
+          "y": 570
         }
       }
     note: false
@@ -459,8 +466,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6550,
-          "y": 400
+          "x": 5760,
+          "y": 570
         }
       }
     note: false
@@ -490,8 +497,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5500,
-          "y": 400
+          "x": 4740,
+          "y": 570
         }
       }
     note: false
@@ -518,7 +525,7 @@ tasks:
       '#default#':
       - "50"
       "yes":
-      - "83"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -535,8 +542,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 530
+          "x": 1640,
+          "y": 700
         }
       }
     note: false
@@ -563,7 +570,7 @@ tasks:
       '#default#':
       - "53"
       "yes":
-      - "84"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -580,8 +587,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2060,
-          "y": 530
+          "x": 2280,
+          "y": 700
         }
       }
     note: false
@@ -608,7 +615,7 @@ tasks:
       '#default#':
       - "58"
       "yes":
-      - "85"
+      - "57"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -625,8 +632,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2780,
-          "y": 530
+          "x": 2930,
+          "y": 700
         }
       }
     note: false
@@ -653,7 +660,7 @@ tasks:
       '#default#':
       - "62"
       "yes":
-      - "86"
+      - "61"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -670,8 +677,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3510,
-          "y": 530
+          "x": 3560,
+          "y": 700
         }
       }
     note: false
@@ -698,7 +705,7 @@ tasks:
       '#default#':
       - "66"
       "yes":
-      - "87"
+      - "65"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -715,8 +722,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4420,
-          "y": 530
+          "x": 4090,
+          "y": 700
         }
       }
     note: false
@@ -743,7 +750,8 @@ tasks:
       '#default#':
       - "70"
       "yes":
-      - "88"
+      - "69"
+      - "73"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -760,8 +768,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5500,
-          "y": 530
+          "x": 4740,
+          "y": 700
         }
       }
     note: false
@@ -791,8 +799,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 1385
+          "x": 1640,
+          "y": 1215
         }
       }
     note: false
@@ -822,8 +830,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2060,
-          "y": 1375
+          "x": 2280,
+          "y": 1215
         }
       }
     note: false
@@ -835,10 +843,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: fab01719-534a-4efd-834d-37e0f7e8edfc
+    taskid: c3095541-ceaa-4d56-875a-55b388dc9ddb
     type: regular
     task:
-      id: fab01719-534a-4efd-834d-37e0f7e8edfc
+      id: c3095541-ceaa-4d56-875a-55b388dc9ddb
       version: -1
       name: TrendMicro CAS Query - CIDR
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -922,7 +930,14 @@ tasks:
                 iscontext: true
       source_ip:
         complex:
-          root: CIDRParsed
+          root: inputs.CIDR
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       start:
         complex:
           root: inputs
@@ -948,7 +963,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
+          "x": 2030,
           "y": 870
         }
       }
@@ -961,10 +976,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 993e85d3-09ba-4412-8a08-0a7ac73e24d7
+    taskid: 232a33e6-363e-4194-8cd5-4175c7b108b0
     type: regular
     task:
-      id: 993e85d3-09ba-4412-8a08-0a7ac73e24d7
+      id: 232a33e6-363e-4194-8cd5-4175c7b108b0
       version: -1
       name: TrendMicro CAS Query - FileName
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -998,7 +1013,14 @@ tasks:
           accessor: end_time
       file_name:
         complex:
-          root: FileNameParsed
+          root: inputs.FileName
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       lastndays:
         complex:
           root: inputs
@@ -1074,7 +1096,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2530,
+          "x": 2680,
           "y": 870
         }
       }
@@ -1105,8 +1127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2780,
-          "y": 1375
+          "x": 2930,
+          "y": 1215
         }
       }
     note: false
@@ -1118,10 +1140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 136d226d-36f5-4d30-85c0-876145da3cb0
+    taskid: a552613b-b7b1-4b78-83f5-68bddb1c4137
     type: regular
     task:
-      id: 136d226d-36f5-4d30-85c0-876145da3cb0
+      id: a552613b-b7b1-4b78-83f5-68bddb1c4137
       version: -1
       name: TrendMicro CAS Query - FileType
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -1155,7 +1177,14 @@ tasks:
           accessor: end_time
       file_extension:
         complex:
-          root: FileTypeParsed
+          root: inputs.FileType
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       lastndays:
         complex:
           root: inputs
@@ -1231,7 +1260,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3250,
+          "x": 3310,
           "y": 870
         }
       }
@@ -1262,8 +1291,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3510,
-          "y": 1375
+          "x": 3560,
+          "y": 1215
         }
       }
     note: false
@@ -1275,10 +1304,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 8aa8e7c8-6189-4add-8def-eca6c00c33a7
+    taskid: 08973b3f-376a-4aba-87c0-aeca85160c28
     type: regular
     task:
-      id: 8aa8e7c8-6189-4add-8def-eca6c00c33a7
+      id: 08973b3f-376a-4aba-87c0-aeca85160c28
       version: -1
       name: TrendMicro CAS Query - SHA1
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -1312,7 +1341,14 @@ tasks:
           accessor: end_time
       file_sha1:
         complex:
-          root: SHA1Parsed
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       lastndays:
         complex:
           root: inputs
@@ -1388,7 +1424,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4150,
+          "x": 4350,
           "y": 870
         }
       }
@@ -1419,8 +1455,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4420,
-          "y": 1375
+          "x": 4090,
+          "y": 1215
         }
       }
     note: false
@@ -1432,10 +1468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 52c443f1-654c-467b-8017-c9ba4f5d900f
+    taskid: 2a86e458-5072-475d-8c58-e597e8c6d6e3
     type: regular
     task:
-      id: 52c443f1-654c-467b-8017-c9ba4f5d900f
+      id: 2a86e458-5072-475d-8c58-e597e8c6d6e3
       version: -1
       name: TrendMicro CAS Query - Domain
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -1519,7 +1555,14 @@ tasks:
                 iscontext: true
       source_domain:
         complex:
-          root: URLDomainParsed
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       start:
         complex:
           root: inputs
@@ -1545,7 +1588,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4830,
+          "x": 4980,
           "y": 870
         }
       }
@@ -1576,8 +1619,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5500,
-          "y": 1375
+          "x": 4740,
+          "y": 1215
         }
       }
     note: false
@@ -1589,10 +1632,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 36077c4a-167c-49ae-8a58-0603760d6b51
+    taskid: aa5dbefa-02a7-4f74-8d86-4c8d62a18ad9
     type: regular
     task:
-      id: 36077c4a-167c-49ae-8a58-0603760d6b51
+      id: aa5dbefa-02a7-4f74-8d86-4c8d62a18ad9
       version: -1
       name: TrendMicro CAS Query - URL
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -1696,13 +1739,20 @@ tasks:
           accessor: start_time
       url:
         complex:
-          root: URLDomainParsed
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 5240,
+          "x": 5380,
           "y": 870
         }
       }
@@ -1715,10 +1765,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 2391ef6b-28d1-446b-878a-0ecd95bcdd46
+    taskid: 0a4a3346-e5ce-4bd6-89a8-3429d97c0d09
     type: regular
     task:
-      id: 2391ef6b-28d1-446b-878a-0ecd95bcdd46
+      id: 0a4a3346-e5ce-4bd6-89a8-3429d97c0d09
       version: -1
       name: TrendMicro CAS Query - Recipient EmailAddress
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -1802,7 +1852,14 @@ tasks:
                 iscontext: true
       recipient:
         complex:
-          root: EmailAddressParsed
+          root: inputs.EmailAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       start:
         complex:
           root: inputs
@@ -1828,7 +1885,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6300,
+          "x": 6430,
           "y": 870
         }
       }
@@ -1841,10 +1898,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: ec86abd3-d775-49d4-8073-29067d9f1ff5
+    taskid: 820de676-e540-4341-8d68-acd8811f4662
     type: regular
     task:
-      id: ec86abd3-d775-49d4-8073-29067d9f1ff5
+      id: 820de676-e540-4341-8d68-acd8811f4662
       version: -1
       name: TrendMicro CAS Query - Sender EmailAddress
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -1928,7 +1985,14 @@ tasks:
                 iscontext: true
       sender:
         complex:
-          root: EmailAddressParsed
+          root: inputs.EmailAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
       start:
         complex:
           root: inputs
@@ -1954,7 +2018,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5890,
+          "x": 6020,
           "y": 870
         }
       }
@@ -1982,7 +2046,8 @@ tasks:
       '#default#':
       - "81"
       "yes":
-      - "89"
+      - "79"
+      - "78"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1999,8 +2064,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6550,
-          "y": 530
+          "x": 5760,
+          "y": 700
         }
       }
     note: false
@@ -2030,367 +2095,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6550,
+          "x": 5760,
           "y": 1375
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "83":
-    id: "83"
-    taskid: a140c194-34d3-4b90-8709-138f5dc29b73
-    type: regular
-    task:
-      id: a140c194-34d3-4b90-8709-138f5dc29b73
-      version: -1
-      name: Set IPAddress search argument
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      key:
-        simple: IPAddressParsed
-      value:
-        complex:
-          root: inputs.IPAddress
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.IPAddress
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1130,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "84":
-    id: "84"
-    taskid: d170f811-3910-4d29-859d-6c3df3d877a6
-    type: regular
-    task:
-      id: d170f811-3910-4d29-859d-6c3df3d877a6
-      version: -1
-      name: Set CIDR search argument
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "54"
-    scriptarguments:
-      key:
-        simple: CIDRParsed
-      value:
-        complex:
-          root: inputs.CIDR
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.CIDR
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1800,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "85":
-    id: "85"
-    taskid: f8383ba2-08e4-4274-8eb1-c9e080dea556
-    type: regular
-    task:
-      id: f8383ba2-08e4-4274-8eb1-c9e080dea556
-      version: -1
-      name: Set FileName search argument
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "57"
-    scriptarguments:
-      key:
-        simple: FileNameParsed
-      value:
-        complex:
-          root: inputs.FileName
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.FileName
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2530,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "86":
-    id: "86"
-    taskid: 4092362c-54f5-4374-8411-d518c1f58018
-    type: regular
-    task:
-      id: 4092362c-54f5-4374-8411-d518c1f58018
-      version: -1
-      name: Set FileType search argument
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "61"
-    scriptarguments:
-      key:
-        simple: FileTypeParsed
-      value:
-        complex:
-          root: inputs.FileType
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.FileType
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 3250,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "87":
-    id: "87"
-    taskid: 02237ca4-d44e-4368-81a5-9a40ebaef518
-    type: regular
-    task:
-      id: 02237ca4-d44e-4368-81a5-9a40ebaef518
-      version: -1
-      name: Set SHA1 search argument
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "65"
-    scriptarguments:
-      key:
-        simple: SHA1Parsed
-      value:
-        complex:
-          root: inputs.SHA1
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.SHA1
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 4150,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "88":
-    id: "88"
-    taskid: d642db74-a19f-4ae3-8df7-ce999e8bbbaf
-    type: regular
-    task:
-      id: d642db74-a19f-4ae3-8df7-ce999e8bbbaf
-      version: -1
-      name: Set URLDomain search argument
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "69"
-      - "73"
-    scriptarguments:
-      key:
-        simple: URLDomainParsed
-      value:
-        complex:
-          root: inputs.URLDomain
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.URLDomain
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 5040,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "89":
-    id: "89"
-    taskid: 6bdeb408-1357-4a4e-853c-1e29649ac70f
-    type: regular
-    task:
-      id: 6bdeb408-1357-4a4e-853c-1e29649ac70f
-      version: -1
-      name: Set EmailAddress search argument
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "79"
-      - "78"
-    scriptarguments:
-      key:
-        simple: EmailAddressParsed
-      value:
-        complex:
-          root: inputs.EmailAddress
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.EmailAddress
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 6090,
-          "y": 700
         }
       }
     note: false
@@ -2440,7 +2146,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
+          "x": 2030,
           "y": 1040
         }
       }
@@ -2496,7 +2202,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2530,
+          "x": 2680,
           "y": 1040
         }
       }
@@ -2552,7 +2258,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3250,
+          "x": 3310,
           "y": 1040
         }
       }
@@ -2608,7 +2314,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4150,
+          "x": 4350,
           "y": 1040
         }
       }
@@ -2664,7 +2370,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5040,
+          "x": 5180,
           "y": 1040
         }
       }
@@ -2715,7 +2421,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5890,
+          "x": 6020,
           "y": 1030
         }
       }
@@ -2764,7 +2470,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6300,
+          "x": 6430,
           "y": 1030
         }
       }
@@ -2819,7 +2525,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6100,
+          "x": 6230,
           "y": 1200
         }
       }
@@ -2832,16 +2538,13 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "2_3_no": 0.27,
-      "41_83_yes": 0.46
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1515,
-        "width": 5800,
-        "x": 1130,
-        "y": 80
+        "height": 1315,
+        "width": 5410,
+        "x": 1400,
+        "y": 270
       }
     }
   }
@@ -2982,7 +2685,6 @@ outputs:
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_attachments.file_name
   description: The name of the attachment file.
   type: string
-quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

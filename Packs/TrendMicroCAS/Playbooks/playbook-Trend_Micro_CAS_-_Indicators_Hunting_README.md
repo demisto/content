@@ -1,4 +1,16 @@
-In this playbook, the 'trendmicro-cas-email-sweep' command is used to automatically hunt for and detect IOCs within email messages protected by Cloud App Security (CAS). \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters).\n\nSupported IOCs for this playbook:\n- IP Addresses\n- CIDR\n- File Name\n- File Type\n- SHA1\n- URL\n- Domain\n- Email Addresses"
+In this playbook, the 'trendmicro-cas-email-sweep' command is used to automatically hunt for and detect IOCs within email messages protected by Cloud App Security (CAS). 
+
+Note that multiple search values should be separated by commas only (without spaces or any special characters).
+
+Supported IOCs for this playbook:
+- IP Addresses
+- CIDR
+- File Name
+- File Type
+- SHA1
+- URL
+- Domain
+- Email Addresses
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -11,7 +23,6 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * IsIntegrationAvailable
-* Set
 * SetAndHandleEmpty
 
 ### Commands
