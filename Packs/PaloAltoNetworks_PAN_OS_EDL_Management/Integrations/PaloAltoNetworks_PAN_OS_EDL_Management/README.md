@@ -12,7 +12,7 @@ If you've configured the server to run Docker images with a non-root internal us
     | --- | --- |
     | Hostname or IP of server | True |
     | Server port | False |
-    | SSH credentials to server (username and certificate) | True |
+    | SSH credentials to server (username and certificate, see in the credential manager) | True |
     | Password | True |
     | SSH extra parameters (e.g., "-c ChaCha20") | False |
     | SCP extra parameters (e.g., "-c ChaCha20 -l 8000") | False |
