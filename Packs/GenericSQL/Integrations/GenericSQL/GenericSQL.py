@@ -295,7 +295,7 @@ def main():
                          "Try selecting 'Trust any certificate' checkbox in the integration configuration.")
         else:
             return_error(
-                f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")} \n{traceback.format_exc()}')
+                f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")}')
     finally:
         try:
             if client.connection:
