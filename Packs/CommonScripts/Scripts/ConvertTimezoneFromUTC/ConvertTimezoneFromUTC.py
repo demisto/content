@@ -5,12 +5,11 @@ from traceback import format_exc
 
 
 def determine_correct_format(time: str, fmt: str) -> datetime:
-    time = datetime.strptime(time, fmt)
-    return time
+    time_as_datetime = datetime.strptime(time, fmt)
+    return time_as_datetime
 
 
 def convert_UTC_Timezone_command(time: datetime, timezone: str, fmt: str) -> CommandResults:
-    # set two timezones we want to work with
     desired_timezone = pytz.timezone(timezone)
 
     # convert me to desired timezone
@@ -24,15 +23,15 @@ def main():     # pragma: no cover
     try:
         # Get Args
         args = demisto.args()
-        time = args.get('value')
-        timezone = args.get('timezone')
+        str_utc_time = args.get('value')
+        requested_timezone = args.get('timezone')
         fmt = args.get('format')
 
-        # Convert UTC string to a datetime type
-        utc_time = determine_correct_format(time=time, fmt=fmt)
+        # Convert UTC time string to a datetime type
+        utc_time = determine_correct_format(time=str_utc_time, fmt=fmt)
 
-        # Convert to desired Timezone and format
-        return_results(convert_UTC_Timezone_command(time=utc_time, timezone=timezone, fmt=fmt))
+        # Convert to requested Timezone and format
+        return_results(convert_UTC_Timezone_command(time=utc_time, timezone=requested_timezone, fmt=fmt))
 
     except Exception as e:
         demisto.error(format_exc())
