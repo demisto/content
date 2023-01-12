@@ -409,7 +409,7 @@ def get_common_incident_details(static_attributes: dict, editable_attributes: di
     static_attributes.pop('incidentId')
     editable_attributes.pop('incidentId')
     incident_info_map_editable.pop('severityId')
-    editable_attributes.pop('customAttributeGroups')
+    editable_attributes.pop('customAttributeGroups', [])
     incident_details.update(incident_info_map_static)
     incident_details.update(incident_info_map_editable)
 
