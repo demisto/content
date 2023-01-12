@@ -988,7 +988,7 @@ def test_zoom_fetch_recording_command__delete_success(mocker):
     res = zoom_fetch_recording_command(
         client=client, meeting_id="000000", delete_after="true")
 
-    assert res[2].readable_output == 'The file recording_000000_29c7tc.mp4 was successfully removed from the cloud'
+    assert res[2].readable_output == 'The file recording_000000_29c7tc.mp4 was successfully removed from the cloud.'
 
 
 def test_zoom_fetch_recording_command__recording_dose_not_exist(mocker):
