@@ -17,7 +17,6 @@ configuration:
   displaypassword: Token (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
 - name: creds_enc_key
-  required: false
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
