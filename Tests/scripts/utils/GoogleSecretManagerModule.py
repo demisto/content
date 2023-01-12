@@ -27,7 +27,7 @@ class GoogleSecreteManagerModule:
             if with_secret:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
-                    # We make sure that the keys we want in the dict are presence
+                    # We make sure that the keys we want in the dict are present
                     missing_attrs = [attr for attr in attr_validation if attr not in secret_value]
                     if missing_attrs:
                         missing_attrs_str = ','.join(missing_attrs)
