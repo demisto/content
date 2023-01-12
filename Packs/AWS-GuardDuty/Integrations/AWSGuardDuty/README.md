@@ -649,15 +649,15 @@ Action: _guardduty:GetFindings_
 `aws-gd-get-findings`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| detectorId | The ID of the detector that specifies the GuardDuty service whose findings you want to retrieve. | Required | 
-| findingIds | IDs of the findings that you want to retrieve. | Required | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
-| roleSessionName | An identifier for the assumed role session. | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-
+| **Argument Name**   | **Description**                                                                                                                                           | **Required** |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| detectorId          | The ID of the detector that specifies the GuardDuty service whose findings you want to retrieve.                                                          | Required     | 
+| findingIds          | IDs of the findings that you want to retrieve.                                                                                                            | Required     | 
+| region              | The AWS Region, if not specified the default region will be used.                                                                                         | Optional     | 
+| roleArn             | The Amazon Resource Name (ARN) of the role to assume.                                                                                                     | Optional     | 
+| roleSessionName     | An identifier for the assumed role session.                                                                                                               | Optional     | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional     | 
+| returnRawResponse   | Select 'true' to save all fields from the response to the context. Otherwise, complex fields will be stored in JSON format. Default value is False.       | Optional     |
 
 #### Context Output
 
