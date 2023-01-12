@@ -140,8 +140,8 @@ def main() -> None:  # pragma: no cover
 
     app_secret = params.get('app_secret') or (params.get('credentials') or {}).get('password')
     app_secret = app_secret if isinstance(app_secret, str) else ''
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
+    private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
 
     try:
         client = MsGraphClient(
