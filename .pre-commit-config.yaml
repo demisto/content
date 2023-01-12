@@ -12,6 +12,7 @@ repos:
   - id: debug-statements
     language_version: python3
   - id: name-tests-test
+    files: .+_test.py$
 
 
 - repo: https://github.com/pre-commit/mirrors-autopep8
@@ -56,8 +57,8 @@ repos:
   - id: check-poetry
 
 - repo: https://github.com/demisto/demisto-sdk
-  rev: 1d8d44fe65d6e25b3964651a9a81976530c70504
+  rev: 008fc8bb0e1e5cbbb77266ee967c1c7f0ced4ccd
   hooks:
-  - id: content-test-runner
+  - id: run-unit-tests
   - id: format
   - id: validate
