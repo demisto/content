@@ -447,13 +447,15 @@ class Client(BaseClient):
         return response
 
     def incident_severity_to_dbot_score(self, severity: str):
-        """Converts an priority string to DBot score representation
+        """
+        Converts an priority string to DBot score representation
             alert severity. Can be one of:
-            Low    ->  1
-            Medium ->  2
-            High   ->  3
+            Unknown -> 0
+            No Risk -> 1
+            Low or Medium -> 2
+            Critical or High -> 3
         Args:
-            severity_str: String representation of severity.
+            severity: String representation of severity.
         Returns:
             Dbot representation of severity
         """
