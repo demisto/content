@@ -35,7 +35,6 @@ configuration:
   hidden: true
 - display: Certificate Thumbprint
   name: creds_certificate
-  required: false
   type: 9
   displaypassword: Private Key
 - display: Certificate Thumbprint
