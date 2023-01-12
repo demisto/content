@@ -301,6 +301,13 @@ script:
       name: interval_in_seconds
     - description: The job sid.
       name: sid
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: The Fast mode prioritizes the performance of the search and does not return nonessential field or event data. This means that the search returns what is essential and required if fast_mode equals 'true'.
+      name: fast_mode
+      predefined:
+      - 'true'
+      - 'false'
     description: Searches Splunk for events.
     name: splunk-search
     polling: true
