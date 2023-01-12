@@ -301,16 +301,17 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
         client.kmsat_account_info()
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure Reporting API Key is correctly set' + str(client._headers)
         else:
             raise e
 
     try:
-        userEventClient.user_event_types()
+        params: Dict = {}
+        userEventClient.user_event_types(params)
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure User Event API Key is correctly set' + str(client._headers)
         else:
             raise e
