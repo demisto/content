@@ -5,6 +5,31 @@ if (serverURL.slice(-1) === '/') {
 serverURL = serverURL + '/xsoar'
 var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
 
+getStandardAuthMethodHeaders = function(key, auth_id) {
+    return {
+                'Authorization': [key],
+                'x-xdr-auth-id': [auth_id],
+                'Content-Type': ['multipart/form-data'],
+                'Accept': ['application/json']
+            }
+}
+
+getAdvancedAuthMethodHeaders = function(key, auth_id) {
+    const nonce = Array.from({length: 64}, () => Math.random().toString(36).charAt(2)).join("");
+    const timestamp = Date.now().toString();
+    var auth_key = key + nonce + timestamp
+    auth_key = unescape(encodeURIComponent(auth_key));
+    const auth_key_hash = SHA256_hash(auth_key)
+
+    return {
+                'x-xdr-timestamp': [timestamp],
+                'x-xdr-nonce': [nonce],
+                'x-xdr-auth-id': [auth_id],
+                'Authorization': [auth_key_hash],
+                'Content-Type': ['multipart/form-data'],
+                'Accept': ['application/json']
+            }
+    }
 
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
@@ -26,16 +51,18 @@ sendMultipart = function (uri, entryID, body) {
         if (auth_id == ''){
             throw 'Auth ID must be provided.';
     }
+    var headers = {}
+    if (params.auth_method == 'standard'){
+        headers = getStandardAuthMethodHeaders(key, auth_id)
+    }
+    else if (params.auth_method == 'advanced') {
+        headers = getAdvancedAuthMethodHeaders(key, auth_id)
+    }
     var res = httpMultipart(
         requestUrl,
         entryID,
         {
-            Headers: {
-                'Authorization': key,
-                'x-xdr-auth-id': auth_id,
-                'Content-Type': ['multipart/form-data'],
-                'Accept': ['application/json']
-            },
+            Headers: headers,
         },
         body,
         params.insecure,
@@ -65,31 +92,27 @@ var sendRequest = function(method, uri, body, raw) {
     if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
-    try {
-         cortexVersion = getDemistoVersion().platform
-    } catch (e) {
-        throw 'Was unable to get CORTEX version.';
-    }
-
     requestUrl += uri;
-    var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
+    var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
     }
-    var auth_id = [params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '')];
-        if (auth_id == '' && cortexVersion != 'xsoar'){
+    var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
+        if (auth_id == ''){
             throw 'Auth ID must be provided.';
+    }
+    var headers = {}
+    if (params.auth_method == 'standard'){
+        headers = getStandardAuthMethodHeaders(key, auth_id)
+    }
+    else if (params.auth_method == 'advanced') {
+        headers = getAdvancedAuthMethodHeaders(key, auth_id)
     }
     var res = http(
         requestUrl,
         {
             Method: method,
-            Headers: {
-                'Accept': ['application/json'],
-                'content-type': ['application/json'],
-                'authorization': key,
-                'x-xdr-auth-id': auth_id
-            },
+            Headers: headers,
             Body: body,
             SaveToFile: raw
         },

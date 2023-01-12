@@ -15,8 +15,14 @@ configuration:
   name: creds_apikey
   type: 9
   required: false
-  hidden:
-    - xsoar
+- display: Authentication Method
+  name: auth_method
+  type: 15
+  required: false
+  defaultvalue: advanced
+  options:
+  - standard
+  - advanced
 - display: Base marketplace url
   name: marketplace_url
   defaultvalue: https://storage.googleapis.com/marketplace-dist/content/packs/
