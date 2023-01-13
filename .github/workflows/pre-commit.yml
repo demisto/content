@@ -9,6 +9,8 @@ env:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
+    permissions: write-all
+
     steps:
     - name: Install poetry
       run: pipx install poetry
