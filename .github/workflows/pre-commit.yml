@@ -28,6 +28,10 @@ jobs:
     - name: Install dependencies
       run: poetry install
 
+    - name: get full demisto-sdk python-version
+      id: get-python-version
+      run: |
+        echo poetry show demisto-sdk
     - uses: actions/cache@v3
       with:
         path: ~/.cache/pre-commit
