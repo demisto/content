@@ -1,7 +1,9 @@
 from typing import Any, Dict, List, Optional
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
+FINAL_VERDICT_VENDOR = 'XSOAR'
 
 
 def reliability_level(reliability: Optional[str]) -> int:
@@ -70,7 +72,7 @@ def get_final_verdict(sources: List[Dict[str, Any]], indicator_value: str) -> Op
                 Type=source.get('Type'),
                 Score=source.get('Score') or 0,
                 Reliability=source.get('Reliability'),
-                Vendor='XSOAR',
+                Vendor=FINAL_VERDICT_VENDOR,
             )
     return final
 
