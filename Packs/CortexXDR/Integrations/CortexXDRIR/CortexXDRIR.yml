@@ -3099,11 +3099,11 @@ script:
     description: Adds a tag to specified endpoint_ids
     name: xdr-endpoint-tag-add
   - arguments:
-    - description: List of endpoint IDs. Supports comma separated list.
+    - description: List of endpoint IDs. Supports comma-separated list.
       isArray: true
       required: true
       name: endpoint_ids
-    - description: Tag to remove from specified endpoint_ids
+    - description: Tag to remove from specified endpoint_ids.
       name: tag
       required: true
     description: Removes a tag from specified endpoint_ids.
@@ -3111,55 +3111,55 @@ script:
   - name: xdr-get-tenant-info
     outputs:
     - contextPath: PaloAltoNetworksXDR.TenantInformation.pro_per_endpoint_expiration
-      description: 'Expiration time pro per endpoint.'
+      description: Expiration time pro per endpoint.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_pro_per_endpoint.agents
-      description: 'Number of endpoints agent purchased.'
+      description: Number of endpoints agent purchased.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.data_enabled_pro_per_endpoint
-      description: 'Enabled data per pro endpoint.'
+      description: Enabled data per pro endpoint.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.prevent_expiration
-      description: 'Number of prevent expiration.'
+      description: Number of prevent expiration.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_prevent
-      description: 'Number of purchased prevent.'
+      description: Number of purchased prevent.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.installed_prevent
-      description: 'Number of installed prevent.'
+      description: Number of installed prevent.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.pro_tb_expiration
       description: 'pro_tb license expiration time.'
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_pro_tb.tb
-      description: 'Number of pro_tb purchased.'
+      description: Number of pro_tb purchased.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.installed_pro_tb
       description: 'Number of pro_tb installed.'
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.compute_unit_expiration
-      description: 'Compute Unit expiration time.'
+      description: Compute unit expiration time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_compute_unit
-      description: 'Number of Compute Unit purchased.'
+      description: Number of compute unit purchased.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.compute_unit_is_trial
-      description: 'Compute Unit is trial (True or False).'
+      description: Compute unit is trial.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.TenantInformation.host_insights_expiration
-      description: 'Host Insight expiration time.'
+      description: Host iInsight expiration time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.enabled_host_insights
-      description: 'Number of Host Insight enabled.'
+      description: Number of host insight enabled.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_host_insights
-      description: 'Number of purchased Host Insight.'
+      description: Number of purchased host insights.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.forensics_expiration
-      description: 'Forensic Expiration time.'
+      description: Forensic expiration time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_forensics
-      description: 'Number of Forensic purchased.'
+      description: Number of forensics purchased.
       type: Number
     arguments: []
     description: 'Provides information about the tenant. '
