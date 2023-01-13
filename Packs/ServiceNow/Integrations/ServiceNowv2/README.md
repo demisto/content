@@ -144,15 +144,13 @@ To set up incident mirroring you need to:
 To use ServiceNow on Cortex XSOAR, ensure your service account has the following roles required to make API calls:  
 - Rest_api_explorer
 - Snc_platform_rest_api_access
-- Itil (Needed to access the sys_journal_field to allow comments, work notes, and files to be mirrored in and out. Incoming mirroring queries sys_journal_field for comments and work notes and therefore, access to sys_journal_table is also required.)  
-**Note:**  
-If your organization does not allow assigning the Itil role, you need to give service account elevated
-privileges to the sys_journal_field (see this ServiceNow community link for [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks).
-- Read access to sys_journal_field is required for incoming mirroring.
+- itil or read/write access the specific tables you want to have access to. If you choose to give permissions only for specific tables, make sure you have the correct role so you have permissions to work with the relevant table. Keep in mind that these permissions may not suffice for managing records in some tables.
+- Read access to sys_journal_field (this is an elevated privilege) for accessing comments and work notes and for incoming mirroring. This is **not mandatory** if you have `Use Display Value` enabled with `Instance Date Format` defined.  
 
-You then need to add to your user account the specific tables you want to have access to.  
-These permissions may not suffice for managing records in some tables. Make sure you
-have the correct role so you have permissions to work with the relevant table.  
+ **Note:**  
+   See this ServiceNow community link for [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks.
+
+  
 
 ### Configure Incident Mirroring When the Trigger Incident is ServiceNow  
 When the trigger incident is ServiceNow, you use the **ServiceNow Classifier** and leave the Incident type as N/A, with either the default incoming and outgoing mappers or optional custom mappers.
@@ -180,19 +178,24 @@ custom mapping, follow the instructions in STEP 3 and then select the custom map
     - **In** - Mirrors changes on the ServiceNow ticket in to the Cortex XSOAR ticket.
     - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
     - **Both** - Mirrors changes both in and out on both tickets.
-11. Set the Timestamp field to query as part of the mirroring flow. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
-12. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.  
+11. Enable the checkbox for **Use Display Value** if you want to fetch comments and work notes without using sys_journal_field table which required an elevated read only permission.
+12. If **Use Display Value** is enabled, **Instance Date Format** needs to be set to the date format that matches the date format used in ServiceNow by the user account used to configure the instance.
+
+![image](https://user-images.githubusercontent.com/74367144/212351268-12938ccc-87d6-4f36-9c9b-ef7fcd3135a0.png)
+
+13. Set the Timestamp field to query as part of the mirroring flow. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
+14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.  
 These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
 **Note:**  
 These tags work only for mirroring comments, work notes, and files from Cortex XSOAR to ServiceNow.
 
 ![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
 
-13. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
+15. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
   **Note:**  
   To enable mirroring custom fields, make a copy of the incoming and outgoing mappers and add the custom fields to the copies (see STEP 2 and STEP 3). Select these copies in the integration instance **Mapper (incoming)** and **Mapper (outgoing)** settings.
-14. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** respectively.
-15. Click **Done**.
+16. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** respectively.
+17. Click **Done**.
 
 #### STEP 2 (Optional) Configure the Incoming Mapper by Incident Type for Custom Fields  
 **Note:**
@@ -278,19 +281,24 @@ You can set up any source integration to create a ServiceNow ticket based on a f
     - **In** - Mirrors changes on the ServiceNow ticket in to the Cortex XSOAR ticket.
     - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
     - **Both** - Mirrors changes both in and out on both tickets.
-13. Set the **Timestamp field to query as part of the mirroring flow**. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
-14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.
+13. Enable the checkbox for **Use Display Value** if you want to fetch comments and work notes without using sys_journal_field table which required an elevated read only permission.
+14. If **Use Display Value** is enabled, **Instance Date Format** needs to be set to the date format that matches the date format used in ServiceNow by the user account used to configure the instance.
+
+![image](https://user-images.githubusercontent.com/74367144/212352242-329284d8-6936-4f6c-9a30-c741b7425ff8.png)
+
+15. Set the **Timestamp field to query as part of the mirroring flow**. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
+16. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.
 These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
 **Note:**  
 These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
 
 ![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
 
-15. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
+17. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
   **Note:**  
   To enable mirroring custom fields, make a copy of the incoming and outgoing mappers and add the custom fields to the copies (see STEP 2 and STEP 3). Select these copies in the integration instance **Mapper (incoming)** and **Mapper (outgoing)** settings.
-16. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** respectively.
-17. Click **Done**.
+18. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** respectively.
+19. Click **Done**.
 
 #### STEP 2 (Optional) Configure the Incoming Mapper by Incident Type for Custom Fields  
 **Note:**
