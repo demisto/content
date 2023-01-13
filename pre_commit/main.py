@@ -1,13 +1,10 @@
-import argparse
 import subprocess
+import sys
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("kwargs", nargs="*")
-    args = parser.parse_args()
-    subprocess.run(["demisto-sdk", "pre-commit", *args.kwargs])
+def main(*filenames):
+    subprocess.run(["demisto-sdk", "pre-commit", *filenames])
 
 
 if __name__ == "__main__":
-    main()
+    main(*sys.argv[1:])
