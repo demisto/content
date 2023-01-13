@@ -4,8 +4,8 @@ This pack includes Cortex XSIAM content.
 You need to configure Squid to forward Syslog messages to XSIAM.
 
 In order to send logs via syslog please follow the below steps:
-1. Open the squid.conf file and locate the command: **access_log <location of file> squid**
-2. Add the command **access_log udp://<Firewall Analyzer IP Address>:514/1514 squid** after the command you located in the previous step.
+1. Open the squid.conf file and locate the command: ***access_log \<location of file> squid***
+2. Add the command ***access_log udp://\<Firewall Analyzer IP Address>:514/1514 squid*** after the command you located in the previous step.
 3. Restart the Squid service.
 
 For more information, see the following: 
@@ -16,7 +16,7 @@ http://www.squid-cache.org/Doc/config/access_log/
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
-To create or configure the Broker VM, use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm).
+To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Set-up-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 
