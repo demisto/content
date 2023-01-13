@@ -149,16 +149,19 @@ def get_incident_by_query(query):
     query_time = get_query_window()
 
     query_from_date = str(parse_date_range(query_time)[0])
+    query += f' modified:>={query_from_date}'
 
-    res = demisto.executeCommand("GetIncidentsByQuery",
-                                 {"query": query, "fromDate": query_from_date, "timeField": "modified",
-                                  "populateFields": "id,status,type,emailsubject"})[0]
+    res = demisto.executeCommand("getIncidents",
+                                 {"query": query, "populateFields": "id,status,type,emailsubject"})[0]
 
     if is_error(res):
-        return_results(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
-        raise DemistoException(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
+        return_results(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
+        raise DemistoException(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
 
-    incidents_details = json.loads(res['Contents'])
+    incidents_details = res['Contents']['data']
+    for inc in incidents_details:
+        inc['emailsubject'] = inc['CustomFields']['emailsubject']
+
     return incidents_details
 
 
