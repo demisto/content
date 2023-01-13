@@ -27,4 +27,4 @@ jobs:
         key: pre-commit-3|${{ env.pythonLocation }}
 
     - name: run pre-commit
-      run: demisto-sdk pre-commit -g --test
+      run: poetry run demisto-sdk pre-commit -g --test

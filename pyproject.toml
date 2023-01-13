@@ -12,7 +12,7 @@ pre-commit = "pre_commit_wrapper.main:main"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "3800bdca2011f0ce783d266cf45b1c59e2c2c22a"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "17b687a014f82bcef74257f0447bbc8c3832f4e7"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
