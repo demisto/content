@@ -1,0 +1,29 @@
+{
+    "id": "AWS Guard Duty S3 Finding",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "AWS Guard Duty S3 Finding",
+    "prevName": "AWS Guard Duty S3 Finding",
+    "color": "#4DE406",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.5.0",
+    "layout": "AWS Guard Duty S3 Finding"
+}

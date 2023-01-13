@@ -308,8 +308,7 @@ script:
       name: contract_id
       required: true
       type: textArea
-    - default: true
-      defaultValue: third-party
+    - defaultValue: third-party
       description: Certificate type.
       name: certificate_type
       type: textArea
@@ -380,6 +379,37 @@ script:
       name: org_address_line_one
       required: true
       type: textArea
+    - defaultValue: 'True'
+      description: Network Configuration - Dns Name Settings - Clone DNS Names
+      name: clone_dns_names
+    - defaultValue: 'False'
+      description: Third Party - Exclude Sans
+      name: exclude_sans
+    - defaultValue: 'False'
+      description: Enable this will stop CPS from deploying the certificate to the network
+      name: change_management
+    - defaultValue: core
+      description: Use core to specify worldwide (includes China and Russia), china+core to specify worldwide and China, and 'russia+core` to specify worldwide and Russia.
+      name: network_configuration_geography
+      type: textArea
+    - defaultValue: third-party
+      description: The registration authority or certificate authority (CA) you want to use to obtain a certificate.
+      name: ra
+    - defaultValue: third-party
+      description: Validation type, Either dv, ev, ov, or third-party.
+      name: validation_type
+    - defaultValue: 'False'
+      description: Enable Dual-Stacked certificate deployment for this enrollment.
+      name: enable_multi_stacked_certificates
+    - defaultValue: 'True'
+      description: Set to true to enable QUIC protocol.
+      name: network_configuration_quic_enabled
+    - defaultValue: enhanced-tls
+      description: Set the type of deployment network you want to use.
+      name: network_configuration_secure_network
+    - defaultValue: 'True'
+      description: SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment.
+      name: network_configuration_sni_only
     description: Create a new enrollment.
     name: akamai-create-enrollment
     outputs:
@@ -424,6 +454,13 @@ script:
       name: weight_1
     - description: Weight 2.
       name: weight_2
+    - name: property_comments
+      description: GTM property comments
+      type: textArea
+    - description: Data center ID 1
+      name: dc1_id
+    - description: Data center ID 2
+      name: dc2_id
     description: Update a property for a specific domain.
     name: akamai-update-property
   - arguments:
@@ -431,7 +468,7 @@ script:
       name: enrollment_path
       required: true
     - defaultValue: third-party-csr
-      description: ''
+      description: Currently supported values include change-management-info, lets-encrypt-challenges, post-verification-warnings, pre-verification-warnings, third-party-csr.
       name: allowed_input_type_param
     description: Get the CPS code.
     name: akamai-get-change
@@ -500,7 +537,7 @@ script:
       description: Domain.
   - arguments:
     - description: Domain Name
-      name: Domain name.
+      name: domain_name
       required: true
     - description: Domain controller name.
       name: dc_name
@@ -782,6 +819,8 @@ script:
     - description: PAPI (Ion Standard) property version.
       name: property_version
       type: textArea
+    - description: activation note
+      name: note
     description: Activate a PAPI property.
     name: akamai-activate-papi-property
     outputs:
@@ -987,8 +1026,8 @@ script:
     - description: The path of the rule.
       name: path
       required: true
-    - description: ''
-      name: value
+    - name: value
+      description: The value of the HTTP Method in dictionary format.
       required: true
     description: Patch PAPI property rule HTTP methods.
     name: akamai-patch-papi-property-rule-httpmethods
@@ -1038,7 +1077,154 @@ script:
       required: true
       type: textArea
     description: Acknowledge the warning message for uploading the certs and trust chains of enrollments.
-  dockerimage: demisto/akamai:1.0.0.34769
+  - arguments:
+    - description: A unique identifier for each configuration.
+      name: config_id
+      required: true
+    - description: A unique identifier for each version of a configuration.
+      name: config_version
+      required: true
+    - description: A list hostnames is used to modifying the configuration.
+      isArray: true
+      name: hostname_list
+      required: true
+    - description: The type of update you want to make to the evaluation hostname list.             - Use "append" to add additional hostnames.             - Use "remove" to delete the hostnames from the list.             - Use "replace" to replace the existing list with the hostnames you pass in your request. Use "append" to add additional hostnames. Use "remove" to delete the hostnames from the list. Use "replace" to replace the existing list with the hostnames you pass in your request.
+      name: mode
+      required: true
+    description: Update the list of selected hostnames for a configuration version.
+    name: akamai-modify-appsec-config-selected-hosts
+  - arguments:
+    - name: enrollment_id
+      description: The enrollment id.
+      required: true
+    description: Get Production Deployment
+    name: akamai-get-production-deployment
+  - arguments:
+    - name: enrollment_id
+      description: The enrollment id.
+      required: true
+    description: Get change history
+    name: akamai-get-change-history
+  - arguments:
+    - description: Akamai contract Identity
+      name: contract_id
+      required: true
+    - description: Akamai configuration group Identity
+      name: group_id
+      required: true
+    - description: Akamai Ion Property Identity
+      name: property_id
+      required: true
+    - description: Akamai Ion Property Version Identity
+      name: property_version
+      required: true
+    - description: Validate the rule or not - true or false
+      name: validate_rules
+      required: true
+    - description: Json patch operation - add / delete / replace
+      name: operation
+      required: true
+    - description: Json patch Rule path
+      name: path
+      required: true
+    - description: siteshiled json format data
+      name: ssmap
+      required: true
+    description: Patch papi property default rule siteshield
+    name: akamai-patch-papi-property-rule-siteshield
+  - arguments:
+    - description: The ID of the application seucirty configuration
+      name: config_id
+      required: true
+    - description: The version number of the application seucirty configuration
+      name: config_version
+      required: true
+    - description: The notes need to be written into the application seucirty configuration version
+      name: notes
+      required: true
+    description: Update application secuirty configuration version notes command
+    name: akamai-update-appsec-config-version-notes
+  - arguments:
+    - description: A unique identifier for each configuration.
+      name: config_id
+      required: true
+    - description: A unique identifier for each version of a configuration.
+      name: config_version
+      required: true
+    - description: The type of the match target
+      name: match_type
+      required: true
+    - description: bypass network lists
+      name: bypass_network_lists
+      required: true
+    - description: Describes the rule to match on paths.
+      name: default_file
+      required: true
+    - description: Contains a list of file paths
+      name: file_paths
+      required: true
+    - description: A list of hostnames that need to be added into match target
+      name: hostnames
+      required: true
+    - description: Specifies the security policy to filter match targets
+      name: policy_id
+      required: true
+    description: New match target if no existing found otherwise update the existing match target hostnames. If there are multiple match targets found, the first one in the list will be updated
+    name: akamai-new-or-renew-match-target
+  - arguments:
+    - description: A unique identifier for each configuration.
+      name: contract_id
+      required: true
+    - description: A unique identifier for each group.
+      name: group_id
+      required: true
+    - description: A unique identifier for each Papi Property
+      name: property_id
+      required: true
+    - description: A unique identifier for each Papi Property Version.
+      name: property_version
+      required: true
+    - description: whether validate rule or not
+      name: validate_rules
+      required: true
+    - description: add/replace/remove
+      name: operation
+      required: true
+    - description: json rule tree path for the default rule
+      name: path
+      required: true
+    - description: value to be operated against
+      name: value
+      required: true
+    - description: whether to convert value to json format. yes/no
+      name: value_to_json
+      predefined:
+      - 'yes'
+      - 'no'
+    description: Generic JSON patch command for Papi Property Default Rule
+    name: akamai-patch-papi-property-rule-generic
+  - arguments:
+    - description: A unique identifier for each configuration.
+      name: contract_id
+      required: true
+    - description: A unique identifier for each group.
+      name: group_id
+      required: true
+    - description: A unique identifier for each Papi Property
+      name: property_id
+      required: true
+    - description: A unique identifier for each Papi Property Version.
+      name: property_version
+      required: true
+    - description: whether validate rule or not
+      name: validate_rules
+      required: true
+    description: get papi property rule json and dump into string
+    name: akamai-get-papi-property-rule
+    outputs:
+    - contextPath: Akamai.PapiProperty.DefaultRule
+      description: Papi Property default rule
+  dockerimage: demisto/akamai:1.0.0.39599
   runonce: false
   script: ''
   subtype: python3

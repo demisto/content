@@ -133,9 +133,6 @@
 				"assigned_user_mail": {
 					"simple": "xdrassigneduseremail"
 				},
-				"assigned_user_pretty_name": {
-					"simple": "owner"
-				},
 				"manual_severity": {
 					"complex": {
 						"filters": [],

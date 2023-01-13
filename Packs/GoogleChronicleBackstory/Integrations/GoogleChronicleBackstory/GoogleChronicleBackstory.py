@@ -51,6 +51,7 @@ CHRONICLE_OUTPUT_PATHS = {
     'RetroHunt': 'GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)',
     'ReferenceList': 'GoogleChronicleBackstory.ReferenceList(val.name == obj.name)',
     'ListReferenceList': 'GoogleChronicleBackstory.ReferenceLists(val.name == obj.name)',
+    'StreamRules': 'GoogleChronicleBackstory.StreamRules(val.id == obj.id)'
 }
 
 ARTIFACT_NAME_DICT = {
@@ -114,6 +115,7 @@ MESSAGES = {
     "INVALID_DAY_ARGUMENT": 'Invalid preset time range value provided. Allowed values are "Last 1 day", "Last 7 days", '
                             '"Last 15 days" and "Last 30 days"',
     "INVALID_PAGE_SIZE": 'Page size should be in the range from 1 to {}.',
+    "INVALID_MAX_RESULTS": 'Max Results should be in the range 1 to 10000.',
     "NO_RECORDS": 'No Records Found',
     "INVALID_RULE_TEXT": 'Invalid rule text provided. Section "meta", "events" or "condition" is missing.',
     "REQUIRED_ARGUMENT": 'Missing argument {}.',
@@ -473,7 +475,7 @@ def get_chronicle_default_date_range(days=DEFAULT_FIRST_FETCH, arg_name='start_t
 def get_artifact_type(value):
     """
     Derive the input value's artifact type based on the regex match. \
-    The returned artifact_type is complaint with the Search API.
+    The returned artifact_type is compliant with the Search API.
 
     :type value: string
     :param value: artifact value
@@ -624,6 +626,8 @@ def parse_error_message(error):
     """
     try:
         json_error = json.loads(error)
+        if isinstance(json_error, list):
+            json_error = json_error[0]
     except json.decoder.JSONDecodeError:
         demisto.debug(
             'Invalid response received from Chronicle Search API. Response not in JSON format. Response - {}'.format(
@@ -3011,6 +3015,46 @@ def gcb_update_reference_list(client_obj, name, lines, description):
     return ec, json_data
 
 
+def gcb_test_rule_stream(client_obj, rule_text, start_time, end_time, max_results):
+    """
+    Return context data and raw response for gcb-test-rule-stream.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type rule_text: str
+    :param rule_text: the rule text to for the rule to be created
+
+    :type start_time: str
+    :param start_time: start time of the window
+
+    :type end_time: str
+    :param end_time: end time of the window
+
+    :type max_results: int
+    :param max_results: maximum number of results to return
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the created rule
+    """
+    req_json_data = {
+        'rule': {
+            'ruleText': rule_text,
+        },
+        "startTime": start_time,
+        "endTime": end_time,
+        "maxResults": max_results
+    }
+    request_url = "{}/detect/rules:streamTestRule".format(BACKSTORY_API_V2_URL)
+    json_data = validate_response(client_obj, request_url, method='POST', body=json.dumps(req_json_data))
+
+    # context data for the command
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['StreamRules']: {'list': json_data}
+    }
+    return ec, json_data
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
@@ -3826,6 +3870,59 @@ def gcb_update_reference_list_command(client_obj, args):
     return hr, ec, json_data
 
 
+def prepare_hr_for_gcb_test_rule_stream_command(detections):
+    """
+    Prepare Human Readable output from the response received.
+
+    :type detections: Dict
+    :param detections: raw response received from api in json format.
+
+    :return: Human Readable output to display.
+    :rtype: str
+    """
+    hr_dict = []
+    for detection in detections:
+        detection = detection.get('detection', {})
+        events = get_event_list_for_detections_hr(detection.get('collectionElements', []))
+        hr_dict.append({
+            'Detection ID': detection.get('id', ''),
+            'Detection Type': detection.get('type', ''),
+            'Detection Time': detection.get('detectionTime', ''),
+            'Events': get_events_hr_for_detection(events)
+        })
+    hr = tableToMarkdown('Detection(s)', hr_dict, ['Detection ID', 'Detection Type', 'Detection Time', 'Events'],
+                         removeNull=True)
+    return hr
+
+
+def gcb_test_rule_stream_command(client_obj, args):
+    """
+    Stream results for given rule text.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-update-reference-list command
+
+    :rtype: str, dict, dict
+    :return: command output
+    """
+    rule_text = args.get('rule_text', '')
+    start_time = arg_to_datetime(args.get('start_time'), 'start_time').strftime(DATE_FORMAT)  # type: ignore
+    end_time = arg_to_datetime(args.get('end_time'), 'end_time').strftime(DATE_FORMAT)  # type: ignore
+    max_results = arg_to_number(args.get('max_results', 1000))
+
+    validate_rule_text(rule_text)
+    if max_results > 10000 or max_results <= 0:  # type: ignore
+        raise ValueError(MESSAGES["INVALID_MAX_RESULTS"])
+
+    ec, json_data = gcb_test_rule_stream(client_obj, rule_text=rule_text, start_time=start_time, end_time=end_time,
+                                         max_results=max_results)
+    hr = prepare_hr_for_gcb_test_rule_stream_command(json_data)  # select fields to be shown in HR
+    return hr, ec, json_data
+
+
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
     # supported command list
@@ -3850,7 +3947,8 @@ def main():
         'gcb-create-reference-list': gcb_create_reference_list_command,
         'gcb-list-reference-list': gcb_list_reference_list_command,
         'gcb-get-reference-list': gcb_get_reference_list_command,
-        'gcb-update-reference-list': gcb_update_reference_list_command
+        'gcb-update-reference-list': gcb_update_reference_list_command,
+        'gcb-test-rule-stream': gcb_test_rule_stream_command
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')

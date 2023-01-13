@@ -7,7 +7,6 @@ from datetime import datetime
 from typing import Dict, Callable
 import copy
 
-
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
@@ -30,11 +29,15 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
-    migrate_integration_ctx, enrich_offense_with_events, \
-    perform_long_running_loop, validate_integration_context, FetchMode
+    qradar_remote_network_cidr_create_command, get_cidrs_indicators, verify_args_for_remote_network_cidr, \
+    qradar_remote_network_cidr_list_command, verify_args_for_remote_network_cidr_list, is_positive, \
+    qradar_remote_network_cidr_delete_command, qradar_remote_network_cidr_update_command, \
+    qradar_remote_network_deploy_execution_command, migrate_integration_ctx, enrich_offense_with_events, \
+    perform_long_running_loop, validate_integration_context, FetchMode, MIRRORED_OFFENSES_FETCHED_CTX_KEY
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
+import demistomock as demisto
 
 QRadar_v3.FAILURE_SLEEP = 0
 QRadar_v3.SLEEP_FETCH_EVENT_RETRIES = 0
@@ -283,7 +286,7 @@ def test_build_headers(first_headers, all_headers):
                           (32, 'a id     >=           35001 ', 35000),
                           (1523, 'closing_reason_id > 5000', 1523),
                           (0, 'id > 4', 4),
-                          (0, 'id > 2', 3)])
+                          (0, 'id > 1', 2)])
 def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected, mocker):
     """
     Given:
@@ -817,7 +820,10 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_domains_list_command, 'domains_list'),
                              (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
                              (qradar_log_sources_list_command, 'log_sources_list'),
-                             (qradar_get_custom_properties_command, 'custom_properties')
+                             (qradar_get_custom_properties_command, 'custom_properties'),
+                             (qradar_remote_network_cidr_list_command, 'get_remote_network_cidr'),
+                             (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr'),
+                             (qradar_remote_network_deploy_execution_command, 'remote_network_deploy_execution'),
                          ])
 def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
     """
@@ -1107,10 +1113,10 @@ def test_get_modified_with_events(mocker):
         and modified incidents returns the modified offenses and the finished queries.
     """
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': QueryStatus.WAIT.value},
-                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}}
+                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'2': '456', '10': '555'},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012', '1': '123'},
-                                LAST_MIRROR_KEY: 3444}
+                                LAST_MIRROR_KEY: 3444, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     set_integration_context(context_data)
     status = {'123': {'status': 'COMPLETED'},
               '456': {'status': 'WAIT'},
@@ -1139,7 +1145,7 @@ def test_remote_data_with_events(mocker, offense_id):
         - Ensure that the offense data is returned and context_data is updated.
     """
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': QueryStatus.WAIT.value},
-                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}}
+                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     set_integration_context(copy.deepcopy(context_data))
 
     mocker.patch.object(QRadar_v3, 'create_events_search', return_value='555')
@@ -1172,7 +1178,9 @@ def test_remote_data_with_events(mocker, offense_id):
         # offense is already finished, so we expect it to being deleted from the context
         assert offense_id not in updated_context[MIRRORED_OFFENSES_FINISHED_CTX_KEY]
         assert offense_data.get('events') == events['events']
-        assert offense_data.get('events_fetched') == 5 + int(offense_id)
+        expected_events_fetched = 5 + int(offense_id)
+        assert offense_data.get('events_fetched') == expected_events_fetched
+        assert updated_context[MIRRORED_OFFENSES_FETCHED_CTX_KEY][offense_id] == expected_events_fetched
 
     elif offense_id not in context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY] or \
             (offense_id in context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY]
@@ -1182,6 +1190,43 @@ def test_remote_data_with_events(mocker, offense_id):
     else:
         # offense is unchanged, so we expect it to be unchanged in the context
         assert offense_id in updated_context[MIRRORED_OFFENSES_QUERIED_CTX_KEY]
+
+
+def test_qradar_remote_network_cidr_create_command(mocker):
+    """
+    Given:
+        - A network CIDR to create.
+
+    When:
+        - Calling qradar_remote_network_cidr_create_command.
+
+    Then:
+        - Ensure the correct request was called and the correct response is returned.
+    """
+    expected_response_from_api = {'name': 'test_name',
+                                  'description': 'description',
+                                  'cidrs': ['1.2.3.4/32', '8.8.8.8/24'],
+                                  'id': 12,
+                                  'group': 'test_group'}
+
+    mocker.patch.object(client, 'create_and_update_remote_network_cidr', return_value=expected_response_from_api)
+
+    res = qradar_remote_network_cidr_create_command(client, {'name': 'test_name',
+                                                             'description': 'description',
+                                                             'cidrs': '1.2.3.4/32,8.8.8.8/24',
+                                                             'group': 'test_group'})
+
+    assert expected_response_from_api == res.raw_response
+    assert '| description | test_group | 12 | test_name |' in res.readable_output
+
+
+def test_qradar_remote_network_cidr_delete_command(mocker):
+    expected_command_result = command_test_data['remote_network_cidr_delete']['readable_output']
+
+    mocker.patch.object(client, 'delete_remote_network_cidr', return_value=b'')
+    result = qradar_remote_network_cidr_delete_command(client, {'id': '46'})
+
+    assert result.readable_output == expected_command_result
 
 
 @pytest.mark.parametrize('test_case_data',
@@ -1345,6 +1390,7 @@ def test_convert_ctx():
     new_context = migrate_integration_ctx(ctx_test_data.get('old_ctxs')[0])
     expected = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                 LAST_FETCH_KEY: 15,
                 LAST_MIRROR_KEY: 0,
                 'samples': [],
@@ -1360,6 +1406,97 @@ def test_convert_ctx_to_new_structure():
     validate_integration_context()
     assert get_integration_context() == {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                          MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                                         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
                                          LAST_FETCH_KEY: 15,
                                          LAST_MIRROR_KEY: 0,
                                          'samples': []}
+
+
+@pytest.mark.parametrize('query, expected', [
+    ('', []),
+    ('cidr', ['1.2.3.4/32', '5.6.7.8/2'])
+])
+def test_get_cidrs_indicators(query, expected, mocker):
+    """
+    Given: A query to get cidr indicators
+
+    When: Calling the function
+
+    Then: Extract and return a clean list of cidrs only
+    """
+    mocker.patch.object(demisto, 'searchIndicators', return_value={'iocs': [
+        {'id': '14', 'version': 1, 'indicator_type': 'CIDR', 'value': '1.2.3.4/32'},
+        {'id': '12', 'version': 1, 'indicator_type': 'CIDR', 'value': '5.6.7.8/2'},
+    ]})
+
+    assert get_cidrs_indicators(query) == expected
+
+
+VERIFY_MESSAGES_ERRORS = [
+    'Cannot specify both cidrs and query arguments.',
+    'Must specify either cidrs or query arguments.',
+    '1.2.3.4 is not a valid CIDR.',
+    'Name and group arguments only allow letters, numbers, \'_\' and \'-\'.',
+    "cidr is not a valid field. Possible fields are: ['id', 'name', 'group', 'cidrs', 'description']."
+]
+
+
+@pytest.mark.parametrize('cidrs_list, cidrs_from_query, name, group, fields, expected', [
+    (['1.2.3.4/32', '5.6.7.8/2'], ['8.8.8.8/12'], 'test1', 'test_group1', '', VERIFY_MESSAGES_ERRORS[0]),
+    ([], [], 'test2', 'test_group2', '', VERIFY_MESSAGES_ERRORS[1]),
+    (['1.2.3.4'], [], 'test3', 'test_group3', '', VERIFY_MESSAGES_ERRORS[2]),
+    (['1.2.3.4/32'], [], 'test4!', 'test_group4', '', VERIFY_MESSAGES_ERRORS[3]),
+    (['1.2.3.4/32'], [], 'test5', 'test_group5!', '', VERIFY_MESSAGES_ERRORS[3]),
+    (['1.2.3.4/32'], [], 'test9', 'test_group9', 'id,cidr', VERIFY_MESSAGES_ERRORS[4]),
+])
+def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields, expected):
+    """
+    Given: Command arguments
+
+    When: Calling to verify arguments
+
+    Then: Verify that the correct error message is returned
+    """
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields)
+
+    assert error_message == expected
+
+
+@pytest.mark.parametrize('values, expected', [
+    ([50, 2, 25], True),
+    ([None, 2, None], True),
+    ([None, None, 0], False),
+    ([4, -5], False),
+    ([None], True)
+])
+def test_is_positive(values, expected):
+    assert is_positive(*values) == expected
+
+
+VERIFY_LIST_MESSAGES_ERRORS = [
+    'Please provide either limit argument or page and page_size arguments.',
+    'Please provide both page and page_size arguments.',
+    'Limit, page and page_size arguments must be positive numbers.',
+    'You can not use filter argument with group, id or name arguments.'
+]
+
+
+@pytest.mark.parametrize('limit, page, page_size, filter_, group, id_, name, expected', [
+    (50, 2, 25, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[0]),
+    (None, 2, None, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[1]),
+    (None, None, 25, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[1]),
+    (-1, None, None, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[2]),
+    (None, -1, -1, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[2]),
+    (None, None, None, 'test', 'test', 'test', 'test', VERIFY_LIST_MESSAGES_ERRORS[3])
+])
+def test_verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name, expected):
+    """
+    Given: Command arguments
+
+    When: Calling to verify arguments
+
+    Then: Verify that the correct error message is returned
+    """
+    error_message = verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name)
+
+    assert error_message == expected

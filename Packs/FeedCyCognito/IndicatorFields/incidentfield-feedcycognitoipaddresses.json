@@ -1,0 +1,32 @@
+{
+    "id": "indicator_feedcycognitoipaddresses",
+    "version": -1,
+    "modified": "2022-08-05T17:00:51.231950462+05:30",
+    "name": "FeedCyCognito IP Addresses",
+    "ownerOnly": false,
+    "cliName": "feedcycognitoipaddresses",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Domain",
+        "CyCognito Asset"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

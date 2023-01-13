@@ -1,0 +1,59 @@
+{
+    "id": "indicator_cvsstable",
+    "version": -1,
+    "modified": "2022-02-15T08:23:52.605154895Z",
+    "name": "CVSS Table",
+    "ownerOnly": false,
+    "cliName": "cvsstable",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+    ],
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "metrics",
+            "displayName": "Metrics",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 250,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "value",
+            "displayName": "Value",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

@@ -2,7 +2,7 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 
-import requests
+import urllib3
 import httplib2
 import urllib.parse
 from oauth2client import service_account
@@ -12,7 +12,7 @@ import typing
 from collections import defaultdict
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 

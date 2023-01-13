@@ -15,19 +15,23 @@ ENV_URLS = {
     "eu": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
+COMMENT_TYPES = set((
+    "investigation",
+))
 INVESTIGATION_STATUSES = set((
     "Open",
-    "Suspended",
     "Active",
     "Awaiting Action",
+    "Suspended",
     "Closed: Authorized Activity",
+    "Closed: Confirmed Security Incident",
     "Closed: False Positive Alert",
     "Closed: Inconclusive",
     "Closed: Informational",
     "Closed: Not Vulnerable",
     "Closed: Threat Mitigated",
 ))
-INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type"))
+INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type", "assignee_id"))
 
 
 """ CLIENT """
@@ -109,6 +113,60 @@ class Client(BaseClient):
 """ COMMANDS """
 
 
+def create_comment_command(client: Client, env: str, args=None):
+    if not args.get("comment"):
+        raise ValueError("Cannot create comment, comment cannot be empty")
+
+    if not args.get("parent_id"):
+        raise ValueError("Cannot create comment, parent_id cannot be empty")
+
+    parent_type = args.get("parent_type", "investigation").lower()
+    if parent_type not in COMMENT_TYPES:
+        raise ValueError(
+            f"The provided comment parent type, {parent_type}, is not valid. "
+            f"Supported Parent Types Values: {COMMENT_TYPES}"
+        )
+
+    query = """
+    mutation createComment ($comment: CommentInput!) {
+        createComment(comment: $comment) {
+            id
+        }
+    }
+    """
+
+    variables = {
+        "comment": {
+            "comment": args.get("comment"),
+            "parent_id": args.get("parent_id"),
+            "parent_type": parent_type,
+            "section_id": args.get("section_id", ""),
+            "section_type": args.get("section_type", ""),
+        }
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        comment = result["data"]["createComment"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to create comment: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.CommentCreate",
+        outputs_key_field="id",
+        outputs=comment,
+        readable_output=tableToMarkdown(
+            "Taegis Comment",
+            comment,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def create_investigation_command(client: Client, env: str, args=None):
     query = """
     mutation ($investigation: InvestigationInput!) {
@@ -128,18 +186,22 @@ def create_investigation_command(client: Client, env: str, args=None):
 
     result = client.graphql_run(query=query, variables=variables)
 
-    investigation_url = f"{ENV_URLS[env]['xdr']}/investigations/{result['data']['createInvestigation']['id']}"
-    readable_output = f"""
-## Results
-* Created Investigation: [{result['data']['createInvestigation']['id']}]({investigation_url})
-"""
-    outputs = result["data"]["createInvestigation"]
+    try:
+        investigation = result["data"]["createInvestigation"]
+        investigation["url"] = generate_id_url(env, "investigations", investigation["id"])
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to create investigation: {result['errors'][0]['message']}")
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Investigation",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=investigation,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation",
+            investigation,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -177,18 +239,19 @@ def execute_playbook_command(client: Client, env: str, args=None):
     if not result.get("data"):
         raise ValueError(f"Failed to execute playbook: {result['errors'][0]['message']}")
 
-    execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{result['data']['executePlaybookInstance']['id']}"
-    readable_output = f"""
-## Results
-* Executed Playbook Instance: [{result['data']['executePlaybookInstance']['id']}]({execution_url})
-"""
-    outputs = result["data"]["executePlaybookInstance"]
+    execution = result["data"]["executePlaybookInstance"]
+    execution["url"] = generate_id_url(env, "automations/playbook-executions", execution["id"])
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Execution",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=execution,
+        readable_output=tableToMarkdown(
+            "Taegis Playbook Execution",
+            execution,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -203,6 +266,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         "cql_query": args.get("cql_query", "from alert severity >= 0.6 and status='OPEN'"),
         "limit": args.get("limit", 10),
         "offset": args.get("offset", 0),
+        "ids": args.get("ids", []),  # ["alerts://id1", "alerts://id2"]
     }
     fields: str = """
             status
@@ -261,16 +325,20 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     if args.get("ids"):
         field = "alertsServiceRetrieveAlertsById"
         query = """
-        query alertsServiceRetrieveAlertsById {
+        query alertsServiceRetrieveAlertsById($ids: [String!]) {
             alertsServiceRetrieveAlertsById(
                 in: {
-                    iDs: %s
+                    iDs: $ids
                 }
             ) {
                 %s
             }
         }
-        """ % (str(args["ids"]), fields)
+        """ % (fields)
+
+        if type(variables["ids"]) == str:
+            variables["ids"] = variables["ids"].split(",")  # alerts://id1,alerts://id2
+        variables["ids"] = [x.strip() for x in variables["ids"]]  # Ensure no whitespace
     else:
         field = "alertsServiceSearch"
         query = """
@@ -290,31 +358,143 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     result = client.graphql_run(query=query, variables=variables)
     alerts = result["data"][field]["alerts"]["list"]
 
-    readable_output = f'## Results\nFound {len(alerts)} alerts'
-
-    if alerts:
-        readable_output += "\n\n### Alerts\n"
-        for alert in alerts:
-            alert_id: str = alert['id'].replace('/', '%2F')
-            readable_output += f"* [{alert['metadata']['title']}]({ENV_URLS[env]['xdr']}/alerts/{alert_id})\n"
+    for alert in alerts:
+        alert.update({"url": generate_id_url(env, "alerts", alert["id"])})
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Alerts",
         outputs_key_field="id",
         outputs=alerts,
-        readable_output=readable_output,
+        readable_output=tableToMarkdown(
+            "Taegis Alerts",
+            alerts,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
     return results
 
 
-def fetch_incidents(client: Client, max_fetch: int = 15):
+def fetch_comment_command(client: Client, env: str, args=None):
+    comment_id = args.get("id")
+    if not comment_id:
+        raise ValueError("Cannot fetch comment, missing comment_id")
+
+    query = """
+    query comment ($comment_id: ID!) {
+        comment(comment_id: $comment_id) {
+            author_user {
+                id
+                family_name
+                given_name
+                email_normalized
+            }
+            id
+            comment
+            modified_at
+            deleted_at
+            created_at
+            parent_id
+            parent_type
+        }
+    }
+    """
+
+    variables = {"comment_id": comment_id}
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        comment = result["data"]["comment"]
+    except (KeyError, TypeError):
+        raise ValueError("Could not locate comment by provided ID")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Comment",
+        outputs_key_field="id",
+        outputs=comment,
+        readable_output=tableToMarkdown(
+            "Taegis Comment",
+            comment,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def fetch_comments_command(client: Client, env: str, args=None):
+    if not args.get("parent_id"):
+        raise ValueError("Cannot fetch comments, missing parent_id")
+
+    parent_type = args.get("parent_type", "investigation")
+    if parent_type not in COMMENT_TYPES:
+        raise ValueError((
+            f"The provided comment parent type, {parent_type}, is not valid. "
+            f"Supported Parent Types Values: {parent_type}"
+        ))
+
+    query = """
+    query commentsByParent ($parent_type: String!, $parent_id: String!) {
+        commentsByParent(parent_type: $parent_type,parent_id:$parent_id) {
+            author_user {
+                id
+                family_name
+                given_name
+                email_normalized
+            }
+            id
+            comment
+            modified_at
+            deleted_at
+            created_at
+            parent_id
+            parent_type
+        }
+    }
+    """
+
+    variables = {
+        "parent_id": args.get("parent_id"),
+        "parent_type": parent_type
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        comments = result["data"]["commentsByParent"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch comments: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Comments",
+        outputs_key_field="id",
+        outputs=comments,
+        readable_output=tableToMarkdown(
+            "Taegis Comments",
+            comments,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = True):
     """
     Fetch Taegis Investigations for the use with "Fetch Incidents"
     """
     if not 0 < int(max_fetch) < 201:
         raise ValueError("Max Fetch must be between 1 and 200")
+
+    asset_query = ""
+    if include_assets:
+        demisto.debug("include_assets=True, fetching assets with investigation")
+        asset_query = "assets {id hostnames {id hostname} tags {tag}}"
 
     query = """
     query investigations(
@@ -367,19 +547,10 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
             latest_activity
             priority
             status
-            assets {
-                id
-                hostnames {
-                    id
-                    hostname
-                }
-                tags {
-                    tag
-                }
-            }
+            %s
         }
     }
-    """
+    """ % (asset_query)
 
     variables = {
         "orderByField": "created_at",
@@ -445,31 +616,35 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
             alerts {
                 id
             }
+            alerts2 {
+                id
+            }
             totalCount
         }
     }
     """
 
     variables = {"page": page, "perPage": page_size, "investigation_id": investigation_id}
-
     result = client.graphql_run(query=query, variables=variables)
 
-    if not result.get("data"):
-        readable_output = f"## Results\nCould not locate investigation '{investigation_id}'"
+    try:
+        alerts = result["data"]["investigationAlerts"]["alerts"]
+    except (KeyError, TypeError):
         alerts = []
-    else:
-        alerts = result["data"]["investigationAlerts"].get("alerts", [])
-        readable_output = f"## Results\nFound {len(alerts)} alerts related to investigation {investigation_id}"
-        if alerts:
-            readable_output += "## Investigation Alerts"
-        for alert in alerts:
-            readable_output += f"* [{alert['id']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
+
+    for alert in alerts:
+        alert.update({"url": generate_id_url(env, "alerts", alert["id"])})
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.InvestigationAlerts",
         outputs_key_field="id",
         outputs=alerts,
-        readable_output=readable_output,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Alerts",
+            alerts,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -488,6 +663,23 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         description
         key_findings
         alerts2 {
+            id
+            suppressed
+            status
+            priority {
+                value
+            }
+            metadata {
+                title
+                description
+                created_at {
+                    seconds
+                }
+                severity
+                confidence
+            }
+        }
+        genesis_alerts2 {
             id
             suppressed
             status
@@ -552,24 +744,23 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         result = client.graphql_run(query=query, variables=variables)
 
     try:
-        outputs = [result["data"]["investigation"]] if investigation_id else result["data"]["allInvestigations"]
-    except KeyError:
-        outputs = []
+        investigations = [result["data"]["investigation"]] if investigation_id else result["data"]["allInvestigations"]
+    except (KeyError, TypeError):
+        investigations = []
 
-    readable_output = f"## Results\nFound {len(outputs)} investigation(s)"
-
-    for investigation in outputs:
-        readable_output += f"""\n\n### [{investigation['description']}]({ENV_URLS[env]['xdr']}/investigations/{investigation["id"]})
-* ID: {investigation['id']}
-* Priority: {investigation['priority']}
-* Status: {investigation['status']}
-"""
+    for investigation in investigations:
+        investigation.update({"url": generate_id_url(env, "investigations", investigation["id"])})
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Investigations",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=investigations,
+        readable_output=tableToMarkdown(
+            "Taegis Investigations",
+            investigations,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -607,33 +798,128 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
 
     result = client.graphql_run(query=query, variables=variables)
 
-    if not result.get("data"):
-        readable_output = f"## Results\n* Could not locate execution '{execution_id}': {result['errors'][0]['message']}"
-        outputs = {}
-    else:
+    try:
         execution = result['data']["playbookExecution"]
-        execution_url = f"{ENV_URLS[env]['xdr']}/automations/playbook-executions/{execution['id']}"
-        readable_output = f"""
-## Results
-* Playbook Name: {execution['instance']['playbook']['name']}
-* Playbook Instance Name: {execution['instance']['name']}
-* Executed Playbook Instance: [{execution['id']}]({execution_url})
-* Executed Time: {execution['createdAt']}
-* Run Time: {execution['executionTime']}
-* Execution State: {execution['state']}
-* Execution Outputs:
-
-```
-{execution['outputs']}
-```
-"""
-        outputs = result["data"]["playbookExecution"]
+        execution["url"] = generate_id_url(env, "automations/playbook-executions", execution["id"])
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch playbook execution: {result['errors'][0]['message']}")
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.PlaybookExecution",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=execution,
+        readable_output=tableToMarkdown(
+            "Taegis Playbook Execution",
+            execution,
+            removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def fetch_users_command(client: Client, env: str, args=None):
+    page = int(args.get("page", 0))
+    page_size = int(args.get("page_size", 10))
+
+    variables: Dict[str, Any] = {
+        "filters": {
+            "status": args.get("status", ""),
+            "perPage": page_size,
+            "pageOffset": page_size * page,
+        }
+    }
+    fields = "user_id email family_name given_name status"
+    if args.get("id"):
+        if not args["id"].startswith("auth0"):
+            raise ValueError("id MUST be in 'auth0|12345' format")
+
+        query = """
+        query ($ids: [String!]) {
+            tdrusersByIDs (userIDs: $ids) {
+                %s
+            }
+        }
+        """ % (fields)
+        variables = {"ids": [args["id"]]}
+    else:
+        query = """
+        query ($filters: TDRUsersSearchInput) {
+            tdrUsersSearch (filters: $filters) {
+                results {
+                    %s
+                }
+            }
+        }
+        """ % (fields)
+
+    if args.get("email"):
+        variables["filters"]["emails"] = args["email"]
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        if args.get("id"):
+            user = result["data"]["tdrusersByIDs"]
+        else:
+            user = result["data"]["tdrUsersSearch"]["results"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch user information: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Users",
+        outputs_key_field="user_id",
+        outputs=user,
+        readable_output=tableToMarkdown(
+            "Taegis Users",
+            user,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def update_comment_command(client: Client, env: str, args=None):
+    if not args.get("id"):
+        raise ValueError("Cannot update comment, comment id cannot be empty")
+
+    if not args.get("comment"):
+        raise ValueError("Cannot update comment, comment cannot be empty")
+
+    query = """
+    mutation updateComment ($comment_id: ID!, $comment: CommentUpdate!) {
+        updateComment(comment_id: $comment_id, comment: $comment) {
+            id
+        }
+    }
+    """
+    variables = {
+        "comment_id": args.get("id"),
+        "comment": {
+            "comment": args.get("comment")
+        },
+    }
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        comment = result["data"]["updateComment"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to locate/update comment: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.CommentUpdate",
+        outputs_key_field="id",
+        outputs=comment,
+        readable_output=tableToMarkdown(
+            "Taegis Comment",
+            comment,
+            removeNull=True,
+        ),
         raw_response=result,
     )
 
@@ -644,6 +930,10 @@ def update_investigation_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
     if not investigation_id:
         raise ValueError("Cannot fetch investigation without investigation_id defined")
+
+    if args.get("assignee_id"):
+        if not args["assignee_id"].startswith("auth0") and args["assignee_id"] != "@secureworks":
+            raise ValueError("assignee_id MUST be in 'auth0|12345' format or '@secureworks'")
 
     query = """
     mutation ($investigation_id: ID!, $investigation: UpdateInvestigationInput!) {
@@ -670,15 +960,114 @@ def update_investigation_command(client: Client, env: str, args=None):
 
     result = client.graphql_run(query=query, variables=variables)
 
-    investigation_url = f"{ENV_URLS[env]['xdr']}/investigations/{result['data']['updateInvestigation']['id']}"
-    readable_output = f"## Results\n* Updated Investigation: [{result['data']['updateInvestigation']['id']}]({investigation_url})"
-    outputs = result["data"]["updateInvestigation"]
+    try:
+        investigation = result["data"]["updateInvestigation"]
+        investigation["url"] = generate_id_url(env, "investigations", investigation["id"])
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to locate/update investigation: {result['errors'][0]['message']}")
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.InvestigationUpdate",
         outputs_key_field="id",
-        outputs=outputs,
-        readable_output=readable_output,
+        outputs=investigation,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation",
+            investigation,
+            removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def archive_investigation_command(client: Client, env: str, args=None):
+    investigation_id = args.get("id")
+    if not investigation_id:
+        raise ValueError("Cannot archive investigation, missing investigation id")
+
+    query = """
+    mutation ($investigation_id: ID!) {
+      archiveInvestigation(investigation_id: $investigation_id) {
+        id
+      }
+    }
+    """
+
+    variables = {"investigation_id": investigation_id}
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"]["archiveInvestigation"]
+        status = "Successfully Archived Investigation"
+    except (KeyError, TypeError):
+        raise ValueError(f"Could not locate investigation with id: {investigation_id}")
+
+    archive_results = {
+        "id": investigation_id,
+        "result": investigation,
+        "status": status,
+        "url": generate_id_url(env, "investigations", investigation_id),
+    }
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.ArchivedInvestigation",
+        outputs_key_field="id",
+        outputs=archive_results,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Archiving",
+            archive_results,
+            removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def unarchive_investigation_command(client: Client, env: str, args=None):
+    investigation_id = args.get("id")
+    if not investigation_id:
+        raise ValueError("Cannot unarchive investigation, missing investigation id")
+
+    query = """
+    mutation ($investigation_id: ID!) {
+      unArchiveInvestigation(investigation_id: $investigation_id) {
+        id
+      }
+    }
+    """
+
+    variables = {"investigation_id": investigation_id}
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"]["unArchiveInvestigation"]
+        status = "Successfully Unarchived Investigation"
+    except (KeyError, TypeError):
+        if result["errors"][0].get("message"):
+            investigation = {}
+            status = "Investigation is not currently archived"
+        else:
+            raise ValueError(f"Could not locate investigation with id: {investigation_id}")
+
+    archive_results = {
+        "id": investigation_id,
+        "result": investigation,
+        "status": status,
+        "url": generate_id_url(env, "investigations", investigation_id),
+    }
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.UnarchivedInvestigation",
+        outputs_key_field="id",
+        outputs=archive_results,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Unarchiving",
+            archive_results,
+            removeNull=True,
+            url_keys=("url"),
+        ),
         raw_response=result,
     )
 
@@ -696,6 +1085,14 @@ def test_module(client: Client) -> str:
         raise DemistoException(exception)
 
 
+""" UTILITIES """
+
+
+def generate_id_url(env: str, endpoint: str, element_id: str):
+    element_id: str = element_id.replace('/', '%2F')
+    return f"{ENV_URLS[env]['xdr']}/{endpoint}/{element_id}"
+
+
 """ MAIN """
 
 
@@ -705,13 +1102,20 @@ def main():
 
     commands: Dict[str, Any] = {
         "fetch-incidents": fetch_incidents,
+        "taegis-create-comment": create_comment_command,
         "taegis-create-investigation": create_investigation_command,
         "taegis-execute-playbook": execute_playbook_command,
         "taegis-fetch-alerts": fetch_alerts_command,
+        "taegis-fetch-comment": fetch_comment_command,
+        "taegis-fetch-comments": fetch_comments_command,
         "taegis-fetch-investigation": fetch_investigation_command,
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
+        "taegis-fetch-users": fetch_users_command,
+        "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
+        "taegis-archive-investigation": archive_investigation_command,
+        "taegis-unarchive-investigation": unarchive_investigation_command,
         "test-module": test_module,
     }
 
@@ -740,7 +1144,7 @@ def main():
             return_results(result)
 
         elif command == "fetch-incidents":
-            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"))
+            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"), include_assets=PARAMS.get("include_assets"))
         else:
             return_results(commands[command](client=client, env=environment, args=demisto.args()))
     except Exception as e:

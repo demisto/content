@@ -2,6 +2,7 @@ id: Access Investigation - Generic - NIST
 version: -1
 name: Access Investigation - Generic - NIST
 fromversion: 5.0.0
+toversion: 5.9.9
 description: |-
   This playbook investigates an access incident by gathering user and IP information, and handling the incident based on the stages in "Handling an incident - Computer Security Incident Handling Guide" by NIST.
   https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r2.pdf

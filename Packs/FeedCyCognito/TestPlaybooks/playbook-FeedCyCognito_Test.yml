@@ -1,0 +1,146 @@
+id: FeedCyCognito-Test
+version: -1
+name: FeedCyCognito-Test
+description: Test playbook for FeedCyCognito integration.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d889de81-327a-4793-8a88-a8fa241adbce
+    type: start
+    task:
+      id: d889de81-327a-4793-8a88-a8fa241adbce
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 2f2a2791-9b09-41f4-830e-b64435f7d270
+    type: regular
+    task:
+      id: 2f2a2791-9b09-41f4-830e-b64435f7d270
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: df251fcc-7443-4af3-874c-eb9cd24f70d1
+    type: regular
+    task:
+      id: df251fcc-7443-4af3-874c-eb9cd24f70d1
+      version: -1
+      name: cycognito-get-indicators
+      description: Fetches a given limit of indicators from the CyCognito platform, and displays them in Human Readable format in the war room.
+      script: '|||cycognito-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      asset_type:
+        simple: ip
+      count:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 345825a4-8adb-4514-8f0b-0371a629b40f
+    type: title
+    task:
+      id: 345825a4-8adb-4514-8f0b-0371a629b40f
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0

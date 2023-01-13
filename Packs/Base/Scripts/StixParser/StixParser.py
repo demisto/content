@@ -189,14 +189,6 @@ class STIX2Parser:
         return indicator
 
     @staticmethod
-    def is_sub_report(report_obj: Dict[str, Any]) -> bool:
-        obj_refs = report_obj.get('object_refs', [])
-        for obj_ref in obj_refs:
-            if obj_ref.startswith('report--'):
-                return False
-        return True
-
-    @staticmethod
     def get_ioc_type(indicator: str, id_to_object: Dict[str, Dict[str, Any]]) -> str:
         """
         Get IOC type by extracting it from the pattern field.
@@ -313,14 +305,24 @@ class STIX2Parser:
         return [attack_pattern]
 
     @staticmethod
-    def parse_report(report_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def parse_report(report_obj: Dict[str, Any]):
         """
         Parses a single report object
         :param report_obj: report object
         :return: report extracted from the report object in cortex format
         """
-        if STIX2Parser.is_sub_report(report_obj):
-            return []
+        object_refs = report_obj.get('object_refs', [])
+        new_relationships = []
+        for obj_id in object_refs:
+            new_relationships.append({
+                "type": "relationship",
+                "id": "relationship--fakeid",
+                "created": report_obj.get('created'),
+                "modified": report_obj.get('modified'),
+                "relationship_type": "contains",
+                "source_ref": report_obj.get('id'),
+                "target_ref": obj_id,
+            })
 
         report = {
             "indicator_type": ThreatIntel.ObjectsNames.REPORT,
@@ -339,7 +341,7 @@ class STIX2Parser:
 
         report['customFields'] = fields
 
-        return [report]
+        return [report], new_relationships
 
     @staticmethod
     def parse_threat_actor(threat_actor_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -766,20 +768,24 @@ class STIX2Parser:
             envelopes.get('extension-definition', []))
 
         for obj_type, stix_objects in envelopes.items():
-            if obj_type != "relationship":
+            if obj_type == 'relationship':
+                relationships_list.extend(stix_objects)
+            else:
                 for obj in stix_objects:
                     # handled separately
                     if obj.get('type') == 'extension-definition':
                         continue
                     self.id_to_object[obj.get('id')] = obj
-                    result = parse_objects_func[obj_type](obj)
+                    if obj.get('type') == 'report':
+                        result, relationships = self.parse_report(obj)
+                        relationships_list.extend(relationships)
+                    else:
+                        result = parse_objects_func[obj_type](obj)
                     if not result:
                         continue
                     self.update_obj_if_extensions(xsoar_taxii_server_extensions, obj, result)
                     self.parsed_object_id_to_object[obj.get('id')] = result[0]
                     indicators.extend(result)
-            else:
-                relationships_list.extend(stix_objects)
 
         if relationships_list:
             relationships_mapping = self.parse_relationships(relationships_list)

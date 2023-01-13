@@ -135,7 +135,7 @@ def prisma_access_active_users():
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
 ''' GLOBALS '''
 apiConfigured = False

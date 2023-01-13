@@ -323,9 +323,17 @@ class TestArcherV2:
         assert "Check the given URL, it can be a redirect issue" in str(e.value)
 
     def test_generate_field_contents(self):
+        """
+        Given:
+            a string of fields values with a \\ character
+        When:
+            - loading a json object from the string object
+        Then:
+            - return a valid json object
+        """
         client = Client(BASE_URL, '', '', '', '', 400)
-        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP['mapping'])
-        assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
+        field = generate_field_contents(client, '{"Device Name":"Macbook\\Name\\\"Test"}', GET_LEVELS_BY_APP['mapping'])
+        assert field == {'2': {'Type': 1, 'Value': 'Macbook\\Name\"Test', 'FieldId': '2'}}
 
     def test_get_errors_from_res(self):
         errors = get_errors_from_res(RES_WITH_ERRORS)

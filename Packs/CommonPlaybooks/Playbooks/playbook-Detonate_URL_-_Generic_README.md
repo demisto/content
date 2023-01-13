@@ -15,7 +15,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 - Detonate URL - JoeSecurity
 - Detonate URL - VMRay
 - Detonate URL - Cuckoo
-- Detonate URL - CrowdStrike Falcon X
+- Detonate URL - CrowdStrike Falcon Intelligence Sandbox
 - Detonate URL - FireEye AX
 - Detonate URL - Hatching Triage
 - Detonate URL - WildFire v2.1
@@ -42,7 +42,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description**                            | **Default Value** | **Required** |
 | -------- | ------------------------------------------ | ----------------- | ------------ |
-| URL      | The URL object of the URL to be detonated. | URL.None          | Optional     |
+| URL      | The URL object of the URL to be detonated. | URL          | Optional     |
 
 ## Playbook Outputs
 

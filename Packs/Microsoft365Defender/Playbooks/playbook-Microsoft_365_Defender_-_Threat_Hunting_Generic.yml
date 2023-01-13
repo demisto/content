@@ -1,0 +1,374 @@
+id: Microsoft 365 Defender - Threat Hunting Generic
+version: -1
+name: Microsoft 365 Defender - Threat Hunting Generic
+description: |
+  This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`. and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
+
+  - **Microsoft 365 Defender - Get Email URL clicks**:
+          Retrieves data based on URL click events.
+
+
+  - **Microsoft 365 Defender - Emails Indicators Hunt**:
+          Retrieves data based on several different email events.
+
+  Read the playbook's descriptions in order to get the full details.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7d49577a-e48d-4199-85b2-b1902771a7fd
+    type: start
+    task:
+      id: 7d49577a-e48d-4199-85b2-b1902771a7fd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: af97b282-0811-44ff-8781-70514404a72d
+    type: playbook
+    task:
+      id: af97b282-0811-44ff-8781-70514404a72d
+      version: -1
+      name: Microsoft 365 Defender - Get Email URL Clicks
+      description: |-
+        This playbook retrieves email data based on the `URLDomain` and `MessageID` inputs. It will use the Microsoft 365 Defender's Advanced Hunting to search only for URL click events based on the playbook inputs and will enrich it with the full email data.
+
+        **URLDomain** - If the “URLDomain” value is found as a substring of URL(s) in the body of the email, the email is retrieved.
+
+        **MessageID** - The message ID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:
+        - The value of the header "Message-ID".
+        - The internal ID of the message within Microsoft's products (e.g., NetworkMessageId).
+
+        Can be a single MessageID or an array of MessageIDs to search.
+      playbookName: Microsoft 365 Defender - Get Email URL Clicks
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      ListenerMailbox:
+        complex:
+          root: inputs.ListenerMailbox
+      MessageID:
+        complex:
+          root: inputs.MessageID
+      ResultsLimit:
+        complex:
+          root: inputs.ResultsLimit
+      SearchTimeframe:
+        complex:
+          root: inputs.SearchTimeframe
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      URLDomain:
+        complex:
+          root: inputs.URLDomain
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 917d20f0-ac44-40f4-8cfb-d85c7686a345
+    type: playbook
+    task:
+      id: 917d20f0-ac44-40f4-8cfb-d85c7686a345
+      version: -1
+      name: Microsoft 365 Defender - Emails Indicators Hunt
+      description: |-
+        This playbook retrieves email data based on the "URLDomain", "SHA256" and "IPAddress" inputs.
+        SHA256 - Emails with attachments matching the "SHA256" input are retrieved.
+        URLDomain - If the "URLDomain" value is found as a substring of URL(s) in the body of the email, the email is retrieved.
+        IPAddress - Emails with "SenderIPv4"/SenderIPv6" or URLs (in the body) matching the "IPAddress" input are retrieved.
+      playbookName: Microsoft 365 Defender - Emails Indicators Hunt
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.IPAddress
+      ListenerMailbox:
+        complex:
+          root: inputs.ListenerMailbox
+      ResultsLimit:
+        complex:
+          root: inputs.ResultsLimit
+      SHA256:
+        complex:
+          root: inputs.SHA256
+      SearchTimeframe:
+        complex:
+          root: inputs.SearchTimeframe
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      URLDomain:
+        complex:
+          root: inputs.URLDomain
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0fb58176-a495-49d0-8cf7-81d69fc7e1d5
+    type: title
+    task:
+      id: 0fb58176-a495-49d0-8cf7-81d69fc7e1d5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 445,
+        "width": 920,
+        "x": 10,
+        "y": 390
+      }
+    }
+  }
+inputs:
+- key: URLDomain
+  value: {}
+  required: false
+  description: Domain or URL to search within emails. Can be a single domain or URL, or an array of domains or URLs to search.
+  playbookInputQuery:
+- key: SHA256
+  value: {}
+  required: false
+  description: The SHA256 hash file or an array of hashes to search within emails.
+  playbookInputQuery:
+- key: IPAddress
+  value: {}
+  required: false
+  description: The source or destination IP address to search. Can be a single address or an array of IP addresses.
+  playbookInputQuery:
+- key: MessageID
+  value: {}
+  required: false
+  description: |-
+    MessageID of the email from which the URL was clicked. Note that this can be either of the following 2 values:
+    - The value of the header "Message-ID".
+    - The internal ID of the message within Microsoft's products (e.g., NetworkMessageId).
+
+    Can be a single MessageID or an array of MessageIDs to search.
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "180"
+  required: false
+  description: The time limit in seconds for the HTTP request to run. Default is 180.
+  playbookInputQuery:
+- key: SearchTimeframe
+  value:
+    simple: "7"
+  required: false
+  description: Number of previous days to search. Default is 7.
+  playbookInputQuery:
+- key: ResultsLimit
+  value:
+    simple: "50"
+  required: false
+  description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the default.
+  playbookInputQuery:
+- key: ListenerMailbox
+  value: {}
+  required: false
+  description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
+  playbookInputQuery:
+outputs:
+- contextPath: Microsoft365Defender.RetrievedEmails
+  description: Email objects containing relevant fields related to URL clicks events.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
+  description: Public-facing identifier for the email that is set by the sending email system. This will be the value of the "Message-ID" header.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromDomain
+  description: Sender domain in the FROM header, which is visible to email recipients on their email clients.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailDirection
+  description: 'Direction of the email relative to your network: Inbound, Outbound, Intra-org.'
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryLocation
+  description: 'Location where the email was delivered: Inbox/Folder, On-premises/External, Junk, Quarantine, Failed, Dropped, Deleted items.'
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AuthenticationDetails
+  description: List of pass or fail verdicts by email authentication protocols like DMARC, DKIM, SPF or a combination of multiple authentication types (CompAuth).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DeliveryAction
+  description: 'Delivery action of the email: Delivered, Junked, Blocked, or Replaced.'
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Subject
+  description: Subject of the email.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AttachmentCount
+  description: Number of attachments in the email.
+  type: number
+- contextPath: Microsoft365Defender.RetrievedEmails.ThreatNames
+  description: Detection name for malware or other threats found.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.RecipientEmailAddress
+  description: Email address of the recipient, or email address of the recipient after distribution list expansion.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailAction
+  description: 'Final action taken on the email based on filter verdict, policies, and user actions: Move message to junk mail folder, Add X-header, Modify subject, Redirect message, Delete message, Send to quarantine, No action taken, Bcc message.'
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.EmailLanguage
+  description: Email language.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderFromAddress
+  description: Sender email address in the FROM header, which is visible to email recipients on their email clients.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Timestamp
+  description: Date and time when the record was generated.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderDisplayName
+  description: Sender display name.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv4
+  description: IPv4 address of the last detected mail server that relayed the message.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ConfidenceLevel
+  description: List of confidence levels of any spam or phishing verdicts. For spam, this column shows the spam confidence level (SCL), indicating if the email was skipped (-1), found to be not spam (0,1), found to be spam with moderate confidence (5,6), or found to be spam with high confidence (9). For phishing, this column displays whether the confidence level is "High" or "Low".
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
+  description: Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats.
+  type: unknown
+- contextPath: Microsoft365Defender.RetrievedEmails.SHA256
+  description: SHA256 of the attachments (if exists in the email).
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Url
+  description: URL that was clicked.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.UrlCount
+  description: Number of embedded URLs in the email.
+  type: number
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv6
+  description: IPv6 address of the last detected mail server that relayed the message.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AccountUpn
+  description: User principal name (UPN) of the account.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.IsClickedThrough
+  description: Indicates whether the user was able to click through to the original URL or not.
+  type: number
+- contextPath: Microsoft365Defender.RetrievedEmails.BulkComplaintLevel
+  description: Threshold assigned to email from bulk mailers. A high bulk complain level (BCL) means the email is more likely to generate complaints, and thus more likely to be spam.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.IPAddress
+  description: IP address assigned to the device during communication.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DetectionMethods
+  description: Methods used to detect whether the URL contains or leads to malware, phishing, or other threats.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ActionType
+  description: Type of activity that triggered the event.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.UrlChain
+  description: List of URLs in the redirection chain.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.NetworkMessageId
+  description: Unique identifier for the email, generated by Office 365.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DisplayName
+  description: Name of the sender displayed in the address book, typically a combination of a given or first name, a middle initial, and a last name or surname.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderMailFromDomain
+  description: Sender domain in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderMailFromAddress
+  description: Sender email address in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ClickTimestamp
+  description: Date and time when the record was generated (URL click).
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

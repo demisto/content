@@ -1,0 +1,389 @@
+[
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${incident.name1} bbb ${incident.name2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "incident": {
+      "name1": "value1",
+      "name2": "value2"
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${inputs.name1} bbb ${inputs.name2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "inputs": {
+      "name1": "value1",
+      "name2": "value2"
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${lists.name1} bbb ${lists.name2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "lists": {
+      "name1": "value1",
+      "name2": "value2"
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${lists.name.1} bbb ${lists.name.2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "lists": {
+      "name.1": "value1",
+      "name.2": "value2"
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "${name1}",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": {
+          "a": "b"
+        }
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": {
+        "a": "b"
+      }
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "${name1}",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {}
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa {name1} bbb {name2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "variable_markers": "{,}",
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa %%name1%% bbb %%name2%% ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "variable_markers": "%%,%%",
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa $name1 bbb $name2 ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "variable_markers": "$",
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${name${name1}} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": "2",
+        "name2": "value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "aaa value2 ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": "value1"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": true
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb ${name2} ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": "value1",
+        "name2": null
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": true
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb ${name2} ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "aaa ${name1} bbb ${name2} ccc",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name1": "value1"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "aaa value1 bbb  ccc"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "123",
+      "append": false,
+      "stringify": "false",
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": 123
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "123",
+      "append": false,
+      "stringify": "true",
+      "force": false,
+      "context": null,
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "123"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "${name1}",
+      "append": false,
+      "stringify": "true",
+      "force": false,
+      "context": {
+        "name1": {
+          "a": "b"
+        }
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "{\"a\": \"b\"}"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "${name1}",
+      "append": false,
+      "stringify": "all",
+      "force": false,
+      "context": {
+        "name1": {
+          "123": {
+            "a": 456
+          }
+        }
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": {
+        "123": {
+          "a": "456"
+        }
+      }
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "{${name}}",
+      "append": false,
+      "stringify": null,
+      "force": false,
+      "context": {
+        "name": "value"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": "{value}"
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": {
+        "1": "aaa ${name1} bbb",
+        "2": "aaa ${name2} ccc"
+      },
+      "append": false,
+      "stringify": null,
+      "context": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": {
+        "1": "aaa value1 bbb",
+        "2": "aaa value2 ccc"
+      }
+    }
+  },
+  {
+    "args": {
+      "key": "Output",
+      "template": "{\"1\": \"aaa ${name1} bbb\", \"2\": \"aaa ${name2} ccc\"}",
+      "template_type": "json",
+      "append": false,
+      "stringify": null,
+      "context": {
+        "name1": "value1",
+        "name2": "value2"
+      },
+      "variable_markers": null,
+      "keep_symbol_to_null": false
+    },
+    "entry_context": {
+      "Output": {
+        "1": "aaa value1 bbb",
+        "2": "aaa value2 ccc"
+      }
+    }
+  }
+]

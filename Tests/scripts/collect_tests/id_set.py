@@ -3,6 +3,10 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
+from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
+from demisto_sdk.commands.content_graph.common import ContentType
+from demisto_sdk.commands.content_graph.objects.content_item import ContentItem
+
 
 from Tests.scripts.collect_tests.constants import \
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
@@ -36,6 +40,12 @@ class IdSetItem(DictBased):
         # hidden for pack_name_to_pack_metadata, deprecated for content items
         self.deprecated: Optional[bool] = \
             self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
+
+    @classmethod
+    def from_model(cls, model: ContentItem):
+        return cls(id_=model.object_id,
+                   dict_=model.to_id_set_entity(),
+                   )
 
     @property
     def integrations(self):
@@ -149,3 +159,38 @@ class IdSet(DictFileBased):
 
                     result[id_] = item
         return result
+
+
+class Graph:
+    def __init__(self, marketplace: MarketplaceVersions) -> None:
+        self.marketplace = marketplace
+        with Neo4jContentGraphInterface() as content_graph_interface:
+            integrations = content_graph_interface.search(marketplace=marketplace,
+                                                          content_type=ContentType.INTEGRATION)
+            scripts = content_graph_interface.search(marketplace=marketplace,
+                                                     content_type=ContentType.SCRIPT)
+            test_playbooks = content_graph_interface.search(marketplace=marketplace,
+                                                            content_type=ContentType.TEST_PLAYBOOK)
+            playbooks = content_graph_interface.search(marketplace=marketplace,
+                                                       content_type=ContentType.PLAYBOOK)
+            # maps content_items to test playbook where they are used recursively
+
+            self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
+            self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
+            self.id_to_test_playbook = {
+                test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
+            self.implemented_playbooks_to_tests = {playbook.object_id: [IdSetItem.from_model(test) for test in playbook.tested_by]
+                                                   for playbook in playbooks}
+            self.implemented_scripts_to_tests = {script.object_id: [IdSetItem.from_model(test) for test in script.tested_by]
+                                                 for script in scripts}
+
+            self.test_playbooks = self.id_to_test_playbook.values()
+
+    @property
+    def artifact_iterator(self) -> Iterable[IdSetItem]:
+        """ returns an iterator for all content items EXCLUDING PACKS """
+        with Neo4jContentGraphInterface() as content_graph_interface:
+            content_items = content_graph_interface.search(self.marketplace, content_type=ContentType.BASE_CONTENT)
+            for content_item in content_items:
+                if content_item.content_type not in {ContentType.COMMAND, ContentType.PACK}:
+                    yield IdSetItem.from_model(content_item)

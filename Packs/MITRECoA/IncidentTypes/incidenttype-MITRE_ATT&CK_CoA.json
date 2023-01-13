@@ -1,0 +1,23 @@
+{
+    "autorun": true,
+    "color": "#64B5F6",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "MITRE ATT\u0026CK CoA",
+    "layout": "MITRE Layout",
+    "locked": false,
+    "name": "MITRE ATT\u0026CK CoA",
+    "playbookId": "MITRE ATT\u0026CK - Courses of Action",
+    "readonly": false,
+    "reputationCalc": 1,
+    "onChangeRepAlg": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.5.0"
+}

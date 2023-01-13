@@ -21,11 +21,13 @@ You can configure the vendor and product by replacing [vendor]_[product]_raw wit
 When configuring the instance, you should use a yml that configures the vendor and product, like this example:
 
 ```
-filebeat.modules:
-- module: mysqlenterprise
-  audit:
-    var.input: file
-    var.paths: /home/user/mysqlauditlogs/audit.*.log
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  json.keys_under_root: true
+  json.add_error_key: true
+  paths:
+    - /var/lib/mysql/audit.log
   processors:
     - add_fields:
         fields:

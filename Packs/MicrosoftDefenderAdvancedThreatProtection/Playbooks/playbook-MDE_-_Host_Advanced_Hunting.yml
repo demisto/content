@@ -1280,7 +1280,7 @@ tasks:
       - "94"
     scriptarguments:
       extend-context:
-        simple: customQueries
+        simple: MicrosoftATP.Hunt.Result.customQueries=
       query_batch:
         complex:
           root: inputs.QueryBatch

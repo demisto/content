@@ -1,4 +1,6 @@
 import hashlib
+from typing import Tuple
+
 from CommonServerPython import *
 
 CSRF_PARSING_CHARS = 14
@@ -34,7 +36,7 @@ class Client:
 
     def session_post(self, url: str, json_cmd: dict) -> dict:
         response = self.session.post(url=url, json=json_cmd, verify=self.verify,
-                                     headers=self.session_metadata["headers"])
+                                     headers=self.session_metadata.get("headers"))
         json_response = json.loads(response.text)
         if 'type' in json_response and json_response['type'] == 'exception':
             if 'message' in json_response:
@@ -62,6 +64,7 @@ class Client:
             'ok': 'Log In'
         }
         try:
+            headers = {}
             if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
                 # We do this to get the cookie we need to add to the requests in the new version of PAN-OS
                 response = self.session.get(url=f'{self.session_metadata["base_url"]}/php/login.php?',
@@ -272,6 +275,22 @@ class Client:
             json_cmd=json_cmd)
 
 
+def get_unused_rules_by_position(client: Client, position, exclude, rule_type, usage, timeframe) -> Tuple[Dict, List]:
+    """
+
+    Get unused rules from panorama based on user defined arguments.
+
+    """
+    raw_response = client.policy_optimizer_get_rules(
+        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
+    )
+
+    stats = raw_response.get('result') or {}
+    if (stats.get('@status') or '') == 'error':
+        raise Exception(f'Operation Failed with: {stats}')
+    return raw_response, (stats.get('result') or {}).get('entry') or []
+
+
 def get_policy_optimizer_statistics_command(client: Client) -> CommandResults:
     """
     Gets the Policy Optimizer Statistics as seen from the User Interface
@@ -356,20 +375,21 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     timeframe = args.get('timeframe')
     usage = args.get('usage')
     exclude = argToBoolean(args.get('exclude'))
-    position = args.get('position') or 'post'
+    position = args.get('position')
     rule_type = args.get('rule_type') or 'security'
-
     position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
+    rules = []
 
-    raw_response = client.policy_optimizer_get_rules(
-        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
-    )
+    if position == 'both':
+        post_raw, post_rules = get_unused_rules_by_position(client, 'post', exclude, rule_type, usage, timeframe)
+        pre_raw, pre_rules = get_unused_rules_by_position(client, 'pre', exclude, rule_type, usage, timeframe)
+        raw_response = {'post': post_raw,
+                        'pre': pre_raw}
+        rules.extend(post_rules)
+        rules.extend(pre_rules)
+    else:
+        raw_response, rules = get_unused_rules_by_position(client, position, exclude, rule_type, usage, timeframe)
 
-    stats = raw_response.get('result') or {}
-    if (stats.get('@status') or '') == 'error':
-        raise Exception(f'Operation Failed with: {stats}')
-
-    rules = (stats.get('result') or {}).get('entry') or []
     if rules:
         headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
         table = tableToMarkdown(

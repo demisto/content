@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+import urllib3
 
 # flake8: noqa: E501
 
@@ -1006,7 +1007,7 @@ class Client:
 
         headers = self.cs_client._headers
 
-        response = self.cs_client.http_request('get', 'devices/entities/devices/v1', params=params, headers=headers)
+        response = self.cs_client.http_request('get', 'devices/entities/devices/v2', params=params, headers=headers)
 
         return response
 
@@ -9575,7 +9576,9 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        # Disable insecure warnings
+        urllib3.disable_warnings()
+
         client = Client(params)
 
         commands = {

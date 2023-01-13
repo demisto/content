@@ -10,14 +10,13 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [
-        "GDPR"
-    ],
+    "tags": [],
     "useCases": [
-        "GDPR Breach Notification",
         "Compliance"
     ],
-    "keywords": [],
+    "keywords": [
+        "GDPR Breach Notification"
+    ],
     "dependencies": {
         "Compliance": {
             "mandatory": true,

@@ -6,7 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
+import urllib3
 import base64
 from datetime import datetime, timedelta
 from ipaddress import IPv4Address, AddressValueError, summarize_address_range
@@ -16,7 +16,7 @@ from typing import (
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 """ CONSTANTS """
@@ -641,7 +641,7 @@ def main() -> None:
 
     params = demisto.params()
     command = demisto.command()
-    api_key = params.get("apikey")
+    api_key = params.get('credentials', {}).get('password', '') or params.get("apikey", '')
     base_url = urljoin(params["url"], "/api")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)

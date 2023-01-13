@@ -1,5 +1,6 @@
 import pytest
 from freezegun import freeze_time
+import json
 
 import demistomock as demisto
 
@@ -33,6 +34,11 @@ expected_incidents = [
         'severity': 0,
         'rawJSON': '{"id": "P-678910", "alertTime": 1664697641, "policy.name": "This is a test"}'
     }]
+
+
+def util_load_json(path):
+    with open(path, mode='r') as f:
+        return json.loads(f.read())
 
 
 @pytest.fixture(autouse=True)
@@ -398,3 +404,29 @@ def test_redlock_search_network(mocker):
     mocker.patch.object(demisto, 'results')
     redlock_search_network()
     assert demisto.results.call_args[0][0].get('EntryContext') == expected_context_entry
+
+
+@pytest.mark.parametrize(
+    "raw_alert, expected_result, set_args",
+    [
+        (util_load_json('test_data/alert_raw.json'), util_load_json('test_data/alert_context.json'), False),
+        (util_load_json('test_data/alert_raw.json'), util_load_json('test_data/alert_context_with_resource_keys.json'), True)
+    ]
+)
+def test_alert_to_context(raw_alert, expected_result, set_args, mocker):
+    """
+        Given
+            - Raw alert data
+            - Raw alert data
+        When
+            - resource_keys argument is not set
+            - resource_keys argument is set to 'tags'
+        Then
+            - Validate that the function returns the expected context JSON
+            - Validate that the function returns the expected context JSON including the 'tags' element from the resource
+    """
+    from RedLock import alert_to_context
+    if set_args:
+        mocker.patch.object(demisto, 'args', return_value={"resource_keys": "tags"})
+    actual_result = alert_to_context(raw_alert)
+    assert actual_result == expected_result

@@ -1,5 +1,6 @@
 import random
 import string
+import subprocess
 from typing import Dict
 
 import dateparser
@@ -19,7 +20,6 @@ import logging
 import warnings
 import email
 from requests.exceptions import ConnectionError
-
 from multiprocessing import Process
 import exchangelib
 from exchangelib.errors import (
@@ -175,9 +175,10 @@ class EWSClient:
         :param insecure: Trust any certificate (not secure)
         """
 
-        client_id = kwargs.get('client_id') or kwargs.get('_client_id')
-        tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
-        client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
+        client_id = kwargs.get('_client_id') or kwargs.get('client_id')
+        tenant_id = kwargs.get('_tenant_id') or kwargs.get('tenant_id')
+        client_secret = (kwargs.get('credentials') or {}).get('password') or kwargs.get('client_secret')
+        access_type = kwargs.get('access_type', IMPERSONATION) or IMPERSONATION
 
         if not client_secret:
             raise Exception('Key / Application Secret must be provided.')
@@ -201,7 +202,7 @@ class EWSClient:
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
-        self.access_type = (kwargs.get('access_type', IMPERSONATION) or IMPERSONATION).lower()
+        self.access_type = (access_type[0] if isinstance(access_type, list) else access_type).lower()
         self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
         self.client_id = client_id
@@ -209,6 +210,7 @@ class EWSClient:
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
+        self.mark_as_read = kwargs.get('mark_as_read', False)
 
     def __prepare(self, insecure):
         """
@@ -549,7 +551,7 @@ def exchangelib_cleanup():
         exchangelib.close_connections()
     except Exception as ex:
         demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
-    for key, protocol in key_protocols:
+    for key, (protocol, _) in key_protocols:
         try:
             if "thread_pool" in protocol.__dict__:
                 demisto.debug(
@@ -766,6 +768,8 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         if type(value) in [str, str, int, float, bool, Body, HTMLBody, None]:
             raw_dict[field] = value
     raw_dict["id"] = item.id
+    demisto.debug(f"checking for attachments in email with id {item.id}")
+    log_memory()
     if getattr(item, "attachments", None):
         raw_dict["attachments"] = [
             parse_attachment_as_dict(item.id, x) for x in item.attachments
@@ -1105,11 +1109,9 @@ def move_item_between_mailboxes(
         destination_folder_path, destination_account, is_public
     )
     item = client.get_item_from_mailbox(source_account, item_id)
-
     exported_items = source_account.export([item])
     destination_account.upload([(destination_folder, exported_items[0])])
     source_account.bulk_delete([item])
-
     move_result = {
         MOVED_TO_MAILBOX: destination_mailbox,
         MOVED_TO_FOLDER: destination_folder_path,
@@ -2030,7 +2032,8 @@ def parse_incident_from_item(item):
     """
     incident = {}
     labels = []
-
+    demisto.debug(f"starting to parse the email with id {item.id} into an incident")
+    log_memory()
     try:
         incident["details"] = item.text_body or item.body
     except AttributeError:
@@ -2068,7 +2071,11 @@ def parse_incident_from_item(item):
     # handle attachments
     if item.attachments:
         incident["attachment"] = []
+        demisto.debug(f"parsing {len(item.attachments)} attachments for item with id {item.id}")
+        attachment_counter = 0
         for attachment in item.attachments:
+            attachment_counter += 1
+            demisto.debug(f'retrieving attachment number {attachment_counter} of email with id {item.id}')
             file_result = None
             label_attachment_type = None
             label_attachment_id_type = None
@@ -2081,6 +2088,8 @@ def parse_incident_from_item(item):
 
                         # save the attachment
                         file_name = get_attachment_name(attachment.name)
+                        demisto.debug(f"saving content number {attachment_counter}, "
+                                      f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
 
                         # check for error
@@ -2168,6 +2177,7 @@ def parse_incident_from_item(item):
             labels.append(
                 {"type": label_attachment_id_type, "value": attachment.attachment_id.id}
             )
+        demisto.debug(f'finished parsing attachment {attachment_counter} of email with id {item.id}')
 
     # handle headers
     if item.headers:
@@ -2195,7 +2205,11 @@ def parse_incident_from_item(item):
         labels.append({"type": "Email/ConversionID", "value": item.conversation_id.id})
 
     incident["labels"] = labels
+    demisto.debug(f"Starting to generate rawJSON for incident, from email with id {item.id}")
+    log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
+    log_memory()
+    demisto.debug(f"FInshed generatiing rawjson from email with id {item.id}")
 
     return incident
 
@@ -2207,6 +2221,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
     :param last_run: last run dict
     :return:
     """
+    log_memory()
     last_run = get_last_run(client, last_run)
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
     try:
@@ -2219,6 +2234,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
         incidents = []
         incident: Dict[str, str] = {}
+        emails_ids = []  # Used for mark emails as read
         demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
         current_fetch_ids = set()
         for item in last_emails:
@@ -2226,6 +2242,8 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
+                if item.id:
+                    emails_ids.append(item.id)
 
                 if len(incidents) >= client.max_fetch:
                     break
@@ -2262,6 +2280,10 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         }
 
         demisto.setLastRun(new_last_run)
+
+        if client.mark_as_read:
+            mark_item_as_read(client, emails_ids)
+
         return incidents
 
     except RateLimitError:
@@ -2288,6 +2310,8 @@ def fetch_last_emails(
     :return: list of exchangelib.Items
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
+    demisto.debug(f"Finished getting the folder named {folder_name} by path")
+    log_memory()
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
@@ -2296,21 +2320,25 @@ def fetch_last_emails(
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
-    qs = qs.filter().only(*[x.name for x in Message.FIELDS])
+    qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name.lower() != 'mime_content'])
     qs = qs.filter().order_by("datetime_received")
-
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
+    qs.chunk_size = min(client.max_fetch, 100)
+    qs.page_size = min(client.max_fetch, 100)
+    demisto.debug("Before iterating on queryset")
+    demisto.debug(f'Size of the queryset object in fetch-incidents:{sys.getsizeof(qs)}')
     for item in qs:
+        demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
         else:
             demisto.debug(f'message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}')
-
     demisto.debug(f'{APP_NAME} - Got total of {len(result)} from ews query.')
+    log_memory()
     return result
 
 
@@ -2355,16 +2383,14 @@ def sub_main():
     params = demisto.params()
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
-    params['default_target_mailbox'] = args.get('target_mailbox',
-                                                args.get('source_mailbox', params['default_target_mailbox']))
-
+    params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
+    if params.get('upn_mailbox') and not(args.get('target_mailbox')):
+        params['default_target_mailbox'] = params.get('upn_mailbox')
     try:
         client = EWSClient(**params)
         start_logging()
-
         # replace sensitive access_token value in logs
         add_sensitive_log_strs(client.credentials.access_token.get('access_token', ''))
-
         command = demisto.command()
         # commands that return a single note result
         normal_commands = {
@@ -2401,6 +2427,7 @@ def sub_main():
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             incidents = fetch_emails_as_incidents(client, last_run)
+            demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
             demisto.incidents(incidents)
 
         # special outputs commands
@@ -2413,6 +2440,7 @@ def sub_main():
             return_outputs(*output)
 
     except Exception as e:
+        demisto.error(f'got exception {e}')
         start_logging()
         debug_log = log_stream.getvalue()  # type: ignore[union-attr]
         error_message_simple = ""
@@ -2520,10 +2548,16 @@ def main():
             p = Process(target=process_main)
             p.start()
             p.join()
+            demisto.debug("subprocess finished")
         except Exception as ex:
             demisto.error("Failed starting Process: {}".format(ex))
     else:
         sub_main()
+
+
+def log_memory():
+    if is_debug_mode():
+        demisto.debug(f'memstat\n{str(subprocess.check_output(["ps", "-opid,comm,rss,vsz"]))}')
 
 
 from MicrosoftApiModule import *  # noqa: E402
