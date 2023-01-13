@@ -25,17 +25,17 @@
         "xsoar"
     ],
     "dependencies": {
-        "Phishing": {
+        "CommonTypes": {
             "mandatory": true,
-            "display_name": "Phishing"
+            "display_name": "Common Types"
         },
         "ExpanseV2": {
             "mandatory": true,
             "display_name": "Cortex Xpanse by Palo Alto Networks"
         },
-        "CommonTypes": {
+        "Phishing": {
             "mandatory": true,
-            "display_name": "Common Types"
+            "display_name": "Phishing"
         },
         "CoreAlertFields": {
             "mandatory": true,
@@ -43,9 +43,9 @@
         }
     },
     "displayedImages": [
-        "Phishing",
-        "ExpanseV2",
         "CommonTypes",
+        "ExpanseV2",
+        "Phishing",
         "CoreAlertFields"
     ]
 }
