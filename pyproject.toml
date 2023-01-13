@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "e9b1d9bafb3c6f671c829c79b22192005a874681"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "9234b683f70c982f475fef20c2280cfdd9d108ec"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -57,7 +57,7 @@ json5 = "^0.9.10"
 
 [tool.ruff]
 line-length = 120
-ignore = ["F405"]
+ignore = ["F405", "F403"]
 src = ["Packs/Base/Scripts/CommonServerPython", "Tests/demistomock", "Packs/ApiModules/Scripts/*"]
 
 [tool.mypy]
