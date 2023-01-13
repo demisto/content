@@ -5,11 +5,15 @@ description = "Cortex XSOAR content"
 authors = ["Cortex XSOAR"]
 license = "MIT"
 
+[tool.poetry.scripts]
+pre-commit = "pre_commit.main:main"
+pre-commit1 = "pre_commit.main:main"
+
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "78a409582111f11deaae6de9e1b7a99492e03ea4"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "144095987a46686070fd39b647f314efdf31a09f"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
