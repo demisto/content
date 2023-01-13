@@ -918,7 +918,8 @@ def test_get_modified_remote_data_command(mocker):
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
-    assert set(int(id_) for id_ in expected.modified_incident_ids) == set(int(id_) for id_ in result.modified_incident_ids)
+    assert set(int(id_) for id_ in expected.modified_incident_ids) == set(int(id_)
+                                                                          for id_ in result.modified_incident_ids)
 
 
 @pytest.mark.parametrize('params, offense, enriched_offense, note_response, expected',

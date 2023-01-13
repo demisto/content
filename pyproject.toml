@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "9c957ae417e808d412ed0c9140ddf2dbf606c257"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "f03c10d840ffaaa2d771f1189e0bbd41914e5c5e"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -57,7 +57,7 @@ google-cloud-secret-manager = "^2.13.0"
 json5 = "^0.9.10"
 
 [tool.ruff]
-line-length = 120
+line-length = 130
 ignore = ["F405", "F403"]
 src = ["Packs/Base/Scripts/CommonServerPython", "Tests/demistomock", "Packs/ApiModules/Scripts/*"]
 

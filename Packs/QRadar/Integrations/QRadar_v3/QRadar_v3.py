@@ -1021,7 +1021,8 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
         (Dict): Dictionary of {offense_type_id: offense_type_name}
     """
     try:
-        offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type') is not None}
+        offense_types_ids = {offense.get('offense_type')
+                             for offense in offenses if offense.get('offense_type') is not None}
         if not offense_types_ids:
             return dict()
         offense_types = client.offense_types(filter_=f'''id in ({','.join(map(str, offense_types_ids))})''',
@@ -1413,7 +1414,8 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
         (int): The ID of the earliest offense created after first_fetch.
     """
     filter_fetch_query = f'start_time>{str(convert_start_fetch_to_milliseconds(first_fetch))}'
-    raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER, range_="items=0-0", fields="id")
+    raw_offenses = client.offenses_list(filter_=filter_fetch_query,
+                                        sort=ASCENDING_ID_ORDER, range_="items=0-0", fields="id")
     return int(raw_offenses[0].get('id')) - 1 if raw_offenses else 0
 
 
@@ -1662,7 +1664,8 @@ def create_search_with_retry(client: Client,
     """
     offense_id = offense['id']
     for i in range(max_retries):
-        search_id = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense['start_time'])
+        search_id = create_events_search(client, fetch_mode, event_columns,
+                                         events_limit, offense_id, offense['start_time'])
         if search_id == QueryStatus.ERROR.value:
             print_debug_msg(f'Failed to create search for offense ID: {offense_id}. '
                             f'Retry number {i+1}/{max_retries}.')
@@ -2545,7 +2548,8 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
     saved_search_id = args.get('saved_search_id')
 
     if not query_expression and not saved_search_id and not offense_id:
-        raise DemistoException('Please provide one of the following args: `query_expression`, `saved_search_id` or `offense_id`.')
+        raise DemistoException(
+            'Please provide one of the following args: `query_expression`, `saved_search_id` or `offense_id`.')
 
     if query_expression and offense_id:
         raise DemistoException('Could not use both `query_expression` and `offense_id`.')
@@ -3426,7 +3430,8 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
                                            note.get('note_text').startswith('This offense was closed with reason:')),
                                           closing_reason)
             if not close_reason_with_note:
-                print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
+                print_debug_msg(
+                    f'Could not find closing reason or closing note for offense with offense id {offense_id}')
                 close_reason_with_note = 'Unknown closing reason from QRadar'
             else:
                 close_reason_with_note = f'From QRadar: {close_reason_with_note}'
@@ -3681,7 +3686,8 @@ def qradar_search_retrieve_events_command(
     # determine if this is the last run of the polling command
     is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
         if end_date else False
-    events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+    events, status = poll_offense_events(client, search_id, should_get_events=True,
+                                         offense_id=args.get('offense_id', ''))
     if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(
