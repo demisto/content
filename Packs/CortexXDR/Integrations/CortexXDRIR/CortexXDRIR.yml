@@ -3129,28 +3129,28 @@ script:
       description: Number of installed prevent.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.pro_tb_expiration
-      description: 'pro_tb license expiration time.'
+      description: pro_tb license expiration time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_pro_tb.tb
-      description: Number of pro_tb purchased.
+      description: Number of pro_tbs purchased.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.installed_pro_tb
-      description: 'Number of pro_tb installed.'
+      description: Number of pro_tbs installed.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.compute_unit_expiration
       description: Compute unit expiration time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_compute_unit
-      description: Number of compute unit purchased.
+      description: Number of compute units purchased.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.compute_unit_is_trial
-      description: Compute unit is trial.
+      description: Whether the compute unit is a trial.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.TenantInformation.host_insights_expiration
       description: Host iInsight expiration time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.TenantInformation.enabled_host_insights
-      description: Number of host insight enabled.
+      description: Number of host insights enabled.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_host_insights
       description: Number of purchased host insights.
@@ -3162,7 +3162,7 @@ script:
       description: Number of forensics purchased.
       type: Number
     arguments: []
-    description: 'Provides information about the tenant. '
+    description: Provides information about the tenant.
   dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   runonce: false
