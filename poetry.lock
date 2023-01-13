@@ -360,18 +360,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.49"
+version = "1.26.50"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.49-py3-none-any.whl", hash = "sha256:2260cb121b202c9f3483e1c5fabff2009a160369824f6da5608261e7c232a75c"},
-    {file = "boto3-1.26.49.tar.gz", hash = "sha256:6c9628f71d0723bf16b5ae4d4e78bbde53da80577e74b17762f3aea17c3c0f85"},
+    {file = "boto3-1.26.50-py3-none-any.whl", hash = "sha256:9c434bcd02c527485c89d6efbd38b7c205e06ab06abe80e5dbf9a8be836c77c2"},
+    {file = "boto3-1.26.50.tar.gz", hash = "sha256:3737d8a506f50065bb2366a6b8e7545d88034f4771527790a125e0abd307d8e8"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.49,<1.30.0"
+botocore = ">=1.29.50,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -380,14 +380,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.49"
+version = "1.29.50"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.49-py3-none-any.whl", hash = "sha256:1d93d602fdc3512c4e1db6f418f274a3f5758fc3bd6dea1d6f9ea29bcfe32ae7"},
-    {file = "botocore-1.29.49.tar.gz", hash = "sha256:0a198d33a426fc8b3342ce238c6bccb7f5d3b0b6a33f624170f1c11aa2483a15"},
+    {file = "botocore-1.29.50-py3-none-any.whl", hash = "sha256:0e9ab19787ad7a079c00d3e40b16bc66423e54bc0e8a203b70b543bd8854d5ad"},
+    {file = "botocore-1.29.50.tar.gz", hash = "sha256:5cc68b78a48217550c18b4639420b7c3b48ed9e09e749343143acbfa423ceec5"},
 ]
 
 [package.dependencies]
@@ -913,8 +913,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "4466e3ccfff09c7822393e64bad804658dff3102"
-resolved_reference = "4466e3ccfff09c7822393e64bad804658dff3102"
+reference = "f773eb28751feb6a2783c69472e21e0924938a5d"
+resolved_reference = "f773eb28751feb6a2783c69472e21e0924938a5d"
 
 [[package]]
 name = "deprecated"
@@ -4482,4 +4482,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "1e70194326d9c71eb03ce830a5e53d1799b68cd04a8fdc3de785006033c938c9"
+content-hash = "1dcd8f5256d7c9b0a5a506dc931ebf9f12b8857b0d13bd238de99ceede8d4e5f"
