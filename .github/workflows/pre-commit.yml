@@ -26,7 +26,7 @@ jobs:
       id: get-demisto-sdk-version
       run: |
         # this gives us the full version, including the commit hash if available
-        run: echo version=$(poetry show | grep demisto-sdk) >> $GITHUB_OUTPUT
+        echo version=$(poetry show | grep demisto-sdk) >> $GITHUB_OUTPUT
 
     - uses: actions/cache@v3
       with:
