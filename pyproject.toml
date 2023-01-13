@@ -5,9 +5,6 @@ description = "Cortex XSOAR content"
 authors = ["Cortex XSOAR"]
 license = "MIT"
 
-[tool.poetry.scripts]
-pre-commit = "pre_commit_wrapper.main:main"
-
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
 
