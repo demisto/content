@@ -220,6 +220,7 @@ def get_account_info(client: Client) -> CommandResults:
         outputs_prefix="Account.Info",
         outputs_key_field="name",
         raw_response=response,
+        outputs=response,
         readable_output=markdown,
     )
 
@@ -239,6 +240,7 @@ def get_account_risk_score_history(client: Client, args: dict) -> CommandResults
         outputs_prefix="AccountRiskScore.History",
         outputs_key_field="",
         raw_response=response,
+        outputs=response,
         readable_output=markdown,
     )
 

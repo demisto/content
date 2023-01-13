@@ -17,6 +17,7 @@ from typing import Dict
 from KnowBe4KMSAT import Client, UserEventClient
 
 USER_EVENT_BASE_URL = "https://api.events.knowbe4.com"
+REPORTING_BASE_URL = "https://us.api.knowbe4.com/v1"
 
 
 def util_load_json(path):
@@ -24,6 +25,64 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def test_account_info(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json('test_data/account_response.json')
+    from KnowBe4KMSAT import get_account_info
+    requests_mock.get(f"{REPORTING_BASE_URL}/account", json=mock_response_data, status_code=200)
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        }
+    )
+
+    result = get_account_info(client)
+    assert result.outputs_prefix == "Account.Info"
+    assert result.outputs_key_field == "name"
+    assert result.outputs == mock_response_data   
+
+
+def test_account_risk_score_history(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json('test_data/account_risk_score_history_response.json')
+    from KnowBe4KMSAT import get_account_risk_score_history
+    requests_mock.get(f"{REPORTING_BASE_URL}/account/risk_score_history", json=mock_response_data, status_code=200)
+
+    client = Client(
+        REPORTING_BASE_URL, 
+        verify=False, 
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        }
+    )
+    args: Dict = {}
+    result = get_account_risk_score_history(client, args)
+    assert result.outputs_prefix == "AccountRiskScore.History"
+    assert result.outputs_key_field == ""
+    assert result.outputs == mock_response_data
+    
+    
 def test_get_user_event_types(requests_mock):
     """
     Given
@@ -62,7 +121,7 @@ def test_get_user_events(requests_mock):
     When
             Calling https://api.events.knowbe4.com/events
     Then
-            Make sure the data array contains event_types with expected values
+            Make sure the data array contains user events
     """
     
     mock_response_data = util_load_json('test_data/user_events_response.json')
