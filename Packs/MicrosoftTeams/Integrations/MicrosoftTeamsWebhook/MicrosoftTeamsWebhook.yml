@@ -8,6 +8,10 @@ configuration:
   name: webhookurl
   required: true
   type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
 display: Microsoft Teams via Webhook
 name: Microsoft Teams via Webhook
@@ -26,7 +30,7 @@ script:
       name: url_title
     description: Send a message to Microsoft Teams via Incoming Webhook
     name: ms-teams-message
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.9.44472
   runonce: false
   script: ''
   subtype: python3
