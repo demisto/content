@@ -1,5 +1,6 @@
-Get the final verdict from the DBotScore of the context.
+Get the final verdict of a indcator from the given DBotScores in the context by their reliability.
 Provided that it has all of the latest source verdict, this script gives you the right final verdict.
+Note that the result is calculated by the context data and not given from the database.
 
 ## Script Data
 ---
