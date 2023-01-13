@@ -32,6 +32,9 @@ jobs:
       with:
         path: ~/.cache/pre-commit
         key: pre-commit-3|${{ env.pythonLocation }}-${{ steps.get-demisto-sdk-version.outputs.version }}
+    
+    - name: Setup flake8 annotations
+      uses: rbialon/flake8-annotations@v1
 
     - name: run pre-commit
       run: poetry run demisto-sdk pre-commit -g --test
