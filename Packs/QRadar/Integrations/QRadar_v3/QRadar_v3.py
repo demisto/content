@@ -3960,6 +3960,7 @@ def qradar_remote_network_deploy_execution_command(client: Client, args):
     )
 
 
+
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
 

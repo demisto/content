@@ -3,6 +3,7 @@ node_modules
 .DS_Store
 .idea
 .vscode
+.venv
 _site
 TestData/EmailWithNonUnicodeAttachmentName.eml
 TestData/EmailWithNonUnicodeSubject.eml

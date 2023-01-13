@@ -201,6 +201,7 @@ def test_add_iso_entries_to_dict():
      - All 'usecs' keys in the dict are replaced with 'iso time' entries with correct iso values.
      - The dict is cloned and its values are not changed, and a new one is created
     """
+    assert False
     tested_dict = {usec_entry: 1600000000000 for usec_entry in USECS_ENTRIES}
     tested_dict['host_name'] = 'QRadar Host'
     output_dict = add_iso_entries_to_dict([tested_dict])[0]
