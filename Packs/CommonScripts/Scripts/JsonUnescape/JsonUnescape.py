@@ -7,6 +7,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def hook(obj: Dict) -> Dict:
+    """ Hook to convert string to json if possible """
     new_obj = {}
     for k, v in obj.items():
         try:
@@ -17,13 +18,15 @@ def hook(obj: Dict) -> Dict:
 
 
 def unescape(args: Dict) -> Union[Dict, List]:
+    """ Unescape json string """
     json_str = json.dumps(args.get("value"))
     return json.loads(json_str, object_hook=hook)
 
 
-def main():
+def main():  # noqa: F841
+    args = demisto.args()
     try:
-        return_results(unescape(demisto.args()))
+        return_results(unescape(args))
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f"Error: {str(ex)}")
