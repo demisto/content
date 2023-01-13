@@ -1,5 +1,5 @@
 Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
-This integration was integrated and tested with version xx of Microsoft Teams via Webhook
+This integration was integrated and tested with version 6.8+ of Microsoft Teams via Webhook
 
 ## Configure Microsoft Teams via Webhook on Cortex XSOAR
 
