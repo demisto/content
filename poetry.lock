@@ -896,8 +896,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "2b50c43806549ba8120f19378f5dc597136b9af6"
-resolved_reference = "2b50c43806549ba8120f19378f5dc597136b9af6"
+reference = "6b7005862cf9c92f22086e914649d7fba3384a1d"
+resolved_reference = "6b7005862cf9c92f22086e914649d7fba3384a1d"
 
 [[package]]
 name = "deprecated"
@@ -3951,14 +3951,14 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-setuptools"
-version = "65.7.0.0"
+version = "65.7.0.1"
 description = "Typing stubs for setuptools"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-setuptools-65.7.0.0.tar.gz", hash = "sha256:0bb78efb7d91baaa7da3fe15dfac0461380ae23ce596708b87bdf368c50fbff7"},
-    {file = "types_setuptools-65.7.0.0-py3-none-any.whl", hash = "sha256:8d20beda264fe2962599aa087373c9b897e7c99d9fe591772d817e872e0fe4eb"},
+    {file = "types-setuptools-65.7.0.1.tar.gz", hash = "sha256:fe89f2d15caee7015708bed8fb68ff578b4d96f9a64b6e2010dad42bb9cc82a6"},
+    {file = "types_setuptools-65.7.0.1-py3-none-any.whl", hash = "sha256:667597f0773464f0259524d349d37503bffefc9d0d3fae621e4493d2fd7b1602"},
 ]
 
 [package.dependencies]
@@ -4439,4 +4439,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "57b096397741fcc7c2694aa68208fc7556c551616c8891e54828b75757576ab7"
+content-hash = "b7e40291e4d5f4631249d59effd1856ec40e6ba0a3b84f0d42fc9c6c2be940f6"
