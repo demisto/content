@@ -6,7 +6,7 @@ authors = ["Cortex XSOAR"]
 license = "MIT"
 
 [tool.poetry.scripts]
-pre-commit = "pre_commit.main:main"
+"pre-commit run" = "pre_commit.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
