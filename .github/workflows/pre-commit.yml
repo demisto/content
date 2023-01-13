@@ -1,6 +1,9 @@
 name: pre-commit
 on: pull_request
 
+env:
+  PYTEST_RUN_PATH: Packs/Qradar/Integrations/Qradar_v3
+
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
