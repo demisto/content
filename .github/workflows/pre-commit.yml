@@ -34,6 +34,6 @@ jobs:
         key: pre-commit-3|${{ env.pythonLocation }}
 
     - name: annotate in files
-      run: echo "::error file=Packs/Qradar/Integrations/Qradar_v3/Qradar_v3.py,line=2,col=3::This is an error"
+      run: echo "::error file=Packs/QRadar/Integrations/QRadar_v3/QRadar_v3.py,line=2,col=3::This is an error"
     - name: run pre-commit
       run: poetry run demisto-sdk pre-commit -g --test
