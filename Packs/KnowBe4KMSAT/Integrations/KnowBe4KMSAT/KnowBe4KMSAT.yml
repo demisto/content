@@ -78,7 +78,11 @@ script:
           type: Number
       description: Returns KMSAT account information
     - name: get-account-risk-score-history
-      arguments: []
+      arguments:
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: AccountRiskScore.History.risk_score
           description: Account Risk score and associated date
@@ -92,6 +96,10 @@ script:
         - name: group_id
           required: true
           description: Group ID
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: GroupsRiskScore.History.risk_score
           description: Groups Risk score and associated date
@@ -105,6 +113,10 @@ script:
         - name: user_id
           required: true
           description: User ID
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: UsersRiskScore.History.risk_score
           description: Users Risk score and associated date
@@ -112,7 +124,11 @@ script:
           description: Users Risk score history date
       description: Returns KMSAT User Specific Risk Score History
     - name: get-phishing-security-tests
-      arguments: []
+      arguments:
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: Phishing.Security.campaign_id
           description: Phishing Security Campaign ID
@@ -128,7 +144,7 @@ script:
           type: string
         - contextPath: Phishing.Security.groups
           description: Phishing Security Groups
-        - contextPath: "Phishing.Security.phish_prone_percentage "
+        - contextPath: Phishing.Security.phish_prone_percentage
           description: Phishing Security Phishing Prone Percent
           type: number
         - contextPath: Phishing.Security.started_at
@@ -137,7 +153,7 @@ script:
         - contextPath: Phishing.Security.duration
           description: Phishing Security Duration
           type: number
-        - contextPath: "Phishing.Security.categories "
+        - contextPath: Phishing.Security.categories
           description: Phishing Security Categories
           type: unknown
         - contextPath: Phishing.Security.template
@@ -183,6 +199,10 @@ script:
         - name: pst_id
           required: true
           description: PST ID
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: Phishing.Security.recipient_id
           description: Phishing Security Recipient ID
@@ -241,7 +261,11 @@ script:
           type: string
       description: Returns a Specific Recipient's Results
     - name: get-training-campaigns
-      arguments: []
+      arguments:
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: Training.Campaigns.campaign_id
           description: Training Campaigns Campaign ID
@@ -276,7 +300,11 @@ script:
           type: number
       description: Returns all Training Campaigns
     - name: get-training-enrollments
-      arguments: []
+      arguments:
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: Training.Enrollments.enrollment_id
           description: Training Enrollments Enrollment ID
@@ -440,8 +468,7 @@ script:
         - name: occurred_date
           description: (YYYY-MM-DD) If a date is not set, this field will default to the current time (UTC).
         - name: risk_level
-          description:
-            Assign a value from -10 (low risk) to 10 (high risk).
+          description: Assign a value from -10 (low risk) to 10 (high risk).
           auto: PREDEFINED
           predefined:
             - "-10"
@@ -469,8 +496,8 @@ script:
           auto: PREDEFINED
           description: Assign a value of 0 or 1.
           predefined:
-            - '0'
-            - '1'
+            - "0"
+            - "1"
         - name: risk_expire_date
           description: (YYYY-MM-DD) If a date is not set, this field will default to the occurred_date plus one (1) month.
       outputs:
