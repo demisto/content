@@ -12,6 +12,11 @@ you are implementing with your integration
 
 import json
 import io
+from typing import Dict
+
+from KnowBe4KMSAT import Client, UserEventClient
+
+USER_EVENT_BASE_URL = "https://api.events.knowbe4.com"
 
 
 def util_load_json(path):
@@ -19,24 +24,63 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_get_user_event_types(requests_mock):
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Given
+            no params
+    When
+            Calling https://api.events.knowbe4.com/event_types
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    
+    mock_response_data = util_load_json('test_data/user_event_types_response.json')
+    from KnowBe4KMSAT import get_user_event_types
+    requests_mock.get(f"{USER_EVENT_BASE_URL}/event_types", json=mock_response_data, status_code=200)
+    
+    userEventClient = UserEventClient(
+        USER_EVENT_BASE_URL, 
+        verify=False, 
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        }
+    )
+    
+    args: Dict = {}
+    result = get_user_event_types(userEventClient, args)
+    assert result.outputs_prefix == "KMSAT_User_Event_Types_Returned"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response_data["data"]
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+def test_get_user_events(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://api.events.knowbe4.com/events
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    
+    mock_response_data = util_load_json('test_data/user_events_response.json')
+    from KnowBe4KMSAT import get_user_events
+    requests_mock.get(f"{USER_EVENT_BASE_URL}/events", json=mock_response_data, status_code=200)
+    
+    userEventClient = UserEventClient(
+        USER_EVENT_BASE_URL, 
+        verify=False, 
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        }
+    )
+    
+    args: Dict = {}
+    result = get_user_events(userEventClient, args)
+    assert result.outputs_prefix == "KMSAT_User_Events_Returned"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response_data["data"]

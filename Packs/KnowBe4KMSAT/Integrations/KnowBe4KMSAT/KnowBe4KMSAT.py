@@ -148,7 +148,7 @@ class UserEventClient(BaseClient):
         )
 
     def user_event_types(self, args: dict):
-        params = remove_empty_elements({"nane": args.get("name")})
+        params = remove_empty_elements({"name": args.get("name")})
         return self._http_request(
             method="GET",
             url_suffix="/event_types",
@@ -512,6 +512,7 @@ def get_user_events(client: UserEventClient, args: dict) -> CommandResults:
         outputs_prefix="KMSAT_User_Events_Returned",
         outputs_key_field="id",
         raw_response=response,
+        outputs=data,
         readable_output=tableToMarkdown(name="KMSAT_User_Events", t=data),
     )
 
@@ -529,6 +530,7 @@ def get_user_event_types(client: UserEventClient, args: dict) -> CommandResults:
         outputs_prefix="KMSAT_User_Event_Types_Returned",
         outputs_key_field="id",
         raw_response=response,
+        outputs=data,
         readable_output=tableToMarkdown(name="KMSAT_User_Event_Types", t=data),
     )
 
