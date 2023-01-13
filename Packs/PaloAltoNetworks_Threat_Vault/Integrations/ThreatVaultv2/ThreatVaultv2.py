@@ -7,19 +7,91 @@ SCORE_TABLE_FILE = {
     "grayware": Common.DBotScore.SUSPICIOUS,
     "malicious": Common.DBotScore.BAD,
 }
-LIST_OF_RN_KEYS = [
-    "spyware",
-    "vulnerability",
-    "fileformat",
-    "antivirus",
-    "file_type",
-    "data_correlation",
-    "decoders",
-    "applications",
-]
+
+
+class ReputationType:
+    FILE = "file"
+    CVE = "cve"
+    ANTIVIRUS = "antivirus"
+    SPYWARE = "spyware"
+    FILEFORMAT = "fileformat"
+    VULNERABILITY = "vulnerability"
+    DNS = "dns"
+    RTDNS = "rtdns"
+    SPYWAREC2 = "spywarec2"
+    RELEASE_NOTES = "release_notes"
+
 
 HEADERS_FILE = ["FileType", "MD5", "SHA256", "SHA1", "Size", "Status"]
 HEADERS_CVE = ["ID", "Description", "Score", "Published", "Modified"]
+HEADERS_SPYWARE = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Vendor",
+    "Score",
+    "Default action",
+    "Details",
+    "Reference",
+    "Status",
+    "Min version",
+    "Max version",
+    "CVE",
+]
+HEADERS_VULNERABILITY = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Category",
+    "Score",
+    "Default action",
+    "Vendor",
+    "Reference",
+    "Status",
+    "Published version",
+    "Latest release version",
+    "Published",
+    "Latest release time",
+    "CVE",
+]
+HEADERS_FILEFORMAT = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Category",
+    "Score",
+    "Default action",
+    "Vendor",
+    "Reference",
+    "Status",
+    "Published version",
+    "Latest release version",
+    "Published",
+    "Latest release time",
+]
+HEADERS_ANTIVIRUS = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Subtype",
+    "Score",
+    "Action",
+    "Creation Time",
+    "Related SHA256 hashes",
+    "Release",
+]
+HEADERS_DNS_RTDNS_SPYWAREC2 = [
+    "ThreatID",
+    "Name",
+    "Description",
+    "Severity",
+    "Type",
+    "Subtype",
+    "Action",
+    "Creation Time",
+    "Status",
+    "Release",
+]
 
 DATE_REGEX = r"\d{4}-[0-9]{2}-[0-9]{2}$"
 
@@ -72,6 +144,17 @@ class Client(BaseClient):
 """
 HELP FUNCTIONS
 """
+
+
+def reputation_type_to_hr(reputation_type: str) -> str:
+
+    match reputation_type:
+        case ReputationType.RTDNS | ReputationType.DNS:
+            return reputation_type.upper()
+        case ReputationType.SPYWAREC2:
+            return "SpywareC2"
+        case _:
+            return reputation_type.capitalize()
 
 
 def validate_arguments_search_command(
@@ -177,7 +260,7 @@ def pagination(
 def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
 
     match type_:
-        case "file":
+        case ReputationType.FILE:
             antivirus = response.get("signatures", {}).get("antivirus", ({},))[0]
             table_for_md = {
                 "Status": antivirus.get("status"),
@@ -191,7 +274,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 table_for_md.update(
                     {
                         "Release": antivirus.get("release"),
-                        "CreateTime": response.get("create_time"),
+                        "Creation Time": response.get("create_time"),
                         "SignatureId": antivirus.get("id"),
                         "Family": response.get("family"),
                         "Platform": response.get("platform"),
@@ -202,7 +285,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                     }
                 )
 
-        case "cve":
+        case ReputationType.CVE:
             table_for_md = {
                 "ID": response.get("cve"),
                 "Score": response.get("severity"),
@@ -211,7 +294,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 "Description": response.get("description"),
             }
 
-        case "fileformat":
+        case ReputationType.FILEFORMAT:
             table_for_md = {
                 "ThreatID": response.get("id"),
                 "Name": response.get("name"),
@@ -228,7 +311,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 "Latest release time": response.get("latest_release_time"),
             }
 
-        case "vulnerability":
+        case ReputationType.VULNERABILITY:
             table_for_md = {
                 "ThreatID": response.get("id"),
                 "Name": response.get("name"),
@@ -246,20 +329,20 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 "CVE": response.get("cve"),
             }
 
-        case "antivirus":
+        case ReputationType.ANTIVIRUS:
             table_for_md = {
                 "ThreatID": response.get("id"),
                 "Name": response.get("name"),
                 "Description": response.get("description"),
                 "Subtype": response.get("subtype"),
                 "Score": response.get("severity"),
-                "Default action": response.get("default_action"),
-                "Create time": response.get("create_time"),
-                "Related sha256 hashes": response.get("related_sha256_hashes"),
+                "Action": response.get("action"),
+                "Creation Time": response.get("create_time"),
+                "Related SHA256 hashes": response.get("related_sha256_hashes"),
                 "Release": response.get("release"),
             }
 
-        case "spyware":
+        case ReputationType.SPYWARE:
             table_for_md = {
                 "ThreatID": response.get("id"),
                 "Name": response.get("name"),
@@ -275,7 +358,21 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                 "CVE": response.get("cve"),
             }
 
-        case "release_notes":
+        case ReputationType.RTDNS | ReputationType.DNS | ReputationType.SPYWAREC2:
+            table_for_md = {
+                "ThreatID": response.get("id"),
+                "Name": response.get("name"),
+                "Description": response.get("description"),
+                "Severity": response.get("severity"),
+                "Type": response.get("type"),
+                "Subtype": response.get("subtype"),
+                "Action": response.get("action"),
+                "Creation Time": response.get("create_time"),
+                "Status": response.get("status"),
+                "Release": response.get("release"),
+            }
+
+        case ReputationType.RELEASE_NOTES:
             applications = response.get("release_notes", {}).get("applications", {})
             spyware = response.get("release_notes", {}).get("spyware", {})
             vulnerability = response.get("release_notes", {}).get("vulnerability", {})
@@ -312,102 +409,42 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
 def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandResults]:
 
     command_results_list: List[CommandResults] = []
+    reputation_types = (
+        (ReputationType.ANTIVIRUS, HEADERS_ANTIVIRUS),
+        (ReputationType.SPYWARE, HEADERS_SPYWARE),
+        (ReputationType.VULNERABILITY, HEADERS_VULNERABILITY),
+        (ReputationType.FILEFORMAT, HEADERS_FILEFORMAT),
+        (ReputationType.DNS, HEADERS_DNS_RTDNS_SPYWAREC2),
+        (ReputationType.RTDNS, HEADERS_DNS_RTDNS_SPYWAREC2),
+        (ReputationType.SPYWAREC2, HEADERS_DNS_RTDNS_SPYWAREC2),
+    )
 
-    if "antivirus" in response["data"]:
-        if expanded:
-            antiviruses = response.get("data", {}).get("antivirus", [])
-        else:
-            antiviruses = [response.get("data", {}).get("antivirus", ([],))[0]]
+    for rep_type, headers_type in reputation_types:
+        if rep_type in response["data"]:
+            if expanded:
+                responses = response.get("data", {}).get(rep_type, [])
+            else:
+                responses = [response.get("data", {}).get(rep_type, ([],))[0]]
 
-        for antivirus in antiviruses:
-            table_for_md = resp_to_hr(response=antivirus, type_="antivirus")
-            readable_output = tableToMarkdown(
-                name=f"Antivirus Reputation: {antivirus.get('id')}",
-                t=table_for_md,
-                removeNull=True,
-            )
-            command_results_list.append(
-                CommandResults(
-                    outputs_prefix="ThreatVault.Antivirus",
-                    outputs_key_field="id",
-                    outputs=antivirus
-                    if expanded
-                    else response.get("data", {}).get("antivirus", []),
-                    readable_output=readable_output,
+            reputation_types_readable = reputation_type_to_hr(rep_type)
+            for result in responses:
+                table_for_md = resp_to_hr(response=result, type_=rep_type)
+                readable_output = tableToMarkdown(
+                    name=f"{reputation_types_readable} Reputation: {result.get('id')}",
+                    t=table_for_md,
+                    headers=headers_type,
+                    removeNull=True,
                 )
-            )
-
-    if "spyware" in response["data"]:
-        if expanded:
-            spywares = response.get("data", {}).get("spyware", [])
-        else:
-            spywares = [response.get("data", {}).get("spyware", ([],))[0]]
-
-        for spyware in spywares:
-            table_for_md = resp_to_hr(response=spyware, type_="spyware")
-            readable_output = tableToMarkdown(
-                name=f"Spyware Reputation: {spyware.get('id')}",
-                t=table_for_md,
-                removeNull=True,
-            )
-            command_results_list.append(
-                CommandResults(
-                    outputs_prefix="ThreatVault.Spyware",
-                    outputs_key_field="id",
-                    outputs=spyware
-                    if expanded
-                    else response.get("data", {}).get("spyware", []),
-                    readable_output=readable_output,
+                command_results_list.append(
+                    CommandResults(
+                        outputs_prefix=f"ThreatVault.{reputation_types_readable}",
+                        outputs_key_field="id",
+                        outputs=result
+                        if expanded
+                        else response.get("data", {}).get(rep_type, []),
+                        readable_output=readable_output,
+                    )
                 )
-            )
-
-    if "vulnerability" in response["data"]:
-        if expanded:
-            vulnerabilities = response.get("data", {}).get("vulnerability", [])
-        else:
-            vulnerabilities = [response.get("data", {}).get("vulnerability", ([],))[0]]
-
-        for vulnerability in vulnerabilities:
-            table_for_md = resp_to_hr(response=vulnerability, type_="vulnerability")
-            readable_output = tableToMarkdown(
-                name=f"Vulnerability Reputation: {vulnerability.get('id')}",
-                t=table_for_md,
-                removeNull=True,
-            )
-            command_results_list.append(
-                CommandResults(
-                    outputs_prefix="ThreatVault.Vulnerability",
-                    outputs_key_field="id",
-                    outputs=vulnerability
-                    if expanded
-                    else response.get("data", {}).get("vulnerability", []),
-                    readable_output=readable_output,
-                )
-            )
-
-    if "fileformat" in response["data"]:
-        if expanded:
-            fileformats = response.get("data", {}).get("fileformat", [])
-        else:
-            fileformats = [response.get("data", {}).get("fileformat", ([],))[0]]
-
-        for fileformat in fileformats:
-            table_for_md = resp_to_hr(response=fileformat, type_="fileformat")
-            readable_output = tableToMarkdown(
-                name=f"Fileformat Reputation: {fileformat.get('id')}",
-                t=table_for_md,
-                removeNull=True,
-            )
-            command_results_list.append(
-                CommandResults(
-                    outputs_prefix="ThreatVault.Fileformat",
-                    outputs_key_field="id",
-                    outputs=fileformat
-                    if expanded
-                    else response.get("data", {}).get("fileformat", []),
-                    readable_output=readable_output,
-                )
-            )
 
     return command_results_list
 
