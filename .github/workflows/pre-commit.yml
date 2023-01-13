@@ -7,7 +7,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-      fetch-depth: 0
+      with:
+        fetch-depth: 2
     - name: Setup python
       uses: actions/setup-python@v4
       with:
