@@ -3,6 +3,8 @@ on: pull_request
 
 env:
   PYTEST_RUN_PATH: Packs/Qradar/Integrations/Qradar_v3
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
 jobs:
   pre-commit:
