@@ -20,6 +20,23 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
+    def list_remediation_rule_request(self, search_params: List[Dict]) -> Dict[str, Any]:
+        """Get a list of all your remediation rules using the 'xpanse_remediation_rules/rules/' endpoint.
+
+        Args:
+            search_params (list): list of search parameters to add to the API call body.
+
+        Returns:
+            dict: dict containing list of external services.
+        """
+        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
+        headers = self._headers
+
+        response = self._http_request('POST', '/xpanse_remediation_rules/rules/',
+                                      json_data=data, headers=headers)
+
+        return response
+    
     def list_external_service_request(self, search_params: List[Dict]) -> Dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
 
@@ -143,6 +160,41 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 
 
 ''' COMMAND FUNCTIONS '''
+
+
+def list_remediation_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-list-remediation-rule command: Returns list of remediation path rules.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['asm_rule_id']`` A string representing the ASM Rule ID you want to get association
+            remediation path rules for.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains list of remediation path rules.
+    """
+    asm_rule_id = str(args.get('asm_rule_id'))
+
+    # create list of search parameters or pass empty list.
+    search_params = []
+    if asm_rule_id:
+        search_params.append({"field": "attack_surface_rule_id", "operator": "eq", "value": asm_rule_id})
+
+    response = client.list_remediation_rule_request(search_params)
+    parsed = response.get('reply', {}).get('remediation_rules')
+    markdown = tableToMarkdown('Remediation Rules', parsed, removeNull=True, headerTransform=string_to_table_header)
+    command_results = CommandResults(
+        outputs_prefix='ASM.RemediationRule',
+        outputs_key_field='rule_id',
+        outputs=parsed,
+        raw_response=response,
+        readable_output=markdown
+    )
+
+    return command_results
 
 
 def list_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -432,7 +484,8 @@ def main() -> None:
             'asm-list-external-ip-address-range': list_external_ip_address_range_command,
             'asm-get-external-ip-address-range': get_external_ip_address_range_command,
             'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
-            'asm-get-asset-internet-exposure': get_asset_internet_exposure_command
+            'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
+            'asm-list-remediation-rule': list_remediation_rule_command
         }
 
         if command == 'test-module':

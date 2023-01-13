@@ -327,6 +327,43 @@ script:
     - contextPath: ASM.AssetInternetExposure.externally_inferred_vulnerability_score
       description: Asset vulnerability score.
       type: Unknown
+  - arguments:
+    - description: A string representing the ASM Rule ID you want to get association remediation path rules for.
+      name: asm_rule_id
+      required: true
+    description: Returns list of remediation path rules.
+    name: asm-list-remediation-rule
+    outputs:
+    - contextPath: ASM.RemediationRule.rule_id
+      description: Remediation path rule UUID.
+      type: String
+    - contextPath: ASM.RemediationRule.rule_name
+      description: Remediation path rule name.
+      type: String
+    - contextPath: ASM.RemediationRule.description
+      description: Remediation path rule description.
+      type: String
+    - contextPath: ASM.RemediationRule.attack_surface_rule_id
+      description: Association ASM rule ID for Remediation path rules.
+      type: String
+    - contextPath: ASM.RemediationRule.criteria
+      description: Array of remediation path rule criteria.
+      type: Unknown
+    - contextPath: ASM.RemediationRule.criteria_conjunction
+      description: Whether criteria is processes with AND or OR.
+      type: String
+    - contextPath: ASM.RemediationRule.action
+      description: Action to take on rule match.
+      type: String
+    - contextPath: ASM.RemediationRule.created_by
+      description: Email of who created the rule.
+      type: String
+    - contextPath: ASM.RemediationRule.created_by_pretty
+      description: Readable name of who created the rule.
+      type: String
+    - contextPath: ASM.RemediationRule.created_at
+      description: Date the rule was created.
+      type: Date
   dockerimage: demisto/python3:3.10.8.37753
   runonce: false
   script: ''
