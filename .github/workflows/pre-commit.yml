@@ -17,4 +17,4 @@ jobs:
     - name: Install demisto-sdk
       run: pip install demisto-sdk
     - name: run pre-commit
-      run: demisto-sdk pre-commit -g
+      run: demisto-sdk pre-commit -g --test
