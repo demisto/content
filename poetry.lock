@@ -896,8 +896,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "d53322e010aa302f372be3ef744b7f5e3e8a5f51"
-resolved_reference = "d53322e010aa302f372be3ef744b7f5e3e8a5f51"
+reference = "7ad804e467e05176838cf49d18d87f4e705af90a"
+resolved_reference = "7ad804e467e05176838cf49d18d87f4e705af90a"
 
 [[package]]
 name = "deprecated"
@@ -4465,4 +4465,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "f3e4c600af3a580b5cdf239f16d9ec4709b6fcf4cca23f3ce2362161d92dc65a"
+content-hash = "9d4da20fe972ddf87942b339da72f4f38676ccfab07815c2467c5d40a0b8fa27"
