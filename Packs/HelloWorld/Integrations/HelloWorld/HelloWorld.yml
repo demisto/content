@@ -42,9 +42,11 @@ configuration:
   required: false
   type: 0
   section: Collect
-- name: apikey
+- display: API Key
+  name: apikey
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
   section: Connect
   display: API Key
 - defaultvalue: '65'

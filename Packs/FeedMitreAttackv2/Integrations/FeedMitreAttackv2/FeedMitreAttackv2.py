@@ -323,9 +323,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
 
 
 def extract_timestamp_from_description(description: str) -> str:
-    if not description:
-        return ''
-    if 'Citation' in description:
+    if not description or 'Citation' in description or 'n.d' in description:
         return ''
     match = re.search(EXTRACT_TIMESTAMP_REGEX, description)
     timestamp = match.group(1) if match else ''
