@@ -12,13 +12,14 @@ pre-commit = "pre_commit_wrapper.main:main"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "6b7005862cf9c92f22086e914649d7fba3384a1d"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "3800bdca2011f0ce783d266cf45b1c59e2c2c22a"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
 flake8 = "^4.0.1"
+ruff = "^0.0.220"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7.1.2"
