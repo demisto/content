@@ -13,7 +13,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-        cache: 'poetry'
+        cache: 'pip'
     - name: Install deps
       run: pip install pre-commit git+https://github.com/demisto/demisto-sdk@a2d8a342e7e5154f9a871fb78a2990cfd21bb49c
     
