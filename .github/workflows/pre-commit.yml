@@ -13,6 +13,6 @@ jobs:
       with:
         python-version: '3.10'
     - name: Install demisto-sdk
-      run: git+https://github.com/demisto/demisto-sdk@6720cd52c31971fb77801bf523a4c5553b96dc9a
+      run: pip install git+https://github.com/demisto/demisto-sdk@6720cd52c31971fb77801bf523a4c5553b96dc9a
     - name: run pre-commit
       run: demisto-sdk pre-commit -g --test
