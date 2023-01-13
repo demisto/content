@@ -14,8 +14,8 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'pip'
-    - name: Install demisto-sdk
-      run: pip install git+https://github.com/demisto/demisto-sdk@9361b13f1684abaaa6ea0424a2e279d350a2b6b2
+    - name: Install demisto-sdk && pre-commit
+      run: pip install pre-commit git+https://github.com/demisto/demisto-sdk@9361b13f1684abaaa6ea0424a2e279d350a2b6b2
     
     - uses: actions/cache@v3
       with:
