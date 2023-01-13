@@ -3120,13 +3120,13 @@ script:
       description: Enabled data per pro endpoint.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.prevent_expiration
-      description: Number of prevent expiration.
+      description: Number of prevent expirations.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.purchased_prevent
-      description: Number of purchased prevent.
+      description: Number of purchased prevents.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.installed_prevent
-      description: Number of installed prevent.
+      description: Number of installed prevents.
       type: Number
     - contextPath: PaloAltoNetworksXDR.TenantInformation.pro_tb_expiration
       description: pro_tb license expiration time.
