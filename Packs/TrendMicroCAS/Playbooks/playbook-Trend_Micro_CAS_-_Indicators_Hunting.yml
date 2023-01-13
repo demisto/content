@@ -42,7 +42,7 @@ tasks:
       id: 95435a23-0dae-4169-8812-d0e6aa2f8ec6
       version: -1
       name: Is Trend Micro Cloud App Security enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -284,7 +284,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2119,7 +2119,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2170,7 +2170,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2226,7 +2226,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2282,7 +2282,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2338,7 +2338,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2394,7 +2394,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2445,7 +2445,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2494,7 +2494,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2617,12 +2617,12 @@ inputs:
 - key: start
   value: {}
   required: false
-  description: "The start date and time from which you would like to retrieve messages from TrendMicro CAS. \nUse ISO 8601 time format, e.g. 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'end' as well.\nIf 'start' is not specified messages will be retrieved from TrendMicro CAS within seven days before the end time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days' is set.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
+  description: "The start date and time from which to retrieve messages from TrendMicro CAS. \nUse ISO 8601 time format, e.g., 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'end' as well.\nIf 'start' is not specified messages will be retrieved from TrendMicro CAS within seven days before the end time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days'.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
   playbookInputQuery:
 - key: end
   value: {}
   required: false
-  description: "The end date and time specify the period of time in which messages should be retrieved from TrendMicro CAS. \nUse ISO 8601 time format, e.g. 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'start' as well.\nIf 'end' is not specified messages will be retrieved from TrendMicro CAS within seven days after the start time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days' is set.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
+  description: "The end date and time specify the period of time in which messages should be retrieved from TrendMicro CAS. \nUse ISO 8601 time format, e.g. 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'start' as well.\nIf 'end' is not specified messages will be retrieved from TrendMicro CAS within seven days after the start time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days'.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
   playbookInputQuery:
 - key: lastndays
   value: {}
@@ -2647,13 +2647,13 @@ outputs:
   description: The time and date when the email message was sent.
   type: number
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_message_id
-  description: The Internet message ID of the email message.
+  description: The internet message ID of the email message.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_unique_id
   description: The ID of the email message.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.mailbox
-  description: The mailbox which contains the email message.
+  description: The mailbox that contains the email message.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.source_ip
   description: The source IP address of the email message.
@@ -2680,7 +2680,7 @@ outputs:
   description: Email attachment objects that were retrieved from TrendMicro CAS.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_attachments.file_sha1
-  description: The SHA-1 hash value of the attachment file.
+  description: The SHA1 hash value of the attachment file.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_attachments.file_name
   description: The name of the attachment file.
