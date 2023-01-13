@@ -231,6 +231,8 @@
     #     ./Tests/scripts/sdk_pylint_check.sh
     #   fi
     # - section_end "Test Infrastructure"
+    - cd ../demisto-sdk
+    - run-unit-tests /builds/xsoar/content/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
     - section_start "precommit"
     - demisto-sdk pre-commit -a --test
     - section_end "precommit"
