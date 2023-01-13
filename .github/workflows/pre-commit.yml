@@ -5,17 +5,21 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
+    - name: Install poetry
+      run: pipx install poetry
+
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: Setup python
+    
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
         cache: 'pip'
-    - name: Install deps
-      run: pip install pre-commit git+https://github.com/demisto/demisto-sdk@a2d8a342e7e5154f9a871fb78a2990cfd21bb49c
+    - name: Install dependencies
+      run: poetry install
     
     - uses: actions/cache@v3
       with:
