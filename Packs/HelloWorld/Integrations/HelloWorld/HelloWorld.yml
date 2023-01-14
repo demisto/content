@@ -42,8 +42,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- display: API Key
-  name: apikey
+- name: apikey
   required: true
   type: 9
   hiddenusername: true
