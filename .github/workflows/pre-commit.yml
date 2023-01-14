@@ -40,12 +40,12 @@ jobs:
       run: poetry run demisto-sdk pre-commit -g --test
 
     - name: Publish Test Report 
-      uses: mikepenz/action-junit-report@v3
+      uses: EnricoMi/publish-unit-test-result-action@v2
       if: always() # always run even if the previous step fails
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        report_paths: | 
+        junit_files: | 
           **/Packs/**/Integrations/**/.report_pytest.xml
           **/Packs/**/Scripts/**/.report_pytest.xml
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        detailed_summary: true
-        
+        report_individual_runs: true
