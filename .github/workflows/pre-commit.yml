@@ -49,3 +49,5 @@ jobs:
             **/Packs/**/Integrations/**/.report_pytest.xml
 
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        detailed_summary: true
+        annotate_only: true
