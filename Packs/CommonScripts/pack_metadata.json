@@ -2,7 +2,7 @@
     "name": "Common Scripts",
     "description": "Frequently used scripts pack.",
     "support": "xsoar",
-    "currentVersion": "1.11.1",
+    "currentVersion": "1.11.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -47,10 +47,6 @@
         "RemoteAccess": {
             "mandatory": false,
             "display_name": "RemoteAccess v2"
-        },
-        "CommonButtons": {
-            "mandatory": true,
-            "display_name": "Common Buttons"
         }
     },
     "excludedDependencies": [

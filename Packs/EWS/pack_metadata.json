@@ -17,6 +17,10 @@
         "MicrosoftExchangeOnPremise": {
             "mandatory": true,
             "display_name": "Microsoft Exchange On-Premise"
+        },
+        "MicrosoftExchangeOnline": {
+            "mandatory": true,
+            "display_name": "Microsoft Exchange Online"
         }
     },
     "marketplaces": [

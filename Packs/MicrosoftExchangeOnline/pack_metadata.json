@@ -1,17 +1,15 @@
 {
-    "name": "Common Buttons",
-    "description": "## FILL MANDATORY FIELD ##",
+    "name": "Microsoft Exchange Online",
+    "description": "Exchange Online and Office 365 (mail)",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Utilities"
+        "IT Services"
     ],
-    "tags": [
-        "Core"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
