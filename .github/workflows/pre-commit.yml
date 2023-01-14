@@ -46,5 +46,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         junit_files: | 
-          '**/Packs/**/Integrations/**/.report_pytest.xml'
-          '**/Packs/**/Scripts/**/.report_pytest.xml'
+          **/Packs/**/Integrations/**/.report_pytest.xml
+          **/Packs/**/Scripts/**/.report_pytest.xml
