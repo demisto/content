@@ -44,9 +44,7 @@ jobs:
       if: always() # always run even if the previous step fails
       with:
         report_paths: |
-          **/Packs/**/Integrations/**/.report_pytest.xml
-          **/Packs/**/Scripts/**/.report_pytest.xml
-          **/Packs/**/Scripts/**/.report_mypy.xml
-          **/Packs/**/Scripts/**/.report_mypy.xml
+            **/Packs/**/Integrations/**/.report_pytest.xml
+            **/Packs/**/Integrations/**/.report_pytest.xml
 
-        github_token: {{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}

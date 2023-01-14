@@ -69,6 +69,7 @@ show_error_codes = true
 follow_imports = "silent"
 pretty = true
 allow_redefinition = true
+junit_xml = ".report_mypy.xml"
 
 [tool.pytest]
 junit_family = "xunit1"
