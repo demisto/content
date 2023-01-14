@@ -398,6 +398,8 @@ class Client(BaseClient):
         Returns:
             - raises DemistoException.
         """
+        i: int = "3"
+        print(i)
         err_msg = f'Error in API call [{res.status_code}] - {res.reason}'
         try:
             # Try to parse json error response

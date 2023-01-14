@@ -46,4 +46,7 @@ jobs:
         report_paths: |
           **/Packs/**/Integrations/**/.report_pytest.xml
           **/Packs/**/Scripts/**/.report_pytest.xml
+          **/Packs/**/Scripts/**/.report_mypy.xml
+          **/Packs/**/Scripts/**/.report_mypy.xml
+
         github_token: {{ secrets.GITHUB_TOKEN }}
