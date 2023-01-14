@@ -1,13 +1,14 @@
 """
 Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec-EDR 4.6
 """
-import demistomock as demisto
+# import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 # from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
 import urllib3
 from typing import Callable
+# from requests.exceptions import HTTPError, ConnectionError
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -94,6 +95,18 @@ DOMAIN_DISPOSITION_STATUS: dict[str, str] = {
     '2': 'Suspicious',
     '3': 'Bad'
 }
+
+HTTP_ERRORS = {
+    400: '400 Bad Request - Incorrect or invalid parameters',
+    401: '401 Authentication error - Incorrect or invalid username or password',
+    403: '403 Forbidden - please provide valid username and password.',
+    404: '404 Resource not found - invalid endpoint was called.',
+    408: '408 Timeout - Check Server URl/Port',
+    410: '410 Gone - Access to the target resource is no longer available at the origin server',
+    500: '500 Internal Server Error - please try again after some time.',
+    502: '502 Bad Gateway - Could not connect to the origin server',
+    503: '503 Service Unavailable'
+}
 ''' CLIENT CLASS '''
 
 
@@ -133,23 +146,19 @@ class Client(BaseClient):
         payload = {
             "grant_type": 'client_credentials'
         }
-        return self._http_request(
-            method='POST',
-            full_url=self.token_url,
-            auth=(self.client_key, self.secret_key),
-            data=payload,
-            error_handler=access_token_error_handler
-        ).get('access_token')
-
-        # token_response = self._http_request(
-        #     method='POST',
-        #     full_url=self.token_url,
-        #     auth=(self.client_key, self.secret_key),
-        #     data=payload,
-        #     error_handler=access_token_error_handler
-        # )
-        # token = token_response.get('access_token')
-        # return token
+        response = None
+        try:
+            return self._http_request(
+                method='POST',
+                full_url=self.token_url,
+                auth=(self.client_key, self.secret_key),
+                data=payload,
+                error_handler=handle_errors
+            ).get('access_token')
+        except Exception as e:
+            msg = f'Something went wrong with request, {e}'
+            demisto.debug(msg)
+            raise DemistoException(msg, res=requests.Response)
 
     def query_request_api(self, endpoint: str, params: dict, method: str | None = 'POST') \
             -> dict[str, str]:
@@ -164,16 +173,29 @@ class Client(BaseClient):
         """
         access_token = self.get_access_token()
         url_path = f'{self._base_url}{endpoint}'
-        response = self._http_request(
-            method=method,
-            full_url=url_path,
-            headers={'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'},
-            json_data=params if method == 'POST' else {},
-            params=params if method == 'GET' else {},
-            resp_type='response',
-            allow_redirects=False,
-            error_handler=http_request_error_handler
-        )
+        try:
+            response = self._http_request(
+                method=method,
+                full_url=url_path,
+                headers={'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'},
+                json_data=params if method == 'POST' else {},
+                params=params if method == 'GET' else {},
+                resp_type='response',
+                allow_redirects=False
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            if HTTP_ERRORS.get(err.response.status_code) is not None:
+                # if it is a known http error - get the message form the preset messages
+                err_response = f'Failed to execute. {response.json().get("error")},{response.json().get("message")}'
+                msg = f'{HTTP_ERRORS.get(err.response.status_code)}.\n{err_response}'
+                raise DemistoException(msg, res=response)
+            else:
+                # if it is unknown error - get the message from the error itself
+                return_error(f'Failed to execute. Error: {str(err)}')
+        except Exception as e:
+            return_error(f'Failed to execute. Error: {str(e)}')
+
         return response.json()
 
     def query_patch_api(self, endpoint: str, payload: list) -> dict:
@@ -181,7 +203,7 @@ class Client(BaseClient):
         Call the PATCH api to add/modify or update to the endpoint
         Args:
             endpoint (str): Symantec EDR endpoint resources operation add, update, delete
-            payload (List): Kwargs
+            payload (List): request body
         Returns:
             return response status code
         """
@@ -201,16 +223,16 @@ class Client(BaseClient):
             data=json.dumps(payload),
             full_url=url_path,
             resp_type="response",
-            return_empty_response=True
+            return_empty_response=True,
         )
 
         if response.status_code == 204:
             result['status'] = response.status_code
             result['message'] = 'Success'
 
-        if response.status_code >= 400:
-            error_message = f'{response.json().get("error")}, {response.json().get("message")}'
-            raise DemistoException(error_message, res=response)
+        # if response.status_code >= 400:
+        #     error_message = f'{response.json().get("error")}, {response.json().get("message")}'
+        #     raise DemistoException(error_message, res=response)
 
         return result
 
@@ -218,18 +240,13 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def access_token_error_handler(response: requests.Response):
-    """
-    Error Handler for Symantec EDR on-premise access_token
-    Args:
-        response (response): Symantec EDR on-premise Token url response
-    Raise:
-         DemistoException
-    """
-    if response.status_code == 401:
-        raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG, res=response)
-    elif response.status_code >= 400:
-        raise DemistoException('Error: something went wrong, please try again.', res=response)
+def handle_errors(response: requests.Response) -> None:
+    """Handle http errors."""
+    status = response.status_code
+    if status in HTTP_ERRORS:
+        raise DemistoException(f'{HTTP_ERRORS[status]}, {response.json().get("error_description")}', res=response)
+    else:
+        response.raise_for_status()
 
 
 def http_request_error_handler(response: requests.Response):
@@ -822,25 +839,26 @@ def get_incident_filter_query(args: dict[str, Any]) -> str:
     Returns:
         Return string.
     """
+    demisto.debug(f'Dump Incident filter query args: {args}')
     incident_status_dict: dict[str, int] = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Closed': 4}
     incident_severity_dict: dict[str, int] = {'Low': 1, 'Medium': 2, 'High': 3}
     # Incident Parameters
-    ids = arg_to_number(args.get('incident_id'))
-    priority = incident_severity_dict.get(args.get('priority', ''))
-    status = incident_status_dict.get(args.get('status', ''))
-    query = args.get('query')
+    ids = arg_to_number(args.get('incident_id', None))
+    priority = incident_severity_dict.get(args.get('priority', None))
+    status = incident_status_dict.get(args.get('status', None))
+    query = args.get('query', None)
 
     if query and (ids or priority or status):
         raise DemistoException(INVALID_QUERY_ERROR_MSG)
 
     condition: str = ''
-    if ids:
+    if ids is not None:
         condition = f'atp_incident_id: {ids}'
 
-    if priority:
+    if priority is not None:
         condition = f'priority_level: {priority}' if not condition else f'{condition} AND priority_level: {priority}'
 
-    if status:
+    if status is not None:
         condition = f'state: {status}' if not condition else f'{condition} AND state: {status}'
 
     if query:
@@ -1076,8 +1094,8 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str:
         if uuid := data_list[0].get('uuid'):
             return uuid
     else:
-        raise DemistoException(f'Incident ID Not Found {args.get("incident_id")}.'
-                               f'Provide time range arguments if incidents are older then 30 days')
+        raise DemistoException(f'Unable to search incident {args.get("incident_id")} which is older than 30 days.\n'
+                               f'Provide time range Arguments')
 
 
 def get_request_payload(args: dict[str, Any], query_type: str | None = 'default'):
@@ -1136,23 +1154,11 @@ def test_module(client: Client) -> str:
         Connection ok
     """
     message: str = ''
-    endpoint = '/atpapi/v2/incidents'
-    params: dict = {
-        'verb': "query",
-        'limit': 1
-    }
     try:
-        client.query_request_api(endpoint, params)
+        res = get_incident_list_command(client, {'limit': 1})
         message = 'ok'
-
     except DemistoException as e:
-        if 'Authorization Error' in str(e) or 'Unauthorized' in str(e):
-            message = f'Make sure Client ID and Client Secret are correctly set. {e}'
-        elif 'Timeout Error' in str(e):
-            message = f'Server URL Invalid. {e}'
-        else:
-            message = f'Either Client ID or Client Secret is Invalid. {e}'
-        raise DemistoException(message)
+        return_error(f'Failed to execute. Error {e}')
 
     return message
 
@@ -1178,8 +1184,7 @@ def get_domain_file_association_list_command(client: Client, args: dict[str, Any
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1217,8 +1222,7 @@ def get_endpoint_domain_association_list_command(client: Client, args: dict[str,
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1256,8 +1260,7 @@ def get_endpoint_file_association_list_command(client: Client, args: dict[str, A
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1284,6 +1287,7 @@ def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResu
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    context_data: list = []
     endpoint = '/atpapi/v2/auditevents'
     payload, limit, offset, page_size = get_request_payload(args, 'event')
     raw_response = client.query_request_api(endpoint, payload)
@@ -1295,9 +1299,7 @@ def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResu
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
-    context_data = None
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
     if page_result:
         readable_output, context_data = audit_event_readable_output(page_result, title)
     else:
@@ -1323,6 +1325,7 @@ def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    context_data: list = []
     endpoint = '/atpapi/v2/events'
     payload, limit, offset, page_size = get_request_payload(args, 'event')
     raw_response = client.query_request_api(endpoint, payload)
@@ -1334,9 +1337,7 @@ def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
-    context_data = None
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
     if page_result:
         readable_output, context_data = incident_event_readable_output(page_result, title)
     else:
@@ -1362,6 +1363,7 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    context_data: list = []
     endpoint = '/atpapi/v2/systemactivities'
     payload, limit, offset, page_size = get_request_payload(args, 'event')
     raw_response = client.query_request_api(endpoint, payload)
@@ -1373,9 +1375,7 @@ def get_system_activity_command(client: Client, args: dict[str, Any]) -> Command
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
-    context_data = None
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
     if page_result:
         readable_output, context_data = system_activity_readable_output(page_result, title)
     else:
@@ -1401,6 +1401,7 @@ def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) ->
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    context_data: list = []
     endpoint = '/atpapi/v2/incidentevents'
     payload, limit, offset, page_size = get_request_payload(args, 'event')
     raw_response = client.query_request_api(endpoint, payload)
@@ -1412,9 +1413,7 @@ def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) ->
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
-    context_data: list[dict[str, Any]]
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
     if page_result:
         readable_output, context_data = incident_event_readable_output(page_result, title)
     else:
@@ -1445,7 +1444,6 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     payload, limit, offset, page_size = get_request_payload(args, 'incident')
     raw_response = client.query_request_api(endpoint, payload)
-
     title = get_command_title_string(
         'Incident',
         arg_to_number(args.get('page', 0)),
@@ -1453,8 +1451,7 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
     if page_result:
         readable_output, context_data = incident_readable_output(page_result, title)
     else:
@@ -1479,13 +1476,16 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    incident_id = args.pop("incident_id", '')
+    context_data: list = []
+
     # Get UUID based on incident_id
     uuid = get_incident_uuid(client, args)
     endpoint = f'/atpapi/v2/incidents/{uuid}/comments'
 
+    # Argument incident_id not be required in further incident command query therefor
+    # remove it from args
+    incident_id = args.pop("incident_id", None)
     payload, limit, offset, page_size = get_request_payload(args, 'incident')
-
     raw_response = client.query_request_api(endpoint, payload)
     title = get_command_title_string(
         'Incident Comment',
@@ -1494,10 +1494,8 @@ def get_incident_comments_command(client: Client, args: dict[str, Any]) -> Comma
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    demisto.debug(f'Command Query payload: {incident_id}, {uuid}, {payload}, Total Rows : {raw_response.get("total")}')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
-    context_data = None
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
+
     if page_result:
         readable_output, context_data = incident_comment_readable_output(page_result, title, incident_id)
     else:
@@ -1618,8 +1616,7 @@ def get_file_instance_command(client: Client, args: dict[str, Any]) -> CommandRe
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1646,6 +1643,7 @@ def get_domain_instance_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
+    context_data: list = []
     endpoint = '/atpapi/v2/entities/domains/instances'
     payload, limit, offset, page_size = get_request_payload(args)
 
@@ -1658,8 +1656,7 @@ def get_domain_instance_command(client: Client, args: dict[str, Any]) -> Command
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
 
     if page_result:
         readable_output, context_data = domain_instance_readable_output(page_result, title)
@@ -1698,8 +1695,7 @@ def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> Comma
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', '')
-    page_result = get_data_of_current_page(offset, limit, result)
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
 
     if page_result:
         readable_output = endpoint_instance_readable_output(page_result, title)
@@ -1737,8 +1733,7 @@ def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1777,8 +1772,7 @@ def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResult
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    page_result = get_data_of_current_page(offset, limit, raw_response.get('result', []))  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -2406,7 +2400,7 @@ def main() -> None:
 
         return_results(command_output)
 
-    # Log exceptions and return errors
+# Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError: {e}')
 

@@ -1356,7 +1356,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the incident  severity/priority level \nLow \nMedium \nHigh (3)"
+      description: "Specifies the incident severity/priority level \nLow \nMedium \nHigh"
       isArray: false
       name: priority
       predefined:
