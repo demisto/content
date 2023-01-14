@@ -1,0 +1,191 @@
+id: EWS Public Folders Test
+version: -1
+name: EWS Public Folders Test
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: e5fd1879-d7f7-4dc8-8116-67367d36d3e3
+    type: start
+    task:
+      id: e5fd1879-d7f7-4dc8-8116-67367d36d3e3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: bfff5578-2b91-463f-886c-76c26b2388ab
+    type: regular
+    task:
+      id: bfff5578-2b91-463f-886c-76c26b2388ab
+      version: -1
+      name: ews-find-folders
+      description: Get folders information for a mailbox. Only folders with read permissions
+        will be return as a result. Notice that your visual folders on the mailbox
+        (like Inbox, etc) is under the folder "Top of Information Store".
+      script: '|||ews-find-folders'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 820b55f7-0f75-4274-8ea2-8a9e2c694bdf
+    type: regular
+    task:
+      id: 820b55f7-0f75-4274-8ea2-8a9e2c694bdf
+      version: -1
+      name: ews-get-folder
+      description: Get a single specific folder.
+      script: '|||ews-get-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      folder-path:
+        simple: pub
+      is-public:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5e17d139-59ee-4a89-8aee-172643f081d1
+    type: regular
+    task:
+      id: 5e17d139-59ee-4a89-8aee-172643f081d1
+      version: -1
+      name: ews-search-mailbox
+      description: Search items in a specific mailbox. Notice that a proper permissions
+        needed for this operation to search in another target mailbox than the default.
+      script: '|||ews-search-mailbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      folder-path:
+        simple: pub
+      is-public:
+        simple: "True"
+      query:
+        simple: From:demistoadmin@demisto.int AND Subject:ismyplaybookworking?
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 85570a06-dcc7-4b70-80ee-22ac0a3d7434
+    type: regular
+    task:
+      id: 85570a06-dcc7-4b70-80ee-22ac0a3d7434
+      version: -1
+      name: ews-get-items-from-folder
+      description: Get items from a specific folder in a mailbox. The items will return
+        order by created time, first item is the most recent item.
+      script: '|||ews-get-items-from-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      folder-path:
+        simple: pub
+      is-public:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
