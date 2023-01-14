@@ -92,7 +92,7 @@
         },
         "CrowdStrikeFalconX": {
             "mandatory": false,
-            "display_name": "CrowdStrike FalconX"
+            "display_name": "CrowdStrike Falcon Intelligence Sandbox"
         },
         "VirusTotal-Private_API": {
             "mandatory": false,
