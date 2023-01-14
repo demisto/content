@@ -27,7 +27,6 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Endpoint_hostname | The host name of the endpoint to isolate. |  | Optional |
-| ManualHunting.DetectedHosts | Hosts that were detected as infected during the manual hunting. |  | Optional |
 | Endpoint_ip | The IP of the endpoint to isolate. |  | Optional |
 | Endpoint_id | The ID of the endpoint to isolate. |  | Optional |
 
