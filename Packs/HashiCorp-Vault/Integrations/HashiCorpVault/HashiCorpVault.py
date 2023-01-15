@@ -220,7 +220,7 @@ def get_secret_metadata_command():  # pragma: no cover
     })
 
 
-def get_secret_metadata(engine_path, secret_path):  # pragma: no cover
+def get_secret_metadata(engine_path, secret_path):
     path = engine_path + '/metadata/' + secret_path
 
     return send_request(path, 'get')
@@ -256,7 +256,7 @@ def undelete_secret_command():  # pragma: no cover
     demisto.results('Secret versions undeleted successfully')
 
 
-def undelete_secret(engine_path, secret_path, versions):  # pragma: no cover
+def undelete_secret(engine_path, secret_path, versions):
     path = urljoin(engine_path, urljoin('undelete/', secret_path))
 
     body = {
@@ -276,7 +276,7 @@ def destroy_secret_command():  # pragma: no cover
     demisto.results('Secret versions destroyed successfully')
 
 
-def destroy_secret(engine_path, secret_path, versions):  # pragma: no cover
+def destroy_secret(engine_path, secret_path, versions):
     path = urljoin(engine_path, urljoin('destroy/', secret_path))
 
     body = {
@@ -308,7 +308,7 @@ def list_policies_command():  # pragma: no cover
     })
 
 
-def list_policies():  # pragma: no cover
+def list_policies():
     path = '/sys/policy'
 
     return send_request(path, 'get')
@@ -343,7 +343,7 @@ def get_policy_command():  # pragma: no cover
     })
 
 
-def get_policy(policy_name):  # pragma: no cover
+def get_policy(policy_name):
     path = 'sys/policy/' + policy_name
 
     return send_request(path, 'get')
