@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Zoom Dev
+  id: Zoom
   version: -1
 configuration:
   - display: Server URL (e.g. 'https://api.zoom.us/v2/')
@@ -50,8 +50,8 @@ configuration:
     type: 8
     required: false
 description: Use the Zoom integration manage your Zoom users and meetings
-display: Zoom Dev
-name: Zoom Dev
+display: Zoom
+name: Zoom
 script:
   commands:
     - arguments:
