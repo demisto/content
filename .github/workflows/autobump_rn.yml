@@ -19,6 +19,8 @@ jobs:
           echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
@@ -28,8 +30,6 @@ jobs:
       - name: Install python dependencies
         run: |
           poetry install --with ci
-      - name: Checkout repository
-        uses: actions/checkout@v3
       - name: Check conflicts and add release notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
