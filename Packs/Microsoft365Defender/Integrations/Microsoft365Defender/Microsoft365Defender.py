@@ -609,8 +609,10 @@ def main() -> None:
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
+        params.get('certificate_thumbprint', '')
+
+    private_key = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
