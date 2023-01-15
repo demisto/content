@@ -24,13 +24,13 @@ def test_send_request(mocker):
     res = MockHttpResponse({'test': 'test'}, 200)
     mocker.patch.object(requests, 'request', return_value=res)
     mocker.patch('HashiCorpVault.get_headers', return_value={})
-    mocker.patch('HashiCorpVault.SERVER_URL', return_value='test')
+    mocker.patch('HashiCorpVault.BASE_URL', return_value='test')
     assert send_request('https://test.com') == {'test': 'test'}
 
 
 @patch('HashiCorpVault.send_request', mock)
 def test_get_aws_secrets(mocker):
-    mocker.patch('HashiCorpVault.SERVER_URL', return_value='test')
+    mocker.patch('HashiCorpVault.BASE_URL', return_value='test')
     get_aws_secrets('test', '999', False)
     assert mock.call_args.args[0] == 'test'
     get_aws_secrets('test', '999', False)
