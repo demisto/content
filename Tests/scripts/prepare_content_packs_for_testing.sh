@@ -76,7 +76,7 @@ if [ ! -f $CONTENT_PACKS_TO_UPLOAD_FILE ] 2> /dev/null && ! $OVERRIDE_ALL_PACKS;
   exit 0
 else
   CONTENT_PACKS_TO_UPLOAD=$(paste -sd, $CONTENT_PACKS_TO_UPLOAD_FILE)
-  if [[ -z "$CONTENT_PACKS_TO_UPLOAD" ]]; then
+  if [[ -z "$CONTENT_PACKS_TO_UPLOAD" ]] 2> /dev/null && ! $OVERRIDE_ALL_PACKS; then
     echo "Did not get content packs to update in the bucket. Skipping upload step."
     exit 0
   fi
