@@ -71,7 +71,7 @@ gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTE
 echo "Finished copying successfully."
 
 CONTENT_PACKS_TO_UPLOAD_FILE="$ARTIFACTS_FOLDER/content_packs_to_upload.txt"
-if [ ! -f $CONTENT_PACKS_TO_UPLOAD_FILE ]; then
+if [ ! -f $CONTENT_PACKS_TO_UPLOAD_FILE ] 2> /dev/null && ! $OVERRIDE_ALL_PACKS; then
   echo "Could not find file $CONTENT_PACKS_TO_UPLOAD_FILE. Skipping upload step."
   exit 0
 else
