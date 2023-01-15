@@ -47,7 +47,6 @@ jobs:
       with:
         report_paths: |
             **/Packs/**/@(Integrations|Scripts)/**/.report_pytest.xml
-        check_name: Unit Tests Report
         github_token: ${{ secrets.GITHUB_TOKEN }}
         detailed_summary: true
         annotate_only: true
@@ -57,9 +56,7 @@ jobs:
       if: always()
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: |
-          **/Packs/**/Integrations/**/.coverage
-          **/Packs/**/Scripts/**/.coverage
+        filename: "**/Packs/**/@(Integrations|Scripts)/**/.report_pytest.xml"
         badge: true
         fail_below_min: true
         format: markdown
