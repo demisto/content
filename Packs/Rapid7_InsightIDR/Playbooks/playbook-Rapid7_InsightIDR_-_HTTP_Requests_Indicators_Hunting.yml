@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3870,
-          "y": -2210
+          "x": -5100,
+          "y": -2200
         }
       }
     note: false
@@ -36,12 +36,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1f1349e6-cad5-401f-8905-ae183d490df6
+    taskid: ea98807d-90dc-4bbd-898f-240df1c82a28
     type: title
     task:
-      id: 1f1349e6-cad5-401f-8905-ae183d490df6
+      id: ea98807d-90dc-4bbd-898f-240df1c82a28
       version: -1
-      name: UserAgent Indicators
+      name: User Agent Indicators
       type: title
       iscommand: false
       brand: ""
@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4180,
+          "x": -4270,
           "y": -1900
         }
       }
@@ -85,7 +85,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3540,
+          "x": -3670,
           "y": -1900
         }
       }
@@ -98,12 +98,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 680515a1-0866-49fc-80d8-ebff17b8579e
+    taskid: ee7f5c64-eaac-43e7-8949-5b5e070fa940
     type: regular
     task:
-      id: 680515a1-0866-49fc-80d8-ebff17b8579e
+      id: ee7f5c64-eaac-43e7-8949-5b5e070fa940
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - user agent
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -202,7 +202,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4180,
+          "x": -4050,
           "y": -1440
         }
       }
@@ -215,12 +215,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 5eff9dde-e0fd-4dc7-8953-877dd2ab650e
+    taskid: 86eafadd-61e4-49b3-81e0-216dbb02e330
     type: regular
     task:
-      id: 5eff9dde-e0fd-4dc7-8953-877dd2ab650e
+      id: 86eafadd-61e4-49b3-81e0-216dbb02e330
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - URI
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -319,7 +319,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3540,
+          "x": -3450,
           "y": -1440
         }
       }
@@ -332,12 +332,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: d2bcd6fc-b97a-42d4-8f76-badaca834d74
+    taskid: c58a191f-280a-42df-85a6-1b710c9918d7
     type: title
     task:
-      id: d2bcd6fc-b97a-42d4-8f76-badaca834d74
+      id: c58a191f-280a-42df-85a6-1b710c9918d7
       version: -1
-      name: HTTPRequestMethods Indicators
+      name: HTTP Request Methods Indicators
       type: title
       iscommand: false
       brand: ""
@@ -350,7 +350,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3100,
+          "x": -3070,
           "y": -1900
         }
       }
@@ -363,12 +363,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: db0ff194-663c-4e1e-8cad-29dcf17979f8
+    taskid: 24ee4171-02df-49b3-80ea-f80f56dcac15
     type: regular
     task:
-      id: db0ff194-663c-4e1e-8cad-29dcf17979f8
+      id: 24ee4171-02df-49b3-80ea-f80f56dcac15
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - HTTP request methods
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -467,7 +467,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3100,
+          "x": -2850,
           "y": -1440
         }
       }
@@ -509,8 +509,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3870,
-          "y": -2080
+          "x": -5100,
+          "y": -2070
         }
       }
     note: false
@@ -522,12 +522,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: f5db55b2-e7be-4c7e-806c-10f6143c6912
+    taskid: 2a0e9ba3-33eb-433c-8033-cbe0d8f63e15
     type: regular
     task:
-      id: f5db55b2-e7be-4c7e-806c-10f6143c6912
+      id: 2a0e9ba3-33eb-433c-8033-cbe0d8f63e15
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - Ja3
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -626,7 +626,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4620,
+          "x": -4650,
           "y": -1440
         }
       }
@@ -657,7 +657,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4620,
+          "x": -4870,
           "y": -1900
         }
       }
@@ -670,26 +670,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "127":
     id: "127"
-    taskid: 25c31c5e-675a-440a-8b45-5b4fc86693df
+    taskid: 0799c24f-93d0-4459-8e64-4991212d5298
     type: title
     task:
-      id: 25c31c5e-675a-440a-8b45-5b4fc86693df
+      id: 0799c24f-93d0-4459-8e64-4991212d5298
       version: -1
-      name: HTTPRequestMethods Hunting Done
+      name: HTTP Request Methods Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -3100,
-          "y": -1275
+          "x": -3070,
+          "y": -1270
         }
       }
     note: false
@@ -713,14 +713,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -3540,
-          "y": -1275
+          "x": -3670,
+          "y": -1270
         }
       }
     note: false
@@ -732,26 +732,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "129":
     id: "129"
-    taskid: 81264a12-3ecb-4c5a-8957-df18c1b3749b
+    taskid: 1990dcc9-6418-45bc-831e-d1c0e98087a7
     type: title
     task:
-      id: 81264a12-3ecb-4c5a-8957-df18c1b3749b
+      id: 1990dcc9-6418-45bc-831e-d1c0e98087a7
       version: -1
-      name: UserAgent Hunting Done
+      name: User Agent Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4180,
-          "y": -1275
+          "x": -4270,
+          "y": -1270
         }
       }
     note: false
@@ -775,14 +775,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4620,
-          "y": -1275
+          "x": -4870,
+          "y": -1270
         }
       }
     note: false
@@ -794,12 +794,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "143":
     id: "143"
-    taskid: 51512a67-46b6-4f70-8d9e-1b555b3affa1
+    taskid: 6e2e02d1-447f-407e-8cc3-e5490b9cd411
     type: condition
     task:
-      id: 51512a67-46b6-4f70-8d9e-1b555b3affa1
+      id: 6e2e02d1-447f-407e-8cc3-e5490b9cd411
       version: -1
-      name: Any RequestMethods to hunt for?
+      name: Any HTTP request method to hunt for?
       description: |
         Checks whether any HTTP request methods are available for threat hunting.
       type: condition
@@ -826,8 +826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3100,
-          "y": -1765
+          "x": -3070,
+          "y": -1770
         }
       }
     note: false
@@ -871,8 +871,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3540,
-          "y": -1765
+          "x": -3670,
+          "y": -1770
         }
       }
     note: false
@@ -884,12 +884,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "145":
     id: "145"
-    taskid: 46c64d29-c317-41e6-8bc4-983337fb7009
+    taskid: 5ca9eee1-6f4a-4f2f-8060-7dcb259f470f
     type: condition
     task:
-      id: 46c64d29-c317-41e6-8bc4-983337fb7009
+      id: 5ca9eee1-6f4a-4f2f-8060-7dcb259f470f
       version: -1
-      name: Any UserAgent to hunt for?
+      name: Any user agent to hunt for?
       description: |
         Checks whether any user agents are available for threat hunting.
       type: condition
@@ -916,8 +916,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4180,
-          "y": -1765
+          "x": -4270,
+          "y": -1770
         }
       }
     note: false
@@ -961,7 +961,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4620,
+          "x": -4870,
           "y": -1770
         }
       }
@@ -974,12 +974,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "159":
     id: "159"
-    taskid: 1b665f1b-540b-4098-8e32-06cd0223852a
+    taskid: 04ba5b26-c170-4e88-8ac9-b1266487c2d8
     type: regular
     task:
-      id: 1b665f1b-540b-4098-8e32-06cd0223852a
+      id: 04ba5b26-c170-4e88-8ac9-b1266487c2d8
       version: -1
-      name: Set RequestMethods search argument
+      name: Set HTTP request methods search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1017,7 +1017,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3100,
+          "x": -2850,
           "y": -1600
         }
       }
@@ -1073,7 +1073,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3540,
+          "x": -3450,
           "y": -1600
         }
       }
@@ -1086,12 +1086,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "161":
     id: "161"
-    taskid: 9b0add30-0015-4927-8da4-edab83376f53
+    taskid: 71455651-783f-4f1a-86bf-66962a3c15a6
     type: regular
     task:
-      id: 9b0add30-0015-4927-8da4-edab83376f53
+      id: 71455651-783f-4f1a-86bf-66962a3c15a6
       version: -1
-      name: Set UserAgent search argument
+      name: Set user agent search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1129,7 +1129,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4180,
+          "x": -4050,
           "y": -1600
         }
       }
@@ -1185,7 +1185,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4620,
+          "x": -4650,
           "y": -1600
         }
       }
@@ -1213,8 +1213,63 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3870,
-          "y": -1130
+          "x": -5100,
+          "y": -950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: f462c522-d159-4e39-8314-cc44c0d90b41
+    type: regular
+    task:
+      id: f462c522-d159-4e39-8314-cc44c0d90b41
+      version: -1
+      name: Save Queries Results
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "175"
+    scriptarguments:
+      extend-context:
+        simple: Rapid7InsightIDR.HuntingResults=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: Rapid7InsightIDR.Event
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Event
+                iscontext: true
+          accessor: message
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: \
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3950,
+          "y": -1120
         }
       }
     note: false
@@ -1227,14 +1282,18 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "56_175_#default#": 0.11
+      "56_12_yes": 0.78,
+      "56_175_#default#": 0.79,
+      "56_53_yes": 0.85,
+      "56_80_yes": 0.4,
+      "56_9_yes": 0.65
     },
     "paper": {
       "dimensions": {
-        "height": 1145,
-        "width": 1900,
-        "x": -4620,
-        "y": -2210
+        "height": 1315,
+        "width": 2630,
+        "x": -5100,
+        "y": -2200
       }
     }
   }
@@ -1345,18 +1404,9 @@ inputs:
     For example, to end searching a day ago, the UNIX timestamp value would be 86400.
   playbookInputQuery:
 outputs:
-- contextPath: Rapid7InsightIDR.Event
+- contextPath: Rapid7InsightIDR.HuntingResults
   description: Events log objects containing relevant fields.
   type: string
-- contextPath: Rapid7InsightIDR.Event.log_id
-  description: ID of the log the event appears in.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.message
-  description: Event log raw message.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.timestamp
-  description: Time when the event was triggered.
-  type: number
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

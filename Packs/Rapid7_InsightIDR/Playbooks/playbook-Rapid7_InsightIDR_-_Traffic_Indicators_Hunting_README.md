@@ -1,4 +1,4 @@
-This playbook queries Rapid7 InsightIDR SIEM for traffic indicators, including URLs, domains, ports, IP addresses, IP ranges (CIDR), email addresses, geolocations, 
+This playbook queries Rapid7 InsightIDR SIEM for traffic indicators, including URLs, domains, ports, IP addresses, IP ranges (CIDR), email addresses, and geolocations. 
 
 Note that multiple search values should be separated by commas only (without spaces or any special characters).
 
@@ -12,8 +12,9 @@ This playbook does not use any sub-playbooks.
 * Rapid7 InsightIDR
 
 ### Scripts
-* SetAndHandleEmpty
+* LoadJSON
 * IsIntegrationAvailable
+* SetAndHandleEmpty
 
 ### Commands
 * rapid7-insight-idr-query-log-set
@@ -50,10 +51,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Event | Events log objects containing relevant fields. | string |
-| Rapid7InsightIDR.Event.log_id | The ID of the log the event appears in. | string |
-| Rapid7InsightIDR.Event.message | Event log raw message. | string |
-| Rapid7InsightIDR.Event.timestamp | Event log trigger time. | number |
+| Rapid7InsightIDR.HuntingResults | Events log objects containing relevant fields. | string |
 
 ## Playbook Image
 ---

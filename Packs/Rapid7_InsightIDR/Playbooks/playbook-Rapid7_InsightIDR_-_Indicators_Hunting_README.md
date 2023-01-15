@@ -29,10 +29,10 @@ Supported IOCs for this playbook:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Rapid7 InsightIDR - Traffic Indicators Hunting
 * Rapid7 InsightIDR - Execution Flow Indicators Hunting
-* Rapid7 InsightIDR - HTTP Requests Indicators Hunting
+* Rapid7 InsightIDR - Traffic Indicators Hunting
 * Rapid7 InsightIDR - File Indicators Hunting
+* Rapid7 InsightIDR - HTTP Requests Indicators Hunting
 
 ### Integrations
 This playbook does not use any integrations.
@@ -107,10 +107,7 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Event | Events log objects containing relevant fields. | string |
-| Rapid7InsightIDR.Event.log_id | The ID of the log the event appears in. | string |
-| Rapid7InsightIDR.Event.message | Event log raw message. | string |
-| Rapid7InsightIDR.Event.timestamp | Event log trigger time. | number |
+| Rapid7InsightIDR.HuntingResults | Events log objects containing relevant fields. | string |
 
 ## Playbook Image
 ---

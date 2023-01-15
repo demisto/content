@@ -1,7 +1,7 @@
 id: Rapid7 InsightIDR - Traffic Indicators Hunting
 version: -1
 name: Rapid7 InsightIDR - Traffic Indicators Hunting
-description: "This playbook queries Rapid7 InsightIDR SIEM for traffic indicators, including URLs, domains, ports, IP addresses, IP ranges (CIDR), email addresses, geolocations, \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+description: "This playbook queries Rapid7 InsightIDR SIEM for traffic indicators, including URLs, domains, ports, IP addresses, IP ranges (CIDR), email addresses, and geolocations. \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
 starttaskid: "0"
 tasks:
   "0":
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4790,
-          "y": -2200
+          "x": -7870,
+          "y": -2210
         }
       }
     note: false
@@ -36,12 +36,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 1ad2e218-4c96-43a8-82f7-58af3cbfe525
+    taskid: aa54e198-7eb7-4b42-8753-e36c907d4e8b
     type: title
     task:
-      id: 1ad2e218-4c96-43a8-82f7-58af3cbfe525
+      id: aa54e198-7eb7-4b42-8753-e36c907d4e8b
       version: -1
-      name: IPAddress Indicators
+      name: IP Address Indicators
       type: title
       iscommand: false
       brand: ""
@@ -54,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5670,
-          "y": -1880
+          "x": -6040,
+          "y": -1900
         }
       }
     note: false
@@ -85,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -7060,
-          "y": -1880
+          "x": -7640,
+          "y": -1900
         }
       }
     note: false
@@ -98,12 +98,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 5e8bf33f-1b00-4a2b-8ba2-1cbf46dcbb0d
+    taskid: 865c2244-bcfe-4abc-86dd-286ed0b0e52f
     type: regular
     task:
-      id: 5e8bf33f-1b00-4a2b-8ba2-1cbf46dcbb0d
+      id: 865c2244-bcfe-4abc-86dd-286ed0b0e52f
       version: -1
-      name: Rapid7 InsightIDR query - Dst IPs
+      name: Rapid7 InsightIDR query - destination IP
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -111,7 +111,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "113"
+      - "118"
     scriptarguments:
       end_time:
         complex:
@@ -202,8 +202,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5450,
-          "y": -1420
+          "x": -5820,
+          "y": -1430
         }
       }
     note: false
@@ -215,12 +215,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7712be30-1e51-4a34-8dab-0852eafb0c84
+    taskid: 9911df03-8126-4f7b-8312-1c2b11accb7a
     type: regular
     task:
-      id: 7712be30-1e51-4a34-8dab-0852eafb0c84
+      id: 9911df03-8126-4f7b-8312-1c2b11accb7a
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - URLDomain
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -319,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -7060,
-          "y": -1420
+          "x": -7420,
+          "y": -1430
         }
       }
     note: false
@@ -332,12 +332,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: baecdb0d-ccba-4293-84c0-e9aa30c4b805
+    taskid: 2103797f-3902-4fc9-8ce4-0b2b510208e4
     type: regular
     task:
-      id: baecdb0d-ccba-4293-84c0-e9aa30c4b805
+      id: 2103797f-3902-4fc9-8ce4-0b2b510208e4
       version: -1
-      name: Rapid7 InsightIDR query - Src IPs
+      name: Rapid7 InsightIDR query - source IP
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -345,7 +345,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "113"
+      - "118"
     scriptarguments:
       end_time:
         complex:
@@ -436,8 +436,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5050,
-          "y": -1420
+          "x": -5420,
+          "y": -1430
         }
       }
     note: false
@@ -449,12 +449,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: fae8d52f-9443-4ea4-8105-3b2fb9716f8d
+    taskid: ee11970e-cce5-4289-83c0-2061e7d209fe
     type: regular
     task:
-      id: fae8d52f-9443-4ea4-8105-3b2fb9716f8d
+      id: ee11970e-cce5-4289-83c0-2061e7d209fe
       version: -1
-      name: Rapid7 InsightIDR query - Sender
+      name: Rapid7 InsightIDR query - sender email address
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -462,7 +462,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "112"
+      - "117"
     scriptarguments:
       end_time:
         complex:
@@ -553,8 +553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4220,
-          "y": -1420
+          "x": -4830,
+          "y": -1430
         }
       }
     note: false
@@ -566,12 +566,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 6b4cbc52-fb50-460e-802c-1035b7147493
+    taskid: 82d403e9-f023-40ad-8133-b7e99414c5b9
     type: regular
     task:
-      id: 6b4cbc52-fb50-460e-802c-1035b7147493
+      id: 82d403e9-f023-40ad-8133-b7e99414c5b9
       version: -1
-      name: Rapid7 InsightIDR query - Recipient
+      name: Rapid7 InsightIDR query - recipient email address
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -579,7 +579,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "112"
+      - "117"
     scriptarguments:
       end_time:
         complex:
@@ -670,8 +670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3830,
-          "y": -1420
+          "x": -4430,
+          "y": -1430
         }
       }
     note: false
@@ -683,12 +683,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: bdcb1a9b-7eee-4c4d-83e9-d5e97f667ed7
+    taskid: d1214549-2397-498e-8c4f-d6f5e333321d
     type: title
     task:
-      id: bdcb1a9b-7eee-4c4d-83e9-d5e97f667ed7
+      id: d1214549-2397-498e-8c4f-d6f5e333321d
       version: -1
-      name: EmailAddress Indicators
+      name: Email Address Indicators
       type: title
       iscommand: false
       brand: ""
@@ -701,8 +701,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4430,
-          "y": -1880
+          "x": -5050,
+          "y": -1900
         }
       }
     note: false
@@ -714,12 +714,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 3e761f65-21cc-4e4f-8979-4d932d2b0ab0
+    taskid: a85c5093-dd1d-4857-866b-e232edc6f377
     type: regular
     task:
-      id: 3e761f65-21cc-4e4f-8979-4d932d2b0ab0
+      id: a85c5093-dd1d-4857-866b-e232edc6f377
       version: -1
-      name: Rapid7 InsightIDR query - Src Geolocation
+      name: Rapid7 InsightIDR query - source geolocation
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -727,7 +727,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "111"
+      - "116"
     scriptarguments:
       end_time:
         complex:
@@ -824,8 +824,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2880,
-          "y": -1420
+          "x": -3450,
+          "y": -1430
         }
       }
     note: false
@@ -837,12 +837,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 5001fe93-7f3c-491b-870e-42b9dc8cc6b4
+    taskid: 1031497a-8595-4693-8c47-161c4dbdabeb
     type: regular
     task:
-      id: 5001fe93-7f3c-491b-870e-42b9dc8cc6b4
+      id: 1031497a-8595-4693-8c47-161c4dbdabeb
       version: -1
-      name: Rapid7 InsightIDR query - Dst Geolocation
+      name: Rapid7 InsightIDR query - destination geolocation
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -850,7 +850,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "111"
+      - "116"
     scriptarguments:
       end_time:
         complex:
@@ -947,8 +947,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3270,
-          "y": -1420
+          "x": -3850,
+          "y": -1430
         }
       }
     note: false
@@ -978,8 +978,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3480,
-          "y": -1880
+          "x": -4070,
+          "y": -1900
         }
       }
     note: false
@@ -991,12 +991,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: af958cd9-d1b7-48eb-893b-712ad2389108
+    taskid: 28752271-dfac-4b1e-8998-97b58a3f0549
     type: regular
     task:
-      id: af958cd9-d1b7-48eb-893b-712ad2389108
+      id: 28752271-dfac-4b1e-8998-97b58a3f0549
       version: -1
-      name: Rapid7 InsightIDR query - Dst Port
+      name: Rapid7 InsightIDR query - destination port
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -1004,7 +1004,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "114"
+      - "119"
     scriptarguments:
       end_time:
         complex:
@@ -1047,124 +1047,7 @@ tasks:
                 value:
                   simple: "500"
       query:
-        simple: where(${inputs.InsightIDRdstPortField} CONTAINS-ANY [${portsParsed}])
-      sequence_number:
-        complex:
-          root: inputs.sequence_number
-      start_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: start_time
-      time_range:
-        complex:
-          root: inputs.time_range
-          filters:
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -6010,
-          "y": -1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
-    taskid: f7e26702-cac7-4d28-8618-11d489fe5c61
-    type: regular
-    task:
-      id: f7e26702-cac7-4d28-8618-11d489fe5c61
-      version: -1
-      name: Rapid7 InsightIDR query - Src Port
-      description: Queries within a log set for certain values.
-      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
-      type: regular
-      iscommand: true
-      brand: Rapid7 InsightIDR
-    nexttasks:
-      '#none#':
-      - "114"
-    scriptarguments:
-      end_time:
-        complex:
-          root: inputs
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.end_time
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.start_time
-                iscontext: true
-          - - operator: isEmpty
-              left:
-                value:
-                  simple: inputs.time_range
-                iscontext: true
-          accessor: end_time
-      log_set_id:
-        complex:
-          root: inputs.LogSetId
-      logs_per_page:
-        complex:
-          root: inputs.logs_per_page
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-          - - operator: lessThanOrEqual
-              left:
-                value:
-                  simple: inputs.logs_per_page
-                iscontext: true
-              right:
-                value:
-                  simple: "500"
-      query:
-        simple: where(${inputs.InsightIDRsrcPortField} CONTAINS-ANY [${portsParsed}])
+        simple: where(${inputs.InsightIDRdstPortField} CONTAINS-ANY [${PortsParsed}])
       sequence_number:
         complex:
           root: inputs.sequence_number
@@ -1213,7 +1096,124 @@ tasks:
       {
         "position": {
           "x": -6410,
-          "y": -1420
+          "y": -1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 14394954-faf8-4aff-8040-2ace47a66c69
+    type: regular
+    task:
+      id: 14394954-faf8-4aff-8040-2ace47a66c69
+      version: -1
+      name: Rapid7 InsightIDR query - source port
+      description: Queries within a log set for certain values.
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
+      type: regular
+      iscommand: true
+      brand: Rapid7 InsightIDR
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      log_set_id:
+        complex:
+          root: inputs.LogSetId
+      logs_per_page:
+        complex:
+          root: inputs.logs_per_page
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.logs_per_page
+                iscontext: true
+              right:
+                value:
+                  simple: "500"
+      query:
+        simple: where(${inputs.InsightIDRsrcPortField} CONTAINS-ANY [${PortsParsed}])
+      sequence_number:
+        complex:
+          root: inputs.sequence_number
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs.time_range
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -6820,
+          "y": -1430
         }
       }
     note: false
@@ -1225,12 +1225,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 5995a799-030a-4e48-8389-834818645521
+    taskid: 00699ce5-0e56-4d08-8714-8d0d46a70e31
     type: title
     task:
-      id: 5995a799-030a-4e48-8389-834818645521
+      id: 00699ce5-0e56-4d08-8714-8d0d46a70e31
       version: -1
-      name: PortNumber Indicators
+      name: Port Number Indicators
       type: title
       iscommand: false
       brand: ""
@@ -1243,8 +1243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -6620,
-          "y": -1880
+          "x": -7040,
+          "y": -1900
         }
       }
     note: false
@@ -1287,8 +1287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4790,
-          "y": -2070
+          "x": -7870,
+          "y": -2080
         }
       }
     note: false
@@ -1318,8 +1318,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2530,
-          "y": -1880
+          "x": -3080,
+          "y": -1900
         }
       }
     note: false
@@ -1331,12 +1331,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: fae908e0-05a9-4a12-86e0-efa38cc4e8bf
+    taskid: 0caae704-a0b1-4a02-83ff-fe34a633ed1c
     type: regular
     task:
-      id: fae908e0-05a9-4a12-86e0-efa38cc4e8bf
+      id: 0caae704-a0b1-4a02-83ff-fe34a633ed1c
       version: -1
-      name: Rapid7 InsightIDR query - Source IP
+      name: Rapid7 InsightIDR query - source IP
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -1344,7 +1344,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "110"
+      - "115"
     scriptarguments:
       end_time:
         complex:
@@ -1435,8 +1435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2310,
-          "y": -1420
+          "x": -2860,
+          "y": -1430
         }
       }
     note: false
@@ -1480,8 +1480,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2530,
-          "y": -1765
+          "x": -3080,
+          "y": -1770
         }
       }
     note: false
@@ -1525,8 +1525,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3480,
-          "y": -1765
+          "x": -4070,
+          "y": -1770
         }
       }
     note: false
@@ -1568,8 +1568,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4430,
-          "y": -1765
+          "x": -5050,
+          "y": -1770
         }
       }
     note: false
@@ -1611,8 +1611,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5670,
-          "y": -1765
+          "x": -6040,
+          "y": -1770
         }
       }
     note: false
@@ -1624,10 +1624,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "105":
     id: "105"
-    taskid: 419c5315-1654-4934-8124-7cf8615cc62c
+    taskid: 1ecc6baa-fb9a-4259-88ae-ed4b3a358592
     type: condition
     task:
-      id: 419c5315-1654-4934-8124-7cf8615cc62c
+      id: 1ecc6baa-fb9a-4259-88ae-ed4b3a358592
       version: -1
       name: Any ports to hunt for?
       description: |
@@ -1656,7 +1656,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -6620,
+          "x": -7040,
           "y": -1770
         }
       }
@@ -1669,12 +1669,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "106":
     id: "106"
-    taskid: c2f10da6-1d33-4c74-8126-4d1134312889
+    taskid: db6c0677-a8bc-4a95-8e6b-61df3aaeff85
     type: condition
     task:
-      id: c2f10da6-1d33-4c74-8126-4d1134312889
+      id: db6c0677-a8bc-4a95-8e6b-61df3aaeff85
       version: -1
-      name: Any URLDomain to hunt for?
+      name: Any URL or domain to hunt for?
       description: |
         Checks whether any URLs or domains are available for threat hunting.
       type: condition
@@ -1701,7 +1701,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -7060,
+          "x": -7640,
           "y": -1770
         }
       }
@@ -1714,12 +1714,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: bdebfa60-281d-43cb-8f72-40fa7c7123f8
+    taskid: 8a8070d4-0e51-4d54-8ba7-6613d09f6ab2
     type: regular
     task:
-      id: bdebfa60-281d-43cb-8f72-40fa7c7123f8
+      id: 8a8070d4-0e51-4d54-8ba7-6613d09f6ab2
       version: -1
-      name: Rapid7 InsightIDR query - Destination IP
+      name: Rapid7 InsightIDR query - destination IP
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -1727,7 +1727,7 @@ tasks:
       brand: Rapid7 InsightIDR
     nexttasks:
       '#none#':
-      - "110"
+      - "115"
     scriptarguments:
       end_time:
         complex:
@@ -1818,309 +1818,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1910,
-          "y": -1420
+          "x": -2460,
+          "y": -1430
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "110":
-    id: "110"
-    taskid: 6fbb455c-c1a6-43be-819f-aeb8b5b35d29
-    type: regular
-    task:
-      id: 6fbb455c-c1a6-43be-819f-aeb8b5b35d29
-      version: -1
-      name: Join matching results
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "115"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        complex:
-          root: Rapid7InsightIDR.Event
-          accessor: message
-      value:
-        complex:
-          root: Rapid7InsightIDR.Event.message
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-              right:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2110,
-          "y": -1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "111":
-    id: "111"
-    taskid: d504b16d-2a3c-4253-89d3-e88753f78c30
-    type: regular
-    task:
-      id: d504b16d-2a3c-4253-89d3-e88753f78c30
-      version: -1
-      name: Join matching results
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "116"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        complex:
-          root: Rapid7InsightIDR.Event
-          accessor: message
-      value:
-        complex:
-          root: Rapid7InsightIDR.Event.message
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-              right:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3070,
-          "y": -1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "112":
-    id: "112"
-    taskid: d31659b4-691e-495a-8b4a-eaacf92aa587
-    type: regular
-    task:
-      id: d31659b4-691e-495a-8b4a-eaacf92aa587
-      version: -1
-      name: Join matching results
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "117"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        complex:
-          root: Rapid7InsightIDR.Event
-          accessor: message
-      value:
-        complex:
-          root: Rapid7InsightIDR.Event.message
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-              right:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4030,
-          "y": -1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "113":
-    id: "113"
-    taskid: 832716d7-bb06-465e-84e0-af0708a2316a
-    type: regular
-    task:
-      id: 832716d7-bb06-465e-84e0-af0708a2316a
-      version: -1
-      name: Join matching results
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "118"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        complex:
-          root: Rapid7InsightIDR.Event
-          accessor: message
-      value:
-        complex:
-          root: Rapid7InsightIDR.Event.message
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-              right:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -5240,
-          "y": -1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "114":
-    id: "114"
-    taskid: ac139144-b9d9-4990-868b-86a785ce0c72
-    type: regular
-    task:
-      id: ac139144-b9d9-4990-868b-86a785ce0c72
-      version: -1
-      name: Join matching results
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "119"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        complex:
-          root: Rapid7InsightIDR.Event
-          accessor: message
-      value:
-        complex:
-          root: Rapid7InsightIDR.Event.message
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-              right:
-                value:
-                  simple: Rapid7InsightIDR.Event.message
-                iscontext: true
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -6210,
-          "y": -1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2138,14 +1843,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2530,
-          "y": -1075
+          "x": -3080,
+          "y": -1255
         }
       }
     note: false
@@ -2169,14 +1874,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -3480,
-          "y": -1075
+          "x": -4070,
+          "y": -1255
         }
       }
     note: false
@@ -2188,26 +1893,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: c4a90189-7952-48cf-8eab-ce9e5e9c5d71
+    taskid: aed9d2fe-cb4f-4222-8f53-7fde81ef4c85
     type: title
     task:
-      id: c4a90189-7952-48cf-8eab-ce9e5e9c5d71
+      id: aed9d2fe-cb4f-4222-8f53-7fde81ef4c85
       version: -1
-      name: EmailAddress Hunting Done
+      name: Email Address Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4430,
-          "y": -1075
+          "x": -5050,
+          "y": -1255
         }
       }
     note: false
@@ -2219,26 +1924,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "118":
     id: "118"
-    taskid: d5f12684-d8aa-40a0-81d2-576d0ba94527
+    taskid: f6d028d2-01e2-4a03-8f2b-0fae54cc761a
     type: title
     task:
-      id: d5f12684-d8aa-40a0-81d2-576d0ba94527
+      id: f6d028d2-01e2-4a03-8f2b-0fae54cc761a
       version: -1
-      name: IPAddress Hunting Done
+      name: IP Address Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -5670,
-          "y": -1075
+          "x": -6040,
+          "y": -1255
         }
       }
     note: false
@@ -2250,26 +1955,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "119":
     id: "119"
-    taskid: 1e4cb901-f853-4194-81fb-762fcf7e29d2
+    taskid: 4afbf533-d6bd-47cd-8c34-10d36932caf9
     type: title
     task:
-      id: 1e4cb901-f853-4194-81fb-762fcf7e29d2
+      id: 4afbf533-d6bd-47cd-8c34-10d36932caf9
       version: -1
-      name: Port Hunting Done
+      name: Port Number Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -6620,
-          "y": -1075
+          "x": -7040,
+          "y": -1255
         }
       }
     note: false
@@ -2293,14 +1998,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -7060,
-          "y": -1075
+          "x": -7640,
+          "y": -1255
         }
       }
     note: false
@@ -2312,10 +2017,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "169":
     id: "169"
-    taskid: f60709f0-3402-46b9-8dd2-a270e78d0751
+    taskid: 4dd6cdba-fbbb-48c2-8cf5-4adcd84db001
     type: regular
     task:
-      id: f60709f0-3402-46b9-8dd2-a270e78d0751
+      id: 4dd6cdba-fbbb-48c2-8cf5-4adcd84db001
       version: -1
       name: Set URLDomain search argument
       description: |-
@@ -2355,8 +2060,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -7060,
-          "y": -1595
+          "x": -7420,
+          "y": -1600
         }
       }
     note: false
@@ -2368,12 +2073,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "170":
     id: "170"
-    taskid: dd03e653-6842-4045-8ea7-206580972ffd
+    taskid: 378630ad-1473-43cb-80a0-97aa4c32a9d5
     type: regular
     task:
-      id: dd03e653-6842-4045-8ea7-206580972ffd
+      id: 378630ad-1473-43cb-80a0-97aa4c32a9d5
       version: -1
-      name: Set port search argument
+      name: Set port number search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -2390,7 +2095,7 @@ tasks:
       - "47"
     scriptarguments:
       key:
-        simple: portsParsed
+        simple: PortsParsed
       value:
         complex:
           root: inputs.PortNumber
@@ -2412,8 +2117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -6210,
-          "y": -1595
+          "x": -6620,
+          "y": -1600
         }
       }
     note: false
@@ -2425,12 +2130,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "171":
     id: "171"
-    taskid: 7d0977fe-36f6-487d-8758-1018ee641b95
+    taskid: 70ca2151-5f6f-4b32-8fc7-71a383bd495a
     type: regular
     task:
-      id: 7d0977fe-36f6-487d-8758-1018ee641b95
+      id: 70ca2151-5f6f-4b32-8fc7-71a383bd495a
       version: -1
-      name: Set IPAddress search argument
+      name: Set IP address search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -2469,8 +2174,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5250,
-          "y": -1595
+          "x": -5620,
+          "y": -1600
         }
       }
     note: false
@@ -2482,12 +2187,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "172":
     id: "172"
-    taskid: 8dac8e79-49f1-49c7-8483-150832e5b7a5
+    taskid: d247398e-7495-4dfe-8dfb-9d5919b17264
     type: regular
     task:
-      id: 8dac8e79-49f1-49c7-8483-150832e5b7a5
+      id: d247398e-7495-4dfe-8dfb-9d5919b17264
       version: -1
-      name: Set EmailAddress search argument
+      name: Set email address search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -2526,8 +2231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4020,
-          "y": -1595
+          "x": -4640,
+          "y": -1600
         }
       }
     note: false
@@ -2539,12 +2244,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "173":
     id: "173"
-    taskid: f7563132-1de0-4253-8114-f1f0023345fb
+    taskid: 0b60898e-ead7-4ea3-882b-04d89a183f1f
     type: regular
     task:
-      id: f7563132-1de0-4253-8114-f1f0023345fb
+      id: 0b60898e-ead7-4ea3-882b-04d89a183f1f
       version: -1
-      name: Set Geolocations search argument
+      name: Set geolocations search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -2583,8 +2288,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3080,
-          "y": -1595
+          "x": -3650,
+          "y": -1600
         }
       }
     note: false
@@ -2596,10 +2301,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "174":
     id: "174"
-    taskid: 8a9ecc40-54e3-4698-8355-aa552dee0489
+    taskid: b43016d2-2a0b-4f6b-8b9a-18caa425773e
     type: regular
     task:
-      id: 8a9ecc40-54e3-4698-8355-aa552dee0489
+      id: b43016d2-2a0b-4f6b-8b9a-18caa425773e
       version: -1
       name: Set CIDR search argument
       description: |-
@@ -2640,8 +2345,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2120,
-          "y": -1595
+          "x": -2660,
+          "y": -1600
         }
       }
     note: false
@@ -2668,8 +2373,63 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4790,
-          "y": -920
+          "x": -7870,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 5938d4ea-25e8-474a-87eb-6771a8154239
+    type: regular
+    task:
+      id: 5938d4ea-25e8-474a-87eb-6771a8154239
+      version: -1
+      name: Save Queries Results
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "175"
+    scriptarguments:
+      extend-context:
+        simple: Rapid7InsightIDR.HuntingResults=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: Rapid7InsightIDR.Event
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Event
+                iscontext: true
+          accessor: message
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: \
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5520,
+          "y": -1110
         }
       }
     note: false
@@ -2682,14 +2442,20 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "56_175_#default#": 0.13
+      "106_120_#default#": 0.72,
+      "56_14_yes": 0.48,
+      "56_175_#default#": 0.79,
+      "56_40_yes": 0.83,
+      "56_46_yes": 0.88,
+      "56_52_yes": 0.64,
+      "56_62_yes": 0.9
     },
     "paper": {
       "dimensions": {
-        "height": 1345,
-        "width": 5530,
-        "x": -7060,
-        "y": -2200
+        "height": 1335,
+        "width": 5790,
+        "x": -7870,
+        "y": -2210
       }
     }
   }
@@ -2839,18 +2605,9 @@ inputs:
     For example, to end searching a day ago, the UNIX timestamp value would be 86400.
   playbookInputQuery:
 outputs:
-- contextPath: Rapid7InsightIDR.Event
+- contextPath: Rapid7InsightIDR.HuntingResults
   description: Events log objects containing relevant fields.
   type: string
-- contextPath: Rapid7InsightIDR.Event.log_id
-  description: The ID of the log the event appears in.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.message
-  description: Event log raw message.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.timestamp
-  description: Event log trigger time.
-  type: number
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

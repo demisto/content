@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4740,
-          "y": -2360
+          "x": -6230,
+          "y": -2330
         }
       }
     note: false
@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3600,
+          "x": -3000,
           "y": -2030
         }
       }
@@ -67,12 +67,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 4175123a-5408-4f2a-8db3-b0622a0fb173
+    taskid: 55463bf4-d0d5-4869-8c00-018e47aaed68
     type: regular
     task:
-      id: 4175123a-5408-4f2a-8db3-b0622a0fb173
+      id: 55463bf4-d0d5-4869-8c00-018e47aaed68
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - application
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -171,7 +171,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3600,
+          "x": -2780,
           "y": -1570
         }
       }
@@ -215,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4740,
-          "y": -2210
+          "x": -6230,
+          "y": -2200
         }
       }
     note: false
@@ -228,12 +228,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 1e94657e-22c8-4fc6-8ea4-5a8dd44200ec
+    taskid: 6e28f484-5d30-4498-8cc9-dbc2cf414564
     type: regular
     task:
-      id: 1e94657e-22c8-4fc6-8ea4-5a8dd44200ec
+      id: 6e28f484-5d30-4498-8cc9-dbc2cf414564
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - registry value
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -332,7 +332,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4040,
+          "x": -3380,
           "y": -1570
         }
       }
@@ -345,12 +345,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 5d03d46a-f85a-4f32-8599-9baf0b9cfd00
+    taskid: c5be0c45-d500-4aac-8388-b6722b6c2980
     type: regular
     task:
-      id: 5d03d46a-f85a-4f32-8599-9baf0b9cfd00
+      id: c5be0c45-d500-4aac-8388-b6722b6c2980
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - registry hives
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -449,7 +449,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5040,
+          "x": -4570,
           "y": -1570
         }
       }
@@ -462,12 +462,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 521405c1-19c5-48ba-88cd-8d8e9c2970f7
+    taskid: e7b3bd2f-08de-4985-81c1-e7dd7ee4fbcf
     type: regular
     task:
-      id: 521405c1-19c5-48ba-88cd-8d8e9c2970f7
+      id: e7b3bd2f-08de-4985-81c1-e7dd7ee4fbcf
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - registry key
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -566,7 +566,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4490,
+          "x": -3970,
           "y": -1570
         }
       }
@@ -579,12 +579,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 6caf62df-2a1a-45dc-8f30-2fadcd768b73
+    taskid: d5a28d92-d341-47d6-8529-edf529650cb1
     type: title
     task:
-      id: 6caf62df-2a1a-45dc-8f30-2fadcd768b73
+      id: d5a28d92-d341-47d6-8529-edf529650cb1
       version: -1
-      name: RegistryValue Indicators
+      name: Registry Value Indicators
       type: title
       iscommand: false
       brand: ""
@@ -597,7 +597,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4040,
+          "x": -3600,
           "y": -2030
         }
       }
@@ -610,12 +610,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 4cbc426f-6b8b-4ed6-8611-26f0a8c505fb
+    taskid: f1c8be57-0360-46b9-8fe1-ced2761f05e1
     type: title
     task:
-      id: 4cbc426f-6b8b-4ed6-8611-26f0a8c505fb
+      id: f1c8be57-0360-46b9-8fe1-ced2761f05e1
       version: -1
-      name: RegistryKey Indicators
+      name: Registry Key Indicators
       type: title
       iscommand: false
       brand: ""
@@ -628,7 +628,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4490,
+          "x": -4190,
           "y": -2030
         }
       }
@@ -641,12 +641,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: f13d8366-8477-44a2-84df-21abd750ae1b
+    taskid: 59e1bf56-b676-4949-8821-46bfe2b48cf4
     type: title
     task:
-      id: f13d8366-8477-44a2-84df-21abd750ae1b
+      id: 59e1bf56-b676-4949-8821-46bfe2b48cf4
       version: -1
-      name: RegistryHives Indicators
+      name: Registry Hives Indicators
       type: title
       iscommand: false
       brand: ""
@@ -659,7 +659,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5040,
+          "x": -4790,
           "y": -2030
         }
       }
@@ -672,12 +672,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 9bd6f4ec-f188-4fdc-89e3-528747dbf7de
+    taskid: b9ec980d-e399-41f7-8f3b-205f933d814a
     type: regular
     task:
-      id: 9bd6f4ec-f188-4fdc-89e3-528747dbf7de
+      id: b9ec980d-e399-41f7-8f3b-205f933d814a
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - command line
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -776,7 +776,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5920,
+          "x": -5770,
           "y": -1570
         }
       }
@@ -789,12 +789,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 17dccc30-45a9-42b7-861a-f616ff4d49a8
+    taskid: b8f3b282-a963-4ace-89e0-89b00fcda9d2
     type: regular
     task:
-      id: 17dccc30-45a9-42b7-861a-f616ff4d49a8
+      id: b8f3b282-a963-4ace-89e0-89b00fcda9d2
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - process name
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -893,7 +893,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5480,
+          "x": -5170,
           "y": -1570
         }
       }
@@ -906,12 +906,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: c825673b-25c0-459e-8106-78e1f48c6f92
+    taskid: 3b5e321a-479d-4ac7-85c1-15655fdd4513
     type: title
     task:
-      id: c825673b-25c0-459e-8106-78e1f48c6f92
+      id: 3b5e321a-479d-4ac7-85c1-15655fdd4513
       version: -1
-      name: ProcessName Indicators
+      name: Process Name Indicators
       type: title
       iscommand: false
       brand: ""
@@ -924,7 +924,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5480,
+          "x": -5390,
           "y": -2030
         }
       }
@@ -937,12 +937,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: 16e27023-53ca-4135-8bf3-7d16ae08046b
+    taskid: 7a575160-eddb-4980-8bd7-e36e64be7326
     type: title
     task:
-      id: 16e27023-53ca-4135-8bf3-7d16ae08046b
+      id: 7a575160-eddb-4980-8bd7-e36e64be7326
       version: -1
-      name: CommandLine Indicators
+      name: Command Line Indicators
       type: title
       iscommand: false
       brand: ""
@@ -955,7 +955,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5920,
+          "x": -5990,
           "y": -2030
         }
       }
@@ -980,14 +980,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -3600,
-          "y": -1405
+          "x": -3000,
+          "y": -1395
         }
       }
     note: false
@@ -999,26 +999,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "132":
     id: "132"
-    taskid: 859989e5-fca6-4f5b-80e6-6396f467cab0
+    taskid: 98f92b56-2d4f-43ef-8631-ad14b6113f3e
     type: title
     task:
-      id: 859989e5-fca6-4f5b-80e6-6396f467cab0
+      id: 98f92b56-2d4f-43ef-8631-ad14b6113f3e
       version: -1
-      name: RegistryValue Hunting Done
+      name: Registry Value Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4040,
-          "y": -1405
+          "x": -3600,
+          "y": -1395
         }
       }
     note: false
@@ -1030,26 +1030,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "133":
     id: "133"
-    taskid: 7ebf1f1d-561b-421c-8ced-3c1c7518a2e7
+    taskid: 7a296b4d-29b2-48d8-80ad-5514de8fa44a
     type: title
     task:
-      id: 7ebf1f1d-561b-421c-8ced-3c1c7518a2e7
+      id: 7a296b4d-29b2-48d8-80ad-5514de8fa44a
       version: -1
-      name: RegistryKey Hunting Done
+      name: Registry Key Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4490,
-          "y": -1405
+          "x": -4190,
+          "y": -1395
         }
       }
     note: false
@@ -1061,26 +1061,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: d8abf019-94c5-4669-8889-b72b711b772e
+    taskid: 9dc07cdf-e8eb-473f-8a2e-1441b044f4bd
     type: title
     task:
-      id: d8abf019-94c5-4669-8889-b72b711b772e
+      id: 9dc07cdf-e8eb-473f-8a2e-1441b044f4bd
       version: -1
-      name: RegistryHives Hunting Done
+      name: Registry Hives Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -5040,
-          "y": -1405
+          "x": -4790,
+          "y": -1395
         }
       }
     note: false
@@ -1092,26 +1092,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "135":
     id: "135"
-    taskid: d5b1817c-2f3a-4d4d-8174-737528961798
+    taskid: 0ea07ce0-ad4d-460c-8ac2-526d1a440c18
     type: title
     task:
-      id: d5b1817c-2f3a-4d4d-8174-737528961798
+      id: 0ea07ce0-ad4d-460c-8ac2-526d1a440c18
       version: -1
-      name: ProcessName Hunting Done
+      name: Process Name Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -5480,
-          "y": -1405
+          "x": -5390,
+          "y": -1395
         }
       }
     note: false
@@ -1123,26 +1123,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "136":
     id: "136"
-    taskid: e3df0b61-9c54-42b5-86e5-61a37f9a107d
+    taskid: 8f4267df-50cb-43bd-8bbe-73c6205ad9f0
     type: title
     task:
-      id: e3df0b61-9c54-42b5-86e5-61a37f9a107d
+      id: 8f4267df-50cb-43bd-8bbe-73c6205ad9f0
       version: -1
-      name: CommandLine Hunting Done
+      name: Command Line Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -5920,
-          "y": -1405
+          "x": -5990,
+          "y": -1395
         }
       }
     note: false
@@ -1154,12 +1154,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "147":
     id: "147"
-    taskid: 806d2bda-a159-4b03-8b03-278e1ec5cbfe
+    taskid: aecf57c4-b0be-4108-8d63-b1082934b9f9
     type: condition
     task:
-      id: 806d2bda-a159-4b03-8b03-278e1ec5cbfe
+      id: aecf57c4-b0be-4108-8d63-b1082934b9f9
       version: -1
-      name: Any Applications to hunt for?
+      name: Any application to hunt for?
       description: |
         Checks whether any applications are available for threat hunting.
       type: condition
@@ -1186,7 +1186,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3600,
+          "x": -3000,
           "y": -1900
         }
       }
@@ -1199,12 +1199,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "148":
     id: "148"
-    taskid: 1893e9c3-a9ac-49be-8d00-2e4d5770b097
+    taskid: 036b07b5-1444-49fb-84ea-f822cc3a4bdd
     type: condition
     task:
-      id: 1893e9c3-a9ac-49be-8d00-2e4d5770b097
+      id: 036b07b5-1444-49fb-84ea-f822cc3a4bdd
       version: -1
-      name: Any RegistryValue to hunt for?
+      name: Any registry value to hunt for?
       description: |
         Checks whether any registry values are available for threat hunting.
       type: condition
@@ -1231,7 +1231,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4040,
+          "x": -3600,
           "y": -1900
         }
       }
@@ -1244,12 +1244,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "149":
     id: "149"
-    taskid: eca98054-fdb8-4883-898d-389796fc0f0a
+    taskid: 505ce6e7-7573-4644-8eca-501733502538
     type: condition
     task:
-      id: eca98054-fdb8-4883-898d-389796fc0f0a
+      id: 505ce6e7-7573-4644-8eca-501733502538
       version: -1
-      name: Any RegistryKey to hunt for?
+      name: Any registry key to hunt for?
       description: |
         Checks whether any registry keys are available for threat hunting.
       type: condition
@@ -1276,7 +1276,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4490,
+          "x": -4190,
           "y": -1900
         }
       }
@@ -1289,12 +1289,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "150":
     id: "150"
-    taskid: 957341e7-5c7b-4c7f-8574-766ee95ed946
+    taskid: ca129bb1-acb0-49f2-8807-596758fe4cd8
     type: condition
     task:
-      id: 957341e7-5c7b-4c7f-8574-766ee95ed946
+      id: ca129bb1-acb0-49f2-8807-596758fe4cd8
       version: -1
-      name: Any RegistryHives to hunt for?
+      name: Any registry hives to hunt for?
       description: |
         Checks whether any registry hives are available for threat hunting.
       type: condition
@@ -1321,7 +1321,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5040,
+          "x": -4790,
           "y": -1900
         }
       }
@@ -1334,12 +1334,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "151":
     id: "151"
-    taskid: 4c69cae0-917e-49e0-8687-ad75b908b840
+    taskid: 421fd0bc-2f86-4f20-8660-9f8f6e8a7403
     type: condition
     task:
-      id: 4c69cae0-917e-49e0-8687-ad75b908b840
+      id: 421fd0bc-2f86-4f20-8660-9f8f6e8a7403
       version: -1
-      name: Any ProcessName to hunt for?
+      name: Any process name to hunt for?
       description: |
         Checks whether any process names are available for threat hunting.
       type: condition
@@ -1366,7 +1366,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5480,
+          "x": -5390,
           "y": -1900
         }
       }
@@ -1379,12 +1379,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "152":
     id: "152"
-    taskid: 9a6947e0-e8ac-4553-8227-379d74eac09f
+    taskid: 8d9713de-7bdd-4634-87fa-b2a2f354afa0
     type: condition
     task:
-      id: 9a6947e0-e8ac-4553-8227-379d74eac09f
+      id: 8d9713de-7bdd-4634-87fa-b2a2f354afa0
       version: -1
-      name: Any CommandLine to hunt for?
+      name: Any command line to hunt for?
       description: |
         Checks whether any commands are available for threat hunting.
       type: condition
@@ -1411,7 +1411,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5920,
+          "x": -5990,
           "y": -1900
         }
       }
@@ -1424,12 +1424,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "153":
     id: "153"
-    taskid: 2bb7c593-990b-4799-81e9-015de3905867
+    taskid: e32caedd-4a67-4d3d-89f6-1a789e3f2688
     type: regular
     task:
-      id: 2bb7c593-990b-4799-81e9-015de3905867
+      id: e32caedd-4a67-4d3d-89f6-1a789e3f2688
       version: -1
-      name: Set Application search argument
+      name: Set application search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1467,7 +1467,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3600,
+          "x": -2780,
           "y": -1730
         }
       }
@@ -1480,12 +1480,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "154":
     id: "154"
-    taskid: 3493f713-0d14-475a-8326-0ed54d211067
+    taskid: 29538faa-ca09-4cf8-83fe-3b7784360521
     type: regular
     task:
-      id: 3493f713-0d14-475a-8326-0ed54d211067
+      id: 29538faa-ca09-4cf8-83fe-3b7784360521
       version: -1
-      name: Set RegistryValue search argument
+      name: Set registry value search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1523,7 +1523,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4040,
+          "x": -3380,
           "y": -1730
         }
       }
@@ -1536,12 +1536,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "155":
     id: "155"
-    taskid: bc61eb72-27a6-443a-8101-98cdd64e00d6
+    taskid: caabb1f8-43bb-49db-8086-95c06aa277b9
     type: regular
     task:
-      id: bc61eb72-27a6-443a-8101-98cdd64e00d6
+      id: caabb1f8-43bb-49db-8086-95c06aa277b9
       version: -1
-      name: Set RegistryKey search argument
+      name: Set registry key search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1579,7 +1579,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4490,
+          "x": -3970,
           "y": -1730
         }
       }
@@ -1592,12 +1592,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "156":
     id: "156"
-    taskid: edf523cb-a614-4004-8fd1-c1c95543ae73
+    taskid: e98dfd6b-acbf-4e9b-8628-2be4fb6f386e
     type: regular
     task:
-      id: edf523cb-a614-4004-8fd1-c1c95543ae73
+      id: e98dfd6b-acbf-4e9b-8628-2be4fb6f386e
       version: -1
-      name: Set RegistryHives search argument
+      name: Set registry hives search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1635,7 +1635,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5040,
+          "x": -4570,
           "y": -1730
         }
       }
@@ -1648,12 +1648,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "157":
     id: "157"
-    taskid: 673f203e-815d-4dff-8ac0-21226d360a0f
+    taskid: c590c90b-9c94-4bf7-8cd7-8d25ec86bd6b
     type: regular
     task:
-      id: 673f203e-815d-4dff-8ac0-21226d360a0f
+      id: c590c90b-9c94-4bf7-8cd7-8d25ec86bd6b
       version: -1
-      name: Set ProcessName search argument
+      name: Set process name search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1691,7 +1691,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5480,
+          "x": -5170,
           "y": -1730
         }
       }
@@ -1704,12 +1704,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "158":
     id: "158"
-    taskid: 28cdf30b-2598-422a-8592-103e2c0f6711
+    taskid: 7ef701df-2ce2-4445-8f0f-174be38bc127
     type: regular
     task:
-      id: 28cdf30b-2598-422a-8592-103e2c0f6711
+      id: 7ef701df-2ce2-4445-8f0f-174be38bc127
       version: -1
-      name: Set CommandLine search argument
+      name: Set command line search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1747,7 +1747,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5920,
+          "x": -5770,
           "y": -1730
         }
       }
@@ -1775,7 +1775,62 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4740,
+          "x": -6230,
+          "y": -1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: ca9d2a88-b264-441e-8ea3-7da09a928b17
+    type: regular
+    task:
+      id: ca9d2a88-b264-441e-8ea3-7da09a928b17
+      version: -1
+      name: Save Queries Results
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "175"
+    scriptarguments:
+      extend-context:
+        simple: Rapid7InsightIDR.HuntingResults=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: Rapid7InsightIDR.Event
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Event
+                iscontext: true
+          accessor: message
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: \
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4490,
           "y": -1250
         }
       }
@@ -1789,14 +1844,20 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "56_175_#default#": 0.15
+      "56_175_#default#": 0.79,
+      "56_7_yes": 0.9,
+      "56_87_yes": 0.88,
+      "56_88_yes": 0.84,
+      "56_89_yes": 0.78,
+      "56_94_yes": 0.65,
+      "56_95_yes": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 1175,
-        "width": 2700,
-        "x": -5920,
-        "y": -2360
+        "height": 1315,
+        "width": 3830,
+        "x": -6230,
+        "y": -2330
       }
     }
   }
@@ -1932,18 +1993,9 @@ inputs:
     For example, to end searching a day ago, the UNIX timestamp value would be 86400.
   playbookInputQuery:
 outputs:
-- contextPath: Rapid7InsightIDR.Event
+- contextPath: Rapid7InsightIDR.HuntingResults
   description: Events log objects containing relevant fields.
   type: string
-- contextPath: Rapid7InsightIDR.Event.log_id
-  description: The ID of the log the event appears in.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.message
-  description: Event log raw message.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.timestamp
-  description: Event log trigger time.
-  type: number
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

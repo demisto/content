@@ -1186,18 +1186,9 @@ inputs:
     For example, to end searching a day ago, the UNIX timestamp value would be 86400.
   playbookInputQuery:
 outputs:
-- contextPath: Rapid7InsightIDR.Event
+- contextPath: Rapid7InsightIDR.HuntingResults
   description: Events log objects containing relevant fields.
   type: string
-- contextPath: Rapid7InsightIDR.Event.log_id
-  description: The ID of the log the event appears in.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.message
-  description: Event log raw message.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.timestamp
-  description: Event log trigger time.
-  type: number
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

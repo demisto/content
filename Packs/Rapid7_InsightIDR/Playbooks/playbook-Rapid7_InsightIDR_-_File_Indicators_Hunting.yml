@@ -26,8 +26,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3400,
-          "y": -1210
+          "x": -4860,
+          "y": -1170
         }
       }
     note: false
@@ -39,12 +39,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d24f4259-4d7d-481d-85a5-ae9cb833a08b
+    taskid: 78f8e5c7-6fc4-4f94-839c-d32b7a4c7e12
     type: title
     task:
-      id: d24f4259-4d7d-481d-85a5-ae9cb833a08b
+      id: 78f8e5c7-6fc4-4f94-839c-d32b7a4c7e12
       version: -1
-      name: FileType Indicators
+      name: File Type Indicators
       type: title
       iscommand: false
       brand: ""
@@ -57,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2680,
+          "x": -2290,
           "y": -870
         }
       }
@@ -70,12 +70,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 98dd0dfa-7a73-49cf-83b2-ad21c78c9597
+    taskid: 17350a20-1b2a-4a63-897b-ba6ceec0a3ed
     type: title
     task:
-      id: 98dd0dfa-7a73-49cf-83b2-ad21c78c9597
+      id: 17350a20-1b2a-4a63-897b-ba6ceec0a3ed
       version: -1
-      name: FileName Indicators
+      name: File Name Indicators
       type: title
       iscommand: false
       brand: ""
@@ -88,7 +88,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2240,
+          "x": -1670,
           "y": -870
         }
       }
@@ -119,7 +119,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4570,
+          "x": -4630,
           "y": -870
         }
       }
@@ -132,12 +132,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 09d02876-f744-4c26-86cb-4b23d3955b3c
+    taskid: e2471789-ff8c-4729-8e11-4500f5f0f3b7
     type: regular
     task:
-      id: 09d02876-f744-4c26-86cb-4b23d3955b3c
+      id: e2471789-ff8c-4729-8e11-4500f5f0f3b7
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - file name
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -236,8 +236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2240,
-          "y": -400
+          "x": -1450,
+          "y": -410
         }
       }
     note: false
@@ -249,12 +249,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 66fe3e28-7db9-42cd-88cd-f2be08e858ea
+    taskid: 2c86b368-e7ae-4a07-8dc0-45a948dd8dff
     type: regular
     task:
-      id: 66fe3e28-7db9-42cd-88cd-f2be08e858ea
+      id: 2c86b368-e7ae-4a07-8dc0-45a948dd8dff
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - file type
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -353,8 +353,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2680,
-          "y": -400
+          "x": -2070,
+          "y": -410
         }
       }
     note: false
@@ -366,12 +366,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: ac3a4ff3-0772-4c98-881f-919f04b5b522
+    taskid: 10c1beb1-9d60-4c44-8d1c-e352e14e0078
     type: regular
     task:
-      id: ac3a4ff3-0772-4c98-881f-919f04b5b522
+      id: 10c1beb1-9d60-4c44-8d1c-e352e14e0078
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - MD5
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -470,8 +470,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4570,
-          "y": -400
+          "x": -4410,
+          "y": -410
         }
       }
     note: false
@@ -514,8 +514,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3400,
-          "y": -1060
+          "x": -4860,
+          "y": -1040
         }
       }
     note: false
@@ -545,7 +545,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3680,
+          "x": -3490,
           "y": -870
         }
       }
@@ -558,12 +558,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: ad323348-13cc-4d34-8480-44de6fbb1932
+    taskid: 745d7d10-e6f8-4552-842f-cf61848aaac1
     type: regular
     task:
-      id: ad323348-13cc-4d34-8480-44de6fbb1932
+      id: 745d7d10-e6f8-4552-842f-cf61848aaac1
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - SHA256
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -662,8 +662,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3680,
-          "y": -400
+          "x": -3270,
+          "y": -410
         }
       }
     note: false
@@ -675,12 +675,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: eb1c59a9-08d5-4589-8b81-cd593a92bbc4
+    taskid: 863111f4-d353-49a1-8410-49849f638ff2
     type: regular
     task:
-      id: eb1c59a9-08d5-4589-8b81-cd593a92bbc4
+      id: 863111f4-d353-49a1-8410-49849f638ff2
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - SHA1
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -779,8 +779,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4120,
-          "y": -400
+          "x": -3900,
+          "y": -410
         }
       }
     note: false
@@ -823,12 +823,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: e6bcc417-b29c-40bc-807d-20a2e9e3a590
+    taskid: cb51b3d4-9383-49fc-899e-7bb313e1c1b1
     type: regular
     task:
-      id: e6bcc417-b29c-40bc-807d-20a2e9e3a590
+      id: cb51b3d4-9383-49fc-899e-7bb313e1c1b1
       version: -1
-      name: Rapid7 InsightIDR query
+      name: Rapid7 InsightIDR query - file path
       description: Queries within a log set for certain values.
       script: Rapid7 InsightIDR|||rapid7-insight-idr-query-log-set
       type: regular
@@ -927,8 +927,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3120,
-          "y": -400
+          "x": -2670,
+          "y": -410
         }
       }
     note: false
@@ -940,12 +940,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 6ba412fc-7bf2-4544-83a4-ace1f12af59a
+    taskid: e402b951-3b9a-430a-80d0-335b73a1ec39
     type: title
     task:
-      id: 6ba412fc-7bf2-4544-83a4-ace1f12af59a
+      id: e402b951-3b9a-430a-80d0-335b73a1ec39
       version: -1
-      name: FilePath Indicators
+      name: File Path Indicators
       type: title
       iscommand: false
       brand: ""
@@ -958,7 +958,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3120,
+          "x": -2890,
           "y": -870
         }
       }
@@ -971,25 +971,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "121":
     id: "121"
-    taskid: 06d3fec8-9d40-4a80-8a6c-aebee3c1d28f
+    taskid: c3ff1d3f-6f45-4ec5-8e9e-75cce24a341b
     type: title
     task:
-      id: 06d3fec8-9d40-4a80-8a6c-aebee3c1d28f
+      id: c3ff1d3f-6f45-4ec5-8e9e-75cce24a341b
       version: -1
-      name: FileName Hunting Done
+      name: File Name Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2240,
+          "x": -1670,
           "y": -235
         }
       }
@@ -1002,25 +1002,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "122":
     id: "122"
-    taskid: 5ac8c9b0-805b-4807-85dc-d041ecd14e59
+    taskid: 778b9cd3-7d6b-4ee4-83b6-c2d6dadfa264
     type: title
     task:
-      id: 5ac8c9b0-805b-4807-85dc-d041ecd14e59
+      id: 778b9cd3-7d6b-4ee4-83b6-c2d6dadfa264
       version: -1
-      name: FileType Hunting Done
+      name: File Type Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2680,
+          "x": -2290,
           "y": -235
         }
       }
@@ -1033,25 +1033,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "123":
     id: "123"
-    taskid: 8d5348de-74ae-43b1-8c9b-e920c380c76f
+    taskid: 7a23b7a5-9427-47af-8880-4e0ffc935503
     type: title
     task:
-      id: 8d5348de-74ae-43b1-8c9b-e920c380c76f
+      id: 7a23b7a5-9427-47af-8880-4e0ffc935503
       version: -1
-      name: FilePath Hunting Done
+      name: File Path Hunting Done
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -3120,
+          "x": -2890,
           "y": -235
         }
       }
@@ -1076,13 +1076,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -3680,
+          "x": -3490,
           "y": -235
         }
       }
@@ -1107,7 +1107,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1138,13 +1138,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "175"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4570,
+          "x": -4630,
           "y": -235
         }
       }
@@ -1157,12 +1157,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "137":
     id: "137"
-    taskid: 0832f739-a2cf-4b66-8547-0e4483c5508a
+    taskid: 176f4dd2-e927-42be-8eb6-859774ed6d65
     type: condition
     task:
-      id: 0832f739-a2cf-4b66-8547-0e4483c5508a
+      id: 176f4dd2-e927-42be-8eb6-859774ed6d65
       version: -1
-      name: Any FileName to hunt for?
+      name: Any file name to hunt for?
       description: |
         Checks whether any file names are available for threat hunting.
       type: condition
@@ -1189,7 +1189,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2240,
+          "x": -1670,
           "y": -740
         }
       }
@@ -1202,12 +1202,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "138":
     id: "138"
-    taskid: 3735eefa-647a-4d29-8dc8-eddfd6b509aa
+    taskid: 6a35fd76-57db-4913-866e-fde04d94981e
     type: condition
     task:
-      id: 3735eefa-647a-4d29-8dc8-eddfd6b509aa
+      id: 6a35fd76-57db-4913-866e-fde04d94981e
       version: -1
-      name: Any FileType to hunt for?
+      name: Any file type to hunt for?
       description: |
         Checks whether any file types are available for threat hunting.
       type: condition
@@ -1234,7 +1234,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2680,
+          "x": -2290,
           "y": -740
         }
       }
@@ -1247,12 +1247,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "139":
     id: "139"
-    taskid: e69474e1-abdf-41e2-8a6b-193debaf1839
+    taskid: 7eda9b97-06c3-41f5-89c1-d15e29a824d4
     type: condition
     task:
-      id: e69474e1-abdf-41e2-8a6b-193debaf1839
+      id: 7eda9b97-06c3-41f5-89c1-d15e29a824d4
       version: -1
-      name: Any FilePath to hunt for?
+      name: Any file path to hunt for?
       description: |
         Checks whether any file paths are available for threat hunting.
       type: condition
@@ -1279,7 +1279,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3120,
+          "x": -2890,
           "y": -740
         }
       }
@@ -1324,8 +1324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3680,
-          "y": -735
+          "x": -3490,
+          "y": -740
         }
       }
     note: false
@@ -1370,7 +1370,7 @@ tasks:
       {
         "position": {
           "x": -4120,
-          "y": -735
+          "y": -740
         }
       }
     note: false
@@ -1382,10 +1382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "142":
     id: "142"
-    taskid: 07057c31-120a-4261-886e-a814a5a13c1c
+    taskid: e84d41e2-5aca-404f-87bc-80d2b1bb0616
     type: condition
     task:
-      id: 07057c31-120a-4261-886e-a814a5a13c1c
+      id: e84d41e2-5aca-404f-87bc-80d2b1bb0616
       version: -1
       name: Any MD5 to hunt for?
       description: |
@@ -1414,8 +1414,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4570,
-          "y": -735
+          "x": -4630,
+          "y": -740
         }
       }
     note: false
@@ -1427,12 +1427,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: 4b9b7827-d86c-4ea8-815a-3a2bf67264e0
+    taskid: 2e55fc2f-cc17-4563-8fe8-b9167f91c898
     type: regular
     task:
-      id: 4b9b7827-d86c-4ea8-815a-3a2bf67264e0
+      id: 2e55fc2f-cc17-4563-8fe8-b9167f91c898
       version: -1
-      name: Set FileName search argument
+      name: Set file name search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1470,8 +1470,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2240,
-          "y": -560
+          "x": -1450,
+          "y": -570
         }
       }
     note: false
@@ -1483,12 +1483,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "164":
     id: "164"
-    taskid: 22c70459-360f-4113-8389-35846eef7c07
+    taskid: 8844d0a8-d4a3-4f0d-81a6-e7185935143a
     type: regular
     task:
-      id: 22c70459-360f-4113-8389-35846eef7c07
+      id: 8844d0a8-d4a3-4f0d-81a6-e7185935143a
       version: -1
-      name: Set FileType search argument
+      name: Set file type search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1526,8 +1526,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2680,
-          "y": -560
+          "x": -2070,
+          "y": -570
         }
       }
     note: false
@@ -1539,12 +1539,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "165":
     id: "165"
-    taskid: 9867f391-a355-41d4-8c15-95d251bedf93
+    taskid: f44bf473-5f4c-4420-8bc2-1d181e77bd90
     type: regular
     task:
-      id: 9867f391-a355-41d4-8c15-95d251bedf93
+      id: f44bf473-5f4c-4420-8bc2-1d181e77bd90
       version: -1
-      name: Set FilePath search argument
+      name: Set file path search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1582,8 +1582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3120,
-          "y": -560
+          "x": -2670,
+          "y": -570
         }
       }
     note: false
@@ -1638,8 +1638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3680,
-          "y": -560
+          "x": -3270,
+          "y": -570
         }
       }
     note: false
@@ -1651,12 +1651,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "167":
     id: "167"
-    taskid: e55c5bc3-74de-4b91-8dda-8997195d9515
+    taskid: 54511478-cf76-4c13-883d-11a3f5f9cd31
     type: regular
     task:
-      id: e55c5bc3-74de-4b91-8dda-8997195d9515
+      id: 54511478-cf76-4c13-883d-11a3f5f9cd31
       version: -1
-      name: Set SHA256 search argument
+      name: Set SHA1 search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1694,8 +1694,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4120,
-          "y": -560
+          "x": -3900,
+          "y": -570
         }
       }
     note: false
@@ -1707,12 +1707,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "168":
     id: "168"
-    taskid: 73998a42-02ef-4d1d-852e-47c3f39002db
+    taskid: 3bce8727-58b1-406c-8742-d264d3e82af5
     type: regular
     task:
-      id: 73998a42-02ef-4d1d-852e-47c3f39002db
+      id: 3bce8727-58b1-406c-8742-d264d3e82af5
       version: -1
-      name: Set SHA256 search argument
+      name: Set MD5 search argument
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -1750,8 +1750,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4570,
-          "y": -560
+          "x": -4410,
+          "y": -570
         }
       }
     note: false
@@ -1778,7 +1778,62 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3400,
+          "x": -4860,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: b3efcda8-a91c-4467-8c2c-61cf7fcfb33d
+    type: regular
+    task:
+      id: b3efcda8-a91c-4467-8c2c-61cf7fcfb33d
+      version: -1
+      name: Save Queries Results
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "175"
+    scriptarguments:
+      extend-context:
+        simple: Rapid7InsightIDR.HuntingResults=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: Rapid7InsightIDR.Event
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Event
+                iscontext: true
+          accessor: message
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: \
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3190,
           "y": -90
         }
       }
@@ -1792,14 +1847,19 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "56_175_#default#": 0.16
+      "56_11_yes": 0.9,
+      "56_13_yes": 0.39,
+      "56_175_#default#": 0.8,
+      "56_74_yes": 0.65,
+      "56_77_yes": 0.83,
+      "56_8_yes": 0.87
     },
     "paper": {
       "dimensions": {
-        "height": 1185,
-        "width": 2710,
-        "x": -4570,
-        "y": -1210
+        "height": 1315,
+        "width": 3790,
+        "x": -4860,
+        "y": -1170
       }
     }
   }
@@ -1934,18 +1994,9 @@ inputs:
     For example, to end searching a day ago, the UNIX timestamp value would be 86400.
   playbookInputQuery:
 outputs:
-- contextPath: Rapid7InsightIDR.Event
+- contextPath: Rapid7InsightIDR.HuntingResults
   description: Events log objects containing relevant fields.
   type: string
-- contextPath: Rapid7InsightIDR.Event.log_id
-  description: The ID of the log the event appears in.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.message
-  description: Event log raw message.
-  type: string
-- contextPath: Rapid7InsightIDR.Event.timestamp
-  description: Event log trigger time.
-  type: number
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
