@@ -40,6 +40,10 @@ MEETING_TYPE_NUM_MAPPING = {
     "Scheduled": 2,
     "Recurring meeting with fixed time": 8
 }
+FILE_TYPE_MAPPING = {
+    'MP4': 'Video',
+    'M4A': 'Audio'
+}
 # ERRORS
 INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
 INVALID_API_SECRET = 'Invalid API Secret. Verify that your API Secret is valid.'
@@ -620,8 +624,10 @@ def zoom_fetch_recording_command(client: Client, **args):
                 resp_type='response',
                 stream=True
             )
+            file_type = file.get('file_type')
+            file_type_as_literal = FILE_TYPE_MAPPING.get(file_type)
             # save the file
-            filename = f'recording_{meeting_id}_{file.get("id")}.mp4'
+            filename = f'recording_{meeting_id}_{file.get("id")}.{file_type}'
             with open(filename, 'wb') as f:
                 # Saving the content of the file locally.
                 record.raw.decode_content = True
@@ -629,7 +635,7 @@ def zoom_fetch_recording_command(client: Client, **args):
 
             results.append(file_result_existing_file(filename))
             results.append(CommandResults(
-                readable_output=f"The file {filename} was downloaded successfully"))
+                readable_output=f"The {file_type_as_literal} file {filename} was downloaded successfully"))
 
             if delete_after:
                 try:
@@ -641,7 +647,7 @@ def zoom_fetch_recording_command(client: Client, **args):
                         resp_type='response'
                     )
                     results.append(CommandResults(
-                        readable_output=f"The file {filename} was successfully removed from the cloud."))
+                        readable_output=f"The file {file_type_as_literal} {filename} was successfully removed from the cloud."))
                 except DemistoException as e:
                     results.append(CommandResults(
                         readable_output=f"Failed to delete file {filename}. {e}"))

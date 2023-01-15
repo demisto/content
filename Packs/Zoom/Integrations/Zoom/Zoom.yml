@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Zoom
+  id: Zoom Dev
   version: -1
 configuration:
   - display: Server URL (e.g. 'https://api.zoom.us/v2/')
@@ -50,8 +50,8 @@ configuration:
     type: 8
     required: false
 description: Use the Zoom integration manage your Zoom users and meetings
-display: Zoom
-name: Zoom
+display: Zoom Dev
+name: Zoom Dev
 script:
   commands:
     - arguments:
@@ -260,8 +260,8 @@ script:
           description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
           type: number
     - arguments:
-        - description: Meeting id to get the recording
-          name: meeting_id
+        - description: Meeting ID of the recorded meeting.
+          name: meeting_id 
           required: true
         - description: Whether to delete the recording from the cloud after downloading.
           name: delete_after
@@ -461,7 +461,7 @@ script:
       arguments:
         - name: user_id
           required: true
-          description: The user ID
+          description: The user ID of the meetings owner.
           type: string
         - name: page_size
           description: Number of users to return. Default = 30. Max = 300.
