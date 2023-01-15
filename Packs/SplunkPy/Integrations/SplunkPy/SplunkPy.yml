@@ -590,7 +590,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.42962
+  dockerimage: demisto/splunksdk-py3:1.0.0.44906
   isfetch: true
   ismappable: true
   isremotesyncin: true
