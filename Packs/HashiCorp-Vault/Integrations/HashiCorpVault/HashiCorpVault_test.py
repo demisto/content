@@ -37,3 +37,12 @@ def test_get_aws_secrets(mocker):
     assert mock.call_args.args[0] == 'test/roles/1'
     get_aws_secrets('test', '999', False)
     assert mock.call_args.args[0] == 'test'
+
+
+def test_get_headers():
+    assert get_headers() == {'Content-Type': 'application/json'}
+
+
+def test_list_secrets_engines(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert list_secrets_engines() == {}

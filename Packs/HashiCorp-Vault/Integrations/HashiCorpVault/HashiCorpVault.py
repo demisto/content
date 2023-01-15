@@ -4,21 +4,20 @@ from CommonServerPython import *  # noqa: F401
 
 ''' GLOBAL VARIABLES '''
 
-CREDENTIALS = demisto.params().get('credentials', {})  # pragma: no cover
-USERNAME = None  # pragma: no cover
-PASSWORD = None  # pragma: no cover
+CREDENTIALS = demisto.params().get('credentials', {})
+USERNAME = None
+PASSWORD = None
 # Used to make sure we generate a new token before the old one expires, in seconds, only relevant to AWS
-AWS_TOKEN_OVERLAP_TIME = 600  # pragma: no cover
-if CREDENTIALS:  # pragma: no cover
+AWS_TOKEN_OVERLAP_TIME = 600
+if CREDENTIALS:
     USERNAME = CREDENTIALS.get('identifier')
     PASSWORD = CREDENTIALS.get('password')
-VERIFY_SSL = not demisto.params().get('unsecure', False)  # pragma: no cover
-TOKEN = demisto.params().get('token')  # pragma: no cover
-NAMESPACE = demisto.params().get('namespace')  # pragma: no cover
-USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get('use_approle', 'false') or 'false')  # pragma: no cover
-
-BASE_URL = demisto.params().get('server', '')  # pragma: no cover
-SERVER_URL = BASE_URL + '/v1'  # pragma: no cover
+VERIFY_SSL = not demisto.params().get('unsecure', False)
+TOKEN = demisto.params().get('token')
+NAMESPACE = demisto.params().get('namespace')
+USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get('use_approle', 'false') or 'false')
+BASE_URL = demisto.params().get('server', '')
+SERVER_URL = BASE_URL + '/v1'
 
 DEFAULT_STATUS_CODES = {
     429,
@@ -29,7 +28,7 @@ DEFAULT_STATUS_CODES = {
 ''' HELPER FUNCTIONS '''
 
 
-def get_headers():  # pragma: no cover
+def get_headers():
     headers = {
         'Content-Type': 'application/json',
     }
@@ -128,7 +127,7 @@ def list_secrets_engines_command():  # pragma: no cover
     })
 
 
-def list_secrets_engines():  # pragma: no cover
+def list_secrets_engines():
     path = 'sys/mounts'
 
     return send_request(path)
