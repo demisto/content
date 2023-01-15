@@ -717,6 +717,7 @@ def get_labels_for_indicator(score):
     elif int(score) == 3:
         return ['malicious-activity']
 
+
 def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
     """
 
