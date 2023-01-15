@@ -12,9 +12,9 @@ Supported Integrations:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* SIEM - Search for Failed logins
 * Okta - User Investigation
 * Cortex XDR - Get entity alerts by MITRE tactics
+* SIEM - Search for Failed logins
 
 ### Integrations
 This playbook does not use any integrations.
@@ -23,8 +23,8 @@ This playbook does not use any integrations.
 * CountArraySize
 
 ### Commands
-* pan-os-get-logs
 * pan-os-query-logs
+* pan-os-get-logs
 
 ## Playbook Inputs
 ---
@@ -62,6 +62,9 @@ This playbook does not use any integrations.
 | SuspiciousUserAgent | Suspicious User Agent from Okta. | unknown |
 | UserApplication |  Applications used by the user from Okta. | unknown |
 | NumOfOktaFailedLogon | Number of failed login from Okta. | unknown |
+| AzureFailedLogonLogs | The result of the Azure Log Analytics search. | unknown |
+| QRadar.Search.Result | The result of the QRadar search  | unknown |
+| Splunk.Result | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | unknown |
 
 ## Playbook Image
 ---

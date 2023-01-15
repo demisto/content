@@ -1317,7 +1317,7 @@ tasks:
     task:
       id: c0251946-a36e-4c1f-842c-95fe5aecc6cd
       version: -1
-      name: The login country is defined?
+      name: Check if the login country is defined
       description: Check if the login country is defined.
       type: condition
       iscommand: false
