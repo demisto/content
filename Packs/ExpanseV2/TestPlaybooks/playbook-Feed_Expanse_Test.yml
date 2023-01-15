@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fe73b563-e450-4e03-886c-e3df93ea1cea
+    taskid: 9d097a29-4f98-4861-8bcb-9402d2364a00
     type: start
     task:
-      id: fe73b563-e450-4e03-886c-e3df93ea1cea
+      id: 9d097a29-4f98-4861-8bcb-9402d2364a00
       version: -1
       name: ""
       iscommand: false
@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 50,
+          "y": 65
         }
       }
     note: false
@@ -31,12 +31,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7747cfc8-2afe-492e-844e-64853c5dbf55
+    taskid: 2f47cad3-e612-45f3-8264-8ec6bc3c52cc
     type: regular
     task:
-      id: 7747cfc8-2afe-492e-844e-64853c5dbf55
+      id: 2f47cad3-e612-45f3-8264-8ec6bc3c52cc
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -50,16 +53,12 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 225
         }
       }
     note: false
@@ -67,12 +66,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: dfdc1bec-7705-4fd1-8a15-5b1506bdc5ac
+    taskid: 1d7afcd0-9b8e-4126-8ac1-8ef670bec565
     type: regular
     task:
-      id: dfdc1bec-7705-4fd1-8a15-5b1506bdc5ac
+      id: 1d7afcd0-9b8e-4126-8ac1-8ef670bec565
       version: -1
       name: FeedExpanse Get Indicators
       description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
@@ -84,20 +86,16 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      certificate: {}
-      domain: {}
       extend-context:
         simple: Indicator=.
-      ip: {}
-      iprange: {}
       max_indicators:
         simple: "1"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 50,
+          "y": 400
         }
       }
     note: false
@@ -105,12 +103,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6a084d19-4509-44bd-8b36-496971c17a24
+    taskid: 26da35bb-db71-4f22-8f60-02bbb63cc038
     type: condition
     task:
-      id: 6a084d19-4509-44bd-8b36-496971c17a24
+      id: 26da35bb-db71-4f22-8f60-02bbb63cc038
       version: -1
       name: Check Indicators
       description: Check if the retrieved indicators are correct.
@@ -119,7 +120,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -181,16 +182,26 @@ tasks:
       - - operator: hasLength
           left:
             value:
-              simple: Indicator
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: "1"
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 590
+          "x": 50,
+          "y": 575
         }
       }
     note: false
@@ -198,12 +209,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 10bbb801-099b-49aa-8f41-51efd523c48f
+    taskid: 1c5b36d3-d749-431e-8fcc-02d06ef501a2
     type: title
     task:
-      id: 10bbb801-099b-49aa-8f41-51efd523c48f
+      id: 1c5b36d3-d749-431e-8fcc-02d06ef501a2
       version: -1
       name: Done
       type: title
@@ -214,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 780
+          "x": 50,
+          "y": 1100
         }
       }
     note: false
@@ -223,15 +237,101 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9c9d3e01-88cc-45ee-8058-a5d6a5504401
+    type: condition
+    task:
+      id: 9c9d3e01-88cc-45ee-8058-a5d6a5504401
+      version: -1
+      name: Is there an indicator?
+      description: Check if the retrieved indicators are correct.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.type
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 56164bd5-db1f-42ed-8869-c2cb55e75346
+    type: condition
+    task:
+      id: 56164bd5-db1f-42ed-8869-c2cb55e75346
+      version: -1
+      name: Are the indicator fields defined?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Indicator
+                accessor: fields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 795,
-        "width": 380,
-        "x": 450,
-        "y": 50
+        "height": 1100,
+        "width": 492.5,
+        "x": 50,
+        "y": 65
       }
     }
   }
