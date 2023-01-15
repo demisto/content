@@ -77,7 +77,7 @@ script:
     description: Gets events from SentinelOne.
     execution: false
     name: sentinelone-get-events
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.44472
   isfetchevents: true
   runonce: false
   script: '-'
