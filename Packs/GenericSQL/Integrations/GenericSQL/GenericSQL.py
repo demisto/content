@@ -289,7 +289,7 @@ def main():
         else:
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
     except Exception as err:
-        if type(err).__name__ == 'OperationalError':
+        if 'certificate verify failed' in str(err):
             return_error("Unexpected error: certificate verify failed, unable to get local issuer certificate. "
                          "Try selecting 'Trust any certificate' checkbox in the integration configuration.")
         else:
