@@ -257,23 +257,19 @@ script:
       isArray: false
       name: name
       required: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
     - default: false
-      description: The maximum number of results to return.
       isArray: false
       name: page
-      required: false
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - default: false
-      description: The maximum number of results to return.
       isArray: false
       name: page_size
-      required: false
+      description: Number of results per page to display.
     - default: false
       description: A specific security rule to return. If not specified, all security rules will be returned.
       isArray: false
@@ -639,7 +635,7 @@ script:
       required: false
     - default: false
       defaultValue: '200'
-      description: The maximum number of results to return.
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
@@ -810,15 +806,13 @@ script:
       name: limit
       required: false
     - default: false
-      description: The maximum number of results to return.
       isArray: false
       name: page
-      required: false
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - default: false
-      description: The maximum number of results to return.
       isArray: false
       name: page_size
-      required: false
+      description: Number of results per page to display.
     deprecated: false
     description: List address objects.
     execution: false
@@ -865,21 +859,19 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-    - auto: PREDEFINED
-      default: false
-      defaultValue: '50'
-      description: The maximum number of results to return.
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
       isArray: false
       name: limit
       required: false
     - default: false
       isArray: false
       name: page
-      required: false
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - default: false
       isArray: false
       name: page_size
-      required: false
+      description: Number of results per page to display.
     deprecated: false
     description: List tags.
     execution: false
@@ -1117,15 +1109,15 @@ script:
     - default: false
       isArray: false
       name: limit
-      required: false
+      description: The maximum number of results to return. Default is 50.
     - default: false
       isArray: false
       name: page
-      required: false
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - default: false
       isArray: false
       name: page_size
-      required: false
+      description: Number of results per page to display.
     deprecated: false
     execution: false
     name: prisma-sase-address-group-list
@@ -1306,15 +1298,15 @@ script:
     - default: false
       isArray: false
       name: limit
-      required: false
+      description: The maximum number of results to return. Default is 50.
     - default: false
       isArray: false
       name: page
-      required: false
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - default: false
       isArray: false
       name: page_size
-      required: false
+      description: Number of results per page to display.
     deprecated: false
     execution: false
     name: prisma-sase-custom-url-category-list
@@ -1480,15 +1472,15 @@ script:
     - default: false
       isArray: false
       name: limit
-      required: false
+      description: The maximum number of results to return. Default is 50.
     - default: false
       isArray: false
       name: page
-      required: false
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - default: false
       isArray: false
       name: page_size
-      required: false
+      description: Number of results per page to display.
     deprecated: false
     execution: false
     name: prisma-sase-external-dynamic-list-list
