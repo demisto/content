@@ -25,7 +25,7 @@ PARAMS_1 = {'column_name': 'incident_id', 'connect_parameters': None,
                             '0001-01-01T00:00:00Z', 'name': '', 'password': '', 'sshkey': '', 'sshkeyPass': '',
                                                               'user': '', 'vaultInstanceId': '', 'version': 0,
                                                               'workgroup': ''},
-                            'identifier': 'admin', 'password': 'P809rxRbYU', 'passwordChanged': False},
+                            'identifier': 'admin', 'password': 'admin', 'passwordChanged': False},
             'dbname': 'Test_db', 'dialect': 'Microsoft SQL Server', 'max_fetch': '3',
             'fetch_parameters': 'Unique ascending ID',
             'host': 'demistodev-microsoftsqlserver.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com',
@@ -51,7 +51,7 @@ PARAMS_2 = {'column_name': 'incident_id', 'connect_parameters': None, 'credentia
                                                'modified': '0001-01-01T00:00:00Z',
                                                'name': '', 'password': '', 'sshkey': '', 'sshkeyPass': '', 'user': '',
                                                'vaultInstanceId': '', 'version': 0, 'workgroup': ''},
-             'identifier': 'admin', 'password': 'P809rxRbYU', 'passwordChanged': False},
+             'identifier': 'admin', 'password': 'admin', 'passwordChanged': False},
             'dbname': 'Test_db', 'dialect': 'Microsoft SQL Server', 'max_fetch': '3',
             'fetch_parameters': 'Unique ascending ID',
             'host': 'demistodev-microsoftsqlserver.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': '',
@@ -68,7 +68,7 @@ PARAMS_3 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials
             {'credential': '', 'credentials': {'cacheVersn': 0, 'id': '', 'locked': False, 'modified': '0001-01-01T00:00:00Z',
              'name': '', 'password': '', 'sshkey': '', 'sshkeyPass': '', 'user': '', 'vaultInstanceId': '',
                                                'version': 0, 'workgroup': ''},
-             'identifier': 'admin', 'password': 'ICYq7L3S21', 'passwordChanged': False}, 'dbname': 'test_db_1',
+             'identifier': 'admin', 'password': 'admin', 'passwordChanged': False}, 'dbname': 'test_db_1',
             'dialect': 'MySQL', 'max_fetch': '2', 'fetch_parameters': 'ID and timestamp',
             'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': 'incident_id',
             'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
@@ -109,7 +109,7 @@ PARAMS_4 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials
             {'credential': '', 'credentials': {'cacheVersn': 0, 'id': '', 'locked': False,
                                                'modified': '0001-01-01T00:00:00Z', 'name': '', 'password': '',
                                                'sshkey': '', 'sshkeyPass': '', 'user': '',
-             'vaultInstanceId': '', 'version': 0, 'workgroup': ''}, 'identifier': 'admin', 'password': 'ICYq7L3S21',
+             'vaultInstanceId': '', 'version': 0, 'workgroup': ''}, 'identifier': 'admin', 'password': 'admin',
              'passwordChanged': False}, 'dbname': 'test_db_1', 'dialect': 'MySQL', 'max_fetch': '2',
             'fetch_parameters': 'Unique timestamp',
             'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': '',
@@ -119,3 +119,41 @@ PARAMS_4 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials
 
 EXPECTED_LAST_RUN_4_1 = {'last_timestamp': '2022-11-24 13:10:12', 'last_id': False, 'ids': []}
 EXPECTED_LAST_RUN_4_2 = {'ids': [], 'last_id': False, 'last_timestamp': '2022-11-24 13:10:43'}
+
+
+# ------------------------------------ test_fetch_incidents_de_duplication (5) -------------------------------
+
+HEADERS_5 = ['incident_id', 'timestamp', 'incident_name', 'incident_data']
+RESPONSE_5_1 = [(1000, datetime.datetime(2022, 11, 24, 13, 9, 56), 'incident_1', 'incident data for incident 1')]
+RESPONSE_5_2 = [(1000, datetime.datetime(2022, 11, 24, 13, 9, 56), 'incident_1', 'incident data for incident 1'),
+                (1001, datetime.datetime(2022, 11, 24, 13, 9, 56), 'incident_2', 'incident data for incident 2')]
+RESPONSE_5_3 = [(1000, datetime.datetime(2022, 11, 24, 13, 9, 56), 'incident_1', 'incident data for incident 1'),
+                (1001, datetime.datetime(2022, 11, 24, 13, 9, 56), 'incident_2', 'incident data for incident 2'),
+                (1002, datetime.datetime(2022, 11, 24, 13, 9, 56), 'incident_3', 'incident data for incident 3')]
+TABLE_5_1 = [{'incident_id': '1000', 'timestamp': '2022-11-24 13:09:56', 'incident_name': 'incident_1',
+              'incident_data': 'incident data for incident 1'}]
+TABLE_5_2 = [{'incident_id': '1000', 'timestamp': '2022-11-24 13:09:56', 'incident_name': 'incident_1',
+              'incident_data': 'incident data for incident 1'},
+             {'incident_id': '1001', 'timestamp': '2022-11-24 13:09:56', 'incident_name': 'incident_2',
+              'incident_data': 'incident data for incident 2'}]
+TABLE_5_3 = [{'incident_id': '1000', 'timestamp': '2022-11-24 13:09:56', 'incident_name': 'incident_1',
+              'incident_data': 'incident data for incident 1'},
+             {'incident_id': '1001', 'timestamp': '2022-11-24 13:09:56', 'incident_name': 'incident_2',
+              'incident_data': 'incident data for incident 2'},
+             {'incident_id': '1002', 'timestamp': '2022-11-24 13:09:56', 'incident_name': 'incident_3',
+              'incident_data': 'incident data for incident 3'}]
+PARAMS_5 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials':
+            {'credential': '', 'credentials': {'cacheVersn': 0, 'id': '', 'locked': False,
+                                               'modified': '0001-01-01T00:00:00Z', 'name': '', 'password': '',
+                                               'sshkey': '', 'sshkeyPass': '', 'user': '',
+             'vaultInstanceId': '', 'version': 0, 'workgroup': ''}, 'identifier': 'admin', 'password': 'admin',
+             'passwordChanged': False}, 'dbname': 'test_db_1', 'dialect': 'MySQL', 'max_fetch': '1',
+            'fetch_parameters': 'ID and timestamp',
+            'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': 'incident_id',
+            'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
+            'pool_ttl': '600', 'port': '3306', 'query': 'call Test_MySQL_6', 'ssl_connect': False,
+            'first_fetch': '2020-01-01 01:01:01', 'use_pool': False}
+
+EXPECTED_LAST_RUN_5_1 = {'last_timestamp': '2022-11-24 13:09:56', 'last_id': False, 'ids': ['1000']}
+EXPECTED_LAST_RUN_5_2 = {'ids': ['1000', '1001'], 'last_id': False, 'last_timestamp': '2022-11-24 13:09:56'}
+EXPECTED_LAST_RUN_5_3 = {'ids': ['1000', '1001', '1002'], 'last_id': False, 'last_timestamp': '2022-11-24 13:09:56'}
