@@ -13,14 +13,22 @@ configuration:
   type: 0
   section: Connect
 - display: Username
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: API Key
+  section: Connect
+- display: Username
   name: username
-  required: true
+  required: false
   type: 0
   section: Connect
+  hidden: true
 - display: API Key
   name: apikey
-  required: true
+  required: false
   type: 4
+  hidden: true
   section: Connect
 - defaultvalue: high
   display: Threshold of the indicator.
@@ -37,6 +45,9 @@ configuration:
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integrationReliability
+  required: true
+  type: 15
+  section: Collect
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -45,11 +56,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
-  section: Collect
-- defaultvalue: 'false'
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8

@@ -12,11 +12,17 @@ configuration:
   name: server_url
   required: true
   type: 0
+- name: creds_tenant_id
+  required: false
+  type: 9
+  displaypassword: Tenant ID
+  hiddenusername: true
   section: Connect
 - display: Tenant ID
   name: tenant_id
-  required: true
+  required: false
   type: 4
+  hidden: true
   section: Connect
 - display: Client ID
   name: credentials
@@ -25,9 +31,33 @@ configuration:
   section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
+  section: Connect
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
+  section: Connect
+  advanced: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
+  section: Connect
+  advanced: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
   section: Connect
   advanced: true
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
@@ -35,6 +65,7 @@ configuration:
   name: private_key
   required: false
   type: 14
+  hidden: true
   section: Connect
   advanced: true
 - display: Subscription ID
