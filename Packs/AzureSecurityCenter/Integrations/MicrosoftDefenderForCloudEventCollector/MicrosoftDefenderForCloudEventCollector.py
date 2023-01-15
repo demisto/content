@@ -255,7 +255,7 @@ def main() -> None:
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun({'time' : next_run})
 
-            evetns = add_time_key_to_events(events)
+            events = add_time_key_to_events(events)
         
             if should_push_events:
                 send_events_to_xsiam(
