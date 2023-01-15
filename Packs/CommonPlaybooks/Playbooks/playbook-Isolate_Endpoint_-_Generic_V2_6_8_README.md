@@ -59,4 +59,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Isolate Endpoint - Generic V2](../doc_files/Isolate_Endpoint_-_Generic_V2_6_5.png)
+![Isolate Endpoint - Generic V2](../doc_files/Isolate_Endpoint_-_Generic_V2_6_8.png)
