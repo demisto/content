@@ -212,7 +212,7 @@ tasks:
     task:
       id: 57ac7280-c928-419e-8de3-4d4310e04848
       version: -1
-      name: QRadarFullSearch
+      name: Search for failed logon attempts using QRadar
       description: This playbook runs a QRadar query and return its results to the context.
       playbookName: QRadarFullSearch
       type: playbook
