@@ -27,6 +27,7 @@ SECURITY_SCOPE = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.defa
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
 VENDOR = 'Microsoft 365'
 PRODUCT = 'Defender'
+TEMP_CHANE = 'changing to trigger xsiam build.'
 
 ''' HELPER CLASSES '''
 
