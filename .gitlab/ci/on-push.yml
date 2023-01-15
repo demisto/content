@@ -189,7 +189,7 @@ mpv2-prepare-testing-bucket:
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCTNAME: "Cortex XSIAM"
-    EXTRACT_MODELING_RULE_TESTDATA_FILES: "true"
+    EXTRACT_PRIVATE_TESTDATA: "true"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -324,7 +324,7 @@ slack-notify-nightly-build:
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     SERVER_TYPE: "XSIAM"
-    EXTRACT_MODELING_RULE_TESTDATA_FILES: "true"
+    EXTRACT_PRIVATE_TESTDATA: "true"
   needs: ["mpv2-prepare-testing-bucket"]
   stage: run-instances
   script:
