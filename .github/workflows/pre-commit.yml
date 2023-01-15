@@ -46,11 +46,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         report_paths: |
-            **/Packs/**/Integrations/**/.report_pytest.xml
-            **/Packs/**/Scripts/**/.report_pytest.xml
-
+            **/Packs/**/@(Integrations|Scripts)/**/.report_pytest.xml
+        check_name: Unit Tests Report
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        check_name: Unit Test Report
         detailed_summary: true
         annotate_only: true
 
@@ -72,11 +70,5 @@ jobs:
       if: always()
       id: append-coverage
       run: |
-        cat code-coverage-results.md >> $GITHUB_SUMMARY
+        cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Comment
-      if: always()
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        header: "Unit Test Report"
-        message: $GITHUB_SUMMARY
