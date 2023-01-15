@@ -41,14 +41,14 @@ tasks:
     task:
       id: bb352d99-3d2e-4ae2-8b9b-4ecb8e2a970c
       version: -1
-      name: Permanent Location  Check
+      name: Permanent Location Check
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -67,13 +67,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 08b0a87e-8ab1-4235-8797-1e656dd0e9c5
+    taskid: 45411a85-7b8b-41fa-86a7-5024cdf8ee49
     type: condition
     task:
-      id: 08b0a87e-8ab1-4235-8797-1e656dd0e9c5
+      id: 45411a85-7b8b-41fa-86a7-5024cdf8ee49
       version: -1
-      name: Is Okta V2 integration enabled?
-      description: Checks if Okta V2 integration enabled
+      name: Is Okta V2 integration enabled and the user email is defined?
+      description: Checks if Okta V2 integration enabled and the user email is defined.
       type: condition
       iscommand: false
       brand: ""
@@ -109,6 +109,12 @@ tasks:
             value:
               simple: active
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.UserEmail
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -173,7 +179,7 @@ tasks:
       {
         "position": {
           "x": 1620,
-          "y": 970
+          "y": 1160
         }
       }
     note: false
@@ -209,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1155
+          "x": 1830,
+          "y": 1335
         }
       }
     note: false
@@ -246,8 +252,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1390,
-          "y": 1155
+          "x": 1410,
+          "y": 1335
         }
       }
     note: false
@@ -291,13 +297,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 794389a8-c620-4aee-82e7-0e46bc36c222
+    taskid: 80cfc361-dfd8-4195-89d1-2b003e741f23
     type: regular
     task:
-      id: 794389a8-c620-4aee-82e7-0e46bc36c222
+      id: 80cfc361-dfd8-4195-89d1-2b003e741f23
       version: -1
       name: Check for suspicious activities
-      description: Gets logs by providing optional filters.
+      description: |-
+        Link to Okta suspicious activity events list:
+        https://help.okta.com/oie/en-us/Content/Topics/Reports/suspicious-activity-report.htm
       script: Okta v2|||okta-get-logs
       type: regular
       iscommand: true
@@ -581,7 +589,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": 1450
+          "y": 1580
         }
       }
     note: false
@@ -611,7 +619,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
+          "x": 2250,
           "y": 820
         }
       }
@@ -801,8 +809,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": 960
+          "x": 2250,
+          "y": 995
         }
       }
     note: false
@@ -981,7 +989,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": 970
+          "y": 985
         }
       }
     note: false
@@ -1302,6 +1310,49 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c0251946-a36e-4c1f-842c-95fe5aecc6cd
+    type: condition
+    task:
+      id: c0251946-a36e-4c1f-842c-95fe5aecc6cd
+      version: -1
+      name: The login country is defined?
+      description: Check if the login country is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.LoginCountry
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1310,12 +1361,14 @@ view: |-
       "29_18_#default#": 0.53,
       "2_18_#default#": 0.16,
       "36_18_#default#": 0.1,
-      "36_35_yes": 0.47
+      "36_35_yes": 0.47,
+      "39_18_#default#": 0.16,
+      "39_4_yes": 0.44
     },
     "paper": {
       "dimensions": {
-        "height": 2395,
-        "width": 3350,
+        "height": 2525,
+        "width": 3360,
         "x": -730,
         "y": -880
       }
@@ -1325,7 +1378,7 @@ inputs:
 - key: UserEmail
   value: {}
   required: false
-  description: User Email.
+  description: The user email to search Okta logs.
   playbookInputQuery:
 - key: LoginCountry
   value: {}
