@@ -181,7 +181,7 @@ script:
     outputs:
     - contextPath: PrismaSase.SecurityRule
       description: Created security rule.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.SecurityRule.action
       description: Security rule action.
       type: String
@@ -286,7 +286,7 @@ script:
     outputs:
     - contextPath: PrismaSase.SecurityRule
       description: Found security rule.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.SecurityRule.action
       description: Security rule action.
       type: String
@@ -356,7 +356,7 @@ script:
     outputs:
     - contextPath: PrismaSase.CandidateConfig
       description: Configuration job information.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.CandidateConfig.job_id
       description: Configuration job ID.
       type: String
@@ -497,7 +497,7 @@ script:
     outputs:
     - contextPath: PrismaSase.SecurityRule
       description: Edited security rule.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.SecurityRule.action
       description: Security rule action.
       type: String
@@ -593,7 +593,7 @@ script:
     outputs:
     - contextPath: PrismaSase.Address
       description: Edited address object.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.Address.description
       description: Address description.
       type: String
@@ -627,7 +627,7 @@ script:
     outputs:
     - contextPath: PrismaSASE.AggregateQueryResponse
       description: Aggregate query response.
-      type: Unknown
+      type: String
     - contextPath: PrismaSASE.AggregateQueryResponse.header.dataCount
       description: Query response data count.
       type: Number
@@ -650,7 +650,7 @@ script:
     outputs:
     - contextPath: PrismaSase.ConfigJob
       description: Configuration job details.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.ConfigJob.description
       description: Configuration job description.
       type: String
@@ -756,7 +756,7 @@ script:
     outputs:
     - contextPath: PrismaSase.Address
       description: Created address object.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.Address.description
       description: Address description.
       type: String
@@ -826,7 +826,7 @@ script:
     outputs:
     - contextPath: PrismaSase.Address
       description: Found security rule.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.Address.description
       description: Address description.
       type: String
@@ -887,7 +887,7 @@ script:
     outputs:
     - contextPath: PrismaSase.Tag
       description: Found security rule.
-      type: Unknown
+      type: String
     - contextPath: PrismaSase.Tag.id
       description: Address description.
       type: String
@@ -978,18 +978,21 @@ script:
     execution: false
     name: prisma-sase-tag-create
     outputs:
-    - contextPath: PrismaSase.Tag
-      type: Unknown
     - contextPath: PrismaSase.Tag.id
-      type: Unknown
+      description: The tag id.
+      type: String
     - contextPath: PrismaSase.Tag.name
-      type: Unknown
+      description: The tag name.
+      type: String
     - contextPath: PrismaSase.Tag.folder
-      type: Unknown
+      description: The tag folder.
+      type: String
     - contextPath: PrismaSase.Tag.color
-      type: Unknown
-    - contextPath: comments
-      type: Unknown
+      description: The tag color.
+      type: String
+    - contextPath: PrismaSase.Tag.comments
+      description: The tag omments.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -1067,17 +1070,20 @@ script:
     execution: false
     name: prisma-sase-tag-update
     outputs:
-    - contextPath: PrismaSase.Tag
-      type: String
     - contextPath: PrismaSase.Tag.id
+      description: The tag id.
       type: String
     - contextPath: PrismaSase.Tag.name
+      description: The tag name.
       type: String
     - contextPath: PrismaSase.Tag.folder
+      description: The tag folder.
       type: String
     - contextPath: PrismaSase.Tag.color
+      description: The tag color.
       type: String
     - contextPath: PrismaSase.Tag.comments
+      description: The tag comments.
       type: String
   - arguments:
     - default: false
@@ -1124,17 +1130,20 @@ script:
     execution: false
     name: prisma-sase-address-group-list
     outputs:
-    - contextPath: PrismaSase.AddressGroup
-      type: String
     - contextPath: PrismaSase.AddressGroup.id
+      description: The address group id.
       type: String
     - contextPath: PrismaSase.AddressGroup.name
+      description: The address group name.
       type: String
     - contextPath: PrismaSase.AddressGroup.description
+      description: The address group description.
       type: String
     - contextPath: PrismaSase.AddressGroup.addresses
+      description: The address group addresses.
       type: String
     - contextPath: PrismaSase.AddressGroup.dynamic_filter
+      description: The address group filter.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1180,19 +1189,23 @@ script:
     execution: false
     name: prisma-sase-address-group-create
     outputs:
-    - contextPath: PrismaSase.AddressGroup
-      type: String
     - contextPath: PrismaSase.AddressGroup.id
+      description: The address group id.
       type: String
     - contextPath: PrismaSase.AddressGroup.name
+      description: The address group name.
       type: String
     - contextPath: PrismaSase.AddressGroup.folder
+      description: The address group folder.
       type: String
     - contextPath: PrismaSase.AddressGroup.description
+      description: The address group description.
       type: String
     - contextPath: PrismaSase.AddressGroup.addresses
+      description: The address group addresses.
       type: String
     - contextPath: PrismaSase.AddressGroup.dynamic_filter
+      description: The address group filter.
       type: String
   - arguments:
     - default: false
@@ -1244,6 +1257,25 @@ script:
     deprecated: false
     execution: false
     name: prisma-sase-address-group-update
+    outputs:
+      - contextPath: PrismaSase.AddressGroup.id
+        description: The address group id.
+        type: String
+      - contextPath: PrismaSase.AddressGroup.name
+        description: The address group name.
+        type: String
+      - contextPath: PrismaSase.AddressGroup.folder
+        description: The address group folder.
+        type: String
+      - contextPath: PrismaSase.AddressGroup.description
+        description: The address group description.
+        type: String
+      - contextPath: PrismaSase.AddressGroup.addresses
+        description: The address group addresses.
+        type: String
+      - contextPath: PrismaSase.AddressGroup.dynamic_filter
+        description: The address group filter.
+        type: String
   - arguments:
     - default: false
       isArray: false
@@ -1287,17 +1319,20 @@ script:
     execution: false
     name: prisma-sase-custom-url-category-list
     outputs:
-    - contextPath: PrismaSase.CustomURLCategory
-      type: String
     - contextPath: PrismaSase.CustomURLCategory.id
+      description: The URL category id.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.name
+      description: The URL category name.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.folder
+      description: The URL category folder.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.type
+      description: The URL category type.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.match
+      description: The URL category macth list.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1338,17 +1373,20 @@ script:
     execution: false
     name: prisma-sase-custom-url-category-create
     outputs:
-    - contextPath: PrismaSase.CustomURLCategory
-      type: String
     - contextPath: PrismaSase.CustomURLCategory.id
+      description: The URL category id.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.name
+      description: The URL category name.
       type: String
     - contextPath: PrismaSase.AddressGroup.folder
+      description: The URL category folder.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.type
+      description: The URL category type.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.match
+      description: The URL category match list.
       type: String
   - arguments:
     - default: false
@@ -1397,17 +1435,20 @@ script:
     execution: false
     name: prisma-sase-custom-url-category-update
     outputs:
-    - contextPath: PrismaSase.CustomURLCategory
-      type: String
     - contextPath: PrismaSase.CustomURLCategory.id
+      description: The URL category id.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.name
+      description: The URL category name.
       type: String
     - contextPath: PrismaSase.AddressGroup.folder
+      description: The URL category folder.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.type
+      description: The URL category type.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.match
+      description: The URL category match list.
       type: String
   - arguments:
     - default: false
@@ -1452,19 +1493,23 @@ script:
     execution: false
     name: prisma-sase-external-dynamic-list-list
     outputs:
-    - contextPath: PrismaSase.ExternalDynamicList
-      type: String
     - contextPath: PrismaSase.ExternalDynamicList.id
+      description: The external dynamic list id.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.name
+      description: The external dynamic list name.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.folder
+      description: The external dynamic list folder.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.description
+      description: The external dynamic list description.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.source
+      description: The external dynamic list source.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.frequency
+      description: The external dynamic list frequency.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1508,18 +1553,24 @@ script:
     execution: false
     name: prisma-sase-external-dynamic-list-create
     outputs:
-    - contextPath: PrismaSase.CustomURLCategory
-      type: String
-    - contextPath: PrismaSase.CustomURLCategory.id
-      type: String
-    - contextPath: PrismaSase.CustomURLCategory.name
-      type: String
-    - contextPath: PrismaSase.AddressGroup.folder
-      type: String
-    - contextPath: PrismaSase.CustomURLCategory.type
-      type: String
-    - contextPath: PrismaSase.CustomURLCategory.match
-      type: String
+      - contextPath: PrismaSase.ExternalDynamicList.id
+        description: The external dynamic list id.
+        type: String
+      - contextPath: PrismaSase.ExternalDynamicList.name
+        description: The external dynamic list name.
+        type: String
+      - contextPath: PrismaSase.ExternalDynamicList.folder
+        description: The external dynamic list folder.
+        type: String
+      - contextPath: PrismaSase.ExternalDynamicList.description
+        description: The external dynamic list description.
+        type: String
+      - contextPath: PrismaSase.ExternalDynamicList.source
+        description: The external dynamic list source.
+        type: String
+      - contextPath: PrismaSase.ExternalDynamicList.frequency
+        description: The external dynamic list frequency.
+        type: String
   - arguments:
     - default: false
       isArray: false
@@ -1567,17 +1618,23 @@ script:
     execution: false
     name: prisma-sase-external-dynamic-list-update
     outputs:
-    - contextPath: PrismaSase.CustomURLCategory
+    - contextPath: PrismaSase.ExternalDynamicList.id
+      description: The external dynamic list id.
       type: String
-    - contextPath: PrismaSase.CustomURLCategory.id
+    - contextPath: PrismaSase.ExternalDynamicList.name
+      description: The external dynamic list name.
       type: String
-    - contextPath: PrismaSase.CustomURLCategory.name
+    - contextPath: PrismaSase.ExternalDynamicList.folder
+      description: The external dynamic list folder.
       type: String
-    - contextPath: PrismaSase.AddressGroup.folder
+    - contextPath: PrismaSase.ExternalDynamicList.description
+      description: The external dynamic list description.
       type: String
-    - contextPath: PrismaSase.CustomURLCategory.type
+    - contextPath: PrismaSase.ExternalDynamicList.source
+      description: The external dynamic list source.
       type: String
-    - contextPath: PrismaSase.CustomURLCategory.match
+    - contextPath: PrismaSase.ExternalDynamicList.frequency
+      description: The external dynamic list frequency.
       type: String
   - arguments:
     - default: false
