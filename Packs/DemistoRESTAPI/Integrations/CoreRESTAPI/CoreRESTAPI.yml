@@ -20,6 +20,7 @@ configuration:
   type: 15
   required: false
   defaultvalue: advanced
+  additionalinfo: Whether authentication should be using standard API key or advanced API key.
   options:
   - standard
   - advanced
@@ -107,8 +108,47 @@ script:
       required: true
       description: IDs of the incidents to delete
       isArray: true
+    - name: fields
+      description: 'Comma separated list of fields to return, case sensitive. Set
+        "all" for all fields. WARNING: Setting all fields may result in big results.'
+      required: false
+      isArray: true
+      defaultValue: id,name,type,severity,status
     description: Delete Demisto incidents
     execution: true
+  - name: demisto-api-install-packs
+    arguments:
+    - name: packs_to_install
+      required: false
+      description: 'The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ).'
+      isArray: true
+    - name: file_url
+      description: 'The pack zip file url.'
+      required: false
+      isArray: false
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
+      required: false
+      isArray: false
+    - name: skip_verify
+      description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: skip_validation
+      description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    description: Upload packs to Demisto server from url or the marketplace.
   - name: core-api-post
     arguments:
       - name: uri
@@ -173,9 +213,41 @@ script:
       isArray: true
     description: Delete Demisto incidents
     execution: true
+  - name: core-api-install-packs
+    arguments:
+    - name: packs_to_install
+      required: false
+      description: 'The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ).'
+      isArray: true
+    - name: file_url
+      description: 'The pack zip file url.'
+      required: false
+      isArray: false
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
+      required: false
+      isArray: false
+    - name: skip_verify
+      description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: skip_validation
+      description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    description: Upload packs to Demisto server from url or the marketplace.
   runonce: false
 tests:
 - No tests
 marketplaces:
-  - marketplacev2
 fromversion: 5.0.0
