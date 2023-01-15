@@ -115,6 +115,14 @@
          "ignored_native_images":[
             "native:dev"
          ]
+      },
+      {
+         "id":"FindEmailCampaign",
+         "reason":"Issue: CIAC-5249 - pylint error.",
+         "ignored_native_images":[
+            "native:8.1",
+            "native:dev"
+         ]
       }
    ],
    "flags_versions_mapping": {
