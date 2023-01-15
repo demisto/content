@@ -43,4 +43,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Cortex XDR -Possible External RDP Brute Force - Set Verdict](../doc_files/Cortex_XDR_-Possible_External_RDP_Brute_Force_-_Set_Verdict.png)
+![Cortex XDR - Possible External RDP Brute-Force - Set Verdict](../doc_files/Cortex_XDR_-_Possible_External_RDP_Brute-Force_-_Set_Verdict.png)

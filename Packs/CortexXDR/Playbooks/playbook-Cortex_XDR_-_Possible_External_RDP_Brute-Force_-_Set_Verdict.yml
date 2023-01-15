@@ -1,6 +1,6 @@
-id: Cortex XDR -Possible External RDP Brute Force - Set Verdict
+id: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
 version: -1
-name: Cortex XDR -Possible External RDP Brute Force - Set Verdict
+name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
 description: |-
   This playbook creating an array called "Suspicious Elements", which is used to count potential security threats. The following elements can be added to the array:
 
@@ -163,10 +163,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: inputs.RelatedAlerts
-                transformers:
-                - operator: count
+              simple: inputs.RelatedAlerts
             iscontext: true
           right:
             value: {}
