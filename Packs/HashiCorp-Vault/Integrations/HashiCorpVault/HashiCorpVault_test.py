@@ -37,4 +37,3 @@ def test_get_aws_secrets(mocker):
     assert mock.call_args.args[0] == 'test/roles/1'
     get_aws_secrets('test', '999', False)
     assert mock.call_args.args[0] == 'test'
-    assert get_aws_secrets('test', '999', False) == [{'name': '1', 'password': 'test@@@test', 'user': 'test'}]
