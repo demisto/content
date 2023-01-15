@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: CiscoAMP
+  id: AMPv2
   version: -1
 configuration:
 - defaultvalue: https://api.amp.cisco.com
@@ -73,8 +73,8 @@ configuration:
   required: false
   type: 8
 description: Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
-display: Cisco AMP Secure Endpoint
-name: CiscoAMP
+display: Cisco AMP v2
+name: AMPv2
 script:
   commands:
   - arguments:
