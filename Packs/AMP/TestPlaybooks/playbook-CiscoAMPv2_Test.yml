@@ -1,6 +1,6 @@
-id: CiscoAMPv2
+id: AMPv2_Test
 version: -1
-name: CiscoAMPv2
+name: AMPv2_Test
 starttaskid: "0"
 tasks:
   "0":

@@ -5223,8 +5223,8 @@
             "fromversion": "6.5.0"
         },
         {
-            "integrations": "CiscoAMP",
-            "playbookID": "CiscoAMP",
+            "integrations": "AMPv2",
+            "playbookID": "AMPv2_Test",
             "fromversion": "6.5.0"
         },
         {
@@ -5507,7 +5507,8 @@
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
         "CiscoSMA": "No instance - developed by Qmasters",
-        "CiscoAMP_v2": "No instance - developed by Qmasters",
+        "CiscoAMP": "No instance & Depreceated, replaced by AMPV2",
+        "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
