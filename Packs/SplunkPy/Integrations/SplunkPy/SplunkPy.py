@@ -1934,7 +1934,7 @@ def build_search_kwargs(args, polling=False):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
-    if argToBoolean(args.get('fast_mode', False)):
+    if argToBoolean(args.get('fast_mode')):
         kwargs_normalsearch['adhoc_search_level'] = "fast"
     if polling:
         kwargs_normalsearch['exec_mode'] = "normal"
