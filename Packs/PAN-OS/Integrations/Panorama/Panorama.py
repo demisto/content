@@ -2786,10 +2786,10 @@ def panorama_custom_url_category_add_items(custom_url_category_name: str, items:
     merged_items = list((set(items)).union(set(custom_url_category_items)))
 
     # escape URLs with HTML escaping
-    # sites = [html.escape(site) for site in merged_items]
+    sites = [html.escape(site) for site in merged_items]
 
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           merged_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],

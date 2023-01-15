@@ -1412,19 +1412,20 @@ def test_panorama_edit_custom_url_category_command_main_flow_with_sites(mocker):
     """
     Given
      - integrations parameters.
-     - pan-os-edit-custom-url-category command arguments: categories, device-group and action = 'add'.
+     - pan-os-edit-custom-url-category command arguments: sites, device-group and action = 'add'.
 
     When -
         running the pan-os-edit-custom-url-category command through the main flow
 
     Then
      - make sure the context output is returned as expected.
+     - make sure the sites are being HTML escaped correctly for the site.
      - make sure the device group gets overriden by the command arguments.
     """
     from Panorama import main
 
     existing_url_categories_mock = {'list': {'member': []}}
-    expeceted_site = 'example.com/?a=b&amp;c=d'
+    expected_site = 'example.com/?a=b&amp;c=d'
 
     mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
     mocker.patch.object(
@@ -1448,7 +1449,7 @@ def test_panorama_edit_custom_url_category_command_main_flow_with_sites(mocker):
     expected_body_request = {
         'action': 'edit',
         'element': '<entry '
-                   f"name='test'><list><member>{expeceted_site}</member></list><type>URL "
+                   f"name='test'><list><member>{expected_site}</member></list><type>URL "
                    'List</type></entry>',
         'key': 'thisisabogusAPIKEY!',
         'type': 'config',
