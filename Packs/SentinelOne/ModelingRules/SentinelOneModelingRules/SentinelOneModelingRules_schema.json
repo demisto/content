@@ -89,7 +89,7 @@
       "is_array": false
     },
     "activityType": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     }
   }
