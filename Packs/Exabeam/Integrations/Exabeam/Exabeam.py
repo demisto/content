@@ -21,20 +21,23 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers: dict, api_key: str = None):
-        self.validate_authentication_params(username=username, password=password, api_key=api_key)
+                 proxy: bool, headers: dict, api_key: str = None, is_fetch: bool = None):
+        self.validate_authentication_params(username=username, password=password, api_key=api_key, is_fetch=is_fetch)
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
+        self.api_key = api_key
         self.session = requests.Session()
         self.session.headers = headers
         if not proxy:
             self.session.trust_env = False
-        if self.username and self.username != TOKEN_INPUT_IDENTIFIER and self.password:
+        if self.is_token_auth():
+            self.session.headers['ExaAuthToken'] = self.password or self.api_key
+        else:
             self._login()
 
     def __del__(self):
-        if self.username and self.username != TOKEN_INPUT_IDENTIFIER and self.password:
+        if not self.is_token_auth():
             self._logout()
         super().__del__()
 
@@ -56,13 +59,43 @@ class Client(BaseClient):
         except Exception as err:
             demisto.debug(f'An error occurred during the logout.\n{str(err)}')
 
-    def validate_authentication_params(self, username: str = None, password: str = None, api_key: str = None):
-        if not password and not api_key:
-            raise ValueError('Using a password or token is necessary.')
-        if not username and not api_key:
-            raise ValueError('When you do not use with API Token an username parameter is necessary.')
-        if password and api_key:
-            raise ValueError('You cannot use both a password and a token at the same time.')
+    def validate_authentication_params(self, username: str = None,
+                                       password: str = None,
+                                       api_key: str = None,
+                                       is_fetch: bool = None):
+        if username == TOKEN_INPUT_IDENTIFIER:
+            if is_fetch:
+                raise ValueError('In order to use the “Fetch Incident” functionality,'
+                                 ' the username must be provided in the “Username” parameter.\n'
+                                 ' Please see documentation `Authentication Methods`')
+            if api_key:
+                raise ValueError(f'When specifying {username=}, the API Token must be provieded using in the password field'
+                                 ' please empty the other field')
+            if not password:
+                raise ValueError('Please insert API Token in the password field'
+                                 ' or see documentation `Authentication Methods` for another authentication methods')
+        elif not username:
+            if not api_key:
+                raise ValueError('If an API token is not provided, it is mandatory to insert username and password.')
+            if is_fetch:
+                raise ValueError('In order to use the “Fetch Incident” functionality,'
+                                 ' the username must be provided in the “Username” parameter.\n'
+                                 ' Please see documentation `Authentication Methods`')
+        else:
+            if not password and not api_key:
+                raise ValueError('Please insert password or API token.')
+            if password and api_key:
+                raise ValueError('Please insert API token OR password and not both.')
+
+    def is_token_auth(self) -> bool:
+
+        if not self.username:
+            return True
+        if self.username == TOKEN_INPUT_IDENTIFIER:
+            return True
+        if self.api_key:
+            return True
+        return False
 
     def test_module_request(self):
         """
@@ -1198,11 +1231,6 @@ def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
     Returns:
         ok if successful
     """
-    if argToBoolean(params.get('isFetch')):
-        if not client.username or client.username == TOKEN_INPUT_IDENTIFIER:
-            demisto.results('IN order to use the “Fetch Incident” functionality,'
-                            'the username must be provided in the “Username” parameter.')
-
     client.test_module_request()
     demisto.results('ok')
 
@@ -2022,7 +2050,7 @@ def list_incidents(client: Client, args: dict[str, str]):
     page_number = arg_to_number(args.get('page_number', 0))
     username = args.get('username')
 
-    if incident_ids and client.username == TOKEN_INPUT_IDENTIFIER and not username:
+    if incident_ids and client.is_token_auth() and not username and not client.username:
         raise ValueError('The username argument is necessary be for this command if the instance configured by api key')
 
     incidents = []
@@ -2139,9 +2167,8 @@ def main():
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    is_fetch = argToBoolean(params.get('isFetch'))
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
-    if username == TOKEN_INPUT_IDENTIFIER or not password:
-        headers['ExaAuthToken'] = password or api_key
 
     commands = {
         'get-notable-users': get_notable_users,
@@ -2186,7 +2213,7 @@ def main():
 
     try:
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
-                        password=password, proxy=proxy, headers=headers, api_key=api_key)
+                        password=password, proxy=proxy, headers=headers, api_key=api_key, is_fetch=is_fetch)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':
