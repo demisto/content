@@ -56,7 +56,7 @@ jobs:
       if: always()
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: "**/Packs/**/+(Integrations|Scripts)/**/.report_pytest.xml"
+        filename: "**/Packs/**/+(Integrations|Scripts)/**/.coverage"
         badge: true
         fail_below_min: true
         format: markdown
