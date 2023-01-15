@@ -11,12 +11,16 @@ configuration:
   name: url
   required: true
   type: 0
+- name: credentials
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
   section: Connect
-- additionalinfo: Xpanse API Key to use to connect.
-  display: API Key
+- display: API Key
   name: apikey
-  required: true
   type: 4
+  additionalinfo: Xpanse API Key to use to connect.
+  hidden: true
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
