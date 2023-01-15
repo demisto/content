@@ -29,6 +29,22 @@
     fi
   - section_end "Check User Permissions to Upload Packs"
 
+.upload_content_graph: &upload_content_graph
+    - |
+      if [[ $TEST_UPLOAD == "false" ]]; then
+        section_start "Upload content graph CSVs to GCP" --collapsed
+        gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
+        section_end "Upload content graph CSVs to GCP"
+      fi
+
+.upload_dependencies_file: &upload_dependencies_file
+    - |
+      if [[ $TEST_UPLOAD == "false" ]]; then
+        section_start "Upload packs_dependencies.json to GCP" --collapsed
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        gsutil cp $ARTIFACTS_FOLDER/packs_dependencies.json "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json"
+        section_end "Upload packs_dependencies.json to GCP"
+      fi
 
 run-validations-upload-flow:
   extends:
@@ -231,6 +247,7 @@ upload-packs-to-marketplace:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "xsoar"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     INSTANCE_ROLE: "Server Master"
@@ -278,8 +295,10 @@ upload-packs-to-marketplace:
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
-      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_end "Download packs from GCP"
+    - *upload_content_graph
+    - *upload_dependencies_file
+    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
 
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
@@ -294,17 +313,6 @@ upload-packs-to-marketplace:
       fi
     - section_end "Validate Premium Packs"
 
-    - |
-      if [[ $TEST_UPLOAD == "false" ]]; then
-        section_start "Upload content graph CSVs to GCP" --collapsed
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
-        gsutil -m cp -r $ARTIFACTS_FOLDER/content_graph/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION"
-        gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
-        section_end "Upload content graph CSVs to GCP"
-      fi
-
-
-
 upload-packs-to-marketplace-v2:
   tags:
     - gke
@@ -316,6 +324,7 @@ upload-packs-to-marketplace-v2:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "marketplacev2"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
@@ -354,22 +363,13 @@ upload-packs-to-marketplace-v2:
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
-      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_end "Download packs from GCP"
-
+    - *upload_content_graph
+    - *upload_dependencies_file
+    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
-
-    - |
-      if [[ $TEST_UPLOAD == "false" ]]; then
-        section_start "Upload content graph CSVs to GCP" --collapsed
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
-        gsutil -m cp -r $ARTIFACTS_FOLDER/content_graph/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION"
-        gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
-        section_end "Upload content graph CSVs to GCP"
-      fi
-
 
 upload-packs-to-xpanse-marketplace:
   tags:
@@ -382,6 +382,7 @@ upload-packs-to-xpanse-marketplace:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "xpanse"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
@@ -420,23 +421,14 @@ upload-packs-to-xpanse-marketplace:
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
-      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_end "Download packs from GCP"
+    - *upload_content_graph
+    - *upload_dependencies_file
+    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
 
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
-
-    - |
-      if [[ $TEST_UPLOAD == "false" ]]; then
-        section_start "Upload content graph CSVs to GCP" --collapsed
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
-        gsutil -m cp -r $ARTIFACTS_FOLDER/content_graph/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION"
-        gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
-        section_end "Upload content graph CSVs to GCP"
-      fi
-
-
 
 force-pack-upload:
   tags:

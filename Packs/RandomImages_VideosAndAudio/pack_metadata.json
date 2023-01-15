@@ -1,13 +1,15 @@
 {
-    "name": "Random Images, Videos and Audio",
-    "description": "This packs automation scripts and integrations that can pull random photos, videos or audio.\n\nThis pack was designed to change the theme of your dashboards and incident layouts\n\nMore and more scripts and automations will be added over time.\n\nSimply add the automation script to a dynamic-section in an incident layout, or into a script based widget in a dashboard.",
+    "name": "Random Images, Videos and Audio (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Adam Burt",
     "url": "",
     "email": "",
     "created": "2021-04-07T17:07:57Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -17,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }
