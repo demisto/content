@@ -51,3 +51,33 @@ def test_list_secrets_engines(mocker):
 def test_list_secrets(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
     assert list_secrets('test', '2') == {}
+
+
+def test_get_secret_metadata(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert get_secret_metadata('test', 'test') == {}
+
+
+def test_delete_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert delete_secret('test', 'test', 'test') == {}
+
+
+def test_undelete_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert undelete_secret('test', 'test', 'test') == {}
+
+
+def test_destroy_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert destroy_secret('test', 'test', 'test') == {}
+
+
+def test_list_policies(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert list_policies() == {}
+
+
+def test_get_policy(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert get_policy('test') == {}

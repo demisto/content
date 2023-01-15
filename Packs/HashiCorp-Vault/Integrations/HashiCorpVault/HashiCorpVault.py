@@ -236,7 +236,7 @@ def delete_secret_command():  # pragma: no cover
     demisto.results('Secret versions deleted successfully')
 
 
-def delete_secret(engine_path, secret_path, versions):  # pragma: no cover
+def delete_secret(engine_path, secret_path, versions):
     path = urljoin(engine_path, urljoin('delete/', secret_path))
 
     body = {
