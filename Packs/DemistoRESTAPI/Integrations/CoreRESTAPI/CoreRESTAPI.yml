@@ -38,7 +38,7 @@ configuration:
   type: 8
   required: false
 - display: Use tenant
-  additionalinfo: Whether API calls should be made to the current tenant instead of the master tenant.
+  additionalinfo: Whether API calls should be made to the current tenant instead of the main tenant.
   name: use_tenant
   type: 8
   required: false
