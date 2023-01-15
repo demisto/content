@@ -17,15 +17,7 @@ TOKEN = demisto.params().get('token')
 NAMESPACE = demisto.params().get('namespace')
 USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get('use_approle', 'false') or 'false')
 
-
-def get_server_url():
-    url = demisto.params()['server']
-    url = re.sub('/[/]+$/', '', url)  # guardrails-disable-line
-    url = re.sub('/$', '', url)  # guardrails-disable-line
-    return url
-
-
-BASE_URL = get_server_url()
+BASE_URL = demisto.params().get('server')
 SERVER_URL = BASE_URL + '/v1'
 
 DEFAULT_STATUS_CODES = {
@@ -51,7 +43,7 @@ def get_headers():  # pragma: no cover
     return headers
 
 
-def login():
+def login():  # pragma: no cover
     if USE_APPROLE_AUTH_METHOD:
         path = 'auth/approle/login'
         body = {
@@ -64,7 +56,7 @@ def login():
             'password': PASSWORD
         }
 
-    url = '{}/{}'.format(SERVER_URL, path)
+    url = urljoin(SERVER_URL, path)
     res = requests.request('POST', url, headers=get_headers(), data=json.dumps(body), verify=VERIFY_SSL)
     if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
         try:
@@ -590,7 +582,7 @@ def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600')
     set_integration_context({'configs': ENGINE_CONFIGS})
 
 
-def fetch_credentials():
+def fetch_credentials():  # pragma: no cover
     credentials = []
     engines_to_fetch_from = []
     engines = argToList(demisto.params().get('engines', []))
@@ -624,7 +616,7 @@ def fetch_credentials():
     demisto.credentials(credentials)
 
 
-def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):
+def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: no cover
     path = engine_path
     params = {
         'list': 'true'
@@ -659,7 +651,7 @@ def get_kv1_secret(engine_path, secret):  # pragma: no cover
     return send_request(path, 'get')
 
 
-def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None):
+def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None):  # pragma: no cover
     secrets = []
     res = list_secrets(engine_path, '2', folder)
     if not res or 'data' not in res:
@@ -695,7 +687,7 @@ def get_kv2_secret(engine_path, secret, folder=None):  # pragma: no cover
     return send_request(path, 'get')
 
 
-def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
+def get_ch_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: no cover
     path = engine_path
 
     params = {
@@ -746,6 +738,8 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
         role_url = urljoin(engine_path, urljoin('/roles/', role))
         demisto.debug('role_url: {}'.format(role_url))
         role_data = send_request(role_url, 'get')
+        if not role_data or 'data' not in role_data:
+            return []
         credential_type = role_data['data'].get('credential_type')
 
         if credential_type != 'iam_user':
