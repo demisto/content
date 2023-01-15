@@ -21,7 +21,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxy: bool, headers: dict[str, str], api_key: str = '', is_fetch: bool = None):
+                 proxy: bool, headers, api_key: str = '', is_fetch: bool = None):
         self.validate_authentication_params(username=username, password=password, api_key=api_key, is_fetch=is_fetch)
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
         self.username = username
