@@ -248,7 +248,7 @@ def main() -> None:
 
         elif command in (f'{VENDOR}-get-events', 'fetch-events'):
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            events = []
+            events: List = []
             if command == f'{VENDOR}-get-events':
                 events, results = get_events_command(client, first_fetch_time, event_type)  # type: ignore
                 return_results(results)
