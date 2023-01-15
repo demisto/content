@@ -1,0 +1,12 @@
+{
+  "OriginalURL": "https://short.url/a",
+  "RedirectCount": 1,
+  "RedirectHistory": [
+    "https://short.url/a",
+    "https://short.url/b"
+  ],
+  "ResolvedURL": "https://short.url/b",
+  "ServiceName": "Built-In",
+  "EncounteredError": false
+}
+
