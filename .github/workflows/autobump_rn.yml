@@ -15,10 +15,10 @@ jobs:
     if: github.repository == 'demisto/content' && startsWith(github.head_ref, 'contrib/') == false
     steps:
       - name: Print out context
-          run: |
-            echo "$GITHUB_CONTEXT"
-          env:
-            GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
