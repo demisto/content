@@ -110,7 +110,7 @@
     "renewable": false,
     "data": {
       "cubbyhole/": {
-        "accessor": "888888",
+        "accessor": "cubbyhole_eb4503de",
         "config": {
           "default_lease_ttl": 0,
           "force_no_cache": false,
@@ -143,7 +143,7 @@
         "running_sha256": "",
         "seal_wrap": false,
         "type": "identity",
-        "uuid": "8-8-8-8-8"
+        "uuid": "8-8-8-zZ-8"
       },
       "secret/": {
         "accessor": "8888888",
