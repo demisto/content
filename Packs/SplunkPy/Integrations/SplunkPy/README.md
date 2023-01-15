@@ -20,7 +20,7 @@ This integration was integrated and tested with Splunk v7.2.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | host | The host name to the server, including the scheme (x.x.x.x). | True |
-| authentication | The username used for authentication. To use Splunk token authentication, enter the text: `_token` in the **Username** field and your token value in the **Password** field. To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens). | True |
+| authentication | The username used for authentication. To use Splunk token authentication, enter the text: `_token` in the **Username** field and your token value in the **Password** field. To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens). There is a known authentication error when using basic authentication behind a load balanced Splunk instance (https://github.com/splunk/splunk-sdk-python/issues/219). To avoid this error use a Splunk token instead. | True |
 | port | The port affiliated with the server. | True |
 | fetchQuery | The events query to be fetched. | False |
 | fetch_limit | The limit of incidents to fetch. The maximum is 200. (It is recommended to fetch less than 50). | False |
