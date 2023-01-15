@@ -450,4 +450,3 @@ def test_fetch_incidents_de_duplication(table_first_cycle, table_second_cycle, t
     incidents, last_run = fetch_incidents(client, params)
     assert expected_last_run_5_3 == last_run
     assert len(incidents) == 1
-
