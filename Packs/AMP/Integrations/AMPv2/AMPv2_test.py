@@ -259,7 +259,7 @@ def test_computer_list_command(
     mock_response = load_mock_response(file)
     requests_mock.get(f"{BASE_URL}/computers{suffix}", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_list_command
+    from AMPv2 import computer_list_command
 
     responses = computer_list_command(mock_client, args)
 
@@ -297,9 +297,9 @@ def test_computer_list_error_command(requests_mock, mock_client):
 
     requests_mock.get(f'{BASE_URL}/computers/{args["connector_guid"]}')
 
-    with pytest.raises(ValueError) as ve:
-        from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_list_command
+    from AMPv2 import computer_list_command
 
+    with pytest.raises(ValueError) as ve:
         computer_list_command(mock_client, args)
 
         assert (
@@ -329,7 +329,7 @@ def test_computer_trajectory_list_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/{args["connector_guid"]}/trajectory', json=mock_response
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_trajectory_list_command
+    from AMPv2 import computer_trajectory_list_command
 
     response = computer_trajectory_list_command(mock_client, args)
 
@@ -396,7 +396,7 @@ def test_computer_trajectory_list_error_command(requests_mock, mock_client):
     args = {"connector_guid": "1", "query_string": '"'}
 
     with pytest.raises(ValueError) as ve:
-        from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_trajectory_list_command
+        from AMPv2 import computer_trajectory_list_command
 
         computer_trajectory_list_command(mock_client, args)
 
@@ -420,7 +420,7 @@ def test_computer_user_activity_list_command(requests_mock, mock_client):
 
     args = {"username": "johndoe"}
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_user_activity_list_command
+    from AMPv2 import computer_user_activity_list_command
 
     response = computer_user_activity_list_command(mock_client, args)
 
@@ -453,7 +453,7 @@ def test_computer_user_trajectory_list_command(requests_mock, mock_client):
         json=mock_response,
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_user_trajectory_list_command
+    from AMPv2 import computer_user_trajectory_list_command
 
     response = computer_user_trajectory_list_command(mock_client, args)
 
@@ -531,7 +531,7 @@ def test_computer_vulnerabilities_list_command(requests_mock, mock_client):
         json=mock_response,
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_vulnerabilities_list_command
+    from AMPv2 import computer_vulnerabilities_list_command
 
     response = computer_vulnerabilities_list_command(mock_client, args)
 
@@ -568,7 +568,7 @@ def test_computer_move_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/{args["connector_guid"]}', json=mock_response
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_move_command
+    from AMPv2 import computer_move_command
 
     response = computer_move_command(mock_client, args)
 
@@ -596,7 +596,7 @@ def test_computer_delete_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/{args["connector_guid"]}', json=mock_response
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_delete_command
+    from AMPv2 import computer_delete_command
 
     response = computer_delete_command(mock_client, args)
 
@@ -622,7 +622,7 @@ def test_computer_delete_error_command(requests_mock, mock_client):
     )
 
     with pytest.raises(DemistoException) as de:
-        from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_delete_command
+        from AMPv2 import computer_delete_command
 
         computer_delete_command(mock_client, args)
 
@@ -646,7 +646,7 @@ def test_computer_activity_list_command(requests_mock, mock_client):
     mock_response = load_mock_response("computer_activity_response.json")
     requests_mock.get(f"{BASE_URL}/computers/activity", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_activity_list_command
+    from AMPv2 import computer_activity_list_command
 
     response = computer_activity_list_command(mock_client, args)
 
@@ -674,7 +674,7 @@ def test_computer_activity_list_error_command(requests_mock, mock_client):
     requests_mock.get(f"{BASE_URL}/computers/activity")
 
     with pytest.raises(ValueError) as ve:
-        from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_activity_list_command
+        from AMPv2 import computer_activity_list_command
 
         computer_activity_list_command(mock_client, args)
 
@@ -699,7 +699,7 @@ def test_computer_isolation_feature_availability_get_command(
         headers={"Allow": "GET, PUT, DELETE"},
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computers_isolation_feature_availability_get_command
+    from AMPv2 import computers_isolation_feature_availability_get_command
 
     response = computers_isolation_feature_availability_get_command(mock_client, args)
 
@@ -730,7 +730,7 @@ def test_computer_isolation_get_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_isolation_get_command
+    from AMPv2 import computer_isolation_get_command
 
     response = computer_isolation_get_command(mock_client, args)
 
@@ -762,7 +762,7 @@ def test_computer_isolation_create_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_isolation_create_command
+    from AMPv2 import computer_isolation_create_command
 
     response = computer_isolation_create_command(mock_client, args)
 
@@ -792,7 +792,7 @@ def test_computer_isolation_delete_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import computer_isolation_delete_command
+    from AMPv2 import computer_isolation_delete_command
 
     response = computer_isolation_delete_command(mock_client, args)
 
@@ -819,7 +819,7 @@ def test_event_list_command(requests_mock, mock_client):
 
     args: Dict[str, Any] = {}
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import event_list_command
+    from AMPv2 import event_list_command
 
     responses = event_list_command(mock_client, args)
 
@@ -893,7 +893,7 @@ def test_event_types_list_command(
     mock_response = load_mock_response("event_type_list_response.json")
     requests_mock.get(f"{BASE_URL}/event_types", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import event_type_list_command
+    from AMPv2 import event_type_list_command
 
     response = event_type_list_command(mock_client, args)
 
@@ -950,7 +950,7 @@ def test_file_list_list_command(
     mock_response = load_mock_response(file)
     requests_mock.get(f"{BASE_URL}/{suffix}", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import file_list_list_command
+    from AMPv2 import file_list_list_command
 
     response = file_list_list_command(mock_client, args)
 
@@ -1003,7 +1003,7 @@ def test_file_list_item_list_command(requests_mock, mock_client, file, suffix, a
     mock_response = load_mock_response(file)
     requests_mock.get(f"{BASE_URL}/{suffix}", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import file_list_item_list_command
+    from AMPv2 import file_list_item_list_command
 
     response = file_list_item_list_command(mock_client, args)
 
@@ -1045,7 +1045,7 @@ def test_file_list_item_create_command(requests_mock, mock_client):
         json=mock_response,
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import file_list_item_create_command
+    from AMPv2 import file_list_item_create_command
 
     response = file_list_item_create_command(mock_client, args)
 
@@ -1074,7 +1074,7 @@ def test_file_list_item_delete_command(requests_mock, mock_client):
         json=mock_response,
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import file_list_item_delete_command
+    from AMPv2 import file_list_item_delete_command
 
     response = file_list_item_delete_command(mock_client, args)
 
@@ -1104,7 +1104,7 @@ def test_file_list_item_delete_error_command(requests_mock, mock_client):
     )
 
     with pytest.raises(DemistoException) as de:
-        from Packs.AMP.Integrations.AMPv2.AMPv2 import file_list_item_delete_command
+        from AMPv2 import file_list_item_delete_command
 
         file_list_item_delete_command(mock_client, args)
 
@@ -1138,7 +1138,7 @@ def test_group_list_command(requests_mock, mock_client, file, args, suffix):
     mock_response = load_mock_response(file)
     requests_mock.get(f"{BASE_URL}/groups{suffix}", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import group_list_command
+    from AMPv2 import group_list_command
 
     response = group_list_command(mock_client, args)
 
@@ -1179,7 +1179,7 @@ def test_group_policy_update_command(requests_mock, mock_client):
     mock_response = load_mock_response("group_response.json")
     requests_mock.patch(f'{BASE_URL}/groups/{args["group_guid"]}', json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import group_policy_update_command
+    from AMPv2 import group_policy_update_command
 
     response = group_policy_update_command(mock_client, args)
 
@@ -1216,7 +1216,7 @@ def test_group_policy_update_error_command(requests_mock, mock_client):
     requests_mock.patch(f'{BASE_URL}/groups/{args["group_guid"]}')
 
     with pytest.raises(ValueError) as ve:
-        from Packs.AMP.Integrations.AMPv2.AMPv2 import group_policy_update_command
+        from AMPv2 import group_policy_update_command
 
         group_policy_update_command(mock_client, args)
 
@@ -1243,7 +1243,7 @@ def test_group_parent_update_command(requests_mock, mock_client, file):
         f'{BASE_URL}/groups/{args["child_guid"]}/parent', json=mock_response
     )
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import group_parent_update_command
+    from AMPv2 import group_parent_update_command
 
     response = group_parent_update_command(mock_client, args)
 
@@ -1284,7 +1284,7 @@ def test_group_create_command(requests_mock, mock_client):
     mock_response = load_mock_response("group_response.json")
     requests_mock.post(f"{BASE_URL}/groups", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import group_create_command
+    from AMPv2 import group_create_command
 
     response = group_create_command(mock_client, args)
 
@@ -1323,7 +1323,7 @@ def test_group_delete_command(requests_mock, mock_client):
     mock_response = load_mock_response("group_delete_response.json")
     requests_mock.delete(f'{BASE_URL}/groups/{args["group_guid"]}', json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import groups_delete_command
+    from AMPv2 import groups_delete_command
 
     response = groups_delete_command(mock_client, args)
 
@@ -1352,7 +1352,7 @@ def test_group_delete_error_command(requests_mock, mock_client):
     requests_mock.delete(f'{BASE_URL}/groups/{args["group_guid"]}', json=mock_response)
 
     with pytest.raises(DemistoException) as de:
-        from Packs.AMP.Integrations.AMPv2.AMPv2 import groups_delete_command
+        from AMPv2 import groups_delete_command
 
         groups_delete_command(mock_client, args)
 
@@ -1383,7 +1383,7 @@ def test_indicator_list_command(requests_mock, mock_client, file, args, suffix):
     mock_response = load_mock_response(file)
     requests_mock.get(f"{BASE_URL}/indicators{suffix}", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import indicator_list_command
+    from AMPv2 import indicator_list_command
 
     response = indicator_list_command(mock_client, args)
 
@@ -1422,7 +1422,7 @@ def test_policy_list_command(requests_mock, mock_client, file, args, suffix):
     mock_response = load_mock_response(file)
     requests_mock.get(f"{BASE_URL}/policies{suffix}", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import policy_list_command
+    from AMPv2 import policy_list_command
 
     response = policy_list_command(mock_client, args)
 
@@ -1469,7 +1469,7 @@ def test_app_trajectory_query_list_command(
     mock_response = load_mock_response("app_trajectory_query_response.json")
     requests_mock.get(f"{BASE_URL}/app_trajectory/queries", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import app_trajectory_query_list_command
+    from AMPv2 import app_trajectory_query_list_command
 
     response = app_trajectory_query_list_command(mock_client, args)
 
@@ -1495,7 +1495,7 @@ def test_version_get_command(requests_mock, mock_client):
     mock_response = load_mock_response("version_get_response.json")
     requests_mock.get(f"{BASE_URL}/version", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import version_get_command
+    from AMPv2 import version_get_command
 
     response = version_get_command(mock_client, arg)
 
@@ -1528,7 +1528,7 @@ def test_vulnerability_list_command(
     mock_response = load_mock_response(file)
     requests_mock.get(f"{BASE_URL}/vulnerabilities{suffix}", json=mock_response)
 
-    from Packs.AMP.Integrations.AMPv2.AMPv2 import vulnerability_list_command
+    from AMPv2 import vulnerability_list_command
 
     response = vulnerability_list_command(mock_client, args)
 
