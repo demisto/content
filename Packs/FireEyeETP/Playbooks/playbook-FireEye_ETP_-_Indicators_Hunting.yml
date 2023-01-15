@@ -2,7 +2,7 @@ id: FireEye ETP - Indicators Hunting
 version: -1
 name: FireEye ETP - Indicators Hunting
 description: |-
-  This playbook queries FireEye Email Threat Prevention (ETP) for indicators such as domains, IP addresses, sender and recipient email addresses.
+  This playbook queries FireEye Email Threat Prevention (ETP) for indicators such as domains, IP addresses, and sender and recipient email addresses.
 
   Note that multiple search values should be separated by commas only (without spaces or any special characters).
 starttaskid: "0"
@@ -138,7 +138,7 @@ tasks:
       id: 9194fece-7d1c-4f5d-886d-5c10e93324b4
       version: -1
       name: Is FireEye ETP enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -179,7 +179,7 @@ tasks:
       id: 9e1e414c-a541-40cd-8180-3eb81cfbb159
       version: -1
       name: FireEye ETP Query - Domain
-      description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+      description: Search for messages that include specified message attributes that are accessible in the ETP portal.
       script: FireEye ETP|||fireeye-etp-search-messages
       type: regular
       iscommand: true
@@ -622,7 +622,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -668,7 +668,7 @@ tasks:
       id: fa989afd-9326-4229-83ba-eec8e4929008
       version: -1
       name: FireEye ETP Query - IPAddress
-      description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+      description: Search for messages that include specified message attributes that are accessible in the ETP portal.
       script: FireEye ETP|||fireeye-etp-search-messages
       type: regular
       iscommand: true
@@ -859,7 +859,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -905,7 +905,7 @@ tasks:
       id: 3c5241a2-4aaf-4f65-83a9-a4d4458b94be
       version: -1
       name: FireEye ETP Query - Sender EmailAddress
-      description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+      description: Search for messages that include specified message attributes that are accessible in the ETP portal.
       script: FireEye ETP|||fireeye-etp-search-messages
       type: regular
       iscommand: true
@@ -1096,7 +1096,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1147,7 +1147,7 @@ tasks:
       id: 91b3ddf9-55ca-411c-8e50-427b671846fd
       version: -1
       name: FireEye ETP Query - Recipient EmailAddress
-      description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+      description: Search for messages that include specified message attributes that are accessible in the ETP portal.
       script: FireEye ETP|||fireeye-etp-search-messages
       type: regular
       iscommand: true
@@ -1338,7 +1338,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1394,7 +1394,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1511,7 +1511,7 @@ inputs:
   value: {}
   required: true
   description: |-
-    The start date and time from which you would like to retrieve messages from the FireEye ETP server, e.g. 2017-10-24T10:48:51.000Z.
+    The start date and time from which to retrieve messages from the FireEye ETP server, e.g., 2017-10-24T10:48:51.000Z.
 
     For a complete date range, specify 'to_accepted_date_time' as well.
   playbookInputQuery:
@@ -1519,14 +1519,14 @@ inputs:
   value: {}
   required: true
   description: |-
-    The end date and time specify the period of time in which messages should be retrieved from the FireEye ETP server, e.g. 2017-10-24T10:48:51.000Z.
+    The end date and time to specify the period of time in which messages should be retrieved from the FireEye ETP server, e.g., 2017-10-24T10:48:51.000Z.
 
     For a complete date range, specify 'from_accepted_date_time' as well.
   playbookInputQuery:
 - key: last_modified_date_time
   value: {}
   required: false
-  description: "The last date and time messages were modified in order to retrieve them from the FireEye ETP server. \n\nDates and times should be accompanied by one of the following operators: \">\", \"<\", \">=\", \"<=\". \nE.g. use value \"<2017-10-24T18:00:00.000Z\" to search for messages that were last modified after the specified time stamp."
+  description: "The last date and time messages were modified in order to retrieve them from the FireEye ETP server. \n\nDates and times should be accompanied by one of the following operators: \">\", \"<\", \">=\", \"<=\". \nE.g., use value \"<2017-10-24T18:00:00.000Z\" to search for messages that were last modified after the specified timestamp."
   playbookInputQuery:
 - key: status
   value: {}

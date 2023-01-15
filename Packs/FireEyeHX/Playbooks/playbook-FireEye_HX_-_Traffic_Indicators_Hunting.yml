@@ -814,7 +814,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -865,7 +865,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -914,7 +914,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -969,7 +969,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1020,7 +1020,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1081,7 +1081,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1142,7 +1142,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1204,7 +1204,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP address to search for within FireEye HX logs. Used for both source and destination IP addresses.
+    A single or multiple IP address to search for in FireEye HX logs. Used for both source and destination IP addresses.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1212,7 +1212,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple port numbers to search for within FireEye HX logs. Used for both remote and local ports.
+    A single or multiple port numbers to search for in FireEye HX logs. Used for both remote and local ports.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1220,7 +1220,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for within FireEye HX logs.
+    Single or multiple URLs and/or domains to search for in FireEye HX logs.
     By default, the 'contains' clause is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -1233,19 +1233,19 @@ inputs:
 - key: interval_in_seconds
   value: {}
   required: false
-  description: "The interval in seconds between each poll. Default is 60.\t"
+  description: The interval in seconds between each poll. Default is 60.
   playbookInputQuery:
 - key: limit
   value: {}
   required: false
-  description: Limits the results count (once the limit is reached, the search is stopped).
+  description: Limits the results count. (When the limit is reached, the search stops).
   playbookInputQuery:
 - key: exhaustive
   value:
     simple: "no"
   required: false
   description: |-
-    Whether a search is exhaustive or quick.
+    Whether a search is exhaustive.
     Possible values are: yes, no. Default is yes.
   playbookInputQuery:
 outputs:
@@ -1256,7 +1256,7 @@ outputs:
   description: The timestamp of the event.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Timestamp - Accessed
-  description: The last accessed time.
+  description: The time when the entry was last accessed.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Timestamp - Modified
   description: The time when the entry was last modified.
@@ -1280,16 +1280,16 @@ outputs:
   description: The MD5 hash of the file.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Port
-  description: The Port.
+  description: The port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Process ID
   description: The ID of the process.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local IP Address
-  description: The local IP Address.
+  description: The local IP address.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local Port
-  description: The local Port.
+  description: The local port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Remote Port
   description: The remote port.
