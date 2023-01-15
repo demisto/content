@@ -53,20 +53,27 @@ jobs:
         check_name: Unit Test Report
         detailed_summary: true
         annotate_only: true
-    
-    - name: Find Comment
-      uses: peter-evans/find-comment@v2
-      id: fc
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-author: 'github-actions[bot]'
-        body-includes: Unit Test Report
 
-    - name: Create or update comment
-      uses: peter-evans/create-or-update-comment@v2
+
+    - name: Code Coverage Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        comment-id: ${{ steps.fc.outputs.comment-id }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          $GITHUB_SUMMARY
-        edit-mode: replace
+        filename: |
+          **/Packs/**/Integrations/**/.coverage
+          **/Packs/**/Scripts/**/.coverage
+        badge: true
+        fail_below_min: true
+        format: markdown
+        output: both
+        thresholds: '70 80'
+
+    - name: Append coverage to summary
+      id: append-coverage
+      run: |
+        cat code-coverage-results.md >> $GITHUB_SUMMARY
+
+    - name: Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: "Unit Test Report"
+        message: $GITHUB_SUMMARY
