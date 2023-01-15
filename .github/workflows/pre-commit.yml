@@ -56,6 +56,7 @@ jobs:
 
 
     - name: Code Coverage Report
+      if: always()
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
         filename: |
@@ -68,11 +69,13 @@ jobs:
         thresholds: '70 80'
 
     - name: Append coverage to summary
+      if: always()
       id: append-coverage
       run: |
         cat code-coverage-results.md >> $GITHUB_SUMMARY
 
     - name: Comment
+      if: always()
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         header: "Unit Test Report"
