@@ -458,4 +458,4 @@ outputs:
   type: string
 tests:
 - Isolate and unisolate endpoint - test
-fromversion: 6.5.0
+fromversion: 6.8.0
