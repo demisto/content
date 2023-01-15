@@ -34,14 +34,21 @@ configuration:
   type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
+  name: creds_certificate
+  type: 9
+  displaypassword: Private Key
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
+  hidden: true
 - defaultvalue: 12 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -312,7 +319,7 @@ script:
       type: string
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
-  dockerimage: demisto/crypto:1.0.0.40696
+  dockerimage: demisto/crypto:1.0.0.42817
   isfetch: true
   runonce: false
   script: ''

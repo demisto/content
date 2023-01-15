@@ -2,11 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-import requests
 from typing import Dict, Tuple, List, Union
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+
+urllib3.disable_warnings()
 
 # List processes
 LIST_PROCESSES_WINDOWS = '2d32a530-0716-4542-afdc-8da3bd47d8bf'  # disable-secrets-detection

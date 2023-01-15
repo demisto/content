@@ -83,6 +83,11 @@ In order to send signed/encrypted messages using the S/MIME Messaging and Mail S
       <td>The message body to send.</td>
       <td>Required</td>
     </tr>
+    <tr>
+      <td>use_transport_encoding</td>
+      <td>Set 'true' to use content transfer encoding.</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 

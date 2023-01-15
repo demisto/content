@@ -386,6 +386,25 @@ def test_module(client):
     return 'ok'
 
 
+def is_command_is_fetch():
+    """
+    Rules wether the executed command is fetch_incidents or classifier
+    - If Last Run is set, then it's a fetch_incident command.
+    Otherwise, the results are dependent on the fetched_incidents_list section in integration context:
+    If it's empty, then it means that fetch_incidents already ran once and therefore it must be a classifier.
+
+    :return: True if this is a fetch_incidents command, otherwise return false.
+    :rtype: ``bool``
+    """
+    if demisto.getLastRun():
+        return True
+    else:
+        if demisto.getIntegrationContext().get('fetched_incidents_list', []):
+            return False
+        else:
+            return True
+
+
 def fetch_incidents(client):
     """
     Fetches new alerts from Prisma Cloud Compute and returns them as a list of Demisto incidents
@@ -398,60 +417,68 @@ def fetch_incidents(client):
         list of incidents
     """
     incidents = []
-    alerts = client.list_incidents()
+    if is_command_is_fetch():
+        alerts = client.list_incidents()
 
-    if alerts:
-        for a in alerts:
-            alert_type = a.get('kind')
-            name = ALERT_TITLE
-            severity = 0
+        if alerts:
+            for a in alerts:
+                alert_type = a.get('kind')
+                name = ALERT_TITLE
+                severity = 0
 
-            # fix the audit category from camel case to display properly
-            if alert_type == ALERT_TYPE_AUDIT:
-                a['category'] = camel_case_transformer(a.get('category'))
+                # fix the audit category from camel case to display properly
+                if alert_type == ALERT_TYPE_AUDIT:
+                    a['category'] = camel_case_transformer(a.get('category'))
 
-            # always save the raw JSON data under this argument (used in scripts)
-            a['rawJSONAlert'] = json.dumps(a)
+                # always save the raw JSON data under this argument (used in scripts)
+                a['rawJSONAlert'] = json.dumps(a)
 
-            # parse any list into a markdown table, since tableToMarkdown takes the headers from the first object in
-            # the list check headers manually since some entries might have omit empty fields
-            tables = {}
-            for key, value in a.items():
-                # check only if we got a non empty list of dict
-                if isinstance(value, list) and value and isinstance(value[0], dict):
-                    tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'),
-                                                                    value,
-                                                                    headers=get_headers(key, value),
-                                                                    headerTransform=camel_case_transformer,
-                                                                    removeNull=True)
+                # parse any list into a markdown table, since tableToMarkdown takes the headers from the first object in
+                # the list check headers manually since some entries might have omit empty fields
+                tables = {}
+                for key, value in a.items():
+                    # check only if we got a non empty list of dict
+                    if isinstance(value, list) and value and isinstance(value[0], dict):
+                        tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'),
+                                                                        value,
+                                                                        headers=get_headers(key, value),
+                                                                        headerTransform=camel_case_transformer,
+                                                                        removeNull=True)
 
-            a.update(tables)
+                a.update(tables)
 
-            if alert_type == ALERT_TYPE_VULNERABILITY:
-                # E.g. "Prisma Cloud Compute Alert - imageName Vulnerabilities"
-                name += a.get('imageName') + ' Vulnerabilities'
-                # Set the severity to the highest vulnerability, take the first from the list
-                severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
+                if alert_type == ALERT_TYPE_VULNERABILITY:
+                    # E.g. "Prisma Cloud Compute Alert - imageName Vulnerabilities"
+                    name += a.get('imageName') + ' Vulnerabilities'
+                    # Set the severity to the highest vulnerability, take the first from the list
+                    severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
 
-            elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
-                # E.g. "Prisma Cloud Compute Alert - Incident"
-                name += camel_case_transformer(a.get('type'))
-                # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
-                if a.get('type') != "incident":
-                    name += ' ' + camel_case_transformer(alert_type)
+                elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
+                    # E.g. "Prisma Cloud Compute Alert - Incident"
+                    name += camel_case_transformer(a.get('type'))
+                    # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
+                    if a.get('type') != "incident":
+                        name += ' ' + camel_case_transformer(alert_type)
 
-            else:
-                # E.g. "Prisma Cloud Compute Alert - Cloud Discovery"
-                name += camel_case_transformer(alert_type)
+                else:
+                    # E.g. "Prisma Cloud Compute Alert - Cloud Discovery"
+                    name += camel_case_transformer(alert_type)
 
-            incidents.append({
-                'name': name,
-                'occurred': a.get('time'),
-                'severity': severity,
-                'rawJSON': json.dumps(a)
-            })
+                incidents.append({
+                    'name': name,
+                    'occurred': a.get('time'),
+                    'severity': severity,
+                    'rawJSON': json.dumps(a)
+                })
+        demisto.setLastRun({"id": "a"})
+        ctx = demisto.getIntegrationContext()
+        incidents_to_update = incidents or ctx.get('fetched_incidents_list')
+        ctx.update({'fetched_incidents_list': incidents_to_update})
+        demisto.setIntegrationContext(ctx)
+        return incidents
 
-    return incidents
+    else:
+        return demisto.getIntegrationContext().get('fetched_incidents_list', [])
 
 
 def parse_limit_and_offset_values(limit: str, offset: str = "0") -> Tuple[int, int]:

@@ -1,8 +1,8 @@
-id: Detonate File - CrowdStrike Falcon X
+id: Detonate File - CrowdStrike Falcon Intelligence Sandbox
 version: -1
-name: Detonate File - CrowdStrike Falcon X
+name: Detonate File - CrowdStrike Falcon Intelligence Sandbox
 description: |-
-  Detonates a File using CrowdStrike Falcon X sandbox.
+  Detonates a File using CrowdStrike Falcon Intelligence Sandbox.
   Accepted file formats:
   Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
   Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
@@ -114,7 +114,7 @@ tasks:
     task:
       id: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
       version: -1
-      name: CrowdStrike Falcon X Get Report
+      name: CrowdStrike Falcon Intelligence Sandbox Get Report
       description: Get a full version of a sandbox report.
       script: CrowdStrike Falcon X|||cs-fx-get-full-report
       type: regular
@@ -167,9 +167,9 @@ tasks:
     task:
       id: ee402758-5d33-4edd-89fb-816dee6233c5
       version: -1
-      name: Is CrowdStrike Falcon X enabled?
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: |
-        Verify that there is a valid instance of CrowdStrike Falcon X enabled.
+        Verify that there is a valid instance of CrowdStrike Falcon Intelligence Sandbox enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -396,7 +396,7 @@ tasks:
     task:
       id: 33e04243-7824-4475-8ea1-5c2366c22fd6
       version: -1
-      name: CrowdStrike Falcon X Upload File to Sandbox
+      name: CrowdStrike Falcon Intelligence Sandbox Upload File to Sandbox
       description: Upload a file for sandbox analysis.
       script: CrowdStrike Falcon X|||cs-fx-upload-file
       type: regular
@@ -516,14 +516,6 @@ inputs:
     simple: "15"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
-  playbookInputQuery: null
-- key: EnableTor
-  value:
-    simple: "false"
-  required: false
-  description: Whether the sandbox analysis routes network traffic via TOR. If true,
-    sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter
-    is set to true.
   playbookInputQuery: null
 - key: EnvironmentID
   value:
