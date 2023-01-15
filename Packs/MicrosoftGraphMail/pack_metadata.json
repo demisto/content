@@ -13,12 +13,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "MicrosoftGraphListener": {
-            "mandatory": true,
-            "display_name": "Microsoft Graph Mail Single User"
-        }
-    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
