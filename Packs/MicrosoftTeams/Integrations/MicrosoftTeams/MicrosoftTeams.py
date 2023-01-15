@@ -499,7 +499,7 @@ def get_graph_access_token() -> str:
         if epoch_seconds() < valid_until:
             demisto.debug('Using access token from integration context')
             return access_token
-    tenant_id: str = integration_context.get('tenant_id', '') or TENANT_ID
+    tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -1054,13 +1054,13 @@ def send_message_in_chat(content: str, message_type: str, chat_id: str) -> dict:
     return response
 
 
-def get_signed_in_user():
+def get_signed_in_user() -> Dict[str, str]:
     """
     Get the properties of the signed-in user
     :return: the properties of the signed-in user
     """
-    url: str = f"{GRAPH_BASE_URL}/beta/me"
-    return cast(Dict[Any, Any], http_request('GET', url))
+    url: str = f"{GRAPH_BASE_URL}/v1.0/me"
+    return cast(Dict[str, str], http_request('GET', url))
 
 
 def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
@@ -1074,7 +1074,7 @@ def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
     url: str = f'{GRAPH_BASE_URL}/v1.0/chats'
 
     # Add the caller as owner member
-    caller_id = get_signed_in_user().get('id')
+    caller_id: str = get_signed_in_user().get('id', '')
     members: list = [create_conversation_member(caller_id, ["owner"])]
 
     members += [create_conversation_member(user_id, [USER_TYPE_TO_USER_ROLE.get(user_type)])
@@ -1346,8 +1346,8 @@ def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = 
 def get_channel_type(channel_id, team_id) -> str:
     """
     Returns the channel membershipType
-    :param channel_id: Name of channel to get ID of
-    :param team_id: AAD ID of team to search channel in
+    :param channel_id: The name of the channel
+    :param team_id: ID of the channel's team
     :return: The channel's membershipType
     """
     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}'
@@ -1370,7 +1370,7 @@ def get_team_members(service_url: str, team_id: str) -> list:
 def get_channel_members(team_id: str, channel_id: str) -> List[Dict[str, Any]]:
     """
     Retrieves channel members given a channel
-    :param team_id: ID of team to get team members of
+    :param team_id: ID of the channel's team
     :param channel_id: ID of channel to get channel members of
     :return: List of channel members
     """
@@ -1457,7 +1457,7 @@ def create_personal_conversation(integration_context: dict, team_member_id: str)
     """
     bot_id: str = demisto.params().get('bot_id', '')
     bot_name: str = integration_context.get('bot_name', '')
-    tenant_id: str = integration_context.get('tenant_id', '') or TENANT_ID
+    tenant_id: str = integration_context.get('tenant_id', '')
     conversation: dict = {
         'bot': {
             'id': f'28:{bot_id}',
@@ -2033,7 +2033,7 @@ def ring_user():
 
     bot_id = demisto.params().get('bot_id')
     integration_context: dict = get_integration_context()
-    tenant_id: str = integration_context.get('tenant_id', '') or TENANT_ID
+    tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -2154,24 +2154,23 @@ def validate_auth_code_flow_params(command: str = ''):
     :param command: the command that should be executed
     """
     if not all([AUTH_CODE, REDIRECT_URI, AUTH_TYPE == AUTHORIZATION_CODE_FLOW]):
-
         err = f"In order to use the '{command}' command, "
-        if AUTH_TYPE != AUTHORIZATION_CODE_FLOW:
-            raise DemistoException(err + "you must set the 'Authentication Type' parameter to 'Authorization Code' in "
-                                         "the integration configuration.")
-        elif not all([AUTH_CODE, REDIRECT_URI]):
-            raise DemistoException(err + "you must provide both 'Application redirect URI' and 'Authorization code' in "
-                                         "the integration configuration for the Authorization Code flow.")
-        else:
+        if not AUTH_CODE and not REDIRECT_URI and AUTH_TYPE != AUTHORIZATION_CODE_FLOW:
             raise DemistoException(err + "Please set the necessary parameters for the Authorization Code flow in the "
                                          "integration configuration.")
+        elif AUTH_TYPE != AUTHORIZATION_CODE_FLOW:
+            raise DemistoException(err + "you must set the 'Authentication Type' parameter to 'Authorization Code' in "
+                                         "the integration configuration.")
+        else:  # not all([AUTH_CODE, REDIRECT_URI]):
+            raise DemistoException(err + "you must provide both 'Application redirect URI' and 'Authorization code' in "
+                                         "the integration configuration for the Authorization Code flow.")
 
 
 def test_connection():
     """
     Test connectivity in the Authorization Code flow mode.
     """
-    get_graph_access_token()  # If fails, get_graph_access_token returns an error
+    get_graph_access_token()  # If fails, get_graph_access_token returns an error TODO - prob in case convert auth_type
     return_results(CommandResults(readable_output='✅ Success!'))
 
 

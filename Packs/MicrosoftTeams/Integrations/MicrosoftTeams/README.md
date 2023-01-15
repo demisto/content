@@ -262,9 +262,11 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 1. Choose the 'Authorization Code' option in the ***Authentication Type*** parameter.
 2. Enter your Client/Application ID in the ***Bot ID*** parameter. 
 3. Enter your Client Secret in the ***Bot Password*** parameter.
-4. Enter your Tenant ID in the ***Tenant ID*** parameter.
-5. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
-6. Enter your Authorization code in the ***Authorization code*** parameter.
+4. Enter your Application redirect URI in the ***Application redirect URI*** parameter.
+5. Copy the following URL and replace the ***TENANT_ID***, ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
+https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=code&response_mode=query&scope=offline_access%20https%3A%2F%2Fgraph.microsoft.com%2F.default&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&state=12345. When prompted, accept the Microsoft authorization request for the required permissions. You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&state=12345&session_state=SESSION_STATE```
+6. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
 7. Save the instance.
 8. Run the ***!microsoft-teams-auth-test*** command - a 'Success' message should be printed to the War Room.
 
@@ -335,8 +337,9 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 ---
 - In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
 - The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the Client Credentials flow due to a limitation in Microsoft's permissions system. In addition, the [microsoft-teams-chat-create](https://learn.microsoft.com/en-us/graph/api/chat-post?view=graph-rest-1.0&tabs=http) and [microsoft-teams-message-send-to-chat](https://learn.microsoft.com/en-us/graph/api/chat-post-messages?view=graph-rest-1.0&tabs=http) commands are only supported when using the Authorization Code flow.
-  To work around these limitations, you can configure two instances of the integration, each with a different Authentication Type.
+  To work around these limitations, you can configure two instances of the integration, each with a different Authentication Type. TODO - with different bots
 - Posting a message or adaptive card to a private/shared channel is currently not supported in the *send-notification* command. Thus, also the *mirror_investigation* command does not support private/shared channels. For more information, see the [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
+- TODO - See Microsoft documentation to [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams)
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -506,6 +509,7 @@ Calling Avishai Brandeis
 ### Add a user to a channel
 ***
 Adds a member (user) to a private/shared channel.
+For a comparison of Teams features for each channel type, see the Microsoft documentation:  [Channel feature comparison](https://learn.microsoft.com/en-us/MicrosoftTeams/teams-channels-overview#channel-feature-comparison).
 
 
 ##### Base Command
@@ -797,6 +801,31 @@ Send a new chat message in the specified chat.
 | Chat Id                                       | Created DateTime         | Id from                              | Message Type | Message content | Message id    | User from | importance | lastModified DateTime    |
 |-----------------------------------------------|--------------------------|--------------------------------------|--------------|-----------------|---------------|-----------|------------|--------------------------|
 | 19:1c771fdc14dc4b05b3a9184414bc8948@thread.v2 | 2023-01-08T07:55:50.222Z | 359d2c3c-162b-414c-b2eq-386461e5l050 | message      | Hello World     | 1673864550222 | itayadmin | normal     | 2023-01-08T07:55:50.222Z |
+
+
+
+
+
+
+### microsoft-teams-auth-test
+***
+Tests the connectivity to MicrosoftTeams.
+
+##### Base Command
+
+`microsoft-teams-auth-test`
+
+##### Input
+There are no input arguments for this command.
+
+##### Context Output
+There is no context output for this command.
+
+##### Command Example
+```!microsoft-teams-auth-test```
+
+##### Human Readable Output
+>✅ Success!
 
 
 ## Running commands from Microsoft Teams

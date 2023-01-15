@@ -27,5 +27,7 @@ There are two different authentication methods for self-deployed configuration:
 **Note:** When using the Authorization Code flow, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation.
 
 ### Self deployed configuration
+
+* TODO maybe - link to readme (in case of changes will be the most updated or to display also here)
 - [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
 - [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)

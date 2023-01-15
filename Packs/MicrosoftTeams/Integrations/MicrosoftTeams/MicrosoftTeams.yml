@@ -198,8 +198,8 @@ script:
     - description: The display name of the member to add to the channel.
       name: member
       required: true
-    - description: Determine whether the new member should be an owner. The default value is 'false'.
-      name: owner
+    - description: Whether to add the member with the owner role. The default value is 'false'.
+      name: owner # todo maybe change to |is_owner
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -286,7 +286,7 @@ script:
     - description: The name of the channel's team.
       name: team
       required: true
-    description: Retrieve a list of members from a channel. Only a user who is a member of the shared channel can retrieve the channel member list.
+    description: Retrieve a list of members from a channel.
     name: microsoft-teams-channel-user-list
     outputs:
     - contextPath: MicrosoftTeams.Channel.ChannelName.Members.displayName
