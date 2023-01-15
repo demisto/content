@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "support_native_docker_image_in_lint"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "7f1a50525ebc6924b8f946d506337eb167985493"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
