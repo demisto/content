@@ -1,6 +1,6 @@
-id: User Investigation - SIEM search for failed logon - Generic
+id: SIEM - Search for Failed logins
 version: -1
-name: User Investigation - SIEM search for failed logon - Generic
+name: SIEM - Search for Failed logins
 description: |-
   This playbook searches for failed logon on a specific user by querying logs from different sources.
 
@@ -29,8 +29,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 150
+          "x": -810,
+          "y": 170
         }
       }
     note: false
@@ -104,17 +104,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4e18dce1-f4b1-470e-8848-9fbacc4045d0
+    taskid: a5b9a9a6-679c-4513-89a8-3d9b2e4c735c
     type: condition
     task:
-      id: 4e18dce1-f4b1-470e-8848-9fbacc4045d0
+      id: a5b9a9a6-679c-4513-89a8-3d9b2e4c735c
       version: -1
-      name: Is SIEM enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      name: Is SIEM enabled and the user name is defined?
+      description: Returns 'yes' if integration brand is available and the user name is defined. Otherwise returns 'no'
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "22"
       Azure Log Analytics:
       - "7"
       QRadar:
@@ -145,6 +147,12 @@ tasks:
             value:
               simple: active
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
     - label: Splunk
       condition:
       - - operator: isEqualString
@@ -168,6 +176,12 @@ tasks:
             value:
               simple: active
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
     - label: Azure Log Analytics
       condition:
       - - operator: isEqualString
@@ -190,12 +204,18 @@ tasks:
           right:
             value:
               simple: active
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 300
+          "x": -810,
+          "y": 320
         }
       }
     note: false
@@ -207,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 57ac7280-c928-419e-8de3-4d4310e04848
+    taskid: eaf023ca-5658-4d9d-887c-d65d088917d6
     type: playbook
     task:
-      id: 57ac7280-c928-419e-8de3-4d4310e04848
+      id: eaf023ca-5658-4d9d-887c-d65d088917d6
       version: -1
       name: Search for failed logon attempts using QRadar
       description: This playbook runs a QRadar query and return its results to the context.
@@ -225,7 +245,7 @@ tasks:
       interval:
         simple: "1"
       query_expression:
-        simple: select * from events WHERE LogSourceTypeName(deviceType) = 'Microsoft Windows Security Event Log' and username='${inputs.Username}' and "EventID"='4771'  or "EventID"='4625' and "Logon Type"='2' OR "Logon Type"='7' OR "Logon Type"='10' Last 1 days
+        simple: select * from events WHERE LogSourceTypeName(deviceType) = 'Microsoft Windows Security Event Log' and username='${inputs.Username}' and "EventID"='4771'  or "EventID"='4625' and "Logon Type"='2' OR "Logon Type"='7' OR "Logon Type"='10' ${inputs.QRadarSearchTime}
       timeout:
         simple: "600"
     separatecontext: true
@@ -327,10 +347,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: be76ff7f-4aea-4346-8538-06990dd8a4e0
+    taskid: b701829c-66f0-4962-8b7f-c681f482d7ac
     type: regular
     task:
-      id: be76ff7f-4aea-4346-8538-06990dd8a4e0
+      id: b701829c-66f0-4962-8b7f-c681f482d7ac
       version: -1
       name: Search for failed logon attempts using Azure Log Analytics
       description: Executes an Analytics query for failed logon events.
@@ -351,7 +371,7 @@ tasks:
           SecurityEvent
           | where EventID == 4771 or EventID == 4625 and (LogonType ==  2 or LogonType == 7 or LogonType == 10)
           | where TargetAccount == '${inputs.Username}'
-          | where TimeGenerated > ago(24h)
+          | where TimeGenerated > ${inputs.AzureSearchTime}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -587,10 +607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: f2ec99bf-b674-4519-8a60-e9440a096f1f
+    taskid: 7229fa12-5d3d-4287-83d4-e641a9773069
     type: condition
     task:
-      id: f2ec99bf-b674-4519-8a60-e9440a096f1f
+      id: 7229fa12-5d3d-4287-83d4-e641a9773069
       version: -1
       name: Found results from Azure Log Analytics?
       description: Check if there are results from Azure Log Analytics
@@ -647,8 +667,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 1610
+          "x": -810,
+          "y": 1390
         }
       }
     note: false
@@ -664,32 +684,48 @@ view: |-
       "16_22_#default#": 0.11,
       "17_22_#default#": 0.26,
       "18_22_#default#": 0.1,
-      "18_9_yes": 0.71
+      "18_9_yes": 0.71,
+      "3_22_#default#": 0.17
     },
     "paper": {
       "dimensions": {
-        "height": 1525,
-        "width": 1880,
-        "x": -440,
-        "y": 150
+        "height": 1285,
+        "width": 2250,
+        "x": -810,
+        "y": 170
       }
     }
   }
 inputs:
 - key: SplunkIndex
-  value: {}
+  value:
+    simple: '*'
   required: false
   description: Splunk's index name in which to search. Default is "*" - All.
   playbookInputQuery:
 - key: SplunkEarliestTime
-  value: {}
+  value:
+    simple: -1d
   required: false
   description: The earliest time for the Splunk search query.
   playbookInputQuery:
 - key: SplunkLatestTime
-  value: {}
+  value:
+    simple: now
   required: false
   description: The latest time for the Splunk search query.
+  playbookInputQuery:
+- key: QRadarSearchTime
+  value:
+    simple: Last 1 days
+  required: false
+  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
+  playbookInputQuery:
+- key: AzureSearchTime
+  value:
+    simple: ago(1d)
+  required: false
+  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
   playbookInputQuery:
 - key: Username
   value: {}
@@ -699,6 +735,13 @@ inputs:
 outputs:
 - contextPath: NumOfSiemFailedLogon
   description: Number of failed login from Siem.
+  type: unknown
+- contextPath: QRadar.Search.Result
+  description: The result of the QRadar search.
+- contextPath: Splunk.Result
+  description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
+- contextPath: AzureFailedLogonLogs
+  description: The result of the Azure Log Analytics search.
   type: unknown
 quiet: true
 tests:
