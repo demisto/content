@@ -42,7 +42,7 @@ tasks:
       id: 95435a23-0dae-4169-8812-d0e6aa2f8ec6
       version: -1
       name: Is Trend Micro Cloud App Security enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -109,12 +109,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 49c693b1-ecb6-47b3-8f63-bfd4abe0f8bb
+    taskid: 7b40ff61-e102-45e2-8af6-173df2135d57
     type: regular
     task:
-      id: 49c693b1-ecb6-47b3-8f63-bfd4abe0f8bb
+      id: 7b40ff61-e102-45e2-8af6-173df2135d57
       version: -1
-      name: TrendMicro CAS Query - IPAddress
+      name: TrendMicro CAS Query - IP Address
       description: Searches for email messages in mailboxes, matching search criteria.
       script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
       type: regular
@@ -242,12 +242,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 82792865-b9b2-425d-883b-20c31332c02e
+    taskid: 295a7cc5-f4dc-4c8e-8b53-42c835717362
     type: title
     task:
-      id: 82792865-b9b2-425d-883b-20c31332c02e
+      id: 295a7cc5-f4dc-4c8e-8b53-42c835717362
       version: -1
-      name: IPAddress Indicators
+      name: IP Address Indicators
       type: title
       iscommand: false
       brand: ""
@@ -273,18 +273,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: f17c7ae1-4f85-4ed7-84fb-87194269b220
+    taskid: 713d3e78-4287-4bcd-80cc-a526750e6ca7
     type: regular
     task:
-      id: f17c7ae1-4f85-4ed7-84fb-87194269b220
+      id: 713d3e78-4287-4bcd-80cc-a526750e6ca7
       version: -1
-      name: Save Matching Results - IPAddress
+      name: Save Matching Results - IP Address
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -355,12 +355,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 6932ef9e-a77a-4e0b-8fa9-d24e91853188
+    taskid: 162b8961-8fb3-46b7-8860-73fb0852f9c8
     type: title
     task:
-      id: 6932ef9e-a77a-4e0b-8fa9-d24e91853188
+      id: 162b8961-8fb3-46b7-8860-73fb0852f9c8
       version: -1
-      name: Filename Indicators
+      name: File Name Indicators
       type: title
       iscommand: false
       brand: ""
@@ -386,12 +386,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: d41cbe57-cd31-4a7b-83e1-6ca87e625733
+    taskid: 479db3f8-3569-453f-8d98-6bd2f279f75f
     type: title
     task:
-      id: d41cbe57-cd31-4a7b-83e1-6ca87e625733
+      id: 479db3f8-3569-453f-8d98-6bd2f279f75f
       version: -1
-      name: Filetype Indicators
+      name: File Type Indicators
       type: title
       iscommand: false
       brand: ""
@@ -479,12 +479,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 785ad1f4-3324-4d48-8fd8-0d3a47547868
+    taskid: 0f42593f-1a6d-4bd7-8911-eda02cb8f2c7
     type: title
     task:
-      id: 785ad1f4-3324-4d48-8fd8-0d3a47547868
+      id: 0f42593f-1a6d-4bd7-8911-eda02cb8f2c7
       version: -1
-      name: URLdomain Indicators
+      name: URL Domain Indicators
       type: title
       iscommand: false
       brand: ""
@@ -781,12 +781,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 32e4b99c-a039-4ab1-8c20-5be25a6b8551
+    taskid: 69654647-b3b7-476c-8af6-3e39efb4d6f2
     type: title
     task:
-      id: 32e4b99c-a039-4ab1-8c20-5be25a6b8551
+      id: 69654647-b3b7-476c-8af6-3e39efb4d6f2
       version: -1
-      name: IPAddress Hunting Done
+      name: IP Address Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -976,12 +976,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 232a33e6-363e-4194-8cd5-4175c7b108b0
+    taskid: ba30b576-2fcf-4bd1-8908-baeb05c29941
     type: regular
     task:
-      id: 232a33e6-363e-4194-8cd5-4175c7b108b0
+      id: ba30b576-2fcf-4bd1-8908-baeb05c29941
       version: -1
-      name: TrendMicro CAS Query - FileName
+      name: TrendMicro CAS Query - File Name
       description: Searches for email messages in mailboxes, matching search criteria.
       script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
       type: regular
@@ -1109,12 +1109,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: d8db5a0e-382e-47af-80b9-27fd0804b6bf
+    taskid: 2b16f6d5-5938-475f-84ec-353b237b423f
     type: title
     task:
-      id: d8db5a0e-382e-47af-80b9-27fd0804b6bf
+      id: 2b16f6d5-5938-475f-84ec-353b237b423f
       version: -1
-      name: FileName Hunting Done
+      name: File Name Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -1140,12 +1140,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: a552613b-b7b1-4b78-83f5-68bddb1c4137
+    taskid: 36eb6507-959d-46b5-8b15-ed82b1b66267
     type: regular
     task:
-      id: a552613b-b7b1-4b78-83f5-68bddb1c4137
+      id: 36eb6507-959d-46b5-8b15-ed82b1b66267
       version: -1
-      name: TrendMicro CAS Query - FileType
+      name: TrendMicro CAS Query - File Type
       description: Searches for email messages in mailboxes, matching search criteria.
       script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
       type: regular
@@ -1273,12 +1273,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: ffbfd3a8-6af8-4d2f-891e-68db4aff3462
+    taskid: ede744a4-4a6f-4467-802a-0ecf68448fa7
     type: title
     task:
-      id: ffbfd3a8-6af8-4d2f-891e-68db4aff3462
+      id: ede744a4-4a6f-4467-802a-0ecf68448fa7
       version: -1
-      name: FileType Hunting Done
+      name: File Type Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -1468,10 +1468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 2a86e458-5072-475d-8c58-e597e8c6d6e3
+    taskid: d35060e2-dab3-4588-8502-c1a9ef966b9d
     type: regular
     task:
-      id: 2a86e458-5072-475d-8c58-e597e8c6d6e3
+      id: d35060e2-dab3-4588-8502-c1a9ef966b9d
       version: -1
       name: TrendMicro CAS Query - Domain
       description: Searches for email messages in mailboxes, matching search criteria.
@@ -1601,12 +1601,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: c53073a3-f5d0-4265-8b31-0a862d027ca0
+    taskid: 068d610f-1b7c-4efd-88ee-a6e0a66a6d97
     type: title
     task:
-      id: c53073a3-f5d0-4265-8b31-0a862d027ca0
+      id: 068d610f-1b7c-4efd-88ee-a6e0a66a6d97
       version: -1
-      name: URLDomain Hunting Done
+      name: URL Domain Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -1765,12 +1765,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 0a4a3346-e5ce-4bd6-89a8-3429d97c0d09
+    taskid: f9263e38-8041-469f-8320-d9396f47799c
     type: regular
     task:
-      id: 0a4a3346-e5ce-4bd6-89a8-3429d97c0d09
+      id: f9263e38-8041-469f-8320-d9396f47799c
       version: -1
-      name: TrendMicro CAS Query - Recipient EmailAddress
+      name: TrendMicro CAS Query - Recipient Email Address
       description: Searches for email messages in mailboxes, matching search criteria.
       script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
       type: regular
@@ -1898,12 +1898,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 820de676-e540-4341-8d68-acd8811f4662
+    taskid: b8a80ea4-1eb7-4986-86da-5d536a246ca1
     type: regular
     task:
-      id: 820de676-e540-4341-8d68-acd8811f4662
+      id: b8a80ea4-1eb7-4986-86da-5d536a246ca1
       version: -1
-      name: TrendMicro CAS Query - Sender EmailAddress
+      name: TrendMicro CAS Query - Sender Email Address
       description: Searches for email messages in mailboxes, matching search criteria.
       script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
       type: regular
@@ -2077,12 +2077,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: ecbfabe0-d3f4-4796-87cc-60b09e538689
+    taskid: a051e99b-6af6-44d2-81d8-819feb622bbc
     type: title
     task:
-      id: ecbfabe0-d3f4-4796-87cc-60b09e538689
+      id: a051e99b-6af6-44d2-81d8-819feb622bbc
       version: -1
-      name: EmailAddress Hunting Done
+      name: Email Address Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -2119,7 +2119,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2159,18 +2159,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: c1e3518a-e7e8-4a2a-8e7d-b9e00bd1304b
+    taskid: 379a38f7-38e1-4c15-8086-b34847533571
     type: regular
     task:
-      id: c1e3518a-e7e8-4a2a-8e7d-b9e00bd1304b
+      id: 379a38f7-38e1-4c15-8086-b34847533571
       version: -1
-      name: Save Matching Results - FileName
+      name: Save Matching Results - File Name
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2215,18 +2215,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: dd6dd720-2a8c-4b64-81e7-046f430ec92a
+    taskid: 2ee3e568-d11c-4f2a-8349-eed34c02168c
     type: regular
     task:
-      id: dd6dd720-2a8c-4b64-81e7-046f430ec92a
+      id: 2ee3e568-d11c-4f2a-8349-eed34c02168c
       version: -1
-      name: Save Matching Results - FileType
+      name: Save Matching Results - File Type
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2282,7 +2282,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2327,18 +2327,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "96":
     id: "96"
-    taskid: bceb4aa6-3f5d-40d9-8b5b-646b66afc149
+    taskid: 75ba6d78-861d-47db-8251-e46f9405c090
     type: regular
     task:
-      id: bceb4aa6-3f5d-40d9-8b5b-646b66afc149
+      id: 75ba6d78-861d-47db-8251-e46f9405c090
       version: -1
-      name: Save Matching Results - Domain
+      name: Save Matching Results - Domain & URL
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2383,18 +2383,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: ab1266f7-014c-4b79-8907-ccd3b36bd8e4
+    taskid: 4dd331a4-618b-434f-8c50-3adc6cee4000
     type: regular
     task:
-      id: ab1266f7-014c-4b79-8907-ccd3b36bd8e4
+      id: 4dd331a4-618b-434f-8c50-3adc6cee4000
       version: -1
-      name: Save Matching Results -  Sender EmailAddress
+      name: Save Matching Results -  Sender Email Address
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2434,18 +2434,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: e56eb46b-5235-4a77-8658-c19c9ebfbe80
+    taskid: a5c55ec4-bbf5-4ff6-833f-e3b9ae967089
     type: regular
     task:
-      id: e56eb46b-5235-4a77-8658-c19c9ebfbe80
+      id: a5c55ec4-bbf5-4ff6-833f-e3b9ae967089
       version: -1
-      name: Save Matching Results - Recipient EmailAddress
+      name: Save Matching Results - Recipient Email Address
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2494,7 +2494,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2617,12 +2617,12 @@ inputs:
 - key: start
   value: {}
   required: false
-  description: "The start date and time from which to retrieve messages from TrendMicro CAS. \nUse ISO 8601 time format, e.g., 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'end' as well.\nIf 'start' is not specified messages will be retrieved from TrendMicro CAS within seven days before the end time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days'.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
+  description: "The start date and time from which you would like to retrieve messages from TrendMicro CAS. \nUse ISO 8601 time format, e.g. 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'end' as well.\nIf 'start' is not specified messages will be retrieved from TrendMicro CAS within seven days before the end time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days' is set.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
   playbookInputQuery:
 - key: end
   value: {}
   required: false
-  description: "The end date and time specify the period of time in which messages should be retrieved from TrendMicro CAS. \nUse ISO 8601 time format, e.g. 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'start' as well.\nIf 'end' is not specified messages will be retrieved from TrendMicro CAS within seven days after the start time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days'.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
+  description: "The end date and time specify the period of time in which messages should be retrieved from TrendMicro CAS. \nUse ISO 8601 time format, e.g. 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'start' as well.\nIf 'end' is not specified messages will be retrieved from TrendMicro CAS within seven days after the start time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days' is set.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
   playbookInputQuery:
 - key: lastndays
   value: {}
@@ -2647,13 +2647,13 @@ outputs:
   description: The time and date when the email message was sent.
   type: number
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_message_id
-  description: The internet message ID of the email message.
+  description: The Internet message ID of the email message.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_unique_id
   description: The ID of the email message.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.mailbox
-  description: The mailbox that contains the email message.
+  description: The mailbox which contains the email message.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.source_ip
   description: The source IP address of the email message.
@@ -2680,7 +2680,7 @@ outputs:
   description: Email attachment objects that were retrieved from TrendMicro CAS.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_attachments.file_sha1
-  description: The SHA1 hash value of the attachment file.
+  description: The SHA-1 hash value of the attachment file.
   type: string
 - contextPath: TrendMicroCAS.HuntingResults.value.mail_attachments.file_name
   description: The name of the attachment file.
