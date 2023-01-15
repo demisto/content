@@ -701,16 +701,17 @@ class Client(BaseClient):
                     file_name = file['name']
                     shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                     with open(file_name, 'rb') as f:
+                        file_info = (file_name, f, self.get_content_type(file))
                         if self.use_oauth:
                             access_token = self.snow_client.get_access_token()
                             headers.update({
                                 'Authorization': f'Bearer {access_token}'
                             })
                             res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': f}, verify=self._verify, proxies=self._proxies)
+                                                   files={'file': file_info}, verify=self._verify, proxies=self._proxies)
                         else:
                             res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': f}, auth=self._auth,
+                                                   files={'file': file_info}, auth=self._auth,
                                                    verify=self._verify, proxies=self._proxies)
                     shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
@@ -760,6 +761,19 @@ class Client(BaseClient):
             num_of_tries += 1
 
         return json_res
+
+    def get_content_type(self, file_name):
+        """Get the correct content type for the POST request.
+
+        Args:
+            file_name: file name
+
+        Returns:
+            the content type - image with right type for images , and general for other types..
+        """
+        file_type = str.split(file_name, '.')[-1]
+        content_type = f'image/{file_type}' if file_type in ['jpeg', 'img', 'png', 'gif'] else '*/*'
+        return content_type
 
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.

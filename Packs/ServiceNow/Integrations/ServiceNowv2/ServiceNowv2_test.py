@@ -16,7 +16,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
-    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
+    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, get_content_type
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -1884,3 +1884,10 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
     # assert the state argument in the last call to client.update
     assert mocker_update.call_args[0][2]['state'] == result_close_state
     assert mocker_update.call_count == update_call_count
+
+
+@pytest.mark.parametrize('file_name', 'expected'[
+    ('123.png', 'image/png')
+])
+def test_upload_file_types(file_name, expected):
+    assert get_content_type(file_name) == expected
