@@ -12,6 +12,8 @@ Supported IOCs for this playbook:
 - Domain
 - Email Addresses
 
+Separate searches are conducted for each type of indicator in the playbook.
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
@@ -22,8 +24,8 @@ This playbook does not use any sub-playbooks.
 * TrendMicro Cloud App Security
 
 ### Scripts
-* SetAndHandleEmpty
 * IsIntegrationAvailable
+* SetAndHandleEmpty
 
 ### Commands
 * trendmicro-cas-email-sweep

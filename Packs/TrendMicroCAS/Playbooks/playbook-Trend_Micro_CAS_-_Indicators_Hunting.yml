@@ -1,7 +1,7 @@
 id: Trend Micro CAS - Indicators Hunting
 version: -1
 name: Trend Micro CAS - Indicators Hunting
-description: "In this playbook, the 'trendmicro-cas-email-sweep' command is used to automatically hunt for and detect IOCs within email messages protected by Cloud App Security (CAS). \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters).\n\nSupported IOCs for this playbook:\n- IP Addresses\n- CIDR\n- File Name\n- File Type\n- SHA1\n- URL\n- Domain\n- Email Addresses"
+description: "In this playbook, the 'trendmicro-cas-email-sweep' command is used to automatically hunt for and detect IOCs within email messages protected by Cloud App Security (CAS). \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters).\n\nSupported IOCs for this playbook:\n- IP Addresses\n- CIDR\n- File Name\n- File Type\n- SHA1\n- URL\n- Domain\n- Email Addresses\n\nSeparate searches are conducted for each type of indicator in the playbook."
 starttaskid: "0"
 tasks:
   "0":
