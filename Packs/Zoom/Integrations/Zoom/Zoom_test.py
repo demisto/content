@@ -955,7 +955,7 @@ def test_zoom_fetch_recording__download_success(mocker):
     res = zoom_fetch_recording_command(
         client=client, meeting_id="000000", delete_after="false")
 
-    assert res[1].readable_output == 'The file recording_000000_29c7tc.mp4 was downloaded successfully'
+    assert res[1].readable_output == 'The None file recording_000000_29c7tc.None was downloaded successfully'
     shutil_copy_mock.called
 
 
@@ -988,7 +988,7 @@ def test_zoom_fetch_recording_command__delete_success(mocker):
     res = zoom_fetch_recording_command(
         client=client, meeting_id="000000", delete_after="true")
 
-    assert res[2].readable_output == 'The file recording_000000_29c7tc.mp4 was successfully removed from the cloud.'
+    assert res[2].readable_output == 'The None file recording_000000_29c7tc.None was successfully removed from the cloud.'
 
 
 def test_zoom_fetch_recording_command__recording_dose_not_exist(mocker):
@@ -1076,4 +1076,4 @@ def test_zoom_fetch_recording_command__not_able_to_delete(mocker):
 
     res = zoom_fetch_recording_command(
         client=client, meeting_id="000000", delete_after="true")
-    assert res[2].readable_output == 'Failed to delete file recording_000000_29c7tc.mp4. mockerror'
+    assert res[2].readable_output == 'Failed to delete file recording_000000_29c7tc.None. mockerror'

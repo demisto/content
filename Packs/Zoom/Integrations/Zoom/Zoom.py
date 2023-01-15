@@ -647,7 +647,7 @@ def zoom_fetch_recording_command(client: Client, **args):
                         resp_type='response'
                     )
                     results.append(CommandResults(
-                        readable_output=f"The file {file_type_as_literal} {filename} was successfully removed from the cloud."))
+                        readable_output=f"The {file_type_as_literal} file {filename} was successfully removed from the cloud."))
                 except DemistoException as e:
                     results.append(CommandResults(
                         readable_output=f"Failed to delete file {filename}. {e}"))
