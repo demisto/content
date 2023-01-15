@@ -1412,8 +1412,8 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
         (int): The ID of the earliest offense created after first_fetch.
     """
     filter_fetch_query = f'start_time>{str(convert_start_fetch_to_milliseconds(first_fetch))}'
-    raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
-    return int(raw_offenses[0].get('id')) if raw_offenses else 0
+    raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER, range_="items=0-0", fields="id")
+    return int(raw_offenses[0].get('id')) - 1 if raw_offenses else 0
 
 
 def convert_start_fetch_to_milliseconds(fetch_start_time: str):
@@ -3445,7 +3445,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
-                int(num_events) > (events_limit := params.get('events_limit', DEFAULT_EVENTS_LIMIT)):
+                int(num_events) > (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
             print_debug_msg(f'Events were already fetched {num_events} for offense {offense_id}, '
                             f'and are more than the events limit, {events_limit}. '
                             f'Not fetching events again.')

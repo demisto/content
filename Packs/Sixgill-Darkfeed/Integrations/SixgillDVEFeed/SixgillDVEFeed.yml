@@ -104,8 +104,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
-  Threat Intelligence indicators. Get CVE Feed straight into the XSOAR platform.
+description: Deprecated. Use Cybersixgill DVE Feed Threat Intelligence v2 from the Cybersixgill-DVE pack instead.
 display: Cybersixgill DVE Feed Threat Intelligence (Deprecated)
 name: Sixgill_DVE_Feed
 script:
@@ -134,3 +133,4 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+deprecated: true

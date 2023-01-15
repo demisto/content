@@ -1,0 +1,16 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": [
+        {
+            "kind": "admin#directory#mobiledevices",
+            "etag": "dummy_etag"
+        }
+    ],
+    "HumanReadable": "No results were found with the respected arguments",
+    "EntryContext": {},
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

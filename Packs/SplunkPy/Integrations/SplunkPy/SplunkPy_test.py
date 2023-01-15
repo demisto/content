@@ -972,7 +972,7 @@ def test_get_modified_remote_data_command(mocker):
 
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x: [updated_incidet_review]
+            self.oneshot = lambda x, count: [updated_incidet_review]
 
     class Service:
         def __init__(self):
