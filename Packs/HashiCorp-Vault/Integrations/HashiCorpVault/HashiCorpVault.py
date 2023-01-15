@@ -3,7 +3,7 @@ import hcl
 from CommonServerPython import *  # noqa: F401
 
 ''' GLOBAL VARIABLES '''
-
+# pragma: no cover
 CREDENTIALS = demisto.params().get('credentials', {})
 USERNAME = None
 PASSWORD = None
