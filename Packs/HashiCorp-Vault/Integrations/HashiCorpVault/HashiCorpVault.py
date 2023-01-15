@@ -731,7 +731,7 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
         if f'{role}_ttl' in integration_context:
             last = datetime.fromtimestamp(integration_context[f'{role}_ttl'])
             diff = (now - last).seconds
-            if diff <= ttl - AWS_TOKEN_OVERLAP_TIME:
+            if diff <= int(ttl) - AWS_TOKEN_OVERLAP_TIME:
                 continue
         integration_context[f'{role}_ttl'] = now.timestamp()
         demisto.setIntegrationContext(integration_context)
