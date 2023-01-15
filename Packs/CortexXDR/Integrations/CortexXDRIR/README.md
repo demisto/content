@@ -99,8 +99,6 @@ manual_description:null
 xdr_url:https://1111.paloaltonetworks.com/incident-view/31
 ```
 
-* Note: By checking the **Fetch incident alerts and artifacts** integration configuration parameter, fetched incidents will include additional data.
-
 ## XDR Incident Mirroring
 **Note this feature is available from Cortex XSOAR version 6.0.0**
 
