@@ -18,7 +18,7 @@ configuration:
     type: 9
     displaypassword: Client Secret (OAuth)
   - name: creds_api_key
-    displaypassword: API Key (JWT-Deprecated.) 
+    displaypassword: API Key (JWT-Deprecated.)
     required: false
     type: 9
     additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
@@ -197,8 +197,8 @@ script:
         - name: join_before_host
           auto: PREDEFINED
           predefined:
-            - "False"
-            - "True"
+            - "false"
+            - "true"
           description: Whether participants can join the meeting before its host. For scheduled or recurring meetings only. The default value is False.
         - name: meeting_authentication
           auto: PREDEFINED
@@ -418,8 +418,8 @@ script:
         - name: show_previous_occurrences
           auto: PREDEFINED
           predefined:
-            - "False"
-            - "True"
+            - "false"
+            - "true"
           description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
           defaultValue: true
       outputs:
