@@ -52,7 +52,9 @@ sendMultipart = function (uri, entryID, body) {
             throw 'Auth ID must be provided.';
     }
     var headers = {}
-    if (params.auth_method == 'standard'){
+    // in case the integration was installed before auth_method was added, the auth_method param will be empty so
+    // we will use the standard auth method
+    if (!params.auth_method || params.auth_method == 'standard'){
         headers = getStandardAuthMethodHeaders(key, auth_id)
     }
     else if (params.auth_method == 'advanced') {
