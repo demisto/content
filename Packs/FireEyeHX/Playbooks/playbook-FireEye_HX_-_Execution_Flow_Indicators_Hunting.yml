@@ -257,12 +257,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "118":
     id: "118"
-    taskid: e65b6268-9661-4660-8e1a-6d542a00db8d
+    taskid: a898916f-a6c5-4358-8934-f88705079501
     type: title
     task:
-      id: e65b6268-9661-4660-8e1a-6d542a00db8d
+      id: a898916f-a6c5-4358-8934-f88705079501
       version: -1
-      name: ProcessName Indicators
+      name: Process Name Indicators
       type: title
       iscommand: false
       brand: ""
@@ -539,12 +539,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "145":
     id: "145"
-    taskid: 810e5775-c263-4367-8c54-705e25adac29
+    taskid: 9e29c944-074c-4142-8ac2-85f384c474a0
     type: title
     task:
-      id: 810e5775-c263-4367-8c54-705e25adac29
+      id: 9e29c944-074c-4142-8ac2-85f384c474a0
       version: -1
-      name: ProcessName Hunting Done
+      name: Process Name Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -581,7 +581,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -632,7 +632,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -686,7 +686,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -741,7 +741,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -786,12 +786,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "154":
     id: "154"
-    taskid: 29083988-db00-4fe7-83f2-ab36c0f2c436
+    taskid: 624d003c-6113-4c63-8e0d-00df43aa191e
     type: regular
     task:
-      id: 29083988-db00-4fe7-83f2-ab36c0f2c436
+      id: 624d003c-6113-4c63-8e0d-00df43aa191e
       version: -1
-      name: FireEye HX Query - RegistryValue
+      name: FireEye HX Query - Registry Value
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
       script: FireEyeHX v2|||fireeye-hx-search
       type: regular
@@ -876,12 +876,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "155":
     id: "155"
-    taskid: abbeb5c3-269e-4a19-8a9e-1589f0644d08
+    taskid: 8cde1c5c-8798-4a55-8f3b-385bf3b115ff
     type: title
     task:
-      id: abbeb5c3-269e-4a19-8a9e-1589f0644d08
+      id: 8cde1c5c-8798-4a55-8f3b-385bf3b115ff
       version: -1
-      name: RegistryValue Indicators
+      name: Registry Value Indicators
       type: title
       iscommand: false
       brand: ""
@@ -907,12 +907,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "156":
     id: "156"
-    taskid: 0a2b4154-961c-4bad-8d79-23588455233a
+    taskid: 6a34e553-c8bb-41b4-8339-63a086adf5cc
     type: title
     task:
-      id: 0a2b4154-961c-4bad-8d79-23588455233a
+      id: 6a34e553-c8bb-41b4-8339-63a086adf5cc
       version: -1
-      name: RegistryKey Indicators
+      name: Registry Key Indicators
       type: title
       iscommand: false
       brand: ""
@@ -983,18 +983,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "159":
     id: "159"
-    taskid: ddc56868-b496-4bbd-8ec9-cc72819d6d0c
+    taskid: fe85c4f9-9d63-4c56-8898-6bc100c5524f
     type: regular
     task:
-      id: ddc56868-b496-4bbd-8ec9-cc72819d6d0c
+      id: fe85c4f9-9d63-4c56-8898-6bc100c5524f
       version: -1
-      name: Save Matching Results - RegistryValue
+      name: Save Matching Results - Registry Value
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1034,12 +1034,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "160":
     id: "160"
-    taskid: af015bc3-ad61-4279-80a4-cb1ad617fccc
+    taskid: 07a9fe38-6582-4ddc-8a9d-536935d33e43
     type: title
     task:
-      id: af015bc3-ad61-4279-80a4-cb1ad617fccc
+      id: 07a9fe38-6582-4ddc-8a9d-536935d33e43
       version: -1
-      name: RegistryValue Hunting Done
+      name: Registry Value Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -1110,12 +1110,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: c1f6dbab-77b0-4a2a-8642-b13d15b806e4
+    taskid: 7d3c452c-fd22-4dfb-86ba-bf4f9d8d59e5
     type: regular
     task:
-      id: c1f6dbab-77b0-4a2a-8642-b13d15b806e4
+      id: 7d3c452c-fd22-4dfb-86ba-bf4f9d8d59e5
       version: -1
-      name: FireEye HX Query - RegistryKey
+      name: FireEye HX Query - Registry Key
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
       script: FireEyeHX v2|||fireeye-hx-search
       type: regular
@@ -1200,18 +1200,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "164":
     id: "164"
-    taskid: 3d83c0bb-efe4-4b3a-8f4f-15dd3956e5aa
+    taskid: abc68d68-5960-43eb-84ce-78a283ff0e28
     type: regular
     task:
-      id: 3d83c0bb-efe4-4b3a-8f4f-15dd3956e5aa
+      id: abc68d68-5960-43eb-84ce-78a283ff0e28
       version: -1
-      name: Save Matching Results - RegistryKey
+      name: Save Matching Results - Registry Key
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1251,12 +1251,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "165":
     id: "165"
-    taskid: beb408e5-445b-4cf0-822f-a02657ac3e7a
+    taskid: bc931338-7d3d-4727-82a5-10a3b95d3830
     type: title
     task:
-      id: beb408e5-445b-4cf0-822f-a02657ac3e7a
+      id: bc931338-7d3d-4727-82a5-10a3b95d3830
       version: -1
-      name: RegistryKey Hunting Done
+      name: Registry Key Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -1341,18 +1341,18 @@ inputs:
   value: {}
   required: false
   description: |-
-    Whether a search is exhaustive.
+    Whether a search is exhaustive or quick.
     Possible values are: yes, no. Default is yes.
   playbookInputQuery:
 - key: interval_in_seconds
   value: {}
   required: false
-  description: The interval in seconds between each poll. Default is 60.
+  description: "The interval in seconds between each poll. Default is 60.\t"
   playbookInputQuery:
 - key: limit
   value: {}
   required: false
-  description: Limits the results count. (Once the limit is reached, the search is stopped).
+  description: Limits the results count (once the limit is reached, the search is stopped).
   playbookInputQuery:
 outputs:
 - contextPath: FireEyeHX.HuntingResults
@@ -1386,16 +1386,16 @@ outputs:
   description: The MD5 hash of the file.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Port
-  description: The port.
+  description: The Port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Process ID
   description: The ID of the process.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local IP Address
-  description: The local IP address.
+  description: The local IP Address.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local Port
-  description: The local port.
+  description: The local Port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Remote Port
   description: The remote port.

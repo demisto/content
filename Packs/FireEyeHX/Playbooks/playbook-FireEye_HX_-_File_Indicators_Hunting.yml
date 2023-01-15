@@ -111,12 +111,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: 6811dd2b-2b1c-439f-8983-3a0d947f3aec
+    taskid: 9d79fcf5-bb7e-4fea-829c-6f2aa7614381
     type: title
     task:
-      id: 6811dd2b-2b1c-439f-8983-3a0d947f3aec
+      id: 9d79fcf5-bb7e-4fea-829c-6f2aa7614381
       version: -1
-      name: FileName Indicators
+      name: File Name Indicators
       type: title
       iscommand: false
       brand: ""
@@ -187,12 +187,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: 9fc5f1d9-48d1-4a75-868b-5100917794d1
+    taskid: ceb28474-21ca-4e35-8b23-b5086f99dcf5
     type: regular
     task:
-      id: 9fc5f1d9-48d1-4a75-868b-5100917794d1
+      id: ceb28474-21ca-4e35-8b23-b5086f99dcf5
       version: -1
-      name: FireEye HX Query - FileName
+      name: FireEye HX Query - File Name
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
       script: FireEyeHX v2|||fireeye-hx-search
       type: regular
@@ -627,12 +627,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "129":
     id: "129"
-    taskid: 99340462-0873-4433-8d7a-2647c26c453e
+    taskid: d9d46007-38d9-4283-8925-ec5a6bb33700
     type: title
     task:
-      id: 99340462-0873-4433-8d7a-2647c26c453e
+      id: d9d46007-38d9-4283-8925-ec5a6bb33700
       version: -1
-      name: FilePath Indicators
+      name: File Path Indicators
       type: title
       iscommand: false
       brand: ""
@@ -703,12 +703,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "131":
     id: "131"
-    taskid: 683a1df9-3920-47bd-8fe8-307ec85d633f
+    taskid: 903f7c4a-0355-4896-8005-624e41ab8219
     type: regular
     task:
-      id: 683a1df9-3920-47bd-8fe8-307ec85d633f
+      id: 903f7c4a-0355-4896-8005-624e41ab8219
       version: -1
-      name: FireEye HX Query - FilePath
+      name: FireEye HX Query - File Path
       description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
       script: FireEyeHX v2|||fireeye-hx-search
       type: regular
@@ -797,12 +797,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "139":
     id: "139"
-    taskid: 3b9a2d79-eed9-4a26-891d-dcf07470213d
+    taskid: f6b307f0-7506-447f-87b9-d28b1b7de4d6
     type: title
     task:
-      id: 3b9a2d79-eed9-4a26-891d-dcf07470213d
+      id: f6b307f0-7506-447f-87b9-d28b1b7de4d6
       version: -1
-      name: Filename Hunting Done
+      name: File Name Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -828,12 +828,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "142":
     id: "142"
-    taskid: 77d4df1d-dbb5-47ec-8e9e-b9e41d151dde
+    taskid: 212ef955-354f-48ba-8bb7-56c32d6cedc3
     type: title
     task:
-      id: 77d4df1d-dbb5-47ec-8e9e-b9e41d151dde
+      id: 212ef955-354f-48ba-8bb7-56c32d6cedc3
       version: -1
-      name: FilePath Hunting Done
+      name: File Path Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -1122,12 +1122,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "170":
     id: "170"
-    taskid: 528ee551-e484-4b52-8631-9b24b4f3218f
+    taskid: 6b9a08c0-ef40-46a4-8a5f-cf08ebaba65b
     type: title
     task:
-      id: 528ee551-e484-4b52-8631-9b24b4f3218f
+      id: 6b9a08c0-ef40-46a4-8a5f-cf08ebaba65b
       version: -1
-      name: FileType Indicators
+      name: File Type Indicators
       type: title
       iscommand: false
       brand: ""
@@ -1277,12 +1277,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "174":
     id: "174"
-    taskid: 7fb363e5-d11b-4132-84dd-7335a1c1ac05
+    taskid: 0bf155cd-b735-4f6b-8515-7dacec13b9ae
     type: title
     task:
-      id: 7fb363e5-d11b-4132-84dd-7335a1c1ac05
+      id: 0bf155cd-b735-4f6b-8515-7dacec13b9ae
       version: -1
-      name: FileType Hunting Done
+      name: File Type Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -1397,7 +1397,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1456,7 +1456,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1517,7 +1517,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1561,18 +1561,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "179":
     id: "179"
-    taskid: 0388dcc0-0a66-4e55-840d-32e4c5a509d6
+    taskid: 11b09293-6049-4e1b-8ff2-f309cb18225b
     type: regular
     task:
-      id: 0388dcc0-0a66-4e55-840d-32e4c5a509d6
+      id: 11b09293-6049-4e1b-8ff2-f309cb18225b
       version: -1
-      name: Save Matching Results - FileName
+      name: Save Matching Results - File Name
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1622,18 +1622,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "180":
     id: "180"
-    taskid: fa57552e-8a5e-48a8-8921-407dcebcae29
+    taskid: 20965e8b-ba4c-44cb-8024-95d0cbbb80a8
     type: regular
     task:
-      id: fa57552e-8a5e-48a8-8921-407dcebcae29
+      id: 20965e8b-ba4c-44cb-8024-95d0cbbb80a8
       version: -1
-      name: Save Matching Results - FilePath
+      name: Save Matching Results - File Path
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1694,7 +1694,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1755,7 +1755,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1816,7 +1816,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1884,7 +1884,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file names to search for in FireEye HX logs.
+    A single or multiple file names to search for FireEye HX logs.
     By default, the 'contains' clause is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -1893,7 +1893,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple SHA256 file hashes to search for in FireEye HX logs.
+    A single or multiple SHA256 file hashes to search for within FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1901,7 +1901,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple SHA1 file hashes to search for in FireEye HX logs.
+    A single or multiple SHA1 file hashes to search for within FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1909,7 +1909,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file paths to search for in FireEye HX logs.
+    A single or multiple file paths to search for within FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1917,7 +1917,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file types to search for in FireEye HX logs.
+    A single or multiple file types to search for within FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1925,7 +1925,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple MD5 file hashes to search for in FireEye HX logs.
+    A single or multiple MD5 file hashes to search for within FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1933,7 +1933,7 @@ inputs:
   value: {}
   required: true
   description: |-
-    The name of the host set to be searched.
+    The name of host set to be searched.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1941,18 +1941,18 @@ inputs:
   value: {}
   required: false
   description: |-
-    Whether a search is exhaustive.
+    Whether a search is exhaustive or quick.
     Possible values are: yes, no. Default is yes.
   playbookInputQuery:
 - key: interval_in_seconds
   value: {}
   required: false
-  description: The interval in seconds between each poll. Default is 60.
+  description: "The interval in seconds between each poll. Default is 60.\t"
   playbookInputQuery:
 - key: limit
   value: {}
   required: false
-  description: Limits the results count. (When the limit is reached, the search stops).
+  description: Limits the results count (once the limit is reached, the search is stopped).
   playbookInputQuery:
 outputs:
 - contextPath: FireEyeHX.HuntingResults
@@ -1962,7 +1962,7 @@ outputs:
   description: The timestamp of the event.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Timestamp - Accessed
-  description: The time when the entry was last accessed.
+  description: The last accessed time.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Timestamp - Modified
   description: The time when the entry was last modified.
@@ -1986,16 +1986,16 @@ outputs:
   description: The MD5 hash of the file.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Port
-  description: The port.
+  description: The Port.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Process ID
   description: The ID of the process.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local IP Address
-  description: The local IP address.
+  description: The local IP Address.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local Port
-  description: The local port.
+  description: The local Port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Remote Port
   description: The remote port.

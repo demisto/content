@@ -39,12 +39,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 1ad2e218-4c96-43a8-82f7-58af3cbfe525
+    taskid: 2e21d65b-c4a7-4678-80d7-2618bccf6c95
     type: title
     task:
-      id: 1ad2e218-4c96-43a8-82f7-58af3cbfe525
+      id: 2e21d65b-c4a7-4678-80d7-2618bccf6c95
       version: -1
-      name: IPAddress Indicators
+      name: IP Address Indicators
       type: title
       iscommand: false
       brand: ""
@@ -98,12 +98,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 180573c2-0c0c-426b-8192-4ce512c0ca0d
+    taskid: 05f96357-68af-40c2-8c96-f9b3b20b2d9c
     type: title
     task:
-      id: 180573c2-0c0c-426b-8192-4ce512c0ca0d
+      id: 05f96357-68af-40c2-8c96-f9b3b20b2d9c
       version: -1
-      name: PortNumber Indicators
+      name: Port Number Indicators
       type: title
       iscommand: false
       brand: ""
@@ -489,12 +489,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "136":
     id: "136"
-    taskid: b4030d12-ee09-4523-84c7-be58770c205d
+    taskid: 113578f1-e6ff-4ddd-87d4-e553616c70c6
     type: title
     task:
-      id: b4030d12-ee09-4523-84c7-be58770c205d
+      id: 113578f1-e6ff-4ddd-87d4-e553616c70c6
       version: -1
-      name: IPAddress Hunting Done
+      name: IP Address Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -520,12 +520,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "152":
     id: "152"
-    taskid: a81ad01a-1393-4f2a-8eae-903e06b2e033
+    taskid: 10efe50e-beb9-470e-828b-356b692d9be3
     type: title
     task:
-      id: a81ad01a-1393-4f2a-8eae-903e06b2e033
+      id: 10efe50e-beb9-470e-828b-356b692d9be3
       version: -1
-      name: PortNumber Hunting Done
+      name: Port Number Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -551,12 +551,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "155":
     id: "155"
-    taskid: ad32efa1-3f92-49b5-8346-aed7e54fe246
+    taskid: 061088c6-f302-4f24-8fa8-548ccf1faf19
     type: title
     task:
-      id: ad32efa1-3f92-49b5-8346-aed7e54fe246
+      id: 061088c6-f302-4f24-8fa8-548ccf1faf19
       version: -1
-      name: URLDomain Indicators
+      name: URL Domain Indicators
       type: title
       iscommand: false
       brand: ""
@@ -700,12 +700,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "159":
     id: "159"
-    taskid: 77269ff8-16a5-42e4-89c2-f41ad0e0224b
+    taskid: 5bc6eb14-a66f-484f-84fc-378390d5f7bd
     type: title
     task:
-      id: 77269ff8-16a5-42e4-89c2-f41ad0e0224b
+      id: 5bc6eb14-a66f-484f-84fc-378390d5f7bd
       version: -1
-      name: URLDomain Hunting Done
+      name: URL Domain Hunting Done
       type: title
       iscommand: false
       brand: ""
@@ -814,7 +814,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -865,7 +865,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -914,7 +914,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -958,18 +958,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "164":
     id: "164"
-    taskid: 1e852ca7-f5c5-49aa-868a-e13431e11b8e
+    taskid: 1c7be78f-edfd-4711-870a-b6e02eb6ba51
     type: regular
     task:
-      id: 1e852ca7-f5c5-49aa-868a-e13431e11b8e
+      id: 1c7be78f-edfd-4711-870a-b6e02eb6ba51
       version: -1
-      name: Save Matching Results - IPAddress
+      name: Save Matching Results - IP Address
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1020,7 +1020,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1081,7 +1081,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1142,7 +1142,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1204,7 +1204,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP address to search for in FireEye HX logs. Used for both source and destination IP addresses.
+    A single or multiple IP address to search for within FireEye HX logs. Used for both source and destination IP addresses.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1212,7 +1212,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple port numbers to search for in FireEye HX logs. Used for both remote and local ports.
+    A single or multiple port numbers to search for within FireEye HX logs. Used for both remote and local ports.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1220,7 +1220,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for in FireEye HX logs.
+    Single or multiple URLs and/or domains to search for within FireEye HX logs.
     By default, the 'contains' clause is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -1233,19 +1233,19 @@ inputs:
 - key: interval_in_seconds
   value: {}
   required: false
-  description: The interval in seconds between each poll. Default is 60.
+  description: "The interval in seconds between each poll. Default is 60.\t"
   playbookInputQuery:
 - key: limit
   value: {}
   required: false
-  description: Limits the results count. (When the limit is reached, the search stops).
+  description: Limits the results count (once the limit is reached, the search is stopped).
   playbookInputQuery:
 - key: exhaustive
   value:
     simple: "no"
   required: false
   description: |-
-    Whether a search is exhaustive.
+    Whether a search is exhaustive or quick.
     Possible values are: yes, no. Default is yes.
   playbookInputQuery:
 outputs:
@@ -1256,7 +1256,7 @@ outputs:
   description: The timestamp of the event.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Timestamp - Accessed
-  description: The time when the entry was last accessed.
+  description: The last accessed time.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Timestamp - Modified
   description: The time when the entry was last modified.
@@ -1280,16 +1280,16 @@ outputs:
   description: The MD5 hash of the file.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Port
-  description: The port.
+  description: The Port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Process ID
   description: The ID of the process.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local IP Address
-  description: The local IP address.
+  description: The local IP Address.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local Port
-  description: The local port.
+  description: The local Port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Remote Port
   description: The remote port.
