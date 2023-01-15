@@ -3,8 +3,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
-import urllib3
-
 # IMPORTS
 # Disable insecure warnings
 urllib3.disable_warnings()
