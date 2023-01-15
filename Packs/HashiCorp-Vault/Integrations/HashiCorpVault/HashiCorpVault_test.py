@@ -50,4 +50,4 @@ def test_list_secrets_engines(mocker):
 
 def test_list_secrets(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
-    assert list_secrets() == {}
+    assert list_secrets('test', '2') == {}
