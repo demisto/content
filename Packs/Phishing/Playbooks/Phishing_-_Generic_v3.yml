@@ -1197,6 +1197,9 @@ tasks:
           accessor: Headers
           transformers:
           - operator: uniq
+      original_authentication_header:
+        complex:
+          root: inputs.OriginalAuthenticationHeader
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
