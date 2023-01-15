@@ -16,15 +16,23 @@ configuration:
   required: true
   type: 9
   section: Connect
+- name: creds_key
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
+  section: Connect
 - display: API Key
   name: key
-  required: true
   type: 4
+  hidden: true
   section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Fairly reliable
+  defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: reliability
+  required: false
+  type: 15
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -33,8 +41,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
-  required: false
   section: Collect
   advanced: true
 - additionalinfo: If enabled, the integration will log out after executing each command.

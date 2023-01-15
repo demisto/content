@@ -12,10 +12,16 @@ configuration:
   required: true
   type: 0
   section: Connect
+- name: credentials
+  type: 9
+  displaypassword: API Token
+  hiddenusername: true
+  section: Connect
 - display: API Token
   name: api_token
   required: false
   type: 4
+  hidden: true
   section: Connect
 - defaultvalue: '2'
   display: Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.
@@ -36,6 +42,8 @@ configuration:
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
+  required: true
+  type: 15
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -44,8 +52,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
   section: Collect
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.

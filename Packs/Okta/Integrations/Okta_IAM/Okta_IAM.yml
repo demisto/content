@@ -11,10 +11,15 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: API Token (see Detailed Instructions)
+- name: credentials
+  type: 9
+  displaypassword: API Token (see detailed instructions)
+  hiddenusername: true
+  section: Connect
+- display: API Token (See detailed instructions)
   name: apitoken
-  required: true
   type: 4
+  hidden: true
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
