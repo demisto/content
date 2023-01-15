@@ -159,7 +159,7 @@ def list_secrets_command():  # pragma: no cover
     })
 
 
-def list_secrets(engine_path, version, folder=None):  # pragma: no cover
+def list_secrets(engine_path, version, folder=None):
     path = engine_path
 
     if version == '2':

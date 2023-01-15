@@ -46,3 +46,8 @@ def test_get_headers():
 def test_list_secrets_engines(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
     assert list_secrets_engines() == {}
+
+
+def test_list_secrets(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert list_secrets() == {}
