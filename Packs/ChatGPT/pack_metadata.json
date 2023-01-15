@@ -1,0 +1,21 @@
+{
+    "name": "ChatGPT",
+    "description": "This is ChatGPT Integration.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Bar Halifa-Levi Trustnet",
+    "url": "",
+    "email": "",
+    "created": "2023-01-15T08:06:51Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "BarHalifa"
+    ]
+}

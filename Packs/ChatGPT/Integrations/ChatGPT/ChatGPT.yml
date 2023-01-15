@@ -1,0 +1,31 @@
+category: Utilities
+commonfields:
+  id: ChatGPT
+  version: -1
+configuration:
+- display: ""
+  name: token
+  required: true
+  type: 4
+description: |-
+  This ChatGPT Integration.
+  Create by Bar Halifa-levi Trustnet LTD
+display: ChatGPT
+name: ChatGPT
+script:
+  commands:
+  - arguments:
+    - description: Please ask ChatGPT what ever you want
+      name: prompt
+      required: true
+    name: ask-chatgpt
+    outputs:
+    - contextPath: ChatGPT.MSG.Answer
+  dockerimage: demisto/python3:3.10.9.44472
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
