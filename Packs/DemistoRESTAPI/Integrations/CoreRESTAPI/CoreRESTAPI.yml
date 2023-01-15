@@ -249,5 +249,4 @@ script:
   runonce: false
 tests:
 - No tests
-marketplaces:
 fromversion: 5.0.0
