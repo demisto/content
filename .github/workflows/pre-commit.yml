@@ -46,7 +46,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         report_paths: |
-            **/Packs/**/+(Integrations|Scripts)/**/.report_pytest.xml
+            **/Packs/**/Integrations/**/.report_pytest.xml
         github_token: ${{ secrets.GITHUB_TOKEN }}
         detailed_summary: true
         annotate_only: true
@@ -56,7 +56,7 @@ jobs:
       if: always()
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: "**/Packs/**/+(Integrations|Scripts)/**/coverage.xml"
+        filename: "**/Packs/**/Integrations/**/coverage.xml"
         badge: true
         fail_below_min: true
         format: markdown
