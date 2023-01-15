@@ -372,7 +372,7 @@ script:
       isArray: false
     - name: order
       description: Domain map order, index of domain map in the collection.
-      required: false
+      required: true
       isArray: false
     - name: ip_addresses
       description: IP addresses to map for the domain.
@@ -400,10 +400,10 @@ script:
   - name: cisco-wsa-domain-map-delete
     description: Delete domain map.
     arguments:
-    - name: domain_name
-      description: Domain name to delete.
+    - name: domain_names
+      description: Domain names to delete.
       required: true
-      isArray: false
+      isArray: true
   - name: cisco-wsa-identification-profiles-list
     description: |-
       Retrieve identification profiles.
@@ -471,6 +471,7 @@ script:
       description: |-
         Identification profile order, index of Identification profile in the collection.
         Not applicable for global_identification_profile.
+      defaultValue: 1
       required: true
       isArray: false
   - name: cisco-wsa-identification-profiles-update
