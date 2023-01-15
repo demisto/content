@@ -43,11 +43,9 @@ configuration:
   hidden: true
 - display: Subscription ID
   name: subscriptionID
-  required: true
   type: 0
 - display: Resource Group Name
   name: resourceGroupName
-  required: true
   type: 0
 - display: Workspace Name
   name: workspaceName
@@ -84,6 +82,26 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Fetch Incident Alerts
+  additionalinfo: Note that this will increase the number of API calls.
+  name: fetch_incident_alerts
+  required: false
+  type: 8
+- display: Fetch Incident Entities
+  additionalinfo: Note that this will increase the number of API calls.
+  name: fetch_incident_entities
+  required: false
+  type: 8
+- display: Fetch Incident Comments
+  additionalinfo: Note that this will increase the number of API calls.
+  name: fetch_incident_comments
+  required: false
+  type: 8
+- display: Fetch Incident Relations
+  additionalinfo: Note that this will increase the number of API calls.
+  name: fetch_incident_relations
+  required: false
+  type: 8
 description: Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 display: Microsoft Sentinel
 name: Azure Sentinel
@@ -95,6 +113,18 @@ script:
       isArray: false
       name: incident_id
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Gets a single incident from Azure Sentinel.
@@ -190,6 +220,18 @@ script:
       name: next_link
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of incidents from Azure Sentinel.
     execution: false
@@ -274,6 +316,18 @@ script:
       name: watchlist_alias
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of watchlists from Azure Sentinel.
     execution: false
@@ -327,6 +381,18 @@ script:
       isArray: false
       name: watchlist_alias
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Delete a watchlist from Azure Sentinel.
@@ -388,6 +454,18 @@ script:
       description: The content type of the raw content. For now, only text/csv is valid.
       isArray: false
       name: content_type
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false
@@ -521,6 +599,18 @@ script:
       name: labels
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Updates a single incident in Azure Sentinel.
     execution: false
@@ -599,6 +689,18 @@ script:
       name: incident_id
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Deletes a single incident in Azure Sentinel.
     execution: false
@@ -621,6 +723,18 @@ script:
       description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
       isArray: false
       name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false
@@ -665,6 +779,18 @@ script:
       name: message
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Adds a comment to an incident in Azure Sentinel.
     execution: false
@@ -700,6 +826,18 @@ script:
       isArray: false
       name: comment_id
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Deletes a comment from incident in Azure Sentinel.
@@ -741,6 +879,18 @@ script:
       name: filter
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of an incident's related entities from Azure Sentinel.
     execution: false
@@ -768,6 +918,18 @@ script:
       name: incident_id
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of an incident's entities from Azure Sentinel.
     execution: false
@@ -791,6 +953,18 @@ script:
       isArray: false
       name: incident_id
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Gets a list of an incident's alerts from Azure Sentinel.
@@ -843,6 +1017,18 @@ script:
       name: watchlist_item_id
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Get a single watchlist item or list of watchlist items.
     execution: false
@@ -882,6 +1068,18 @@ script:
       name: watchlist_item_id
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Delete a watchlist item.
     execution: false
@@ -904,6 +1102,18 @@ script:
       isArray: false
       name: item_key_value
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Create or update a watchlist item.
@@ -952,6 +1162,18 @@ script:
         There may be no support for pagination.
       isArray: false
       name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false
@@ -1130,6 +1352,18 @@ script:
       description: A comma-separated list of keywords.
       isArray: true
       name: keywords
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false
@@ -1324,6 +1558,18 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new threat indicator.
     execution: false
@@ -1511,6 +1757,18 @@ script:
       name: created_by
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Updates an existing threat indicator.
     execution: false
@@ -1604,6 +1862,18 @@ script:
       name: indicator_names
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Deletes an existing threat indicator.
     execution: false
@@ -1620,6 +1890,18 @@ script:
       isArray: true
       name: tags
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Appends new tags to an existing indicator.
@@ -1719,6 +2001,18 @@ script:
       isArray: true
       name: tags
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Replaces the tags of a given indicator.

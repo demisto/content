@@ -1360,6 +1360,8 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
+    args = demisto.args()
+
     LOG(f'Command being called is {demisto.command()}')
     try:
         client_secret = params.get('credentials', {}).get('password')
@@ -1374,13 +1376,18 @@ def main():
         if not tenant_id:
             raise ValueError('Tenant ID must be provided.')
 
+        subscription_id = args.get('subscription_id') or params.get('subscriptionID', '')
+        resource_group_name = args.get('resource_group_name') or params.get('resourceGroupName', '')
+        if not subscription_id or not resource_group_name:
+            raise ValueError('Subscription ID and Resource Group Name must be provided.')
+
         client = AzureSentinelClient(
             server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
             tenant_id=tenant_id,
             client_id=params.get('credentials', {}).get('identifier'),
             client_secret=client_secret,
-            subscription_id=params.get('subscriptionID', ''),
-            resource_group_name=params.get('resourceGroupName', ''),
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
             workspace_name=params.get('workspaceName', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
@@ -1435,7 +1442,7 @@ def main():
             demisto.incidents(incidents)
 
         elif demisto.command() in commands:
-            return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
+            return_results(commands[demisto.command()](client, args))  # type: ignore
 
     except Exception as e:
         return_error(
