@@ -12,24 +12,19 @@ Supported Integrations:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* SIEM - Search for Failed logins
+* Okta - User Investigation
 * Cortex XDR - Get entity alerts by MITRE tactics
-* QRadarFullSearch
 
 ### Integrations
-Okta v2
+This playbook does not use any integrations.
 
 ### Scripts
 * CountArraySize
-* Set
-* MathUtil
-* GetTime
 
 ### Commands
-* azure-log-analytics-execute-query
-* okta-get-logs
-* pan-os-query-logs
 * pan-os-get-logs
-* splunk-search
+* pan-os-query-logs
 
 ## Playbook Inputs
 ---
@@ -39,32 +34,34 @@ Okta v2
 | SplunkIndex | Splunk's index name in which to search. Default is "\*" - All. | * | Optional |
 | SplunkEarliestTime | The earliest time for the Splunk search query. | -1d | Optional |
 | SplunkLatestTime | The latest time for the Splunk search query. | now | Optional |
-| UserEmail | User email. |  | Optional |
-| Username | Username. |  | Optional |
-| LoginCountry | The country from which the user logged in. |  | Optional |
-| CurrentTime | Date/Time format profile of ISO 8601. For example: 2022-05-13T16:22:18Z. | TimeNow.[0] | Optional |
-| TimeLast1Day | Date/Time format profile of ISO 8601. For example: 2022-05-13T16:22:18Z. | TimeNow.[1] | Optional |
-| TimeLast7Days | Date/Time format profile of ISO 8601. For example: 2022-05-13T16:22:18Z. | TimeNow.[2] | Optional |
-| FailedLogonSearch | Whether to search for failed logon logs from SIEM. Can be True or False. | True | Optional |
-| ThreatLogSearch | Whether to search for threat logs from PAN-OS. Can be True or False. | True | Optional |
-| LocationSearch | Whether to search for the user's permanent location. Can be True or False. | True | Optional |
-| XdrAlertSearch | Whether to search for Related alerts from XDR. Can be True or False. | True | Optional |
-| OktaSuspiciousactivitySearch | Whether to search for Suspicious activities from Okta. Can be True or False. | True | Optional |
+| UserEmail | The user email to search Okta logs. |  | Optional |
+| Username | User name. |  | Optional |
+| LoginCountry | The Country from which the user logged in. |  | Optional |
+| SIEMFailedLogonSearch | Whether to search for failed logon logs from Siem? Can be False or True. | True | Optional |
+| ThreatLogSearch | Whether to search for threat logs from PAN-OS? Can be False or True. | True | Optional |
+| XDRAlertSearch | Whether to search for Related alerts from XDR? Can be False or True. | True | Optional |
+| OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
+| XDRUsernameField | Cortex XDR User name Field. |  | Optional |
+| QRadarSearchTime | The Search Time for the QRadar search query. for example:  Last 1 days | Last 1 days | Optional |
+| AzureSearchTime | The Search Time for the Azure Log Analytics search query. for example: ago\(1d\) | ago(1d) | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PermanentCountry | True if the user works from a permanent country. Otherwise, False. | unknown |
-| NumOfFailedLogon | Number of failed login from SIEM. | unknown |
-| NumOfThreatLogs | Number of Threat logs for the user from Panorama. | unknown |
-| PaloAltoNetworksXDR.Alert | XDR alerts. | unknown |
-| ArraySize | Number of XDR alerts for the user. | unknown |
+| NumOfSiemFailedLogon | Number of failed login from Siem. | unknown |
+| NumOfThreatLogs | Number of Threat Logs for the user from Panorama. | unknown |
+| PaloAltoNetworksXDR.Alert | XDR Alerts. | unknown |
+| ArraySize | Number of XDR alert for the user. | unknown |
+| PermanentCountry | True if the user work from a permanent country from Okta. False if else. | unknown |
+| UserDevices | Devices used by the user from Okta. | unknown |
 | NumOfOktaSuspiciousActivities | Number of Suspicious Activities for the user from Okta. | unknown |
-| OktaSuspiciousActivities | Suspicious activities logs from Okta. | unknown |
+| SuspiciousUserActivities | Suspicious Activities for the user from Okta. | unknown |
 | NumOfOktaSuspiciousUserAgent | Number of Suspicious User Agent from Okta. | unknown |
-| OktaUserAgentLogs | Suspicious User Agent logs from Okta. | unknown |
+| SuspiciousUserAgent | Suspicious User Agent from Okta. | unknown |
+| UserApplication |  Applications used by the user from Okta. | unknown |
+| NumOfOktaFailedLogon | Number of failed login from Okta. | unknown |
 
 ## Playbook Image
 ---
