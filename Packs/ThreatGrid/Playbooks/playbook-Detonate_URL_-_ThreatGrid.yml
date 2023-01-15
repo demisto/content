@@ -225,3 +225,5 @@ outputs: []
 quiet: true
 fromversion: 5.0.0
 description: REAL
+tests:
+ -  No tests
