@@ -1,6 +1,6 @@
 {
-    "name": "SecurityAdvisor",
-    "description": "Contextual coaching and awareness for end users",
+    "name": "SecurityAdvisor (Deprecated)",
+    "description": "Deprecated. No available replacement.",
     "support": "partner",
     "hidden": true,
     "currentVersion": "1.0.4",
