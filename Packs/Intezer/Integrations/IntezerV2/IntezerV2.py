@@ -753,23 +753,29 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
     file_entry: dict = {}
     if 'downloaded_file' in intezer_result:
         downloaded_file = intezer_result.pop('downloaded_file')
-        presentable_result += f'Downloaded file SHA256: {downloaded_file["sha256"]}\n'
-        presentable_result += f'Downloaded file Verdict: **{downloaded_file["analysis_summary"]["verdict_type"]}**\n'
-        downloaded_file_analysis = FileAnalysis.from_analysis_id(downloaded_file['analysis_id'], intezer_api)
-        download_file_result = downloaded_file_analysis.result()
-        intezer_result['downloaded_file'] = download_file_result
-        metadata = downloaded_file_analysis.get_root_analysis().metadata
 
-        file_dbot_entry, file_entry = _get_dbot_score_and_file_entries(download_file_result, metadata)
+        if 'sha256' in downloaded_file:
+            presentable_result += f'Downloaded file SHA256: {downloaded_file["sha256"]}\n'
 
-        sha1 = metadata.get('sha1')
-        md5 = metadata.get('md5')
-        download_file_result['sha1'] = sha1
-        download_file_result['md5'] = md5
-        downloaded_file_presentable_result = _file_analysis_presentable_code(download_file_result)
+        if 'analysis_summary' in downloaded_file:
+            presentable_result += f'Downloaded file Verdict: **{downloaded_file["analysis_summary"]["verdict_type"]}**\n'
 
-        dbot.extend(file_dbot_entry)
-        file_entry = {outputPaths['file']: file_entry}
+        if 'analysis_id' in downloaded_file:
+            downloaded_file_analysis = FileAnalysis.from_analysis_id(downloaded_file['analysis_id'], intezer_api)
+            download_file_result = downloaded_file_analysis.result()
+            intezer_result['downloaded_file'] = download_file_result
+            metadata = downloaded_file_analysis.get_root_analysis().metadata
+
+            file_dbot_entry, file_entry = _get_dbot_score_and_file_entries(download_file_result, metadata)
+
+            sha1 = metadata.get('sha1')
+            md5 = metadata.get('md5')
+            download_file_result['sha1'] = sha1
+            download_file_result['md5'] = md5
+            downloaded_file_presentable_result = _file_analysis_presentable_code(download_file_result)
+
+            dbot.extend(file_dbot_entry)
+            file_entry = {outputPaths['file']: file_entry}
 
     md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
     presentable_result += md + downloaded_file_presentable_result
