@@ -244,10 +244,10 @@ import json
 from typing import Any, cast
 
 import dateparser
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *
 
+import demistomock as demisto
+from CommonServerPython import *
 from CommonServerUserPython import *
 
 # Disable insecure warnings

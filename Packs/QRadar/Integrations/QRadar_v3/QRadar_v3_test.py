@@ -1,43 +1,104 @@
 """
     QRadar v3 integration for Cortex XSOAR - Unit Tests file
 """
-import io
+import copy
 import json
 from datetime import datetime
-from typing import Dict, Callable
-import copy
+from typing import Callable
 
-import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
-    Client, ASSET_PROPERTIES_NAME_MAP, \
-    FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
-    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus
-from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
-    get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
-    get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
-    create_search_with_retry, enrich_offense_with_assets, get_offense_enrichment, \
-    add_iso_entries_to_asset, create_single_asset_for_offense_enrichment, create_incidents_from_offenses, \
-    qradar_offenses_list_command, qradar_offense_update_command, qradar_closing_reasons_list_command, \
-    qradar_offense_notes_list_command, qradar_offense_notes_create_command, qradar_rules_list_command, \
-    qradar_rule_groups_list_command, qradar_assets_list_command, qradar_saved_searches_list_command, \
-    qradar_searches_list_command, qradar_search_create_command, qradar_search_status_get_command, \
-    qradar_search_results_get_command, qradar_reference_sets_list_command, qradar_reference_set_create_command, \
-    qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
-    qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
-    qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
-    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
-    qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
-    qradar_remote_network_cidr_create_command, get_cidrs_indicators, verify_args_for_remote_network_cidr, \
-    qradar_remote_network_cidr_list_command, verify_args_for_remote_network_cidr_list, is_positive, \
-    qradar_remote_network_cidr_delete_command, qradar_remote_network_cidr_update_command, \
-    qradar_remote_network_deploy_execution_command, migrate_integration_ctx, enrich_offense_with_events, \
-    perform_long_running_loop, validate_integration_context, FetchMode, MIRRORED_OFFENSES_FETCHED_CTX_KEY
+import QRadar_v3  # import module separately for mocker
+from QRadar_v3 import (
+    ASSET_PROPERTIES_NAME_MAP,
+    FULL_ASSET_PROPERTIES_NAMES_MAP,
+    LAST_FETCH_KEY,
+    LAST_MIRROR_KEY,
+    MINIMUM_API_VERSION,
+    MIRROR_OFFENSE_AND_EVENTS,
+    MIRRORED_OFFENSES_FETCHED_CTX_KEY,
+    MIRRORED_OFFENSES_FINISHED_CTX_KEY,
+    MIRRORED_OFFENSES_QUERIED_CTX_KEY,
+    OFFENSE_OLD_NEW_NAMES_MAP,
+    REFERENCE_SETS_OLD_NEW_MAP,
+    USECS_ENTRIES,
+    Client,
+    EntryFormat,
+    EntryType,
+    FetchMode,
+    QueryStatus,
+    add_iso_entries_to_asset,
+    add_iso_entries_to_dict,
+    build_final_outputs,
+    build_headers,
+    create_incidents_from_offenses,
+    create_search_with_retry,
+    create_single_asset_for_offense_enrichment,
+    enrich_asset_properties,
+    enrich_assets_results,
+    enrich_offense_with_assets,
+    enrich_offense_with_events,
+    flatten_nested_geolocation_values,
+    get_cidrs_indicators,
+    get_domain_names,
+    get_minimum_id_to_fetch,
+    get_modified_remote_data_command,
+    get_offense_addresses,
+    get_offense_closing_reasons,
+    get_offense_enrichment,
+    get_offense_types,
+    get_remote_data_command,
+    get_rules_names,
+    get_time_parameter,
+    is_positive,
+    is_valid_ip,
+    migrate_integration_ctx,
+    perform_long_running_loop,
+    poll_offense_events,
+    qradar_assets_list_command,
+    qradar_closing_reasons_list_command,
+    qradar_domains_list_command,
+    qradar_geolocations_for_ip_command,
+    qradar_get_custom_properties_command,
+    qradar_ips_local_destination_get_command,
+    qradar_ips_source_get_command,
+    qradar_log_sources_list_command,
+    qradar_offense_notes_create_command,
+    qradar_offense_notes_list_command,
+    qradar_offense_update_command,
+    qradar_offenses_list_command,
+    qradar_reference_set_create_command,
+    qradar_reference_set_delete_command,
+    qradar_reference_set_value_delete_command,
+    qradar_reference_set_value_upsert_command,
+    qradar_reference_sets_list_command,
+    qradar_remote_network_cidr_create_command,
+    qradar_remote_network_cidr_delete_command,
+    qradar_remote_network_cidr_list_command,
+    qradar_remote_network_cidr_update_command,
+    qradar_remote_network_deploy_execution_command,
+    qradar_rule_groups_list_command,
+    qradar_rules_list_command,
+    qradar_saved_searches_list_command,
+    qradar_search_create_command,
+    qradar_search_results_get_command,
+    qradar_search_status_get_command,
+    qradar_searches_list_command,
+    sanitize_outputs,
+    validate_integration_context,
+    verify_args_for_remote_network_cidr,
+    verify_args_for_remote_network_cidr_list,
+)
 
-from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
-    GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
 import demistomock as demisto
+from CommonServerPython import (
+    CommandResults,
+    DemistoException,
+    GetModifiedRemoteDataResponse,
+    GetRemoteDataResponse,
+    get_integration_context,
+    set_integration_context,
+)
 
 QRadar_v3.FAILURE_SLEEP = 0
 QRadar_v3.SLEEP_FETCH_EVENT_RETRIES = 0
@@ -57,7 +118,7 @@ QRadar_v3.EVENTS_SEARCH_RETRY_SECONDS = 0
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -150,7 +211,7 @@ def test_flatten_nested_geolocation_values(dict_key, inner_keys, expected):
                            {'ComplianceNotes': {'Value': 'note', 'LastUser': 'Adam'}}),
                           ([], FULL_ASSET_PROPERTIES_NAMES_MAP, dict())
                           ])
-def test_enrich_asset_properties(properties, properties_to_enrich_dict: Dict, expected):
+def test_enrich_asset_properties(properties, properties_to_enrich_dict: dict, expected):
     """
     Given:
      - Properties of an asset.
@@ -492,7 +553,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
          3,
          ),
     ])
-def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_search_response: Dict,
+def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode, mock_search_response: dict,
                                     poll_events_response, events_limit):
     """
     Given:
@@ -826,7 +887,7 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr'),
                              (qradar_remote_network_deploy_execution_command, 'remote_network_deploy_execution'),
                          ])
-def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
+def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str):
     """
     Given:
      - Command function.
@@ -864,7 +925,7 @@ def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults]
                           (qradar_offense_update_command, 'offense_update', 'enrich_offenses_result'),
                           (qradar_assets_list_command, 'assets_list', 'enrich_assets_results')
                           ])
-def test_commands_with_enrichment(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str,
+def test_commands_with_enrichment(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str,
                                   enrichment_func_name: str):
     """
     Given:
@@ -984,7 +1045,7 @@ def test_get_modified_remote_data_command(mocker):
                                       'ContentsFormat': EntryFormat.JSON
                                   }]))
                          ])
-def test_get_remote_data_command(mocker, params, offense: Dict, enriched_offense, note_response,
+def test_get_remote_data_command(mocker, params, offense: dict, enriched_offense, note_response,
                                  expected: GetRemoteDataResponse):
     """
     Given:
@@ -1051,7 +1112,7 @@ def test_validate_long_running_params():
     Then:
      - Ensure that error is thrown.
     """
-    from QRadar_v3 import validate_long_running_params, LONG_RUNNING_REQUIRED_PARAMS
+    from QRadar_v3 import LONG_RUNNING_REQUIRED_PARAMS, validate_long_running_params
     for param_name, param_value in LONG_RUNNING_REQUIRED_PARAMS.items():
         params_without_required_param = {k: v for k, v in LONG_RUNNING_REQUIRED_PARAMS.items() if k is not param_name}
         with pytest.raises(DemistoException):
@@ -1063,7 +1124,7 @@ def test_validate_long_running_params():
                              (qradar_ips_source_get_command, 'source_ip'),
                              (qradar_ips_local_destination_get_command, 'local_destination')
                          ])
-def test_ip_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
+def test_ip_commands(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str):
     """
     Given:
      - Command function.

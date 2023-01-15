@@ -68,4 +68,3 @@ jobs:
       id: append-coverage
       run: |
         cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
-
