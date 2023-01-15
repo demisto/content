@@ -1,14 +1,12 @@
 """
 Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec-EDR 4.6
 """
-# import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 # from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
 import urllib3
 from typing import Callable
-# from requests.exceptions import HTTPError, ConnectionError
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -17,6 +15,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 DEFAULT_INTERVAL = 10
 DEFAULT_TIMEOUT = 600
+# Symantec TOKEN timeout 3600 Second , or 60 mins
+SESSION_TIMEOUT_SEC = 3480
 XSOAR_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SYMANTEC_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 INTEGRATION_CONTEXT_NAME = 'SymantecEDR'
@@ -136,6 +136,7 @@ class Client(BaseClient):
         self.is_fetch_comment = is_fetch_comment
         self.fetch_status = fetch_status
         self.fetch_priority = fetch_priority
+        self.sid = None
 
     def get_access_token(self):
         """
@@ -147,18 +148,39 @@ class Client(BaseClient):
             "grant_type": 'client_credentials'
         }
         response = None
-        try:
-            return self._http_request(
-                method='POST',
-                full_url=self.token_url,
-                auth=(self.client_key, self.secret_key),
-                data=payload,
-                error_handler=handle_errors
-            ).get('access_token')
-        except Exception as e:
-            msg = f'Something went wrong with request, {e}'
-            demisto.debug(msg)
-            raise DemistoException(msg, res=requests.Response)
+        if last_sid := self.get_sid_from_context():
+            demisto.debug(f"Last login sid still alive. Return last sid {last_sid}")
+            return last_sid
+        else:
+            try:
+                response = self._http_request(
+                    method='POST',
+                    full_url=self.token_url,
+                    auth=(self.client_key, self.secret_key),
+                    data=payload,
+                    error_handler=handle_errors
+                )
+                sid = response.get('access_token', '')
+                self.sid = sid
+                timestamp_string = int(time.time() * 1000)
+                demisto.debug(f"login: success, saving sid={sid} , sid_last_datetime={timestamp_string} to integrationContext")
+                demisto.setIntegrationContext({'sedr_sid': sid, 'sedr_last_sid_datatime': timestamp_string})
+                return sid
+            except Exception as e:
+                msg = f'Something went wrong with request, {e}'
+                demisto.debug(msg)
+                raise DemistoException(msg, res=requests.Response)
+
+    def get_sid_from_context(self):
+        if sid := demisto.getIntegrationContext().get('sedr_sid', None):
+            last_datetime = demisto.getIntegrationContext().get('sedr_last_sid_datatime', None)
+            now_datetime = int(time.time() * 1000)  # Convert to Millisecond
+            time_diff = int(now_datetime - last_datetime)
+            demisto.debug(f"Check Last Sid: {sid}, time_diff: {time_diff}.")
+            return sid if time_diff <= SESSION_TIMEOUT_SEC * 1000 else None
+
+        demisto.debug("No last SID found in Context.")
+        return None
 
     def query_request_api(self, endpoint: str, params: dict, method: str | None = 'POST') \
             -> dict[str, str]:
@@ -230,9 +252,9 @@ class Client(BaseClient):
             result['status'] = response.status_code
             result['message'] = 'Success'
 
-        # if response.status_code >= 400:
-        #     error_message = f'{response.json().get("error")}, {response.json().get("message")}'
-        #     raise DemistoException(error_message, res=response)
+        if response.status_code >= 400:
+            error_message = f'{response.json().get("error")}, {response.json().get("message")}'
+            raise DemistoException(error_message, res=response)
 
         return result
 
@@ -1094,7 +1116,7 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str:
         if uuid := data_list[0].get('uuid'):
             return uuid
     else:
-        raise DemistoException(f'Unable to search incident {args.get("incident_id")} which is older than 30 days.\n'
+        raise DemistoException(f'Either Incident does not exist or Unable to search incident {args.get("incident_id")} which is older than 30 days.\n'
                                f'Provide time range Arguments')
 
 
@@ -1443,6 +1465,7 @@ def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandRe
     endpoint = '/atpapi/v2/incidents'
 
     payload, limit, offset, page_size = get_request_payload(args, 'incident')
+    demisto.debug(f'Incident Payload: {payload}')
     raw_response = client.query_request_api(endpoint, payload)
     title = get_command_title_string(
         'Incident',
