@@ -9,14 +9,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* FireEyeHX v2
+FireEyeHX v2
 
 ### Scripts
 * SetAndHandleEmpty
 * IsIntegrationAvailable
 
 ### Commands
-* fireeye-hx-search
+fireeye-hx-search
 
 ## Playbook Inputs
 ---
@@ -27,10 +27,10 @@ This playbook does not use any sub-playbooks.
 | ProcessName | A single or multiple process names to search for within FireEye HX logs.<br/>By default, the 'contains' clause is used.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | RegistryKey | A single or multiple registry keys to search for within FireEye HX logs.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | RegistryValue | A single or multiple registry values to search for within FireEye HX logs.<br/>By default, the 'contains' clause is used.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| hostSetName | The name of host set to be searched. |  | Required |
-| exhaustive | Whether a search is exhaustive or quick.<br/>Possible values are: yes, no. Default is yes. |  | Optional |
+| hostSetName | The name of the host set to be searched. |  | Required |
+| exhaustive | Whether a search is exhaustive.<br/>Possible values are: yes, no. Default is yes. |  | Optional |
 | interval_in_seconds | The interval in seconds between each poll. Default is 60.	 |  | Optional |
-| limit | Limits the results count \(once the limit is reached, the search is stopped\). |  | Optional |
+| limit | Limits the results count. \(Once the limit is reached, the search is stopped\). |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -47,10 +47,10 @@ This playbook does not use any sub-playbooks.
 | FireEyeHX.HuntingResults.URL | The event URL. | string |
 | FireEyeHX.HuntingResults.Username | The event username. | string |
 | FireEyeHX.HuntingResults.File MD5 Hash | The MD5 hash of the file. | string |
-| FireEyeHX.HuntingResults.Port | The Port. | number |
+| FireEyeHX.HuntingResults.Port | The port. | number |
 | FireEyeHX.HuntingResults.Process ID | The ID of the process. | string |
-| FireEyeHX.HuntingResults.Local IP Address | The local IP Address. | string |
-| FireEyeHX.HuntingResults.Local Port | The local Port. | number |
+| FireEyeHX.HuntingResults.Local IP Address | The local IP address. | string |
+| FireEyeHX.HuntingResults.Local Port | The local port. | number |
 | FireEyeHX.HuntingResults.Remote Port | The remote port. | number |
 | FireEyeHX.HuntingResults.IP Address | The IP address. | string |
 | FireEyeHX.HuntingResults.Process Name | The process name. | string |

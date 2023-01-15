@@ -1,4 +1,4 @@
-This playbook queries FireEye Email Threat Prevention (ETP) for indicators such as domains, IP addresses, sender and recipient email addresses.
+This playbook queries FireEye Email Threat Prevention (ETP) for indicators such as domains, IP addresses, and sender and recipient email addresses.
 
 Note that multiple search values should be separated by commas only (without spaces or any special characters).
 
@@ -9,14 +9,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* FireEye ETP
+FireEye ETP
 
 ### Scripts
 * IsIntegrationAvailable
 * SetAndHandleEmpty
 
 ### Commands
-* fireeye-etp-search-messages
+fireeye-etp-search-messages
 
 ## Playbook Inputs
 ---
@@ -30,9 +30,9 @@ This playbook does not use any sub-playbooks.
 | recipients_not_in | List of recipient email addresses to be excluded \(including "cc"\).<br/>The max limit of entries is 10.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | has_attachments | Boolean value filter to indicate if the message has attachments.<br/>Values can be only 'true' or 'false'. |  | Optional |
 | max_message_size | Select the message size \(in KB\) based on which you wish to retrieve messages from the FireEye ETP server.<br/><br/>The default value is 20 and the maximum value is 100. |  | Optional |
-| from_accepted_date_time | The start date and time from which you would like to retrieve messages from the FireEye ETP server, e.g. 2017-10-24T10:48:51.000Z.<br/><br/>For a complete date range, specify 'to_accepted_date_time' as well. |  | Required |
-| to_accepted_date_time | The end date and time specify the period of time in which messages should be retrieved from the FireEye ETP server, e.g. 2017-10-24T10:48:51.000Z.<br/><br/>For a complete date range, specify 'from_accepted_date_time' as well. |  | Required |
-| last_modified_date_time | The last date and time messages were modified in order to retrieve them from the FireEye ETP server. <br/><br/>Dates and times should be accompanied by one of the following operators: "&amp;gt;", "&amp;lt;", "&amp;gt;=", "&amp;lt;=". <br/>E.g. use value "&amp;lt;2017-10-24T18:00:00.000Z" to search for messages that were last modified after the specified time stamp. |  | Optional |
+| from_accepted_date_time | The start date and time from which you would like to retrieve messages from the FireEye ETP server, e.g., 2017-10-24T10:48:51.000Z.<br/><br/>For a complete date range, specify 'to_accepted_date_time' as well. |  | Required |
+| to_accepted_date_time | The end date and time specify the period of time in which messages should be retrieved from the FireEye ETP server, e.g., 2017-10-24T10:48:51.000Z.<br/><br/>For a complete date range, specify 'from_accepted_date_time' as well. |  | Required |
+| last_modified_date_time | The last date and time messages were modified in order to retrieve them from the FireEye ETP server. <br/><br/>Dates and times should be accompanied by one of the following operators: "\>", "\<", "\>=", "\<=". <br/>E.g., use value "\<2017-10-24T18:00:00.000Z" to search for messages that were last modified after the specified time stamp. |  | Optional |
 | status | Filter messages to be retrieved from the FireEye ETP server based on their email message status.<br/><br/>Possible values are: "accepted", "deleted", "delivered", "delivered \(retroactive\)", "dropped", "dropped oob", "dropped \(oob retroactive\)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure".<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | status_not_in | Exclude messages from being retrieved from the FireEye ETP server based on the email message status.<br/><br/>Possible values are: "accepted", "deleted", "delivered", "delivered \(retroactive\)", "dropped", "dropped oob", "dropped \(oob retroactive\)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure".<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | rejection_reason | Filter messages that should be retrieved from the FireEye ETP server based on the email rejection reason.<br/><br/>Possible values are:  "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405".<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |

@@ -2,7 +2,7 @@ id: FireEye HX - Indicators Hunting
 version: -1
 name: FireEye HX - Indicators Hunting
 description: |-
-  This playbook facilitates threat hunting and detection of IOCs within FireEye Endpoint Security (HX) utilizing three sub-playbooks. The sub-playbooks query FireEye HX for different indicators including files, traffic, and execution flows indicators.
+  This playbook facilitates threat hunting and detection of IOCs within FireEye Endpoint Security (HX) utilizing three sub-playbooks. The sub-playbooks query FireEye HX for different indicators including files, traffic, and execution flow indicators.
 
   Note that multiple search values should be separated by commas only (without spaces or any special characters).
 
@@ -382,7 +382,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP address to search for within FireEye HX logs. Used for both source and destination IP addresses.
+    A single or multiple IP address to search for in FireEye HX logs. Used for both source and destination IP addresses.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -390,7 +390,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple port numbers to search for within FireEye HX logs. Used for both remote and local ports.
+    A single or multiple port numbers to search for in FireEye HX logs. Used for both remote and local ports.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -398,7 +398,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for within FireEye HX logs.
+    Single or multiple URLs and/or domains to search for in FireEye HX logs.
     By default, the 'contains' clause is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -407,7 +407,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple SHA256 file hashes to search for within FireEye HX logs.
+    A single or multiple SHA256 file hashes to search for in FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -415,7 +415,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple SHA1 file hashes to search for within FireEye HX logs.
+    A single or multiple SHA1 file hashes to search for in FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -423,7 +423,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple MD5 file hashes to search for within FireEye HX logs.
+    A single or multiple MD5 file hashes to search for in FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -431,7 +431,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file paths to search for within FireEye HX logs.
+    A single or multiple file paths to search for in FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -439,7 +439,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file names to search for FireEye HX logs.
+    A single or multiple file names to search for in FireEye HX logs.
     By default, the 'contains' clause is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -448,7 +448,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file types to search for within FireEye HX logs.
+    A single or multiple file types to search for in FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -456,7 +456,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple process names to search for within FireEye HX logs.
+    A single or multiple process names to search for in FireEye HX logs.
     By default, the 'contains' clause is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -465,7 +465,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple registry keys to search for within FireEye HX logs.
+    A single or multiple registry keys to search for in FireEye HX logs.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -473,14 +473,14 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple registry values to search for within FireEye HX logs.
+    A single or multiple registry values to search for in FireEye HX logs.
     By default, the 'contains' clause is used.
   playbookInputQuery:
 - key: Application
   value: {}
   required: false
   description: |-
-    Single or multiple application names or codes to search for within FireEye HX logs.
+    Single or multiple application names or codes to search for in FireEye HX logs.
     By default, the 'contains' clause is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -488,24 +488,24 @@ inputs:
 - key: hostSetName
   value: {}
   required: true
-  description: The name of host set to be searched.
+  description: The name of the host set to be searched.
   playbookInputQuery:
 - key: exhaustive
   value: {}
   required: false
   description: |-
-    Whether a search is exhaustive or quick.
+    Whether a search is exhaustive.
     Possible values are: yes, no. Default is yes.
   playbookInputQuery:
 - key: interval_in_seconds
   value: {}
   required: false
-  description: "The interval in seconds between each poll. Default is 60.\t"
+  description: The interval in seconds between each poll. Default is 60.
   playbookInputQuery:
 - key: limit
   value: {}
   required: false
-  description: Limits the results count (once the limit is reached, the search is stopped).
+  description: Limits the results count. (When the limit is reached, the search stops).
   playbookInputQuery:
 outputs:
 - contextPath: FireEyeHX.HuntingResults
@@ -515,7 +515,7 @@ outputs:
   description: The timestamp of the event.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Timestamp - Accessed
-  description: The last accessed time.
+  description: The time when the entry was last accessed.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Timestamp - Modified
   description: The time when the entry was last modified.
@@ -539,16 +539,16 @@ outputs:
   description: The MD5 hash of the file.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Port
-  description: The Port.
+  description: The port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Process ID
   description: The ID of the process.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local IP Address
-  description: The local IP Address.
+  description: The local IP address.
   type: string
 - contextPath: FireEyeHX.HuntingResults.Local Port
-  description: The local Port.
+  description: The local port.
   type: number
 - contextPath: FireEyeHX.HuntingResults.Remote Port
   description: The remote port.
