@@ -40,7 +40,7 @@ filter _raw_log contains "threatInfo"
     xdm.alert.original_threat_id = id,
     xdm.alert.original_threat_name = json_extract(indicators, "$.0.category"),
     xdm.alert.description = json_extract(indicators, "$.0.description"),
-    xdm.alert.mitre_techniques = split(json_extract(indicators, "$.0.tactics.0.techniques")),
+    xdm.alert.mitre_techniques = split(json_extract(indicators, "$.0.tactics.0.techniques"), ","),
     xdm.observer.action = json_extract_scalar(mitigationStatus, "$.action"),
     xdm.source.process.executable.path = json_extract_scalar(threatInfo, "$.filePath"),
     xdm.source.process.executable.md5 = json_extract_scalar(threatInfo, "$.md5"),
