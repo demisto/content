@@ -1,8 +1,8 @@
 {
-    "name": "DateTimeToADTime",
-    "description": "Since Active Directory understands time in terms of Filetime so it requires to convert human readable time to AD Filetime. This automation script will convert the Human Readable time to Active Directory Filetime. It can also take input as number of days and convert human readable time that many days ago to AD Filetime. \nThis can also be used with Active Directory Integration ",
+    "name": "DateTimeToADTime (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Shubham Agarwal",
     "url": "",
     "email": "",
@@ -19,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }
