@@ -42,7 +42,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma access folder location for the rule.
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -64,7 +64,7 @@ script:
       - post
       required: true
     - default: false
-      description: Friendly name of the rule.
+      description: The name of the security rule.
       isArray: false
       name: name
       required: true
@@ -82,7 +82,7 @@ script:
       - reset both client and server
       required: true
     - default: false
-      description: Rule description.
+      description: The security rule's description.
       isArray: false
       name: description
       required: false
@@ -231,7 +231,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma access folder location for the rule.
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -253,7 +253,7 @@ script:
       - post
       required: true
     - default: false
-      description: Name of the security rule.
+      description: The name of the security rule.
       isArray: false
       name: name
       required: false
@@ -276,7 +276,7 @@ script:
       name: rule_id
       required: false
     deprecated: false
-    description: List the security rules.
+    description: Lists all security rules.
     execution: false
     name: prisma-sase-security-rule-list
     outputs:
@@ -371,7 +371,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Folder Location for the Object.
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -396,7 +396,7 @@ script:
       - reset both client and server
       required: true
     - default: false
-      description: Rule description.
+      description: The security rule's description.
       isArray: false
       name: description
       required: false
@@ -480,14 +480,17 @@ script:
       isArray: false
       name: negate_destination
       required: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: This argument specifies rather to append or overwrite the....
       isArray: false
       name: overwrite
-      required: false
+      predefined:
+        - 'true'
+        - 'false'
     deprecated: false
-    description: Edit an existing security rule.
+    description: Update an existing security rule.
     execution: false
     name: prisma-sase-security-rule-update
     outputs:
@@ -545,7 +548,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Folder Location for the Object.
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -557,13 +560,13 @@ script:
       - Mobile Users Explicit Proxy
       required: true
     - default: false
-      description: Address Object description
+      description: The address object's description.
       isArray: false
       name: description
       required: false
     - auto: PREDEFINED
       default: false
-      description: The type of the address
+      description: The type of the address.
       isArray: false
       name: type
       predefined:
@@ -583,7 +586,7 @@ script:
       name: tag
       required: false
     deprecated: false
-    description: Edit address object
+    description: Update an existing address object.
     execution: false
     name: prisma-sase-address-object-update
     outputs:
@@ -640,7 +643,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: List configuration jobs.
+    description: Lists all configuration jobs.
     execution: false
     name: prisma-sase-config-job-list
     outputs:
@@ -696,14 +699,14 @@ script:
       name: rule_id
       required: true
     deprecated: false
-    description: Delete a security rule.
+    description: Delete a specific security rule.
     execution: false
     name: prisma-sase-security-rule-delete
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma Access Folder Location for the Object
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -715,12 +718,12 @@ script:
       - Mobile Users Explicit Proxy
       required: true
     - default: false
-      description: Friendly name of the address object.
+      description: The name of the address object.
       isArray: false
       name: name
       required: true
     - default: false
-      description: Address object description.
+      description: The address object's description.
       isArray: false
       name: description
       required: false
@@ -746,7 +749,7 @@ script:
       name: address_value
       required: true
     deprecated: false
-    description: Create a new address object
+    description: Create a new address object.
     execution: false
     name: prisma-sase-address-object-create
     outputs:
@@ -775,7 +778,7 @@ script:
       name: object_id
       required: true
     deprecated: false
-    description: Delete address object
+    description: Delete a specific address object.
     execution: false
     name: prisma-sase-address-object-delete
   - arguments:
@@ -787,7 +790,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma access folder location for the object.
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -814,7 +817,7 @@ script:
       name: page_size
       description: Number of results per page to display.
     deprecated: false
-    description: List address objects.
+    description: Lists all addresses objects.
     execution: false
     name: prisma-sase-address-object-list
     outputs:
@@ -848,7 +851,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location for the tag.
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -873,7 +876,7 @@ script:
       name: page_size
       description: Number of results per page to display.
     deprecated: false
-    description: List tags.
+    description: Lists all tags.
     execution: false
     name: prisma-sase-tag-list
     outputs:
@@ -896,7 +899,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
-      description: Prisma sase folder location for the tag.
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -908,7 +911,7 @@ script:
       - Mobile Users Explicit Proxy
       required: true
     - default: false
-      description: Tag unique name.
+      description: The tag unique name.
       isArray: false
       name: name
       required: true
@@ -966,7 +969,7 @@ script:
       name: comments
       required: false
     deprecated: false
-    description: Create a tag.
+    description: Create a new tag.
     execution: false
     name: prisma-sase-tag-create
     outputs:
@@ -987,6 +990,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
+      description: Prisma sase folder location.
       default: false
       defaultValue: Shared
       isArray: false
@@ -1058,7 +1062,7 @@ script:
       name: comments
       required: false
     deprecated: false
-    description: Uptade tag
+    description: Update an existing tag.
     execution: false
     name: prisma-sase-tag-update
     outputs:
@@ -1096,6 +1100,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1120,6 +1125,7 @@ script:
       description: Number of results per page to display.
     deprecated: false
     execution: false
+    description: Lists all address groups.
     name: prisma-sase-address-group-list
     outputs:
     - contextPath: PrismaSase.AddressGroup.id
@@ -1141,6 +1147,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1154,6 +1161,7 @@ script:
     - auto: PREDEFINED
       default: false
       isArray: false
+      description: The address group type.
       name: type
       predefined:
       - static
@@ -1172,13 +1180,16 @@ script:
     - default: false
       isArray: false
       name: description
+      description: The address group's description.
       required: false
     - default: false
       isArray: false
       name: name
-      required: false
+      required: true
+      description: The name of the address group.
     deprecated: false
     execution: false
+    description: Create a new address group.
     name: prisma-sase-address-group-create
     outputs:
     - contextPath: PrismaSase.AddressGroup.id
@@ -1203,10 +1214,12 @@ script:
     - default: false
       isArray: false
       name: group_id
+      description: The id of the address group.
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1220,24 +1233,25 @@ script:
     - default: false
       isArray: false
       name: static_addresses
-      required: false
+      description: static addresses for the address group. If the type is static, value must be provided.
     - default: false
       isArray: false
       name: dynamic_filter
-      required: false
+      description: dynamic filter for the address group. If the type is dynamic, value must be provided.
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
       isArray: false
+      description: Rather to overwrite existing data.
       name: overwrite
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
     - default: false
       isArray: false
       name: description
-      required: false
+      description: The address group's description.
     - auto: PREDEFINED
       default: false
       isArray: false
@@ -1245,36 +1259,39 @@ script:
       predefined:
       - dynamic
       - static
-      required: false
+      description: The address group type.
     deprecated: false
     execution: false
+    description: Update an existing address group.
     name: prisma-sase-address-group-update
     outputs:
-      - contextPath: PrismaSase.AddressGroup.id
-        description: The address group id.
-        type: String
-      - contextPath: PrismaSase.AddressGroup.name
-        description: The address group name.
-        type: String
-      - contextPath: PrismaSase.AddressGroup.folder
-        description: The address group folder.
-        type: String
-      - contextPath: PrismaSase.AddressGroup.description
-        description: The address group description.
-        type: String
-      - contextPath: PrismaSase.AddressGroup.addresses
-        description: The address group addresses.
-        type: String
-      - contextPath: PrismaSase.AddressGroup.dynamic_filter
-        description: The address group filter.
-        type: String
+    - contextPath: PrismaSase.AddressGroup.id
+      description: The address group id.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.name
+      description: The address group name.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      description: The address group folder.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.description
+      description: The address group description.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.addresses
+      description: The address group addresses.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.dynamic_filter
+      description: The address group filter.
+      type: String
   - arguments:
     - default: false
       isArray: false
       name: group_id
+      description: The name of the address group.
       required: true
     deprecated: false
     execution: false
+    description: Delete a specific address group.
     name: prisma-sase-address-group-delete
   - arguments:
     - default: false
@@ -1285,6 +1302,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1309,6 +1327,7 @@ script:
       description: Number of results per page to display.
     deprecated: false
     execution: false
+    description: Lists all custom URL categories.
     name: prisma-sase-custom-url-category-list
     outputs:
     - contextPath: PrismaSase.CustomURLCategory.id
@@ -1330,6 +1349,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1343,6 +1363,7 @@ script:
     - auto: PREDEFINED
       default: false
       isArray: false
+      description: The custom URL category's type.
       name: type
       predefined:
       - URL List
@@ -1356,13 +1377,16 @@ script:
     - default: false
       isArray: false
       name: description
+      description: The custom URL category's description.
       required: false
     - default: false
       isArray: false
       name: name
       required: true
+      description: The name of the custom URL category.
     deprecated: false
     execution: false
+    description: Create a new url category.
     name: prisma-sase-custom-url-category-create
     outputs:
     - contextPath: PrismaSase.CustomURLCategory.id
@@ -1385,9 +1409,11 @@ script:
       isArray: false
       name: id
       required: true
+      description: The custom URL category id.
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1402,21 +1428,22 @@ script:
       isArray: false
       name: value
       required: false
+      description: ''
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
       isArray: false
       name: overwrite
       predefined:
-      - true
-      - false
-      required: false
+      - 'true'
+      - 'false'
+      description: This argument specifies rather to append or overwrite the....
     - default: false
       isArray: false
       name: description
-      required: false
+      description: The custom URL category's description.
     - auto: PREDEFINED
-      default: false
+      description: The custom URL category's type.
       isArray: false
       name: type
       predefined:
@@ -1425,6 +1452,7 @@ script:
       required: false
     deprecated: false
     execution: false
+    description: Update an existing url category.
     name: prisma-sase-custom-url-category-update
     outputs:
     - contextPath: PrismaSase.CustomURLCategory.id
@@ -1447,8 +1475,10 @@ script:
       isArray: false
       name: id
       required: true
+      description: The custom URL category id.
     deprecated: false
     execution: false
+    description: Delete a specific url category.
     name: prisma-sase-custom-url-category-delete
   - arguments:
     - default: false
@@ -1459,6 +1489,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1483,6 +1514,7 @@ script:
       description: Number of results per page to display.
     deprecated: false
     execution: false
+    description: Lists all external dynamic lists.
     name: prisma-sase-external-dynamic-list-list
     outputs:
     - contextPath: PrismaSase.ExternalDynamicList.id
@@ -1507,6 +1539,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1518,7 +1551,7 @@ script:
       - Mobile Users Explicit Proxy
       required: true
     - auto: PREDEFINED
-      default: false
+      description: The dynamic list's type.
       isArray: false
       name: type
       predefined:
@@ -1536,41 +1569,45 @@ script:
     - default: false
       isArray: false
       name: description
-      required: false
+      description: The dynamic list's description.
     - default: false
       isArray: false
+      description: The name of the external dynamic list.
       name: name
       required: true
     deprecated: false
     execution: false
+    description: Create a new dynamic list.
     name: prisma-sase-external-dynamic-list-create
     outputs:
-      - contextPath: PrismaSase.ExternalDynamicList.id
-        description: The external dynamic list id.
-        type: String
-      - contextPath: PrismaSase.ExternalDynamicList.name
-        description: The external dynamic list name.
-        type: String
-      - contextPath: PrismaSase.ExternalDynamicList.folder
-        description: The external dynamic list folder.
-        type: String
-      - contextPath: PrismaSase.ExternalDynamicList.description
-        description: The external dynamic list description.
-        type: String
-      - contextPath: PrismaSase.ExternalDynamicList.source
-        description: The external dynamic list source.
-        type: String
-      - contextPath: PrismaSase.ExternalDynamicList.frequency
-        description: The external dynamic list frequency.
-        type: String
+    - contextPath: PrismaSase.ExternalDynamicList.id
+      description: The external dynamic list id.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.name
+      description: The external dynamic list name.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.folder
+      description: The external dynamic list folder.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.description
+      description: The external dynamic list description.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.source
+      description: The external dynamic list source.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.frequency
+      description: The external dynamic list frequency.
+      type: String
   - arguments:
     - default: false
       isArray: false
       name: id
       required: true
+      description: The external dynamic list id.
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
+      description: Prisma sase folder location.
       isArray: false
       name: folder
       predefined:
@@ -1584,20 +1621,20 @@ script:
     - default: false
       isArray: false
       name: value
-      required: false
+      description: ''
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
       isArray: false
       name: overwrite
       predefined:
-      - true
-      - false
-      required: false
+      - 'true'
+      - 'false'
+      description: This argument specifies rather to append or overwrite the....
     - default: false
       isArray: false
       name: description
-      required: false
+      description: The dynamic list's description.
     - auto: PREDEFINED
       default: false
       isArray: false
@@ -1605,9 +1642,10 @@ script:
       predefined:
       - URL List
       - Category Match
-      required: false
+      description: The dynamic list's type.
     deprecated: false
     execution: false
+    description: Update an existing dynamic list.
     name: prisma-sase-external-dynamic-list-update
     outputs:
     - contextPath: PrismaSase.ExternalDynamicList.id
@@ -1633,10 +1671,12 @@ script:
       isArray: false
       name: id
       required: true
+      description: The external dynamic list id.
     deprecated: false
     execution: false
+    description: Delete a specific dynamic list.
     name: prisma-sase-external-dynamic-list-delete
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.44472
   feed: false
   isfetch: false
   longRunning: false
