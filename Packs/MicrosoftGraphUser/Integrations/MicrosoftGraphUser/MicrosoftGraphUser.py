@@ -3,10 +3,11 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
 from urllib.parse import quote
+import urllib3
 
 # disable insecure warnings
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
@@ -463,17 +464,17 @@ def revoke_user_session_command(client: MsGraphClient, args: Dict):
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
+    tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id', '')
+    enc_key = params.get('creds_enc_key', {}).get('password', '') or params.get('enc_key', '')
     verify = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
     redirect_uri = params.get('redirect_uri', '')
-    auth_code = params.get('auth_code', '')
+    auth_code = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_code', '')
     proxy = params.get('proxy', False)
     handle_error = argToBoolean(params.get('handle_error', 'true'))
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or params.get('certificate_thumbprint', '')
+    private_key = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')

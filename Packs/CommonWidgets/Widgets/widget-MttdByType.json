@@ -24,7 +24,7 @@
   ],
   "groupBy": [
    "occurred(d)",
-   "type"
+   "rawType"
   ]
  },
  "description": "A widget that shows the Mean Time to Detection, by incident type."
