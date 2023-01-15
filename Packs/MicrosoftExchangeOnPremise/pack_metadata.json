@@ -12,6 +12,12 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "dependencies": {
+        "MicrosoftExchangeOnline": {
+            "mandatory": true,
+            "display_name": "Microsoft Exchange Online"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
