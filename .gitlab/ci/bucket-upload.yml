@@ -494,3 +494,24 @@ upload-id-set-bucket:
     - !reference [.create-id-set-xsoar]
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
     - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/content/id_set.json"
+
+
+sync-buckets-between-projects:
+  # syncs buckets from oproxy-dev project to xdr-xsoar-content-dev-01 project
+  tags:
+    - gke
+  extends:
+    - .bucket-upload-rule-always
+  stage: upload-to-marketplace
+  needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
+  script:
+    - |
+      if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]]; then
+        echo "$GCS_XSOAR_CONTENT_DEV_KEY not set, cannot perform sync"
+      else
+        gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
+        gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-dev
+        gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-dev
+        gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-dev
+        echo "Bucket sync completed"
+      fi
