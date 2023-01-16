@@ -1,0 +1,1812 @@
+id: Cortex Data Lake - File Indicators Hunting
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Cortex Data Lake - File Indicators Hunting
+description: |
+  This playbook queries Cortex Data Lake (CDL) for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, and file types.
+
+  Note that multiple search values should be separated by commas only (without spaces or any special characters).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: efd174b1-c3ae-48ce-8d14-52e397954612
+    type: start
+    task:
+      id: efd174b1-c3ae-48ce-8d14-52e397954612
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "315"
+      - "269"
+      - "267"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2270,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8866ab9f-b803-4e46-86c8-03b6fe1fd891
+    type: condition
+    task:
+      id: 8866ab9f-b803-4e46-86c8-03b6fe1fd891
+      version: -1
+      name: Any file type to hunt for?
+      description: Checks whether any file types are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "303"
+      "yes":
+      - "335"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileType
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2270,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 96c96060-86cc-45ae-8e0f-2a239b289823
+    type: condition
+    task:
+      id: 96c96060-86cc-45ae-8e0f-2a239b289823
+      version: -1
+      name: Any file name to hunt for?
+      description: Checks whether any file names are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "285"
+      "yes":
+      - "334"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Filename
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1700,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "222":
+    id: "222"
+    taskid: 4bda8846-4806-4766-823f-93d2c02ba30f
+    type: regular
+    task:
+      id: 4bda8846-4806-4766-823f-93d2c02ba30f
+      version: -1
+      name: Query Cortex Data Lake - Threat Logs
+      description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
+      script: Cortex Data Lake|||cdl-query-threat-logs
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "284"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.action
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      fields:
+        simple: all
+      file_name:
+        complex:
+          root: inputs.Filename
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      limit:
+        complex:
+          root: inputs.limit
+      rule_matched:
+        complex:
+          root: inputs.rule_matched
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.rule_matched
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1470,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "257":
+    id: "257"
+    taskid: c8d89928-54f0-43b4-85a0-c129afe5c8ad
+    type: title
+    task:
+      id: c8d89928-54f0-43b4-85a0-c129afe5c8ad
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2270,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "267":
+    id: "267"
+    taskid: 4724bd19-b2b5-4ebe-8805-363a9d187814
+    type: title
+    task:
+      id: 4724bd19-b2b5-4ebe-8805-363a9d187814
+      version: -1
+      name: File Name Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1700,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "269":
+    id: "269"
+    taskid: 54912fab-85cc-4e40-8c22-b1553d0a2ec0
+    type: title
+    task:
+      id: 54912fab-85cc-4e40-8c22-b1553d0a2ec0
+      version: -1
+      name: File Type Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2270,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "273":
+    id: "273"
+    taskid: a6847aa8-f05e-4099-8ddb-9c9b4e426cc7
+    type: regular
+    task:
+      id: a6847aa8-f05e-4099-8ddb-9c9b4e426cc7
+      version: -1
+      name: Query Cortex Data Lake - File Data Logs
+      description: Searches the Cortex firewall.file_data table.
+      script: Cortex Data Lake|||cdl-query-file-data
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "284"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.action
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      file_name:
+        complex:
+          root: inputs.Filename
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      limit:
+        complex:
+          root: inputs.limit
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "280":
+    id: "280"
+    taskid: 325853ff-aa56-41dc-8b1f-098e2b6c14d0
+    type: regular
+    task:
+      id: 325853ff-aa56-41dc-8b1f-098e2b6c14d0
+      version: -1
+      name: Save Matching Results - Threat Logs
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "283"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CDL.HuntingResults
+      value:
+        complex:
+          root: CDL.Logging.Threat
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.Threat.DestinationPort
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.Threat.SourcePort
+                iscontext: true
+          - - operator: notInList
+              left:
+                value:
+                  simple: CDL.Logging.Threat.SessionID
+                iscontext: true
+              right:
+                value:
+                  simple: CDL.HuntingResults.SessionID
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "283":
+    id: "283"
+    taskid: b5f0be31-2638-4bf8-899e-e5cacc55d63d
+    type: regular
+    task:
+      id: b5f0be31-2638-4bf8-899e-e5cacc55d63d
+      version: -1
+      name: Save Matching Results - File Data Logs
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "285"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CDL.HuntingResults
+      value:
+        complex:
+          root: CDL.Logging.File
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.File.DestinationPort
+                iscontext: true
+          - - operator: notInList
+              left:
+                value:
+                  simple: CDL.Logging.File.SessionID
+                iscontext: true
+              right:
+                value:
+                  simple: CDL.HuntingResults.SessionID
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "284":
+    id: "284"
+    taskid: a90914e3-86fa-4427-8114-9508eafc4c30
+    type: title
+    task:
+      id: a90914e3-86fa-4427-8114-9508eafc4c30
+      version: -1
+      name: Save Matching Results - File Name
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "280"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "285":
+    id: "285"
+    taskid: 64264f5a-39ba-4c6a-84d0-5ce5df522631
+    type: title
+    task:
+      id: 64264f5a-39ba-4c6a-84d0-5ce5df522631
+      version: -1
+      name: File Name Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "257"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1700,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "298":
+    id: "298"
+    taskid: 839b0049-0fd6-4f15-8f00-9d6d4f92c85d
+    type: regular
+    task:
+      id: 839b0049-0fd6-4f15-8f00-9d6d4f92c85d
+      version: -1
+      name: Query Cortex Data Lake - File Data Logs
+      description: Searches the Cortex firewall.file_data table.
+      script: Cortex Data Lake|||cdl-query-file-data
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "300"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.action
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      file_type:
+        complex:
+          root: inputs.FileType
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      limit:
+        complex:
+          root: inputs.limit
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2040,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "300":
+    id: "300"
+    taskid: d1bbe8e1-ed8e-4c80-8a70-805423472389
+    type: title
+    task:
+      id: d1bbe8e1-ed8e-4c80-8a70-805423472389
+      version: -1
+      name: Save Matching Results - File Type
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "301"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2040,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "301":
+    id: "301"
+    taskid: db8d75d8-affd-4293-843e-18bd0cbfca8e
+    type: regular
+    task:
+      id: db8d75d8-affd-4293-843e-18bd0cbfca8e
+      version: -1
+      name: Save Matching Results - File Data Logs
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "303"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CDL.HuntingResults
+      value:
+        complex:
+          root: CDL.Logging.File
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.File.FileType
+                iscontext: true
+          - - operator: notInList
+              left:
+                value:
+                  simple: CDL.Logging.File.SessionID
+                iscontext: true
+              right:
+                value:
+                  simple: CDL.HuntingResults.SessionID
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2040,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "303":
+    id: "303"
+    taskid: 2907b4b4-0154-4dc1-80b9-e1f95a12a52d
+    type: title
+    task:
+      id: 2907b4b4-0154-4dc1-80b9-e1f95a12a52d
+      version: -1
+      name: File Type Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "257"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2270,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "308":
+    id: "308"
+    taskid: 989ed938-5230-4ff2-896f-c3e6a0825475
+    type: title
+    task:
+      id: 989ed938-5230-4ff2-896f-c3e6a0825475
+      version: -1
+      name: Save Matching Results - SHA256
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "314"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3210,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "309":
+    id: "309"
+    taskid: 30aca201-6695-4bc8-8ffe-094747ec40e3
+    type: regular
+    task:
+      id: 30aca201-6695-4bc8-8ffe-094747ec40e3
+      version: -1
+      name: Save Matching Results - File Data Logs
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "311"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CDL.HuntingResults
+      value:
+        complex:
+          root: CDL.Logging.File
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.File.FileSHA256
+                iscontext: true
+          - - operator: notInList
+              left:
+                value:
+                  simple: CDL.Logging.File.SessionID
+                iscontext: true
+              right:
+                value:
+                  simple: CDL.HuntingResults.SessionID
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3210,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "311":
+    id: "311"
+    taskid: bd9bbdcf-efb0-4c8c-8cfa-3211786636bc
+    type: title
+    task:
+      id: bd9bbdcf-efb0-4c8c-8cfa-3211786636bc
+      version: -1
+      name: Hash Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "257"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2780,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "312":
+    id: "312"
+    taskid: f27ee0ff-92f2-4e82-822d-74b520495260
+    type: regular
+    task:
+      id: f27ee0ff-92f2-4e82-822d-74b520495260
+      version: -1
+      name: Query Cortex Data Lake - File Data Logs (Source Geolocation)
+      description: Searches the Cortex firewall.file_data table.
+      script: Cortex Data Lake|||cdl-query-file-data
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "308"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.action
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      file_sha_256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      limit:
+        complex:
+          root: inputs.limit
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3010,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "313":
+    id: "313"
+    taskid: 6c6c47cf-6762-4c60-8a19-1202ccb80c95
+    type: regular
+    task:
+      id: 6c6c47cf-6762-4c60-8a19-1202ccb80c95
+      version: -1
+      name: Query Cortex Data Lake - Threat Logs
+      description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
+      script: Cortex Data Lake|||cdl-query-threat-logs
+      type: regular
+      iscommand: true
+      brand: Cortex Data Lake
+    nexttasks:
+      '#none#':
+      - "308"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.action
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      end_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: end_time
+      fields:
+        simple: all
+      file_sha_256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      limit:
+        complex:
+          root: inputs.limit
+      rule_matched:
+        complex:
+          root: inputs.rule_matched
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.rule_matched
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start_time:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          accessor: start_time
+      time_range:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.time_range
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: time_range
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3410,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "314":
+    id: "314"
+    taskid: ad4afbe9-3ae2-461f-8c48-03df023e92e7
+    type: regular
+    task:
+      id: ad4afbe9-3ae2-461f-8c48-03df023e92e7
+      version: -1
+      name: Save Matching Results - Threat Logs
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "309"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: CDL.HuntingResults
+      value:
+        complex:
+          root: CDL.Logging.Threat
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CDL.Logging.Threat.SessionID
+                iscontext: true
+          - - operator: notInList
+              left:
+                value:
+                  simple: CDL.Logging.Threat.SessionID
+                iscontext: true
+              right:
+                value:
+                  simple: CDL.HuntingResults.SessionID
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3210,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "315":
+    id: "315"
+    taskid: 44b7e440-80e9-4a8c-87cf-6ce9aa866cf6
+    type: title
+    task:
+      id: 44b7e440-80e9-4a8c-87cf-6ce9aa866cf6
+      version: -1
+      name: Hash Indicators (SHA1, SHA256, and MD5)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "316"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2780,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "316":
+    id: "316"
+    taskid: be812b5e-d289-426d-8b57-5d8867687cbf
+    type: condition
+    task:
+      id: be812b5e-d289-426d-8b57-5d8867687cbf
+      version: -1
+      name: Any hash to hunt for?
+      description: Checks whether any MD5, SHA256, or SHA1 hashes are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "311"
+      "yes":
+      - "333"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2780,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "333":
+    id: "333"
+    taskid: ff5e0aab-37dc-42b0-8d2e-2370443306ab
+    type: playbook
+    task:
+      id: ff5e0aab-37dc-42b0-8d2e-2370443306ab
+      version: -1
+      name: Convert file hash to corresponding hashes
+      playbookName: Convert file hash to corresponding hashes
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "336"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -3210,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "334":
+    id: "334"
+    taskid: e889d535-b148-4655-8019-f48086e54fbd
+    type: title
+    task:
+      id: e889d535-b148-4655-8019-f48086e54fbd
+      version: -1
+      name: Search File Name
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "222"
+      - "273"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "335":
+    id: "335"
+    taskid: 6445dd7f-687a-45da-8902-9c808435fef4
+    type: title
+    task:
+      id: 6445dd7f-687a-45da-8902-9c808435fef4
+      version: -1
+      name: Search File Type
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "298"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2040,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "336":
+    id: "336"
+    taskid: d2bb163b-a41a-4e94-80bd-65a9f7062fb1
+    type: title
+    task:
+      id: d2bb163b-a41a-4e94-80bd-65a9f7062fb1
+      version: -1
+      name: Search SHA256
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "312"
+      - "313"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3210,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1605,
+        "width": 2730,
+        "x": -3410,
+        "y": -290
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA256 file hashes to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: MD5
+  value: {}
+  required: false
+  description: |-
+    A single or multiple MD5 file hashes to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA1
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA1 file hashes to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Filename
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file names to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileType
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file types to search for within Cortex Data Lake.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: time_range
+  value: {}
+  required: false
+  description: |-
+    An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.
+
+    When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used.
+  playbookInputQuery:
+- key: start_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query start time at which to perform a search within Cortex Data Lake.
+
+    For example, start_time="2018-04-26 00:00:00"
+  playbookInputQuery:
+- key: end_time
+  value: {}
+  required: false
+  description: |-
+    Specify the query end time at which to perform a search within Cortex Data Lake.
+
+    For example, end_time="2018-04-26 00:00:00"
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: "The maximum number of logs to return. \nDefault is 10."
+  playbookInputQuery:
+- key: fields
+  value: {}
+  required: false
+  description: "Select the fields you wish to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
+  playbookInputQuery:
+- key: action
+  value: {}
+  required: false
+  description: |-
+    Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: rule_matched
+  value: {}
+  required: false
+  description: |-
+    Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+outputs:
+- contextPath: CDL.HuntingResults
+  description: Event log objects and fields that were retrieved from Cortex Data Lake (CDL).
+  type: string
+- contextPath: CDL.HuntingResults.TimeGenerated
+  description: Time when the log was generated on the firewall's data plane.
+  type: number
+- contextPath: CDL.HuntingResults.LogTime
+  description: Time the log was received in Cortex Data Lake.
+  type: number
+- contextPath: CDL.HuntingResults.IngestionTime
+  description: Ingestion time of the log.
+  type: number
+- contextPath: CDL.HuntingResults.App
+  description: Application associated with the network traffic.
+  type: string
+- contextPath: CDL.HuntingResults.AppCategory
+  description: Identifies the high-level family of the application.
+  type: string
+- contextPath: CDL.HuntingResults.RiskOfApp
+  description: Indicates how risky the application is from a network security perspective.
+  type: string
+- contextPath: CDL.HuntingResults.CharacteristicOfApp
+  description: Identifies the behavioral characteristic of the application associated with the network traffic.
+  type: string
+- contextPath: CDL.HuntingResults.SanctionedStateOfApp
+  description: Indicates whether the application has been flagged as sanctioned by the firewall administrator.
+  type: string
+- contextPath: CDL.HuntingResults.SessionID
+  description: Identifies the firewall's internal identifier for a specific network session.
+  type: string
+- contextPath: CDL.HuntingResults.Action
+  description: Identifies the action that the firewall took for the network traffic.
+  type: string
+- contextPath: CDL.HuntingResults.Protocol
+  description: IP protocol associated with the session.
+  type: string
+- contextPath: CDL.HuntingResults.SourcePort
+  description: Source port utilized by the session.
+  type: number
+- contextPath: CDL.HuntingResults.DestinationPort
+  description: Network traffic's destination port. If this value is 0, then the app is using its standard port.
+  type: number
+- contextPath: CDL.HuntingResults.DestinationIP
+  description: Original destination IP address.
+  type: string
+- contextPath: CDL.HuntingResults.SourceIP
+  description: Original source IP address.
+  type: string
+- contextPath: CDL.HuntingResults.Users
+  description: Source/Destination user. If neither is available, source_ip is used.
+  type: string
+- contextPath: CDL.HuntingResults.IsPhishing
+  description: Indicates whether enterprise credentials were submitted by an end user.
+  type: string
+- contextPath: CDL.HuntingResults.SourceLocation
+  description: Source country or internal region for private addresses.
+  type: string
+- contextPath: CDL.HuntingResults.DestinationLocation
+  description: Destination country or internal region for private addresses.
+  type: string
+- contextPath: CDL.HuntingResults.RuleMatched
+  description: Unique identifier for the security policy rule that the network traffic matched.
+  type: string
+- contextPath: CDL.HuntingResults.ThreatCategory
+  description: Threat category of the detected threat.
+  type: string
+- contextPath: CDL.HuntingResults.LogSourceName
+  description: Name of the source of the log.
+  type: string
+- contextPath: CDL.HuntingResults.Direction
+  description: Indicates the direction of the attack.
+  type: string
+- contextPath: CDL.HuntingResults.FileName
+  description: The name of the file that is blocked.
+  type: string
+- contextPath: CDL.HuntingResults.FileSHA256
+  description: The binary hash (SHA256) of the file.
+  type: string
+- contextPath: CDL.HuntingResults.IsURLDenied
+  description: Indicates whether the session was denied due to a URL filtering rule.
+  type: string
+- contextPath: CDL.HuntingResults.URLDomain
+  description: The name of the internet domain that was visited in this session.
+  type: string
+- contextPath: CDL.HuntingResults.URLCategory
+  description: The URL category.
+  type: string
+- contextPath: CDL.HuntingResults.SourceDeviceHost
+  description: Hostname of the device from which the session originated.
+  type: string
+- contextPath: CDL.HuntingResults.DestDeviceHost
+  description: Hostname of the device session destination.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
