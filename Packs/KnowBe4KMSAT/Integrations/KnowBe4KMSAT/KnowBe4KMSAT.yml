@@ -390,46 +390,46 @@ script:
             Order returned events in ascending (asc) or descending (desc) order
             ("asc", "desc")
       outputs:
-        - contextPath: UserEvent.data.id
+        - contextPath: KMSAT.UserEvents.id
           description: "Unique ID of the event"
           type: Number
-        - contextPath: UserEvent.data.user.email
+        - contextPath: KMSAT.UserEvents.user.email
           description: "User email address"
           type: String
-        - contextPath: UserEvent.data.user.id
+        - contextPath: KMSAT.UserEvents.user.id
           description: "User ID"
           type: Number
-        - contextPath: UserEvent.data.user.archived
+        - contextPath: KMSAT.UserEvents.user.archived
           description: "User Archived flag"
           type: Boolean
-        - contextPath: UserEvent.data.external_id
+        - contextPath: KMSAT.UserEvents.external_id
           description: "External ID of the event"
           type: String
-        - contextPath: UserEvent.data.source
+        - contextPath: KMSAT.UserEvents.source
           description: "Source of the event"
           type: String
-        - contextPath: UserEvent.data.description
+        - contextPath: KMSAT.UserEvents.description
           description: "Description of the event"
           type: String
-        - contextPath: UserEvent.data.occurred_date
+        - contextPath: KMSAT.UserEvents.occurred_date
           description: "When the event occurred"
           type: Date
-        - contextPath: UserEvent.data.risk.level
+        - contextPath: KMSAT.UserEvents.risk.level
           description: "Risk Level of the event"
           type: Number
-        - contextPath: UserEvent.data.risk.factor
+        - contextPath: KMSAT.UserEvents.risk.factor
           description: "Risk Factor of the event"
           type: Number
-        - contextPath: UserEvent.data.risk.decay_mode
+        - contextPath: KMSAT.UserEvents.risk.decay_mode
           description: "The Risk Level Decay Mode"
           type: String
-        - contextPath: UserEvent.data.risk.expire_date
+        - contextPath: KMSAT.UserEvents.risk.expire_date
           description: "Risk Expire Date"
           type: String
-        - contextPath: UserEvent.data.event_type.id
+        - contextPath: KMSAT.UserEvents.event_type.id
           description: "Event Type ID"
           type: Number
-        - contextPath: UserEvent.data.event_type.name
+        - contextPath: KMSAT.UserEvents.event_type.name
           description: "Event Type Name"
           type: String
       description: Returns KMSAT User Events.
@@ -438,16 +438,16 @@ script:
         - name: name
           description: Filter by name of the event type
       outputs:
-        - contextPath: UserEvent.Types.data.id
+        - contextPath: KMSAT.UserEventTypes.id
           description: "ID of the Event Type"
           type: Number
-        - contextPath: UserEvent.Types.account_id
+        - contextPath: KMSAT.UserEventTypes.account_id
           description: "Account ID"
           type: Number
-        - contextPath: UserEvent.Types.data.name
+        - contextPath: KMSAT.UserEventTypes.name
           description: "Name of the Event Type"
           type: String
-        - contextPath: UserEvent.Types.data.description
+        - contextPath: KMSAT.UserEventTypes.description
           description: "Description of Event Type"
           type: String
       description: Returns all KMSAT User Event Types
@@ -501,7 +501,7 @@ script:
         - name: risk_expire_date
           description: (YYYY-MM-DD) If a date is not set, this field will default to the occurred_date plus one (1) month.
       outputs:
-        - contextPath: UserEvent.data.id
+        - contextPath: KMSAT.UserEventCreate.id
           description: "Unique ID of the event"
           type: Number
       description: Adds a User Event

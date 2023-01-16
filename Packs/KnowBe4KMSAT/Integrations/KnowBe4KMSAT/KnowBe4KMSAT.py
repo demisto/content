@@ -540,11 +540,11 @@ def kmsat_user_events_list_command(
         )
     data: List[Dict] = response.get("data") or []
     return CommandResults(
-        outputs_prefix="KMSAT_User_Events_Returned",
+        outputs_prefix="KMSAT.UserEvents",
         outputs_key_field="id",
         raw_response=response,
         outputs=data,
-        readable_output=tableToMarkdown(name="KMSAT_User_Events", t=data),
+        readable_output=tableToMarkdown(name="KMSAT User Events", t=data),
     )
 
 
@@ -559,11 +559,11 @@ def kmsat_user_event_types_list_command(
         )
     data: List[Dict] = response.get("data") or []
     return CommandResults(
-        outputs_prefix="KMSAT_User_Event_Types_Returned",
+        outputs_prefix="KMSAT.UserEventTypes",
         outputs_key_field="id",
         raw_response=response,
         outputs=data,
-        readable_output=tableToMarkdown(name="KMSAT_User_Event_Types", t=data),
+        readable_output=tableToMarkdown(name="KMSAT User Event Types", t=data),
     )
 
 
@@ -578,10 +578,11 @@ def kmsat_user_event_create_command(
         )
     data: List[Dict] = response.get("data") or []
     return CommandResults(
-        outputs_prefix="KMSAT_Create_User_EvenReturned",
+        outputs_prefix="KMSAT.UserEventCreate",
         outputs_key_field="id",
         raw_response=response,
-        readable_output=tableToMarkdown(name="KMSAT_Create_User_Event", t=data),
+        outputs=response
+        readable_output=tableToMarkdown(name="KMSAT Create User Event", t=data),
     )
 
 
@@ -590,7 +591,8 @@ def kmsat_user_event_delete_command(
 ) -> CommandResults:
     event_id: str = str(args.get("id"))
     client.delete_user_event(event_id)
-    return CommandResults(readable_output=f"Successfully deleted event: {event_id}")
+    return CommandResults(
+        readable_output=f"Successfully deleted event: {event_id}")
 
 
 def test_module(client: Client, userEventClient: UserEventClient) -> str:
