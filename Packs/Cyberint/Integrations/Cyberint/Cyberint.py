@@ -543,30 +543,24 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
         incident = {}
 
         incident_csvs = dict_safe_get(alert, ['alert_data', 'csv', 'content']) or []
-
+        incident = {
+            'name': f'Cyberint alert {alert_id}: {alert_title}',
+            'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
+            'rawJSON': json.dumps(alert),
+            'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
+            'attachment': incident_attachments,
+        }
         if not fetch_assign_multiple:
             if incident_csvs:
                 index = 1
                 for incident_csv in incident_csvs:
                     alert.update({'ref_id': f'{alert_id} ({index})'})
                     alert['alert_data']['csv'].update({'content': incident_csv})
-                    incident = {
-                        'name': f'Cyberint alert {alert_id} ({index}): {alert_title}',
-                        'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
-                        'rawJSON': json.dumps(alert),
-                        'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
-                        'attachment': incident_attachments,
-                    }
+
+                    incident.update{'name': f'Cyberint alert {alert_id} ({index}): {alert_title}'}
                     incidents.append(incident)
                     index += 1
             else:
-                incident = {
-                    'name': f'Cyberint alert {alert_id}: {alert_title}',
-                    'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
-                    'rawJSON': json.dumps(alert),
-                    'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
-                    'attachment': incident_attachments,
-                }
                 incidents.append(incident)
         else:
             alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
@@ -577,13 +571,6 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                     alert_csv_id)
                 alert['alert_data']['csv'] = extracted_csv_data
 
-            incident = {
-                'name': f'Cyberint alert {alert_id}: {alert_title}',
-                'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
-                'rawJSON': json.dumps(alert),
-                'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
-                'attachment': incident_attachments,
-            }
             incidents.append(incident)
 
     if incidents:
