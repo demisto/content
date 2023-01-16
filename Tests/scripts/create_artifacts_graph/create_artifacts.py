@@ -13,18 +13,19 @@ import json
 logging_setup(3)
 install_logging("create_artifacts.log", logger=logger)
 
-
 def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bool):
     content_dto.dump(output, marketplace, zip)
 
 
-def create_dependencies(content_dto: ContentDTO, output: Path):
+def create_dependencies(content_dto: ContentDTO, output: Path, bucket_upload: bool = False):
     pack_dependencies = {}
     for pack in content_dto.packs:
         dependencies = pack.depends_on
         first_level_dependencies = {}
         all_level_dependencies = {}
         for dependency in dependencies:
+            if bucket_upload and dependency.is_test:
+                continue
             if dependency.mandatorily:
                 all_level_dependencies[dependency.content_item.object_id] = {
                     "display_name": dependency.content_item.name,
@@ -51,6 +52,7 @@ def main():
     parser.add_argument("-mp", "--marketplace", type=MarketplaceVersions, help="marketplace version", default="xsoar")
     parser.add_argument("-ao", "--artifacts-output", help="Artifacts output directory", required=True)
     parser.add_argument("-do", "--dependencies-output", help="Dependencies output directory", required=True)
+    parser.add_argument("-bu", "--bucket-upload", help="Upload to bucket", action="store_true")
     parser.add_argument("--zip", default=True, action="store_true")
     parser.add_argument("--no-zip", dest="zip", action="store_false")
     args = parser.parse_args()
@@ -61,7 +63,7 @@ def main():
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
 
         logger.info("Creating pack dependencies mapping")
-        create_dependencies(content_dto, Path(args.dependencies_output))
+        create_dependencies(content_dto, Path(args.dependencies_output), args.bucket_upload)
 
 
 if __name__ == "__main__":
