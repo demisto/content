@@ -414,7 +414,7 @@ class Client(BaseClient):
         new_domain_name: Optional[str] = None,
         ip_addresses: Optional[str] = None,
         order: Optional[str] = None,
-    )-> Dict[str, Any]:
+    ) -> Dict[str, Any]:
         """
         Update domain map.
 
@@ -442,7 +442,7 @@ class Client(BaseClient):
             "PUT", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data
         )
 
-    def domain_map_delete_request(self, domain_name: str)-> Dict[str, Any]:
+    def domain_map_delete_request(self, domain_name: str) -> Dict[str, Any]:
         """
         Delete domain map.
 
@@ -590,6 +590,7 @@ class Client(BaseClient):
             "DELETE",
             f"{V3_PREFIX}/web_security/identification_profiles",
             params=params,
+            resp_type="response",
         )
 
     def url_categories_list_request(self) -> Dict[str, Any]:
@@ -980,9 +981,9 @@ def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    domain_name = args.get("domain_name")
-    ip_addresses = argToList(args.get("ip_addresses"))
-    order = arg_to_number(args.get("order"))
+    domain_name = args["domain_name"]
+    ip_addresses = argToList(args["ip_addresses"])
+    order = arg_to_number(args["order"])
 
     response = client.domain_map_create_request(
         domain_name=domain_name,
@@ -990,12 +991,10 @@ def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
         order=order,
     )
 
-    if response.get('res_code') == 201:
-        readable_output = response.get('res_message')
+    if response.get("res_code") == 201:
+        readable_output = response.get("res_message")
     else:
-        raise DemistoException(
-            response
-        )
+        raise DemistoException(response)
 
     return CommandResults(readable_output=readable_output)
 
@@ -1023,12 +1022,10 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
         order=order,
     )
 
-    if response.get('res_code') == 200:
-        readable_output = response.get('res_message')
+    if response.get("res_code") == 200:
+        readable_output = response.get("res_message")
     else:
-        raise DemistoException(
-            response
-        )
+        raise DemistoException(response)
 
     return CommandResults(readable_output=readable_output)
 
@@ -1048,16 +1045,21 @@ def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     response = client.domain_map_delete_request(domain_name=domain_name)
 
-    if response.get('res_code') == 200:
-        readable_output = response.get('res_message')
-    elif response.get('res_code') == 206:
-        readable_output = response
-    else:
-        raise DemistoException(
-            response
-        )
+    if response.get("res_code") == 200:
+        return CommandResults(readable_output=response.get("res_message"))
+    elif response.get("res_code") == 206:
+        command_results_list = []
+        for domain_map in dict_safe_get(response, ["res_data", "delete_success"]):
+            readable_output = f"Domain {domain_map} mapping was successfully deleted."
+            command_results_list.append(CommandResults(readable_output=readable_output))
 
-    return CommandResults(readable_output=readable_output)
+        readable_output = dict_safe_get(
+            response, ["res_data", "delete_failure", "error_msg"]
+        )
+        command_results_list.append(CommandResults(readable_output=readable_output))
+        return command_results_list
+    else:
+        raise DemistoException(response)
 
 
 def identification_profiles_list_command(
@@ -1135,7 +1137,7 @@ def identification_profiles_create_command(
     if response.status_code == 204:
         readable_output = f"Created profile {profile_name} successfully."
     else:
-        readable_output = f"ERROR: Created profile {profile_name} successfully."
+        raise DemistoException(response.json())
 
     return CommandResults(readable_output=readable_output)
 
@@ -1168,10 +1170,11 @@ def identification_profiles_update_command(
         protocols=protocols,
         order=order,
     )
+
     if response.status_code == 204:
         readable_output = f"Updated profile {profile_name} successfully."
     else:
-        readable_output = f"ERROR: Updated profile {profile_name} successfully."
+        raise DemistoException(response.json())
 
     return CommandResults(readable_output=readable_output)
 
@@ -1194,11 +1197,22 @@ def identification_profiles_delete_command(
     response = client.identification_profiles_delete_request(profile_names)
 
     if response.status_code == 204:
-        readable_output = f"Deleted profiles successfully."
-    else:
-        readable_output = f"ERROR: Deleted profiles successfully."
+        return CommandResults(readable_output=f"Deleted profiles successfully.")
+    elif response.status_code == 207:
+        response = response.json()
+        command_results_list = []
+        for profile in response.get("success_list"):
+            readable_output = f'Identification profile "{profile.get("profile_name")}" '\
+                f'was successfully deleted.'
+            command_results_list.append(CommandResults(readable_output=readable_output))
+        for profile in response.get("failure_list"):
+            readable_output = f'Identification profile "{profile.get("profile_name")}" '\
+                f'deletion failed, message: "{profile.get("message")}".'
+            command_results_list.append(CommandResults(readable_output=readable_output))
 
-    return CommandResults(readable_output=readable_output)
+        return command_results_list
+    else:
+        raise DemistoException(response.json())
 
 
 def url_categories_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
