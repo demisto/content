@@ -690,6 +690,8 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
     else:
         pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
 
+    labels = get_labels_for_indicator(xsoar_indicator.get('score'))
+
     stix_domain_object: Dict[str, Any] = assign_params(
         type=stix_type,
         id=create_sdo_stix_uuid(xsoar_indicator, stix_type),
@@ -697,10 +699,23 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
         valid_from=stix_object['created'],
         valid_until=expiration_parsed,
         description=xsoar_indicator.get('CustomFields', {}).get('description', ''),
-        pattern_type='stix'
+        pattern_type='stix',
+        labels=labels
     )
     return dict({k: v for k, v in stix_object.items()
                  if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
+
+
+def get_labels_for_indicator(score):
+    """Get indicator label based on the DBot score"""
+    if int(score) == 0:
+        return ['']
+    elif int(score) == 1:
+        return ['benign']
+    elif int(score) == 2:
+        return ['anomalous-activity']
+    elif int(score) == 3:
+        return ['malicious-activity']
 
 
 def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
