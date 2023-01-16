@@ -1272,8 +1272,8 @@ def test_build_search_human_readable_multi_table_in_query(mocker):
     assert expected_headers_hr in hr
 
 
-@pytest.mark.parametrize('polling', [False, True])
-def test_build_search_kwargs(polling):
+@pytest.mark.parametrize('polling, fast_mode', [(False, True), (True, True)])
+def test_build_search_kwargs(polling, fast_mode):
     """
     Given:
         The splunk-search command args.
@@ -1286,7 +1286,7 @@ def test_build_search_kwargs(polling):
 
     """
     args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app',
-            'polling': polling}
+            'fast_mode': fast_mode, 'polling': polling}
     kwargs_normalsearch = splunk.build_search_kwargs(args, polling)
     for field in args:
         if field == 'polling':
@@ -1295,6 +1295,8 @@ def test_build_search_kwargs(polling):
                 assert kwargs_normalsearch['exec_mode'] == 'normal'
             else:
                 assert kwargs_normalsearch['exec_mode'] == 'blocking'
+        elif field == 'fast_mode' and fast_mode:
+            assert kwargs_normalsearch['adhoc_search_level'] == 'fast'
         else:
             assert field in kwargs_normalsearch
 
@@ -1317,7 +1319,7 @@ def test_splunk_search_command(mocker, polling, status):
 
     mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
                                                        'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'polling': polling})
+                                                       'fast_mode': 'false', 'polling': polling})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     search_result = splunk.splunk_search_command(Service(status))
 

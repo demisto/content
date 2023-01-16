@@ -1,0 +1,144 @@
+id: Phishing - Create New Incident
+version: -1
+name: Phishing - Create New Incident
+description: This playbook take arguments which will be used to create a new phishing incident. It is needed for scenarios such as creating several incidents based on values stored in the context. In such scenarios, the playbook can be looped.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 99a2b008-f2fe-41ad-8452-07bfc306bda6
+    type: start
+    task:
+      id: 99a2b008-f2fe-41ad-8452-07bfc306bda6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1847a486-b4a0-4649-8243-ccd47af1f68e
+    type: regular
+    task:
+      id: 1847a486-b4a0-4649-8243-ccd47af1f68e
+      version: -1
+      name: Create New Incident
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      entryIDs:
+        complex:
+          root: inputs.EntryIDs
+      name:
+        complex:
+          root: inputs.IncidentName
+      reportedemailmessageid:
+        complex:
+          root: inputs.ReportedEmailMessageID
+      type:
+        simple: Phishing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 10f15187-648e-4666-838f-b9f23339ba4a
+    type: title
+    task:
+      id: 10f15187-648e-4666-838f-b9f23339ba4a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 375,
+        "width": 380,
+        "x": 450,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: IncidentName
+  value: {}
+  required: false
+  description: The value for the Incident Name field.
+  playbookInputQuery:
+- key: ReportedEmailMessageID
+  value: {}
+  required: false
+  description: The value for the Reported Email Message ID field.
+  playbookInputQuery:
+- key: EntryIDs
+  value: {}
+  required: false
+  description: The value for the EntryIDs field.
+  playbookInputQuery:
+outputs:
+- contextPath: CreatedIncidentID
+  description: ID of the created incident.
+  type: string
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
