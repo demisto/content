@@ -1,4 +1,3 @@
-import google
 from google.cloud import secretmanager
 import json5
 from Tests.scripts.utils import logging_wrapper as logging
@@ -17,20 +16,27 @@ class GoogleSecreteManagerModule:
             logging.error(
                 f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
 
-    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False) -> list:
+    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=tuple()) -> list:
         secrets = []
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
-            logging.info(f'Getting the secret: {secret.name}')
+            logging.debug(f'Getting the secret: {secret.name}')
             if secret.name in name_filter:
                 continue
             if with_secret:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
+                    # We make sure that the keys we want in the dict are present
+                    missing_attrs = [attr for attr in attr_validation if attr not in secret_value]
+                    if missing_attrs:
+                        missing_attrs_str = ','.join(missing_attrs)
+                        logging.error(
+                            f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
+                        continue
                     secrets.append(secret_value)
-                except google.api_core.exceptions.NotFound:
-                    logging.error(f'Could not find the secret: {secret.name}')
+                except Exception as e:
+                    logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
             else:
                 secrets.append(secret)
 

@@ -23,6 +23,7 @@ SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+MIRROR_LIMIT = 1000
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
@@ -1310,9 +1311,10 @@ def get_modified_remote_data_command(service: client.Service, args):
              '| fields rule_id ' \
              '| dedup rule_id'.format(last_update_splunk_timestamp)
     demisto.debug('Performing get-modified-remote-data command with query: {}'.format(search))
-    for item in results.ResultsReader(service.jobs.oneshot(search)):
+    for item in results.ResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT)):
         modified_notable_ids.append(item['rule_id'])
-
+    if len(modified_notable_ids) >= MIRROR_LIMIT:
+        demisto.info(f'Warning: More than {MIRROR_LIMIT} notables have been modified since the last update.')
     return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
 
 
@@ -1932,6 +1934,8 @@ def build_search_kwargs(args, polling=False):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
+    if argToBoolean(demisto.get(args, 'fast_mode')):
+        kwargs_normalsearch['adhoc_search_level'] = "fast"
     if polling:
         kwargs_normalsearch['exec_mode'] = "normal"
     else:
@@ -2064,7 +2068,6 @@ def splunk_search_command(service: client.Service) -> CommandResults:
     job_sid = args.get("sid")
     search_job = None
     interval_in_secs = int(args.get('interval_in_seconds', 30))
-
     if not job_sid or not polling:
         # create a new job to search the query.
         search_job = service.jobs.create(query, **search_kwargs)
@@ -2249,7 +2252,7 @@ def splunk_submit_event_hec(
 
 
 def splunk_submit_event_hec_command():
-    hec_token = demisto.params().get('hec_token')
+    hec_token = demisto.params().get('cred_hec_token', {}).get('password') or demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
         raise Exception('The HEC URL was not provided.')

@@ -143,6 +143,8 @@ FORMAT_QUERY = [
     ('www.test.test.com/test.html?paramaters=testagain', 'www.test.test.com/test.html?paramaters=testagain'),
     ('https://www.test.test.com/test.html?paramaters=testagain',
      'https://www.test.test.com/test.html?paramaters=testagain'),
+    ('https://test.test.com/v2/test?test&test=[test]test',  # disable-secrets-detection
+     'https://test.test.com/v2/test?test&test=[test]test')  # disable-secrets-detection
 ]
 
 FORMAT_FRAGMENT = [

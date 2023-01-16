@@ -29,6 +29,22 @@
     fi
   - section_end "Check User Permissions to Upload Packs"
 
+.upload_content_graph: &upload_content_graph
+    - |
+      if [[ $TEST_UPLOAD == "false" ]]; then
+        section_start "Upload content graph CSVs to GCP" --collapsed
+        gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
+        section_end "Upload content graph CSVs to GCP"
+      fi
+
+.upload_dependencies_file: &upload_dependencies_file
+    - |
+      if [[ $TEST_UPLOAD == "false" ]]; then
+        section_start "Upload packs_dependencies.json to GCP" --collapsed
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        gsutil cp $ARTIFACTS_FOLDER/packs_dependencies.json "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json"
+        section_end "Upload packs_dependencies.json to GCP"
+      fi
 
 run-validations-upload-flow:
   extends:
@@ -44,9 +60,9 @@ run-unittests-and-lint-upload-flow:
     - .bucket-upload-rule
 
 
-create-instances-upload-flow:
+xsoar-prepare-testing-bucket-upload-flow:
   extends:
-    - create-instances
+    - xsoar-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -55,10 +71,11 @@ create-instances-upload-flow:
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
+  
 
-prepare-testing-bucket-mpv2-upload-flow:
+mpv2-prepare-testing-bucket-upload-flow:
  extends:
-   - prepare-testing-bucket-mpv2
+   - mpv2-prepare-testing-bucket
  variables:
    IFRA_ENV_TYPE: "Bucket-Upload"
    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -69,9 +86,9 @@ prepare-testing-bucket-mpv2-upload-flow:
    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
-prepare-testing-bucket-xpanse-upload-flow:
+xpanse-prepare-testing-bucket-upload-flow:
  extends:
-   - prepare-testing-bucket-xpanse
+   - xpanse-prepare-testing-bucket
  variables:
    IFRA_ENV_TYPE: "Bucket-Upload"
    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
@@ -85,7 +102,7 @@ prepare-testing-bucket-xpanse-upload-flow:
 .install_packs_in_xsoar_server:
   tags:
     - gke
-  needs: ["create-instances-upload-flow"]
+  needs: ["xsoar-prepare-testing-bucket-upload-flow"]
   stage: run-instances
   artifacts:
     expire_in: 48 hrs
@@ -151,7 +168,7 @@ install-packs-in-server-master:
 .install-mpv2-packs-on-xsiam-instances:
   tags:
     - gke
-  needs: ["prepare-testing-bucket-mpv2-upload-flow"]
+  needs: ["mpv2-prepare-testing-bucket-upload-flow"]
   stage: run-instances
   artifacts:
     expire_in: 48 hrs
@@ -230,6 +247,7 @@ upload-packs-to-marketplace:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "xsoar"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     INSTANCE_ROLE: "Server Master"
@@ -277,8 +295,10 @@ upload-packs-to-marketplace:
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
-      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_end "Download packs from GCP"
+    - *upload_content_graph
+    - *upload_dependencies_file
+    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
 
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
@@ -293,11 +313,10 @@ upload-packs-to-marketplace:
       fi
     - section_end "Validate Premium Packs"
 
-
 upload-packs-to-marketplace-v2:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "mpv2-prepare-testing-bucket-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -305,6 +324,7 @@ upload-packs-to-marketplace-v2:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "marketplacev2"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
@@ -343,18 +363,18 @@ upload-packs-to-marketplace-v2:
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
-      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_end "Download packs from GCP"
-
+    - *upload_content_graph
+    - *upload_dependencies_file
+    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
 
-
 upload-packs-to-xpanse-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-xpanse-upload-flow"] # "install-packs-in-xpanse-dev"
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "xpanse-prepare-testing-bucket-upload-flow"] # "install-packs-in-xpanse-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -362,6 +382,7 @@ upload-packs-to-xpanse-marketplace:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    MARKETPLACE_VERSION: "xpanse"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
@@ -400,20 +421,20 @@ upload-packs-to-xpanse-marketplace:
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
-      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - section_end "Download packs from GCP"
+    - *upload_content_graph
+    - *upload_dependencies_file
+    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
 
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
 
-
-
 force-pack-upload:
   tags:
     - gke
   stage: upload-to-marketplace
-  needs: ["create-instances-upload-flow"]
+  needs: ["xsoar-prepare-testing-bucket-upload-flow"]
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
   extends:
@@ -459,3 +480,17 @@ slack-notify-bucket-upload:
   extends:
     - .trigger-slack-notification
     - .bucket-upload-rule-always
+
+
+upload-id-set-bucket:
+  tags:
+    - gke
+  stage: prepare-testing-bucket
+  extends:
+    - .bucket-upload-rule
+    - .default-job-settings
+  script:
+    # This is needed because we still use id_set.json in other repos
+    - !reference [.create-id-set-xsoar]
+    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
+    - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/content/id_set.json"

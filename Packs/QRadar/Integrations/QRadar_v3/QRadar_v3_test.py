@@ -286,7 +286,7 @@ def test_build_headers(first_headers, all_headers):
                           (32, 'a id     >=           35001 ', 35000),
                           (1523, 'closing_reason_id > 5000', 1523),
                           (0, 'id > 4', 4),
-                          (0, 'id > 2', 3)])
+                          (0, 'id > 1', 2)])
 def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected, mocker):
     """
     Given:
