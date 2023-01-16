@@ -3,3 +3,6 @@ ignore=RM106
 
 [file:playbook-MockPlaybook.yml]
 ignore=BA110
+
+[file:playbook-MockSubPlaybook.yml]
+ignore=BA110
