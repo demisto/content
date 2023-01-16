@@ -660,8 +660,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             pool.submit(search_pack_and_its_dependencies,
                         client, pack_id, packs_to_install, installation_request_body, lock)
 
-    request_timeout = 1800 if host and host.startswith('qa2-test') else 999999   # hot-fix for xsiam packs install issue
-
-    install_packs(client, host, installation_request_body, request_timeout)
+    install_packs(client, host, installation_request_body)
 
     return packs_to_install, SUCCESS_FLAG
