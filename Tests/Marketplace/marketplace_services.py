@@ -2342,9 +2342,11 @@ class Pack(object):
                             logging.info("entered layout rule with external layout rule")
                             self.add_pack_type_tags(content_item, 'LayoutRule')
                             layout_rule_metadata = {
-                                'id': content_item.get('id', ''),
-                                'name': content_item.get('name', ''),
+                                'id': content_item.get('rule_id', ''),
+                                'name': content_item.get('rule_name', ''),
                                 'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                                'layout_id': content_item.get('layout_id', ''),
+                                'fromVersion': content_item.get('fromVersion', '')
                             }
                             layout_rule_description = content_item.get('description')
                             if layout_rule_description is not None:
