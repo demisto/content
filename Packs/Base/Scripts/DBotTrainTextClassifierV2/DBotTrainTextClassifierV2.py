@@ -4,9 +4,9 @@ import gc
 import pandas as pd
 from typing import List, Dict
 from collections import defaultdict, Counter
-# from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 from CommonServerPython import *
-# import demisto_ml
+import demisto_ml
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
