@@ -1073,7 +1073,6 @@ def main():
     Main
     """
     global PAGE_SIZE
-    demisto.info('this is just a test')
     params = demisto.params()
     try:
         PAGE_SIZE = max(1, int(params.get('page_size') or PAGE_SIZE))
