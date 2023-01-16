@@ -1,8 +1,7 @@
 category: Endpoint
 commonfields:
-  id: CiscoAMP
+  id: AMPv2
   version: -1
-deprecated: true
 configuration:
 - defaultvalue: https://api.amp.cisco.com
   display: Server URL
@@ -73,9 +72,9 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: Deprecated. Use Cisco AMP v2 instead.
-display: Cisco AMP (Deprecated)
-name: CiscoAMP
+description: Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
+display: Cisco AMP v2
+name: AMPv2
 script:
   commands:
   - arguments:
@@ -2004,7 +2003,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.44472
   feed: false
   isfetch: true
   longRunning: false
