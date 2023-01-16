@@ -83,10 +83,8 @@ alter
     source_ip3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
     action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     null),
-//
     source_port3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),
     action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),null),
-//
     dest_ip3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s"),0),action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s"),0),
     null),
 dest_port3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),
