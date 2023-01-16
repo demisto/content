@@ -15,8 +15,8 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
 * SearchIndicatorRelationships
+* Set
 
 ### Commands
 This playbook does not use any commands.
