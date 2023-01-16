@@ -1213,6 +1213,7 @@ def output(result: Optional[CollectionResult]):
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
+    modeling_rules_to_test = map(lambda x: x.as_posix() if isinstance(x, Path) else str(x), modeling_rules_to_test)
     machines = result.machines if result and result.machines else ()
 
     test_str = '\n'.join(tests)
