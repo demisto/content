@@ -42,15 +42,16 @@ def get_packs_names(packs_to_upload: str) -> set:
         set: unique collection of packs names to upload.
 
     """
-    if packs_to_upload and isinstance(packs_to_upload, str):
-        packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
-        logging.info(f"Number of selected packs to upload is: {len(packs)}")
-        # return only packs from csv list
-        return packs
-    else:
-        logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
-        sys.exit(1)
-
+    if packs_to_upload:
+        if isinstance(packs_to_upload, str):
+            packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
+            logging.info(f"Number of selected packs to upload is: {len(packs)}")
+            # return only packs from csv list
+            return packs
+        else:
+            logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
+            sys.exit(1)
+    return set()
 
 def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path: str):
     """Extracts all packs from content pack artifact zip.
