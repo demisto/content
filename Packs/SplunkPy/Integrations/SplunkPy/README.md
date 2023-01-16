@@ -289,6 +289,7 @@ Searches Splunk for events.
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
 | sid | The job sid. | Optional |
+| fast_mode | Determines whether to retrieve the results in fast mode | Optional |
 
 ##### Context Output
 
