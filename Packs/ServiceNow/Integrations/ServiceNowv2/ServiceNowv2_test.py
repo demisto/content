@@ -461,7 +461,7 @@ def test_fetch_incidents_with_attachments(mocker):
     Validate The length of the results and the attachment content.
     """
     RESPONSE_FETCH_ATTACHMENTS_TICKET['result'][0]['opened_at'] = (
-            datetime.utcnow() - timedelta(minutes=15)
+        datetime.utcnow() - timedelta(minutes=15)
     ).strftime('%Y-%m-%d %H:%M:%S')
     mocker.patch(
         'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
@@ -529,88 +529,88 @@ class TestFetchIncidentsWithLookBack:
         'start_incidents, phase2_incident, phase3_incident, look_back',
         [
             (
-                    {
-                        'result': [
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '2',
-                                'number': '2',
-                            },
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '1',
-                                'number': '4'
-                            },
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=2)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '2',
-                                'number': '5'
-                            }
-                        ]
-                    },
-                    {
-                        'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
-                        ).strftime(API_TIME_FORMAT),
-                        'severity': '1',
-                        'number': '3',
-                    },
-                    {
-                        'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=11)
-                        ).strftime(API_TIME_FORMAT),
-                        'severity': '1',
-                        'number': '1',
-                    },
-                    15
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '2',
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4'
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=2)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '5'
+                        }
+                    ]
+                },
+                {
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
+                    ).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '3',
+                },
+                {
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=11)
+                    ).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '1',
+                },
+                15
             ),
             (
-                    {
-                        'result': [
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=20)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '2',
-                                'number': '2',
-                            },
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=26)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '1',
-                                'number': '4'
-                            },
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=20)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '2',
-                                'number': '5'
-                            }
-                        ]
-                    },
-                    {
-                        'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=45)
-                        ).strftime(API_TIME_FORMAT),
-                        'severity': '1',
-                        'number': '3',
-                    },
-                    {
-                        'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=50)
-                        ).strftime(API_TIME_FORMAT),
-                        'severity': '1',
-                        'number': '1',
-                    },
-                    1000
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=20)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '2',
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=26)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4'
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=20)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '5'
+                        }
+                    ]
+                },
+                {
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=45)
+                    ).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '3',
+                },
+                {
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=50)
+                    ).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '1',
+                },
+                1000
             )
         ]
     )
@@ -678,102 +678,102 @@ class TestFetchIncidentsWithLookBack:
         'incidents, phase2_incident, phase3_incident',
         [
             (
-                    {
-                        'result': [
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '2',
-                                'number': '1',
-                            },
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '1',
-                                'number': '2'
-                            },
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=7)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '2',
-                                'number': '3'
-                            }
-                        ]
-                    },
-                    {
-                        'result': [
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '1',
-                                'number': '4',
-                            }
-                        ]
-                    },
-                    {
-                        'result': [
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=4)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '1',
-                                'number': '5',
-                            }
-                        ]
-                    },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '1',
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '2'
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=7)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '3'
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4',
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=4)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '5',
+                        }
+                    ]
+                },
             ),
             (
-                    {
-                        'result': [
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=8, minutes=51)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '2',
-                                'number': '1',
-                            },
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=45)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '1',
-                                'number': '2'
-                            },
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '2',
-                                'number': '3'
-                            }
-                        ]
-                    },
-                    {
-                        'result': [
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '1',
-                                'number': '4',
-                            }
-                        ]
-                    },
-                    {
-                        'result': [
-                            {
-                                'opened_at': (
-                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=34)
-                                ).strftime(API_TIME_FORMAT),
-                                'severity': '1',
-                                'number': '5',
-                            }
-                        ]
-                    }
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=8, minutes=51)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '1',
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=45)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '2'
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '3'
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4',
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=34)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '5',
+                        }
+                    ]
+                }
             )
         ]
     )
