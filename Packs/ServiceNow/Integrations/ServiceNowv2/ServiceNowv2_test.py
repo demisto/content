@@ -16,7 +16,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
-    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, get_content_type
+    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -461,7 +461,7 @@ def test_fetch_incidents_with_attachments(mocker):
     Validate The length of the results and the attachment content.
     """
     RESPONSE_FETCH_ATTACHMENTS_TICKET['result'][0]['opened_at'] = (
-        datetime.utcnow() - timedelta(minutes=15)
+            datetime.utcnow() - timedelta(minutes=15)
     ).strftime('%Y-%m-%d %H:%M:%S')
     mocker.patch(
         'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
@@ -529,93 +529,93 @@ class TestFetchIncidentsWithLookBack:
         'start_incidents, phase2_incident, phase3_incident, look_back',
         [
             (
-                {
-                    'result': [
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '2',
-                            'number': '2',
-                        },
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '1',
-                            'number': '4'
-                        },
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=2)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '2',
-                            'number': '5'
-                        }
-                    ]
-                },
-                {
-                    'opened_at': (
-                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
-                    ).strftime(API_TIME_FORMAT),
-                    'severity': '1',
-                    'number': '3',
-                },
-                {
-                    'opened_at': (
-                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=11)
-                    ).strftime(API_TIME_FORMAT),
-                    'severity': '1',
-                    'number': '1',
-                },
-                15
+                    {
+                        'result': [
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '2',
+                                'number': '2',
+                            },
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '1',
+                                'number': '4'
+                            },
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=2)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '2',
+                                'number': '5'
+                            }
+                        ]
+                    },
+                    {
+                        'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
+                        ).strftime(API_TIME_FORMAT),
+                        'severity': '1',
+                        'number': '3',
+                    },
+                    {
+                        'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=11)
+                        ).strftime(API_TIME_FORMAT),
+                        'severity': '1',
+                        'number': '1',
+                    },
+                    15
             ),
             (
-                {
-                    'result': [
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=20)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '2',
-                            'number': '2',
-                        },
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=26)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '1',
-                            'number': '4'
-                        },
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=20)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '2',
-                            'number': '5'
-                        }
-                    ]
-                },
-                {
-                    'opened_at': (
-                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=45)
-                    ).strftime(API_TIME_FORMAT),
-                    'severity': '1',
-                    'number': '3',
-                },
-                {
-                    'opened_at': (
-                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=50)
-                    ).strftime(API_TIME_FORMAT),
-                    'severity': '1',
-                    'number': '1',
-                },
-                1000
+                    {
+                        'result': [
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=20)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '2',
+                                'number': '2',
+                            },
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=26)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '1',
+                                'number': '4'
+                            },
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=20)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '2',
+                                'number': '5'
+                            }
+                        ]
+                    },
+                    {
+                        'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=45)
+                        ).strftime(API_TIME_FORMAT),
+                        'severity': '1',
+                        'number': '3',
+                    },
+                    {
+                        'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=50)
+                        ).strftime(API_TIME_FORMAT),
+                        'severity': '1',
+                        'number': '1',
+                    },
+                    1000
             )
         ]
     )
     def test_fetch_incidents_with_look_back_greater_than_zero(
-        self, mocker, start_incidents, phase2_incident, phase3_incident, look_back
+            self, mocker, start_incidents, phase2_incident, phase3_incident, look_back
     ):
         """
         Given
@@ -678,107 +678,107 @@ class TestFetchIncidentsWithLookBack:
         'incidents, phase2_incident, phase3_incident',
         [
             (
-                {
-                    'result': [
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '2',
-                            'number': '1',
-                        },
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '1',
-                            'number': '2'
-                        },
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=7)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '2',
-                            'number': '3'
-                        }
-                    ]
-                },
-                {
-                    'result': [
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '1',
-                            'number': '4',
-                        }
-                    ]
-                },
-                {
-                    'result': [
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=4)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '1',
-                            'number': '5',
-                        }
-                    ]
-                },
+                    {
+                        'result': [
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '2',
+                                'number': '1',
+                            },
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '1',
+                                'number': '2'
+                            },
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=7)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '2',
+                                'number': '3'
+                            }
+                        ]
+                    },
+                    {
+                        'result': [
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '1',
+                                'number': '4',
+                            }
+                        ]
+                    },
+                    {
+                        'result': [
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=4)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '1',
+                                'number': '5',
+                            }
+                        ]
+                    },
             ),
             (
-                {
-                    'result': [
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=8, minutes=51)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '2',
-                            'number': '1',
-                        },
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=45)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '1',
-                            'number': '2'
-                        },
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '2',
-                            'number': '3'
-                        }
-                    ]
-                },
-                {
-                    'result': [
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '1',
-                            'number': '4',
-                        }
-                    ]
-                },
-                {
-                    'result': [
-                        {
-                            'opened_at': (
-                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=34)
-                            ).strftime(API_TIME_FORMAT),
-                            'severity': '1',
-                            'number': '5',
-                        }
-                    ]
-                }
+                    {
+                        'result': [
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=8, minutes=51)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '2',
+                                'number': '1',
+                            },
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=45)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '1',
+                                'number': '2'
+                            },
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '2',
+                                'number': '3'
+                            }
+                        ]
+                    },
+                    {
+                        'result': [
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '1',
+                                'number': '4',
+                            }
+                        ]
+                    },
+                    {
+                        'result': [
+                            {
+                                'opened_at': (
+                                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=34)
+                                ).strftime(API_TIME_FORMAT),
+                                'severity': '1',
+                                'number': '5',
+                            }
+                        ]
+                    }
             )
         ]
     )
     def test_fetch_incidents_with_look_back_equals_zero(
-        self, mocker, incidents, phase2_incident, phase3_incident
+            self, mocker, incidents, phase2_incident, phase3_incident
     ):
         """
         Given
@@ -907,10 +907,10 @@ def test_file_tags_names_are_the_same_main_flow(mocker):
     )
     mocker.patch.object(ServiceNowv2, 'get_server_url', return_value='test')
     with pytest.raises(
-        Exception,
-        match=re.escape(
-            'File Entry Tag To ServiceNow and File Entry Tag From ServiceNow cannot be the same name [ServiceNow].'
-        )
+            Exception,
+            match=re.escape(
+                'File Entry Tag To ServiceNow and File Entry Tag From ServiceNow cannot be the same name [ServiceNow].'
+            )
     ):
         main()
 
@@ -1253,6 +1253,7 @@ def test_assigned_to_field_no_user():
     Then
         - Check that assign_to value is empty
     """
+
     class Client:
         def get(self, table, value):
             return {'results': {}}
@@ -1273,6 +1274,7 @@ def test_assigned_to_field_user_exists():
     Then
         - Check that assign_to value is filled with the right email
     """
+
     class Client:
         def get(self, table, value):
             return USER_RESPONSE
@@ -1729,7 +1731,7 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     client.get_ticket_attachment_entries(ticket_id='id')
 
     # Validate Results are as expected:
-    assert requests_get_mocker.call_args.kwargs.get('auth') is None,\
+    assert requests_get_mocker.call_args.kwargs.get('auth') is None, \
         "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
     assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
            f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
@@ -1832,6 +1834,18 @@ def ticket_fields_mocker(*args, **kwargs):
     return fields
 
 
+@pytest.mark.parametrize('file_name , expected',
+                         [('123.png', 'image/png'),
+                          ('123.jpeg', 'image/jpeg')])
+def test_upload_file_types(file_name, expected):
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    get_attachments=False, incident_name='description', ticket_type='incident')
+    assert client.get_content_type(file_name) == expected
+
+
 @pytest.mark.parametrize('ticket_type, ticket_state, close_custom_state, result_close_state, update_call_count',
                          [
                              # case 1 - SIR ticket closed by custom state
@@ -1885,9 +1899,3 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
     assert mocker_update.call_args[0][2]['state'] == result_close_state
     assert mocker_update.call_count == update_call_count
 
-
-@pytest.mark.parametrize('file_name', 'expected'[
-    ('123.png', 'image/png')
-])
-def test_upload_file_types(file_name, expected):
-    assert get_content_type(file_name) == expected
