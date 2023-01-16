@@ -118,13 +118,11 @@ def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:  # type:
     }
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_events(events: List[Dict[str, Any]] = None):
     """
     Adds the _time key to the events.
     Args:
         events: list, the events to add the time key to.
-    Returns:
-        list: The events with the _time key.
     """
     for event in events:
         if alert_info := event.get('alertInfo'):
@@ -133,8 +131,6 @@ def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]
             event["_time"] = threat_info.get("createdAt")
         else:  # Otherwise, it's an activity.
             event["_time"] = event.get("createdAt")
-
-    return events
 
 
 ''' COMMAND FUNCTIONS '''
@@ -248,7 +244,7 @@ def main() -> None:
 
         elif command in (f'{VENDOR}-get-events', 'fetch-events'):
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            events: List = []
+            events = []  # type: List[Dict]
             if command == f'{VENDOR}-get-events':
                 events, results = get_events_command(client, first_fetch_time, event_type)  # type: ignore
                 return_results(results)

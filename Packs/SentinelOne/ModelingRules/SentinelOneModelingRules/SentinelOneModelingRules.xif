@@ -1,5 +1,5 @@
 [MODEL: dataset=sentinelone_xdr_raw]
-filter _raw_log contains "activityType"
+filter activityType > 1
 | alter
     xdm.source.user.identifier = accountId,
     xdm.source.user.username = accountName,
@@ -16,7 +16,7 @@ filter _raw_log contains "activityType"
     xdm.target.user.username = json_extract_scalar(data, "$.username"),
     xdm.target.user.groups = split(json_extract_scalar(data, "$.role"));
 
-filter _raw_log contains "threatInfo"
+filter to_integer(json_extract_scalar(threatInfo, "$.threatId"), 0) > 0
 | alter
     xdm.source.user.identifier = json_extract_scalar(agentDetectionInfo, "$.accountId"),
     xdm.source.user.username = json_extract_scalar(agentDetectionInfo, "$.accountName"),
@@ -38,16 +38,16 @@ filter _raw_log contains "threatInfo"
     xdm.source.location.region = json_extract_scalar(agentRealtimeInfo, "$.siteName"),
     xdm.source.process.container_id = json_extract_scalar(containerInfo, "$.id"),
     xdm.alert.original_threat_id = id,
-    xdm.alert.original_threat_name = json_extract(indicators, "$.0.category"),
-    xdm.alert.description = json_extract(indicators, "$.0.description"),
-    xdm.alert.mitre_techniques = split(json_extract(indicators, "$.0.tactics.0.techniques"), ","),
+    xdm.alert.original_threat_name = json_extract_scalar(indicators, "$.0.category"),
+    xdm.alert.description = json_extract_scalar(indicators, "$.0.description"),
+    xdm.alert.mitre_techniques = split(json_extract_scalar(indicators, "$.0.tactics.0.techniques"), ","),
     xdm.observer.action = json_extract_scalar(mitigationStatus, "$.action"),
     xdm.source.process.executable.path = json_extract_scalar(threatInfo, "$.filePath"),
     xdm.source.process.executable.md5 = json_extract_scalar(threatInfo, "$.md5"),
     xdm.source.process.executable.sha256 = json_extract_scalar(threatInfo, "$.sha256"),
     xdm.alert.original_threat_name = json_extract_scalar(threatInfo, "$.threatName");
 
-filter _raw_log contains "alertInfo"
+filter to_integer(json_extract_scalar(alertInfo, "$.alertId"), 0) > 0
 | alter
     xdm.source.host.hostname = json_extract_scalar(agentDetectionInfo, "$.name"),
     xdm.source.host.os_family = json_extract_scalar(agentDetectionInfo, "$.osFamily"),
@@ -58,14 +58,14 @@ filter _raw_log contains "alertInfo"
     xdm.network.dns.dns_resource_record.value = json_extract_scalar(alertInfo, "$.dnsResponse"),
     xdm.network.http.url = json_extract_scalar(alertInfo, "$.dnsRequest"),
     xdm.target.ipv4 = json_extract_scalar(alertInfo, "$.dstIp"),
-    xdm.target.port = to_number(json_extract_scalar(alertInfo, "$.dstPort")),
+    xdm.target.port = to_integer(json_extract_scalar(alertInfo, "$.dstPort")),
     xdm.event.type = json_extract_scalar(alertInfo, "$.eventType"),
     xdm.source.user.domain = json_extract_scalar(alertInfo, "$.loginAccountDomain"),
     xdm.source.user.identifier = json_extract_scalar(alertInfo, "$.loginAccountSid"),
     xdm.logon.type = json_extract_scalar(alertInfo, "$.loginType"),
     xdm.source.user.username = json_extract_scalar(alertInfo, "$.loginsUserName"),
     xdm.source.ipv4 = json_extract_scalar(alertInfo, "$.srcIp"),
-    xdm.source.port = to_number(json_extract_scalar(alertInfo, "$.srcPort")),
+    xdm.source.port = to_integer(json_extract_scalar(alertInfo, "$.srcPort")),
     xdm.source.process.container_id = json_extract_scalar(containerInfo, "$.id"),
     xdm.event.description = json_extract_scalar(ruleInfo, "$.description"),
     xdm.alert.severity = json_extract_scalar(ruleInfo, "$.severity"),
@@ -74,12 +74,12 @@ filter _raw_log contains "alertInfo"
     xdm.source.process.executable.sha256 = json_extract_scalar(sourceProcessInfo, "$.fileHashSha256"),
     xdm.source.process.executable.path = json_extract_scalar(sourceProcessInfo, "$.filePath"),
     xdm.source.process.name = json_extract_scalar(sourceProcessInfo, "$.name"),
-    xdm.source.process.pid = to_number(json_extract_scalar(sourceProcessInfo, "$.pid")),
+    xdm.source.process.pid = to_integer(json_extract_scalar(sourceProcessInfo, "$.pid")),
     xdm.source.process.parent_id = json_extract_scalar(sourceParentProcessInfo, "$.pid"),
     xdm.target.process.executable.sha256 = json_extract_scalar(targetProcessInfo, "$.tgtFileHashSha256"),
     xdm.target.file.path = json_extract_scalar(targetProcessInfo, "$.tgtFilePath"),
     xdm.target.file_before.path = json_extract_scalar(targetProcessInfo, "$.tgtFileOldPath"),
     xdm.target.process.command_line = json_extract_scalar(targetProcessInfo, "$.tgtProcCmdLine"),
     xdm.target.process.executable.filename = json_extract_scalar(targetProcessInfo, "$.tgtProcName"),
-    xdm.target.process.integrity_level = to_number(json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel")),
-    xdm.target.process.pid = to_number(json_extract_scalar(targetProcessInfo, "$.tgtProcPid"));
+    xdm.target.process.integrity_level = to_integer(json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel")),
+    xdm.target.process.pid = to_integer(json_extract_scalar(targetProcessInfo, "$.tgtProcPid"));
