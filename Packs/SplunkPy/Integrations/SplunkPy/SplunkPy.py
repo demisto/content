@@ -2087,6 +2087,8 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         else:
             # Get the job by its SID.
             search_job = service.job(job_sid)
+            print('job_sid3: ' + str(job_sid))
+            print('search_job5: ' + str(search_job))
 
     num_of_results_from_query = search_job["resultCount"] if search_job else None
 
@@ -2111,6 +2113,9 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         results_offset += batch_size
 
     entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
+    print(total_parsed_results)
+    print("type" + str(type(total_parsed_results)))
+    print(total_parsed_results['_raw'])
     human_readable = build_search_human_readable(args, total_parsed_results)
 
     return CommandResults(
