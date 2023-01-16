@@ -376,7 +376,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       None, XSIAM_BRANCH_ARGS,
       ('Packs/bothMarketplacesPack/pack_metadata.json',
        'Packs/bothMarketplacesPackOnlyXSIAMIntegration/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml'), (),
-      ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration')),
+      ('bothMarketplacesPackOnlyXSIAMIntegration',)),
 
      # (28) Only packs with changes in XSOAR items will be collected to install and to upload.
      (MockerCases.R, None, ('bothMarketplacesPack',), None, None, XSOAR_BRANCH_ARGS,
@@ -385,20 +385,20 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       (), None),
 
      # (29) modeling rule yml file is changed - expect the modeling rule dir to be marked
-     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields'), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),),
-      XSIAM_BRANCH_ARGS, ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.yml',), ()),
+     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),),
+      XSIAM_BRANCH_ARGS, ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.yml',), (), ('MyXSIAMPack',)),
 
      # (30) modeling rule schema json file changed - expect the modeling rule dir to be marked
-     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields'), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),),
-      XSIAM_BRANCH_ARGS, ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_schema.json',)),
+     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),),
+      XSIAM_BRANCH_ARGS, ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_schema.json',), (), ('MyXSIAMPack',)),
 
      # (31) modeling rule xif file is changed - expect the modeling rule dir to be marked
-     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields'), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),),
-      XSIAM_BRANCH_ARGS, ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.xif',), ()),
+     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),),
+      XSIAM_BRANCH_ARGS, ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.xif',), (), ('MyXSIAMPack',)),
 
      # (32) modeling rule test data file is changed - expect the modeling rule dir to be marked
-     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields'), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),),
-      XSIAM_BRANCH_ARGS, ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',), ()),
+     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),),
+      XSIAM_BRANCH_ARGS, ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',), (), ('MyXSIAMPack',)),
     )
 )
 def test_branch(
