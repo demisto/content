@@ -17,12 +17,11 @@ config case_sensitive = true
 | alter tmp_time3 = parse_timestamp("%b %d %Y %H:%M:%S",tmp_date_part_3 )
 //<166>:Jun 20 11:54:23 UTC:
 |   alter tmp_date_part_4 = arrayindex(regextract(_raw_log, "^\<\d+\>\:([A-Za-z]+\s\d+\s\d+\:\d+\:\d+)"), 0),
-    year_now = format_timestamp("%Y",_insert_time )
+    year_now = to_string(format_timestamp("%Y",_insert_time ))
 | alter tmp_time4 = parse_timestamp("%b %d %H:%M:%S %Y",concat(tmp_date_part_4 , " " , year_now) )
-
 //Jun  9 11:39:48
-|   alter tmp_date_part_5 = arrayindex(regextract(_raw_log, "([A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+)\s+"), 0)
-| alter tmp_time5 = parse_timestamp("%b  %d %H:%M:%S %Y",concat(tmp_date_part_5 , " " , year_now) )
+| alter tmp_date_part_5 = arrayindex(regextract(_raw_log, "(\w+\s+\d+\s+\d+\:\d+\:\d+)\s+"), 0)
+| alter tmp_time5 = parse_timestamp("%b  %e %H:%M:%S %Y",concat(tmp_date_part_5 , " " , year_now) )
 //<13> 10.232.211.127 Dec 12 10:09:21
 |   alter tmp_date_part_6 = arrayindex(regextract(_raw_log, "\<\d+\>\s*\d+\.\d+\.\d+\.\d+\s+([A-Za-z]+\s\d+\s\d+\:\d+\:\d+)"), 0)
 | alter tmp_time6 = parse_timestamp("%b  %d %H:%M:%S %Y",concat(tmp_date_part_6 , " " , year_now) )
