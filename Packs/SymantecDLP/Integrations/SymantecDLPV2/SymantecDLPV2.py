@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import dateparser
 
-import requests
 from typing import Dict, Any
 
 # Disable insecure warnings
