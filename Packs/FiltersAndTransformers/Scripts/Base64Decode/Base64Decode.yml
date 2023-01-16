@@ -8,6 +8,7 @@ tags:
 - Utility
 - transformer
 - string
+- incident-action-button
 comment: Decodes an input in Base64 format.
 enabled: true
 args:
