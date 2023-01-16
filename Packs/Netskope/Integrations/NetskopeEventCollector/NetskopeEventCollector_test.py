@@ -121,7 +121,7 @@ def test_v2_get_events_command(mocker):
     }
     response, _ = v2_get_events_command(client, args, {})
     assert response.raw_response == MOCK_ENTRY
-    assert len(response.outputs) == 8
+    assert len(response.outputs) == 9
     assert 'Events List' in response.readable_output
 
 
