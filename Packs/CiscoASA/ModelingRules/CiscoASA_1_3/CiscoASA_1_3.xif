@@ -80,31 +80,20 @@ alter
 // for <interface>:<source_ip>/<source_port> (<mapped_ip>/<mapped_port>) to <dest_ip>/<dest_port>
 // dest_ip, dest_port, dest_interface on option 3 is the same as option 2,4,5
 | alter
-    source_ip3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*"),0),
-    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*"),0),
-    arrayindex(regextract(_raw_log,"[a-zA-Z0-9-_]+\:\s*(\d+\.\d+\.\d+\.\d+)\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*\s*to"),0)),
-source_port3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*\([^\)]+\)\s*\s*\(*[^\)]*\)*\s*"),0),
-    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*\([^\)]+\)\s*\s*\(*[^\)]*\)*\s*"),0),arrayindex(regextract(_raw_log,"[a-zA-Z0-9-_]+\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*\([^\)]+\)\s*\s*\(*[^\)]*\)*\s*to"),0)),
-source_mapped_ip = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:[\d+\.]+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/\d+\)\s*\(*[^\)]*\)*"),0),
-    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:[\d+\.]+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/\d+\)\s*\(*[^\)]*\)*"),0),
-    arrayindex(regextract(_raw_log,"[a-zA-Z0-9-_]+\:\s*(\d+\.\d+\.\d+\.\d+)\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*\s*to"),0)),
-source_mapped_port = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:[\d+\.]+\/\d+\s*\(\d+\.\d+\.\d+\.\d+\/(\d+)\)\s*\(*[^\)]*\)*"),0),
-    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:[\d+\.]+\/\d+\s*\(\d+\.\d+\.\d+\.\d+\/(\d+)\)\s*\(*[^\)]*\)*"),0),
-    arrayindex(regextract(_raw_log,"\d+\.\d+\.\d+\.\d+\/\d+\s*\(\d+\.\d+\.\d+\.\d+\/(\d+)\)\s*to"),0)),
-dest_ip3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*"),0),
-    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*"),0),
-    arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0)),
-dest_port3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\d+\.\d+\.\d+\.\d+\/(\d+)\s*\([^\)]+\)\s*\(*[^\)]*\)*"),0),
-    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:\d+\.\d+\.\d+\.\d+\/(\d+)\s*\([^\)]+\)\s*\(*[^\)]*\)*"),0),
-    arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)\s*"),0)),
-dest_mapped_ip = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:[\d+\.]+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/\d+\)\s*\(*[^\)]*\)*"),0),
-    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:[\d+\.]+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/\d+\)\s*\(*[^\)]*\)*"),0),
-    arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/"),0)),
-dest_mapped_port = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:[\d+\.]+\/\d+\s*\(\d+\.\d+\.\d+\.\d+\/(\d+)\)\s*\(*[^\)]*\)*"),0),
-    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:[\d+\.]+\/\d+\s*\(\d+\.\d+\.\d+\.\d+\/(\d+)\)\s*\(*[^\)]*\)*"),0),
-    arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\/]+\/(\d+)\)"),0)),
-    source_interface3 = if(action contains "inbound","outside", action contains "outbound","inside",arrayindex(regextract(_raw_log,"([a-zA-Z0-9-_]+)\:\s*\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*\s*to"),0)),
-    dest_interface3 = if(action contains "inbound","inside", action contains "outbound","outside",arrayindex(regextract(_raw_log,"to\s*([a-zA-Z0-9-_]+)\:\d+\.\d+\.\d+\.\d+\/\d+\s*"),0))
+    source_ip3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
+    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
+    null),
+//
+    source_port3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),
+    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),null),
+//
+    dest_ip3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s"),0),action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s"),0),
+    null),
+dest_port3 = if(action contains "inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),
+    action contains "outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\soutside\:\d+\.\d+\.\d+\.\d+\/(\d+)\s"),0),
+    null),
+    source_interface3 = if(action contains "inbound","outside", action contains "outbound","inside",null),
+    dest_interface3 = if(action contains "inbound","inside", action contains "outbound","outside",null)
 //option 4
 //from <source_ip>/<source_port> to <interface>:<source_ip>/<source_port>
 | alter
@@ -170,12 +159,10 @@ dest_mapped_port = if(action contains "inbound",arrayindex(regextract(_raw_log ,
     xdm.alert.severity = severity,
     xdm.source.ipv4 = coalesce(source_ip,host_ip),
     xdm.source.port = to_number(source_port),
-    xdm.source.interface = source_interface,
     xdm.source.zone = source_interface,
     xdm.source.sent_bytes = to_number(sent_bytes ),
     xdm.target.ipv4 = dest_ip,
     xdm.target.port = to_number(dest_port),
-    xdm.target.interface = dest_interface,
     xdm.target.zone = dest_interface,
     xdm.source.user.username = user_name,
     xdm.event.outcome_reason = action,
