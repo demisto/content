@@ -21,7 +21,10 @@ This playbook does not use any scripts.
 
 ## Playbook Inputs
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| device-group | Use device-group as input in case needed to override the device-group in panorama instance configuration. | None | Optional |
 
 ## Playbook Outputs
 ---

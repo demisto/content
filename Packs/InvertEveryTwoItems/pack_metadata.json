@@ -1,8 +1,8 @@
 {
-    "name": "InvertEveryTwoItems",
-    "description": "This transformer will invert every two items in an array.",
+    "name": "InvertEveryTwoItems (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Rod Gonzalez",
     "url": "",
     "email": "",
@@ -19,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

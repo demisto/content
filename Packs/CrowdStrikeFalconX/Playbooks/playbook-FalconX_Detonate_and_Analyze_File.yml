@@ -2,7 +2,7 @@ id: FalconX Detonate and Analyze File
 version: -1
 fromversion: 6.5.0
 name: FalconX Detonate and Analyze File
-description: This playbook uploads, detonates, and analyzes files for the Falcon X sandbox.
+description: This playbook uploads, detonates, and analyzes files for the Falcon Intelligence Sandbox.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,8 +41,8 @@ tasks:
     task:
       id: 20d4c83c-1366-4524-82a4-42a305852e17
       version: -1
-      name: Is CrowdStrike Falcon X enabled?
-      description: Returns 'yes' if the Falcon X integration is available. 
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
+      description: Returns 'yes' if the Falcon Intelligence Sandbox integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -54,7 +54,7 @@ tasks:
       - "7"
     scriptarguments:
       brandname:
-        simple: CrowdStrike Falcon X
+        simple: CrowdStrike Falcon Intelligence Sandbox
     results:
     - brandInstances
     separatecontext: false
@@ -229,7 +229,7 @@ tasks:
     task:
       id: d840af25-45ab-4b77-8eef-be41022df556
       version: -1
-      name: CrowdStrike Falcon X upload and detonate
+      name: CrowdStrike Falcon Intelligence Sandbox upload and detonate
       description: Submits a sample SHA256 hash for sandbox analysis.
       script: '|||cs-fx-submit-uploaded-file'
       type: regular
@@ -258,7 +258,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: FalconX sandbox report
+        simple: Falcon Intelligence Sandbox report
       customfields: {}
     timertriggers: []
     ignoreworker: false
@@ -441,10 +441,10 @@ outputs:
 - contextPath: csfalconx.resource.file_name
   description: 'The name of the uploaded file. '
 - contextPath: csfalconx.resource.sandbox
-  description: The Falcon X findings.
+  description: The Falcon Intelligence Sandbox findings.
   type: unknown
 - contextPath: csfalconx.resource.intel
-  description: The Falcon X intelligence results.
+  description: The Falcon Intelligence Sandbox intelligence results.
   type: unknown
 tests:
  -  No tests
