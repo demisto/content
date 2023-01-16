@@ -81,6 +81,7 @@ tasks:
       attack_pattern:
         simple: ${MITREATTACK.value}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,10 +112,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: MITREATTACK.value
             iscontext: true
       - - operator: isNotEmpty
           left:
