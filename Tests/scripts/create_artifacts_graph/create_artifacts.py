@@ -1,7 +1,8 @@
+import os
 from argparse import ArgumentParser
 from pathlib import Path
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
-from demisto_sdk.commands.common.constants import MarketplaceVersions
+from demisto_sdk.commands.common.constants import MarketplaceVersions, ENV_DEMISTO_SDK_MARKETPLACE
 from demisto_sdk.commands.content_graph.objects.repository import ContentDTO
 from Tests.scripts.utils.log_util import install_logging
 import logging as logger
@@ -55,10 +56,13 @@ def main():
     parser.add_argument("--no-zip", dest="zip", action="store_false")
     args = parser.parse_args()
 
+    marketplace = args.marketplace
+    os.environ[ENV_DEMISTO_SDK_MARKETPLACE] = marketplace
+
     with Neo4jContentGraphInterface() as interface:
-        content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
+        content_dto: ContentDTO = interface.marshal_graph(marketplace, all_level_dependencies=True)
         logger.info("Creating content artifacts zips")
-        create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
+        create_zips(content_dto, Path(args.artifacts_output), marketplace, args.zip)
 
         logger.info("Creating pack dependencies mapping")
         create_dependencies(content_dto, Path(args.dependencies_output))
