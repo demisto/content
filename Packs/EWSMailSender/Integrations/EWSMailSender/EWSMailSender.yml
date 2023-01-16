@@ -132,6 +132,10 @@ script:
     description: Replies to an email using EWS.
   dockerimage: demisto/py3ews:1.0.0.43044
 tests:
-- "EWS Mail Sender Test"
-- "EWS Mail Sender Test 2"
+- EWS Mail Sender Test 3
+- EWS Mail Sender Test 2
+- EWS Mail Sender Test
+- Send Investigation Summary Reports - Test
+- Send Email To Recipients
+- EWS search-mailbox test
 fromversion: 5.0.0
