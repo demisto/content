@@ -506,13 +506,16 @@ sync-buckets-between-projects:
   needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
   script:
     - |
-      if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]]; then
-        echo "$GCS_XSOAR_CONTENT_DEV_KEY not set, cannot perform sync"
+      if [[ -z "$GCS_MARKET_KEY" ]]; then
+        echo "$GCS_MARKET_KEY not set, cannot perform sync"
         exit 1
       else
-        gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
+        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
         gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-dev
+        gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-prod-us
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-dev
+        gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-prod-us
         gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-dev
+        gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-prod-us
         echo "Bucket sync completed"
       fi
