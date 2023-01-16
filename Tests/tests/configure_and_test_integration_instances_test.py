@@ -87,7 +87,7 @@ def test_configure_old_and_new_integrations(mocker):
     assert not set(old_modules_instances).intersection(new_modules_instances)
 
 
-@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (CloudBuild, 'CLOUD')])
+@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (CloudBuild, 'XSIAM')])
 def test_create_build(mocker, expected_class, build_object_type):
     """
     Given:
@@ -227,7 +227,7 @@ CHANGED_MARKETPLACE_PACKS = [
 +         "xsoar",
 +        "marketplacev2"
      ]
- }""", 'CLOUD', {'pack_name'}),
+ }""", 'XSIAM', {'pack_name'}),
     ("""
      "dependencies": {},
      "marketplaces": [

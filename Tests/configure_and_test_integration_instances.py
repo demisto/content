@@ -71,7 +71,7 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
 }
 ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
-CLOUD_BUILD_TYPE = "CLOUD"
+CLOUD_BUILD_TYPE = "XSIAM"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
 
 SET_SERVER_KEYS = True
@@ -886,7 +886,7 @@ def options_handler(args=None):
                         default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./artifacts/content_packs_to_install.txt')
-    parser.add_argument('--build_object_type', help='Build type running: XSOAR or CLOUD')
+    parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to file with cloud Servers api keys.')
