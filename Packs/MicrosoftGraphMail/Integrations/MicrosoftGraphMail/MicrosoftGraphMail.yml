@@ -32,19 +32,27 @@ configuration:
   required: false
   type: 9
   section: Connect
+  hiddenusername: true
+- display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Private Key
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
   section: Connect
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
-  hiddenusername: true
+  hidden: true
+- display: Private Key
   name: private_key
   required: false
   type: 14
   section: Connect
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  hidden: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -63,27 +71,27 @@ configuration:
   required: false
   type: 0
   section: Collect
-- defaultvalue: 15 minutes
+- additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
+  defaultvalue: '15 minutes'
   display: First fetch timestamp
-  additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
   name: first_fetch
   required: false
   type: 0
   section: Collect
-- additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
-  defaultvalue: '10'
+- defaultvalue: '10'
   display: HTTP Timeout
   name: timeout
   required: false
   type: 0
   section: Connect
+  additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
   advanced: true
-- defaultvalue: '50'
-  display: Maximum number of emails to pull per fetch
+- display: Maximum number of emails to pull per fetch
   name: fetch_limit
   required: false
   type: 0
   section: Collect
+  defaultvalue: '50'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -134,16 +142,23 @@ configuration:
   section: Connect
   advanced: true
 - display: Token or Tenant ID - see Detailed Instructions (?) (Deprecated)
-  hidden: true
   name: tenant_id
-  required: false
   type: 4
   section: Connect
   advanced: true
-- additionalinfo: Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required.
+  hidden: true
+  required: false
+- additionalinfo: If not active, only a preview of the email will be fetched.
   defaultvalue: 'false'
-  display: Display the entire email body
+  display: 'Display full email body'
   name: display_full_email_body
+  type: 8
+  section: Collect
+  advanced: true
+- additionalinfo: Relevant only if fetch incidents is active.
+  defaultvalue: 'false'
+  display: 'Mark fetched emails as read'
+  name: mark_fetched_read
   type: 8
   section: Collect
   advanced: true
@@ -175,7 +190,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An OData query. See REDAME for OData usage examples.
+      description: An OData query. See README for OData usage examples.
       isArray: false
       name: odata
       required: false
@@ -1349,7 +1364,26 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.39526
+  - name: msgraph-mail-update-email-status
+    arguments:
+    - description: User ID or principal ID (usually an email address. E.g., user@example.com).
+      name: user_id
+      required: true
+    - description: Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '<message-id>'. Can be a list of comma-separated values.
+      isArray: true
+      name: message_ids
+      required: true
+    - description: The folder ID.
+      name: folder_id
+    - auto: PREDEFINED
+      description: Status to set the email to.
+      name: status
+      required: true
+      predefined:
+      - Read
+      - Unread
+    description: Update the status of an email to read / unread.
+  dockerimage: demisto/crypto:1.0.0.42817
   feed: false
   isfetch: true
   longRunning: false

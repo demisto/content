@@ -39,9 +39,9 @@ CortexXDRIR
 | HostID | The ID of the host for running an isolation process. | ${incident.deviceid} | Optional |
 | FilePaths | Enter the file paths you would like to delete. | incident.processpaths | Optional |
 | ManuallyChooseIOCForHunting | This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident.<br/>Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage. | True | Optional |
-| IP | IP value to be hunt upon. | IP.None | Optional |
-| MD5 | MD5 file value to be hunt upon. | File.MD5.None | Optional |
-| URL_or_Domain | URL or Domain to be hunt upon. | Domain.None | Optional |
+| IP | IP value to be hunt upon. | IP | Optional |
+| MD5 | MD5 file value to be hunt upon. | File.MD5 | Optional |
+| URL_or_Domain | URL or Domain to be hunt upon. | Domain | Optional |
 | FileSha1 | File SHA1 value to be hunt upon. | File.SHA1 | Optional |
 
 ## Playbook Outputs

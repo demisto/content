@@ -535,6 +535,20 @@ class Build(ABC):
         installed_content_packs_successfully = self.install_packs()
         return installed_content_packs_successfully
 
+    def create_and_upload_test_pack(self, packs_to_install: list = None):
+        """Creates and uploads a test pack that contains the test playbook of the specified packs to install list.
+
+        Args:
+            packs_to_install (list): The packs to install list from the artifacts.
+        """
+        packs_to_install = packs_to_install or []
+        create_test_pack(packs_to_install)
+
+        for server in self.servers:
+            upload_zipped_packs(client=server.client,
+                                host=server.name or server.internal_ip,
+                                pack_path=f'{Build.test_pack_target}/test_pack.zip')
+
 
 class XSOARBuild(Build):
 
@@ -601,7 +615,7 @@ class XSOARBuild(Build):
         self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
                                                   service_account=self.service_account)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
-        create_nightly_test_pack()
+        create_test_pack()
         # uploads test_pack.zip to all servers
         self.concurrently_run_function_on_servers(function=upload_zipped_packs,
                                                   pack_path=f'{Build.test_pack_target}/test_pack.zip')
@@ -770,7 +784,7 @@ class CLOUDBuild(Build):
         """
         self.install_packs()
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
-        create_nightly_test_pack()
+        create_test_pack()
         # uploads test_pack.zip to all servers (we have only one cloud server)
         for server in self.servers:
             upload_zipped_packs(client=server.client,
@@ -1522,13 +1536,22 @@ def get_json_file(path):
         return json.loads(json_file.read())
 
 
-def create_nightly_test_pack():
-    test_pack_zip(Build.content_path, Build.test_pack_target)
+def create_test_pack(packs: list = None):
+    packs = packs or []
+    test_pack_zip(Build.content_path, Build.test_pack_target, packs)
 
 
-def test_files(content_path):
+def test_files(content_path, packs_to_install: list = None):
     packs_root = f'{content_path}/Packs'
-    packs = filter(lambda x: x.is_dir(), os.scandir(packs_root))
+    packs_to_install = packs_to_install or []
+
+    # if is given a list of packs to install then collect the test playbook only for those packs (in commit/push build)
+    if packs_to_install:
+        packs = filter(lambda x: x.is_dir() and x.name in packs_to_install, os.scandir(packs_root))
+    else:
+        # else collect the test playbooks for all content packs (in nightly)
+        packs = filter(lambda x: x.is_dir(), os.scandir(packs_root))
+
     for pack_dir in packs:
         if pack_dir in SKIPPED_PACKS:
             continue
@@ -1551,9 +1574,9 @@ def test_pack_metadata():
     now = datetime.now().isoformat().split('.')[0]
     now = f'{now}Z'
     metadata = {
-        "name": "nightly test",
+        "name": "test pack",
         "id": str(uuid.uuid4()),
-        "description": "nightly test pack (all test playbooks and scripts).",
+        "description": "test pack (all test playbooks and scripts).",
         "created": now,
         "updated": now,
         "legacy": True,
@@ -1580,13 +1603,14 @@ def test_pack_metadata():
     return json.dumps(metadata, indent=4)
 
 
-def test_pack_zip(content_path, target):
+def test_pack_zip(content_path, target, packs: list = None):
     """
     Iterates over all TestPlaybooks folders and adds all files from there to test_pack.zip' file.
     """
+    packs = packs or []
     with zipfile.ZipFile(f'{target}/test_pack.zip', 'w', zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr('test_pack/metadata.json', test_pack_metadata())
-        for test_path, test in test_files(content_path):
+        for test_path, test in test_files(content_path, packs):
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
@@ -1812,7 +1836,8 @@ def main():
         8. Installs all (new and modified) packs from current branch.
         9. After updating packs from branch, runs `test-module` for both new and modified integrations,
             to check that modified integrations was not broken. (post-update).
-        10. Prints results.
+        10. Upload the test playbooks of packs from the packs to install list.
+        11. Prints results.
     The flow for nightly:
         1. Add server config and restart servers (only in xsoar).
         2. Disable all enabled integrations.
@@ -1842,6 +1867,8 @@ def main():
         installed_content_packs_successfully = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
+        if not os.getenv('BUCKET_UPLOAD'):  # Don't need to upload test playbooks in upload flow
+            build.create_and_upload_test_pack(packs_to_install=build.pack_ids_to_install)
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                       new_integrations_names, build)
         if not success or not installed_content_packs_successfully:

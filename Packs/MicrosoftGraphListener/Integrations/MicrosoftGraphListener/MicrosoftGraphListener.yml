@@ -1,82 +1,163 @@
 category: Cloud Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
 configuration:
+- name: creds_auth_id
+  required: false
+  type: 9
+  displaypassword: ID or Client ID
+  hiddenusername: true
+  section: Connect
+- name: creds_refresh_token
+  required: false
+  type: 9
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+  section: Connect
+  advanced: true
+- name: creds_enc_key
+  required: false
+  type: 9
+  displaypassword: Key or Client Secret
+  hiddenusername: true
+  section: Connect
 - display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
-  required: true
+  required: false
   type: 4
+  hidden: true
+  section: Connect
 - display: Token or Tenant ID - see Detailed Instructions (?)
   name: refresh_token
-  required: true
+  required: false
   type: 4
+  hidden: true
+  section: Connect
+  advanced: true
 - display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint (optional for self-deployed Azure app)
+  hidden: true
+  section: Connect
+- display: Certificate Thumbprint (optional for self-deployed Azure app)
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
+  section: Connect
+  advanced: true
+- display: Certificate Thumbprint (optional for self-deployed Azure app)
   name: certificate_thumbprint
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  hidden: true
+  section: Connect
+  advanced: true
+- display: Private Key
   name: private_key
   required: false
   type: 14
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  hidden: true
+  section: Connect
+- name: creds_auth_code
+  required: false
+  type: 9
+  displaypassword: Authorization code (required for self-deployed Azure app)
+  hiddenusername: true
+  section: Connect
+  advanced: true
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
   required: false
   type: 4
+  hidden: true
+  section: Connect
+  advanced: true
 - display: Application redirect URI (required for self-deployed Azure app)
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- display: Email address from which to fetch incidents (e.g. "example@demisto.com")
+  section: Collect
+- display: Email address from which to fetch incidents (e.g., "example@demisto.com")
   name: mailbox_to_fetch
   required: true
   type: 0
-- defaultvalue: Inbox
-  display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)
+  section: Collect
+- display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   required: true
   type: 0
-- defaultvalue: 15 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: Inbox
+  section: Collect
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '50'
-  display: Maximum number of emails to pull per fetch
+  defaultvalue: 15 minutes
+  section: Collect
+- display: Maximum number of emails to pull per fetch
   name: fetch_limit
-  required: false
+  defaultvalue: '50'
   type: 0
+  required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
+  section: Connect
+  advanced: true
 - display: Use a self-deployed Azure application
   name: self_deployed
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
+- display: Display full email body
+  name: display_full_email_body
+  defaultvalue: 'false'
+  type: 8
+  additionalinfo: If not active, only a preview of the email will be fetched.
+  section: Collect
+  advanced: true
+- additionalinfo: Relevant only if fetch incidents is active.
+  defaultvalue: 'false'
+  display: Mark fetched emails as read
+  name: mark_fetched_read
+  type: 8
+  section: Collect
+  advanced: true
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   type: 19
   required: false
+  section: Collect
+  advanced: true
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
@@ -528,7 +609,7 @@ script:
     arguments:
     - name: message_id
       required: true
-      description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      description: The unique ID of the email. You cannot use the the 'MessageID' key in the form '<message-id>'.
     - deprecated: true
       description: flag for rate limit retry
       isArray: false
@@ -570,7 +651,23 @@ script:
       type: String
     description: Retrieves an email message by message ID and uploads the content as an EML file.
     polling: true
-  dockerimage: demisto/crypto:1.0.0.39526
+  - name: msgraph-update-email-status
+    arguments:
+    - description: Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '<message-id>'. Can be a list of comma-separated values.
+      isArray: true
+      name: message_ids
+      required: true
+    - description: The folder ID.
+      name: folder_id
+    - auto: PREDEFINED
+      description: Status to set the email to.
+      name: status
+      required: true
+      predefined:
+      - Read
+      - Unread
+    description: Update the status of an email to read / unread.
+  dockerimage: demisto/crypto:1.0.0.42817
   isfetch: true
   runonce: false
   script: ''

@@ -193,6 +193,9 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
         'timed_out': response.get('timed_out')
     }
 
+    if aggregations := response.get('aggregations'):
+        search_context['aggregations'] = aggregations
+
     hit_headers = []  # type: List
     hit_tables = []
     if total_dict.get('value') > 0:
@@ -208,7 +211,7 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
         hit_headers = ['_id', '_index', '_type', '_score'] + hit_headers
 
     search_context['Results'] = response.get('hits').get('hits')
-    meta_headers = ['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']
+    meta_headers = ['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size', 'aggregations']
     return search_context, meta_headers, hit_tables, hit_headers
 
 
@@ -261,8 +264,7 @@ def search_command(proxies):
                                          time_field=timestamp_field)
 
     if query_dsl:
-
-        response = execute_raw_query(es, query_dsl)
+        response = execute_raw_query(es, query_dsl, index, size, base_page)
 
     else:
         que = QueryString(query=query)
@@ -671,15 +673,20 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     return {'range': {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query):
+def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     try:
         raw_query = json.loads(raw_query)
-    except Exception as e:
+        if raw_query.get('query'):
+            demisto.debug('query provided already has a query field. Sending as is')
+            body = raw_query
+        else:
+            body = {'query': raw_query}
+    except (ValueError, TypeError) as e:
+        body = {'query': raw_query}
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
-    body = {"query": raw_query}
-    response = es.search(index=FETCH_INDEX, body=body)
-    return response
+    requested_index = index or FETCH_INDEX
+    return es.search(index=requested_index, body=body, size=size, from_=page)
 
 
 def fetch_incidents(proxies):

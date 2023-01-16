@@ -2,6 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
 import enum
+import html
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -26,10 +27,10 @@ import json
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
-
+import re
 import requests
 import urllib3
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -45,6 +46,12 @@ PRE_POST = ''
 OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
+FETCH_DEFAULT_TIME = '1 day'
+MAX_INCIDENTS_TO_FETCH = 100
+FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -683,7 +690,7 @@ def get_pan_os_major_version() -> int:
 ''' FUNCTIONS'''
 
 
-def panorama_test():
+def panorama_test(fetch_params):
     """
     test module
     """
@@ -710,6 +717,13 @@ def panorama_test():
         # Test the topology functionality
         topology = get_topology()
         test_topology_connectivity(topology)
+        
+        # Test fetch incidents parameters
+        if fetch_params.get('isFetch'):
+            test_fetch_incidents_parameters(fetch_params)
+        
+    except DemistoException as e:
+        raise e
     except Exception as exception_text:
         demisto.debug(f"Failed to create topology; topology commands will not work. {exception_text}")
         pass
@@ -2771,8 +2785,11 @@ def panorama_custom_url_category_add_items(custom_url_category_name: str, items:
 
     merged_items = list((set(items)).union(set(custom_url_category_items)))
 
+    # escape URLs with HTML escaping
+    sites = [html.escape(site) for site in merged_items]
+
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           merged_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -2804,8 +2821,12 @@ def panorama_custom_url_category_remove_items(custom_url_category_name: str, ite
         raise Exception('Custom url category does not contain sites or categories.')
 
     subtracted_items = [item for item in custom_url_category_items if item not in items]
+
+    # escape URLs with HTML escaping
+    sites = [html.escape(site) for site in subtracted_items]
+
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           subtracted_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -10724,7 +10745,7 @@ class FirewallCommand:
     @staticmethod
     def get_ha_status(
         topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
-    ) -> List[ShowHAState]:
+    ) -> List[ShowHAState] | ShowHAState:
         """
         Gets the HA status of the device. If HA is not enabled, assumes the device is active.
         :param topology: `Topology` instance.
@@ -10735,8 +10756,9 @@ class FirewallCommand:
         for firewall in topology.all(filter_string=device_filter_str, target=target):
             firewall_host_id: str = resolve_host_id(firewall)
 
-            peer_serial: str = topology.get_peer(firewall_host_id)
-            if not peer_serial:
+            peer_serial: str = topology.get_peer(firewall_host_id) or ''
+            # if this is firewall instance, there is no peer_serial, hence checking this only for Panorama instance.
+            if not peer_serial and DEVICE_GROUP:
                 result.append(ShowHAState(
                     hostid=firewall_host_id,
                     status="HA Not enabled.",
@@ -10748,8 +10770,19 @@ class FirewallCommand:
                 # Check both places for state to cover firewalls and panorama
                 try:
                     state = find_text_in_element(state_information_element, "./result/group/local-info/state")
-                except LookupError:
-                    state = find_text_in_element(state_information_element, "./result/local-info/state")
+                except LookupError as e:
+                    demisto.debug(f'Could not find HA state at ./result/group/local-info/state, error: {e}')
+                    try:
+                        state = find_text_in_element(state_information_element, "./result/local-info/state")
+                    except LookupError as e:  # if the state was not found at all, that means HA is not enabled.
+                        demisto.debug(f'Could not find HA state at ./result/local-info/state, error: {e}')
+                        result.append(ShowHAState(
+                            hostid=firewall_host_id,
+                            status="HA Not enabled.",
+                            active=True,
+                            peer=""
+                        ))
+                        continue
 
                 if "active" in state:
                     result.append(ShowHAState(
@@ -10956,7 +10989,7 @@ def get_ha_state(
     topology: Topology,
     device_filter_string: Optional[str] = None,
     target: Optional[str] = None
-) -> List[ShowHAState]:
+) -> List[ShowHAState] | ShowHAState:
     """
     Get the HA state and associated details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
@@ -12823,8 +12856,328 @@ def pan_os_delete_application_group_command(args):
         readable_output=f'application-group {application_group_name} was deleted successfully.'
     )
 
+""" Fetch Incidents """
 
-def main():
+
+def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> str:
+    """get the Job ID linked to a particular query.
+
+    Args:
+        log_type (str): query log type
+        query (str): query for the fetch
+        max_fetch (int): maximum number of entries to fetch
+
+    Returns:
+        job_id (str): returns the Job ID associated with the given query
+    """
+    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch)
+    response = http_request(URL, 'GET', params=params)
+    return response.get('response', {}).get('result', {}).get('job')
+
+
+def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
+    """get the entries of a particular Job ID.
+
+    Args:
+        job_id (int): ID of a query job
+
+    Returns:
+        Dict[str,Any]: a dictionary of the raw entries linked to the Job ID
+    """
+    params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
+    return http_request(URL, 'GET', params=params)
+
+
+def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[Any, Any]]:
+    """get query entries according to a specific query.
+    
+    Args:
+        log_type (str): query log type
+        query (str): query for the fetch
+        max_fetch (int): maximum number of entries to fetch
+
+    Returns:
+        List[Dict[Any,Any]]): a list of raw entries for the the specified query
+    """
+    entries = []
+    # first http request: send request with query, valid response will contain a job id.
+    job_id = get_query_by_job_id_request(log_type, query, max_fetch)
+    demisto.debug(f'{job_id=}')
+
+    # second http request: send request with job id, valid response will contain a dictionary of entries.
+    query_entries = get_query_entries_by_id_request(job_id)
+
+    # extract all entries from response
+    if result := query_entries.get('response', {}).get('result', {}).get('log', {}).get('logs', {}).get('entry'):
+        if isinstance(result,list):
+            entries.extend(result)
+        elif isinstance(result,dict):
+            entries.append(result)
+        else:
+            raise DemistoException(f'Could not parse fetch results: {result}')
+    
+    entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
+    demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
+    demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
+    return entries
+
+
+def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
+    """append time filter parameter to original query parameter.
+
+    Args:
+        query (str): a string representing a query
+        last_fetch (datetime): last fetch time for the specific log type
+
+    Returns:
+        str: a string representing a query with added time filter parameter
+    """
+    if 'time_generated' in query or not last_fetch:
+        raise DemistoException('Query parameter must not contain time_generated filter.')
+    time_generated = f" and (time_generated geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
+    return query + time_generated
+
+
+def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
+    """append unique id filter parameter to original query parameter.
+    'seqno' is a 64-bit log entry identifier incremented sequentially; each log type has unique number space.
+    by adding this filter which gives us only entries that have larger id, we insure not have duplicates in our request.
+
+    Args:
+        query (str): a string representing a query
+        last_id (str): largest unique log entry id from last fetch (for a specific log type)
+
+    Returns:
+        str: a string representing a query with added time filter parameter
+    """
+    if last_id:
+        last_id_int = arg_to_number(last_id)
+        if isinstance(last_id_int, int):
+            # last_id is can be filtered only by '>=' so we need to add 1 to it.
+            last_id_int += 1
+            unique_id_filter = f" and (seqno geq '{last_id_int}')"
+            return query + unique_id_filter
+        else:
+            return query
+    else:
+        return query
+
+
+def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
+                            max_fetch: int, fetch_start_datetime_dict: Dict[str, datetime], last_id_dict: Dict[str,str]) -> Dict[str, List[Dict[str,Any]]]:
+    """get raw entires of incidents according to provided queries, log types and max_fetch parameters.
+
+    Args:
+        queries_dict (Optional[Dict[str, str]]): chosen log type queries dictionaries
+        max_fetch (int): max incidents per fetch parameter
+        fetch_start_datetime_dict (Dict[str,datetime]): updated last fetch time per log type dictionary
+
+    Returns:
+        Dict[str, List[Dict[str,Any]]]: a dictionary of all fetched raw incidents entries
+    """
+    entries = {}
+    if queries_dict:
+        for log_type, query in queries_dict.items():
+            fetch_start_time = fetch_start_datetime_dict.get(log_type)
+            if fetch_start_time:
+                query = add_time_filter_to_query_parameter(query, fetch_start_time)
+            if id := last_id_dict.get(log_type):
+                query = add_unique_id_filter_to_query_parameter(query, id)
+            entries[log_type] = get_query_entries(log_type, query, max_fetch)
+    return entries
+
+
+def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str | None ,datetime | None, List[Dict[str, Any]]]:
+    """parses raw incident entries of a specific log type query into basic context incidents.
+    
+    Args:
+        incident_entries (list[dict[str,Any]]): list of dictionaries representing raw incident entries
+
+    Returns:
+        (str | None ,datetime | None, List[Dict[str, Any]]): (updated last fetch time, parsed incident list) tuple
+    """
+    # if no new incidents are available, return empty list of incidents
+    if not incident_entries:
+        return None, None, incident_entries
+
+    # calculate largest last fetch time for each log type query
+    last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
+    new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
+    
+    # calculate largest unique id for each log type query
+    new_largest_id = max({entry.get('seqno', '') for entry in incident_entries})
+
+    # convert incident entries to incident context and filter any empty incidents if exists
+    parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
+    filtered_parsed_incidents = list(filter(lambda incident: incident, parsed_incidents))
+        
+    return new_largest_id, new_fetch_datetime, filtered_parsed_incidents
+
+
+def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
+    """convert raw incident entry to basic cortex incident format.
+
+    Args:
+        incident_entry (Dict[str, Any]): raw incident entry represented by a dictionary
+
+    Returns:
+        dict[str,any]: context formatted incident entry represented by a dictionary
+    """
+    occurred = incident_entry.get('time_generated', "")
+    occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
+    incident_context = {}
+    if occurred_datetime:
+        incident_context = {
+            'name': incident_entry.get('seqno'),
+            'occurred': occurred_datetime.strftime(DATE_FORMAT),
+            'rawJSON': json.dumps(incident_entry),
+            'type': incident_entry.get('type')
+        }
+    return incident_context
+
+
+def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str, str],
+                                  first_fetch: str, queries_dict: Optional[Dict[str, str]]) -> Dict[str, datetime]:
+    """calculate fetch start time for each log type query.
+    - if last fetch time already exists for a log type, it will not be changed (only converted to datetime object).
+    - if last fetch time does not exist for the log_type, it will be changed into first_fetch parameter (and converted to datetime object).
+    - example: {'log_name':'2022-12-18T05:58:17'} --> {'log_name': datetime.datetime(2022, 12, 18, 5, 58, 17)}
+
+    Args:
+        last_fetch_dict (Dict[str,str]): last fetch dictionary
+        first_fetch (str): first fetch parameter
+        queries_dict (Optional[Dict[str, str]]): queries per log type dictionary
+
+    Returns:
+        Dict[str,datetime]: log_type:datetime pairs dictionary
+    """
+    fetch_start_datetime_dict = {}
+    first_fetch_parsed = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+
+    # add new log types to last_fetch_dict
+    if queries_dict:
+        for log_type in queries_dict.keys():
+            if (log_type not in last_fetch_dict) and (log_type != "All"):
+                last_fetch_dict[log_type] = ''
+
+    # update fetch_start_datetime_dict with relevant last fetch time per log type in datetime UTC format
+    # if there is no prior last fetch time available for a log type - it will be set it to first_fetch
+    for log_type, last_fetch in last_fetch_dict.items():
+        if not last_fetch and first_fetch_parsed:
+            fetch_start_datetime_dict[log_type] = first_fetch_parsed
+        else:
+            updated_last_fetch = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
+            if updated_last_fetch:
+                fetch_start_datetime_dict[log_type] = updated_last_fetch
+        demisto.debug(
+            f'last fetch for {log_type} log type was at: {last_fetch}, new time to fetch start time is: {fetch_start_datetime_dict[log_type]}.')
+
+    return fetch_start_datetime_dict
+
+
+def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
+    """converts chosen log type queries from parameters to a queries dictionary.
+    Example:
+    for parameters: log_types=['X_log_type'], X_log_type_query='(example query for X_log_type)'
+    the dictionary returned is: {'X_log_type':'(example query for X_log_type)'}
+
+    Args:
+        params (Dict[str, str]): instance configuration parameters 
+
+    Returns:
+        Dict[str, str]: queries per log type dictionary
+    """
+    queries_dict = {}
+    if log_types := params.get('log_types'):
+        # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
+        active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
+        for log_type in active_log_type_queries:
+            log_type_query = params.get(f'{log_type.lower()}_query', "")
+            if log_type_query:
+                queries_dict[log_type.capitalize()] = log_type_query
+
+    return queries_dict
+
+
+def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, Any]]], last_fetch_dict: Dict[str,str], last_id_dict: Dict[str,str]) -> Dict[str,Any]:
+    """for each log type incident entries array, parse the raw incidents into context incidents.
+    if necessary, update the latest fetch time and last ID values in their corresponding dictionaries.
+
+    Args:
+        incident_entries_dict (Dict[str, List[Dict[str, Any]]]): list of dictionaries representing raw incident entries
+        last_fetch_dict (Dict[str,str]): last fetch dictionary
+        last_id_dict (Dict[str,str]): last id dictionary
+
+    Returns:
+        Dict[str,Any]: parsed context incident dictionary
+    """
+    parsed_incident_entries_dict = {}
+    for log_type, incident_entries in incident_entries_dict.items():
+        if incident_entries:
+            updated_last_id, updated_last_fetch, incidents = parse_incident_entries(incident_entries)
+            demisto.debug(f'{log_type} log type: {len(incidents)} parsed incidents returned from parse_incident_entries function.')
+            demisto.debug(f"{log_type} log type: parsed incidents unique ID list: {[incident.get('name','') for incident in incidents]}")
+            parsed_incident_entries_dict[log_type] = incidents
+            if updated_last_fetch:
+                last_fetch_dict[log_type] = str(updated_last_fetch)
+            if updated_last_id:
+                last_id_dict[log_type] = updated_last_id
+            demisto.debug(f'{log_type} log type: incidents parsing has completed with total of {len(incidents)} incidents. Updated last run is: {last_fetch_dict.get(log_type)}. Updated last ID is: {last_id_dict.get(log_type)}')
+            demisto.debug(f'incidents ID list: {[incident.get("name") for incident in incidents]}')
+    return parsed_incident_entries_dict
+
+
+def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dict[str, str]],
+                    max_fetch: int) -> Tuple[Dict[str, str], Dict[str,str], List[Dict[str, list]]]:
+    """run one cycle of fetch incidents.
+
+    Args:
+        last_run (Dict): contains last run information
+        first_fetch (str): first time to fetch from (First fetch timestamp parameter)
+        queries_dict (Optional[Dict[str, str]]): queries per log type dictionary
+        max_fetch (int): max incidents per fetch parameter
+
+    Returns:
+        (Dict[str, str], Dict[str,str], List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
+    """
+    last_fetch_dict = last_run.get('last_fetch_dict', {})
+    last_id_dict = last_run.get('last_id_dict', {})
+    demisto.debug(f'last fetch time dictionary from previous fetch is: {last_fetch_dict=}.')
+    demisto.debug(f'last id dictionary from previous fetch is: {last_id_dict=}.')
+
+    fetch_start_datetime_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)
+    demisto.debug(f'updated last fetch per log type: {fetch_start_datetime_dict=}.')
+
+    incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch, fetch_start_datetime_dict, last_id_dict)
+    demisto.debug('raw incident entries fetching has completed.')
+
+    parsed_incident_entries_dict = get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict)
+
+    # flatten incident_entries_dict to a single list of dictionaries representing context entries
+    parsed_incident_entries_list = [incident for incident_list in parsed_incident_entries_dict.values()
+                                    for incident in incident_list]
+
+    return last_fetch_dict, last_id_dict, parsed_incident_entries_list
+
+
+def test_fetch_incidents_parameters(fetch_params):
+    if log_types := fetch_params.get('log_types'):
+        # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
+        active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
+        for log_type in active_log_type_queries:
+            log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
+            if not log_type_query:
+                raise DemistoException(f"{log_type} Log Type Query parameter is empty. Please enter a valid query.")
+            if 'time_generated' in log_type_query:
+                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'time_generated' filter. Please remove it from the query.")
+            if 'seqno' in log_type_query:
+                raise DemistoException(f"{log_type} Log Type Query parameter cannot contain 'seqno' filter. Please remove it from the query.")
+                
+    else:
+        raise DemistoException("fetch incidents is checked but no Log Types were selected to fetch from the dropdown menu.")
+    
+    
+def main(): # pragma: no cover
     try:
         args = demisto.args()
         params = demisto.params()
@@ -12839,7 +13192,19 @@ def main():
         handle_proxy()
 
         if command == 'test-module':
-            panorama_test()
+            panorama_test(params)
+
+        # Fetch incidents
+        elif command == 'fetch-incidents':
+            last_run = demisto.getLastRun()
+            first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
+            max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
+            queries_dict = log_types_queries_to_dict(params)
+            
+            last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
+            
+            demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict})
+            demisto.incidents(incident_entries_list)
 
         elif command == 'panorama' or command == 'pan-os':
             panorama_command(args)
