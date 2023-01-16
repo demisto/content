@@ -21,19 +21,6 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: ACTIVE
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  options:
-  - ACTIVE
-  - CLOSED
-  required: false
-  type: 15
-- display: Fetch alerts with type
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
-  name: alert_type
-  required: false
-  type: 0
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -62,22 +49,6 @@ script:
       - 'true'
       - 'false'
       required: true
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: false
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-      required: false
-      secret: false
-    - default: false
-      description: Filter by alert type
-      isArray: false
-      name: alert_type
-      required: false
-      secret: false
     - default: false
       description: Maximum results to return.
       isArray: false
