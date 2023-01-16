@@ -17,22 +17,19 @@ DEFAULT_INTERVAL = 10
 DEFAULT_TIMEOUT = 600
 # Symantec TOKEN timeout 3600 Second , or 60 mins
 SESSION_TIMEOUT_SEC = 3480
-XSOAR_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SYMANTEC_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 INTEGRATION_CONTEXT_NAME = 'SymantecEDR'
-TOKEN_ENDPOINT = '/atpapi/oauth2/tokens'
 DEFAULT_PAGE = 0
 DEFAULT_PAGE_SIZE = 50
 PAGE_NUMBER_ERROR_MSG = 'Invalid Input Error: page number should be greater than zero. ' \
                         'Note: Page must be used along with page_size'
+
 PAGE_SIZE_ERROR_MSG = 'Invalid Input Error: page size should be greater than zero. ' \
                       'Note: Page must be used along with page_size'
-INVALID_CREDENTIALS_ERROR_MSG = 'Authorization Error: ' \
-                                'The provided credentials for Symantec EDR on-premise are invalid. ' \
-                                'Please provide a valid Client ID and Client Secret.'
+
 INVALID_QUERY_ERROR_MSG = 'Invalid query arguments. Either use any optional filter in lieu of "query" ' \
                           'or explicitly use only "query" argument'
-COMMAND_ACTION = ['isolate_endpoint', 'rejoin_endpoint', 'cancel_command', 'delete_endpoint_file']
+
 INCIDENT_PATCH_ACTION = ['add_comment', 'close_incident', 'update_resolution']
 SEARCH_QUERY_TYPE = ['domain', 'sha256', 'device_uid']
 INCIDENT_PRIORITY_LEVEL: dict[str, str] = {
@@ -120,14 +117,14 @@ class Client(BaseClient):
     """
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
                  first_fetch: str = '3 days', fetch_limit: int = 50, is_incident_event: bool = False,
-                 is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None):
+                 is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None,
+                 sid: str = None):
         super().__init__(
             base_url=base_url,
             verify=verify,
             proxy=proxy
         )
 
-        self.token_url = f'{base_url}{TOKEN_ENDPOINT}'
         self.client_key = client_id
         self.secret_key = client_secret
         self.first_fetch = first_fetch
@@ -136,7 +133,8 @@ class Client(BaseClient):
         self.is_fetch_comment = is_fetch_comment
         self.fetch_status = fetch_status
         self.fetch_priority = fetch_priority
-        self.sid = None
+        self.sid = sid
+
 
     def get_access_token(self):
         """
@@ -147,40 +145,41 @@ class Client(BaseClient):
         payload = {
             "grant_type": 'client_credentials'
         }
-        response = None
-        if last_sid := self.get_sid_from_context():
-            demisto.debug(f"Last login sid still alive. Return last sid {last_sid}")
-            return last_sid
+
+        if self.sid is not None:
+            demisto.debug(f"Last login sid still active. Return last sid {self.sid}")
+            return self.sid
         else:
             try:
                 response = self._http_request(
                     method='POST',
-                    full_url=self.token_url,
+                    url_suffix='/atpapi/oauth2/tokens',
                     auth=(self.client_key, self.secret_key),
                     data=payload,
-                    error_handler=handle_errors
+                    resp_type='response'
                 )
-                sid = response.get('access_token', '')
+                demisto.debug(f'Dump response Object: {response.json()}')
+
+                sid = response.json().get("access_token", '')
                 self.sid = sid
                 timestamp_string = int(time.time() * 1000)
                 demisto.debug(f"login: success, saving sid={sid} , sid_last_datetime={timestamp_string} to integrationContext")
                 demisto.setIntegrationContext({'sedr_sid': sid, 'sedr_last_sid_datatime': timestamp_string})
                 return sid
+
+            except requests.exceptions.HTTPError as err:
+                if HTTP_ERRORS.get(err.response.status_code) is not None:
+                    # if it is a known http error - get the message form the preset messages
+                    err_response = f'Failed to execute. {response.json().get("error")},{response.json().get("message")}'
+                    msg = f'{HTTP_ERRORS.get(err.response.status_code)}.\n{err_response}'
+                    raise DemistoException(msg, res=response)
+                else:
+                    # if it is unknown error - get the message from the error itself
+                    return_error(f'Failed to execute. Error: {str(err)}')
             except Exception as e:
                 msg = f'Something went wrong with request, {e}'
                 demisto.debug(msg)
-                raise DemistoException(msg, res=requests.Response)
-
-    def get_sid_from_context(self):
-        if sid := demisto.getIntegrationContext().get('sedr_sid', None):
-            last_datetime = demisto.getIntegrationContext().get('sedr_last_sid_datatime', None)
-            now_datetime = int(time.time() * 1000)  # Convert to Millisecond
-            time_diff = int(now_datetime - last_datetime)
-            demisto.debug(f"Check Last Sid: {sid}, time_diff: {time_diff}.")
-            return sid if time_diff <= SESSION_TIMEOUT_SEC * 1000 else None
-
-        demisto.debug("No last SID found in Context.")
-        return None
+                raise DemistoException(msg, res=response)
 
     def query_request_api(self, endpoint: str, params: dict, method: str | None = 'POST') \
             -> dict[str, str]:
@@ -193,17 +192,17 @@ class Client(BaseClient):
         Returns:
             Return the raw api response from Symantec EDR on-premise API.
         """
-        access_token = self.get_access_token()
-        url_path = f'{self._base_url}{endpoint}'
+        access_token = self.sid if self.sid is not None else self.get_access_token()
         try:
             response = self._http_request(
                 method=method,
-                full_url=url_path,
+                url_suffix=endpoint,
                 headers={'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'},
-                json_data=params if method == 'POST' else {},
+                json_data=params if method in ['POST', 'PATCH'] else {},
                 params=params if method == 'GET' else {},
                 resp_type='response',
-                allow_redirects=False
+                allow_redirects=False,
+                return_empty_response=True if method == 'PATCH' else False
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError as err:
@@ -229,37 +228,46 @@ class Client(BaseClient):
         Returns:
             return response status code
         """
-
-        result: dict = {}
         access_token = self.get_access_token()
-        url_path = f'{self._base_url}{endpoint}'
+        try:
+            response = self._http_request(
+                method="PATCH",
+                headers={'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json'},
+                json_data=payload,
+                url_suffix=endpoint,
+                resp_type="response",
+                return_empty_response=True
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            if HTTP_ERRORS.get(err.response.status_code) is not None:
+                # if it is a known http error - get the message form the preset messages
+                err_response = f'Failed to execute. {response.json().get("error")},{response.json().get("message")}'
+                msg = f'{HTTP_ERRORS.get(err.response.status_code)}.\n{err_response}'
+                raise DemistoException(msg, res=response)
+            else:
+                # if it is unknown error - get the message from the error itself
+                return_error(f'Failed to execute. Error: {str(err)}')
+        except Exception as e:
+            return_error(f'Failed to execute. Error: {str(e)}')
 
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {access_token}'
-        }
-
-        response = self._http_request(
-            method="PATCH",
-            headers=headers,
-            data=json.dumps(payload),
-            full_url=url_path,
-            resp_type="response",
-            return_empty_response=True,
-        )
-
-        if response.status_code == 204:
-            result['status'] = response.status_code
-            result['message'] = 'Success'
-
-        if response.status_code >= 400:
-            error_message = f'{response.json().get("error")}, {response.json().get("message")}'
-            raise DemistoException(error_message, res=response)
-
-        return result
+        return response
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_sid_from_context():
+    if sid := demisto.getIntegrationContext().get('sedr_sid', None):
+        last_datetime = demisto.getIntegrationContext().get('sedr_last_sid_datatime', None)
+        now_datetime = int(time.time() * 1000)  # Convert to Millisecond
+        time_diff = int(now_datetime - last_datetime)
+        demisto.debug(
+            f"Last Sid: {sid}, Last datetime: {last_datetime}, now_datetime: {now_datetime}, time_diff: {time_diff}.")
+        return sid if time_diff <= SESSION_TIMEOUT_SEC * 1000 else None
+
+    demisto.debug("No last SID found in Context.")
+    return None
 
 
 def handle_errors(response: requests.Response) -> None:
@@ -269,19 +277,6 @@ def handle_errors(response: requests.Response) -> None:
         raise DemistoException(f'{HTTP_ERRORS[status]}, {response.json().get("error_description")}', res=response)
     else:
         response.raise_for_status()
-
-
-def http_request_error_handler(response: requests.Response):
-    """
-    Error Handler for Symantec EDR on-premise
-    Args:
-        response (response): Symantec EDR on-premise response
-    Raise:
-         DemistoException
-    """
-    if response.status_code >= 400:
-        error_message = f'{response.json().get("error")},{response.json().get("message")}'
-        raise DemistoException(error_message, res=response)
 
 
 def iso_creation_date(date: str):
@@ -1594,7 +1589,7 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
     response = client.query_patch_api(endpoint, action_list)
     title = f'Incident {action_desc}'
 
-    if response.get('status') == 204:
+    if response.status_code == 204:
         summary_data = {
             'incident_id': args.get('incident_id'),
             'Message': 'Successfully Updated',
@@ -2336,11 +2331,12 @@ def main() -> None:
         fetch_comments = params.get('isIncidentComment', False)
         fetch_status = argToList(params.get('fetch_status', 'New'))
         fetch_priority = argToList(params.get('fetch_priority', 'High,Medium'))
+        last_sid = get_sid_from_context()
 
         client = Client(base_url=server_url, verify=verify_certificate, proxy=proxy, client_id=client_id,
                         client_secret=client_secret, first_fetch=first_fetch_time, fetch_limit=fetch_limit,
                         is_incident_event=fetch_incident_event, is_fetch_comment=fetch_comments,
-                        fetch_status=fetch_status, fetch_priority=fetch_priority)
+                        fetch_status=fetch_status, fetch_priority=fetch_priority, sid=last_sid)
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
