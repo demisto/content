@@ -93,7 +93,7 @@ class Server:
         self.name = ''
 
 
-class CLOUDServer(Server):
+class CloudServer(Server):
 
     def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name):
         super().__init__()
@@ -737,7 +737,7 @@ class XSOARBuild(Build):
         run_threads_list(threads_list)
 
 
-class CLOUDBuild(Build):
+class CloudBuild(Build):
 
     def __init__(self, options):
         global SET_SERVER_KEYS
@@ -748,7 +748,7 @@ class CLOUDBuild(Build):
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
-        self.servers = [CLOUDServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
+        self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.cloud_machine)]
         self.marketplace_tag_name = options.marketplace_name
         self.artifacts_folder = options.artifacts_folder
@@ -756,7 +756,7 @@ class CLOUDBuild(Build):
 
     @staticmethod
     def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path):
-        logging.info('get cloud configuration')
+        logging.info('getting cloud configuration')
 
         cloud_servers = get_json_file(cloud_servers_path)
         conf = cloud_servers.get(cloud_machine)
@@ -850,7 +850,7 @@ class CLOUDBuild(Build):
                 subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
             try:
                 # We are syncing marketplace since we are copying custom bucket to existing bucket and if new packs
-                # was added, they will not appear on cloud marketplace without sync.
+                # were added, they will not appear on the cloud marketplace without sync.
                 _ = demisto_client.generic_request_func(
                     self=server.client, method='POST',
                     path='/contentpacks/marketplace/sync')
@@ -1696,7 +1696,7 @@ def create_build_object() -> Build:
     if options.build_object_type == XSOAR_BUILD_TYPE:
         return XSOARBuild(options)
     elif options.build_object_type == CLOUD_BUILD_TYPE:
-        return CLOUDBuild(options)
+        return CloudBuild(options)
     else:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
 

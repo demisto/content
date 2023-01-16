@@ -218,7 +218,7 @@ function poll_for_env() {
 
 touch queue
 touch ChosenMachine
-touch CLOUDEnvVariables
+touch CloudEnvVariables
 
 # copy TestMachines locally for faster perf
 gsutil cp $GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file from bucket. 3 machines names.
@@ -310,5 +310,5 @@ done
 
 export CLOUD_CHOSEN_MACHINE_ID=`cat ChosenMachine`	# ChosenMachine it is the file with free machine. machine name will be written there.
 # export vars to file
-echo -e "export CLOUD_CHOSEN_MACHINE_ID=$CLOUD_CHOSEN_MACHINE_ID" >>  CLOUDEnvVariables
+echo -e "export CLOUD_CHOSEN_MACHINE_ID=$CLOUD_CHOSEN_MACHINE_ID" >>  CloudEnvVariables
 

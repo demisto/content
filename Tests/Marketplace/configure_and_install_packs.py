@@ -4,7 +4,7 @@ import traceback
 
 from demisto_sdk.commands.common.tools import get_json, str2bool
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
-    XSOARBuild, XSOARServer, CLOUDBuild, CLOUDServer, Build, get_packs_with_higher_min_version
+    XSOARBuild, XSOARServer, CloudBuild, CloudServer, Build, get_packs_with_higher_min_version
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket, \
     search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
@@ -154,13 +154,13 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     """
     logging.info('Retrieving the credentials for Cortex XSIAM server')
     cloud_machine = options.cloud_machine
-    api_key, server_numeric_version, base_url, xdr_auth_id = CLOUDBuild.get_cloud_configuration(
+    api_key, server_numeric_version, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(
         cloud_machine,
         options.cloud_servers_path,
         options.cloud_servers_api_keys)
     # Configure the Server
-    server = CLOUDServer(api_key, server_numeric_version, base_url, xdr_auth_id, cloud_machine)
-    CLOUDBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
+    server = CloudServer(api_key, server_numeric_version, base_url, xdr_auth_id, cloud_machine)
+    CloudBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
     # extract pack_ids from the content_packs_to_install.txt
     pack_ids = Build.fetch_pack_ids_to_install(options.pack_ids_to_install)

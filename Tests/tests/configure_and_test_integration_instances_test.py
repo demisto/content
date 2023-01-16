@@ -2,7 +2,7 @@ import os
 import pytest
 from unittest.mock import mock_open
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
-    options_handler, CLOUDBuild, get_turned_non_hidden_packs, update_integration_lists, \
+    options_handler, CloudBuild, get_turned_non_hidden_packs, update_integration_lists, \
     get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
 
 XSIAM_SERVERS = {
@@ -87,7 +87,7 @@ def test_configure_old_and_new_integrations(mocker):
     assert not set(old_modules_instances).intersection(new_modules_instances)
 
 
-@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (CLOUDBuild, 'CLOUD')])
+@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (CloudBuild, 'CLOUD')])
 def test_create_build(mocker, expected_class, build_object_type):
     """
     Given:
@@ -95,7 +95,7 @@ def test_create_build(mocker, expected_class, build_object_type):
     When:
         - Running 'configure_an_test_integration_instances' script and creating Build object
     Then:
-        - Assert there the rigth Build object created: CLOUDBuild or XSOARBuild.
+        - Assert there the rigth Build object created: CloudBuild or XSOARBuild.
     """
     build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)

@@ -4,7 +4,7 @@ import os
 import sys
 
 import demisto_client
-from Tests.configure_and_test_integration_instances import CLOUDBuild
+from Tests.configure_and_test_integration_instances import CloudBuild
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.search_and_install_packs import install_packs
@@ -190,7 +190,7 @@ def main():
     host = options.cloud_machine
     logging.info(f'Starting cleanup for CLOUD server {host}')
 
-    api_key, _, base_url, xdr_auth_id = CLOUDBuild.get_cloud_configuration(options.cloud_machine,
+    api_key, _, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(options.cloud_machine,
                                                                            options.cloud_servers_path,
                                                                            options.cloud_servers_api_keys)
 
