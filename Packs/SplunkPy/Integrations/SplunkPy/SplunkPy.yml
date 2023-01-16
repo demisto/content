@@ -301,6 +301,13 @@ script:
       name: interval_in_seconds
     - description: The job sid.
       name: sid
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: The Fast mode prioritizes the performance of the search and does not return nonessential field or event data. This means that the search returns what is essential and required if fast_mode equals 'true'.
+      name: fast_mode
+      predefined:
+      - 'true'
+      - 'false'
     description: Searches Splunk for events.
     name: splunk-search
     polling: true
@@ -583,7 +590,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.42962
+  dockerimage: demisto/splunksdk-py3:1.0.0.44906
   isfetch: true
   ismappable: true
   isremotesyncin: true
