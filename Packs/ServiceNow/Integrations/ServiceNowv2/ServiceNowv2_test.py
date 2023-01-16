@@ -1898,4 +1898,3 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
     # assert the state argument in the last call to client.update
     assert mocker_update.call_args[0][2]['state'] == result_close_state
     assert mocker_update.call_count == update_call_count
-
