@@ -1,2 +1,5 @@
 [file:Microsoft365Defender.yml]
-ignore=IN145,IN124
+ignore=IN124
+
+[known_words]
+SafeLinks
