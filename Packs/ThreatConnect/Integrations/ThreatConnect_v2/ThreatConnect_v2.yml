@@ -54,6 +54,7 @@ configuration:
   required: false
   type: 8
 description: Deprecated. Use the ThreatConnect v3 integration instead.
+deprecated: true
 display: ThreatConnect v2 (Deprecated)
 name: ThreatConnect v2
 script:
