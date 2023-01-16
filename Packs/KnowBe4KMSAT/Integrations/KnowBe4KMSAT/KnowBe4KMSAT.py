@@ -236,10 +236,11 @@ def get_account_risk_score_history(client: Client, args: dict) -> CommandResults
         "Account Risk Score History", response, ["risk_score", "date"]
     )
     return CommandResults(
-        outputs_prefix="AccountRiskScore.History",
+        outputs_prefix="KMSAT.AccountRiskScoreHistory",
         outputs_key_field="",
         raw_response=response,
         readable_output=markdown,
+        outputs=response,
     )
 
 
@@ -280,6 +281,7 @@ def get_users_risk_score_history(client: Client, args: dict) -> CommandResults:
         outputs_key_field="",
         raw_response=response,
         readable_output=markdown,
+        outputs=response,
     )
 
 
@@ -324,6 +326,7 @@ def get_phishing_security_tests(client: Client, args: dict) -> CommandResults:
         outputs_key_field="campaign_id",
         raw_response=response,
         readable_output=markdown,
+        outputs=response,
     )
 
 
@@ -569,6 +572,18 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
     message: str = ""
     try:
         client.kmsat_account_info()
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
+        client.kmsat_groups_risk_score_history(123, {})
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):

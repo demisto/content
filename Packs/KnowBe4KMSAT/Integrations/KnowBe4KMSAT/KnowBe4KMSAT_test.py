@@ -16,12 +16,52 @@ from typing import Dict
 
 from KnowBe4KMSAT import Client, UserEventClient
 
+KMSAT_BASE_URL = "https://us.api.knowbe4.com"
+
 USER_EVENT_BASE_URL = "https://api.events.knowbe4.com"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
+
+
+def test_groups_risk_score_history(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/groups/{group_id}/risk_score_history
+    Then
+            Make sure the data array contains group history with expected values
+    """
+
+    mock_response_data = util_load_json(
+        "test_data/groups_risk_score_history_response.json"
+    )
+    from KnowBe4KMSAT import get_groups_risk_score_history
+
+    requests_mock.get(
+        f"{KMSAT_BASE_URL}/groups/123/risk_score_history",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        KMSAT_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+
+    args: Dict = {"group_id": 123}
+    result = get_groups_risk_score_history(client, args)
+    assert result.outputs_prefix == "GroupsRiskScore.History"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response_data["data"]
 
 
 def test_get_user_event_types(requests_mock):
@@ -33,21 +73,24 @@ def test_get_user_event_types(requests_mock):
     Then
             Make sure the data array contains event_types with expected values
     """
-    
-    mock_response_data = util_load_json('test_data/user_event_types_response.json')
+
+    mock_response_data = util_load_json("test_data/user_event_types_response.json")
     from KnowBe4KMSAT import get_user_event_types
-    requests_mock.get(f"{USER_EVENT_BASE_URL}/event_types", json=mock_response_data, status_code=200)
-    
+
+    requests_mock.get(
+        f"{USER_EVENT_BASE_URL}/event_types", json=mock_response_data, status_code=200
+    )
+
     userEventClient = UserEventClient(
-        USER_EVENT_BASE_URL, 
-        verify=False, 
+        USER_EVENT_BASE_URL,
+        verify=False,
         proxy=False,
         headers={
             "Authorization": "Bearer abc123xyz",
             "Content-Type": "application/json",
-        }
+        },
     )
-    
+
     args: Dict = {}
     result = get_user_event_types(userEventClient, args)
     assert result.outputs_prefix == "KMSAT_User_Event_Types_Returned"
@@ -64,21 +107,24 @@ def test_get_user_events(requests_mock):
     Then
             Make sure the data array contains event_types with expected values
     """
-    
-    mock_response_data = util_load_json('test_data/user_events_response.json')
+
+    mock_response_data = util_load_json("test_data/user_events_response.json")
     from KnowBe4KMSAT import get_user_events
-    requests_mock.get(f"{USER_EVENT_BASE_URL}/events", json=mock_response_data, status_code=200)
-    
+
+    requests_mock.get(
+        f"{USER_EVENT_BASE_URL}/events", json=mock_response_data, status_code=200
+    )
+
     userEventClient = UserEventClient(
-        USER_EVENT_BASE_URL, 
-        verify=False, 
+        USER_EVENT_BASE_URL,
+        verify=False,
         proxy=False,
         headers={
             "Authorization": "Bearer abc123xyz",
             "Content-Type": "application/json",
-        }
+        },
     )
-    
+
     args: Dict = {}
     result = get_user_events(userEventClient, args)
     assert result.outputs_prefix == "KMSAT_User_Events_Returned"
