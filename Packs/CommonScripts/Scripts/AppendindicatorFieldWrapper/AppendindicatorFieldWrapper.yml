@@ -24,6 +24,8 @@ name: AppendindicatorFieldWrapper
 script: '-'
 subtype: python3
 system: false
+tags:
+- incident-action-button
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.4.28442
