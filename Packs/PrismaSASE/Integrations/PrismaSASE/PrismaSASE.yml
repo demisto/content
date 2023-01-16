@@ -610,28 +610,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Query data
-      isArray: false
-      name: query_data
-      required: false
-    - default: false
-      description: 'Aggregate monitor URI to query (for example: mt/monitor/v1/agg/threats).'
-      isArray: false
-      name: uri
-      required: true
-    deprecated: false
-    description: Query the aggregate monitor API.
-    execution: false
-    name: prisma-sase-query-agg-monitor-api
-    outputs:
-    - contextPath: PrismaSASE.AggregateQueryResponse
-      description: Aggregate query response.
-      type: String
-    - contextPath: PrismaSASE.AggregateQueryResponse.header.dataCount
-      description: Query response data count.
-      type: Number
-  - arguments:
-    - default: false
       description: A specific config job to return. If not specified, all config jobs will be returned.
       isArray: false
       name: job_id
@@ -1676,6 +1654,24 @@ script:
     execution: false
     description: Delete a specific dynamic list.
     name: prisma-sase-external-dynamic-list-delete
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Shared
+      description: Prisma sase folder location.
+      isArray: false
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    deprecated: false
+    execution: false
+    description: Get all predefined URL categories.
+    name: prisma-sase-url-category-list
   dockerimage: demisto/python3:3.10.9.44472
   feed: false
   isfetch: false

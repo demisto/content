@@ -236,32 +236,6 @@ class Client(BaseClient):
             params=query_params
         )
 
-    def query_agg_monitor_api(self, uri: str, query: dict) -> dict:
-        """Query the Prisma SASE aggregate monitor API
-        Args:
-            uri: Query URI
-            query: Query body represented as json
-        Returns:
-            Outputs.
-        """
-        query_params = {
-            'agg_by': 'tenant'
-        }
-
-        if query is not None:
-            return self.http_request(
-                method="POST",
-                url_suffix=uri,
-                params=query_params,
-                json_data=query
-            )
-        else:
-            return self.http_request(
-                method="GET",
-                url_suffix=uri,
-                params=query_params
-            )
-
     def push_candidate_config(self, folders: str, description: str) -> dict:
         """Push candidate configuration
         Args:
@@ -654,6 +628,21 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
+    def list_url_access_profile(self, query_params: dict) -> dict:
+        """Get all external dynamic list
+        Args:
+            query_params: Address object dictionary
+        Returns:
+            Outputs.
+        """
+        uri = f'{CONFIG_URI_PREFIX}url-access-profiles'
+
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
     def get_access_token(self) -> str:
         """Get access token to use for API call.
 
@@ -965,39 +954,6 @@ def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
         readable_output=f'Security Rule object with id {raw_response.get("id", "")} '
                         f'and name {raw_response.get("name", "")} was deleted successfully',
         raw_response=raw_response
-    )
-
-
-def query_agg_monitor_api_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to query the SASE aggregate monitor API
-    Args:
-        client: Client object with request
-        args: demisto.args()
-            uri: Aggregate Monitor URI to query (for example: mt/monitor/v1/agg/threats)
-            tsg_id: Tenant services group ID
-            query_data: JSON structure query data
-
-    Returns:
-        Query Results
-    """
-
-    if query_data := args.get('query_data'):
-        try:
-            query = json.loads(query_data)  # type: ignore
-        except ValueError as exception:
-            raise DemistoException('Failed to parse query data.  Please check syntax.',
-                                   exception)
-    else:
-        query = None
-
-    raw_response = client.query_agg_monitor_api(args.get('uri'), query)  # type: ignore
-
-    return CommandResults(
-        readable_output=tableToMarkdown('Aggregate Monitor API Query Response', raw_response,
-                                        headerTransform=string_to_table_header),
-        raw_response=raw_response,
-        outputs=raw_response,
-        outputs_prefix='PrismaSase.AggregateQueryResponse'
     )
 
 
@@ -1690,6 +1646,35 @@ def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     )
 
 
+def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Command get allbuilt-in url categories
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    query_params = {
+            'folder': encode_string_results(args.get('folder'))
+        }
+    raw_response = client.list_url_access_profile(query_params)  # type: ignore
+    profiles = raw_response.get('data', [])
+
+    categories = {'alert': [], 'allow': [], 'block': [], 'continue': [], 'override': []}
+    for profile in profiles:
+        # we only want predefined profiles
+        if profile.get('folder', '') == 'predefined':
+            for category in categories.keys():
+                categories[category].extend(profile.get(category, []))
+                categories[category].extend(profile.get('credential_enforcement', {}).get(category, []))
+                categories[category] = list(set(categories[category]))
+
+    return CommandResults(
+        readable_output=tableToMarkdown('URL categories', categories),
+        raw_response=raw_response
+    )
+
 
 
 def main():
@@ -1719,7 +1704,6 @@ def main():
 
         'prisma-sase-candidate-config-push': push_candidate_config_command,
         'prisma-sase-config-job-list': list_config_jobs_command,
-        'prisma-sase-query-agg-monitor-api': query_agg_monitor_api_command,
 
         'prisma-sase-address-object-create': create_address_object_command,
         'prisma-sase-address-object-update': edit_address_object_command,
@@ -1740,6 +1724,8 @@ def main():
         'prisma-sase-custom-url-category-create': create_custom_url_category_command,
         'prisma-sase-custom-url-category-update': update_custom_url_category_command,
         'prisma-sase-custom-url-category-delete': delete_custom_url_category_command,
+
+        'prisma-sase-url-category-list': list_url_category_command,
 
         'prisma-sase-external-dynamic-list-list': list_external_dynamic_list_command,
         'prisma-sase-external-dynamic-list-create': create_external_dynamic_list_command,
