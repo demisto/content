@@ -4,9 +4,9 @@ import gc
 import pandas as pd
 from typing import List, Dict
 from collections import defaultdict, Counter
-from sklearn.model_selection import StratifiedKFold
+# from sklearn.model_selection import StratifiedKFold
 from CommonServerPython import *
-import demisto_ml
+# import demisto_ml
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
@@ -40,7 +40,7 @@ def get_phishing_map_labels(comma_values):
     for v in values:
         v = v.strip()
         if ":" in v:
-            splited = v.split(":")
+            splited = v.rsplit(":", maxsplit=1)
             labels_dict[splited[0].strip()] = splited[1].strip()
         else:
             labels_dict[v] = v
