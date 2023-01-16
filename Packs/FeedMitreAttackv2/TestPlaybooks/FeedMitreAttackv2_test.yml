@@ -81,7 +81,6 @@ tasks:
       attack_pattern:
         simple: ${MITREATTACK.value}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
