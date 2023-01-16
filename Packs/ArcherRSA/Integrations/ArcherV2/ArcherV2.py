@@ -570,15 +570,15 @@ class Client(BaseClient):
                             'Parent': parent,
                             'Depth': child.get('Depth')})
         depth -= 1
-        if depth:
+        if depth > -1:
             for grandchild in child.get('Children', []):
                 self.get_field_value_list_helper(grandchild, values_list, depth, child['Data']['Name'])
 
     def get_field_value_list(self, field_id, args):
         cache = get_integration_context()
 
-        # if cache['fieldValueList'].get(field_id):
-        #     return cache.get('fieldValueList').get(field_id)
+        if cache['fieldValueList'].get(field_id):
+            return cache.get('fieldValueList').get(field_id)
 
         res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
 
@@ -595,7 +595,7 @@ class Client(BaseClient):
             values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
                 values_list: List[Dict[str, Any]] = []
-                depth = arg_to_number(args.get('depth'))
+                depth = arg_to_number(args.get('depth', '0'))
                 for value in values_list_res['RequestedObject'].get('Children'):
                     self.get_field_value_list_helper(value, values_list, depth)
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
