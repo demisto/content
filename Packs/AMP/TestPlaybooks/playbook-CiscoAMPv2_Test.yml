@@ -1,6 +1,6 @@
-id: CiscoAMP
+id: AMPv2_Test
 version: -1
-name: CiscoAMP
+name: AMPv2_Test
 starttaskid: "0"
 tasks:
   "0":
@@ -3388,5 +3388,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.5.0
-description: 'Deprecated. See AMPv2_Test instead (pack deprecated, moved to the AMP pack)'
-deprecated: true
+description: ''
