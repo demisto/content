@@ -73,15 +73,11 @@ PARAMS_3 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials
             'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': 'incident_id',
             'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
             'pool_ttl': '600', 'port': '3306', 'query': 'call Test_MySQL_6', 'ssl_connect': False,
-            'first_fetch': '2020-01-01 01:01:01', 'use_pool': False}
+            'first_fetch': '2022-11-24 13:09:56', 'use_pool': False}
 RESPONSE_3 = [(1000, datetime.datetime(2022, 11, 24, 13, 9, 56), 'incident_1', 'incident data for incident 1'),
               (1001, datetime.datetime(2022, 11, 24, 13, 10, 12), 'incident_2', 'incident data for incident 2')]
-LAST_RUN_BEFORE_SECOND_FETCH_3 = {'last_timestamp': '2020-01-01 01:01:01', 'last_id': False, 'ids': []}
-EXPECTED_INCIDENTS_3 = [{'name': 'incident_1', 'occurred': '2022-11-24T13:09:56Z',
-                         'rawJSON': '{"incident_id": "1000", "timestamp": "2022-11-24 13:09:56",'
-                                    ' "incident_name": "incident_1", "incident_data": "incident data for incident 1",'
-                                    ' "type": "GenericSQL Record"}'},
-                        {'name': 'incident_2', 'occurred': '2022-11-24T13:10:12Z',
+LAST_RUN_BEFORE_SECOND_FETCH_3 = {'last_timestamp': '2022-11-24 13:09:56', 'last_id': False, 'ids': ['1000']}
+EXPECTED_INCIDENTS_3 = [{'name': 'incident_2', 'occurred': '2022-11-24T13:10:12Z',
                          'rawJSON': '{"incident_id": "1001", "timestamp": "2022-11-24 13:10:12",'
                                     ' "incident_name": "incident_2", "incident_data": "incident data for incident 2",'
                                     ' "type": "GenericSQL Record"}'}]

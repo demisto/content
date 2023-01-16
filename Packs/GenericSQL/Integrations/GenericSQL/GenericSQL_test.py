@@ -263,15 +263,18 @@ def test_fetch_incident_by_id_simple_query(table, params, response, headers, exp
                                            mocker):
     """
     Given
-    - raw response of the database
-    - response converted to table
-    - headers
-    - configuration parameters
+    - raw response of the database - 3 records from the database
+    - configuration parameters:
+         - 'fetch_parameters': 'Unique ascending ID'
+         - 'query': 'select * from incidents where incident_id >:incident_id order by incident_id'
+         - 'first_fetch': '-1'
+         - 'max_fetch': '3'
+    - last_run: {} (first fetch cycle)
     When
-    - mock the database result
+    - running one fetch cycle
     Then
-    - validate the expected_last_run - if updated properly
-    - validate the length of the incidents
+    - validate the last_run - 'last_id' should be updated to '1002' as the last record.
+    - validate the number of incidents - As the max_fetch parameter, the number of incidents should be 3.
     """
     from GenericSQL import fetch_incidents
     mocker.patch('GenericSQL.demisto.getLastRun', return_value={})
@@ -295,14 +298,18 @@ def test_fetch_incident_by_id_simple_query(table, params, response, headers, exp
 def test_fetch_incident_without_incidents(table, params, response, headers, last_run_before_fetch, mocker):
     """
     Given
-    - raw response of the database
-    - response converted to table
-    - headers
-    - configuration parameters
+    - raw response of the database - an empty response list
+    - configuration parameters:
+        - 'fetch_parameters': 'Unique ascending ID'
+        - 'query': 'select * from incidents where incident_id >:incident_id order by incident_id'
+        - 'first_fetch': '1012'
+        - 'max_fetch': '3'
+    - last_run: {'last_timestamp': False, 'last_id': '1012', 'ids': []}
     When
-    - mock the database result
+    - running one fetch cycle
     Then
-    - validate the expected_last_run - should be the same - no incidents
+    - validate the last_run:
+        should be the same as given before fetch {'last_timestamp': False, 'last_id': '1012', 'ids': []} - no incidents
     """
     from GenericSQL import fetch_incidents
     mocker.patch('GenericSQL.demisto.getLastRun', return_value=last_run_before_fetch)
@@ -324,12 +331,21 @@ def test_fetch_incident_avoiding_duplicates(table, params, response, headers, la
                                             expected_incidents, mocker):
     """
     Given
-    - raw response of the database
-    - response converted to table
-    - headers
-    - configuration parameters
+    - raw response of the database - 2 records from the database
+    - configuration parameters:
+        - 'fetch_parameters': 'ID and timestamp'
+        - 'query': 'call Test_MySQL_6'
+            [CREATE PROCEDURE Test_MySQL_6(IN ts DATETIME, IN l INT)
+            BEGIN
+                SELECT *
+                FROM incidents
+                WHERE timestamp >= ts order by timestamp asc limit l;
+            END]
+        - 'first_fetch': '2022-11-24 13:09:56'
+        - 'max_fetch': '2'
+    - last_run: {'last_timestamp': '2022-11-24 13:09:56', 'last_id': False, 'ids': ['1000']}
     When
-    - mock the database result
+    - running one fetch cycle
     Then
     - validate the incidents - should contain only one incident at the end, after omitting the duplicate incident
     """
@@ -359,14 +375,28 @@ def test_fetch_incident_update_last_run(table_first_cycle, table_second_cycle, p
                                         mocker):
     """
     Given
-    - raw responses of the database
-    - responses converted to table
-    - headers
-    - configuration parameters
+    - raw responses of the database:
+        2 records from the database for the first cycle and then another 2 records for the second.
+    - configuration parameters:
+        - 'fetch_parameters': 'Unique timestamp'
+        - 'query': 'call Test_MySQL_3'
+            [CREATE PROCEDURE Test_MySQL_3(IN ts VARCHAR(255), IN l INT)
+            BEGIN
+                SELECT *
+                FROM incidents
+                WHERE timestamp > ts limit l;
+            END]
+        - 'first_fetch': '2020-01-01 01:01:01'
+        - 'max_fetch': '2'
+    - first last_run: {}
     When
-    - mock the database result
+    - running two fetch cycles
     Then
-    - Validate the last run's update during two cycles of fetch
+    - Validate the last run's update during two cycles of fetch:
+        after first fetch should be {'last_timestamp': '2022-11-24 13:10:12', 'last_id': False, 'ids': []}, as the
+        timestamp in the last (second record).
+        after second fetch should be {'ids': [], 'last_id': False, 'last_timestamp': '2022-11-24 13:10:43'}, as the
+        timestamp in the last (second record).
     """
 
     from GenericSQL import fetch_incidents
@@ -406,14 +436,27 @@ def test_fetch_incidents_de_duplication(table_first_cycle, table_second_cycle, t
                                         mocker):
     """
     Given
-    - raw responses of the database
-    - responses converted to table
-    - headers
-    - configuration parameters
+    - raw responses of the database:
+        1 record from the database for the first cycle and then another 2 records for the second,
+        then 3 records for the third.
+    - configuration parameters:
+        - 'fetch_parameters': 'ID and timestamp'
+        - 'query': 'call Test_MySQL_6'
+            [CREATE PROCEDURE Test_MySQL_6(IN ts DATETIME, IN l INT)
+            BEGIN
+                SELECT *
+                FROM incidents
+                WHERE timestamp >= ts order by timestamp asc limit l;
+            END]
+        - 'first_fetch': '2020-01-01 01:01:01'
+        - 'max_fetch': '1'
+    - first last_run: {}
     When
-    - mock the database result
+    - running three fetch cycles
     Then
     - Validate the update of the last run during three fetch cycles, focusing on the IDs.
+        Since they have the same timestamp, the last_run should accumulate the ids every cycle,
+         and the 'last_timestamp' field should remain unchanged.
     - Validate the number of incidents, which should be just one per cycle.
     """
 
