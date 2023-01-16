@@ -610,7 +610,7 @@ tasks:
     - incidentfield: Source IP
       output:
         complex:
-          root: inputs.External_IP
+          root: inputs.ExternalIP
     - incidentfield: Detected User
       output:
         complex:
@@ -639,7 +639,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: inputs.External_IP
+                  simple: inputs.ExternalIP
                 iscontext: true
           accessor: ASN
     - incidentfield: IP Reputation
@@ -1452,7 +1452,7 @@ tasks:
         simple: "True"
       IP:
         complex:
-          root: inputs.External_IP
+          root: inputs.ExternalIP
       InputEnrichment:
         simple: "False"
       RuleDirection:
@@ -1509,7 +1509,7 @@ tasks:
         simple: "True"
       IP:
         complex:
-          root: inputs.External_IP
+          root: inputs.ExternalIP
       InputEnrichment:
         simple: "False"
       RuleDirection:
@@ -1725,12 +1725,6 @@ tasks:
       hostname:
         complex:
           root: inputs.Hostname
-      ip_list:
-        complex:
-          root: IP
-          accessor: Address
-          transformers:
-          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
