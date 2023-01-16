@@ -323,12 +323,16 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: 'False'
+      defaultValue: 'false'
       description: Show only cloud results. If omitted, the response will show only local results.
       isArray: false
       name: ticloud
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+        - True
+        - False
     - default: false
       defaultValue: '5000'
       description: Maximum number of results.
