@@ -896,8 +896,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "702f20a6ec45f91610d3dfca561c869ce919d4c5"
-resolved_reference = "702f20a6ec45f91610d3dfca561c869ce919d4c5"
+reference = "49c4e3e1422c1041110e463f50ccdda06328e5b7"
+resolved_reference = "49c4e3e1422c1041110e463f50ccdda06328e5b7"
 
 [[package]]
 name = "deprecated"
@@ -3477,14 +3477,14 @@ starkbank-ecdsa = ">=2.0.1"
 
 [[package]]
 name = "setuptools"
-version = "65.7.0"
+version = "66.0.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-65.7.0-py3-none-any.whl", hash = "sha256:8ab4f1dbf2b4a65f7eec5ad0c620e84c34111a68d3349833494b9088212214dd"},
-    {file = "setuptools-65.7.0.tar.gz", hash = "sha256:4d3c92fac8f1118bb77a22181355e29c239cabfe2b9effdaa665c66b711136d7"},
+    {file = "setuptools-66.0.0-py3-none-any.whl", hash = "sha256:a78d01d1e2c175c474884671dde039962c9d74c7223db7369771fcf6e29ceeab"},
+    {file = "setuptools-66.0.0.tar.gz", hash = "sha256:bd6eb2d6722568de6d14b87c44a96fac54b2a45ff5e940e639979a3d1792adb6"},
 ]
 
 [package.extras]
@@ -4464,4 +4464,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "1bb7656e297c065759208f9b59ac2ebc6f904591d15b85d007162c2bdcdedab4"
+content-hash = "3ff8e541f342a46b7e3e07cee4a24f0c6acfe61f467ce8a521618d687997d372"
