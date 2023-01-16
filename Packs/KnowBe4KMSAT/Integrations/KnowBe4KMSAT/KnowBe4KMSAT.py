@@ -195,14 +195,15 @@ class UserEventClient(BaseClient):
 
 """ HELPER FUNCTIONS """
 
-""" COMMAND FUNCTIONS """
-
 
 def get_pagination(args: dict):
     params = remove_empty_elements(
         {"page": args.get("page"), "per_page": args.get("per_page")}
     )
     return params
+
+
+""" COMMAND FUNCTIONS """
 
 
 def kmsat_account_info_list_command(client: Client) -> CommandResults:
@@ -226,7 +227,7 @@ def kmsat_account_info_list_command(client: Client) -> CommandResults:
             res=response,
         )
     return CommandResults(
-        outputs_prefix="Account.Info",
+        outputs_prefix="KMSAT.AccountInfo",
         outputs_key_field="name",
         raw_response=response,
         outputs=response,
@@ -271,7 +272,7 @@ def kmsat_groups_risk_score_history_list_command(
             res=response,
         )
     return CommandResults(
-        outputs_prefix="GroupsRiskScore.History",
+        outputs_prefix="KMSAT.GroupsRiskScoreHistory",
         outputs_key_field="id",
         raw_response=response,
         outputs=response,
@@ -294,7 +295,7 @@ def kmsat_users_risk_score_history_list_command(
             res=response,
         )
     return CommandResults(
-        outputs_prefix="UsersRiskScore.History",
+        outputs_prefix="KMSAT.UsersRiskScoreHistory",
         outputs_key_field="",
         raw_response=response,
         outputs=response,
@@ -341,7 +342,7 @@ def kmsat_phishing_security_tests_list_command(
             res=response,
         )
     return CommandResults(
-        outputs_prefix="Phishing.Security",
+        outputs_prefix="KMSAT.PhishingSecurity",
         outputs_key_field="campaign_id",
         raw_response=response,
         outputs=response,
@@ -387,7 +388,7 @@ def kmsat_phishing_security_tests_recipients_list_command(
             res=response,
         )
     return CommandResults(
-        outputs_prefix="Phishing.Security",
+        outputs_prefix="KMSAT.PhishingSecurityPST",
         outputs_key_field="recipient_id",
         raw_response=response,
         outputs=response,
@@ -422,7 +423,7 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
             res=response,
         )
     return CommandResults(
-        outputs_prefix="Training.Campaigns",
+        outputs_prefix="KMSAT.TrainingCampaigns",
         outputs_key_field="campaign_id",
         raw_response=response,
         outputs=response,
@@ -458,7 +459,7 @@ def kmsat_training_enrollments_list_command(
             res=response,
         )
     return CommandResults(
-        outputs_prefix="Training.Enrollments",
+        outputs_prefix="KMSAT.TrainingEnrollments",
         outputs_key_field="enrollment_id",
         raw_response=response,
         outputs=response,

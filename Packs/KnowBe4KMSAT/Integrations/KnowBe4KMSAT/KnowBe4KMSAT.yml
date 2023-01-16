@@ -43,37 +43,37 @@ script:
     - name: kmsat-account-info-list
       arguments: []
       outputs:
-        - contextPath: Account.Info.name
+        - contextPath: KMSAT.AccountInfo.name
           description: "Account Name"
           type: String
-        - contextPath: Account.Info.type
+        - contextPath: KMSAT.AccountInfo.type
           description: "Account Type"
           type: String
-        - contextPath: Account.Info.domains
+        - contextPath: KMSAT.AccountInfo.domains
           description: "Account Domains"
           type: String
-        - contextPath: Account.Info.admins.id
+        - contextPath: KMSAT.AccountInfo.admins.id
           description: "Account Admin ID"
           type: Number
-        - contextPath: Account.Info.admins.first_name
+        - contextPath: KMSAT.AccountInfo.admins.first_name
           description: "Account Admin First Name"
           type: String
-        - contextPath: Account.Info.admins.last_name
+        - contextPath: KMSAT.AccountInfo.admins.last_name
           description: "Account Admin Last Name"
           type: String
-        - contextPath: Account.Info.admins.email
+        - contextPath: KMSAT.AccountInfo.admins.email
           description: "Account Admin Email"
           type: String
-        - contextPath: Account.Info.subscription_level
+        - contextPath: KMSAT.AccountInfo.subscription_level
           description: "Account Subscription Level"
           type: String
-        - contextPath: Account.Info.subscription_end_date
+        - contextPath: KMSAT.AccountInfo.subscription_end_date
           description: "Account Subscription End Date"
           type: Date
-        - contextPath: Account.Info.number_of_seats
+        - contextPath: KMSAT.AccountInfo.number_of_seats
           description: "Number of Seats"
           type: Number
-        - contextPath: Account.Info.current_risk_score
+        - contextPath: KMSAT.AccountInfo.current_risk_score
           description: "Account Risk Score"
           type: Number
       description: Returns KMSAT account information
@@ -84,10 +84,10 @@ script:
         - name: per_page
           description: Per Page Amount
       outputs:
-        - contextPath: AccountRiskScore.History.risk_score
+        - contextPath: KMSAT.AccountRiskScoreHistory.risk_score
           description: Account Risk score and associated date
           type: String
-        - contextPath: AccountRiskScore.History.date
+        - contextPath: KMSAT.AccountRiskScoreHistory.date
           description: Account Risk score history date
           type: String
       description: Returns KMSAT Account Risk Score History.
@@ -101,10 +101,10 @@ script:
         - name: per_page
           description: Per Page Amount
       outputs:
-        - contextPath: GroupsRiskScore.History.risk_score
+        - contextPath: KMSAT.GroupsRiskScoreHistory.risk_score
           description: Groups Risk score and associated date
           type: String
-        - contextPath: GroupsRiskScore.History.date
+        - contextPath: KMSAT.GroupsRiskScoreHistory.date
           description: Groups Risk score history date
           type: String
       description: Returns KMSAT Group Specific Risk Score History.
@@ -118,9 +118,9 @@ script:
         - name: per_page
           description: Per Page Amount
       outputs:
-        - contextPath: UsersRiskScore.History.risk_score
+        - contextPath: KMSAT.UsersRiskScoreHistory.risk_score
           description: Users Risk score and associated date
-        - contextPath: UsersRiskScore.History.date
+        - contextPath: KMSAT.UsersRiskScoreHistory.date
           description: Users Risk score history date
       description: Returns KMSAT User Specific Risk Score History
     - name: kmsat-phishing-security-tests-list
@@ -130,67 +130,67 @@ script:
         - name: per_page
           description: Per Page Amount
       outputs:
-        - contextPath: Phishing.Security.campaign_id
+        - contextPath: KMSAT.PhishingSecurity.campaign_id
           description: Phishing Security Campaign ID
           type: number
-        - contextPath: Phishing.Security.pst_id
+        - contextPath: KMSAT.PhishingSecurity.pst_id
           description: Phishing Security PST ID
           type: number
-        - contextPath: Phishing.Security.status
+        - contextPath: KMSAT.PhishingSecurity.status
           description: Phishing Security Status
           type: string
-        - contextPath: Phishing.Security.name
+        - contextPath: KMSAT.PhishingSecurity.name
           description: Phishing Security Name
           type: string
-        - contextPath: Phishing.Security.groups
+        - contextPath: KMSAT.PhishingSecurity.groups
           description: Phishing Security Groups
-        - contextPath: Phishing.Security.phish_prone_percentage
+        - contextPath: KMSAT.PhishingSecurity.phish_prone_percentage
           description: Phishing Security Phishing Prone Percent
           type: number
-        - contextPath: Phishing.Security.started_at
+        - contextPath: KMSAT.PhishingSecurity.started_at
           description: Phishing Security Started At Date
           type: string
-        - contextPath: Phishing.Security.duration
+        - contextPath: KMSAT.PhishingSecurity.duration
           description: Phishing Security Duration
           type: number
-        - contextPath: Phishing.Security.categories
+        - contextPath: KMSAT.PhishingSecurity.categories
           description: Phishing Security Categories
           type: unknown
-        - contextPath: Phishing.Security.template
+        - contextPath: KMSAT.PhishingSecurity.template
           description: Phishing Security Template
-        - contextPath: Phishing.Security.landing-page
+        - contextPath: KMSAT.PhishingSecurity.landing-page
           description: Phishing Security Landing Page
-        - contextPath: Phishing.Security.scheduled_count
+        - contextPath: KMSAT.PhishingSecurity.scheduled_count
           description: Phishing Security Scheduled Count
           type: number
-        - contextPath: Phishing.Security.delivered_count
+        - contextPath: KMSAT.PhishingSecurity.delivered_count
           description: Phishing Security Delivered Count
           type: number
-        - contextPath: Phishing.Security.opened_count
+        - contextPath: KMSAT.PhishingSecurity.opened_count
           description: Phishing Security Opened Count
           type: number
-        - contextPath: Phishing.Security.clicked_count
+        - contextPath: KMSAT.PhishingSecurity.clicked_count
           description: Phishing Security Clicked Count
           type: number
-        - contextPath: Phishing.Security.replied_count
+        - contextPath: KMSAT.PhishingSecurity.replied_count
           description: Phishing Security Replied Count
           type: number
-        - contextPath: Phishing.Security.attachment_open_count
+        - contextPath: KMSAT.PhishingSecurity.attachment_open_count
           description: Phishing Security Attachment Open Count
           type: number
-        - contextPath: Phishing.Security.macro_enabled_count
+        - contextPath: KMSAT.PhishingSecurity.macro_enabled_count
           description: Phishing Security Macro Enabled Count
           type: number
-        - contextPath: Phishing.Security.data_entered_count
+        - contextPath: KMSAT.PhishingSecurity.data_entered_count
           description: Phishing Security Data Entered Count
           type: number
-        - contextPath: Phishing.Security.qr_code_scanned_count
+        - contextPath: KMSAT.PhishingSecurity.qr_code_scanned_count
           description: Phishing Security QA Code Scanned Count
           type: number
-        - contextPath: Phishing.Security.reported_count
+        - contextPath: KMSAT.PhishingSecurity.reported_count
           description: Phishing Security Reported Count
           type: number
-        - contextPath: Phishing.Security.bounced_count
+        - contextPath: KMSAT.PhishingSecurity.bounced_count
           description: Phishing Security Bounced Count
           type: number
       description: Returns All Phishing Security Tests (PSTs)
@@ -204,59 +204,59 @@ script:
         - name: per_page
           description: Per Page Amount
       outputs:
-        - contextPath: Phishing.Security.recipient_id
+        - contextPath: KMSAT.PhishingSecurityPST.recipient_id
           description: Phishing Security Recipient ID
           type: number
-        - contextPath: Phishing.Security.psd_id
+        - contextPath: KMSAT.PhishingSecurityPST.psd_id
           description: Phishing Security PST ID
           type: number
-        - contextPath: Phishing.Security.user
+        - contextPath: KMSAT.PhishingSecurityPST.user
           description: Phishing Security User
-        - contextPath: Phishing.Security.template
+        - contextPath: KMSAT.PhishingSecurityPST.template
           description: Phishing Security Template
-        - contextPath: Phishing.Security.scheduled_at
+        - contextPath: KMSAT.PhishingSecurityPST.scheduled_at
           description: Phishing Security Scheduled At
           type: string
-        - contextPath: Phishing.Security.delivered_at
+        - contextPath: KMSAT.PhishingSecurityPST.delivered_at
           description: Phishing Security Delivered At
           type: string
-        - contextPath: Phishing.Security.opened_at
+        - contextPath: KMSAT.PhishingSecurityPST.opened_at
           description: Phishing Security Opened At
           type: string
-        - contextPath: Phishing.Security.clicked_at
+        - contextPath: KMSAT.PhishingSecurityPST.clicked_at
           description: Phishing Security Clicked At
           type: string
-        - contextPath: Phishing.Security.replied_at
+        - contextPath: KMSAT.PhishingSecurityPST.replied_at
           description: Phishing Security Replied At
           type: unknown
-        - contextPath: Phishing.Security.attachment_opened_at
+        - contextPath: KMSAT.PhishingSecurityPST.attachment_opened_at
           description: Phishing Security Attachment Opened At
           type: unknown
-        - contextPath: Phishing.Security.macro_enabled_at
+        - contextPath: KMSAT.PhishingSecurityPST.macro_enabled_at
           description: Phishing Security Macro Enabled At
-        - contextPath: Phishing.Security.data_entered_at
+        - contextPath: KMSAT.PhishingSecurityPST.data_entered_at
           description: Phishing Security Date Entered At
           type: string
-        - contextPath: Phishing.Security.qr_code_scanned
+        - contextPath: KMSAT.PhishingSecurityPST.qr_code_scanned
           description: Phishing Security QR Scanned At
           type: string
-        - contextPath: Phishing.Security.reported_at
+        - contextPath: KMSAT.PhishingSecurityPST.reported_at
           description: Phishing Security Reported At
-        - contextPath: Phishing.Security.bounced_at
+        - contextPath: KMSAT.PhishingSecurityPST.bounced_at
           description: Phishing Security Bounced At
-        - contextPath: Phishing.Security.ip
+        - contextPath: KMSAT.PhishingSecurityPST.ip
           description: Phishing Security IP
           type: string
-        - contextPath: Phishing.Security.ip_location
+        - contextPath: KMSAT.PhishingSecurityPST.ip_location
           description: Phishing Security IP Location
           type: string
-        - contextPath: Phishing.Security.browser
+        - contextPath: KMSAT.PhishingSecurityPST.browser
           description: Phishing Security Browser
           type: string
-        - contextPath: Phishing.Security.browser_version
+        - contextPath: KMSAT.PhishingSecurityPST.browser_version
           description: Phishing Security Browser Security
           type: string
-        - contextPath: Phishing.Security.os
+        - contextPath: KMSAT.PhishingSecurityPST.os
           description: Phishing Security OS
           type: string
       description: Returns a Specific Recipient's Results
@@ -267,35 +267,35 @@ script:
         - name: per_page
           description: Per Page Amount
       outputs:
-        - contextPath: Training.Campaigns.campaign_id
+        - contextPath: KMSAT.TrainingCampaigns.campaign_id
           description: Training Campaigns Campaign ID
           type: number
-        - contextPath: Training.Campaigns.name
+        - contextPath: KMSAT.TrainingCampaigns.name
           description: Training Campaigns Name
           type: string
-        - contextPath: Training.Campaigns.groups
+        - contextPath: KMSAT.TrainingCampaigns.groups
           description: Training Campaigns Groups
-        - contextPath: Training.Campaigns.status
+        - contextPath: KMSAT.TrainingCampaigns.status
           description: Training Campaigns  Status
           type: string
-        - contextPath: Training.Campaigns.content
+        - contextPath: KMSAT.TrainingCampaigns.content
           description: Training Campaigns Content
-        - contextPath: Training.Campaigns.duration_type
+        - contextPath: KMSAT.TrainingCampaigns.duration_type
           description: Training Campaigns Duration Type
           type: string
-        - contextPath: Training.Campaigns.start_date
+        - contextPath: KMSAT.TrainingCampaigns.start_date
           description: Training Campaigns Start Date
-        - contextPath: Training.Campaigns.end_date
+        - contextPath: KMSAT.TrainingCampaigns.end_date
           description: Training Campaigns  End Date
-        - contextPath: Training.Campaigns.relative_duration
+        - contextPath: KMSAT.TrainingCampaigns.relative_duration
           description: Training Campaigns Relative Duration
-        - contextPath: Training.Campaigns.auto_enroll
+        - contextPath: KMSAT.TrainingCampaigns.auto_enroll
           description: Training Campaigns Auto Enroll
           type: boolean
-        - contextPath: Training.Campaigns.allow_multiple_enrollments
+        - contextPath: KMSAT.TrainingCampaigns.allow_multiple_enrollments
           description: Training Campaigns Allow Multiple Enrollments
           type: boolean
-        - contextPath: Training.Campaigns.completion_percentage
+        - contextPath: KMSAT.TrainingCampaigns.completion_percentage
           description: Training Campaigns Completion Percentage
           type: number
       description: Returns all Training Campaigns
@@ -306,31 +306,31 @@ script:
         - name: per_page
           description: Per Page Amount
       outputs:
-        - contextPath: Training.Enrollments.enrollment_id
+        - contextPath: KMSAT.TrainingEnrollments.enrollment_id
           description: Training Enrollments Enrollment ID
           type: number
-        - contextPath: Training.Enrollments.content_type
+        - contextPath: KMSAT.TrainingEnrollments.content_type
           description: Training Enrollments Content Type
           type: string
-        - contextPath: Training.Enrollments.module_name
+        - contextPath: KMSAT.TrainingEnrollments.module_name
           description: Training Enrollments Module Name
           type: string
-        - contextPath: Training.Enrollments.user
+        - contextPath: KMSAT.TrainingEnrollments.user
           description: Training Enrollments User
-        - contextPath: Training.Enrollments.campaign_name
+        - contextPath: KMSAT.TrainingEnrollments.campaign_name
           description: Training Enrollments Campaign Name
           type: string
-        - contextPath: Training.Enrollments.enrollment_date
+        - contextPath: KMSAT.TrainingEnrollments.enrollment_date
           description: Training Enrollments Enrollment Date
-        - contextPath: Training.Enrollments.start_date
+        - contextPath: KMSAT.TrainingEnrollments.start_date
           description: Training Enrollments Start Date
-        - contextPath: Training.Enrollments.completion_date
+        - contextPath: KMSAT.TrainingEnrollments.completion_date
           description: Training Enrollments Completion Date
-        - contextPath: Training.Enrollments.status
+        - contextPath: KMSAT.TrainingEnrollments.status
           description: Training Enrollments Status
-        - contextPath: Training.Enrollments.time_spent
+        - contextPath: KMSAT.TrainingEnrollments.time_spent
           description: Training Enrollments Time Spent
-        - contextPath: Training.Enrollments.policy_acknowledged
+        - contextPath: KMSAT.TrainingEnrollments.policy_acknowledged
           description: Training Enrollments Policy Acknowledged
           type: boolean
       description: Returns all Training Enrollments
