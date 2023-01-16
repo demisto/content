@@ -1,3 +1,5 @@
+from typing import Callable
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -13,7 +15,6 @@ SEARCH_LIMIT = 200
 DEFAULT_LIMIT = 50
 PA_OUTPUT_PREFIX = "PrismaSase."
 CONFIG_URI_PREFIX = "/sse/config/v1/"
-
 
 SECURITYRULE_FIELDS = {
     "action": "",
@@ -236,7 +237,7 @@ class Client(BaseClient):
             params=query_params
         )
 
-    def push_candidate_config(self, folders: str, description: str) -> dict:
+    def push_candidate_config(self, folders: str, description: str = None) -> dict:
         """Push candidate configuration
         Args:
             folders: Target Prisma SASE Folders for the configuration commit
@@ -269,10 +270,8 @@ class Client(BaseClient):
             url_suffix=uri,
         )
 
-    def list_config_jobs(self, query_params: dict) -> dict:
+    def list_config_jobs(self) -> dict:
         """List config jobs
-        Args:
-            query_params: Address object dictionary
         Returns:
             Outputs.
         """
@@ -280,8 +279,7 @@ class Client(BaseClient):
 
         return self.http_request(
             method="GET",
-            url_suffix=uri,
-            params=query_params,
+            url_suffix=uri
         )
 
     def get_address_by_id(self, query_params: dict, address_id: str) -> dict:
@@ -720,7 +718,9 @@ class Client(BaseClient):
 """HELPER FUNCTIONS"""
 
 
-def modify_address(outputs: List[dict]) -> List[dict]:
+def modify_address(outputs) -> List[dict]:
+    if isinstance(outputs, dict):
+        outputs = [outputs]
     for output in outputs:
         for address_type in ADDRESS_TYPES:
             if address_type in output:
@@ -730,7 +730,9 @@ def modify_address(outputs: List[dict]) -> List[dict]:
     return outputs
 
 
-def modify_group_address(outputs: List[dict]) -> List[dict]:
+def modify_group_address(outputs) -> List[dict]:
+    if isinstance(outputs, dict):
+        outputs = [outputs]
     for output in outputs:
         if 'static' in output:
             output['addresses'] = output['static']
@@ -742,7 +744,6 @@ def modify_group_address(outputs: List[dict]) -> List[dict]:
 
 
 def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dict:
-
     if overwrite:
         # simply update the relevant keys with the new data
         original_rule.update(new_rule)
@@ -826,6 +827,8 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
 
     raw_response = client.create_address_object(address_object, args.get('folder'))  # type: ignore
 
+    raw_response = modify_address(raw_response)
+
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
@@ -864,13 +867,13 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
         original_address['tag'] = tag
 
     raw_response = client.edit_address_object(original_address, object_id)  # type: ignore
-    outputs = raw_response
+    outputs = modify_address(raw_response)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Address Object Edited', outputs, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown('Address Object updated', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -1076,7 +1079,7 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
         if offset := arg_to_number(args.get('offset', 0)):
             query_params['offset'] = offset
 
-        raw_response = client.list_config_jobs(query_params)  # type: ignore
+        raw_response = client.list_config_jobs()  # type: ignore
 
     outputs = raw_response.get('data')
 
@@ -1290,6 +1293,8 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
     raw_response = client.create_address_group(query_params, address_group)  # type: ignore
 
+    raw_response = modify_group_address(raw_response)
+
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
         outputs_key_field='id',
@@ -1319,24 +1324,31 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
     if description := args.get('description'):
         original_address_group['description'] = description
-    overwrite = args.get('overwrite')
+    overwrite = argToBoolean(args.get('overwrite'))
     group_type = args.get('type')
     if not group_type:
         group_type = 'static' if 'static' in original_address_group else 'dynamic'
 
+    static_addresses = argToList(args.get('static_addresses'))
+    dynamic_filter = args.get('dynamic_filter')
+    if group_type == 'static' and (dynamic_filter and not static_addresses):
+        raise DemistoException("noooo")
+    if group_type == 'dynamic' and (not dynamic_filter and static_addresses):
+        raise DemistoException("noooo")
     if group_type == 'static':
         if static_addresses := argToList(args.get('static_addresses')):
             if static_addresses:
                 original_address_group['static'] = static_addresses
-                original_address_group.pop('dynamic')
+                original_address_group.pop('dynamic') if 'dynamic' in original_address_group else None
     else:  # type == 'dynamic'
         if dynamic_filter := args.get('dynamic_filter'):
             if dynamic_filter:
                 original_address_group['dynamic'] = {'filter': dynamic_filter}
-                original_address_group.pop('static')
+                original_address_group.pop('static') if 'static' in original_address_group else None
 
     raw_response = client.update_address_group(original_address_group, group_id)  # type: ignore
-    outputs = raw_response
+
+    outputs = modify_group_address(raw_response)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
@@ -1437,7 +1449,8 @@ def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
         outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
         outputs_key_field='id',
         outputs=raw_response,
-        readable_output=tableToMarkdown('Custom URrl Category Created', raw_response, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown('Custom URrl Category Created', raw_response,
+                                        headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -1458,11 +1471,11 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     url_category_id = args.get('id')
     # first get the original, so user won't need to send all data
     original_custom_url_category = client.get_custom_url_category_by_id(query_params, url_category_id)
-    # TODO change
+    print(original_custom_url_category)
 
     if description := args.get('description'):
         original_custom_url_category['description'] = description
-    overwrite = args.get('overwrite')
+    overwrite = argToBoolean(args.get('overwrite'))
     if category_type := args.get('type'):
         original_custom_url_category['type'] = category_type
 
@@ -1472,7 +1485,6 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
         else:
             original_custom_url_category.get('list', []).extend(value)
 
-    print(original_custom_url_category)
     raw_response = client.update_custom_url_category(original_custom_url_category, url_category_id)  # type: ignore
     outputs = raw_response
 
@@ -1656,8 +1668,8 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
         Outputs.
     """
     query_params = {
-            'folder': encode_string_results(args.get('folder'))
-        }
+        'folder': encode_string_results(args.get('folder'))
+    }
     raw_response = client.list_url_access_profile(query_params)  # type: ignore
     profiles = raw_response.get('data', [])
 
@@ -1676,6 +1688,51 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
         raw_response=raw_response
     )
 
+
+def run_push_jobs_polling_command(client: Client, args: dict):
+    """
+    This function is generically handling the polling flow. In the polling flow, there is always an initial call that
+    starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
+    of that upload (referred here as the 'results' function).
+    The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
+    the next 'results' function, until the polling is complete.
+    Args:
+        client:
+        args: the arguments required to the command being called, under cmd
+
+    Returns:
+
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    if folders := argToList(args.get('folders')):
+        #  first call, folder in args
+        res = client.push_candidate_config(folders)
+        # remove folders, not needed for the rest
+        args['folders'] = []
+        job_id = arg_to_number(res.get('job_id'))
+        args['job_id'] = job_id
+        args['parent_finished'] = False
+        return CommandResults(
+            scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args,
+                                               next_run_in_seconds=20))
+
+
+    job_id = args.get('job_id')
+    if not args.get('parent_finished'):
+        res = client.get_config_job_by_id(job_id).get('data', [{}])[0]
+        if res.get('result_str') == 'PEND':
+            print(res)
+            return CommandResults(
+                scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args, next_run_in_seconds=20))
+    args['parent_finished'] = True
+    res = client.list_config_jobs()
+    for job in res:
+        if job.get('parent_id') == job_id:
+            print(res.get('parent_id'))
+            if job.get('result_str') == 'PEND':
+                return CommandResults(
+                    scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args, next_run_in_seconds=20))
+    return CommandResults(readable_output="finished pushing")
 
 
 def main():
@@ -1703,7 +1760,7 @@ def main():
         'prisma-sase-security-rule-delete': delete_security_rule_command,
         'prisma-sase-security-rule-update': edit_security_rule_command,
 
-        'prisma-sase-candidate-config-push': push_candidate_config_command,
+        'prisma-sase-candidate-config-push': run_push_jobs_polling_command,
         'prisma-sase-config-job-list': list_config_jobs_command,
 
         'prisma-sase-address-object-create': create_address_object_command,

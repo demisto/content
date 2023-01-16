@@ -22,12 +22,6 @@ configuration:
   name: tsg_id
   required: true
   type: 0
-- additionalinfo: URL used to obtain the OAUTH2 access token.
-  defaultvalue: https://auth.apps.paloaltonetworks.com/am/oauth2/access_token
-  display: Prisma API OAUTH URL
-  name: oauth_url
-  required: false
-  type: 0
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -345,10 +339,23 @@ script:
       isArray: false
       name: description
       required: false
+    - default: false
+      description: For polling use.
+      isArray: false
+      name: job_id
+      required: false
+      deprecated: true
+    - default: false
+      description: For polling use.
+      isArray: false
+      name: parent_finished
+      required: false
+      deprecated: true
     deprecated: false
     description: Push the candidate configuration.
     execution: false
     name: prisma-sase-candidate-config-push
+    polling: true
     outputs:
     - contextPath: PrismaSase.CandidateConfig
       description: Configuration job information.
@@ -1514,6 +1521,11 @@ script:
       description: The external dynamic list frequency.
       type: String
   - arguments:
+    - default: false
+      isArray: false
+      name: name
+      required: true
+      description: The external dynamic list name.
     - auto: PREDEFINED
       default: false
       defaultValue: Shared
@@ -1528,8 +1540,12 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
+    - default: false
+      isArray: false
+      name: description
+      description: The dynamic list's description.
     - auto: PREDEFINED
-      description: The dynamic list's type.
+      required: true
       isArray: false
       name: type
       predefined:
@@ -1538,21 +1554,64 @@ script:
       - ip
       - domain
       - url
-      required: true
-    - default: false
-      description: If the type is url list the value will be a comma separated array of url addresses. If the type is Category Match the value will be a comma separated array of categories name. The user can get the names by running prisma-sase-url-access-profile-list.
-      isArray: true
-      name: value
-      required: true
+      description: The dynamic list's type.
+    - auto: PREDEFINED
+      isArray: false
+      name: predefined_ip_list
+      required: false
+      predefined:
+      - panw-torexit-ip-list
+      - panw-bulletproof-ip-list
+      - panw-highrisk-ip-list
+      - panw-known-ip-list
+      description: Dont know yet
+    - auto: PREDEFINED
+      isArray: false
+      name: predefined_url_list
+      required: false
+      description: Dont know yet
+      predefined:
+      - panw–auth-portal-exclude-list
     - default: false
       isArray: false
-      name: description
-      description: The dynamic list's description.
+      name: source_url
+      description: Dont know yet
+    - auto: PREDEFINED
+      isArray: false
+      name: frequency
+      required: false
+      description: Dont know yet
+      predefined:
+      - five_minute
+      - hourly
+      - daily
+      - weekly
+      - monthly
     - default: false
       isArray: false
-      description: The name of the external dynamic list.
-      name: name
-      required: true
+      name: frequency_hour
+      description: The frequency hour
+    - auto: PREDEFINED
+      isArray: false
+      name: day_of_week
+      required: false
+      description: The day of the week
+      predefined:
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      - sunday
+    - default: false
+      isArray: false
+      name: day_of_month
+      description: The day of the month. Possible values are between 1 and 31.
+    - default: false
+      isArray: false
+      name: exception_list
+      description: The user can exclude certain addresses from the list depending on the type of list.
     deprecated: false
     execution: false
     description: Create a new dynamic list.
@@ -1596,10 +1655,6 @@ script:
       - Mobile Users Container
       - Mobile Users Explicit Proxy
       required: true
-    - default: false
-      isArray: false
-      name: value
-      description: ''
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
@@ -1618,9 +1673,69 @@ script:
       isArray: false
       name: type
       predefined:
-      - URL List
-      - Category Match
+      - predefined_ip
+      - predefined_url
+      - ip
+      - domain
+      - url
       description: The dynamic list's type.
+    - auto: PREDEFINED
+      isArray: false
+      name: predefined_ip_list
+      required: false
+      predefined:
+      - panw-torexit-ip-list
+      - panw-bulletproof-ip-list
+      - panw-highrisk-ip-list
+      - panw-known-ip-list
+      description: Dont know yet
+    - auto: PREDEFINED
+      isArray: false
+      name: predefined_url_list
+      required: false
+      description: Dont know yet
+      predefined:
+      - panw–auth-portal-exclude-list
+    - default: false
+      isArray: false
+      name: source_url
+      description: Dont know yet
+    - auto: PREDEFINED
+      isArray: false
+      name: frequency
+      required: false
+      description: Dont know yet
+      predefined:
+      - five_minute
+      - hourly
+      - daily
+      - weekly
+      - monthly
+    - default: false
+      isArray: false
+      name: frequency_hour
+      description: The frequency hour
+    - auto: PREDEFINED
+      isArray: false
+      name: day_of_week
+      required: false
+      description: The day of the week
+      predefined:
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      - sunday
+    - default: false
+      isArray: false
+      name: day_of_month
+      description: The day of the month. Possible values are between 1 and 31.
+    - default: false
+      isArray: false
+      name: exception_list
+      description: The user can exclude certain addresses from the list depending on the type of list.
     deprecated: false
     execution: false
     description: Update an existing dynamic list.
