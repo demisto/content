@@ -4,8 +4,8 @@ This pack includes Cortex XSIAM content.
 You need to configure Squid to forward Syslog messages to XSIAM.
 
 In order to send logs via syslog please follow the below steps:
-1. Open the squid.conf file and locate the command: ***access_log \<location of file> squid***
-2. Add the command ***access_log udp://\<Firewall Analyzer IP Address>:514/1514 squid*** after the command you located in the previous step.
+1. Open the squid.conf file and locate the command: ***access_log \<location of file\> squid***
+2. Add the command ***access_log udp://\<Firewall Analyzer IP Address\>:514/1514 squid*** after the command you located in the previous step.
 3. Restart the Squid service.
 
 For more information, see the following: 
