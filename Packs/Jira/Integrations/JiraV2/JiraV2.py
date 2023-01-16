@@ -1260,7 +1260,7 @@ def update_remote_system_command(args):
                           f'incident {remote_id}')
             # take the val from data as it's the updated value
             delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
-            demisto.debug(f'sending the following date to edit the issue with: {delta}')
+            demisto.debug(f'sending the following data to edit the issue with: {delta}')
             edit_issue_command(remote_id, mirroring=True, **delta)
 
         else:
