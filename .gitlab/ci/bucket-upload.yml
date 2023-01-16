@@ -508,6 +508,7 @@ sync-buckets-between-projects:
     - |
       if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]]; then
         echo "$GCS_XSOAR_CONTENT_DEV_KEY not set, cannot perform sync"
+        exit 1
       else
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
         gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-dev
