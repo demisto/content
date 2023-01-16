@@ -18,13 +18,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Block Indicators - Generic v3
-* TIM - Indicator Relationships Analysis
 * Threat Hunting - Generic
 * Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-* User Investigation - Generic
-* Account Enrichment - Generic v2.1
+* TIM - Indicator Relationships Analysis
 * Cortex XDR - Get entity alerts by MITRE tactics
 * Cortex XDR - Isolate Endpoint
+* Account Enrichment - Generic v2.1
+* User Investigation - Generic
 
 ### Integrations
 * XQLQueryingEngine
@@ -35,9 +35,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Set
 
 ### Commands
-* setIncident
 * ad-expire-password
 * ip
+* setIncident
 
 ## Playbook Inputs
 ---
