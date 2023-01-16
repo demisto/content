@@ -1,0 +1,130 @@
+id: 716af962-8b78-4e09-864d-ded6f471342b
+version: 22
+vcShouldKeepItemLegacyProdMachine: false
+name: test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 469b1f2a-d699-4cc0-8924-2eef1bcdbcae
+    type: start
+    task:
+      id: 469b1f2a-d699-4cc0-8924-2eef1bcdbcae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 984b41c5-91e8-4f09-8372-5bb0c54a4a56
+    type: regular
+    task:
+      id: 984b41c5-91e8-4f09-8372-5bb0c54a4a56
+      version: -1
+      name: EclecticIQ_lookup_observables
+      description: Lookup observables from EclecticIQ Intelligence Center Platform
+      script: EclecticIQ Platform v2|||EclecticIQ_lookup_observables
+      type: regular
+      iscommand: true
+      brand: EclecticIQ
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      type:
+        simple: ipv4
+      value:
+        simple: ${incident.destinationip}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: aa235d59-396d-41ee-8697-a0826ce8c0a9
+    type: regular
+    task:
+      id: aa235d59-396d-41ee-8697-a0826ce8c0a9
+      version: -1
+      name: EclecticIQ_create sighting
+      description: 'create sighting in the EclecticIQ Intelligence Center Platform '
+      script: EclecticIQ Platform v2|||EclecticIQ_create_sighting
+      type: regular
+      iscommand: true
+      brand: EclecticIQ
+    scriptarguments:
+      confidence_level:
+        simple: medium
+      description:
+        simple: sighting
+      tags:
+        simple: alerts
+      title:
+        simple: ${EclecticIQ.Entity.title}
+      type:
+        simple: ipv4
+      value:
+        simple: ${incident.destinationip}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 465,
+        "width": 380,
+        "x": 440,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.5.0
