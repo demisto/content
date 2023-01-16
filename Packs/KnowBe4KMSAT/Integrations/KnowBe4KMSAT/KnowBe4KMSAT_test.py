@@ -35,7 +35,7 @@ def test_account_info(requests_mock):
             Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json('test_data/account_response.json')
-    from KnowBe4KMSAT import get_account_info
+    from KnowBe4KMSAT import kmsat_account_info_list_command
     requests_mock.get(f"{REPORTING_BASE_URL}/account", json=mock_response_data, status_code=200)
 
     client = Client(
@@ -48,7 +48,7 @@ def test_account_info(requests_mock):
         }
     )
 
-    result = get_account_info(client)
+    result = kmsat_account_info_list_command(client)
     assert result.outputs_prefix == "Account.Info"
     assert result.outputs_key_field == "name"
     assert result.outputs == mock_response_data   
@@ -64,7 +64,7 @@ def test_account_risk_score_history(requests_mock):
             Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json('test_data/account_risk_score_history_response.json')
-    from KnowBe4KMSAT import get_account_risk_score_history
+    from KnowBe4KMSAT import kmsat_account_risk_score_history_list_command
     requests_mock.get(f"{REPORTING_BASE_URL}/account/risk_score_history", json=mock_response_data, status_code=200)
 
     client = Client(
@@ -77,7 +77,7 @@ def test_account_risk_score_history(requests_mock):
         }
     )
     args: Dict = {}
-    result = get_account_risk_score_history(client, args)
+    result = kmsat_account_risk_score_history_list_command(client, args)
     assert result.outputs_prefix == "AccountRiskScore.History"
     assert result.outputs_key_field == ""
     assert result.outputs == mock_response_data
@@ -94,7 +94,7 @@ def test_get_user_event_types(requests_mock):
     """
     
     mock_response_data = util_load_json('test_data/user_event_types_response.json')
-    from KnowBe4KMSAT import get_user_event_types
+    from KnowBe4KMSAT import kmsat_user_event_types_list_command
     requests_mock.get(f"{USER_EVENT_BASE_URL}/event_types", json=mock_response_data, status_code=200)
     
     userEventClient = UserEventClient(
@@ -108,7 +108,7 @@ def test_get_user_event_types(requests_mock):
     )
     
     args: Dict = {}
-    result = get_user_event_types(userEventClient, args)
+    result = kmsat_user_event_types_list_command(userEventClient, args)
     assert result.outputs_prefix == "KMSAT_User_Event_Types_Returned"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]
@@ -125,7 +125,7 @@ def test_get_user_events(requests_mock):
     """
     
     mock_response_data = util_load_json('test_data/user_events_response.json')
-    from KnowBe4KMSAT import get_user_events
+    from KnowBe4KMSAT import kmsat_user_events_list_command
     requests_mock.get(f"{USER_EVENT_BASE_URL}/events", json=mock_response_data, status_code=200)
     
     userEventClient = UserEventClient(
@@ -139,7 +139,35 @@ def test_get_user_events(requests_mock):
     )
     
     args: Dict = {}
-    result = get_user_events(userEventClient, args)
+    result = kmsat_user_events_list_command(userEventClient, args)
     assert result.outputs_prefix == "KMSAT_User_Events_Returned"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]
+
+
+def test_delete_user_event(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://api.events.knowbe4.com/events/{id}
+    Then
+            Make sure the data array contains user events
+    """
+    id: str = "123-456-789"
+    from KnowBe4KMSAT import kmsat_user_event_delete_command
+    requests_mock.delete(f"{USER_EVENT_BASE_URL}/events/{id}", status_code=204)
+
+    userEventClient = UserEventClient(
+        USER_EVENT_BASE_URL,
+        verify=False, 
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        }
+    )
+
+    args: Dict = {"id": id}
+    result = kmsat_user_event_delete_command(userEventClient, args)
+    assert result.readable_output == f"Successfully deleted event: {id}"
