@@ -1224,10 +1224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 9c3407df-acfc-4206-82a3-b50eb2b9a5d6
+    taskid: c88ac41f-8109-42b7-8264-65c248724876
     type: regular
     task:
-      id: 9c3407df-acfc-4206-82a3-b50eb2b9a5d6
+      id: c88ac41f-8109-42b7-8264-65c248724876
       version: -1
       name: Get machine related alerts
       description: Retrieves all Alerts related to a specific device.
@@ -1241,8 +1241,8 @@ tasks:
     scriptarguments:
       machine_id:
         complex:
-          root: MicrosoftATP.Alert
-          accessor: MachineID
+          root: MicrosoftATP.Machine
+          accessor: ID
           transformers:
           - operator: atIndex
             args:
@@ -1267,10 +1267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 1c3c9543-1f7a-44a7-8c38-13ec6d3ed81c
+    taskid: d164434f-8c7c-4a01-83f3-89e5a9be9004
     type: condition
     task:
-      id: 1c3c9543-1f7a-44a7-8c38-13ec6d3ed81c
+      id: d164434f-8c7c-4a01-83f3-89e5a9be9004
       version: -1
       name: Assert related alerts
       type: condition
@@ -1286,8 +1286,10 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: MicrosoftATP.MachineAlerts.ID
+              simple: MicrosoftATP.Machine.ID
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
