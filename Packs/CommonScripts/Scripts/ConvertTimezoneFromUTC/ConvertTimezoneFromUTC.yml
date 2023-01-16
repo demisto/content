@@ -4,8 +4,8 @@ args:
   name: value
   required: true
 - defaultValue: '%Y-%m-%d %H:%M:%S'
-  description: Format that the input expects, and output will format to (i.e "%Y-%m-%d
-    %H:%M:%S")
+  description: >
+    The format of the time to convert and the converted time. (i.e "%Y-%m-%d%H:%M:%S")
   name: format
 - description: Timezone to be converted to (i.e. 'US/Eastern', 'Etc/Greenwich','Canada/Eastern').
     Review documentation on http://pytz.sourceforge.net/#helpers for what timezones
@@ -21,7 +21,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.9.44472
 enabled: true
 name: ConvertTimezoneFromUTC
 runas: DBotWeakRole
