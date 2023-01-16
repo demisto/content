@@ -237,7 +237,7 @@ class Client(BaseClient):
             params=query_params
         )
 
-    def push_candidate_config(self, folders: str, description: str = None) -> dict:
+    def push_candidate_config(self, folders: list, description: str = None) -> dict:
         """Push candidate configuration
         Args:
             folders: Target Prisma SASE Folders for the configuration commit
@@ -1180,7 +1180,6 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     }
     # first get the original tag, so user won't need to send all data
     original_tag = client.get_tag_by_id(query_params, args.get('tag_id'))
-    print(original_tag)
 
     if color := args.get('color'):
         original_tag['color'] = color
@@ -1471,7 +1470,6 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     url_category_id = args.get('id')
     # first get the original, so user won't need to send all data
     original_custom_url_category = client.get_custom_url_category_by_id(query_params, url_category_id)
-    print(original_custom_url_category)
 
     if description := args.get('description'):
         original_custom_url_category['description'] = description
@@ -1624,7 +1622,6 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
         else:
             original_custom_url_category.get('list', []).extend(value)
 
-    print(original_custom_url_category)
     raw_response = client.update_external_dynamic_list(original_custom_url_category, url_category_id)  # type: ignore
     outputs = raw_response
 
@@ -1709,29 +1706,31 @@ def run_push_jobs_polling_command(client: Client, args: dict):
         res = client.push_candidate_config(folders)
         # remove folders, not needed for the rest
         args['folders'] = []
-        job_id = arg_to_number(res.get('job_id'))
+        job_id = res.get('job_id')
         args['job_id'] = job_id
         args['parent_finished'] = False
         return CommandResults(
             scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args,
-                                               next_run_in_seconds=20))
-
+                                               next_run_in_seconds=10),
+            readable_output=f'Waiting for all data to push for job ib {job_id}')
 
     job_id = args.get('job_id')
-    if not args.get('parent_finished'):
+    if not argToBoolean(args.get('parent_finished')):
         res = client.get_config_job_by_id(job_id).get('data', [{}])[0]
         if res.get('result_str') == 'PEND':
-            print(res)
             return CommandResults(
-                scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args, next_run_in_seconds=20))
-    args['parent_finished'] = True
-    res = client.list_config_jobs()
+                scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
+                                                   args=args,
+                                                   next_run_in_seconds=10))
+        args['parent_finished'] = True
+    res = client.list_config_jobs().get('data', {})
     for job in res:
         if job.get('parent_id') == job_id:
-            print(res.get('parent_id'))
             if job.get('result_str') == 'PEND':
                 return CommandResults(
-                    scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args, next_run_in_seconds=20))
+                    scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
+                                                       args=args,
+                                                       next_run_in_seconds=10))
     return CommandResults(readable_output="finished pushing")
 
 
@@ -1754,7 +1753,6 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     commands = {
-        'test-module': test_module,
         'prisma-sase-security-rule-create': create_security_rule_command,
         'prisma-sase-security-rule-list': list_security_rules_command,
         'prisma-sase-security-rule-delete': delete_security_rule_command,
@@ -1805,6 +1803,8 @@ def main():
         ok_codes=(200, 201, 204))
 
     try:
+        if command == 'test-module':
+            return_results(test_module(client))
         if command in commands:
             return_results(commands[command](client, demisto.args()))  # type: ignore
         else:
