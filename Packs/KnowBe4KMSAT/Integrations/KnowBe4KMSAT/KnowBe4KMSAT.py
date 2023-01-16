@@ -183,13 +183,13 @@ class UserEventClient(BaseClient):
             json_data=params,
         )
 
-    def delete_user_event(self, event_id: str):    
+    def delete_user_event(self, event_id: str):
         return self._http_request(
             method="DELETE",
             url_suffix=f"/events/{event_id}",
             resp_type="response",
             raise_on_status=True,
-            ok_codes=(204,)
+            ok_codes=(204,),
         )
 
 
@@ -234,7 +234,9 @@ def kmsat_account_info_list_command(client: Client) -> CommandResults:
     )
 
 
-def kmsat_account_risk_score_history_list_command(client: Client, args: dict) -> CommandResults:
+def kmsat_account_risk_score_history_list_command(
+    client: Client, args: dict
+) -> CommandResults:
     params = get_pagination(args)
     response = client.kmsat_account_risk_score_history(params)
     if response is None:
@@ -251,11 +253,12 @@ def kmsat_account_risk_score_history_list_command(client: Client, args: dict) ->
         raw_response=response,
         outputs=response,
         readable_output=markdown,
-        outputs=response,
     )
 
 
-def kmsat_groups_risk_score_history_list_command(client: Client, args: dict) -> CommandResults:
+def kmsat_groups_risk_score_history_list_command(
+    client: Client, args: dict
+) -> CommandResults:
     group_id = remove_empty_elements(args.get("group_id"))
     params = get_pagination(args)
     response = client.kmsat_groups_risk_score_history(group_id, params)
@@ -271,11 +274,14 @@ def kmsat_groups_risk_score_history_list_command(client: Client, args: dict) -> 
         outputs_prefix="GroupsRiskScore.History",
         outputs_key_field="id",
         raw_response=response,
+        outputs=response,
         readable_output=markdown,
     )
 
 
-def kmsat_users_risk_score_history_list_command(client: Client, args: dict) -> CommandResults:
+def kmsat_users_risk_score_history_list_command(
+    client: Client, args: dict
+) -> CommandResults:
     user_id = remove_empty_elements(args.get("user_id"))
     params = get_pagination(args)
     response = client.kmsat_users_risk_score_history(user_id, params)
@@ -291,12 +297,14 @@ def kmsat_users_risk_score_history_list_command(client: Client, args: dict) -> C
         outputs_prefix="UsersRiskScore.History",
         outputs_key_field="",
         raw_response=response,
-        readable_output=markdown,
         outputs=response,
+        readable_output=markdown,
     )
 
 
-def kmsat_phishing_security_tests_list_command(client: Client, args: dict) -> CommandResults:
+def kmsat_phishing_security_tests_list_command(
+    client: Client, args: dict
+) -> CommandResults:
     params = get_pagination(args)
     response = client.kmsat_phishing_security_tests(params)
     markdown = tableToMarkdown(
@@ -336,12 +344,14 @@ def kmsat_phishing_security_tests_list_command(client: Client, args: dict) -> Co
         outputs_prefix="Phishing.Security",
         outputs_key_field="campaign_id",
         raw_response=response,
-        readable_output=markdown,
         outputs=response,
+        readable_output=markdown,
     )
 
 
-def kmsat_phishing_security_tests_recipients_list_command(client: Client, args) -> CommandResults:
+def kmsat_phishing_security_tests_recipients_list_command(
+    client: Client, args
+) -> CommandResults:
     pst_id = remove_empty_elements(args.get("pst_id"))
     params = get_pagination(args)
     response = client.kmsat_phishing_security_tests_recipients(pst_id, params)
@@ -380,6 +390,7 @@ def kmsat_phishing_security_tests_recipients_list_command(client: Client, args) 
         outputs_prefix="Phishing.Security",
         outputs_key_field="recipient_id",
         raw_response=response,
+        outputs=response,
         readable_output=markdown,
     )
 
@@ -414,11 +425,14 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
         outputs_prefix="Training.Campaigns",
         outputs_key_field="campaign_id",
         raw_response=response,
+        outputs=response,
         readable_output=markdown,
     )
 
 
-def kmsat_training_enrollments_list_command(client: Client, args: dict) -> CommandResults:
+def kmsat_training_enrollments_list_command(
+    client: Client, args: dict
+) -> CommandResults:
     params = get_pagination(args)
     response = client.kmsat_training_enrollments(params)
     markdown = tableToMarkdown(
@@ -447,6 +461,7 @@ def kmsat_training_enrollments_list_command(client: Client, args: dict) -> Comma
         outputs_prefix="Training.Enrollments",
         outputs_key_field="enrollment_id",
         raw_response=response,
+        outputs=response,
         readable_output=markdown,
     )
 
@@ -513,7 +528,9 @@ def fetch_incidents_command(client: Client) -> None:
     demisto.incidents(incidents)
 
 
-def kmsat_user_events_list_command(client: UserEventClient, args: dict) -> CommandResults:
+def kmsat_user_events_list_command(
+    client: UserEventClient, args: dict
+) -> CommandResults:
     response = client.user_events(args, 1, 100)  # TODO: paging
     if response is None:
         raise DemistoException(
@@ -530,7 +547,9 @@ def kmsat_user_events_list_command(client: UserEventClient, args: dict) -> Comma
     )
 
 
-def kmsat_user_event_types_list_command(client: UserEventClient, args: dict) -> CommandResults:
+def kmsat_user_event_types_list_command(
+    client: UserEventClient, args: dict
+) -> CommandResults:
     response = client.user_event_types(args)
     if response is None:
         raise DemistoException(
@@ -547,7 +566,9 @@ def kmsat_user_event_types_list_command(client: UserEventClient, args: dict) -> 
     )
 
 
-def kmsat_user_event_create_command(client: UserEventClient, args: dict) -> CommandResults:
+def kmsat_user_event_create_command(
+    client: UserEventClient, args: dict
+) -> CommandResults:
     response = client.create_user_event(args)
     if response is None:
         raise DemistoException(
@@ -563,7 +584,9 @@ def kmsat_user_event_create_command(client: UserEventClient, args: dict) -> Comm
     )
 
 
-def kmsat_user_event_delete_command(client: UserEventClient, args: dict) -> CommandResults:
+def kmsat_user_event_delete_command(
+    client: UserEventClient, args: dict
+) -> CommandResults:
     event_id: str = str(args.get("id"))
     client.delete_user_event(event_id)
     return CommandResults(readable_output=f"Successfully deleted event: {event_id}")
@@ -706,7 +729,9 @@ def main() -> None:
         elif command == "kmsat-phishing-security-tests-list":
             return_results(kmsat_phishing_security_tests_list_command(client, args))
         elif command == "kmsat-phishing-security-tests-recipients-list":
-            return_results(kmsat_phishing_security_tests_recipients_list_command(client, args))
+            return_results(
+                kmsat_phishing_security_tests_recipients_list_command(client, args)
+            )
         elif command == "kmsat-training-campaigns-list":
             return_results(kmsat_training_campaigns_list_command(client, args))
         elif command == "kmsat-training-enrollments-list":

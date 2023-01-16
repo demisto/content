@@ -512,7 +512,7 @@ script:
           required: true
           default: false
           isArray: false
-          secret: false      
+          secret: false
       description: Deletes User Event by Event ID
   isfetch: false
   runonce: false
