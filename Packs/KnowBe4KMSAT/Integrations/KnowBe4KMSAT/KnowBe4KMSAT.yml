@@ -40,7 +40,7 @@ display: "KnowBe4KMSAT"
 name: KnowBe4KMSAT
 script:
   commands:
-    - name: get-account-info
+    - name: kmsat-account-info-list
       arguments: []
       outputs:
         - contextPath: Account.Info.name
@@ -77,7 +77,7 @@ script:
           description: "Account Risk Score"
           type: Number
       description: Returns KMSAT account information
-    - name: get-account-risk-score-history
+    - name: kmsat-account-risk-score-history-list
       arguments:
         - name: page
           description: Page Number
@@ -91,7 +91,7 @@ script:
           description: Account Risk score history date
           type: String
       description: Returns KMSAT Account Risk Score History.
-    - name: get-groups-risk-score-history
+    - name: kmsat-groups-risk-score-history-list
       arguments:
         - name: group_id
           required: true
@@ -108,7 +108,7 @@ script:
           description: Groups Risk score history date
           type: String
       description: Returns KMSAT Group Specific Risk Score History.
-    - name: get-users-risk-score-history
+    - name: kmsat-users-risk-score-history-list
       arguments:
         - name: user_id
           required: true
@@ -123,7 +123,7 @@ script:
         - contextPath: UsersRiskScore.History.date
           description: Users Risk score history date
       description: Returns KMSAT User Specific Risk Score History
-    - name: get-phishing-security-tests
+    - name: kmsat-phishing-security-tests-list
       arguments:
         - name: page
           description: Page Number
@@ -194,7 +194,7 @@ script:
           description: Phishing Security Bounced Count
           type: number
       description: Returns All Phishing Security Tests (PSTs)
-    - name: get-phishing-security-tests-recipients
+    - name: kmsat-phishing-security-tests-recipients-list
       arguments:
         - name: pst_id
           required: true
@@ -260,7 +260,7 @@ script:
           description: Phishing Security OS
           type: string
       description: Returns a Specific Recipient's Results
-    - name: get-training-campaigns
+    - name: kmsat-training-campaigns-list
       arguments:
         - name: page
           description: Page Number
@@ -299,7 +299,7 @@ script:
           description: Training Campaigns Completion Percentage
           type: number
       description: Returns all Training Campaigns
-    - name: get-training-enrollments
+    - name: kmsat-training-enrollments-list
       arguments:
         - name: page
           description: Page Number
@@ -334,7 +334,7 @@ script:
           description: Training Enrollments Policy Acknowledged
           type: boolean
       description: Returns all Training Enrollments
-    - name: get-user-events
+    - name: kmsat-user-events-list
       arguments:
         - name: event_type
           description: Filter by Event Type
@@ -433,7 +433,7 @@ script:
           description: "Event Type Name"
           type: String
       description: Returns KMSAT User Events.
-    - name: get-user-event-types
+    - name: kmsat-user-event-types-list
       arguments:
         - name: name
           description: Filter by name of the event type
@@ -451,7 +451,7 @@ script:
           description: "Description of Event Type"
           type: String
       description: Returns all KMSAT User Event Types
-    - name: post-user-event
+    - name: kmsat-user-event-create
       arguments:
         - name: target_user
           description: User's email address
@@ -505,12 +505,21 @@ script:
           description: "Unique ID of the event"
           type: Number
       description: Adds a User Event
+    - name: kmsat-user-event-delete
+      arguments:
+        - name: id
+          description: Event ID
+          required: true
+          default: false
+          isArray: false
+          secret: false      
+      description: Deletes User Event by Event ID
   isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.43882
+  dockerimage: demisto/python3:3.10.9.44472
 fromversion: 6.5.0
 tests:
   - No tests (auto formatted)
