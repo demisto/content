@@ -64,7 +64,7 @@
     "wrap_info": null,
     "warnings": null,
     "auth": {
-      "client_token": "hvs.CAESIAVeeeeeeeeeeVE4uSkJHd1IQm8kE",
+      "client_token": "testing-dummy-token",
       "accessor": "eeeeeee.JBGwR",
       "policies": [
         "default"
