@@ -21,6 +21,7 @@ args:
   - utf-8
   - utf-16
   - ascii
+  - gbk
   required: false
   secret: false
 - name: output_data_type
