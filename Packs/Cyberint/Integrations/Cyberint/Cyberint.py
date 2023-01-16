@@ -557,7 +557,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                     alert.update({'ref_id': f'{alert_id} ({index})'})
                     alert['alert_data']['csv'].update({'content': incident_csv})
 
-                    incident.update{'name': f'Cyberint alert {alert_id} ({index}): {alert_title}'}
+                    incident.update({'name': f'Cyberint alert {alert_id} ({index}): {alert_title}'})
+                    incident.update({'rawJSON': json.dumps(alert)})
                     incidents.append(incident)
                     index += 1
             else:
