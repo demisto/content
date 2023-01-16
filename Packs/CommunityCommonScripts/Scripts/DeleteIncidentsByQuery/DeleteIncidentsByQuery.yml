@@ -1,7 +1,7 @@
 args:
 - description: Max incidents to delete.
   name: size
-- description: 'The same format as used in incedent page. '
+- description: The query should be in the same format as used in incident page.
   name: query
   required: true
 comment: Use this automation to delete incidents using query parameter with the same format as used in incidents search. Demisto REST API integration instance should be created.
