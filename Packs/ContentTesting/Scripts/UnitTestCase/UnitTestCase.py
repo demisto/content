@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
+    testName = ''
     try:
         args = demisto.args()
         testName = args.get("testName", "")

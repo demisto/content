@@ -8,9 +8,10 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.9.44472
 enabled: true
 name: UnitTestLoadFieldsList
+comment: ""
 runas: DBotWeakRole
 runonce: false
 script: ''

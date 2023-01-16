@@ -3,6 +3,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
 id: MockPlaybook
+description: ""
 inputs: []
 name: MockPlaybook
 outputs: []
