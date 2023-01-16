@@ -4407,7 +4407,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 130,
+            "memory_threshold": 135,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -5073,7 +5073,8 @@
         },
         {
             "integrations": "McAfee ePO v2",
-            "playbookID": "McAfee ePO v2 Test"
+            "playbookID": "McAfee ePO v2 Test",
+            "memory_threshold": 80
         },
         {
             "playbookID": "Dedup - Generic v3",
