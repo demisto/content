@@ -1291,7 +1291,7 @@ def get_user_info_data():
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
-    return jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS)
+    return jira_req(method='GET', resource_url='rest/api/latest/myself', headers=HEADERS)
 
 
 def get_modified_remote_data_command(args):
