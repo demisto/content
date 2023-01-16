@@ -128,6 +128,55 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from AWS - Security Hub to Cortex XSOAR), Outgoing (from Cortex XSOAR to AWS - Security Hub), or Incoming and Outgoing (from/to Cortex XSOAR and AWS - Security Hub).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+  section: Collect
+- display: Finding Type
+  additionalinfo: 'You can set the type of the findings to be fetched or mirrored: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch or mirror findings with finding type that match TTPs.'
+  name: finding_type
+  type: 16
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - Software and Configuration Checks
+  - TTPs
+  - Effects
+  - Unusual Behaviors
+  - Sensitive Data Identifications
+- display: Workflow Status
+  additionalinfo: 'You can set the workflow status of the findings to be fetched or mirrored: "New", "Notified", "Resolved", "Suppressed". For example, if you set the workflow status to "Suppressed", the integration will only fetch or mirror findings with workflow status of Suppressed.'
+  name: workflow_status
+  type: 16
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - New
+  - Notified
+  - Resolved
+  - Suppressed
+- display: Product Name
+  name: product_name
+  additionalinfo: 'You can write a list of product names separated by comma. In order to get the product name you need to press Integrations in the AWS - Security Hub menu. Than provide here only the product name (the value after the colon (:)).'
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+- display: Mapper (outgoing)
+  name: mapper_out
+  required: false
+  type: 0
+  section: Connect
 description: Amazon Web Services Security Hub Service.
 display: AWS - Security Hub
 name: AWS - Security Hub
