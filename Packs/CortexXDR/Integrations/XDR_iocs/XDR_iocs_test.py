@@ -93,7 +93,7 @@ class TestHttpRequest:
             client.http_request('suffix', requests_kwargs={})
         assert e.value.message == f'Could not parse json out of {text}'
         assert e.value.res.status_code == 200
-        assert isinstance(e.value.exception, json.JSONDecodeError)
+        assert isinstance(e.value.exception, (requests.exceptions.JSONDecodeError, json.decoder.JSONDecodeError))
         assert e.value.exception.args == ('Expecting value', 'not a json')
 
 

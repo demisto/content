@@ -477,7 +477,9 @@ def parse_finding(finding: dict) -> Dict:
     return parsed_finding
 
 
-def get_findings(client: boto3.client, args: dict) -> CommandResults:
+def get_findings(client: boto3.client, args: dict) -> dict:
+    return_raw_response = argToBoolean(args.get('returnRawResponse', 'false'))
+
     response = client.get_findings(
         DetectorId=args.get('detectorId'),
         FindingIds=argToList(args.get('findingIds')))
@@ -492,11 +494,15 @@ def get_findings(client: boto3.client, args: dict) -> CommandResults:
     headers = ['Id', 'Title', 'Description', 'Type', 'ResourceType', 'CreatedAt', 'AccountId', 'Arn']
     readable_output = tableToMarkdown('AWS GuardDuty Findings', data, removeNull=True, headers=headers) \
         if data else 'No result were found'
-    return CommandResults(readable_output=readable_output,
-                          raw_response=raw,
-                          outputs=data,
-                          outputs_prefix='AWS.GuardDuty.Findings',
-                          outputs_key_field='Id')
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': raw if raw else data,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
+        'EntryContext': {"AWS.GuardDuty.Findings(val.FindingId === obj.Id)": raw if return_raw_response else data}
+    }
 
 
 def parse_incident_from_finding(finding: dict):
