@@ -1,6 +1,6 @@
 {
-    "name": "## FILL MANDATORY FIELD ##",
-    "description": "## FILL MANDATORY FIELD ##",
+    "name": "RunZero",
+    "description": "RunZero, a network discovery and asset inventory solution.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

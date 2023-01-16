@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: RunZeroEventCollector
+  id: RunZero Event Collector
   version: -1
 configuration:
 - defaultvalue: https://console.runzero.com/
@@ -20,7 +20,7 @@ configuration:
 - display: API Key
   name: apikey
   required: true
-  type: 4
+  type: 9
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -65,7 +65,7 @@ script:
     description: Gets events from RunZero.
     execution: false
     name: runzero-get-events
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.44472
   isfetchevents: true
   runonce: false
   script: '-'
