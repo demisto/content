@@ -1668,6 +1668,7 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
             for category in categories.keys():
                 categories[category].extend(profile.get(category, []))
                 categories[category].extend(profile.get('credential_enforcement', {}).get(category, []))
+                # remove duplicates
                 categories[category] = list(set(categories[category]))
 
     return CommandResults(
