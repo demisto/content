@@ -106,7 +106,7 @@ script:
       description: The number of protected host name group members.
       type: Number
     - contextPath: FortiwebVM.ProtectedHostnameGroup.can_delete
-      description: Can deleted flag. Supports API version 1 only.
+      description: Whether the Geo IP group can be deleted. Supports API version 1 only.
       type: Boolean
   - arguments:
     - description: Protected host name group name.
@@ -378,7 +378,7 @@ script:
       description: The number of IP list members.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.can_delete
-      description: Can delete flag. Supports API version 1 only.
+      description: Whether the Geo IP group can be deleted. Supports API version 1 only.
       type: Boolean
     - contextPath: FortiwebVM.IpListGroup.q_ref
       description: The CMDB reference count. Supports API version 2 only.

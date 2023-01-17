@@ -103,7 +103,7 @@ List the Protected host name group.
 | FortiwebVM.ProtectedHostnameGroup.id | String | Protected host name group ID. | 
 | FortiwebVM.ProtectedHostnameGroup.default_action | Number | Protected host name group action. | 
 | FortiwebVM.ProtectedHostnameGroup.protected_hostname_count | Number | The number of protected host name group members. | 
-| FortiwebVM.ProtectedHostnameGroup.can_delete | Boolean | Can deleted flag. Supports API version 1 only. | 
+| FortiwebVM.ProtectedHostnameGroup.can_delete | Boolean | Whether the Geo IP group can be deleted. Supports API version 1 only. |
 
 #### Command example
 ```!fortiwebvm-protected-hostname-group-list name=example```
@@ -454,7 +454,7 @@ Supports API versions 1 & 2.
 | --- | --- | --- |
 | FortiwebVM.IpListGroup.id | String | IP list ID. | 
 | FortiwebVM.IpListGroup.ip_list_count | Number | The number of IP list members. | 
-| FortiwebVM.IpListGroup.can_delete | Boolean | Can delete flag. Supports API version 1 only. | 
+| FortiwebVM.IpListGroup.can_delete | Boolean | Whether the Geo IP group can be deleted. Supports API version 1 only. |
 | FortiwebVM.IpListGroup.q_ref | Number | The CMDB reference count. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.q_type | Number | IP list group object type. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.can_clone | Number | Whether the IP list group can be cloned. Supports API version 2 only. |
