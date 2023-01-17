@@ -457,9 +457,9 @@ Supports API versions 1 & 2.
 | FortiwebVM.IpListGroup.can_delete | Boolean | Can delete flag. Supports API version 1 only. | 
 | FortiwebVM.IpListGroup.q_ref | Number | The CMDB reference count. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.q_type | Number | IP list group object type. Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.can_clone | Number | Can clone flag. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.can_clone | Number | Whether the IP list group can be cloned. Supports API version 2 only. |
 | FortiwebVM.IpListGroup.block_period | Number | IP list group block period. Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.can_view | Number | Can view flag. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.can_view | Number | Whether you can view the IP list group. Supports API version 2 only. |
 | FortiwebVM.IpListGroup.action | String | IP list group action. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.trigger_policy | String | IP list group trigger policy name. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.severity | String | IP list group severity. Supports API version 2 only. | 
@@ -1466,7 +1466,7 @@ Get Geo IP list.
 | FortiwebVM.GeoIpGroup.trigger_policy | String | Geo IP group trigger policy name. | 
 | FortiwebVM.GeoIpGroup.severity | String | Geo IP group severity number. | 
 | FortiwebVM.GeoIpGroup.except | String | Geo IP group exception groups. | 
-| FortiwebVM.GeoIpGroup.can_delete | Boolean | Geo IP group Can delete flag. Supports API version 1 only. | 
+| FortiwebVM.GeoIpGroup.can_delete | Boolean |Whether the Geo IP group can be deleted.  Supports API version 1 only. |
 | FortiwebVM.GeoIpGroup.action | String | Geo IP group action. Supports API version 2 only. | 
 | FortiwebVM.GeoIpGroup.block_period | Number | Geo IP group block period. Supports API version 2 only. | 
 | FortiwebVM.GeoIpGroup.ignore_x_forwarded_for | String | Whether IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only. | 

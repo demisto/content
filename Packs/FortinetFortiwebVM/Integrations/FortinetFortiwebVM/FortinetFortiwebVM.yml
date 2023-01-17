@@ -387,13 +387,13 @@ script:
       description: IP list group object type. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.can_clone
-      description: Can clone flag. Supports API version 2 only.
+      description: Whether the IP list group can be cloned. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.block_period
       description: IP list group block period. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.can_view
-      description: Can view flag. Supports API version 2 only.
+      description: Whether you can view the IP list group. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.action
       description: IP list group action. Supports API version 2 only.
@@ -1478,7 +1478,7 @@ script:
       description: Geo IP group exception groups.
       type: String
     - contextPath: FortiwebVM.GeoIpGroup.can_delete
-      description: Geo IP group Can delete flag. Supports API version 1 only.
+      description: Whether the Geo IP group can be deleted. Supports API version 1 only.
       type: Boolean
     - contextPath: FortiwebVM.GeoIpGroup.action
       description: Geo IP group action. Supports API version 2 only.
