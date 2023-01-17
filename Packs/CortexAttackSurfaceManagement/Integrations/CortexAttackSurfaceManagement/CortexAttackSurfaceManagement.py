@@ -35,7 +35,7 @@ class Client(BaseClient):
                                       json_data=request_data, headers=headers)
 
         return response
-    
+
     def list_external_service_request(self, search_params: List[Dict]) -> Dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
 
