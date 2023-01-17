@@ -1244,6 +1244,7 @@ def test_remote_data_with_events(mocker, offense_id):
         expected_events_fetched = 5 + int(offense_id)
         assert offense_data.get('events_fetched') == expected_events_fetched
         assert updated_context[MIRRORED_OFFENSES_FETCHED_CTX_KEY][offense_id] == expected_events_fetched
+        assert 2 == 3
 
     elif offense_id not in context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY] or \
             (offense_id in context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY]
