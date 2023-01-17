@@ -2116,8 +2116,19 @@ def splunk_search_command(service: client.Service) -> CommandResults:
     print(total_parsed_results)
     print("type" + str(type(total_parsed_results)))
     for item in total_parsed_results:
-        if item['_raw']:
-            print('no')
+        item_raw = item['_raw']
+        if item_raw:
+            print(item_raw)
+            print('type: ' + str(type(item_raw)))
+            if ite:
+                print(item_raw.get('sid'))
+    print("*************************\n entry_context \n")    
+    for item in entry_context:
+        item_raw = item['_raw']
+        if item_raw:
+            print(item_raw)
+            print('type: ' + str(type(item_raw)))
+            
     human_readable = build_search_human_readable(args, total_parsed_results)
 
     return CommandResults(
