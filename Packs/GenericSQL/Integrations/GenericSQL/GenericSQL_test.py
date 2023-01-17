@@ -2,6 +2,8 @@ import os
 
 import pytest
 import sqlalchemy
+import pyodbc
+import cx_Oracle
 
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
 
@@ -250,6 +252,25 @@ def test_mysql_integration():
     ('arg1=value1&arg2=value2', 'MySQL', {'arg1': 'value1', 'arg2': 'value2'}),
     ('arg1=value1&arg2=value2', 'Microsoft SQL Server', {'arg1': 'value1', 'arg2': 'value2', 'driver': 'FreeTDS'}),
     ('arg1=value1&arg2=value2', 'Microsoft SQL Server - MS ODBC Driver',
-     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 17 for SQL Server'})])
+     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 18 for SQL Server', 'TrustServerCertificate': 'yes'})])
 def test_parse_connect_parameters(connect_parameters, dialect, expected_response):
-    assert Client.parse_connect_parameters(connect_parameters, dialect) == expected_response
+    assert Client.parse_connect_parameters(connect_parameters, dialect, False) == expected_response
+
+
+def test_loading_relevant_drivers():
+    assert 'FreeTDS' in pyodbc.drivers()
+    assert 'ODBC Driver 18 for SQL Server' in pyodbc.drivers(), pyodbc.drivers()
+
+    try:
+        # make sure oracle manages to load tns client libraries.
+        # Will fail, but we want to be sure we don't fail on loading the driver
+        cx_Oracle.connect()
+    except Exception as ex:
+        assert 'ORA-12162' in str(ex)
+
+    # freetds test
+    engine = sqlalchemy.create_engine('mssql+pyodbc:///testuser:testpass@127.0.0.1:1433/TEST?driver=FreeTDS')
+    try:
+        engine.execute('select 1 as [Result]')
+    except Exception as ex:
+        assert "Can't open lib" not in str(ex), "Failed because of missing lib: " + str(ex)
