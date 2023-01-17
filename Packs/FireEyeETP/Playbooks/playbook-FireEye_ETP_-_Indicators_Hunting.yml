@@ -3,6 +3,7 @@ version: -1
 name: FireEye ETP - Indicators Hunting
 description: |-
   This playbook queries FireEye Email Threat Prevention (ETP) for indicators such as domains, IP addresses, sender and recipient email addresses.
+  Separate searches are conducted for each type of indicator in the playbook.
 
   Note that multiple search values should be separated by commas only (without spaces or any special characters).
 starttaskid: "0"
