@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 08701979-4fec-4653-8b53-1b269127558c
+    taskid: d3c90ea2-4703-46b5-8b84-88d176b93c93
     type: condition
     task:
-      id: 08701979-4fec-4653-8b53-1b269127558c
+      id: d3c90ea2-4703-46b5-8b84-88d176b93c93
       version: -1
       name: Verify Outputs
       type: condition
@@ -111,7 +111,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -150,29 +150,29 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ded9ec47-01af-4bfa-80d7-d24c49ad6ea8
+    taskid: 301ab3a7-4f78-4e0c-8220-672dcec8c104
     type: regular
     task:
-      id: ded9ec47-01af-4bfa-80d7-d24c49ad6ea8
+      id: 301ab3a7-4f78-4e0c-8220-672dcec8c104
       version: -1
       name: asm-get-external-service
       script: Cortex Xpanse|||asm-get-external-service
       type: regular
       iscommand: true
-      brand: ""
+      brand: Cortex Xpanse
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
       service_id:
-        simple: 94232f8a-f001-3292-aa65-63fa9d981427
+        simple: eba5cb2f-1393-30e4-aa40-9cf695bd1ba1
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -195,7 +195,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -212,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -255,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6aafdb30-6c7a-47cf-8deb-0f16196fdeac
+    taskid: dd397d55-0a62-4c29-8761-173b6f23bd81
     type: condition
     task:
-      id: 6aafdb30-6c7a-47cf-8deb-0f16196fdeac
+      id: dd397d55-0a62-4c29-8761-173b6f23bd81
       version: -1
       name: Verify Outputs
       type: condition
@@ -266,7 +266,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "25"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -327,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -339,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f55bf579-33b9-4cb7-8ad5-be47f33f0475
+    taskid: 38edbc6e-44c4-45c0-8902-2312ebade557
     type: condition
     task:
-      id: f55bf579-33b9-4cb7-8ad5-be47f33f0475
+      id: 38edbc6e-44c4-45c0-8902-2312ebade557
       version: -1
       name: Verify Outputs
       type: condition
@@ -377,7 +377,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -408,7 +408,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -431,7 +431,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "26"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -446,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -458,10 +458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 84b72877-fc6d-4ad9-8878-741fb60aee98
+    taskid: cb5a1b19-954c-486f-8183-66c6f1bf2f48
     type: regular
     task:
-      id: 84b72877-fc6d-4ad9-8878-741fb60aee98
+      id: cb5a1b19-954c-486f-8183-66c6f1bf2f48
       version: -1
       name: asm-get-asset-internet-exposure
       script: Cortex Xpanse|||asm-get-asset-internet-exposure
@@ -473,14 +473,14 @@ tasks:
       - "13"
     scriptarguments:
       asm_id:
-        simple: 3c176460-8735-333c-b618-8262e2fb660c
+        simple: 43164fde-8e87-3d1e-8530-82f14cd3ae9a
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -520,7 +520,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2820
         }
       }
     note: false
@@ -548,41 +548,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 23230367-087f-4736-832b-b04638b016de
-    type: regular
-    task:
-      id: 23230367-087f-4736-832b-b04638b016de
-      version: -1
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
+          "y": 3520
         }
       }
     note: false
@@ -617,7 +583,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2995
         }
       }
     note: false
@@ -659,7 +625,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3170
         }
       }
     note: false
@@ -694,7 +660,109 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: c4404a64-8706-41ae-80c5-c75581029f8d
+    type: regular
+    task:
+      id: c4404a64-8706-41ae-80c5-c75581029f8d
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 0aee3454-7b35-499e-8cfa-989bd30c5d5e
+    type: regular
+    task:
+      id: 0aee3454-7b35-499e-8cfa-989bd30c5d5e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 5680c4cb-7aa1-49f9-8eb7-f521945e8f75
+    type: regular
+    task:
+      id: 5680c4cb-7aa1-49f9-8eb7-f521945e8f75
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -709,7 +777,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3185,
+        "height": 3535,
         "width": 380,
         "x": 50,
         "y": 50

@@ -541,7 +541,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: Option
     """
     try:
         client.list_external_service_request([])
-        
+
         if params.get('isFetch'):  # Tests fetch incident:
             severity = params.get('severity')
             max_fetch = int(params.get('max_fetch', 10))
