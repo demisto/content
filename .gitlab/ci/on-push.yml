@@ -109,6 +109,8 @@ validate-content-conf:
     - section_end "Create or update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - export ENV_DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION
+    - echo DEMISTO_SDK_MARKETPLACE=$ENV_DEMISTO_SDK_MARKETPLACE
     - |
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
@@ -171,7 +173,6 @@ xsoar-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
-    ENV_DEMISTO_SDK_MARKETPLACE: "$MARKETPLACE_VERSION"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -190,7 +191,6 @@ mpv2-prepare-testing-bucket:
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCTNAME: "Cortex XSIAM"
-    ENV_DEMISTO_SDK_MARKETPLACE: "$MARKETPLACE_VERSION"
   extends:
     - .generic-prepare-testing-bucket
 
