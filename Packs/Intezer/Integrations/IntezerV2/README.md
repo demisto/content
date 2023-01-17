@@ -93,14 +93,9 @@ Checks file reputation of the given URL
 | Intezer.Analysis.Status | string     | status of the analysis | 
 | Intezer.Analysis.Type   | string     | type of the analysis   | 
 | URL.Data              | string   | The submitted Url                                                                                                                                                             | 
-| Url.URL               | string   | The submitted Url (deprecated)                                                                                                                                                | 
 | URL.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision                                                                                                                          | 
-| Url.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision (deprecated)                                                                                                             | 
-| URL.Metadata          | Unknown  | Metadata returned from Intezer analysis                                                                                                                                       | 
-| Url.Metadata          | Unknown  | Metadata returned from Intezer analysis (deprecated)                                                                                                                          | 
+| URL.Metadata          | Unknown  | Metadata returned from Intezer analysis                                                                                                                                       |
 | URL.ExistsInIntezer   | Boolean  | Does the url exists on intezer                                                                                                                                                |
-| Url.ExistsInIntezer   | Boolean  | Does the url exists on intezer (deprecated)                                                                                                                                   |
-
 #### Command Example
 
 ``` 
@@ -323,13 +318,9 @@ Check the url analysis status and get analysis result, supports polling.
 | DBotScore.Vendor      | string   | Vendor used to calculate the score                                                                                                                                            | 
 | DBotScore.Score       | number   | The actual score                                                                                                                                                              |
 | URL.Data              | string   | The submitted Url                                                                                                                                                             | 
-| Url.URL               | string   | The submitted Url (deprecated)                                                                                                                                                | 
 | URL.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision                                                                                                                          | 
-| Url.Malicious.Vendor  | string   | For malicious Url, the vendor that made the decision (deprecated)                                                                                                             | 
 | URL.Metadata          | Unknown  | Metadata returned from Intezer analysis                                                                                                                                       | 
-| Url.Metadata          | Unknown  | Metadata returned from Intezer analysis (deprecated)                                                                                                                          | 
 | URL.ExistsInIntezer   | Boolean  | Does the url exists on intezer                                                                                                                                                |
-| Url.ExistsInIntezer   | Boolean  | Does the url exists on intezer (deprecated)                                              | 
 
 #### Command Example
 

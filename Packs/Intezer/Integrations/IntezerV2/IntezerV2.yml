@@ -115,27 +115,15 @@ script:
     - contextPath: Intezer.Analysis.Type
       description: type of the analysis
       type: string
-    - contextPath: Url.URL
-      description: The submitted Url (deprecated)
-      type: string
     - contextPath: URL.Data
       description: The submitted Url
-      type: string
-    - contextPath: Url.Malicious.Vendor
-      description: For malicious Url, the vendor that made the decision (deprecated)
       type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious Url, the vendor that made the decision
       type: string
-    - contextPath: Url.Metadata
-      description: Metadata returned from Intezer analysis (deprecated)
-      type: Unknown
     - contextPath: URL.Metadata
       description: Metadata returned from Intezer analysis
       type: Unknown
-    - contextPath: Url.ExistsInIntezer
-      description: Does the url exists on intezer (deprecated)
-      type: Boolean
     - contextPath: URL.ExistsInIntezer
       description: Does the url exists on intezer
       type: Boolean
@@ -148,7 +136,8 @@ script:
       name: file_hash
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Should get only private analysis
       isArray: false
       name: should_get_only_private_analysis
@@ -214,7 +203,8 @@ script:
       name: interval
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Should disable sandox dynamic execution
       isArray: false
       name: disable_dynamic_execution
@@ -223,7 +213,8 @@ script:
       - 'false'
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Should disable static extraction
       isArray: false
       name: disable_static_extraction
@@ -574,27 +565,15 @@ script:
     execution: false
     polling: true
     outputs:
-    - contextPath: Url.URL
-      description: The submitted Url (deprecated)
-      type: string
     - contextPath: URL.Data
       description: The submitted Url
-      type: string
-    - contextPath: Url.Malicious.Vendor
-      description: For malicious Url, the vendor that made the decision (deprecated)
       type: string
     - contextPath: URL.Malicious.Vendor
       description: For malicious Url, the vendor that made the decision
       type: string
-    - contextPath: Url.Metadata
-      description: Metadata returned from Intezer analysis (deprecated)
-      type: Unknown
     - contextPath: URL.Metadata
       description: Metadata returned from Intezer analysis
       type: Unknown
-    - contextPath: Url.ExistsInIntezer
-      description: Does the url exists on intezer (deprecated)
-      type: Boolean
     - contextPath: URL.ExistsInIntezer
       description: Does the url exists on intezer
       type: Boolean
