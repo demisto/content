@@ -1,0 +1,24 @@
+!bitbucket-branch-create name=testing target_branch=master
+!bitbucket-branch-delete branch_name=testing
+!bitbucket-branch-get branch_name=master
+!bitbucket-commit-create branch=master message="checking master" file_name="new_file.txt" file_content="some new content"
+!bitbucket-commit-list limit=2
+!bitbucket-file-delete branch=master file_name=new_file.txt message="delete the new file"
+!bitbucket-issue-comment-create content="some comment" issue_id=1
+!bitbucket-issue-comment-delete comment_id=111111111 issue_id=1
+!bitbucket-issue-comment-list issue_id=1
+!bitbucket-issue-comment-update issue_id=1 comment_id=11111111 content="updating content info"
+!bitbucket-issue-create title="a new issue"
+!bitbucket-issue-list limit=2
+!bitbucket-issue-update issue_id=91 title="a new issue" state=resolved
+!bitbucket-open-branch-list
+!bitbucket-project-list
+!bitbucket-pull-request-comment-create content="new comment on a pull request" pull_request_id=1
+!bitbucket-pull-request-comment-delete comment_id=111111111 pull_request_id=1
+!bitbucket-pull-request-comment-list pull_request_id=1
+!bitbucket-pull-request-comment-update comment_id=111111111 content="hi you" pull_request_id=1
+!bitbucket-pull-request-create source_branch=test title="pull_request"
+!bitbucket-pull-request-list
+!bitbucket-pull-request-update pull_request_id=8 description="updating description"
+!bitbucket-raw-file-get file_path=new.txt branch=branch
+!bitbucket-workspace-member-list

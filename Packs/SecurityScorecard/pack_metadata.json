@@ -7,16 +7,10 @@
     "url": "https://securityscorecard.com/contact-us",
     "email": "support@securityscorecard.io",
     "categories": [
-        "Data Enrichment & Threat Intelligence",
-        "Vulnerability Management"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Alerts",
-        "Security Analytics"
-    ],
-    "useCases": [
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "securityscorecard",
         "scorecard",

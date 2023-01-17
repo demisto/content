@@ -36,7 +36,7 @@ You don't need to install the packages, they are included in the Docker image.
     | Broker CA certificates | From \`brokercerts.crt\` file. | True |
     | Client certificates | From \`client.crt\` file. | True |
     | Client private key | From \`client.key\` file. Make sure that the type of the field is not \`encrypted\` when filling it out. | True |
-    | Broker URLs | The format should be: \[ssl://\]\<hostname\>\[:port\]. Get the hostname and port from the \`brokerlist.properties\` file. The broker should be reachable from Cortex XSOAR server. | True |
+    | Broker URLs | The format should be: `[ssl://]<hostname>[:port]`. Get the hostname and port from the \`brokerlist.properties\` file. The broker should be reachable from Cortex XSOAR server. | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.

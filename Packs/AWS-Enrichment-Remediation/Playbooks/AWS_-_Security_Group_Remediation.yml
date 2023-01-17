@@ -1,0 +1,904 @@
+id: AWS - Security Group Remediation
+version: -1
+name: AWS - Security Group Remediation
+description: Replace current security groups with limited access security groups.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 887ec5b3-a4d7-47fc-82b0-701e072c0deb
+    type: start
+    task:
+      id: 887ec5b3-a4d7-47fc-82b0-701e072c0deb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 978b630a-7e00-443b-83f3-5e683144863a
+    type: title
+    task:
+      id: 978b630a-7e00-443b-83f3-5e683144863a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e2474001-6d68-4de4-8fbb-4e034f2c22fb
+    type: regular
+    task:
+      id: e2474001-6d68-4de4-8fbb-4e034f2c22fb
+      version: -1
+      name: Add a security group ingress rule (IP 172.16.0.0/12 & port 22) permitting specific traffic
+      description: Adds ingress rule to a security group.
+      script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      cidrIp:
+        simple: 172.16.0.0/12
+      fromPort:
+        simple: ${Ssh}
+      groupId:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AWS.EC2.SecurityGroups.GroupName
+                iscontext: true
+              right:
+                value:
+                  simple: Remediation-Security-Group
+          accessor: GroupId
+      ipProtocol:
+        simple: tcp
+      toPort:
+        simple: ${Ssh}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 63f1d8a3-6d9d-48ab-8879-f946a51fd7b6
+    type: regular
+    task:
+      id: 63f1d8a3-6d9d-48ab-8879-f946a51fd7b6
+      version: -1
+      name: Create remediation security group
+      description: Creates a security group.
+      script: AWS - EC2|||aws-ec2-create-security-group
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      description:
+        simple: This is a remediation security group that has rules for basic access to the instance.
+      groupName:
+        complex:
+          root: inputs.RemediationRule
+      vpcId:
+        complex:
+          root: inputs.VpcID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 509778e3-a0cb-47c4-8748-ea8c6bf2d2ca
+    type: regular
+    task:
+      id: 509778e3-a0cb-47c4-8748-ea8c6bf2d2ca
+      version: -1
+      name: Replace security group
+      description: Modifies the specified network interface attribute. You can specify only one attribute at a time.
+      script: AWS - EC2|||aws-ec2-modify-network-interface-attribute
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      groups:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AWS.EC2.SecurityGroups.GroupName
+                iscontext: true
+              right:
+                value:
+                  simple: Remediation-Security-Group
+          accessor: GroupId
+          transformers:
+          - operator: uniq
+      networkInterfaceId:
+        complex:
+          root: inputs.NicID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b144a4a4-1169-4671-83ee-a0ab05fc6e96
+    type: title
+    task:
+      id: b144a4a4-1169-4671-83ee-a0ab05fc6e96
+      version: -1
+      name: Create remediation security group
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 63f00e72-9977-44d2-8257-d7c620cad056
+    type: regular
+    task:
+      id: 63f00e72-9977-44d2-8257-d7c620cad056
+      version: -1
+      name: Add a security group ingress rule (IP 10.0.0.0/8 & port 22) permitting specific traffic
+      description: Adds ingress rule to a security group.
+      script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      cidrIp:
+        simple: 10.0.0.0/8
+      fromPort:
+        simple: ${Ssh}
+      groupId:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AWS.EC2.SecurityGroups.GroupName
+                iscontext: true
+              right:
+                value:
+                  simple: Remediation-Security-Group
+          accessor: GroupId
+      ipProtocol:
+        simple: tcp
+      toPort:
+        simple: ${Ssh}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2ff724c1-0404-47d9-8f94-105424401d30
+    type: regular
+    task:
+      id: 2ff724c1-0404-47d9-8f94-105424401d30
+      version: -1
+      name: Add a security group ingress rule (IP 192.168.0.0/16 & port 22) permitting specific traffic
+      description: Adds ingress rule to a security group.
+      script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      cidrIp:
+        simple: 192.168.0.0/16
+      fromPort:
+        simple: ${Ssh}
+      groupId:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AWS.EC2.SecurityGroups.GroupName
+                iscontext: true
+              right:
+                value:
+                  simple: Remediation-Security-Group
+          accessor: GroupId
+      ipProtocol:
+        simple: tcp
+      toPort:
+        simple: ${Ssh}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1860,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: fe2a0416-ca52-4e8c-8e19-0ff32443bdf7
+    type: title
+    task:
+      id: fe2a0416-ca52-4e8c-8e19-0ff32443bdf7
+      version: -1
+      name: Add port 22 ingress rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+      - "6"
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f524581f-cef9-473c-84ef-84ccbb69d2e4
+    type: title
+    task:
+      id: f524581f-cef9-473c-84ef-84ccbb69d2e4
+      version: -1
+      name: Add port 3389 ingress rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+      - "22"
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 748699b6-df52-4522-8578-6937459791c4
+    type: regular
+    task:
+      id: 748699b6-df52-4522-8578-6937459791c4
+      version: -1
+      name: Add a security group ingress rule (IP 172.16.0.0/12 & port 3389) permitting specific traffic
+      description: Adds ingress rule to a security group.
+      script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      cidrIp:
+        simple: 172.16.0.0/12
+      fromPort:
+        simple: ${Rdp}
+      groupId:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AWS.EC2.SecurityGroups.GroupName
+                iscontext: true
+              right:
+                value:
+                  simple: Remediation-Security-Group
+          accessor: GroupId
+      ipProtocol:
+        simple: tcp
+      toPort:
+        simple: ${Rdp}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 72d63cba-f917-4738-8e8a-4cae1173eb7c
+    type: regular
+    task:
+      id: 72d63cba-f917-4738-8e8a-4cae1173eb7c
+      version: -1
+      name: Add a security group ingress rule (IP 10.0.0.0/8 & port 3389) permitting specific traffic
+      description: Adds ingress rule to a security group.
+      script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      cidrIp:
+        simple: 10.0.0.0/8
+      fromPort:
+        simple: ${Rdp}
+      groupId:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AWS.EC2.SecurityGroups.GroupName
+                iscontext: true
+              right:
+                value:
+                  simple: Remediation-Security-Group
+          accessor: GroupId
+      ipProtocol:
+        simple: tcp
+      toPort:
+        simple: ${Rdp}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 0193fdb8-1188-4c5e-8d93-7502a255ceba
+    type: regular
+    task:
+      id: 0193fdb8-1188-4c5e-8d93-7502a255ceba
+      version: -1
+      name: Add a security group ingress rule (IP 192.168.0.0/16 & port 3389) permitting specific traffic
+      description: Adds ingress rule to a security group.
+      script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      cidrIp:
+        simple: 192.168.0.0/16
+      fromPort:
+        simple: ${Rdp}
+      groupId:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AWS.EC2.SecurityGroups.GroupName
+                iscontext: true
+              right:
+                value:
+                  simple: Remediation-Security-Group
+          accessor: GroupId
+      ipProtocol:
+        simple: tcp
+      toPort:
+        simple: ${Rdp}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1860,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 23c67c55-a182-4308-8d76-64bcdf585034
+    type: regular
+    task:
+      id: 23c67c55-a182-4308-8d76-64bcdf585034
+      version: -1
+      name: Check if Remediation-Security-Group exists?
+      description: Checks if the remediation security group exists.
+      script: AWS - EC2|||aws-ec2-describe-security-groups
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      filters:
+        complex:
+          root: inputs.RemediationRule
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: Name=group-name,Values=
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 55
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 2e8828ac-9ef8-4e71-8f0f-9bb3eacf6bd2
+    type: condition
+    task:
+      id: 2e8828ac-9ef8-4e71-8f0f-9bb3eacf6bd2
+      version: -1
+      name: Was there a SG named Remediation-Security-Group?
+      description: Check whether the last command returned security group information or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "no":
+      - "14"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AWS.EC2.SecurityGroups
+                accessor: GroupName
+            iscontext: true
+          right:
+            value: {}
+    - label: "no"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: AWS.EC2.SecurityGroups
+                accessor: GroupName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3b1adad9-3940-4a44-84a6-18fdff61c222
+    type: regular
+    task:
+      id: 3b1adad9-3940-4a44-84a6-18fdff61c222
+      version: -1
+      name: Ssh port
+      description: Set a Ssh port value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: Ssh
+      value:
+        simple: "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 2802aff4-84de-43e1-8b44-f8384a2000f7
+    type: regular
+    task:
+      id: 2802aff4-84de-43e1-8b44-f8384a2000f7
+      version: -1
+      name: Rdp port
+      description: Set a Rdp port value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: Rdp
+      value:
+        simple: "3389"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: e1e2dd85-0e64-454b-8712-80992ef6650d
+    type: title
+    task:
+      id: e1e2dd85-0e64-454b-8712-80992ef6650d
+      version: -1
+      name: Set ports in context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a7163c41-3334-4605-8aa1-d8f0edb0c161
+    type: condition
+    task:
+      id: a7163c41-3334-4605-8aa1-d8f0edb0c161
+      version: -1
+      name: Is AWS - EC2 enabled and are Input values defined?
+      description: Determines if the AWS - EC2 integration instance is configured and Input values are defined in order to continue with remediating security groups.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.VpcID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.NicID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.RemediationRule
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3045,
+        "width": 2140,
+        "x": 100,
+        "y": -470
+      }
+    }
+  }
+inputs:
+- key: VpcID
+  value: {}
+  required: true
+  description: This is the VPC ID used for Security group creation.
+  playbookInputQuery:
+- key: NicID
+  value: {}
+  required: true
+  description: This is the Network interface of Ec2 instance.
+  playbookInputQuery:
+- key: RemediationRule
+  value:
+    simple: Remediation-Security-Group
+  required: true
+  description: 'The security group that will used for remediating internet exposures. '
+  playbookInputQuery:
+outputs: []
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

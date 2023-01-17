@@ -7,15 +7,16 @@ import json
 import requests
 import socket
 import traceback
+import urllib3
 from typing import Callable, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
 
-API_KEY = AutoFocusKeyRetriever(PARAMS.get('api_key')).key
+API_KEY = AutoFocusKeyRetriever(PARAMS.get('credentials', {}).get('password') or PARAMS.get('api_key')).key
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'

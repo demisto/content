@@ -1,0 +1,175 @@
+{
+  "raw_response": [
+    {
+      "affected_asset": "ip/127.0.0.1",
+      "last_detected": "2022-03-24T04:26:03.296Z",
+      "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+      "potential_threat": "Information Disclosure",
+      "tags": [
+        "Vulnerable Software",
+        "Pulse Secure"
+      ],
+      "id": "issue/127.0.0.1-test",
+      "organizations": [
+        "Acme Interior Design",
+        "Acme Corporation"
+      ],
+      "issue_status": "normal",
+      "issue_id": "test",
+      "first_detected": "2021-07-25T16:57:01.565Z",
+      "summary": "| This is dummy data.",
+      "resolved_at": null,
+      "investigation_status": "investigating",
+      "severity_score": 10,
+      "locations": [
+        "IND"
+      ],
+      "detection_complexity": "Service Detection",
+      "exploitation_method": "Metasploit",
+      "title": "Pulse Secure Arbitrary File Reading",
+      "exploitation_score": 3,
+      "issue_type": "Vulnerable Software",
+      "comment": null,
+      "severity": "critical",
+      "remediation_steps": [
+        "Patch the Pulse Secure VPN to the latest version."
+      ],
+      "potential_impact": [
+        "Loss of integrity",
+        "Loss of confidentiality",
+        "Data compromise"
+      ]
+    },
+    {
+      "affected_asset": "ip/127.0.0.2",
+      "last_detected": "2022-03-24T04:26:03.296Z",
+      "references": [
+      "https://example2.com",
+      "https://example3.com"
+    ],
+      "potential_threat": "Remote Code Execution",
+      "tags": [],
+      "id": "issue/127.0.0.1-test1",
+      "organizations": [
+        "ACME Ticketing",
+        "ACME Cleantech Solutions",
+        "Acme Holdings"
+      ],
+      "issue_status": "normal",
+      "issue_id": "test1",
+      "first_detected": "2021-07-26T08:25:39.724Z",
+      "summary": "| This is dummy data.",
+      "resolved_at": null,
+      "investigation_status": "uninvestigated",
+      "severity_score": 10,
+      "locations": [
+        "USA"
+      ],
+      "detection_complexity": "Service Detection",
+      "exploitation_method": "Metasploit",
+      "title": "CVE-2019-19781 (Unauthenticated Remote Directory Traversal & Code Execution)",
+      "exploitation_score": 3,
+      "issue_type": "Vulnerable Software",
+      "comment": null,
+      "severity": "critical",
+      "remediation_steps": [
+        "Patch the NetScaler to the latest version.",
+        "If a patch is not feasible, perform \"work-around\" mitigations per Citrix's instructions."
+      ],
+      "potential_impact": [
+        "Loss of integrity",
+        "Loss of confidentiality",
+        "Loss of availability",
+        "Data compromise",
+        "Network breach"
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "affected_asset": "ip/127.0.0.1",
+      "last_detected": "2022-03-24T04:26:03.296Z",
+      "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+      "potential_threat": "Information Disclosure",
+      "tags": [
+        "Vulnerable Software",
+        "Pulse Secure"
+      ],
+      "id": "issue/127.0.0.1-test",
+      "organizations": [
+        "Acme Interior Design",
+        "Acme Corporation"
+      ],
+      "issue_status": "normal",
+      "issue_id": "test",
+      "first_detected": "2021-07-25T16:57:01.565Z",
+      "summary": "| This is dummy data.",
+      "investigation_status": "investigating",
+      "severity_score": 10,
+      "locations": [
+        "IND"
+      ],
+      "detection_complexity": "Service Detection",
+      "exploitation_method": "Metasploit",
+      "title": "Pulse Secure Arbitrary File Reading",
+      "exploitation_score": 3,
+      "issue_type": "Vulnerable Software",
+      "severity": "critical",
+      "remediation_steps": [
+        "Patch the Pulse Secure VPN to the latest version."
+      ],
+      "potential_impact": [
+        "Loss of integrity",
+        "Loss of confidentiality",
+        "Data compromise"
+      ]
+    },
+    {
+      "affected_asset": "ip/127.0.0.2",
+      "last_detected": "2022-03-24T04:26:03.296Z",
+      "references": [
+      "https://example2.com",
+      "https://example3.com"
+    ],
+      "potential_threat": "Remote Code Execution",
+      "id": "issue/127.0.0.1-test1",
+      "organizations": [
+        "ACME Ticketing",
+        "ACME Cleantech Solutions",
+        "Acme Holdings"
+      ],
+      "issue_status": "normal",
+      "issue_id": "test1",
+      "first_detected": "2021-07-26T08:25:39.724Z",
+      "summary": "| This is dummy data.",
+      "investigation_status": "uninvestigated",
+      "severity_score": 10,
+      "locations": [
+        "USA"
+      ],
+      "detection_complexity": "Service Detection",
+      "exploitation_method": "Metasploit",
+      "title": "CVE-2019-19781 (Unauthenticated Remote Directory Traversal & Code Execution)",
+      "exploitation_score": 3,
+      "issue_type": "Vulnerable Software",
+      "severity": "critical",
+      "remediation_steps": [
+        "Patch the NetScaler to the latest version.",
+        "If a patch is not feasible, perform \"work-around\" mitigations per Citrix's instructions."
+      ],
+      "potential_impact": [
+        "Loss of integrity",
+        "Loss of confidentiality",
+        "Loss of availability",
+        "Data compromise",
+        "Network breach"
+      ]
+    }
+  ]
+}

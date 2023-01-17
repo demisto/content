@@ -1,0 +1,60 @@
+{
+  "microsoft_365_defender_raw": {
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "incidentId": {
+      "type": "string",
+      "is_array": false
+    },
+    "title": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "detectionSource": {
+      "type": "string",
+      "is_array": false
+    },
+    "category": {
+      "type": "string",
+      "is_array": false
+    },
+    "threatFamilyName": {
+      "type": "string",
+      "is_array": false
+    },
+    "threatName": {
+      "type": "string",
+      "is_array": false
+    },
+    "description": {
+      "type": "string",
+      "is_array": false
+    },
+    "alertCreationTime": {
+      "type": "string",
+      "is_array": false
+    },
+    "machineId": {
+      "type": "string",
+      "is_array": false
+    },
+    "computerDnsName": {
+      "type": "string",
+      "is_array": false
+    },
+    "mitreTechniques": {
+      "type": "string",
+      "is_array": true
+    },
+    "evidence": {
+      "type": "string",
+      "is_array": true
+    }
+  }
+}

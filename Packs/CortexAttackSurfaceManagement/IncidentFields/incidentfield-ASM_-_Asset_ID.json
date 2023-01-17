@@ -7,7 +7,7 @@
     "description": "UUID for ASM Asset",
     "editForm": true,
     "group": 0,
-    "hidden": false,
+    "hidden": true,
     "id": "incident_asmassetid",
     "isReadOnly": false,
     "locked": false,
@@ -24,5 +24,6 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.5.0",
+    "x2_fields": "xpanse_primary_asset_id"
 }

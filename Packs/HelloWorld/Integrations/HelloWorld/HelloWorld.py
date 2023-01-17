@@ -1307,7 +1307,7 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get('apikey')
+    api_key = params.get('credentials', {}).get('password')
 
     # get the service API url
     base_url = urljoin(params.get('url'), '/api/v1')

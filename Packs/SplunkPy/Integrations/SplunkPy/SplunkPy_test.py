@@ -141,7 +141,8 @@ SAMPLE_RESPONSE = [{
     'sourcetype': 'stash',
     'splunk_server': 'ip-172-31-44-193',
     'urgency': 'low',
-    'owner': 'unassigned'
+    'owner': 'unassigned',
+    'event_id': '66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca',
 }]
 
 EXPECTED = {
@@ -199,25 +200,34 @@ RAW_JSON_AND_STANDARD_OUTPUT = {"Test": "success"}
 
 
 class Jobs:
-    def __init__(self, status):
-        self.oneshot = None
+    def __init__(self, status, service):
+        self.oneshot = lambda x, **kwargs: x
         state = namedtuple('state', 'content')
         self.state = state(content={'dispatchState': str(status)})
+        self.service = service
 
     def __getitem__(self, arg):
         return 0
 
-    def create(self, query, latest_time, app, earliest_time, exec_mode):
-        return {'sid': '123456', 'resultCount': 0}
+    def create(self, query, **kwargs):
+        job = client.Job(sid='123456', service=self.service, **kwargs)
+        job.resultCount = 0
+        return job
 
 
 class Service:
     def __init__(self, status):
-        self.jobs = Jobs(status)
+        self.jobs = Jobs(status, self)
         self.status = status
+        self.disable_v2_api = False
+        self.namespace = {'app': 'test', 'owner': 'test', 'sharing': 'global'}
+        self._abspath = lambda x, **kwargs: x
+
+    def get(self, path_segment, owner=None, app=None, headers=None, sharing=None, **query):
+        return {'status': '200', 'body': 'test', 'headers': {'content-type': 'application/json'}, 'reason': 'OK'}
 
     def job(self, sid):
-        return Jobs(self.status)
+        return self.jobs
 
 
 def test_raw_to_dict():
@@ -613,18 +623,34 @@ def test_fetch_notables(mocker):
     - make sure the incident response is valid.
     - make sure that the owner is not part of the incident response
     """
+    mocker.patch.object(splunk.client.Job, 'is_done', return_value=True)
+    mocker.patch.object(splunk.client.Job, 'results', return_value=None)
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', [splunk.ASSET_ENRICHMENT,
+                        splunk.DRILLDOWN_ENRICHMENT, splunk.IDENTITY_ENRICHMENT])
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
     mock_params = {'fetchQuery': "something"}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
-    service = mocker.patch('splunklib.client.connect', return_value=None)
+    service = Service('DONE')
     mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = splunk.UserMappingObject(service, False)
-    splunk.fetch_notables(service, enrich_notables=False, mapper=mapper)
+    splunk.fetch_incidents(service, mapper=mapper)
+    cache_object = splunk.Cache.load_from_integration_context(get_integration_context())
+    assert cache_object.submitted_notables
+    notable = cache_object.submitted_notables[0]
+    incident_from_cache = notable.to_incident(mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
+    assert len(incidents) == 0
+    assert incident_from_cache["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
+                                          "Recurring Malware Infection - Rule"
+    assert not incident_from_cache.get('owner')
+
+    # now call second time to make sure that the incident fetched
+    splunk.fetch_incidents(service, mapper=mapper)
+    incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
@@ -946,7 +972,7 @@ def test_get_modified_remote_data_command(mocker):
 
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x: [updated_incidet_review]
+            self.oneshot = lambda x, count: [updated_incidet_review]
 
     class Service:
         def __init__(self):
@@ -1246,8 +1272,8 @@ def test_build_search_human_readable_multi_table_in_query(mocker):
     assert expected_headers_hr in hr
 
 
-@pytest.mark.parametrize('polling', [False, True])
-def test_build_search_kwargs(polling):
+@pytest.mark.parametrize('polling, fast_mode', [(False, True), (True, True)])
+def test_build_search_kwargs(polling, fast_mode):
     """
     Given:
         The splunk-search command args.
@@ -1260,7 +1286,7 @@ def test_build_search_kwargs(polling):
 
     """
     args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app',
-            'polling': polling}
+            'fast_mode': fast_mode, 'polling': polling}
     kwargs_normalsearch = splunk.build_search_kwargs(args, polling)
     for field in args:
         if field == 'polling':
@@ -1269,6 +1295,8 @@ def test_build_search_kwargs(polling):
                 assert kwargs_normalsearch['exec_mode'] == 'normal'
             else:
                 assert kwargs_normalsearch['exec_mode'] == 'blocking'
+        elif field == 'fast_mode' and fast_mode:
+            assert kwargs_normalsearch['adhoc_search_level'] == 'fast'
         else:
             assert field in kwargs_normalsearch
 
@@ -1291,9 +1319,8 @@ def test_splunk_search_command(mocker, polling, status):
 
     mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
                                                        'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'polling': polling})
+                                                       'fast_mode': 'false', 'polling': polling})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-
     search_result = splunk.splunk_search_command(Service(status))
 
     if search_result.scheduled_command:

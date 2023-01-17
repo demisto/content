@@ -593,6 +593,9 @@ tasks:
     nexttasks:
       '#none#':
       - "22"
+    scriptarguments:
+      user_id:
+        simple: admin@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -629,6 +632,8 @@ tasks:
           accessor: id
           transformers:
           - operator: FirstArrayElement
+      user_id:
+        simple: admin@demistodev.com
     separatecontext: false
     view: |-
       {

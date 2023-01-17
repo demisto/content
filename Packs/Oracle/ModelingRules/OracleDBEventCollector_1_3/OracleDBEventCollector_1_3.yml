@@ -1,0 +1,5 @@
+fromversion: 6.10.0
+id: OracleDBEventCollector
+name: OracleDBEventCollector
+rules: ''
+schema: ''

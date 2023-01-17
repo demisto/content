@@ -1,17 +1,20 @@
 {
-    "name": "Jq-json-processer",
-    "description": "jq command to make much more powerful queries on JSON-based data than it is possible using DT",
+    "name": "Jq-json-processer (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Szymon Siarkiewicz",
     "url": "",
     "email": "",
     "created": "2022-04-06T11:25:43Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "68zuhKQfKPk"
-    ]
+    ],
+    "hidden": true
 }

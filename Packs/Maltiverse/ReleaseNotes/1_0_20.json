@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"emoved the ***Maltiverse.Domain.ResolvedIP.IP*** and ***Maltiverse.Domain.ResolvedIP.Timestamp*** outputs as they are not supported by the updated API version."}

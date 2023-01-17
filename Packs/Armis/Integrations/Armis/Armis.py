@@ -129,8 +129,9 @@ class Client(BaseClient):
         if alert_id:
             aql_string.append(f'alertId:({alert_id})')
 
-        aql_string = ' '.join(aql_string)
-        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results, page_from=page_from)
+        aql_string = ' '.join(aql_string)  # type: ignore
+        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results,
+                                         page_from=page_from)  # type: ignore
 
     def free_string_search_alerts(self, aql_string: str,
                                   order_by: str = None,
@@ -233,8 +234,8 @@ class Client(BaseClient):
             risk_level_string = ','.join([risk_level_option for risk_level_option in risk_level])
             aql_string.append(f'riskLevel:{risk_level_string}')
 
-        aql_string = ' '.join(aql_string)
-        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results)
+        aql_string = ' '.join(aql_string)  # type: ignore
+        return self.search_by_aql_string(aql_string, order_by=order_by, max_results=max_results)  # type: ignore
 
     def free_string_search_devices(self, aql_string: str, order_by: str = None, max_results: int = None):
         """
@@ -534,12 +535,18 @@ def search_devices_command(client: Client, args: dict):
     if results:
         headers = [
             'riskLevel',
+            'id',
             'name',
             'type',
             'ipAddress',
+            'ipv6',
+            'macAddress',
+            'operatingSystem',
+            'operatingSystemVersion',
+            'manufacturer',
+            'model',
             'tags',
-            'user',
-            'id',
+            'user'
         ]
         return CommandResults(
             outputs_prefix='Armis.Device',

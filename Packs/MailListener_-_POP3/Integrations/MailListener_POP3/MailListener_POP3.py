@@ -91,7 +91,7 @@ def parse_base64(text):
     if re.match("^=?.*?=$", text):
         res = re.search('=\?.*?\?[A-Z]{1}\?(.*?)\?=', text, re.IGNORECASE)
         if res:
-            res = res.group(1)
+            res = res.group(1)  # type: ignore
             return base64.b64decode(res)  # type: ignore
     return text
 

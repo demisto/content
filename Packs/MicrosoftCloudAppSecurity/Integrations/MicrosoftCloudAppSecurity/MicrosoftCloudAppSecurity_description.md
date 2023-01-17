@@ -5,12 +5,13 @@ Microsoft Cloud App Security is a Cloud Access Security Broker that supports var
 2. *Device Code Flow*.
 3. *By token (legacy method)*. 
 
+In order to use the ***microsoft-cas-files-list*** command, you must use with the legacy Ahtentication.
 
 ### Client Credentials Flow
 ___
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article]
-(https://docs.microsoft.com/en&#45;us/defender&#45;cloud&#45;apps/api&#45;authentication&#45;application).
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following 
+[Microsoft article](https://learn.microsoft.com/en-us/defender-cloud-apps/api-authentication-application#create-an-app).
 To connect to the Microsoft Cloud App Security:
 1. In the instance configuration, select in the *Authentication Mode* parameter ***Client Credentials***.
 2. Enter your Client/Application ID in the ***Application ID*** parameter. 
@@ -29,6 +30,10 @@ To connect to the Microsoft Cloud App Security:
 4. Run the ***!microsoft-cas-auth-complete*** command.
 At the end of the process you'll see a message that you've logged in successfully.
    
+#### Required Permissions
+*Make sure to provide the following permissions for the app to work with Microsoft Cloud App Security:*
+ - ***Discovery.manage*** - https://learn.microsoft.com/en-us/defender-cloud-apps/api-authentication-application#supported-permission-scopes
+ - ***offline_access*** - only when using the Device Code flow.
 
 ### By token (legacy method)
 To access the Microsoft Cloud App Security API, you need to grant authorization.

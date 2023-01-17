@@ -12,7 +12,7 @@ CSV_TEST_RESULTS_2 = [
 ]
 
 XLS_TEST_RESULTS_1 = [
-    {'type': 'URL', 'value': 'www.demisto.com'},
+    {'type': 'URL', 'value': 'www.demisto.com/path'},
     {'type': 'Domain', 'value': 'demisto.com'}
 ]
 
@@ -24,13 +24,13 @@ TEXT_TEST_RESULT_1 = [
     {'type': 'IP', 'value': '8.8.8.8'},
     {'type': 'IP', 'value': '1.2.3.4'},
     {'type': 'Domain', 'value': 'google.com'},
-    {'type': 'URL', 'value': 'www.google.com'},
+    {'type': 'URL', 'value': 'www.google.com/path'},
     {'type': 'IPv6', 'value': '2001:db8:85a3:8d3:1319:8a2e:370:7348'}
 ]
 
 TEXT_TEST_RESULT_2 = [
     {'type': 'File', 'value': 'google.com'},
-    {'type': 'File', 'value': 'www.google.com'},
+    {'type': 'File', 'value': 'www.google.com/path'},
 ]
 
 
@@ -104,7 +104,7 @@ def test_detect_type():
     assert 'Domain' == detect_type('demisto.com')
     assert 'IP' == detect_type('8.8.8.8')
     assert 'IPv6' == detect_type('2001:db8:85a3:8d3:1319:8a2e:370:7348')
-    assert 'URL' == detect_type('www.demisto.com')
+    assert 'URL' == detect_type('www.demisto.com/path')
     assert 'CIDR' == detect_type('8.8.8.8/12')
     assert 'Email' == detect_type('some@mail.com')
     assert 'DomainGlob' == detect_type('*.demisto.com')

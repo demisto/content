@@ -1,0 +1,100 @@
+{
+  "alert_name": "Some RDP Alert",
+  "alert_details": "Details about the alert here",
+  "asmalertsummary": [
+    { "EntryID": "dumm123", "Link": "https://xsiam.com/link" }
+  ],
+  "asm_cloud": [
+    {
+      "organization": "n/a",
+      "other": "us-east-1a",
+      "project": "n/a",
+      "provider": "AWS",
+      "region": "us-east-1"
+    }
+  ],
+  "asm_data_collection": [
+    {
+      "Answerer": "fake_user@domain.com",
+      "Options": "NoAutomatedRemediation",
+      "Selected": "File a ServiceNow Ticket",
+      "Timestamp": "1666033665586"
+    }
+  ],
+  "asm_notification": [
+    {
+      "timestamp": "2022-10-17 19:08:03",
+      "type": "ServiceNow",
+      "url": "n/a",
+      "value": "asdfasdfasdfasdfa"
+    }
+  ],
+  "asmprivateip": [{ "ip": "10.0.0.2", "source": "AWS" }],
+  "asm_remediation": [
+    {
+      "action": "Notified service owner via ServiceNow",
+      "actiontimestamp": "2022-10-17 19:08:03",
+      "outcome": "Resolved by service owner",
+      "outcometimestamp": "1666033708494"
+    }
+  ],
+  "asm_service_detection": [
+    {
+      "ScanDone": "True",
+      "ScanNum": "1",
+      "ScanResult": "Open",
+      "ScanState": "open",
+      "Timestamp": "1666033432"
+    },
+    {
+      "ScanDone": "True",
+      "ScanNum": "2",
+      "ScanResult": "Open",
+      "ScanState": "open",
+      "Timestamp": "1666033738"
+    }
+  ],
+  "asm_service_owner": [
+    {
+      "email": "fake_user@domain.com",
+      "name": "Fake User",
+      "source": "SNOW-CMDB",
+      "timestamp": "1666033478911"
+    }
+  ],
+  "asm_system_ids": [
+    {
+      "id": "asdfasdfasdfasdfe",
+      "link": "n/a",
+      "type": "SNOW-CMDB-NIC"
+    },
+    {
+      "id": "asdfasdfasdfadf9",
+      "link": "n/a",
+      "type": "SNOW-CMDB-Parent"
+    },
+    {
+      "id": "easdfasdfasdfasdf",
+      "link": "https://fake.service-now.com/api/now/table/sys_user/easdfasdfasdfadsfb98",
+      "type": "SNOW-CMDB-ASSIGN"
+    },
+    {
+      "id": "asdfasdfadfasdfe",
+      "link": "https://fake.service-now.com/api/now/table/core_company/9asdfasdfasdfasdf5dbe",
+      "type": "SNOW-CMDB-COMPANY"
+    },
+    { "id": "vpc-asdfasdfaf", "link": "n/a", "type": "AWS-VPC" },
+    { "id": "sg-0asdfasdfadf", "link": "n/a", "type": "AWS-SG" },
+    { "id": "subnet-0asdfasdfasdf7", "link": "n/a", "type": "AWS-NET" },
+    { "id": "eni-0asdfasdfadf", "link": "n/a", "type": "AWS-NIC" },
+    { "id": "i-0dasdfasdfasdfaf", "link": "n/a", "type": "AWS-EC2" }
+  ],
+  "asm_tags": [
+    {
+      "Key": "Name",
+      "Value": "fake-ssh-ubuntu18",
+      "Source": "AWS"
+    },
+    { "Key": "env", "Value": "sbx", "Source": "AWS" }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "raw_response": {
+    "messages": [],
+    "search": {
+      "id": 133,
+      "createdBy": "test",
+      "createdDate": "2022-07-07T04:36:50.411813",
+      "modifiedBy": "test",
+      "modifiedDate": "2022-07-07T04:36:50.411813",
+      "subjects": [],
+      "senders": [
+        "abc@xyz.com",
+        "pqr@xyz.com"
+      ],
+      "recipient": null,
+      "attachmentNames": [],
+      "attachmentHashCriteria": {
+        "type": "ANY",
+        "attachmentHashes": []
+      },
+      "domainCriteria": {
+        "type": "ANY",
+        "domains": [],
+        "whiteListUrls": []
+      },
+      "attachmentMimeTypes": [],
+      "attachmentExcludeMimeTypes": [
+        "image"
+      ],
+      "receivedAfterDate": null,
+      "receivedBeforeDate": null,
+      "url": null,
+      "internetMessageId": null,
+      "headers": [],
+      "partialIngest": null
+    }
+  },
+  "outputs": {
+    "id": 133,
+    "createdBy": "test",
+    "createdDate": "2022-07-07T04:36:50.411813",
+    "modifiedBy": "test",
+    "modifiedDate": "2022-07-07T04:36:50.411813",
+    "senders": [
+      "abc@xyz.com",
+      "pqr@xyz.com"
+    ],
+    "attachmentHashCriteria": {
+      "type": "ANY"
+    },
+    "domainCriteria": {
+      "type": "ANY"
+    },
+    "attachmentExcludeMimeTypes": [
+      "image"
+    ]
+  }
+}

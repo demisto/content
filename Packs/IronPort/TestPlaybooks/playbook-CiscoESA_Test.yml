@@ -1,0 +1,975 @@
+id: CiscoESA
+version: -1
+name: CiscoESA
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f4f91e26-5bd9-483b-8c8f-263c07a3b1b2
+    type: start
+    task:
+      id: f4f91e26-5bd9-483b-8c8f-263c07a3b1b2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6d1077ef-78aa-42bc-83d0-ecb647df6008
+    type: regular
+    task:
+      id: 6d1077ef-78aa-42bc-83d0-ecb647df6008
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 73b16666-9df6-466e-8d56-2a2200da6cd8
+    type: regular
+    task:
+      id: 73b16666-9df6-466e-8d56-2a2200da6cd8
+      version: -1
+      name: cisco-esa-spam-quarantine-message-search
+      script: CiscoESA|||cisco-esa-spam-quarantine-message-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      end_date:
+        simple: now
+      page:
+        simple: "3"
+      page_size:
+        simple: "2"
+      start_date:
+        simple: 2weeks
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4d35912d-7254-4545-8f3f-cdefd6b766a7
+    type: condition
+    task:
+      id: 4d35912d-7254-4545-8f3f-cdefd6b766a7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.envelopeRecipient
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.toAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.fromAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.mid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 70fe7eee-b70b-460f-8ce7-6fd9df105a70
+    type: regular
+    task:
+      id: 70fe7eee-b70b-460f-8ce7-6fd9df105a70
+      version: -1
+      name: cisco-esa-spam-quarantine-message-get
+      script: CiscoESA|||cisco-esa-spam-quarantine-message-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message_id:
+        simple: "1572"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 18f533ef-7d5d-4642-8b85-0676e20035c3
+    type: condition
+    task:
+      id: 18f533ef-7d5d-4642-8b85-0676e20035c3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.envelopeRecipient
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.toAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.messageBody
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.fromAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.SpamQuarantineMessage.mid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 63292af7-dff7-41b4-8623-855b1e041024
+    type: regular
+    task:
+      id: 63292af7-dff7-41b4-8623-855b1e041024
+      version: -1
+      name: cisco-esa-list-entry-get
+      script: CiscoESA|||cisco-esa-list-entry-get
+      type: regular
+      iscommand: true
+      brand: CiscoESA
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      entry_type:
+        simple: blocklist
+      order_by:
+        simple: recipient
+      order_dir:
+        simple: desc
+      page:
+        simple: "1"
+      page_size:
+        simple: "2"
+      view_by:
+        simple: recipient
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f3a743e1-eb41-4ab7-848f-27a378d65a0c
+    type: condition
+    task:
+      id: f3a743e1-eb41-4ab7-848f-27a378d65a0c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.ListEntry.Blocklist.senderList
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.ListEntry.Blocklist.recipientAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 339ea052-1075-4a7d-82b6-11eebfa8aa7a
+    type: regular
+    task:
+      id: 339ea052-1075-4a7d-82b6-11eebfa8aa7a
+      version: -1
+      name: cisco-esa-list-entry-add
+      script: CiscoESA|||cisco-esa-list-entry-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      entry_type:
+        simple: blocklist
+      recipient_addresses:
+        simple: test@test.com
+      sender_list:
+        simple: t1@test.com,t2@test.com
+      view_by:
+        simple: recipient
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 717b77b8-7ccc-442b-83c8-05b15f8aed5e
+    type: regular
+    task:
+      id: 717b77b8-7ccc-442b-83c8-05b15f8aed5e
+      version: -1
+      name: cisco-esa-list-entry-append
+      script: CiscoESA|||cisco-esa-list-entry-append
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      entry_type:
+        simple: blocklist
+      recipient_addresses:
+        simple: test@test.com
+      sender_list:
+        simple: t4@test.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d2b44baa-c197-4b54-83cc-4b0aa42356e9
+    type: regular
+    task:
+      id: d2b44baa-c197-4b54-83cc-4b0aa42356e9
+      version: -1
+      name: cisco-esa-list-entry-edit
+      script: CiscoESA|||cisco-esa-list-entry-edit
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entry_type:
+        simple: blocklist
+      recipient_addresses:
+        simple: test@test.com
+      sender_list:
+        simple: t5@test.com,t6@test.com
+      view_by:
+        simple: recipient
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9712124a-f097-4e22-86d0-807d8dab0dfd
+    type: regular
+    task:
+      id: 9712124a-f097-4e22-86d0-807d8dab0dfd
+      version: -1
+      name: cisco-esa-list-entry-delete
+      script: CiscoESA|||cisco-esa-list-entry-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      entry_type:
+        simple: blocklist
+      recipient_list:
+        simple: test@test.com
+      view_by:
+        simple: recipient
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d21e2381-4d94-47ae-850e-d373dec619ed
+    type: regular
+    task:
+      id: d21e2381-4d94-47ae-850e-d373dec619ed
+      version: -1
+      name: cisco-esa-message-search
+      script: CiscoESA|||cisco-esa-message-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      end_date:
+        simple: now
+      page:
+        simple: "3"
+      page_size:
+        simple: "2"
+      start_date:
+        simple: 1month
+      subject_filter_operator:
+        simple: contains
+      subject_filter_value:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3fa3a8b1-d887-4566-8a56-6e15efaed826
+    type: condition
+    task:
+      id: 3fa3a8b1-d887-4566-8a56-6e15efaed826
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.friendly_from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.messageStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.recipientMap
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.senderIp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.mailPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.senderGroup
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.mid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.senderDomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.finalSubject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.direction
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.icid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.messageID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.verdictChart
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.recipient
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.sender
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.serialNumber
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.allIcid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.sbrs
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ad55f5af-794f-4a25-8966-3ca24dd56e3d
+    type: regular
+    task:
+      id: ad55f5af-794f-4a25-8966-3ca24dd56e3d
+      version: -1
+      name: cisco-esa-message-details-get
+      script: CiscoESA|||cisco-esa-message-details-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      injection_connection_id:
+        simple: "36859"
+      message_ids:
+        simple: "1576"
+      serial_number:
+        simple: 423ADC9EBD9C5F1A7A64-B81D2582608C
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 48e6c2e9-c80b-4567-8865-83fa62e52a4c
+    type: condition
+    task:
+      id: 48e6c2e9-c80b-4567-8865-83fa62e52a4c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.hostName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoESA.Message.isCompleteData
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.messageStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.mailPolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.senderGroup
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.mid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.timestamp
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoESA.Message.showDLP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoESA.Message.showURL
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.recipient
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.sender
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoESA.Message.showAMP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.summary.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Message.summary.description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoESA.Message.summary.lastEvent
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 26267579-88ca-4c3e-82eb-56c47f38b808
+    type: regular
+    task:
+      id: 26267579-88ca-4c3e-82eb-56c47f38b808
+      version: -1
+      name: cisco-esa-report-get
+      script: CiscoESA|||cisco-esa-report-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      end_date:
+        simple: now
+      report_type:
+        simple: mail_incoming_traffic_summary
+      start_date:
+        simple: 2weeks
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 77d8e688-8c43-4754-8abb-d86399c6826d
+    type: condition
+    task:
+      id: 77d8e688-8c43-4754-8abb-d86399c6826d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Report.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoESA.Report.resultSet
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 9402cd52-bbdf-4259-82d5-fe19c467d9b9
+    type: title
+    task:
+      id: 9402cd52-bbdf-4259-82d5-fe19c467d9b9
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3625,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: Cisco ESA Test Playbook

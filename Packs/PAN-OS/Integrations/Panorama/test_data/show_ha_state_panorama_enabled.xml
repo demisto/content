@@ -1,0 +1,69 @@
+<response status="success">
+    <result>
+        <enabled>yes</enabled>
+        <local-info>
+            <url-compat>Match</url-compat>
+            <app-version>8612-7539</app-version>
+            <av-compat>Match</av-compat>
+            <url-version>Not Installed</url-version>
+            <av-version>4191-4704</av-version>
+            <build-rel>10.1.5-h2</build-rel>
+            <NSX>Match</NSX>
+            <encrypt-enable>no</encrypt-enable>
+            <Cloud-Services>Compat Match</Cloud-Services>
+            <monitor-fail-holdup>0</monitor-fail-holdup>
+            <priority>primary</priority>
+            <preempt-hold>1</preempt-hold>
+            <state>primary-active</state>
+            <version>1</version>
+            <promotion-hold>2000</promotion-hold>
+            <addon-master-holdup>7000</addon-master-holdup>
+            <heartbeat-interval>2000</heartbeat-interval>
+            <hello-interval>8000</hello-interval>
+            <mgmt-ip>1.1.1.1/24</mgmt-ip>
+            <mgmt-macaddr>00:50:56:ab:cd:ef</mgmt-macaddr>
+            <AZ>Match</AZ>
+            <link-mon-intv>3000</link-mon-intv>
+            <state-duration>10840</state-duration>
+            <mgmt-ipv6></mgmt-ipv6>
+            <preemptive>no</preemptive>
+            <iot-version>56-343</iot-version>
+            <build-compat>Match</build-compat>
+            <encrypt-imported>yes</encrypt-imported>
+            <iot-compat>Match</iot-compat>
+            <app-compat>Match</app-compat>
+        </local-info>
+        <peer-info>
+            <iot-version>56-343</iot-version>
+            <app-version>8612-7539</app-version>
+            <conn-status>up</conn-status>
+            <build-rel>10.1.5-h2</build-rel>
+            <mgmt-macaddr>00:50:56:ab:cd:ef</mgmt-macaddr>
+            <state-duration>10797</state-duration>
+            <mgmt-ip>1.1.1.2</mgmt-ip>
+            <Cloud-Services>2.1.0</Cloud-Services>
+            <NSX>3.2.0</NSX>
+            <preemptive>no</preemptive>
+            <AZ>2.0.3</AZ>
+            <priority>secondary</priority>
+            <last-error-state>secondary-suspended</last-error-state>
+            <state>secondary-passive</state>
+            <version>1</version>
+            <url-version>Not Installed</url-version>
+            <av-version>4191-4704</av-version>
+            <conn-ha1>
+                <conn-status>up</conn-status>
+                <conn-primary>yes</conn-primary>
+                <conn-desc>heartbeat status</conn-desc>
+            </conn-ha1>
+            <last-error-reason>User requested</last-error-reason>
+        </peer-info>
+        <path-monitoring>
+            <failure-condition>any</failure-condition>
+            <enabled>yes</enabled>
+            <groups/>
+        </path-monitoring>
+        <running-sync>not synchronized</running-sync>
+        <running-sync-enabled>yes</running-sync-enabled>
+    </result>
+</response>

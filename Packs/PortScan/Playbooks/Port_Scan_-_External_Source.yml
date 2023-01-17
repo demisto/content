@@ -1067,6 +1067,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
+toversion: 5.9.9
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

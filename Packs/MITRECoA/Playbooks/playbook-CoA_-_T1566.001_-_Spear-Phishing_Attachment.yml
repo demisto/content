@@ -1,0 +1,534 @@
+description: "This playbook Remediates the Spear-Phishing Attachment technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1566.001: Spear-Phishing Attachment\n\nKill Chain phases:\n- Initial Access\n\nMITRE ATT&CK Description:\n\nAdversaries may send spearphishing emails with a malicious attachment in an attempt to gain access to victim systems. Spearphishing attachment is a specific variant of spearphishing. Spearphishing attachment is different from other forms of spearphishing in that it employs the use of malware attached to an email. All forms of spearphishing are electronically delivered social engineering targeted at a specific individual, company, or industry. In this scenario, adversaries attach a file to the spearphishing email and usually rely upon User Execution to gain execution.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
+id: MITRE ATT&CK CoA - T1566.001 - Spear-Phishing Attachment
+inputs:
+- description: Template name to enforce WildFire best practices profile.
+  key: template
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MITRE ATT&CK CoA - T1566.001 - Spear-Phishing Attachment
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a7241ac9-c852-4302-8914-487319ede100
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: a7241ac9-c852-4302-8914-487319ede100
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 195d4bf5-8da5-4601-8604-ee5aee989a5f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 195d4bf5-8da5-4601-8604-ee5aee989a5f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2245
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Configure XDR Malware Security Profile.
+      id: b60fb437-41c8-4615-8070-287e57bf6308
+      iscommand: false
+      name: Manual - Configure XDR Malware Security Profile
+      type: regular
+      version: -1
+    taskid: b60fb437-41c8-4615-8070-287e57bf6308
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1665
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 44aad267-b338-42d1-8e39-1e44de660664
+      iscommand: false
+      name: Forward files for WildFire Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: 44aad267-b338-42d1-8e39-1e44de660664
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: '["T1193","T1566.001"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 0f100148-6ebf-4d5d-8d77-3bfc8caa7f9e
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 0f100148-6ebf-4d5d-8d77-3bfc8caa7f9e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1860
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7e115d51-47e6-4cb6-8f29-0a8cc0dc69ed
+      iscommand: false
+      name: PAN-OS - Enforce File Blocking Best Practices Profile
+      playbookId: PAN-OS - Enforce File Blocking Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 7e115d51-47e6-4cb6-8f29-0a8cc0dc69ed
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 97af1725-4a50-4c55-828c-5b7fd2a54f96
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Virus Best Practices Profile
+      playbookId: PAN-OS - Enforce Anti-Virus Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 97af1725-4a50-4c55-828c-5b7fd2a54f96
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d5a86576-c5be-46b4-81e7-86b2170d1dfa
+      iscommand: false
+      name: PAN-OS - Enforce WildFire Best Practices Profile
+      playbookId: PAN-OS - Enforce WildFire Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: d5a86576-c5be-46b4-81e7-86b2170d1dfa
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 980
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d3ee8b64-3414-4fad-8143-85e06cd546e6
+      iscommand: false
+      name: Enable Anti-Virus profile with reset-both action
+      type: title
+      version: -1
+      description: ''
+    taskid: d3ee8b64-3414-4fad-8143-85e06cd546e6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5b92567-1690-49f3-84d5-6897d667166c
+      iscommand: false
+      name: Configure a File Blocking Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: b5b92567-1690-49f3-84d5-6897d667166c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 78aa28e2-5c35-489b-8e85-67153db48382
+      iscommand: false
+      name: Configure XDR Malware Security Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: 78aa28e2-5c35-489b-8e85-67153db48382
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1170
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 16ca677d-ce6a-4470-8fa1-26df13640ab9
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 16ca677d-ce6a-4470-8fa1-26df13640ab9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1320
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: 84e48db8-1041-4d2b-839e-b41b6fcd0353
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: 84e48db8-1041-4d2b-839e-b41b6fcd0353
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1490
+        }
+      }
+  "23":
+    continueonerror: true
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: f3da3803-436d-4fc5-8ada-78e34f6e5ce6
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: f3da3803-436d-4fc5-8ada-78e34f6e5ce6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2050
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2260,
+        "width": 730,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

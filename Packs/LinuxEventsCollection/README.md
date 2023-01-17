@@ -33,6 +33,8 @@ filebeat.inputs:
   paths:
     - /var/log/syslog
     - /var/log/auth.log
+    - /var/log/messages
+    - /var/log/secure
   processors:
     - add_fields:
         fields:

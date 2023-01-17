@@ -1,5 +1,5 @@
 {
-    "name": "Demisto Lock",
+    "name": "Cortex Lock",
     "description": "Locking mechanism that prevents concurrent execution of different tasks",
     "support": "xsoar",
     "currentVersion": "1.0.4",
@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Demisto Lock",
+        "Core Lock"
+    ],
     "dependencies": {},
     "marketplaces": [
         "xsoar",

@@ -1,4 +1,4 @@
-import requests
+import urllib3
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -6,7 +6,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 DEFAULT_HEADERS = {
     "Content-Type": "application/json"
@@ -150,79 +150,87 @@ def create_domain_command_markdown(domain, context):
 
 
 def domain_command(**kwargs):
-    domain_name = demisto.args().get('domain')
-    threat_miner_raw_results = get_domain_report_from_threat_miner(domain_name, kwargs.get('threat_miner_url'),
-                                                                   kwargs.get('verify_certificates'))
+    domains_names = demisto.args().get('domain')
+    domains_names_list = argToList(domains_names)
 
-    passive_dns = {}
-    subdomains = {}
-    md5s = {}
-    max_returned_array_size = kwargs.get('max_array_size')
-    if max_returned_array_size == -1:
-        passive_dnses = threat_miner_raw_results['raw_passive_dns']
-        subdomains = threat_miner_raw_results['raw_sub_domains']
-        md5s = threat_miner_raw_results['raw_domain_md5']
-    else:
-        passive_dnses = threat_miner_raw_results['raw_passive_dns'][:max_returned_array_size]
-        subdomains = threat_miner_raw_results['raw_sub_domains'][:max_returned_array_size]
-        md5s = threat_miner_raw_results['raw_domain_md5'][:max_returned_array_size]
+    domains_results = []
 
-    context_passive_dnses = []
-    for passive_dns in passive_dnses:
-        context_passive_dnses.append({
-            'IP': passive_dns['ip'],
-            'FirstSeen': passive_dns['first_seen'],
-            'LastSeen': passive_dns['last_seen']
+    for domain_name in domains_names_list:
+        threat_miner_raw_results = get_domain_report_from_threat_miner(domain_name, kwargs.get('threat_miner_url'),
+                                                                       kwargs.get('verify_certificates'))
 
-        })
+        passive_dns = {}
+        subdomains = {}
+        md5s = {}
+        max_returned_array_size = kwargs.get('max_array_size')
+        if max_returned_array_size == -1:
+            passive_dnses = threat_miner_raw_results['raw_passive_dns']
+            subdomains = threat_miner_raw_results['raw_sub_domains']
+            md5s = threat_miner_raw_results['raw_domain_md5']
+        else:
+            passive_dnses = threat_miner_raw_results['raw_passive_dns'][:max_returned_array_size]
+            subdomains = threat_miner_raw_results['raw_sub_domains'][:max_returned_array_size]
+            md5s = threat_miner_raw_results['raw_domain_md5'][:max_returned_array_size]
 
-    threat_miner_context = {
-        'Name': domain_name,
-        'Whois': {
-            'Server': threat_miner_raw_results['raw_whois']['whois']['whois_server'],
-            'CreateDate': threat_miner_raw_results['raw_whois']['whois']['creation_date'],
-            'UpdateDate': threat_miner_raw_results['raw_whois']['whois']['updated_date'],
-            'Expiration': threat_miner_raw_results['raw_whois']['whois']['expiration_date'],
-            'NameServers': threat_miner_raw_results['raw_whois']['whois']['nameservers']
-        },
-        'PassiveDNS': context_passive_dnses,
-        'Subdomains': subdomains,
-        'URI': get_domain_URI(threat_miner_raw_results, max_returned_array_size),
-        'MD5': md5s
-    }
+        context_passive_dnses = []
+        for passive_dns in passive_dnses:
+            context_passive_dnses.append({
+                'IP': passive_dns['ip'],
+                'FirstSeen': passive_dns['first_seen'],
+                'LastSeen': passive_dns['last_seen']
 
-    passive_dnses_ips = []
-    for passive_dns in passive_dnses:
-        passive_dnses_ips.append(passive_dns['ip'])
+            })
 
-    domain_context = {
-        "Name": threat_miner_context['Name'],
-        "DNS": passive_dnses_ips,
-        'Whois': {
-            'UpdateDate': threat_miner_context['Whois']['UpdateDate'],
-            'CreateDate': threat_miner_context['Whois']['CreateDate'],
-            'Expiration': threat_miner_context['Whois']['Expiration'],
-            'Registrant': {
-                'Name': threat_miner_raw_results['raw_whois']['whois']['tech_info']['Organization'],
-                'Email': threat_miner_raw_results['raw_whois']['whois']['emails']['registrant']
+        threat_miner_context = {
+            'Name': domain_name,
+            'Whois': {
+                'Server': threat_miner_raw_results['raw_whois']['whois']['whois_server'],
+                'CreateDate': threat_miner_raw_results['raw_whois']['whois']['creation_date'],
+                'UpdateDate': threat_miner_raw_results['raw_whois']['whois']['updated_date'],
+                'Expiration': threat_miner_raw_results['raw_whois']['whois']['expiration_date'],
+                'NameServers': threat_miner_raw_results['raw_whois']['whois']['nameservers']
+            },
+            'PassiveDNS': context_passive_dnses,
+            'Subdomains': subdomains,
+            'URI': get_domain_URI(threat_miner_raw_results, max_returned_array_size),
+            'MD5': md5s
+        }
+
+        passive_dnses_ips = []
+        for passive_dns in passive_dnses:
+            passive_dnses_ips.append(passive_dns['ip'])
+
+        domain_context = {
+            "Name": threat_miner_context['Name'],
+            "DNS": passive_dnses_ips,
+            'Whois': {
+                'UpdateDate': threat_miner_context['Whois']['UpdateDate'],
+                'CreateDate': threat_miner_context['Whois']['CreateDate'],
+                'Expiration': threat_miner_context['Whois']['Expiration'],
+                'Registrant': {
+                    'Name': threat_miner_raw_results['raw_whois']['whois']['tech_info']['Organization'],
+                    'Email': threat_miner_raw_results['raw_whois']['whois']['emails']['registrant']
+                }
             }
         }
-    }
 
-    context = {
-        'ThreatMiner.Domain(val.Name && val.Name == obj.Name)': threat_miner_context,
-        'Domain(val.Name && val.Name == obj.Name)': domain_context
-    }
+        context = {
+            'ThreatMiner.Domain(val.Name && val.Name == obj.Name)': threat_miner_context,
+            'Domain(val.Name && val.Name == obj.Name)': domain_context
+        }
 
-    markdown = create_domain_command_markdown(domain_name, threat_miner_context)
+        markdown = create_domain_command_markdown(domain_name, threat_miner_context)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': threat_miner_raw_results,
-        'HumanReadable': markdown,
-        'EntryContext': context,
-        'ContentsFormat': formats['json']
-    })
+        result = {
+            'Type': entryTypes['note'],
+            'Contents': threat_miner_raw_results,
+            'HumanReadable': markdown,
+            'EntryContext': context,
+            'ContentsFormat': formats['json']
+        }
+        domains_results.append(result)
+
+    demisto.results(domains_results)
 
 
 def get_ip_whois_rawdata(ip_address, threat_miner_url, verify_certificates):
@@ -350,59 +358,79 @@ def get_passive_dns(threat_miner_raw_results):
     return passive_dnses
 
 
+def validate_ips(ips):
+    invalid_ips = []
+
+    for ip in ips:
+        if not is_ip_valid(ip):
+            invalid_ips.append(ip)
+
+    if invalid_ips:
+        return_error('An invalid IP(s) was specified: {}'.format(invalid_ips))
+
+
 def ip_command(**kwargs):
-    ip_address = demisto.args().get('ip')
-    if not is_ip_valid(ip_address):
-        return_error('An invalid IP was specified')
-    threat_miner_raw_results = get_ip_report_from_threat_miner(ip_address, kwargs.get('threat_miner_url'),
-                                                               kwargs.get('verify_certificates'))
-    passiveDnses = get_passive_dns(threat_miner_raw_results)
-    md5s = {}
-    ssls = {}
+    ips_address = demisto.args().get('ip')
+    ips_address_list = argToList(ips_address)
 
-    max_returned_array_size = kwargs.get('max_array_size')
-    if max_returned_array_size == -1:
-        passiveDns = passiveDnses
-        md5s = threat_miner_raw_results['raw_ip_md5']
-        ssls = threat_miner_raw_results['raw_ip_ssl']
-    else:
-        ssls = threat_miner_raw_results['raw_ip_ssl'][:max_returned_array_size]
-        passiveDns = passiveDnses[:max_returned_array_size]
-        md5s = threat_miner_raw_results['raw_ip_md5'][:max_returned_array_size]
+    validate_ips(ips_address_list)
 
-    threat_miner_context = {
-        'Address': ip_address,
-        'Whois': {
+    ips_address_results = []
+
+    for ip_address in ips_address_list:
+        threat_miner_raw_results = get_ip_report_from_threat_miner(ip_address, kwargs.get('threat_miner_url'),
+                                                                   kwargs.get('verify_certificates'))
+        passiveDnses = get_passive_dns(threat_miner_raw_results)
+        md5s = {}
+        ssls = {}
+
+        max_returned_array_size = kwargs.get('max_array_size')
+        if max_returned_array_size == -1:
+            passiveDns = passiveDnses
+            md5s = threat_miner_raw_results['raw_ip_md5']
+            ssls = threat_miner_raw_results['raw_ip_ssl']
+        else:
+            ssls = threat_miner_raw_results['raw_ip_ssl'][:max_returned_array_size]
+            passiveDns = passiveDnses[:max_returned_array_size]
+            md5s = threat_miner_raw_results['raw_ip_md5'][:max_returned_array_size]
+
+        threat_miner_context = {
             'Address': ip_address,
-            'Reverse': threat_miner_raw_results['raw_whois'].get('reverse_name'),
-            'Bgp': threat_miner_raw_results['raw_whois'].get('bgp_prefix'),
-            'Country': threat_miner_raw_results['raw_whois'].get('cc'),
-            'ASN': threat_miner_raw_results['raw_whois'].get('asn'),
-            'Org': threat_miner_raw_results['raw_whois'].get('org_name')
-        },
-        'PassiveDNS': passiveDns,
-        'MD5': md5s,
-        'URI': get_ip_URI(threat_miner_raw_results, max_returned_array_size),
-        'SSL': ssls
-    }
+            'Whois': {
+                'Address': ip_address,
+                'Reverse': threat_miner_raw_results['raw_whois'].get('reverse_name'),
+                'Bgp': threat_miner_raw_results['raw_whois'].get('bgp_prefix'),
+                'Country': threat_miner_raw_results['raw_whois'].get('cc'),
+                'ASN': threat_miner_raw_results['raw_whois'].get('asn'),
+                'Org': threat_miner_raw_results['raw_whois'].get('org_name')
+            },
+            'PassiveDNS': passiveDns,
+            'MD5': md5s,
+            'URI': get_ip_URI(threat_miner_raw_results, max_returned_array_size),
+            'SSL': ssls
+        }
 
-    markdown = create_ip_command_markdown(ip_address, threat_miner_context)
-    ipcontext = {
-        "IP.Address": threat_miner_context['Address'],
-        "IP.Geo.Country": threat_miner_context['Whois']['Country'],
-        "IP.ASN": threat_miner_context['Whois']['ASN'],
-    }
-    context = {
-        'ThreatMiner.IP(val.Address && val.Address == obj.Address)': threat_miner_context,
-        'IP(val.Address && val.Address == obj.Address)': ipcontext
-    }
+        markdown = create_ip_command_markdown(ip_address, threat_miner_context)
+        ipcontext = {
+            "IP.Address": threat_miner_context['Address'],
+            "IP.Geo.Country": threat_miner_context['Whois']['Country'],
+            "IP.ASN": threat_miner_context['Whois']['ASN'],
+        }
+        context = {
+            'ThreatMiner.IP(val.Address && val.Address == obj.Address)': threat_miner_context,
+            'IP(val.Address && val.Address == obj.Address)': ipcontext
+        }
 
-    demisto.results(
-        {'Type': entryTypes['note'],
-         'Contents': threat_miner_raw_results,
-         'HumanReadable': markdown,
-         'EntryContext': context,
-         'ContentsFormat': formats['json']})
+        result = {
+            'Type': entryTypes['note'],
+            'Contents': threat_miner_raw_results,
+            'HumanReadable': markdown,
+            'EntryContext': context,
+            'ContentsFormat': formats['json']
+        }
+        ips_address_results.append(result)
+
+    demisto.results(ips_address_results)
 
 
 def get_file_whois_rawdata(hashed_file, threat_miner_url, verify_certificates):
@@ -550,51 +578,59 @@ def get_dbot_scores_context(threat_miner_raw_results, file_context, hashed_file,
 
 
 def file_command(**kwargs):
-    hashed_file = demisto.args().get('file')
-    threat_miner_raw_results = get_file_report_from_threat_miner(hashed_file, kwargs.get('threat_miner_url'),
-                                                                 kwargs.get('verify_certificates'))
+    hashed_files = demisto.args().get('file')
+    hashed_files_list = argToList(hashed_files)
 
-    max_returned_array_size = kwargs.get('max_array_size')
-    threat_miner_context = {
-        'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
-        'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
-        'SHA1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
-        'SHA256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
-        'Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
-        'Name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
-        'Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
-        'Analyzed': threat_miner_raw_results['raw_whois'].get('date_analysed', ''),
-        'HTTP': get_file_http(threat_miner_raw_results, max_returned_array_size),
-        'Domains': get_file_domains_and_ip(threat_miner_raw_results, max_returned_array_size),
-        'Mutants': get_file_mutants(threat_miner_raw_results, max_returned_array_size),
-        'Registry': get_file_registry_keys(threat_miner_raw_results, max_returned_array_size),
-        'AV': get_file_AV_detection(threat_miner_raw_results)
-    }
-    markdown = create_file_command_markdown(hashed_file, threat_miner_context)
+    hashed_files_results = []
 
-    file_context = {
-        'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
-        'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
-        'SHA1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
-        'SHA256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
-        'Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
-        'Name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
-        'Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
-        'Analyzed': threat_miner_raw_results['raw_whois'].get('date_analysed', '')
-    }
-    dbot_scores = get_dbot_scores_context(threat_miner_context, file_context, hashed_file, kwargs.get('reliability'))
+    for hashed_file in hashed_files_list:
+        threat_miner_raw_results = get_file_report_from_threat_miner(hashed_file, kwargs.get('threat_miner_url'),
+                                                                     kwargs.get('verify_certificates'))
 
-    context = {
-        'ThreatMiner.File(val.MD5 && val.MD5 == obj.MD5)': threat_miner_context,
-        'File(val.MD5 && val.MD5 == obj.MD5)': file_context,
-        'DBotScore': dbot_scores
-    }
+        max_returned_array_size = kwargs.get('max_array_size')
+        threat_miner_context = {
+            'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
+            'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
+            'SHA1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
+            'SHA256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
+            'Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
+            'Name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
+            'Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
+            'Analyzed': threat_miner_raw_results['raw_whois'].get('date_analysed', ''),
+            'HTTP': get_file_http(threat_miner_raw_results, max_returned_array_size),
+            'Domains': get_file_domains_and_ip(threat_miner_raw_results, max_returned_array_size),
+            'Mutants': get_file_mutants(threat_miner_raw_results, max_returned_array_size),
+            'Registry': get_file_registry_keys(threat_miner_raw_results, max_returned_array_size),
+            'AV': get_file_AV_detection(threat_miner_raw_results)
+        }
+        markdown = create_file_command_markdown(hashed_file, threat_miner_context)
 
-    return demisto.results({'Type': entryTypes['note'],
-                            'Contents': threat_miner_raw_results,
-                            'HumanReadable': markdown,
-                            'EntryContext': context,
-                            'ContentsFormat': formats['json']})
+        file_context = {
+            'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
+            'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
+            'SHA1': threat_miner_raw_results['raw_whois'].get('sha1', ''),
+            'SHA256': threat_miner_raw_results['raw_whois'].get('sha256', ''),
+            'Type': threat_miner_raw_results['raw_whois'].get('file_type', ''),
+            'Name': threat_miner_raw_results['raw_whois'].get('file_name', ''),
+            'Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
+            'Analyzed': threat_miner_raw_results['raw_whois'].get('date_analysed', '')
+        }
+        dbot_scores = get_dbot_scores_context(threat_miner_context, file_context, hashed_file, kwargs.get('reliability'))
+
+        context = {
+            'ThreatMiner.File(val.MD5 && val.MD5 == obj.MD5)': threat_miner_context,
+            'File(val.MD5 && val.MD5 == obj.MD5)': file_context,
+            'DBotScore': dbot_scores
+        }
+
+        result = {'Type': entryTypes['note'],
+                  'Contents': threat_miner_raw_results,
+                  'HumanReadable': markdown,
+                  'EntryContext': context,
+                  'ContentsFormat': formats['json']}
+        hashed_files_results.append(result)
+
+    demisto.results(hashed_files_results)
 
 
 def get_dbot_score_report(amount_of_detections, hashed_file, file_context, reliability):

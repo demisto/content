@@ -553,7 +553,7 @@ script:
       name: azure-data-explorer-auth-test
       arguments: []
       outputs: []
-  dockerimage: demisto/azure-kusto-data:1.0.0.30486
+  dockerimage: demisto/azure-kusto-data:1.0.0.44974
   feed: false
   isfetch: false
   longRunning: false

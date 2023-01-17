@@ -26,8 +26,12 @@ def _get_behavioral_task_id(value):
 
 def test_module(client: Client) -> str:
     r = client._http_request(
-        "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
+        "GET", "me", resp_type="response", ok_codes=(200, 401, 404)
     )
+    if r.status_code == 404:
+        r = client._http_request(
+            "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
+        )
 
     if r.status_code == 404:
         return "Page not found, possibly wrong base_url"
@@ -58,7 +62,21 @@ def query_samples(client, **args) -> CommandResults:
 
 
 def submit_sample(client: Client, **args) -> CommandResults:
-    data = {"kind": args.get("kind"), "interactive": False}
+    data = {
+        "kind": args.get("kind"),
+        "interactive": argToBoolean(args.get("interactive", False))
+    }
+
+    if args.get("password"):
+        data["password"] = args["password"]
+
+    if args.get("timeout"):
+        data.setdefault("defaults", {})["timeout"] = arg_to_number(
+            args["timeout"]
+        )
+
+    if args.get("network"):
+        data.setdefault("defaults", {})["network"] = args["network"]
 
     if args.get("profiles", []):
         profiles_data = []
@@ -82,8 +100,8 @@ def submit_sample(client: Client, **args) -> CommandResults:
             )
     else:
         raise IncorrectUsageError(
-            f'Type of sample needs to be selected, either "file" or "url", '
-            f'the selected type was: {data["kind"]}'
+            f'Type of submission needs to be selected, either "file", "url", '
+            f'or fetch. The selected type was: {data["kind"]}'
         )
 
     return CommandResults(
@@ -101,12 +119,21 @@ def get_sample(client: Client, **args) -> CommandResults:
 
 
 def get_sample_summary(client: Client, **args) -> CommandResults:
-    sample_id = args.get("sample_id")
-    r = client._http_request("GET", f"samples/{sample_id}/summary")
+    outputs = []
+    for sample_id in argToList(args.get("sample_id", "")):
+        try:
+            res = client._http_request(
+                "GET", f"samples/{sample_id}/summary", ok_codes=(200,)
+            )
+        except DemistoException as e:
+            e.message += f" - Sample ID: {sample_id}"
+            raise
+
+        outputs.append(res)
 
     return CommandResults(
         outputs_prefix="Triage.sample-summaries", outputs_key_field="sample",
-        outputs=r
+        outputs=outputs
     )
 
 
@@ -139,7 +166,7 @@ def set_sample_profile(client: Client, **args) -> str:
 
 def get_static_report(client: Client, **args) -> CommandResults:
     """
-    Get's the static analysis report from a given sample
+    Gets the static analysis report for a given sample id
     """
     sample_id = args.get("sample_id")
 

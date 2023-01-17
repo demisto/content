@@ -11,11 +11,12 @@ This playbook does not use any sub-playbooks.
 * MicrosoftGraphMail
 
 ### Scripts
+* Set
 * IsIntegrationAvailable
 
 ### Commands
-* msgraph-mail-get-email-as-eml
 * msgraph-mail-list-emails
+* msgraph-mail-get-email-as-eml
 
 ## Playbook Inputs
 ---

@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IoC_Domain | A Digital Shadows ShadowSearch query containing domains | Domain.Name.None | Optional |
+| IoC_Domain | A Digital Shadows ShadowSearch query containing domains | Domain.Name | Optional |
 
 ## Playbook Outputs
 ---

@@ -1,0 +1,109 @@
+{
+    "zscaler_nssweblog_raw": {
+        "externalId": {
+          "type": "string",
+          "is_array": false
+        },
+        "act": {
+          "type": "string",
+          "is_array": false
+        },
+        "reason": {
+          "type": "string",
+          "is_array": false
+        },
+        "requestMethod": {
+          "type": "string",
+          "is_array": false
+        },
+        "request": {
+          "type": "string",
+          "is_array": false
+        },
+        "devicehostname": {
+          "type": "string",
+          "is_array": false
+        },
+        "src": {
+          "type": "string",
+          "is_array": false
+        },
+        "dst": {
+          "type": "string",
+          "is_array": false
+        },
+        "cat": {
+          "type": "string",
+          "is_array": false
+        },
+        "app": {
+          "type": "string",
+          "is_array": false
+        },
+        "suser": {
+          "type": "string",
+          "is_array": false
+        },
+        "spriv": {
+          "type": "string",
+          "is_array": false
+        },
+        "dhost": {
+          "type": "string",
+          "is_array": false
+        },
+        "outcome": {
+          "type": "string",
+          "is_array": false
+        },
+        "out": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs2": {
+          "type": "string",
+          "is_array": false
+        },
+        "contenttype": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs4": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs5": {
+          "type": "string",
+          "is_array": false
+        },
+        "cn1": {
+          "type": "string",
+          "is_array": false
+        },
+        "_reporting_device_name": {
+          "type": "string",
+          "is_array": false
+        },
+        "requestClientApplication": {
+          "type": "string",
+          "is_array": false
+        },
+        "destinationServiceName": {
+          "type": "string",
+          "is_array": false
+        },
+        "sourceTranslatedAddress": {
+          "type": "string",
+          "is_array": false
+        },
+        "ZscalerNSSWeblogURLClass": {
+          "type": "string",
+          "is_array": false
+        },
+        "fileType": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+}
+ 

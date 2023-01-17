@@ -1282,14 +1282,12 @@ def test_jira_req(mocker, requests_mock, params, custom_headers, expected_header
            - Ensure the authentication headers are correct when using default headers
        """
     import JiraV2
-    import requests
 
     class ResponseDummy():
         def __init__(self):
             self.ok = 1
 
-    req_mock = mocker.patch.object(requests, 'request', return_value=ResponseDummy())
-    # requests_mock.register_uri(requests_mock.ANY, 'example.com', text='resp')
+    req_mock = mocker.patch.object(JiraV2.SESSION, 'request', return_value=ResponseDummy())
     JiraV2.USERNAME = params.get('username')
     JiraV2.HEADERS = {'Content-Type': 'application/json'}
     mocker.patch.object(demisto, "params", return_value=params)

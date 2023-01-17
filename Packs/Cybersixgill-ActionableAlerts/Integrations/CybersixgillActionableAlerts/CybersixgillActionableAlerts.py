@@ -7,12 +7,13 @@ from CommonServerUserPython import *
 import json
 import copy
 import requests
+import urllib3
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 

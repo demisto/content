@@ -1,0 +1,15 @@
+{
+	"name": "variants/30e27357b7b773b226d4ee638e17b19b954226d197b0781822859269a5c22b4d",
+	"variants": [
+		{
+			"similarity": 1,
+			"sha256": "e1a00d8923bac6f863c262236f15eb60d80571f8b31e7220c4b2912fae7e9a14"
+		},
+		{
+			"similarity": 0.9875,
+			"sha256": "e1a00d8923bac6f863c262236f15eb60d80571f8b31e7220c4b2912fae7e9a14"
+		}
+	],
+	"variant_count": 2,
+	"original_object": "30e27357b7b773b226d4ee638e17b19b954226d197b0781822859269a5c22b4d"
+}

@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "modified": "2020-10-26T15:44:53.870145028Z",
-    "name": "Technique Name",
+    "name": "Technique name",
     "ownerOnly": false,
     "cliName": "techniquename",
     "type": "shortText",

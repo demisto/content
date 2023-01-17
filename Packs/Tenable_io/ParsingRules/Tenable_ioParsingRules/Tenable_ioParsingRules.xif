@@ -1,0 +1,2 @@
+[INGEST:vendor="tenable", product="io", target_dataset="tenable_io_raw", no_hit=keep]
+ alter _time = coalesce(received, indexed);

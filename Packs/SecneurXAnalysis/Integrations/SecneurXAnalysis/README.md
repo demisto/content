@@ -222,4 +222,26 @@ Get the detailed report of the analyzed sample.
 | SecneurXAnalysis.Report.FileDeleted | String | List of File deletions observed in the analyzed sample | 
 | SecneurXAnalysis.Report.FileModified | String | List of File changes observed in the analyzed sample | 
 | SecneurXAnalysis.Report.IOC | String | List of IOC's observed in the analyzed sample | 
-| SecneurXAanlysis.Report.Status | String | Analysis queued sample state |
+| SecneurXAnalysis.Report.Status | String | Analysis queued sample state |
+
+### snx-analysis-get-quota
+***
+Get the API Key quota usage details.
+
+#### Base Command
+
+`snx-analysis-get-quota`
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SecneurXAnalysis.Quota.start_time | String | Creation Time of the API Key |
+| SecneurXAnalysis.Quota.used | Integer | Used count of API Key |
+| SecneurXAnalysis.Quota.allowed | Integer | Limitation count of API Key |
+| SecneurXAnalysis.Quota.scale | String | API Key expiration renew scale type |
+| SecneurXAnalysis.Quota.unused | String | Unused count of API Key |
+
+#### Human Readable Output
+| allowed | scale | start_time | unused | used |
+| 100 | MONTH | 01 Sep 2022 00:00:00 UTC | 60 | 40 |

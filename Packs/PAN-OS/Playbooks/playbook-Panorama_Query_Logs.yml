@@ -616,3 +616,4 @@ outputs:
 tests:
 - Panorama Query Logs - Test
 fromversion: 5.0.0
+toversion: 6.1.9

@@ -1,4 +1,5 @@
 import shutil
+import urllib3
 from typing import Callable
 
 from requests import Response
@@ -134,8 +135,6 @@ class Client:
         xsoar_system_file_path = xsoar_file_data['path']
         blob_name = file_name if file_name else xsoar_file_data['name']
 
-        headers = {'x-ms-blob-type': 'BlockBlob'}
-
         try:
             shutil.copy(xsoar_system_file_path, blob_name)
         except FileNotFoundError:
@@ -144,6 +143,7 @@ class Client:
 
         try:
             with open(blob_name, 'rb') as file:
+                headers = {'x-ms-blob-type': 'BlockBlob', 'Content-Length': f'{os.path.getsize(file.name)}'}
                 response = self.ms_client.http_request(method='PUT',
                                                        url_suffix=f'{container_name}/{blob_name}',
                                                        headers=headers,
@@ -886,6 +886,8 @@ def main() -> None:
     global storage_account_name
     account_sas_token = params['credentials']['password']
     storage_account_name = params['credentials']['identifier']
+    # supported api versions can be found here:
+    # https://learn.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.blob.core.windows.net/'
 
@@ -893,7 +895,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
                                 api_version)
 

@@ -1,6 +1,7 @@
 {
     "name": "Symantec Advanced Threat Protection (Deprecated)",
     "description": "Deprecated. No available replacement.",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",

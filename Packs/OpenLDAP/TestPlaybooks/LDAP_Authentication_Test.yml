@@ -158,7 +158,7 @@ tasks:
       password:
         simple: "1234"
       username:
-        simple: Demisto\NotAnADUser
+        simple: Demisto\NotAnLDAPUser
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
