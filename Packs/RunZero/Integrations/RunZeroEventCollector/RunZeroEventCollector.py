@@ -30,6 +30,10 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
+    def __init__(self, base_url, verify, proxy, data):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.data = data
+
     def fetch_system_event_logs(self, search_query: str) -> list:
         """
         Searches for RunZero system event logs using the '/account/events.json' API endpoint.
@@ -42,13 +46,31 @@ class Client(BaseClient):
             list: list of RunZero system event logs as dicts.
         """
 
-        # search_query in the form of: created_at:>1673719953
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        api_token_res = self._http_request(
+            method='POST',
+            url_suffix='/account/api/token',
+            headers=headers,
+            data=self.data
+        )
+
+        api_token = api_token_res.get('access_token', '')
+
+        headers = {
+            'Authorization': f'Bearer {api_token}'
+        }
+
+        # # search_query in the form of: created_at:>1673719953
         request_params: Dict[str, str] = {"search": search_query}
 
         return self._http_request(
             method='GET',
             url_suffix='/account/events.json',
-            params=request_params
+            params=request_params,
+            headers=headers
         )
 
 
@@ -211,7 +233,10 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey')
+    data = {}
+    data['client_secret'] = params.get('client_secret', {}).get('password', {})
+    data['client_id'] = params.get('client_id', '')
+    data['grant_type'] = 'client_credentials'
     base_url = urljoin(params.get('url'), '/api/v1.0')
     verify_certificate = not params.get('insecure', False)
     first_fetch_time = arg_to_datetime(
@@ -227,14 +252,11 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            data=data)
 
         if command == 'test-module':
             result = test_module(client, params, first_fetch_epoch_time)
@@ -244,7 +266,8 @@ def main() -> None:
             if command == 'runzero-get-events':
                 should_push_events = argToBoolean(args.get("should_push_events"))
                 events, results = get_events_command(
-                    client, query_string=f'created_at:>{first_fetch_epoch_time}', limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
+                    client, query_string=f'created_at:>{first_fetch_epoch_time}',
+                    limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
                 )
                 return_results(results)
 

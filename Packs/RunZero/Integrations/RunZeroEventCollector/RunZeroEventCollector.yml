@@ -17,10 +17,19 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: API Key
-  name: apikey
+- name: client_secret
+  displaypassword: Client secret
   required: true
+  defaultvalue:
   type: 9
+  hiddenusername: true
+  additionalinfo: "The client secret to access the service REST API."
+- defaultvalue: client_id
+  display: Client id
+  name: client_id
+  required: true
+  type: 0
+  additionalinfo: "The client ID as defined in RunZero."
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch

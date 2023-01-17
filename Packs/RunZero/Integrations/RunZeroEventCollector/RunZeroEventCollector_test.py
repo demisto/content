@@ -56,7 +56,7 @@ def test_sort_events_by_ids():
     events_sorted = sort_events(mock_response)
     for i in range(1, len(events_sorted)):
         assert events_sorted[i]['created_at'] > events_sorted[i - 1]['created_at']
-        
+
 
 def test_get_events_command(requests_mock):
     """
@@ -74,6 +74,10 @@ def test_get_events_command(requests_mock):
     """
     from RunZeroEventCollector import Client, get_events_command
     mock_response = util_load_json('test_data/system_event_logs.json')
+    requests_mock.post(
+        'https://console.runzero.com/api/v1.0/account/api/token',
+        json={'access_token': 'access_token'})
+
     requests_mock.get(
         'https://console.runzero.com/api/v1.0/account/events.json?search=created_at:>1673719953',
         json=mock_response)
@@ -81,9 +85,8 @@ def test_get_events_command(requests_mock):
     client = Client(
         base_url='https://console.runzero.com/api/v1.0',
         verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
+        proxy=False,
+        data={}
     )
 
     events, commandResult = get_events_command(
@@ -125,6 +128,11 @@ def test_fetch_events(requests_mock):
     from RunZeroEventCollector import Client, fetch_events
 
     mock_response = util_load_json('test_data/system_event_logs.json')
+    
+    requests_mock.post(
+        'https://console.runzero.com/api/v1.0/account/api/token',
+        json={'access_token': 'access_token'})
+    
     requests_mock.get(
         'https://console.runzero.com/api/v1.0/account/events.json?search=created_at:>1673719953',
         json=mock_response)
@@ -132,9 +140,8 @@ def test_fetch_events(requests_mock):
     client = Client(
         base_url='https://console.runzero.com/api/v1.0',
         verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
+        proxy=False,
+        data={}
     )
 
     last_run = {
