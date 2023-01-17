@@ -540,6 +540,8 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: Option
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
+        client.list_external_service_request([])
+        
         if params.get('isFetch'):  # Tests fetch incident:
             severity = params.get('severity')
             max_fetch = int(params.get('max_fetch', 10))
@@ -550,8 +552,6 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: Option
                 first_fetch_time=first_fetch_time,
                 severity=severity
             )
-        else:
-            client.list_external_service_request([])
     except DemistoException as e:
         if 'Forbidden' in str(e):
             raise DemistoException('Authorization Error: make sure API Key is correctly set')
