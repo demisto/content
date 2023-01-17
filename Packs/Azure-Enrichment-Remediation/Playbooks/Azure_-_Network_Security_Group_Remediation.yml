@@ -43,17 +43,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1519908a-356e-48b6-8c19-8d2a3fd920d0
+    taskid: 81a05305-0f13-42cc-8c51-6d4c8915b7f1
     type: regular
     task:
-      id: 1519908a-356e-48b6-8c19-8d2a3fd920d0
+      id: 81a05305-0f13-42cc-8c51-6d4c8915b7f1
       version: -1
       name: Retrieve Rules from NSG Associated to Public IP
-      description: List all rules of the specified security group.
-      script: '|||azure-nsg-security-rules-list'
+      description: List all rules of the specified security groups.
+      script: Azure Network Security Groups|||azure-nsg-security-rules-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: Azure Network Security Groups
     nexttasks:
       '#none#':
       - "22"
@@ -1047,17 +1047,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7c77b9fb-80b7-4a26-8788-61cb3cb1aa96
+    taskid: 23e710c6-c214-4e8b-8acb-9d0226c5ad6a
     type: regular
     task:
-      id: 7c77b9fb-80b7-4a26-8788-61cb3cb1aa96
+      id: 23e710c6-c214-4e8b-8acb-9d0226c5ad6a
       version: -1
       name: Add allow rule for port ${inputs.RemotePort} and ${inputs.RemoteProtocol}
-      description: Create a security rule that allows traffic from private IPs to the remoteIP.
-      script: '|||azure-nsg-security-rule-create'
+      description: Create a security rule.
+      script: Azure Network Security Groups|||azure-nsg-security-rule-create
       type: regular
       iscommand: true
-      brand: ""
+      brand: Azure Network Security Groups
     nexttasks:
       '#none#':
       - "34"
@@ -1214,17 +1214,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: d283f9a6-23b2-403e-8fe5-4720dba46538
+    taskid: f282724b-7154-4855-8686-862a88566253
     type: regular
     task:
-      id: d283f9a6-23b2-403e-8fe5-4720dba46538
+      id: f282724b-7154-4855-8686-862a88566253
       version: -1
       name: Add block rule for port ${inputs.RemotePort}
-      description: Create a security rule that denies all internet traffic to the remoteIP.
-      script: '|||azure-nsg-security-rule-create'
+      description: Create a security rule.
+      script: Azure Network Security Groups|||azure-nsg-security-rule-create
       type: regular
       iscommand: true
-      brand: ""
+      brand: Azure Network Security Groups
     nexttasks:
       '#none#':
       - "5"
