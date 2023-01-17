@@ -2429,18 +2429,31 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'EntryContext': comments_context
             })
 
-    if ticket.get('closed_at'):
-        if params.get('close_incident'):
-            demisto.debug(f'ticket is closed: {ticket}')
-            entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
-                    'closeReason': converts_state_close_reason(ticket.get("state"))
-                },
-                'ContentsFormat': EntryFormat.JSON
-            })
+    # Handle closing ticket/incident in XSOAR as chosen by close_incident_multiple_options parameter
+    # 1. check if the ticket is closed or resolved
+    # 2. check if close_incident_multiple_options is set to 'closed' or 'resolved'
+    # 3. if on of the above is true, handle debug call and append the entry accordingly to the entries list
+    if ticket.get('closed_at') and params.get('close_incident_multiple_options') == 'closed':
+        close_ticket_entry = create_closed_ticket_entry(ticket)
+        entries.append(close_ticket_entry)
+    elif ticket.get('resolved_at') and params.get('close_incident_multiple_options') == 'resolved':
+        close_ticket_entry = create_closed_ticket_entry(ticket)
+        entries.append(close_ticket_entry)
+
+    # TODO: this code segment is related to 'Close Mirrored XSOAR Incident' parameter which is hidden.
+    # We should remove this code segment if the param is removed (unreachable code).
+    # if ticket.get('closed_at'):
+    #     if params.get('close_incident'):
+    #         demisto.debug(f'ticket is closed: {ticket}')
+    #         entries.append({
+    #             'Type': EntryType.NOTE,
+    #             'Contents': {
+    #                 'dbotIncidentClose': True,
+    #                 'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+    #                 'closeReason': converts_state_close_reason(ticket.get("state"))
+    #             },
+    #             'ContentsFormat': EntryFormat.JSON
+    #         })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
@@ -2458,6 +2471,18 @@ def converts_state_close_reason(ticket_state: str):
         return 'Resolved'
 
     return 'Other'
+
+
+def create_closed_ticket_entry(ticket: Dict[str, Any]):
+    demisto.debug(f'ticket is closed: {ticket}')
+    return {'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                'closeReason': converts_state_close_reason(ticket.get("state"))
+            },
+            'ContentsFormat': EntryFormat.JSON
+            }
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:

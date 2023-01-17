@@ -139,7 +139,7 @@ configuration:
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
-  hide: true
+  hidden: true
   type: 8
 - additionalinfo: Define how to close the mirrored tickets in XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
