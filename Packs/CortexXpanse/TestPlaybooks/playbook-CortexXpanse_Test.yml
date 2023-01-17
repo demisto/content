@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5a7075f2-90e2-40cb-8412-1dc568ec3841
+    taskid: 08701979-4fec-4653-8b53-1b269127558c
     type: condition
     task:
-      id: 5a7075f2-90e2-40cb-8412-1dc568ec3841
+      id: 08701979-4fec-4653-8b53-1b269127558c
       version: -1
       name: Verify Outputs
       type: condition
@@ -121,6 +121,8 @@ tasks:
             value:
               simple: ASM.ExternalService.service_id
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -130,61 +132,6 @@ tasks:
           left:
             value:
               simple: ASM.ExternalService.service_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.ip_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.externally_detected_providers
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.is_active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.first_observed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.last_observed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.port
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.protocol
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.inactive_classifications
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.discovery_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.business_units
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.externally_inferred_vulnerability_score
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -308,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 5ffa269d-6683-4829-8ed5-1be2d52ff5a4
+    taskid: 6aafdb30-6c7a-47cf-8deb-0f16196fdeac
     type: condition
     task:
-      id: 5ffa269d-6683-4829-8ed5-1be2d52ff5a4
+      id: 6aafdb30-6c7a-47cf-8deb-0f16196fdeac
       version: -1
       name: Verify Outputs
       type: condition
@@ -329,6 +276,8 @@ tasks:
             value:
               simple: ASM.ExternalIpAddressRange.range_id
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -338,31 +287,6 @@ tasks:
           left:
             value:
               simple: ASM.ExternalIpAddressRange.last_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.ips_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.date_added
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.business_units
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.organization_handles
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -415,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 59a96838-126f-40f5-8c5e-5873d0d2bc80
+    taskid: f55bf579-33b9-4cb7-8ad5-be47f33f0475
     type: condition
     task:
-      id: 59a96838-126f-40f5-8c5e-5873d0d2bc80
+      id: f55bf579-33b9-4cb7-8ad5-be47f33f0475
       version: -1
       name: Verify Outputs
       type: condition
@@ -436,6 +360,8 @@ tasks:
             value:
               simple: ASM.ExternalIpAddressRange.range_id
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -445,36 +371,6 @@ tasks:
           left:
             value:
               simple: ASM.ExternalIpAddressRange.last_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.ips_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.date_added
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.business_units
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.organization_handles
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.details
             iscontext: true
     continueonerrortype: ""
     view: |-
