@@ -224,14 +224,14 @@ install-packs-in-server-master:
 #install-packs-in-xsiam-dev:
 #  extends: .install-mpv2-packs-on-xsiam-instances
 #  variables:
-#    INSTANCE_ROLE: "XSIAM Master"
+#    INSTANCE_ROLE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
 install-packs-in-xsiam-ga:
   extends: .install-mpv2-packs-on-xsiam-instances
   variables:
-    INSTANCE_ROLE: "XSIAM 1.2"
+    INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
 

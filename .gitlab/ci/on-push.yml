@@ -400,7 +400,7 @@ xsiam_server_ga:
     - if: '$NIGHTLY'
       when: always
   variables:
-    INSTANCE_ROLE: "XSIAM 1.2"
+    INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
@@ -423,7 +423,7 @@ xsoar_ng_server_ga:
     - if: '$NIGHTLY'
       when: always
   variables:
-    INSTANCE_ROLE: "XSIAM 1.2"
+    INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsoar-ng"

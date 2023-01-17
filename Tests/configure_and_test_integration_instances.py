@@ -73,6 +73,8 @@ ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
 CLOUD_BUILD_TYPE = "XSIAM"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
+MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
+ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
 
 SET_SERVER_KEYS = True
 
@@ -211,6 +213,9 @@ class Build(ABC):
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
+        self.marketplace_tag_name = None
+        self.artifacts_folder = None
+        self.marketplace_buckets = None
 
     @property
     @abstractmethod
@@ -271,7 +276,8 @@ class Build(ABC):
         pass
 
     @staticmethod
-    def set_marketplace_url(servers, branch_name, ci_build_number):
+    def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
+                            marketplace_buckets=None):
         pass
 
     def check_if_new_to_marketplace(self, diff: str) -> bool:
@@ -531,7 +537,8 @@ class Build(ABC):
             If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
             both before that update and after the update.
         """
-        self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number)
+        self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
+                                 self.artifacts_folder, self.marketplace_buckets)
         installed_content_packs_successfully = self.install_packs()
         return installed_content_packs_successfully
 
@@ -700,7 +707,8 @@ class XSOARBuild(Build):
         return success
 
     @staticmethod
-    def set_marketplace_url(servers, branch_name, ci_build_number):
+    def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
+                            marketplace_buckets=None):
         url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
         config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
@@ -838,13 +846,16 @@ class CloudBuild(Build):
                                                                        use_mock=False)
         return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
-    def set_marketplace_url(self, servers, branch_name, ci_build_number):
+    @staticmethod
+    def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name='marketplacev2',
+                            artifacts_folder=ARTIFACTS_FOLDER_MPV2,
+                            marketplace_buckets=MARKETPLACE_XSIAM_BUCKETS):
         logging.info('Copying custom build bucket to cloud_instance_bucket.')
-        marketplace_name = self.marketplace_name
+        marketplace_name = marketplace_name
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{marketplace_name}/content'
-        output_file = f'{self.artifacts_folder}/Copy_custom_bucket_to_cloud_machine.log'
+        output_file = f'{artifacts_folder}/Copy_custom_bucket_to_cloud_machine.log'
         for server in servers:
-            to_bucket = f'{self.marketplace_buckets}/{server.name}'
+            to_bucket = f'{marketplace_buckets}/{server.name}'
             cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
             with open(output_file, "w") as outfile:
                 subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
