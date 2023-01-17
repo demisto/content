@@ -1,6 +1,6 @@
 id: Intezer - Analyze File and URL
 version: -1
-fromversion: 6.2.0
+fromversion: 6.5.0
 name: Intezer - Analyze File and URL
 description: Analyze Files and URLs on Intezer Analyze
 tags:

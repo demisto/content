@@ -152,6 +152,9 @@ script:
       description: Should get only private analysis
       isArray: false
       name: should_get_only_private_analysis
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -184,7 +187,7 @@ script:
       type: Boolean
   - name: intezer-analyze-by-file
     arguments:
-    - default: false
+    - default: true
       description: The file entry id to upload
       isArray: false
       name: file_entry_id
@@ -215,12 +218,24 @@ script:
       description: Should disable sandox dynamic execution
       isArray: false
       name: disable_dynamic_execution
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
       description: Should disable static extraction
       isArray: false
       name: disable_static_extraction
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      secret: false
+    - default: false
+      description: Given sandbox command line arguments
+      isArray: false
+      name: sandbox_command_line_arguments
       required: false
       secret: false
     - default: false
