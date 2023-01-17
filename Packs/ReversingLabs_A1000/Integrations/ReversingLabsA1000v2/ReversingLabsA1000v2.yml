@@ -331,8 +331,8 @@ script:
       secret: false
       auto: PREDEFINED
       predefined:
-        - True
-        - False
+        - 'true'
+        - 'false'
     - default: false
       defaultValue: '5000'
       description: Maximum number of results.
