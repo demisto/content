@@ -312,7 +312,7 @@ def install_packs_private(client: demisto_client,
 def install_packs(client: demisto_client,
                   host: str,
                   packs_to_install: list,
-                  request_timeout: int = 999999,
+                  request_timeout: int = 18000,
                   ):
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
@@ -406,7 +406,10 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      pack_id: str,
                                      packs_to_install: list,
                                      installation_request_body: list,
-                                     lock: Lock):
+                                     lock: Lock,
+                                     one_pack_and_its_dependencies_in_batch: bool = False,
+                                     batch_packs_install_request_body: list = None
+                                     ):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
 
@@ -416,6 +419,11 @@ def search_pack_and_its_dependencies(client: demisto_client,
         packs_to_install (list) A list of the packs to be installed in this iteration.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
+        one_pack_and_its_dependencies_in_batch(bool): Whether to install packs in small batches.
+            If false - install all packs in one batch.
+        batch_packs_install_request_body (list): A list of  lists packs to be installed, in the request format.
+            Each list contain one pack and its dependencies.
+
     """
     pack_data = {}
     if pack_id not in packs_to_install:
@@ -445,10 +453,13 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     current_packs_to_install.extend(dependencies)
 
         lock.acquire()
-        for pack in current_packs_to_install:
-            if pack['id'] not in packs_to_install:
-                packs_to_install.append(pack['id'])
-                installation_request_body.append(pack)
+        if one_pack_and_its_dependencies_in_batch:
+            batch_packs_install_request_body.append(current_packs_to_install)
+        else:
+            for pack in current_packs_to_install:
+                if pack['id'] not in packs_to_install:
+                    packs_to_install.append(pack['id'])
+                    installation_request_body.append(pack)
         lock.release()
 
 
@@ -631,13 +642,16 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client, hostname: str = ''):
+                                                    client: demisto_client, hostname: str = '',
+                                                    small_batches_install=False):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
         hostname (str): Hostname of instance. Using for logs.
+        small_batches_install(bool): Whether to install packs in small batches.
+            If false - install all packs in one batch.
 
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
@@ -649,6 +663,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
     installation_request_body: list = []  # the packs to install, in the request format
+    batch_packs_install_request_body: list = []    # list of lists of packs to install if small batch install
 
     lock = Lock()
 
@@ -658,10 +673,51 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
                 logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
                 continue
             pool.submit(search_pack_and_its_dependencies,
-                        client, pack_id, packs_to_install, installation_request_body, lock)
+                        client, pack_id, packs_to_install, installation_request_body, lock,
+                        small_batches_install,
+                        batch_packs_install_request_body)
 
-    request_timeout = 1800 if host and host.startswith('qa2-test') else 999999   # hot-fix for xsiam packs install issue
+    if small_batches_install:
+        batch_packs_install_request_body = change_installation_batches(batch_packs_install_request_body)
+    else:
+        batch_packs_install_request_body = [installation_request_body]
 
-    install_packs(client, host, installation_request_body, request_timeout)
+    for packs_to_install_body in batch_packs_install_request_body:
+        install_packs(client, host, packs_to_install_body)
 
     return packs_to_install, SUCCESS_FLAG
+
+
+def change_installation_batches(
+        one_pack_and_its_dependencies_in_batch: list,
+        max_packs_in_batch: int = 15,
+        exceed_allowed: int = 5
+) -> list:
+    """
+    Args:
+        one_pack_and_its_dependencies_in_batch: list of lists of packs to install.
+        max_packs_in_batch: Maximum number of packs to install in one API call
+        exceed_allowed: A list of  lists packs to be installed, in the request format.
+            Each list contain one pack and its dependencies.
+    Returns:
+        A list of the installed packs ids, or an empty list if is_nightly == True.
+    """
+    batch_packs_install_request_body = []
+    packs_ids_in_batch = []
+    temp_batch = []
+
+    for pack_and_its_deps in one_pack_and_its_dependencies_in_batch:
+        if (len(temp_batch) >= max_packs_in_batch) or \
+                (len(temp_batch) + len(pack_and_its_deps) > max_packs_in_batch + exceed_allowed):
+            logging.debug(f'Created batch for installation: {[pack for pack in packs_ids_in_batch]}')
+            batch_packs_install_request_body.append(temp_batch)
+            temp_batch = []
+            packs_ids_in_batch = []
+
+        for pack in pack_and_its_deps:
+            if pack['id'] not in packs_ids_in_batch:
+                packs_ids_in_batch.append(pack['id'])
+                temp_batch.append(pack)
+
+    logging.debug(f'\n\n\nBatch for installation: {batch_packs_install_request_body}.\n\n\n')
+    return batch_packs_install_request_body

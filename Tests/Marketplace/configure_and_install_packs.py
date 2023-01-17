@@ -48,7 +48,9 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, hostname
     """
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
+        small_batches_install = True if (server.__class__ == XSIAMServer) else False
+        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
+                                                                     small_batches_install)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 
