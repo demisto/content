@@ -11,7 +11,7 @@
         "Forensics & Malware Analysis"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": ["phishing"],
     "keywords": [
         "slashnext",
         "reputation",
