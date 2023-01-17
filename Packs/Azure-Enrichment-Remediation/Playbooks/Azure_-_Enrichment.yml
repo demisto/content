@@ -740,8 +740,11 @@ outputs:
 - contextPath: MSGraphIdentity.Role
   description: Microsoft Graph Role object that contains role ID and user IDs
   type: unknown
-- contextPath: MSGraphUser.Account
+- contextPath: Account
   description: Microsoft Graph User account objects for found user IDs.
+  type: unknown
+- contextPath: MSGraphUser
+  description: Microsoft Graph User objects for found user IDs.
   type: unknown
 fromversion: 6.5.0
 tests:

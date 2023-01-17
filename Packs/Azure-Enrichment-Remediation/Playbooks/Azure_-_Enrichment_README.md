@@ -43,7 +43,8 @@ This playbook does not use any scripts.
 | Azure.Compute | Azure Compute information. | unknown |
 | Azure.Network | Azure NIC information. | unknown |
 | MSGraphIdentity.Role | Microsoft Graph Role object that contains role ID and user IDs | unknown |
-| MSGraphUser.Account | Microsoft Graph User account objects for found user IDs. | unknown |
+| Account | Microsoft Graph User account objects for found user IDs. | unknown |
+| MSGraphUser | Microsoft Graph User objects for found user IDs. | unknown |
 
 ## Playbook Image
 
