@@ -2,7 +2,7 @@ commonfields:
   id: Demisto REST API
   version: -1
 name: Demisto REST API
-display: Demisto REST API
+display: Demisto REST API (Deprecated)
 category: Utilities
 description: Use Demisto REST APIs
 configuration:
