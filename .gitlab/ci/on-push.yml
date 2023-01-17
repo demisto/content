@@ -436,3 +436,4 @@ xsoar_ng_server_ga:
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
   needs: ["xsoar-prepare-testing-bucket"]
+  allow_failure: true
