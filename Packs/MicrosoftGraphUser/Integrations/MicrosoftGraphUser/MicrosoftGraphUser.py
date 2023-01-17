@@ -187,12 +187,10 @@ class MsGraphClient:
     def list_users(self, properties, page_url, filters):
         if page_url:
             response = self.ms_client.http_request(method='GET', url_suffix='users', full_url=page_url)
-        elif filters:
+        else:
             response = self.ms_client.http_request(method='GET', url_suffix='users', headers={"ConsistencyLevel": "eventual"}, params={
                                                    '$filter': filters, '$select': properties, "$count": "true"})
-        else:
-            response = self.ms_client.http_request(method='GET', url_suffix='users', params={
-                                                   'filters': filters, '$select': properties})
+                                                   
         next_page_url = response.get('@odata.nextLink')
         users = response.get('value')
         return users, next_page_url
@@ -480,7 +478,7 @@ def main():
     proxy = params.get('proxy', False)
     handle_error = argToBoolean(params.get('handle_error', 'true'))
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or params.get('certificate_thumbprint', '')
-    private_key = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')   
+    private_key = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
     if not self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
