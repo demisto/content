@@ -122,6 +122,7 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -173,6 +174,7 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -224,6 +226,7 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -275,6 +278,7 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -532,6 +536,7 @@ tasks:
       limit:
         complex:
           root: inputs.LimitResults
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -573,6 +578,7 @@ tasks:
       limit:
         complex:
           root: inputs.LimitResults
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -873,6 +879,7 @@ tasks:
           accessor: EntityB
           transformers:
           - operator: uniq
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
