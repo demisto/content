@@ -1836,7 +1836,10 @@ def ticket_fields_mocker(*args, **kwargs):
 
 @pytest.mark.parametrize('file_name , expected',
                          [('123.png', 'image/png'),
-                          ('123.jpeg', 'image/jpeg')])
+                          ('123.gif', 'image/gif'),
+                          ('123.jpeg', 'image/jpeg'),
+                          ('123.pdf', '*/*'),
+                          ('123', '*/*')])
 def test_upload_file_types(file_name, expected):
     client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
                     cr_server_url='cr_server_url', username='username',
