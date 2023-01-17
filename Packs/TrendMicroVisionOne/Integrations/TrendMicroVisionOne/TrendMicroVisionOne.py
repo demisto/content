@@ -295,7 +295,7 @@ class Client(BaseClient):
         """
         task_id = data.get(TASKID)
         result = self.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
-        risk = result.get("data", {}).get("analysisSummary", "").get("riskLevel", "")
+        risk = result.get("data", {}).get("analysisSummary", {}).get("riskLevel", "")
         risk_score = self.incident_severity_to_dbot_score(risk)
         sha256 = result.get("data", {}).get("digest", {}).get("sha256")
         md5 = result.get("data", {}).get("digest", {}).get("md5")
@@ -706,6 +706,7 @@ def fetch_incidents(client: Client):
             incident = {
                 "name": record["workbenchName"],
                 "occurred": record["createdTime"],
+                'severity': client.incident_severity_to_dbot_score(record['severity']),
                 "rawJSON": json.dumps(record),
             }
             incidents.append(incident)
@@ -1089,7 +1090,7 @@ def get_file_analysis_status(
     """
     task_id = args.get(TASKID)
     response = client.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
-    risk = response.get("data", {}).get("analysisSummary", "").get("riskLevel", "")
+    risk = response.get("data", {}).get("analysisSummary", {}).get("riskLevel", "")
     risk_score = client.incident_severity_to_dbot_score(risk)
     sha256 = response.get("data", {}).get("digest", {}).get("sha256")
     md5 = response.get("data", {}).get("digest", {}).get("md5")
