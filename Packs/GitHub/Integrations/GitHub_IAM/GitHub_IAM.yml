@@ -7,10 +7,15 @@ configuration:
   name: url
   required: true
   type: 0
+- name: creds_token
+  required: false
+  type: 9
+  displaypassword: Token
+  hiddenusername: true
 - display: Token
   name: token
-  required: true
   type: 4
+  hidden: true
 - display: Organization name
   name: org
   required: true
@@ -53,8 +58,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: Integrate with GitHub services to perform Identity Lifecycle Management
-  operations.
+description: Integrate with GitHub services to perform Identity Lifecycle Management operations.
 display: GitHub IAM
 name: GitHub IAM
 script:
@@ -109,8 +113,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile
-      argument.
+    description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
     outputs:
@@ -229,11 +232,10 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields
-      within the application. Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: false
   longRunning: false
