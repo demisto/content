@@ -56,6 +56,7 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
         }
     )
 
+
 def _get_missing_url_result(url: str, ex: ServerError = None) -> CommandResults:
     dbot = {
         'Vendor': 'Intezer',
