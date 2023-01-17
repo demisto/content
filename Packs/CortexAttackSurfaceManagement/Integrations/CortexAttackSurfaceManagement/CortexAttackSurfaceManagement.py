@@ -20,20 +20,19 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def list_remediation_rule_request(self, search_params: List[Dict]) -> Dict[str, Any]:
+    def list_remediation_rule_request(self, request_data: Dict) -> Dict[str, Any]:
         """Get a list of all your remediation rules using the 'xpanse_remediation_rules/rules/' endpoint.
 
         Args:
-            search_params (list): list of search parameters to add to the API call body.
+            request_data (dict): dict of parameters for API call.
 
         Returns:
             dict: dict containing list of external services.
         """
-        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
         headers = self._headers
 
         response = self._http_request('POST', '/xpanse_remediation_rules/rules/',
-                                      json_data=data, headers=headers)
+                                      json_data=request_data, headers=headers)
 
         return response
     
@@ -171,19 +170,27 @@ def list_remediation_rule_command(client: Client, args: Dict[str, Any]) -> Comma
         args (dict): all command arguments, usually passed from ``demisto.args()``.
             ``args['asm_rule_id']`` A string representing the ASM Rule ID you want to get association
             remediation path rules for.
+            ``args['sort_by_creation_time']`` optional - enum (asc,desc).
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
         that contains list of remediation path rules.
     """
     asm_rule_id = str(args.get('asm_rule_id'))
+    sort_by_creation_time = args.get('sort_by_creation_time')
 
     # create list of search parameters or pass empty list.
     search_params = []
     if asm_rule_id:
         search_params.append({"field": "attack_surface_rule_id", "operator": "eq", "value": asm_rule_id})
+    if sort_by_creation_time:
+        request_data = {"request_data": {"filters": search_params, 'search_from': 0,
+                        'search_to': DEFAULT_SEARCH_LIMIT, "sort": {"field": "created_at", "keyword": sort_by_creation_time}}}
+    else:
+        request_data = {"request_data": {"filters": search_params, 'search_from': 0,
+                        'search_to': DEFAULT_SEARCH_LIMIT}}
 
-    response = client.list_remediation_rule_request(search_params)
+    response = client.list_remediation_rule_request(request_data)
     parsed = response.get('reply', {}).get('remediation_rules')
     markdown = tableToMarkdown('Remediation Rules', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(

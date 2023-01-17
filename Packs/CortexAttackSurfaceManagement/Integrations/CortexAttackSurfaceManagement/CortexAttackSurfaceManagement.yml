@@ -331,6 +331,12 @@ script:
     - description: A string representing the ASM Rule ID you want to get association remediation path rules for.
       name: asm_rule_id
       required: true
+    - auto: PREDEFINED
+      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
+      name: sort_by_creation_time
+      predefined:
+      - asc
+      - desc
     description: Returns list of remediation path rules.
     name: asm-list-remediation-rule
     outputs:
