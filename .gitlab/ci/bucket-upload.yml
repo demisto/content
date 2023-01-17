@@ -514,13 +514,11 @@ sync-buckets-between-projects:
         gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-dev
         gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-dev
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-dev
-        gcloud auth revoke $GCS_XSOAR_CONTENT_DEV_ACCOUNT_NAME
 
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_PROD_KEY"
         gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-prod-us
         gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-prod-us
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-prod-us
-        gcloud auth revoke $GCS_XSOAR_CONTENT_PROD_ACCOUNT_NAME
 
         echo "Bucket sync completed"
       fi
