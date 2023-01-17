@@ -163,7 +163,8 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.RelatedAlerts
+              complex:
+                root: inputs.RelatedAlerts
             iscontext: true
           right:
             value: {}
