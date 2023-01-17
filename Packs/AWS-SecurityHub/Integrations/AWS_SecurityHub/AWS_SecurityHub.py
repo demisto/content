@@ -557,6 +557,23 @@ def sh_severity_mapping(severity: str):
     return severity_mapper.get(severity, 0)
 
 
+def create_filters_list_dictionaries(arr: List[str]) -> List[Dict]:
+    """ Returns the object for the filters dictionary.
+        Args:
+            arr: List[str] - An array of strings
+        Returns:
+            The correct object to add to filters.
+    """
+    result_arr = []
+    for item in arr:
+        d = {
+            'Comparison': 'EQUALS',
+            'value': item
+        }
+        result_arr.append(d)
+    return result_arr
+
+
 def disable_security_hub_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.disable_security_hub(**kwargs)
@@ -812,8 +829,59 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]):
         workflow_status = finding.get('Workflow', {}).get('Status')
 
 
-def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str], finding_type: str,
-                                     workflow_status: str, product_name: List[str]) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str], aws_sh_severity: str,
+                                     archive_findings: bool, additional_filters: str, finding_types: List[str],
+                                     workflow_status: List[str], product_name: List[str]) \
+        -> GetModifiedRemoteDataResponse:  # TODO: check what archive findings suppose to do
+    """ Checks if there were any updates in the incidents on AWS Security Hub, that match the given filters.
+            Than returns a list of the updated incident ids.
+        Args:
+            client: boto3.client - An AWS client.
+            args: Dict[str, str] - The argument to the function.
+            aws_sh_severity: str - The severity we want to filter by.
+            archive_findings: bool
+            additional_filters: str - More filters that the user provided.
+            finding_types: List[str] - A list of finding types to filter by.
+            workflow_status: List[str] - A list of workflow statuses to filter by.
+            product_name: List[str] - A list of product name to filter by.
+        Returns:
+            A GetModifiedRemoteDataResponse object that contains a list of the updated incident ids.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+    filters = {}
+    if remote_args.last_update:
+        parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+        now = datetime.now(timezone.utc)
+        filters['CreatedAt'] = [{
+            'Start': parsed_date,
+            'End': now.isoformat()
+        }]
+    if aws_sh_severity:
+        filters['SeverityNormalized'] = [{
+            'Gte': sh_severity_mapping(aws_sh_severity)
+        }]
+    if additional_filters:
+        filters.update(parse_filter_field(additional_filters))
+    if finding_types:
+        filters['Type'] = create_filters_list_dictionaries(finding_types)
+    if workflow_status:
+        filters['WorkflowStatus'] = create_filters_list_dictionaries(workflow_status)
+    if product_name:
+        filters['ProductName'] = create_filters_list_dictionaries(product_name)
+    response = client.get_findings(Filters=filters)
+    findings = response.get('Findings')
+    next_token = response.get('NextToken')
+    modified_incident_ids = []
+    while findings:
+        for finding in findings:
+            modified_incident_ids.append(finding.get('Id'))
+        if next_token:
+            response = client.get_findings(NextToken=next_token)
+            findings = response.get('Findings')
+            next_token = response.get('NextToken')
+        else:
+            findings = None
+    return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
 
 
 def test_function(client):
@@ -888,7 +956,9 @@ def main():  # pragma: no cover
             get_remote_data_command(client, args)
             return
         elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, args, finding_type, workflow_status, product_name))
+            return_results(get_modified_remote_data_command(client, args, aws_sh_severity, archive_findings,
+                                                            additional_filters, finding_type, workflow_status,
+                                                            product_name))
         return_outputs(human_readable, outputs, response)
 
     except Exception as e:
