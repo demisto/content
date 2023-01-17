@@ -1,7 +1,8 @@
-from CommonServerPython import *  # noqa: F401
-import demistomock as demisto  # noqa: F401
+import traceback
 
-
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 import requests
 import re
 import base64
@@ -147,8 +148,12 @@ class MicrosoftClient(BaseClient):
 
     def is_command_executed_from_integration(self):
         ctx = demisto.callingContext.get('context', {})
-        executed_command = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])[0]
-        return executed_command.get('moduleBrand') != 'Scripts'
+        executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
+
+        if executed_commands:
+            return executed_commands[0].get('moduleBrand', "") != 'Scripts'
+
+        return True
 
     def http_request(
             self, *args, resp_type='json', headers=None,
