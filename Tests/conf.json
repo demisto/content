@@ -21,7 +21,8 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "IndicatorFormatterFilterTest"
+            "playbookID": "IndicatorFormatterFilterTest",
+            "timeout": 1200
         },
         {
             "integrations": "FeedURLhaus",
@@ -102,6 +103,13 @@
             "integrations": "Bitbucket",
             "playbookID": "Test_Bitbucket",
             "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2",
+            "fromversion": "6.5.0",
+            "memory_threshold": 200,
+            "timeout": 300
         },
         {
             "playbookID": "Generic Polling Test",
@@ -752,9 +760,16 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR Playbook",
+            "playbookID": "Test XDR execute script Playbook",
             "fromversion": "4.1.0",
             "timeout": 2500
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR general and file commands Playbook",
+            "fromversion": "4.1.0",
+            "timeout": 2500,
+            "is_mockable": false
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -4443,13 +4458,13 @@
             "fromversion": "6.2.0",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
+                "EWSO365",
                 "Demisto REST API",
                 "CreateIncidents",
                 "Rasterize"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
+                "ewso365_dev_team",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
@@ -4473,7 +4488,6 @@
             "toversion": "6.4.9",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
                 "Demisto REST API",
                 "EWSO365",
                 "Rasterize",
@@ -4481,9 +4495,8 @@
                 "VirusTotal (API v3)"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
                 "virus_total_v3",
-                "ewso365_sec_eng_team"
+                "ewso365_dev_team"
             ],
             "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
@@ -5210,6 +5223,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "AMPv2",
+            "playbookID": "AMPv2_Test",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "XSOAR EDL Checker",
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
@@ -5383,6 +5401,7 @@
         "GCS - Test": "No instance",
         "GCS Object Policy (ACL) - Test": "No instance",
         "GCS Bucket Policy (ACL) - Test": "No instance",
+        "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
@@ -5488,6 +5507,8 @@
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
         "CiscoSMA": "No instance - developed by Qmasters",
+        "CiscoAMP": "No instance & Depreceated, replaced by AMPV2",
+        "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -5737,7 +5758,7 @@
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
-                "pid_threshold": 11
+                "pid_threshold": 18
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
