@@ -678,7 +678,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
                         batch_packs_install_request_body)
 
     if small_batches_install:
-        batch_packs_install_request_body = change_installation_batches(batch_packs_install_request_body)
+        # batch_packs_install_request_body = change_installation_batches(batch_packs_install_request_body)
+        pass
     else:
         batch_packs_install_request_body = [installation_request_body]
 
