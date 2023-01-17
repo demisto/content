@@ -8,7 +8,6 @@ from CommonServerPython import *
 import urllib3
 import ipaddress
 import dateparser
-import datetime
 import tempfile
 from typing import Tuple
 
@@ -350,7 +349,7 @@ class PrismaCloudComputeClient(BaseClient):
         }
         return self._http_request(
             method="GET", url_suffix="audits/firewall/app/container", params=params, resp_type="response"
-        )
+        ).json()
 
 
 
@@ -1743,12 +1742,12 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
     Returns:
         CommandResults: command-results object.
     """
-    now = datetime.datetime.now()
-    from_time = now - datetime.timedelta(days=arg_to_number(args.get("FromDays", 2)))
+    now = datetime.now()
+    from_time = now - timedelta(days=arg_to_number(args.get("FromDays", 2)))
     image_name = urllib.parse.quote(args.get("ImageName"), safe='')
     audit_type = args.get("audit_type")
     limit = arg_to_number(args.get("limit", 25))
-    data = client.get_firewall_audit_container_alerts(image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=limit, audit_type=audit_type).json()
+    data = client.get_firewall_audit_container_alerts(image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=limit, audit_type=audit_type)
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.Audits",

@@ -1,0 +1,86 @@
+[
+    {
+        "_id": "63bf6e2d911525bbe1739009",
+        "accountID": "470460512026",
+        "appID": "",
+        "attackField": {
+            "key": "ip",
+            "type": "formBody",
+            "value": "1.1.1.1; tail /etc/passwd"
+        },
+        "attackTechniques": [
+            "exploitPublicFacingApplication",
+            "applicationExploitRCE"
+        ],
+        "cluster": "sample-cluster",
+        "collections": [
+            "All",
+            "dvwa"
+        ],
+        "containerId": "d0b596caa57aeecff1d0d6ea1167e696fdbe41c1c0a8ef460e331c45db2613fe",
+        "containerName": "/k8s_nginx_nginx-deployment-bb6558558-dxqtl_default_6cb1fae9-0289-4b47-ab1d-fa6c3cbe1ad4_0",
+        "count": 1,
+        "effect": "alert",
+        "eventID": "185c00d3-387e-589f-bfce-7074463a5351",
+        "fqdn": "",
+        "host": false,
+        "hostname": "ip-192-168-17-75.us-west-1.compute.internal",
+        "imageName": "vulnerables/web-dvwa:latest",
+        "method": "POST",
+        "msg": "Detected Local File Inclusion attack in request body parameter \"ip\", match etc/passwd, value 1.1.1.1; tail /etc/passwd",
+        "ns": [
+            "default"
+        ],
+        "os": "Debian GNU/Linux 9 (stretch)",
+        "profileId": "sha256:ab0d83586b6e8799bb549ab91914402e47e3bcc7eea0c5cdf43755d56150cc6a_default_sample-cluster",
+        "protection": "firewall",
+        "requestHeaderNames": [
+            "Accept",
+            "Accept-Encoding",
+            "Accept-Language",
+            "Cache-Control",
+            "Connection",
+            "Content-Length",
+            "Content-Type",
+            "Cookie",
+            "Origin",
+            "Referer",
+            "Upgrade-Insecure-Requests",
+            "User-Agent"
+        ],
+        "requestHeaders": "POST /vulnerabilities/exec/ HTTP/1.1\r\nHost: a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\nAccept-Encoding: gzip, deflate\r\nAccept-Language: en-US,en;q=0.9\r\nCache-Control: max-age=0\r\nConnection: keep-alive\r\nContent-Length: 48\r\nContent-Type: application/x-www-form-urlencoded\r\nCookie: PHPSESSID=ihg0qsi11j388td1s617e2nqf5; security=low\r\nOrigin: http://a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com\r\nReferer: http://a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com/vulnerabilities/exec/\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\r\n",
+        "requestHost": "a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com",
+        "resource": {
+            "accountIDs": [
+                "470460512026"
+            ],
+            "images": [
+                "vulnerables/web-dvwa:latest"
+            ],
+            "namespaces": [
+                "default"
+            ]
+        },
+        "responseHeaderNames": [
+            "Cache-Control",
+            "Content-Encoding",
+            "Content-Length",
+            "Content-Type",
+            "Date",
+            "Expires",
+            "Pragma",
+            "Vary",
+            "X-Frame-Options"
+        ],
+        "ruleAppID": "app-DF33",
+        "ruleName": "WaaS rule for DVWA",
+        "statusCode": 200,
+        "subnet": "192.168.17.75",
+        "time": "2023-01-12T02:19:22Z",
+        "type": "lfi",
+        "url": "a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com/vulnerabilities/exec/",
+        "urlPath": "/vulnerabilities/exec/",
+        "userAgentHeader": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+        "version": "22.06.229"
+    }
+]
