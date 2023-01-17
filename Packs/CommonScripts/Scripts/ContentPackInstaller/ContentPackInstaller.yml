@@ -12,8 +12,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: The key in which the pack version is stored. Enter "latest" to update
-    all packs to the latest version.
+  description: The key in which the pack version is stored. Enter "latest" to update all packs to the latest version.
   isArray: false
   name: pack_version_key
   required: true
@@ -51,7 +50,7 @@ tags:
 - Content Management
 timeout: 600ns
 type: python
-dockerimage: demisto/xsoar-tools:1.0.0.42327
+dockerimage: demisto/xsoar-tools:1.0.0.42998
 tests:
 - ContentPackInstaller_Test
-fromversion: 6.0.0
+fromversion: 6.5.0

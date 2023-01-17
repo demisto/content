@@ -12,9 +12,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Comma-separated list of domains that are associated to the logo defined
-    in the logoName argument. It will only be used if the action argument is AddLogo
-    or ModifiedDomainForLogo.
+  description: Comma-separated list of domains that are associated to the logo defined in the logoName argument. It will only be used if the action argument is AddLogo or ModifiedDomainForLogo.
   isArray: true
   name: associatedDomains
   required: false
@@ -44,9 +42,9 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/mlurlphishing:1.0.0.28347
+dockerimage: demisto/mlurlphishing:1.0.0.45023
 runas: DBotRole
 runonce: false
 tests:
 - DBotUpdateLogoURLPhishing_test
-fromversion: 6.0.0
+fromversion: 6.5.0

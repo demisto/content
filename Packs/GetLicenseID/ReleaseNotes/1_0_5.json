@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"The script GetLicenseID moved to *CommonScripts* pack. Make sure to update the *CommonScripts* pack to the latest version in order to use the script."} 
