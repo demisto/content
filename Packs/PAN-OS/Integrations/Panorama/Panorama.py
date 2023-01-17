@@ -2,6 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
 import enum
+import html
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -29,7 +30,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView
 import re
 import requests
 import urllib3
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -2784,8 +2785,11 @@ def panorama_custom_url_category_add_items(custom_url_category_name: str, items:
 
     merged_items = list((set(items)).union(set(custom_url_category_items)))
 
+    # escape URLs with HTML escaping
+    sites = [html.escape(site) for site in merged_items]
+
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           merged_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -2817,8 +2821,12 @@ def panorama_custom_url_category_remove_items(custom_url_category_name: str, ite
         raise Exception('Custom url category does not contain sites or categories.')
 
     subtracted_items = [item for item in custom_url_category_items if item not in items]
+
+    # escape URLs with HTML escaping
+    sites = [html.escape(site) for site in subtracted_items]
+
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
-                                                                           subtracted_items, description)
+                                                                           sites, description)
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
