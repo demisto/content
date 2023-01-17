@@ -1,0 +1,181 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "AWS Security Hub - Incoming Mapper",
+    "mapping": {
+        "AWS Security Hub Finding": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "AWS Security Hub Action": {
+                    "simple": "Action"
+                },
+                "AWS Security Hub Company Name": {
+                    "simple": "CompanyName"
+                },
+                "AWS Security Hub Compliance": {
+                    "simple": "Compliance"
+                },
+                "AWS Security Hub Generator Id": {
+                    "simple": "GeneratorId"
+                },
+                "AWS Security Hub Malware": {
+                    "simple": "Malware"
+                },
+                "AWS Security Hub Network Path": {
+                    "simple": "NetworkPath"
+                },
+                "AWS Security Hub Product Arn": {
+                    "simple": "ProductArn"
+                },
+                "AWS Security Hub Product Fields": {
+                    "simple": "ProductFields"
+                },
+                "AWS Security Hub Product Name": {
+                    "simple": "ProductName"
+                },
+                "AWS Security Hub Provider Fields": {
+                    "simple": "FindingProviderFields"
+                },
+                "AWS Security Hub Record State": {
+                    "simple": "RecordState"
+                },
+                "AWS Security Hub Related Findings": {
+                    "simple": "RelatedFindings"
+                },
+                "AWS Security Hub Remediation": {
+                    "simple": "Remediation"
+                },
+                "AWS Security Hub Resources": {
+                    "simple": "Resource"
+                },
+                "AWS Security Hub Schema Version": {
+                    "simple": "SchemaVersion"
+                },
+                "AWS Security Hub Severity": {
+                    "simple": "Severity"
+                },
+                "AWS Security Hub Threats": {
+                    "simple": "Threats"
+                },
+                "AWS Security Hub Types": {
+                    "simple": "Types"
+                },
+                "AWS Security Hub User Defined Fields": {
+                    "simple": "UserDefinedFields"
+                },
+                "AWS Security Hub Verification State": {
+                    "simple": "VerificationState"
+                },
+                "AWS Security Hub Workflow Status": {
+                    "complex": {
+                        "accessor": "status",
+                        "filters": [],
+                        "root": "Workflow",
+                        "transformers": []
+                    }
+                },
+                "Account ID": {
+                    "simple": "AwsAccountId"
+                },
+                "Alert ID": {
+                    "simple": "Id"
+                },
+                "Alert URL": {
+                    "simple": "sourceUrl"
+                },
+                "Description": {
+                    "simple": "Description"
+                },
+                "Detection Update Time": {
+                    "simple": "LastObservedAt"
+                },
+                "External Confidence": {
+                    "simple": "Confidence"
+                },
+                "External Start Time": {
+                    "simple": "FirstObservedAt"
+                },
+                "Last Update Time": {
+                    "simple": "updatedAt"
+                },
+                "Region": {
+                    "simple": "Region"
+                },
+                "Risk Score": {
+                    "simple": "Criticality"
+                },
+                "Title": {
+                    "simple": "Title"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "incident_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "occurred": {
+                    "simple": "createdAt"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "normalized",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "Id"
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Description",
+                        "transformers": []
+                    }
+                },
+                "External Confidence": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Confidence",
+                        "transformers": []
+                    }
+                },
+                "Last Update Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "updatedAt",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdAt",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "normalized",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "AWS Security Hub - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

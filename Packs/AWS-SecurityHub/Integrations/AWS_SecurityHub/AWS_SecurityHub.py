@@ -1,3 +1,4 @@
+import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -7,6 +8,15 @@ from dateparser import parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
+
 
 '''HELPER FUNCTIONS'''
 
@@ -514,12 +524,14 @@ def severity_mapping(severity: int) -> int:
     Returns:
         Demisto severity
     """
-    if 1 <= severity <= 30:
+    if 1 <= severity <= 39:
         demisto_severity = 1
-    elif 31 <= severity <= 70:
+    elif 40 <= severity <= 69:
         demisto_severity = 2
-    elif 71 <= severity <= 100:
+    elif 70 <= severity <= 89:
         demisto_severity = 3
+    elif 90 <= severity <= 100:
+        demisto_severity = 4
     else:
         demisto_severity = 0
 
@@ -536,9 +548,11 @@ def sh_severity_mapping(severity: str):
         The number representation of the AWS finding severity
     """
     severity_mapper = {
+        'Informational': 0,
         'Low': 1,
-        'Medium': 31,
-        'High': 71
+        'Medium': 40,
+        'High': 70,
+        'Critical': 90
     }
     return severity_mapper.get(severity, 0)
 
@@ -699,7 +713,7 @@ def batch_update_findings_command(client, args):
     return human_readable, outputs, response
 
 
-def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters):
+def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction):
     last_run = demisto.getLastRun().get('lastRun', None)
     next_token = demisto.getLastRun().get('next_token', None)
     if last_run is None:
@@ -734,7 +748,9 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         'occurred': finding['CreatedAt'],
         'severity': severity_mapping(finding['Severity']['Normalized']),
         'rawJSON': json.dumps(finding),
-        'dbotMirrorId': finding['Id']
+        'dbotMirrorId': finding['Id'],
+        'mirror_direction': mirror_direction,
+        'mirror_instance': demisto.integrationInstance()
     }
         for finding in findings]
     if findings:
@@ -764,6 +780,38 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
+def get_remote_data_command(client: boto3.client, args: Dict[str, Any]):
+    """
+    get-remote-data command: Returns an updated incident and entries
+    Args:
+        client: XSOAR client to use
+        args:
+            id: incident id to retrieve
+            lastUpdate: when was the last time we retrieved data
+
+    Returns:
+
+    """
+    incident_id = args.get('id', '')
+    demisto.debug(f'Getting updated for remote incident {incident_id}')
+    last_update = args.get('lastUpdate')
+    demisto.debug(f'last update is {last_update}')
+    kwargs = generate_kwargs_for_get_findings(args)
+    response = client.get_findings(**kwargs)
+    findings = response.get('Findings', [{}])
+    demisto.debug(f'the findings are {findings}')
+    entries = []
+    for finding in findings:
+        confidence = finding.get('Confidence')
+        criticality = finding.get('Criticality')
+        related_findings = finding.get('RelatedFindings')
+        severity_normalized = finding.get('Severity', {}).get('Normalized')
+        finding_types = finding.get('Types')
+        user_defined_fields = finding.get('UserDefinedFields')
+        verification_state = finding.get('VerificationState')
+        workflow_status = finding.get('Workflow', {}).get('Status')
+
+
 def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -789,6 +837,11 @@ def main():  # pragma: no cover
     aws_sh_severity = params.get('sh_severity')
     archive_findings = params.get('archiveFindings', False)
     additional_filters = params.get('additionalFilters', '')
+    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]
+    finding_type = params.get('finding_type', '')
+    workflow_status = params.get('workflow_status', '')
+    product_name = argToList(params.get('product_name', ''))
+    mapper_out = params.get('mapper_out', '')
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -825,7 +878,10 @@ def main():  # pragma: no cover
         elif command == 'aws-securityhub-batch-update-findings':
             human_readable, outputs, response = batch_update_findings_command(client, args)
         elif command == 'fetch-incidents':
-            fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters)
+            fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction)
+            return
+        elif command == 'get-remote-data':
+            get_remote_data_command(client, args)
             return
         return_outputs(human_readable, outputs, response)
 
