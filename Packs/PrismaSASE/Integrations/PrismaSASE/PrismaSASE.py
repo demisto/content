@@ -15,6 +15,7 @@ SEARCH_LIMIT = 200
 DEFAULT_LIMIT = 50
 PA_OUTPUT_PREFIX = "PrismaSase."
 CONFIG_URI_PREFIX = "/sse/config/v1/"
+DEFAULT_POLLING_INTERVAL = 30
 
 SECURITYRULE_FIELDS = {
     "action": "",
@@ -743,6 +744,10 @@ def modify_group_address(outputs) -> List[dict]:
     return outputs
 
 
+def get_address_group_type(original_address_group: dict) -> str:
+    return 'static' if 'static' in original_address_group else 'dynamic'
+
+
 def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dict:
     if overwrite:
         # simply update the relevant keys with the new data
@@ -757,6 +762,50 @@ def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dic
             else:
                 original_rule.get(key, []).extend(argToList(new_rule.get(key, [])))
     return original_rule
+
+
+def get_url_according_to_type(args):
+    dynamic_list_type = args.get('type')
+    if dynamic_list_type in ('ip', 'domain', 'url'):
+        url = args.get('source_url')
+        if not url:
+            raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
+
+    elif dynamic_list_type == 'predefined_url':
+        url = args.get('predefined_url_list')
+        if not url:
+            raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
+    else:  # dynamic_list_type == 'predefined_ip':
+        url = args.get('predefined_ip_list')
+        if not url:
+            raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
+    return url
+
+
+def build_recurring_according_to_params(args):
+    frequency = args.get('frequency')
+    frequency_object = {frequency: {}}
+    if frequency in ('daily', 'weekly', 'monthly'):
+        frequency_hour = args.get('frequency_hour')
+        if not frequency_hour:
+            raise DemistoException('Please provide the frequency_hour argument when using daily, '
+                                   'weekly or monthly frequency')
+        frequency_object[frequency]['at'] = frequency_hour
+        if frequency == 'weekly':
+            day_of_week = args.get('day_of_week')
+            if not day_of_week:
+                raise DemistoException('Please provide the day_of_week argument when using weekly frequency')
+            frequency_object[frequency]['day_of_week'] = day_of_week
+
+        elif frequency == 'monthly':
+            day_of_month = args.get('day_of_month')
+            if not day_of_month:
+                raise DemistoException('Please provide the day_of_month argument when using monthly frequency')
+            frequency_object[frequency]['day_of_month'] = day_of_month
+
+    return frequency_object
+
+
 
 
 """COMMANDS"""
@@ -854,11 +903,20 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     object_id = args.get('object_id')
     # first get the original address, so user won't need to send all data
     original_address = client.get_address_by_id(query_params, object_id)
+    original_address_type = None
+    if not args.get('type'):
+        for address_type in ADDRESS_TYPES:
+            if address_type in original_address:
+                original_address_type = address_type
+    else:
+        original_address_type = args.get('type')
+
+    original_address[original_address_type] = args.get('address_value')
+
+    # in case the type has changed, we want to remove other types from the address object
     for address_type in ADDRESS_TYPES:
-        # address object can have exactly one type. If the type is updated, need to delete the previous type
-        if address_type in original_address:
+        if address_type in original_address and address_type != original_address_type:
             original_address.pop(address_type)
-    original_address[args.get('type')] = args.get('address_value')
 
     if description := args.get('description'):
         original_address['description'] = description
@@ -1154,7 +1212,9 @@ def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if comments := args.get('comments'):
         tag['comments'] = comments
 
-    raw_response = client.create_tag(tag, args.get('folder'))  # type: ignore
+    query_params = {'folder': args.get('folder')}
+
+    raw_response = client.create_tag(query_params, tag)  # type: ignore
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
@@ -1287,9 +1347,8 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
             if static_addresses := argToList(args.get('static_addresses')):
                 address_group['static'] = static_addresses
         else:  # type == 'dynamic'
-            if dynamic_filter := argToList(args.get('dynamic_filter')):
+            if dynamic_filter := args.get('dynamic_filter'):
                 address_group['dynamic'] = {'filter': dynamic_filter}
-
     raw_response = client.create_address_group(query_params, address_group)  # type: ignore
 
     raw_response = modify_group_address(raw_response)
@@ -1319,14 +1378,19 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     group_id = args.get('group_id')
     # first get the original address, so user won't need to send all data
     original_address_group = client.get_address_group_by_id(query_params, group_id)
-    # TODO change overwrite
 
     if description := args.get('description'):
         original_address_group['description'] = description
     overwrite = argToBoolean(args.get('overwrite'))
-    group_type = args.get('type')
+    group_type = args.get('type', '')
+    if group_type and group_type != get_address_group_type(original_address_group):
+        # we can not concatenate static value to dynamic
+        demisto.info(f"setting overwrite parameter to True as the type of the address group has changed."
+                     f"overwrite original value: {overwrite}")
+        overwrite = True
+
     if not group_type:
-        group_type = 'static' if 'static' in original_address_group else 'dynamic'
+        group_type = get_address_group_type(original_address_group)
 
     static_addresses = argToList(args.get('static_addresses'))
     dynamic_filter = args.get('dynamic_filter')
@@ -1335,15 +1399,22 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     if group_type == 'dynamic' and (not dynamic_filter and static_addresses):
         raise DemistoException("noooo")
     if group_type == 'static':
-        if static_addresses := argToList(args.get('static_addresses')):
-            if static_addresses:
-                original_address_group['static'] = static_addresses
-                original_address_group.pop('dynamic') if 'dynamic' in original_address_group else None
+        print(overwrite)
+        if overwrite:
+            original_address_group['static'] = static_addresses
+        else:
+            original_address_group.get('static', []).extend(static_addresses)
+        original_address_group.pop('dynamic') if 'dynamic' in original_address_group else None
+
     else:  # type == 'dynamic'
-        if dynamic_filter := args.get('dynamic_filter'):
-            if dynamic_filter:
-                original_address_group['dynamic'] = {'filter': dynamic_filter}
-                original_address_group.pop('static') if 'static' in original_address_group else None
+        if not overwrite:
+            dynamic_filter = original_address_group.get('dynamic', {}).get('filter', '') + ' ' + dynamic_filter
+            print(f"after {dynamic_filter}")
+
+        original_address_group['dynamic'] = {'filter': dynamic_filter}
+
+        original_address_group.pop('static') if 'static' in original_address_group else None
+
 
     raw_response = client.update_address_group(original_address_group, group_id)  # type: ignore
 
@@ -1475,6 +1546,10 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
         original_custom_url_category['description'] = description
     overwrite = argToBoolean(args.get('overwrite'))
     if category_type := args.get('type'):
+        if category_type != original_custom_url_category['type']:
+            demisto.info(f"setting overwrite parameter to True as the type of the URL category has changed."
+                         f"overwrite original value: {overwrite}")
+            overwrite = True
         original_custom_url_category['type'] = category_type
 
     if value := argToList(args.get('value')):
@@ -1564,22 +1639,29 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
         Outputs.
     """
 
-    custom_url_category = {
+    dynamic_list_type = args.get('type', '')
+    external_dynamic_list = {
         'name': args.get('name'),
-        'type': args.get('type')
+        'type': {dynamic_list_type: {}}
     }
 
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
 
+    url = get_url_according_to_type(args)
+
     if description := args.get('description'):
-        custom_url_category['description'] = description
+        external_dynamic_list['type'][dynamic_list_type]['description'] = description
 
-    if value := argToList(args.get('value')):
-        custom_url_category['list'] = value
+    external_dynamic_list['type'][dynamic_list_type]['url'] = url
 
-    raw_response = client.create_external_dynamic_list(query_params, custom_url_category)  # type: ignore
+    if dynamic_list_type in ('ip', 'domain', 'url'):
+        external_dynamic_list['type'][dynamic_list_type]['recurring'] = build_recurring_according_to_params(args)
+
+    print(external_dynamic_list)
+
+    raw_response = client.create_external_dynamic_list(query_params, external_dynamic_list)  # type: ignore
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
@@ -1701,6 +1783,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
 
     """
     ScheduledCommand.raise_error_if_not_supported()
+    polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
     if folders := argToList(args.get('folders')):
         #  first call, folder in args
         res = client.push_candidate_config(folders)
@@ -1711,7 +1794,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
         args['parent_finished'] = False
         return CommandResults(
             scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args,
-                                               next_run_in_seconds=10),
+                                               next_run_in_seconds=polling_interval),
             readable_output=f'Waiting for all data to push for job ib {job_id}')
 
     job_id = args.get('job_id')
@@ -1721,7 +1804,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
             return CommandResults(
                 scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                    args=args,
-                                                   next_run_in_seconds=10))
+                                                   next_run_in_seconds=polling_interval))
         args['parent_finished'] = True
     res = client.list_config_jobs().get('data', {})
     for job in res:
@@ -1730,7 +1813,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                 return CommandResults(
                     scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                        args=args,
-                                                       next_run_in_seconds=10))
+                                                       next_run_in_seconds=polling_interval))
     return CommandResults(readable_output="finished pushing")
 
 

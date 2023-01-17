@@ -341,6 +341,10 @@ script:
       name: description
       required: false
     - default: false
+      description: interval for polling command. Default is 30.
+      name: interval_in_seconds
+      required: false
+    - default: false
       description: For polling use.
       isArray: false
       name: job_id
@@ -582,7 +586,7 @@ script:
       - ip_range
       - ip_wildcard
       - fqdn
-      required: true
+      required: false
     - default: false
       description: The address value (should match the type)
       isArray: false
@@ -1565,18 +1569,18 @@ script:
       - panw-bulletproof-ip-list
       - panw-highrisk-ip-list
       - panw-known-ip-list
-      description: Dont know yet
+      description: The predefined IP list. If the type is predefined_ip, value must be provided.
     - auto: PREDEFINED
       isArray: false
       name: predefined_url_list
       required: false
-      description: Dont know yet
+      description: The predefined URL list. If the type is predefined_url, value must be provided.
       predefined:
       - panw–auth-portal-exclude-list
     - default: false
       isArray: false
       name: source_url
-      description: Dont know yet
+      description: The source URL. If the type is IP, URL or Domain, value must be provided.
     - auto: PREDEFINED
       isArray: false
       name: frequency
