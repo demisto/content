@@ -33,7 +33,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, token: str, api_version: str, validate_certificate: bool, proxy: bool):
         super().__init__(base_url, verify=validate_certificate, proxy=proxy)
         if api_version == 'v1':
-            self._session.params['token'] = token
+            self._session.params['token'] = token  # type: ignore
         else:
             self.headers = {'Netskope-Api-Token': token}
 
