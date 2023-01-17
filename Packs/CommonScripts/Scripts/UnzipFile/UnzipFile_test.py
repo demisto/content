@@ -242,7 +242,7 @@ def test_get_password_invalid():
 def test_archive_with_slash_in_path():
     """
     Given
-    - valid tar.gz file slash in path
+    - valid tar.gz file with slash in path
     - empty folder _dir
     When
     - run extract on the tar file and export the internal files to _dir
@@ -253,7 +253,7 @@ def test_archive_with_slash_in_path():
         'name': 'Archive_with_slash_in_path.tar.gz',
         'path': 'data_test/Archive_with_slash_in_path.tar.gz'
     }
-    # - empty folder _di
+    # - empty folder _dir
     _dir = mkdtemp()
     # When
     # - run extract on that zip file and export the internal files to _dir

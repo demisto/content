@@ -147,6 +147,7 @@ def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
     stdout, stderr = process.communicate()
     stdout = str(stdout)
     if stderr:
+        # tar returns a warning in the stderr when the compressed file path starts with /
         if str(stderr, 'UTF-8') != "tar: removing leading '/' from member names\n":
             return_error(str(stderr))
     if "Errors" in stdout:
