@@ -812,6 +812,10 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]):
         workflow_status = finding.get('Workflow', {}).get('Status')
 
 
+def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str], finding_type: str,
+                                     workflow_status: str, product_name: List[str]) -> GetModifiedRemoteDataResponse:
+
+
 def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -883,6 +887,8 @@ def main():  # pragma: no cover
         elif command == 'get-remote-data':
             get_remote_data_command(client, args)
             return
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, args, finding_type, workflow_status, product_name))
         return_outputs(human_readable, outputs, response)
 
     except Exception as e:
