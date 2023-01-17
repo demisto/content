@@ -43,7 +43,8 @@ ERROR_MESSAGE_TEST_INPUTS = [
         TEST_LIST,
         "list_of_priorities_from_rules does not support list over 999 entries, please reduce the list.",
     ),
-    (101, 2, [100, 101], "No available priorities found."),
+    (101, 2, [100, 101], "Available priorities not found."),
+    (102, 3, [100, 102], "Available priorities not found."),
 ]
 
 
@@ -57,6 +58,14 @@ def test_find_available_priorities(
     list_of_priorities_from_rules,
     expected_result,
 ):
+    """Test valid input from TEST_INPUTS to find_available_priorities function.
+
+    Args:
+        target_rule_priority (int): The priority of the rule you want to find available priorities before.
+        number_of_available_priorities_to_retrieve (int): Number of available priorities to find.
+        list_of_priorities_from_rules (list): List of existing rule priorities.
+        expected_result: List of test results that represent available priorities.
+    """
     assert (
         find_available_priorities(
             target_rule_priority,
@@ -77,6 +86,14 @@ def test_input_value_errors(
     list_of_priorities_from_rules,
     expected_error_message,
 ):
+    """Test exceptions from ERROR_MESSAGE_TEST_INPUTS to find_available_priorities function.
+
+    Args:
+        target_rule_priority (int): The priority of the rule you want to find available priorities before.
+        number_of_available_priorities_to_retrieve (int): Number of available priorities to find.
+        list_of_priorities_from_rules (list): List of existing rule priorities.
+        expected_result: potential error message.
+    """
     with pytest.raises(ValueError) as error_message:
         # function call with invalid parameters
         find_available_priorities(

@@ -7,6 +7,28 @@ def find_available_priorities(
     number_of_available_priorities_to_retrieve: int,
     list_of_priorities_from_rules: list,
 ) -> list:
+    """This function gathers the below arguments to retrieve a list of available priorities
+    from an Azure NSG that can be used to add rules to.
+
+    Args:
+        target_rule_priority (int): The priority of the rule you want to find available priorities before.
+        number_of_available_priorities_to_retrieve (int): Number of available priorities to find.
+        list_of_priorities_from_rules (list): List of existing rule priorities.
+
+    Raises:
+        ValueError: if target_rule_priority not specified.
+        ValueError: if target_rule_priority is 100 or less.
+        ValueError: if target_rule_priority is 4096 or more.
+        ValueError: if number_of_available_priorities_to_retrieve not specified.
+        ValueError: if number_of_available_priorities_to_retrieve is 0 or less, or more than 5.
+        ValueError: if list_of_priorities_from_rules is not specified.
+        ValueError: if list_of_priorities_from_rules is not a list.
+        ValueError: if list_of_priorities_from_rules is over 999 entries.
+        ValueError: if available priorities are not found.
+
+    Returns:
+        list: a number of available priorities before the offending rules' priority (target_rule_priority).
+    """
 
     if not target_rule_priority:
         raise ValueError("target_rule_priority not specified.")
@@ -17,7 +39,10 @@ def find_available_priorities(
 
     if not number_of_available_priorities_to_retrieve:
         raise ValueError("number_of_available_priorities_to_retrieve not specified.")
-    elif number_of_available_priorities_to_retrieve > 5 or number_of_available_priorities_to_retrieve <= 0:
+    elif (
+        number_of_available_priorities_to_retrieve > 5
+        or number_of_available_priorities_to_retrieve <= 0
+    ):
         raise ValueError(
             "number_of_available_priorities_to_retrieve cannot be 0 or less, or more than 5. Please use a lower number."
         )
@@ -41,8 +66,11 @@ def find_available_priorities(
         :number_of_available_priorities_to_retrieve
     ]
 
-    if not closest_numbers:
-        raise ValueError("No available priorities found.")
+    if (
+        not closest_numbers
+        or len(closest_numbers) != number_of_available_priorities_to_retrieve
+    ):
+        raise ValueError("Available priorities not found.")
 
     return closest_numbers
 
