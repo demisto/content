@@ -558,10 +558,10 @@ tasks:
     continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 046b134b-6704-4d29-8443-af01b62bf60e
+    taskid: f1e1594d-5b8b-4414-8efb-2682ee0bb1a2
     type: regular
     task:
-      id: 046b134b-6704-4d29-8443-af01b62bf60e
+      id: f1e1594d-5b8b-4414-8efb-2682ee0bb1a2
       version: -1
       name: Get Wildfire PDF report
       description: Gets a PDF report of search results for hashes in the WildFire sandbox.
@@ -577,8 +577,6 @@ tasks:
         simple: pdf
       sha256:
         simple: ${inputs.FileSha256}
-      execution-timeout:
-        simple: "900"
     separatecontext: false
     view: |-
       {
