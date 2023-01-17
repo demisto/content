@@ -11,6 +11,8 @@ from dateparser import parse
 import demistomock as demisto
 from CommonServerPython import *
 
+import re
+
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
 INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
@@ -336,14 +338,14 @@ class Client(BaseClient):
             params={'limit': limit}
         )
 
-    def passive_dns_data(self, ip: str, limit: int) -> dict:
+    def passive_dns_data(self, id: dict, limit: int) -> dict:
         """
         See Also:
             https://developers.virustotal.com/v3.0/reference#ip-relationships
         """
         return self._http_request(
             'GET',
-            f'ip_addresses/{ip}/resolutions',
+            f'{"ip_addresses" if id["type"] == "ip" else "domains"}/{id["value"]}/resolutions',
             params={'limit': limit}
         )
 
@@ -1161,6 +1163,9 @@ def build_domain_output(
         extended_data: bool):
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
+    last_analysis_stats = attributes.get('last_analysis_stats')
+    positive_engines = last_analysis_stats.get('malicious', 0)
+    detection_engines = sum(last_analysis_stats.values())
     relationships_response = data.get('relationships', {})
     whois: defaultdict = get_whois(attributes.get('whois', ''))
     score = score_calculator.domain_score(domain, raw_response)
@@ -1206,16 +1211,19 @@ def build_domain_output(
         readable_output=tableToMarkdown(
             f'Domain data of {domain}',
             {
-                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 **data,
+                **attributes,
                 **whois,
-                **attributes
+                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
+                'positives': f'{positive_engines}/{detection_engines}'
             },
             headers=[
                 'id',
                 'Registrant Country',
+                'Registrar',
                 'last_modified',
-                'last_analysis_stats'
+                'reputation',
+                'positives'
             ],
             removeNull=True,
             headerTransform=underscoreToCamelCase
@@ -1273,19 +1281,19 @@ def build_url_output(
             f'URL data of "{url}"',
             {
                 **data,
-                **data.get('attributes', {}),
+                **attributes,
                 'url': url,
+                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date')),
                 'positives': f'{positive_detections}/{detection_engines}',
-                'last_modified': epoch_to_timestamp(attributes.get('last_modification_date'))
             },
             headers=[
                 'url',
                 'title',
-                'last_modified',
                 'has_content',
                 'last_http_response_content_sha256',
-                'positives',
-                'reputation'
+                'last_modified',
+                'reputation',
+                'positives'
             ],
             removeNull=True,
             headerTransform=underscoreToCamelCase
@@ -1652,7 +1660,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
         execution_metrics.success += 1
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
     if len(results) == 0:
-        result = CommandResults(readable_output='No domains were found.')
+        result = CommandResults(readable_output='No urls were found.')
         results.append(result)
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
@@ -2070,19 +2078,38 @@ def passive_dns_data(client: Client, args: dict) -> CommandResults:
     """
     1 API Call
     """
-    ip = args['ip']
+
+    id = {}
+    if 'ip' in args:
+        id['value'] = args['ip']
+        id['type'] = 'ip'
+    elif 'domain' in args:
+        id['value'] = args['domain']
+        id['type'] = 'domain'
+    elif 'id' in args:
+        id['value'] = args['id']
+        if re.search(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", id['value']) is None:
+            id['type'] = 'domain'
+        else:
+            id['type'] = 'ip'
+            for x in id['value'].split('.'):
+                if int(x) > 255:
+                    id['type'] = 'domain'
+    else:
+        return CommandResults(readable_output='No IP address or domain was given.')
+
     limit = arg_to_number_must_int(
         args['limit'],
         arg_name='limit',
         required=True
     )
-    raw_response = client.passive_dns_data(ip, limit)
+    raw_response = client.passive_dns_data(id, limit)
     data = raw_response['data']
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.PassiveDNS',
         'id',
         readable_output=tableToMarkdown(
-            f'Passive DNS data for IP {ip}',
+            f'Passive DNS data for {"IP" if id["type"] == "ip" else "domain"} {id["value"]}',
             [
                 {
                     'id': item['id'],
@@ -2171,25 +2198,25 @@ def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
     """Get last sigma analysis for a given file"""
     file_hash = args['file']
     only_stats = argToBoolean(args['only_stats'])
-    raw_response = client.get_file_sigma_analysis(file_hash)
+    raw_response = client.file(file_hash)
     data = raw_response['data']
 
-    if only_stats:
-        formatted_data = []
-        total = data['attributes']['severity_stats']
+    if 'sigma_analysis_stats' not in data['attributes'] or 'sigma_analysis_results' not in data['attributes']:
+        return CommandResults(readable_output=f'No Sigma analyses for file {file_hash} were found.')
 
-        for key, value in data['attributes']['source_severity_stats'].items():
-            formatted_data.append(merge_two_dicts(value, {'name': key}))
-        formatted_data.append(merge_two_dicts(total, {'name': 'TOTAL'}))
+    if only_stats:
         return CommandResults(
             f'{INTEGRATION_ENTRY_CONTEXT}.SigmaAnalysis',
             'id',
             readable_output=tableToMarkdown(
                 f'Summary of the last Sigma analysis for file {file_hash}:',
-                formatted_data,
-                headers=['name', 'critical', 'high', 'medium', 'low'],
+                {
+                    **data['attributes']['sigma_analysis_stats'],
+                    '**TOTAL**': sum(data['attributes']['sigma_analysis_stats'].values())
+                },
+                headers=['critical', 'high', 'medium', 'low', '**TOTAL**'],
                 removeNull=True,
-                headerTransform=underscoreToCamelCase,
+                headerTransform=underscoreToCamelCase
             ),
             outputs=data,
             raw_response=raw_response,
@@ -2200,13 +2227,13 @@ def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
             'id',
             readable_output=tableToMarkdown(
                 f'Matched rules for file {file_hash} in the last Sigma analysis:',
-                data['attributes']['rule_matches'],
+                data['attributes']['sigma_analysis_results'],
                 headers=[
-                    'match_context', 'rule_level', 'rule_description',
-                    'rule_source', 'rule_title', 'rule_id', 'rule_author'
+                    'rule_level', 'rule_description', 'rule_source',
+                    'rule_title', 'rule_id', 'rule_author', 'match_context'
                 ],
                 removeNull=True,
-                headerTransform=underscoreToCamelCase,
+                headerTransform=underscoreToCamelCase
             ),
             outputs=data,
             raw_response=raw_response,
