@@ -1,0 +1,1368 @@
+id: Azure - Network Security Group Remediation
+version: -1
+name: Azure - Network Security Group Remediation
+description: "Adds or updates security deny and allow rules to Azure Network Security Group (NSG) associated with NIC to remediate open port to the internet. \n\nConditions and limitations:\n- Limited to one resource group.\n- 200 Azure rules viewed at once to find offending rule.\n- 2 priorities lower than the offending rule priority must be available.\n- Adds rules to NSGs associated to NICs"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 41e5c47a-1936-48ad-8c02-a0f748035b66
+    type: start
+    task:
+      id: 41e5c47a-1936-48ad-8c02-a0f748035b66
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": -710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1519908a-356e-48b6-8c19-8d2a3fd920d0
+    type: regular
+    task:
+      id: 1519908a-356e-48b6-8c19-8d2a3fd920d0
+      version: -1
+      name: Retrieve Rules from NSG Associated to Public IP
+      description: List all rules of the specified security group.
+      script: '|||azure-nsg-security-rules-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      limit:
+        simple: "200"
+      offset:
+        simple: "1"
+      security_group_name:
+        complex:
+          root: inputs.AzureSecurityGroup
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 65f9da98-6c36-4c40-8786-d83d3770e4d6
+    type: condition
+    task:
+      id: 65f9da98-6c36-4c40-8786-d83d3770e4d6
+      version: -1
+      name: Is Azure Network Security Groups and is Input Value Defined?
+      description: Determines if the Azure Network Security Groups integration instance is configured and Input values are defined to pull in data required for remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure Network Security Groups
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 013da57d-4a0e-45e2-8a82-52f3cd2b1cfd
+    type: title
+    task:
+      id: 013da57d-4a0e-45e2-8a82-52f3cd2b1cfd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: f7419872-ff3c-4272-8a99-59bae56e6d33
+    type: condition
+    task:
+      id: f7419872-ff3c-4272-8a99-59bae56e6d33
+      version: -1
+      name: Does offending rule exist?
+      description: Check whether the last command returned rules or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AzureNSG.Rule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.access
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Allow
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.direction
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Inbound
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationPortRange
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.RemotePort
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.protocol
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.RemoteProtocol
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.sourceAddressPrefix
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '*'
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.sourceAddressPrefix
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Internet
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a70caeee-0399-4821-8c66-263c8133173e
+    type: title
+    task:
+      id: a70caeee-0399-4821-8c66-263c8133173e
+      version: -1
+      name: Retrieve and Update Allow Rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 110e9510-f313-4536-8113-59b63fad02fc
+    type: regular
+    task:
+      id: 110e9510-f313-4536-8113-59b63fad02fc
+      version: -1
+      name: Set variable for existing allow rule name
+      description: Set a variable for the existing allow rule.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: existingAllowRule
+      value:
+        complex:
+          root: AzureNSG.Rule
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.direction
+                iscontext: true
+              right:
+                value:
+                  simple: Inbound
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.access
+                iscontext: true
+              right:
+                value:
+                  simple: Allow
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureNSG.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: remediation-allow-port
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureNSG.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: ${inputs.RemotePort}
+                iscontext: true
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureNSG.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: ${inputs.RemoteProtocol}
+                iscontext: true
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: AzureNSG.Rule.destinationAddressPrefix
+                iscontext: true
+              right:
+                value:
+                  simple: ${inputs.AzureVMPrivateIP}
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: af560a6b-f0b9-42c5-8447-a041bbfc9ae1
+    type: regular
+    task:
+      id: af560a6b-f0b9-42c5-8447-a041bbfc9ae1
+      version: -1
+      name: Update existing remediation allow rule
+      description: Update existing security allow rule that denies all internet traffic to exposed public IPs with the additional remoteIP. If one does not exist, it will be created.
+      script: Azure Network Security Groups|||azure-nsg-security-rule-update
+      type: regular
+      iscommand: true
+      brand: Azure Network Security Groups
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      destination:
+        complex:
+          root: existingAllowRule
+          accessor: destinationAddressPrefix
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${inputs.AzureVMPrivateIP}
+                iscontext: true
+      security_group_name:
+        complex:
+          root: inputs.AzureSecurityGroup
+      security_rule_name:
+        complex:
+          root: existingAllowRule
+          accessor: name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: b9ec97db-eea7-4cd6-8f2c-e76ca04bfb9a
+    type: condition
+    task:
+      id: b9ec97db-eea7-4cd6-8f2c-e76ca04bfb9a
+      version: -1
+      name: Does remediation deny rule exist?
+      description: Determines whether a remediation deny rule already exists or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      Update:
+      - "35"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AzureNSG.Rule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.access
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Allow
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: remediation-deny-port
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.RemotePort}
+                      iscontext: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.RemoteProtocol}
+                      iscontext: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefix
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.AzureVMPrivateIP}
+                      iscontext: true
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: name
+            iscontext: true
+          right:
+            value: {}
+    - label: Update
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AzureNSG.Rule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.access
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Allow
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: remediation-allow-port
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.RemotePort}
+                      iscontext: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.RemoteProtocol}
+                      iscontext: true
+                - - operator: notContainsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefix
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.AzureVMPrivateIP}
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 27d21edd-8a53-4e3b-8b6f-39201e3f2c6c
+    type: title
+    task:
+      id: 27d21edd-8a53-4e3b-8b6f-39201e3f2c6c
+      version: -1
+      name: Retrieve and Update Allow Rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: e930fede-842f-4d97-84d3-003360da4110
+    type: regular
+    task:
+      id: e930fede-842f-4d97-84d3-003360da4110
+      version: -1
+      name: Set variable for existing deny rule name
+      description: Set a variable for the existing deny rule.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      key:
+        simple: existingDenyRule
+      value:
+        complex:
+          root: AzureNSG.Rule
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.direction
+                iscontext: true
+              right:
+                value:
+                  simple: Inbound
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.access
+                iscontext: true
+              right:
+                value:
+                  simple: Deny
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureNSG.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: remediation-deny-port
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureNSG.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: "3389"
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureNSG.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: TCP
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: AzureNSG.Rule.destinationAddressPrefix
+                iscontext: true
+              right:
+                value:
+                  simple: ${inputs.AzureVMPrivateIP}
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: f9ed14a4-f402-4438-8bcf-628a18ed65a8
+    type: regular
+    task:
+      id: f9ed14a4-f402-4438-8bcf-628a18ed65a8
+      version: -1
+      name: Update existing remediation deny rule
+      description: Update existing security rule that denies all internet traffic to exposed public IPs with the additional remoteIP.  If one does not exist, it will be created.
+      script: Azure Network Security Groups|||azure-nsg-security-rule-update
+      type: regular
+      iscommand: true
+      brand: Azure Network Security Groups
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      destination:
+        complex:
+          root: existingDenyRule
+          accessor: destinationAddressPrefix
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${inputs.AzureVMPrivateIP}
+                iscontext: true
+      security_group_name:
+        complex:
+          root: inputs.AzureSecurityGroup
+      security_rule_name:
+        complex:
+          root: existingDenyRule
+          accessor: name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: da28b150-a5ff-467f-8811-3432937ce7e6
+    type: condition
+    task:
+      id: da28b150-a5ff-467f-8811-3432937ce7e6
+      version: -1
+      name: Does remediation allow rule exist?
+      description: Determines whether a remediation allow rule already exists or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      Update:
+      - "30"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AzureNSG.Rule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.access
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Allow
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: remediation-allow-port
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.RemotePort}
+                      iscontext: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.RemoteProtocol}
+                      iscontext: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefix
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.AzureVMPrivateIP}
+                      iscontext: true
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: name
+            iscontext: true
+          right:
+            value: {}
+    - label: Update
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AzureNSG.Rule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.access
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Allow
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: remediation-allow-port
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.RemotePort}
+                      iscontext: true
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.RemoteProtocol}
+                      iscontext: true
+                - - operator: notContainsGeneral
+                    left:
+                      value:
+                        simple: AzureNSG.Rule.destinationAddressPrefix
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${inputs.AzureVMPrivateIP}
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 0f591347-c5b5-4de5-886e-03a4a6ab7e74
+    type: title
+    task:
+      id: 0f591347-c5b5-4de5-886e-03a4a6ab7e74
+      version: -1
+      name: Create Allow Rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: e65e18a5-0588-4b65-8aa1-753a80b94e7f
+    type: regular
+    task:
+      id: e65e18a5-0588-4b65-8aa1-753a80b94e7f
+      version: -1
+      name: Create list of priorities of all returned Azure rules
+      description: Creates a list of priorities from the list of rules found.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      key:
+        simple: prioritiesAzureRules
+      value:
+        complex:
+          root: AzureNSG.Rule
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.direction
+                iscontext: true
+              right:
+                value:
+                  simple: Inbound
+          accessor: priority
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 89d3847a-96c0-40f7-8207-2d8d2c899684
+    type: regular
+    task:
+      id: 89d3847a-96c0-40f7-8207-2d8d2c899684
+      version: -1
+      name: Retrieve available priorities
+      description: 'This script takes in a list of numbers that represent Azure priorities for NSG rules, a target priority number, and a number available priorities to return available priorities from the provided list. '
+      scriptName: AzureFindAvailableNSGPriorities
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      list_of_priorities_from_rules:
+        simple: ${prioritiesAzureRules}
+      number_of_available_priorities_to_retrieve:
+        simple: "2"
+      target_rule_priority:
+        simple: ${azureOffendingRulePriority}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 7c77b9fb-80b7-4a26-8788-61cb3cb1aa96
+    type: regular
+    task:
+      id: 7c77b9fb-80b7-4a26-8788-61cb3cb1aa96
+      version: -1
+      name: Add allow rule for port ${inputs.RemotePort} and ${inputs.RemoteProtocol}
+      description: Create a security rule that allows traffic from private IPs to the remoteIP.
+      script: '|||azure-nsg-security-rule-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      action:
+        simple: Allow
+      destination:
+        complex:
+          root: ${inputs
+          accessor: AzureVMPrivateIP}
+      destination_ports:
+        complex:
+          root: inputs.RemotePort
+      direction:
+        simple: Inbound
+      priority:
+        complex:
+          root: AvailableAzureNSGPriorities
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      protocol:
+        complex:
+          root: inputs.RemoteProtocol
+      security_group_name:
+        complex:
+          root: inputs.AzureSecurityGroup
+      security_rule_name:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: remediation-allow-port-
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${inputs.RemoteProtocol}
+                iscontext: true
+      source:
+        simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 4a606d7d-785f-41c5-8674-3c81a435a398
+    type: regular
+    task:
+      id: 4a606d7d-785f-41c5-8674-3c81a435a398
+      version: -1
+      name: Set variable for offending rule priority
+      description: Sets variable for the offending rule priority in the list of rules returned.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      key:
+        simple: azureOffendingRulePriority
+      value:
+        complex:
+          root: AzureNSG.Rule
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.direction
+                iscontext: true
+              right:
+                value:
+                  simple: Inbound
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.destinationPortRange
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.RemotePort
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.protocol
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.sourceAddressPrefix
+                iscontext: true
+              right:
+                value:
+                  simple: '*'
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: AzureNSG.Rule.access
+                iscontext: true
+              right:
+                value:
+                  simple: Allow
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: priority
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: d283f9a6-23b2-403e-8fe5-4720dba46538
+    type: regular
+    task:
+      id: d283f9a6-23b2-403e-8fe5-4720dba46538
+      version: -1
+      name: Add block rule for port ${inputs.RemotePort}
+      description: Create a security rule that denies all internet traffic to the remoteIP.
+      script: '|||azure-nsg-security-rule-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      action:
+        simple: Deny
+      destination:
+        complex:
+          root: inputs.AzureVMPrivateIP
+      destination_ports:
+        complex:
+          root: inputs.RemotePort
+      direction:
+        simple: Inbound
+      priority:
+        complex:
+          root: AvailableAzureNSGPriorities
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      protocol:
+        complex:
+          root: inputs.RemoteProtocol
+      security_group_name:
+        complex:
+          root: inputs.AzureSecurityGroup
+      security_rule_name:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: remediation-deny-port-
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${inputs.RemoteProtocol}
+      source:
+        simple: Internet
+      source_ports:
+        simple: '*'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: f5735595-a251-455e-8388-c6e2b4c60398
+    type: title
+    task:
+      id: f5735595-a251-455e-8388-c6e2b4c60398
+      version: -1
+      name: Create Deny Rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_43_yes": 0.67,
+      "22_5_#default#": 0.16,
+      "34_35_Update": 0.65,
+      "34_5_yes": 0.35,
+      "38_39_#default#": 0.58,
+      "4_1_yes": 0.61,
+      "4_5_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2935,
+        "width": 1350,
+        "x": -10,
+        "y": -710
+      }
+    }
+  }
+inputs:
+- key: AzureSecurityGroup
+  value: {}
+  required: true
+  description: The Azure Network Security Group that will have new rules created or updated.
+  playbookInputQuery:
+- key: RemotePort
+  value: {}
+  required: true
+  description: The remote port that is publicly exposed.
+  playbookInputQuery:
+- key: RemoteProtocol
+  value: {}
+  required: true
+  description: The remote protocol that is publicly exposed.
+  playbookInputQuery:
+- key: RemoteIP
+  value: {}
+  required: true
+  description: The remote IP that is publicly exposed.
+  playbookInputQuery:
+- key: AzureVMPrivateIP
+  value: {}
+  required: true
+  description: The private IP of the Azure Virtual Machine.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
