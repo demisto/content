@@ -10,11 +10,11 @@ args:
   - comment
   - work_notes
 - description: Specify the sys_id of the ticket. If not specified, it will use the ticket ID from the incident. servicenowticketid must be in context data for this to work.
-  name: ticketID
+  name: ticket_id
 - description: Specify a table name. If nothing is mentioned, it will  use ticket type from instance configuration.
   name: table_name
 - description: Specify the instance to be used. If not specified, it will run using all available instances.
-  name: using
+  name: instance_name
 comment: Use this script to add a comment or work note to a ServiceNow ticket. To be run within the incident.
 commonfields:
   id: ServiceNowAddComment
