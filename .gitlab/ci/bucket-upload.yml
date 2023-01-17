@@ -507,7 +507,7 @@ sync-buckets-between-projects:
   script:
     - |
       if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]] || [[ -z "$GCS_XSOAR_CONTENT_PROD_KEY" ]]; then
-        echo "$GCS_XSOAR_CONTENT_DEV_KEY or $GCS_XSOAR_CONTENT_PROD_KEY not set, cannot perform sync"
+        echo "GCS_XSOAR_CONTENT_DEV_KEY or GCS_XSOAR_CONTENT_PROD_KEY not set, cannot perform sync"
         exit 1
       else
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
