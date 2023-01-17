@@ -2420,19 +2420,19 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         if 'Mirrored from Cortex XSOAR' not in note.get('value'):
             comments_context = {'comments_and_work_notes': note.get('value')}
 
-            Tags = str(note.get('tags', 'none'))
-            if Tags == 'none':
+            tags = str(note.get('tags', 'none'))
+            if tags == 'none':
                 if str(note.get('element')) == 'comments':
-                    Tags = [params.get('comment_tag_from_servicenow')]
+                    tags = [params.get('comment_tag_from_servicenow')]
                 else:
-                    Tags = [params.get('work_notes_tag_from_servicenow')]
+                    tags = [params.get('work_notes_tag_from_servicenow')]
             else:
                 if str(note.get('element')) == 'comments':
-                    Tags = Tags + params.get('comment_tag_from_servicenow')
-                    Tags = argToList(Tags)
+                    tags = tags + params.get('comment_tag_from_servicenow')
+                    tags = argToList(tags)
                 else:
-                    Tags = Tags + params.get('work_notes_tag_from_servicenow')
-                    Tags = argToList(Tags)
+                    tags = tags + params.get('work_notes_tag_from_servicenow')
+                    tags = argToList(tags)
 
             entries.append({
                 'Type': note.get('type'),
@@ -2440,7 +2440,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
                             f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                 'ContentsFormat': note.get('format'),
-                'Tags': Tags,
+                'Tags': tags,
                 'Note': True,
                 'EntryContext': comments_context
             })
