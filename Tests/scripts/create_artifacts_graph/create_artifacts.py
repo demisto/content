@@ -7,7 +7,7 @@ from Tests.scripts.utils.log_util import install_logging
 import logging as logger
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import get_content_path
-
+from demisto_sdk.commands.common.tools import str2bool
 import json
 
 logging_setup(3)
@@ -52,7 +52,7 @@ def main():
     parser.add_argument("-mp", "--marketplace", type=MarketplaceVersions, help="marketplace version", default="xsoar")
     parser.add_argument("-ao", "--artifacts-output", help="Artifacts output directory", required=True)
     parser.add_argument("-do", "--dependencies-output", help="Dependencies output directory", required=True)
-    parser.add_argument("-bu", "--bucket-upload", help="Upload to bucket", action="store_true")
+    parser.add_argument("-bu", "--bucket-upload", type=str2bool, default=False, help="Upload to bucket")
     parser.add_argument("--zip", default=True, action="store_true")
     parser.add_argument("--no-zip", dest="zip", action="store_false")
     args = parser.parse_args()
