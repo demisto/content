@@ -5223,6 +5223,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "AMPv2",
+            "playbookID": "AMPv2_Test",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "XSOAR EDL Checker",
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
@@ -5396,6 +5401,7 @@
         "GCS - Test": "No instance",
         "GCS Object Policy (ACL) - Test": "No instance",
         "GCS Bucket Policy (ACL) - Test": "No instance",
+        "playbook-AzureDataExplorer-Test": "No Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
@@ -5502,6 +5508,8 @@
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
         "CiscoSMA": "No instance - developed by Qmasters",
+        "CiscoAMP": "No instance & Depreceated, replaced by AMPV2",
+        "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",

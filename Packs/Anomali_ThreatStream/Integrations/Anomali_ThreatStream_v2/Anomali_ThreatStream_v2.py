@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import urllib3
 from requests.exceptions import MissingSchema, ConnectionError
 
 # Disable insecure warnings
@@ -1027,8 +1028,8 @@ def main():
 
     params = demisto.params()
 
-    user_name = params.get('username')
-    api_key = params.get('apikey')
+    user_name = params.get('credentials', {}).get('identifier', '') or params.get('username', '')
+    api_key = params.get('credentials', {}).get('password', '') or params.get('apikey', '')
     server_url = params.get('url', '').strip('/')
 
     CREDENTIALS['username'] = user_name
