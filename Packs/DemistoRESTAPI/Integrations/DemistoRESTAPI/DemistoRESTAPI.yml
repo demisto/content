@@ -153,3 +153,4 @@ marketplaces:
   - xsoar
 fromversion: 5.0.0
 toversion: 7.9.9
+deprecated: true

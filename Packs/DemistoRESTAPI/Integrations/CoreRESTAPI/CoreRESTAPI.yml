@@ -14,6 +14,7 @@ configuration:
 - display: Auth ID
   name: creds_apikey
   type: 9
+  additionalinfo: "Please provide Auth ID when using Cortex XSIAM or Cortex XSOAR 8.0.0 and above."
   required: false
 - display: Authentication Method
   name: auth_method

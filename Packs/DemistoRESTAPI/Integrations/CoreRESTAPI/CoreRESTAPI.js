@@ -48,9 +48,6 @@ sendMultipart = function (uri, entryID, body) {
         throw 'API Key must be provided.';
     }
     var auth_id = [params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '')];
-        if (auth_id == ''){
-            throw 'Auth ID must be provided.';
-    }
     var headers = {}
     // in case the integration was installed before auth_method was added, the auth_method param will be empty so
     // we will use the standard auth method
