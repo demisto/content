@@ -1,5 +1,5 @@
-Fortiweb VM integration allows to manage WAF policies and block cookies, URLs, and hostnames.
-This integration was integrated and tested with versions 1 and 2 of fortiweb_vm
+Fortiweb VM integration allows to manage WAF policies and block cookies, URLs, and host names.
+This integration was integrated and tested with version xx of fortiweb_vm
 
 ## Configure Fortiweb VM on Cortex XSOAR
 
@@ -10,7 +10,8 @@ This integration was integrated and tested with versions 1 and 2 of fortiweb_vm
     | **Parameter** | **Required** |
     | --- | --- |
     | Server URL | True |
-    | The API Key. | True |
+    | Username. | True |
+    | Password. | True |
     | API Version | True |
     | Use system proxy settings | False |
     | Trust any certificate (not secure) | False |
@@ -21,7 +22,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortiwebvm-protected-hostname-group-create
 ***
-Create Protected Hostname Group.
+Create protected host name group.
 
 
 #### Base Command
@@ -31,8 +32,8 @@ Create Protected Hostname Group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Protected Hostname Group Name. | Required | 
-| default_action | Select whether to accept or deny HTTP requests whose Host: field does not match any of the host definitions that you will add to this protected hosts group. Possible values are: Allow, Deny (no log), Deny. Default is Allow. | Optional | 
+| name | Protected host name group name. | Required | 
+| default_action | Whether to accept or deny HTTP requests whose Host field does not match any of the host definitions that you add to this protected hosts group. Possible values are: Allow, Deny (no log), Deny. Default is Allow. | Optional | 
 
 
 #### Context Output
@@ -50,7 +51,7 @@ There is no context output for this command.
 
 ### fortiwebvm-protected-hostname-group-update
 ***
-Update Protected Hostname Group.
+Update protected host name group.
 
 
 #### Base Command
@@ -60,8 +61,8 @@ Update Protected Hostname Group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Protected Hostname Group Name. | Required | 
-| default_action | Select whether to accept or deny HTTP requests whose Host: field does not match any of the host definitions that you will add to this protected hosts group. Possible values are: Allow, Deny (no log), Deny. | Optional | 
+| name | Protected host name group name. | Required | 
+| default_action | Whether to accept or deny HTTP requests whose Host field does not match any of the host definitions that you will add to this protected hosts group. Possible values are: Allow, Deny (no log), Deny. | Optional | 
 
 
 #### Context Output
@@ -79,7 +80,7 @@ There is no context output for this command.
 
 ### fortiwebvm-protected-hostname-group-list
 ***
-List the Protected Hostname groups.
+List the Protected host name group.
 
 
 #### Base Command
@@ -89,7 +90,7 @@ List the Protected Hostname groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Protected Hostname Group Name. | Optional | 
+| name | Protected host name group name. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -99,9 +100,9 @@ List the Protected Hostname groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.ProtectedHostnameGroup.id | String | Protected Hostname Group ID. | 
-| FortiwebVM.ProtectedHostnameGroup.default_action | Number | Protected Hostname Group Action. | 
-| FortiwebVM.ProtectedHostnameGroup.protected_hostname_count | Number | Protected Hostname Group members number. | 
+| FortiwebVM.ProtectedHostnameGroup.id | String | Protected host name group ID. | 
+| FortiwebVM.ProtectedHostnameGroup.default_action | Number | Protected host name group action. | 
+| FortiwebVM.ProtectedHostnameGroup.protected_hostname_count | Number | The number of protected host name group members. | 
 | FortiwebVM.ProtectedHostnameGroup.can_delete | Boolean | Can deleted flag. Supports API version 1 only. | 
 
 #### Command example
@@ -155,7 +156,7 @@ List the Protected Hostname groups.
 
 ### fortiwebvm-protected-hostname-member-create
 ***
-Create Protected Hostname Member (Protected Hostname Member is a sub-object of Protected Hostname Group).
+Create protected host name member.
 
 
 #### Base Command
@@ -165,31 +166,18 @@ Create Protected Hostname Member (Protected Hostname Member is a sub-object of P
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Protected Hostname Group Name. | Required | 
-| action | Select whether to accept or deny HTTP requests whose Host. Possible values are: Allow, Deny (no log), Deny. Default is Allow. | Optional | 
-| host | Enter the IP address or FQDN of a virtual or real web host, as it appears in the Host: field of HTTP headers, such as www.example.com. The maximum length is 256 characters. | Required | 
-| ignore_port | Enable ignore-port so that the host names with port number will be protected. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
-| include_subdomains | Enable include-subdomains so that the sub domains of the host will be protected. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
+| group_name | Protected host name group name. | Required | 
+| action | Whether to accept or deny HTTP requests whose Host field does not match any of the host definitions that you add to this protected hosts group. Possible values are: Allow, Deny (no log), Deny. Default is Allow. | Optional | 
+| host | Enter the IP address or FQDN of a virtual or real web host, as it appears in the Host field of HTTP headers, such as www.example.com. The maximum length is 256 characters. | Required | 
+| ignore_port | Whether host names with a port number will be protected. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
+| include_subdomains | Whether sub-domains of the host will be protected. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.ProtectedHostnameMember.id | String | Protected Hostname Member ID | 
-
-#### Command example
-```!fortiwebvm-protected-hostname-member-create group_name=example host=1.2.3.4 action=Deny```
-#### Context Example
-```json
-{
-    "FortiwebVM": {
-        "ProtectedHostnameMember": {
-            "id": "1"
-        }
-    }
-}
-```
+| FortiwebVM.ProtectedHostnameMember.id | String | Protected host name member ID | 
 
 #### Human Readable Output
 
@@ -201,7 +189,7 @@ Create Protected Hostname Member (Protected Hostname Member is a sub-object of P
 
 ### fortiwebvm-protected-hostname-member-update
 ***
-Update protected Hostname Member (Protected Hostname Member is a member of Protected Hostname).
+Update a protected host name member.
 
 
 #### Base Command
@@ -211,12 +199,12 @@ Update protected Hostname Member (Protected Hostname Member is a member of Prote
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Protected Hostname Group Name. | Required | 
-| member_id | Protected hostname member ID. | Required | 
-| action | Select whether to accept or deny HTTP requests whose Host.Requiered in V1. Possible values are: Allow, Deny (no log), Deny. | Optional | 
-| host | Enter the IP address or FQDN of a virtual or real web host, as it appears in the Host: field of HTTP headers, such as www.example.com. The maximum length is 256 characters. | Optional | 
-| ignore_port | Enable ignore-port so that the host names with port number will be protected. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
-| include_subdomains | Enable include-subdomains so that the sub domains of the host will be protected. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
+| group_name | Protected host name group name. | Required | 
+| member_id | Protected host name member ID. | Required | 
+| action | Whether to accept or deny HTTP requests whose Host field does not match any of the host definitions that you add to this protected hosts group. Required in V1. Possible values are: Allow, Deny (no log), Deny. | Optional | 
+| host | Enter the IP address or FQDN of a virtual or real web host, as it appears in the Host field of HTTP headers, such as www.example.com. The maximum length is 256 characters. | Optional | 
+| ignore_port | Whether host names with a port number will be protected. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
+| include_subdomains | Whether sub-domains of the host will be protected. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
 
 
 #### Context Output
@@ -234,7 +222,7 @@ There is no context output for this command.
 
 ### fortiwebvm-protected-hostname-member-list
 ***
-List all the Protected Hostname Members (Protected Hostname Member is a member of Protected Hostname).
+List all the protected host name members.
 
 
 #### Base Command
@@ -244,8 +232,8 @@ List all the Protected Hostname Members (Protected Hostname Member is a member o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Protected Hostname Group Name. | Required | 
-| member_id | Protected Hostname Member ID. | Optional | 
+| group_name | Protected host name group name. | Required | 
+| member_id | Protected host name member ID. | Optional | 
 | page | The page number of the results to retrieve. Default is 25. | Optional | 
 | page_size | A number of hostname members per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -255,12 +243,12 @@ List all the Protected Hostname Members (Protected Hostname Member is a member o
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.ProtectedHostnameMember.group_name | String | Protected Hostname Group Name. | 
-| FortiwebVM.ProtectedHostnameMember.Members.id | String | Protected Hostname Member ID. | 
-| FortiwebVM.ProtectedHostnameMember.Members.action | String | Protected Hostname Member Action. | 
-| FortiwebVM.ProtectedHostnameMember.Members.host | String | Protected Hostname Member IP Address. | 
-| FortiwebVM.ProtectedHostnameMember.Members.ignore_port | String | Protected Hostname Member Ignore Port. Supports API version 2 only. | 
-| FortiwebVM.ProtectedHostnameMember.Members.include_subdomains | String | Protected Hostname Member Include Subdomains. Supports API version 2 only. | 
+| FortiwebVM.ProtectedHostnameMember.group_name | String | Protected host name group name. | 
+| FortiwebVM.ProtectedHostnameMember.Members.id | String | Protected host name member ID. | 
+| FortiwebVM.ProtectedHostnameMember.Members.action | String | Protected hostname member action. | 
+| FortiwebVM.ProtectedHostnameMember.Members.host | String | Protected host name member IP address. | 
+| FortiwebVM.ProtectedHostnameMember.Members.ignore_port | String | Protected host name member ignore port. Supports API version 2 only. | 
+| FortiwebVM.ProtectedHostnameMember.Members.include_subdomains | String | Protected host name member include sub-domains. Supports API version 2 only. | 
 
 #### Command example
 ```!fortiwebvm-protected-hostname-member-list group_name=example member_id=1```
@@ -320,7 +308,7 @@ List all the Protected Hostname Members (Protected Hostname Member is a member o
 
 ### fortiwebvm-protected-hostname-member-delete
 ***
-Delete Protected Hostname Member (Protected Hostname Member is a member of Protected Hostname).
+Delete protected host name member.
 
 
 #### Base Command
@@ -330,8 +318,8 @@ Delete Protected Hostname Member (Protected Hostname Member is a member of Prote
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Protected Hostname Group Name. | Required | 
-| member_id | Protected Hostname Member ID. | Required | 
+| group_name | Protected host name group name. | Required | 
+| member_id | Protected host name member ID. | Required | 
 
 
 #### Context Output
@@ -349,7 +337,7 @@ There is no context output for this command.
 
 ### fortiwebvm-protected-hostname-group-delete
 ***
-Delete Protected Hostname.
+Delete a protected host name.
 
 
 #### Base Command
@@ -359,7 +347,7 @@ Delete Protected Hostname.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Protected Hostname Group Name. | Required | 
+| name | Protected host name group name. | Required | 
 
 
 #### Context Output
@@ -388,12 +376,12 @@ Create IP List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | IP List Group Name. | Required | 
-| action | Select which action FortiWeb will take when it detects a violation of the rule. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). Default is Alert deny. | Optional | 
-| block_period | Enter the number of seconds that you want to block subsequent requests from a client after FortiWeb detects that the client has violated the rule. The valid range is 1–3,600 seconds. Supports API version 2 only. Default is 600. | Optional | 
-| severity | Select which severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers.Supports API version 2 only. Possible values are: Low, Medium, High, Info. Default is Low. | Optional | 
-| ignore_x_forwarded_for | enable Ignore X-Forwarded-For so that the IP addresses will be scanned at the TCP layer instead of HTTP layer. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
-| trigger_policy | Select which trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address’s attempt to connect to your web serversSupports API version 2 only. | Optional | 
+| name | IP list group name. | Required | 
+| action | The action FortiWeb will take when it detects a violation of the rule. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). Default is Alert deny. | Optional | 
+| block_period | Enter the number of seconds to block subsequent requests from a client after FortiWeb detects that the client has violated the rule. The valid range is 1–3,600 seconds. Supports API version 2 only. Default is 600. | Optional | 
+| severity | The severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 2 only. Possible values are: Low, Medium, High, Info. Default is Low. | Optional | 
+| ignore_x_forwarded_for | Whether IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
+| trigger_policy | The trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address's attempt to connect to your web servers. Supports API version 2 only. | Optional | 
 
 
 #### Context Output
@@ -411,7 +399,7 @@ There is no context output for this command.
 
 ### fortiwebvm-ip-list-group-update
 ***
-Update IP List.
+Update an IP list.
 
 
 #### Base Command
@@ -422,11 +410,11 @@ Update IP List.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | IP list group name. | Required | 
-| action | Select which action FortiWeb will take when it detects a violation of the rule. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). | Optional | 
-| block_period | Enter the number of seconds that you want to block subsequent requests from a client after FortiWeb detects that the client has violated the rule. The valid range is 1–3,600 seconds. Supports API version 2 only. | Optional | 
-| severity | Select which severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 2 only. Possible values are: Low, Medium, High, Info. | Optional | 
-| ignore_x_forwarded_for | enable Ignore X-Forwarded-For so that the IP addresses will be scanned at the TCP layer instead of HTTP layer. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
-| trigger_policy | Select which trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address’s attempt to connect to your web serversSupports API version 2 only. | Optional | 
+| action | The action FortiWeb will take when it detects a violation of the rule. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). | Optional | 
+| block_period | The number of seconds to block subsequent requests from a client after FortiWeb detects that the client has violated the rule. The valid range is 1–3,600 seconds. Supports API version 2 only. | Optional | 
+| severity | The severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 2 only. Possible values are: Low, Medium, High, Info. | Optional | 
+| ignore_x_forwarded_for | Whether the IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
+| trigger_policy | The trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address's attempt to connect to your web servers. Supports API version 2 only. | Optional | 
 
 
 #### Context Output
@@ -454,7 +442,7 @@ Supports API versions 1 & 2.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | IP List Name. | Optional | 
+| name | IP list name. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -464,17 +452,17 @@ Supports API versions 1 & 2.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.IpListGroup.id | String | IP list id. | 
-| FortiwebVM.IpListGroup.ip_list_count | Number | IP list members number. | 
+| FortiwebVM.IpListGroup.id | String | IP list ID. | 
+| FortiwebVM.IpListGroup.ip_list_count | Number | The number of IP list members. | 
 | FortiwebVM.IpListGroup.can_delete | Boolean | Can delete flag. Supports API version 1 only. | 
 | FortiwebVM.IpListGroup.q_ref | Number | The CMDB reference count. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.q_type | Number | IP list group object type. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.can_clone | Number | Can clone flag. Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.block_period | Number | IP list group Block Period. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.block_period | Number | IP list group block period. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.can_view | Number | Can view flag. Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.action | String | IP list group Action. Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.trigger_policy | String | IP list group Trigger Policy Name. Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.severity | String | IP list group Severity. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.action | String | IP list group action. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.trigger_policy | String | IP list group trigger policy name. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.severity | String | IP list group severity. Supports API version 2 only. | 
 
 #### Command example - API Version 1
 ```!fortiwebvm-ip-list-group-list name=example```
@@ -530,7 +518,7 @@ Supports API versions 1 & 2.
 
 ### fortiwebvm-ip-list-member-create
 ***
-Supports API versions 1 & 2.
+Create an IP list member. Supports API versions 1 & 2.
 
 
 #### Base Command
@@ -540,18 +528,18 @@ Supports API versions 1 & 2.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | IP List Group Name. | Required | 
-| type | The type of the source IP address . Possible values are: Trust IP, Black IP, Allow Only Ip. | Required | 
-| ip_address | IPv4/IPv6/IP Range. | Required | 
-| severity | Select which severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers:Supports API version 1 only.Required when type= "Black Ip". Possible values are: High, Medium, Low, Informative. Default is Medium. | Optional | 
-| trigger_policy | Select which trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address’s attempt to connect to your web serversSupports API version 1 only.Required when type= "Black Ip". | Optional | 
+| group_name | IP list group name. | Required | 
+| type | The type of the source IP address. Possible values are: Trust IP, Black IP, Allow Only Ip. | Required | 
+| ip_address | IPv4/IPv6/IP range. | Required | 
+| severity | The severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 1 only. Required when type= \"Black Ip\". Possible values are: High, Medium, Low, Informative. Default is Medium. | Optional | 
+| trigger_policy | The trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address's attempt to connect to your web servers. Supports API version 1 only. Required when type= \"Black Ip\". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.IpListMember.id | Number | IP List Policy Member ID | 
+| FortiwebVM.IpListMember.id | Number | IP list policy member ID. | 
 
 #### Command example
 ```!fortiwebvm-ip-list-member-create group_name=example ip_address=1.2.3.4 type="Black IP"```
@@ -576,7 +564,7 @@ Supports API versions 1 & 2.
 
 ### fortiwebvm-ip-list-member-update
 ***
-Update IP List Policy Member (IP List Policy Member is a member of IP List).
+Update IP list policy member.
 
 
 #### Base Command
@@ -586,12 +574,12 @@ Update IP List Policy Member (IP List Policy Member is a member of IP List).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | IP List Group Name. | Required | 
-| member_id | IP List Policy Member id. | Required | 
-| type | The type of the source IP address . Possible values are: Trust IP, Black IP, Allow Only Ip. | Optional | 
-| ip_address | IPv4/IPv6/IP Range. | Optional | 
-| severity | Select which severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers:Supports API version 1 only.Required when type= "Black Ip". Possible values are: High, Medium, Low, Informative. | Optional | 
-| trigger_policy | Select which trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address’s attempt to connect to your web serversSupports API version 1 only.Required when type= "Black Ip". | Optional | 
+| group_name | IP list group name. | Required | 
+| member_id | IP list policy member ID. | Required | 
+| type | The type of the source IP address. Possible values are: Trust IP, Black IP, Allow Only Ip. | Optional | 
+| ip_address | IPv4/IPv6/IP range. | Optional | 
+| severity | The severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 1 only. Required when type= \"Black Ip\". Possible values are: High, Medium, Low, Informative. | Optional | 
+| trigger_policy | The trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address's attempt to connect to your web servers. Supports API version 1 only. Required when type= \"Black Ip\". | Optional | 
 
 
 #### Context Output
@@ -609,7 +597,7 @@ There is no context output for this command.
 
 ### fortiwebvm-ip-list-member-list
 ***
-List the IP List Policy Member(IP List Policy Member is a member of IP List).
+List the IP list policy members.
 
 
 #### Base Command
@@ -619,8 +607,8 @@ List the IP List Policy Member(IP List Policy Member is a member of IP List).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | IP List Group Name. | Required | 
-| member_id | IP List Member ID. | Optional | 
+| group_name | IP list group name. | Required | 
+| member_id | IP list member ID. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -630,12 +618,12 @@ List the IP List Policy Member(IP List Policy Member is a member of IP List).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.IpListMember.group_name | String | IP list Group Name. | 
-| FortiwebVM.IpListMember.Members.id | String | IP list Member ID. | 
-| FortiwebVM.IpListMember.Members.type | String | IP list Member Type. | 
-| FortiwebVM.IpListMember.Members.severity | String | IP list Member Severity. Supports API version 1 only. | 
-| FortiwebVM.IpListMember.Members.trigger_policy | String | IP list Member Trigger Policy. Supports API version 1 only. | 
-| FortiwebVM.IpListMember.Members.ip | String | IP list Member IP Address. | 
+| FortiwebVM.IpListMember.group_name | String | IP list group name. | 
+| FortiwebVM.IpListMember.Members.id | String | IP list member ID. | 
+| FortiwebVM.IpListMember.Members.type | String | IP list member type. | 
+| FortiwebVM.IpListMember.Members.severity | String | IP list member severity. Supports API version 1 only. | 
+| FortiwebVM.IpListMember.Members.trigger_policy | String | IP list member trigger policy. Supports API version 1 only. | 
+| FortiwebVM.IpListMember.Members.ip | String | IP list member IP address. | 
 
 #### Command example
 ```!fortiwebvm-ip-list-member-list group_name=example```
@@ -696,7 +684,7 @@ List the IP List Policy Member(IP List Policy Member is a member of IP List).
 
 ### fortiwebvm-ip-list-member-delete
 ***
-Delete IP List Policy Member (IP List Policy Member is a member of IP List).
+Delete an IP list policy member.
 
 
 #### Base Command
@@ -706,8 +694,8 @@ Delete IP List Policy Member (IP List Policy Member is a member of IP List).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | IP List Group Name. | Required | 
-| member_id | IP List Policy Member ID. | Required | 
+| group_name | IP list group name. | Required | 
+| member_id | IP list policy member ID. | Required | 
 
 
 #### Context Output
@@ -753,7 +741,7 @@ There is no context output for this command.
 
 ### fortiwebvm-custom-predefined-whitelist-update
 ***
-Update Custom Predefined Global Whitelist.
+Update the custom predefined global whitelist.
 
 
 #### Base Command
@@ -763,7 +751,7 @@ Update Custom Predefined Global Whitelist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Predefined Global White List ID. | Required | 
+| id | Predefined global whitelist ID. | Required | 
 | status | Status. Possible values are: enable, disable. | Optional | 
 
 
@@ -782,7 +770,7 @@ There is no context output for this command.
 
 ### fortiwebvm-custom-predefined-whitelist-list
 ***
-Get Custom Predefined Global Whitelist.
+Get custom predefined global whitelist.
 
 
 #### Base Command
@@ -792,8 +780,8 @@ Get Custom Predefined Global Whitelist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Custom Predifined White List ID. | Optional | 
-| type | Type. Possible values are: URL, Parameter, Cookie, Header Field. | Optional | 
+| id | Custom predefined whitelist ID. | Optional | 
+| type | Type of the custom predefined whitelist. Possible values are: URL, Parameter, Cookie, Header Field. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -803,11 +791,11 @@ Get Custom Predefined Global Whitelist.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.CustomPredefinedGlobalWhitelist.id | Number | Predefined Global White List Member ID. | 
-| FortiwebVM.CustomPredefinedGlobalWhitelist.name | String | Predefined Global White List Member Name. | 
-| FortiwebVM.CustomPredefinedGlobalWhitelist.path | String | Predefined Global White List Member Path. | 
-| FortiwebVM.CustomPredefinedGlobalWhitelist.domain | String | Predefined Global White List Member Domain. | 
-| FortiwebVM.CustomPredefinedGlobalWhitelist.status | Boolean | Predefined Global White List Member Status. | 
+| FortiwebVM.CustomPredefinedGlobalWhitelist.id | Number | Predefined global whitelist member ID. | 
+| FortiwebVM.CustomPredefinedGlobalWhitelist.name | String | Predefined global whitelist member name. | 
+| FortiwebVM.CustomPredefinedGlobalWhitelist.path | String | Predefined global whitelist member path. | 
+| FortiwebVM.CustomPredefinedGlobalWhitelist.domain | String | Predefined global whitelist member domain. | 
+| FortiwebVM.CustomPredefinedGlobalWhitelist.status | Boolean | Predefined global whitelist member status. | 
 
 #### Command example
 ```!fortiwebvm-custom-predefined-whitelist-list limit=1```
@@ -837,7 +825,7 @@ Get Custom Predefined Global Whitelist.
 
 ### fortiwebvm-custom-whitelist-url-create
 ***
-Create Custom Global White List URL Object (Custom Global White List URL Object is an object of Custom Global White List).
+Create a custom global whitelist URL object.
 
 
 #### Base Command
@@ -847,15 +835,15 @@ Create Custom Global White List URL Object (Custom Global White List URL Object 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| request_type | Indicate whether the request-file "&lt;url_str&gt;" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
-| request_url | Depending on your selection in the request-type {plain \| regular} field, enter either:The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ).A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at match URLs that begin with a backslash, such as /index.html. | Required | 
+| request_type | Indicate whether the request-file \"&lt;url_str&gt;\" field contains a literal URL (Simple String), or a regular expression designed to match multiple URLs (Regular Expression). Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
+| request_url | Depending on your selection in the request-type {plain \| regular} field, enter either:  - The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ). - A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at least match URLs that begin with a backslash, such as /index.html. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist ID | 
+| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom global whitelist ID |
 
 #### Command example
 ```!fortiwebvm-custom-whitelist-url-create request_url=/123```
@@ -880,7 +868,7 @@ Create Custom Global White List URL Object (Custom Global White List URL Object 
 
 ### fortiwebvm-custom-whitelist-parameter-create
 ***
-Create Custom Global White List Parameter Object (Custom Global White List Parameter Object is an object of Custom Global White List).
+Create a custom global whitelist parameter object.
 
 
 #### Base Command
@@ -890,21 +878,21 @@ Create Custom Global White List Parameter Object (Custom Global White List Param
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| request_type | Indicate whether the request-file "&lt;url_str&gt;" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Supports API version 2 only.Required when request_url_status= True. Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
-| request_url | Depending on your selection in the request-type {plain \| regular} field, enter either:The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ).A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at match URLs that begin with a backslash, such as /index.html. Supports API version 2 only.Required when request_url_status= True. | Optional | 
+| request_type | Indicate whether the request-file \"&lt;url_str&gt;\" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Supports API version 2 only. Required when request_url_status= True. Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
+| request_url | Depending on your selection in the request-type {plain \| regular} field, enter either: - The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ). - A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at least match URLs that begin with a backslash, such as /index.html. Supports API version 2 only. Required when request_url_status= True. | Optional | 
 | name | Enter the name of the parameter as it appears in the HTTP URL or body, such as rememberme. | Required | 
-| name_type | Indicate whether the name "&lt;name_str&gt;" field will contain a literal parameter name (Simple String), or a regular expression designed to match all parameter names (Regular Expression). Supports API version 2 only. Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
+| name_type | Indicate whether the name \"&lt;name_str&gt;\" field will contain a literal parameter name (Simple String), or a regular expression designed to match all parameter names (Regular Expression). Supports API version 2 only. Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
 | request_url_status | Enable to apply this rule only to HTTP requests for specific URLs. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
 | domain_status | Enable to apply this rule only to HTTP requests for specific domains. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
-| domain_type | Indicate whether the domain "&lt;cookie_str&gt;" field will contain a literal domain/IP address (Simple String), or a regular expression designed to match multiple domains/IP addresses (Regular Expression). Supports API version 2 only.Required when request_url_status= True. Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
-| domain | Enter the partial or complete domain name or IP address as it appears in the cookieSupports API version 2 only.Required when request_url_status= True. | Optional | 
+| domain_type | Indicate whether the domain \"&lt;cookie_str&gt;\" field will contain a literal domain/IP address (Simple String), or a regular expression designed to match multiple domains/IP addresses (Regular Expression). Supports API version 2 only. Required when request_url_status= True. Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
+| domain | The partial or complete domain name or IP address as it appears in the cookie. Supports API version 2 only. Required when request_url_status= True. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist ID | 
+| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom global whitelist ID. | 
 
 #### Command example
 ```!fortiwebvm-custom-whitelist-parameter-create name=example```
@@ -929,7 +917,7 @@ Create Custom Global White List Parameter Object (Custom Global White List Param
 
 ### fortiwebvm-custom-whitelist-cookie-create
 ***
-Create Custom Global White List Cookie Object (Custom Global White List Cookie  Object is an object of Custom Global White List).
+Create a custom global whitelist cookie object.
 
 
 #### Base Command
@@ -939,16 +927,16 @@ Create Custom Global White List Cookie Object (Custom Global White List Cookie  
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Enter the name of the cookie as it appears in the HTTP request, such as NID. | Required | 
-| domain | Enter the partial or complete domain name or IP address as it appears in the cookie. | Optional | 
-| path | Enter the path as it appears in the cookie. | Optional | 
+| name | The name of the cookie as it appears in the HTTP request, such as NID. | Required | 
+| domain | The partial or complete domain name or IP address as it appears in the cookie. | Optional | 
+| path | The path as it appears in the cookie. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist ID | 
+| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom global whitelist ID |
 
 #### Command example
 ```!fortiwebvm-custom-whitelist-cookie-create name=example domain=abc path=/abc```
@@ -970,10 +958,9 @@ Create Custom Global White List Cookie Object (Custom Global White List Cookie  
 >|---|
 >| 2 |
 
-
 ### fortiwebvm-custom-whitelist-header-field-create
 ***
-Create Custom Global White List Header Field Object (Custom Global White List Header Field Object is an object of Custom Global White List). Supports API version 2 only.
+Create a custom global whitelist header field object. Supports API version 2 only.
 
 
 #### Base Command
@@ -984,21 +971,21 @@ Create Custom Global White List Header Field Object (Custom Global White List He
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Enter the name of the cookie as it appears in the HTTP header. | Required | 
-| header_name_type | Indicate whether the type field will contain a literal name (plain), or a regular expression designed to match multiple names (regular). Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
-| value_status | Enable to also check the value of the HTTP header. Only the HTTP headers which match both the name and the value will be allowlisted. Possible values are: enable, disable. Default is disable. | Optional | 
+| header_name_type | Indicate whether the type field will contain a literal name (Simple String), or a regular expression designed to match multiple names (Regular Expression). Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
+| value_status | Enable to also check the value of the HTTP header. Only the HTTP headers that match both the name and the value will be allowlisted. Possible values are: enable, disable. Default is disable. | Optional | 
 | header_value_type | Indicate whether the header name will contain a literal name (plain), or a regular expression designed to match multiple names (regular). Possible values are: Simple String, Regular Expression. Default is Simple String. | Optional | 
-| value | The value of the HTTP header.Required when: value_status is enable. | Optional | 
+| value | The value of the HTTP header. Required when value_status is enabled. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist ID | 
+| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom global whitelist ID. | 
 
 ### fortiwebvm-custom-whitelist-url-update
 ***
-Update Custom Global White List URL Object (Custom Global White List URL Object is an object of Custom Global White List).
+Update a custom global whitelist URL object.
 
 
 #### Base Command
@@ -1008,10 +995,10 @@ Update Custom Global White List URL Object (Custom Global White List URL Object 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Custom Global Whitelist Object ID. | Required | 
-| status | Status. Enable to exempt this object from all scans. Possible values are: enable, disable. Default is enable. | Optional | 
-| request_type | Indicate whether the request-file "&lt;url_str&gt;" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Possible values are: Simple String, Regular Expression. | Optional | 
-| request_url | Depending on your selection in the request-type {plain \| regular} field, enter either:The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ).A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at match URLs that begin with a backslash, such as /index.html. | Optional | 
+| id | Custom global whitelist object ID. | Required | 
+| status | Enable to exempt this object from all scans. Possible values are: enable, disable. Default is enable. | Optional | 
+| request_type | Indicate whether the request-file \"&lt;url_str&gt;\" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Possible values are: Simple String, Regular Expression. | Optional | 
+| request_url | Depending on your selection in the request-type {plain \| regular} field, enter either - The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ). - A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at least match URLs that begin with a backslash, such as /index.html. | Optional | 
 
 
 #### Context Output
@@ -1029,7 +1016,7 @@ There is no context output for this command.
 
 ### fortiwebvm-custom-whitelist-parameter-update
 ***
-Update Custom Global White List Parameter Object (Custom Global White List Parameter Object is an object of Custom Global White List).
+Update custom global whitelist parameter object.
 
 
 #### Base Command
@@ -1039,34 +1026,24 @@ Update Custom Global White List Parameter Object (Custom Global White List Param
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Custom Global Whitelist Object ID. | Required | 
-| status | Status. Enable to exempt this object from all scans. Possible values are: enable, disable. Default is enable. | Optional | 
-| request_type | Indicate whether the request-file "&lt;url_str&gt;" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Supports API version 2 only.Required when request_url_status= True. Possible values are: Simple String, Regular Expression. Default is enable. | Optional | 
-| request_url | Depending on your selection in the request-type {plain \| regular} field, enter either:The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ).A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at match URLs that begin with a backslash, such as /index.html. Supports API version 2 only.Required when request_url_status= True. | Optional | 
+| id | Custom global whitelist object ID. | Required | 
+| status | Enable to exempt this object from all scans. Possible values are: enable, disable. Default is enable. | Optional | 
+| request_type | Indicate whether the request-file \"&lt;url_str&gt;\" field contains a literal URL (plain), or a regular expression designed to match multiple URLs (regular). Supports API version 2 only. Required when request_url_status= True. Possible values are: Simple String, Regular Expression. Default is enable. | Optional | 
+| request_url | Depending on your selection in the request-type {plain \| regular} field, enter either: - The literal URL, such as /robots.txt, that the HTTP request must contain in order to match the rule. The URL must begin with a backslash ( / ). - A regular expression, such as ^/*.html, matching all and only the URLs to which the rule should apply. The pattern does not require a slash ( / ); however, it must at least match URLs that begin with a backslash, such as /index.html. Supports API version 2 only. Required when request_url_status= True. | Optional | 
 | name | Name. | Optional | 
-| name_type | Indicate whether the name "&lt;name_str&gt;" field will contain a literal parameter name (Simple String), or a regular expression designed to match all parameter names (Regular Expression). Supports API version 2 only. Possible values are: Simple String, Regular Expression. | Optional | 
+| name_type | Indicate whether the name \"&lt;name_str&gt;\" field will contain a literal parameter name (Simple String), or a regular expression designed to match all parameter names (Regular Expression). Supports API version 2 only. Possible values are: Simple String, Regular Expression. | Optional | 
 | request_url_status | Enable to apply this rule only to HTTP requests for specific URLs. Supports. Possible values are: enable, disable. | Optional | 
 | domain_status | Enable to apply this rule only to HTTP requests for specific domains. Supports. Possible values are: enable, disable. | Optional | 
-| domain_type | Indicate whether the domain "&lt;cookie_str&gt;" field will contain a literal domain/IP address (Simple String), or a regular expression designed to match multiple domains/IP addresses (Regular Expression). Supports API version 2 only.Required when request_url_status= True. Possible values are: Simple String, Regular Expression. | Optional | 
-| domain | Enter the partial or complete domain name or IP address as it appears in the cookieSupports API version 2 only.Required when request_url_status= True. | Optional | 
+| domain_type | Indicate whether the domain \"&lt;cookie_str&gt;\" field will contain a literal domain/IP address (Simple String), or a regular expression designed to match multiple domains/IP addresses (Regular Expression). Supports API version 2 only. Required when request_url_status= True. Possible values are: Simple String, Regular Expression. | Optional | 
+| domain | Enter the partial or complete domain name or IP address as it appears in the cookie. Supports API version 2 only. Required when request_url_status= True. | Optional | 
 
 
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!fortiwebvm-custom-whitelist-parameter-update id=2 status=disable```
-#### Human Readable Output
-
->### Custom whitelist Parameter member succesfuly updated!
->|Id|
->|---|
->| 2 |
-
-
 ### fortiwebvm-custom-whitelist-cookie-update
 ***
-Update Custom Global White List Cookie Object (Custom Global White List Cookie  Object is an object of Custom Global White List).
+Update a custom global whitelist cookie object.
 
 
 #### Base Command
@@ -1076,8 +1053,8 @@ Update Custom Global White List Cookie Object (Custom Global White List Cookie  
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Custom Global Whitelist Object ID. | Required | 
-| status | Status. Enable to exempt this object from all scans. Possible values are: enable, disable. Default is enable. | Optional | 
+| id | Custom global whitelist object ID. | Required | 
+| status | Enable to exempt this object from all scans. Possible values are: enable, disable. Default is enable. | Optional | 
 | name | Enter the name of the cookie as it appears in the HTTP request, such as NID. | Optional | 
 | domain | Enter the partial or complete domain name or IP address as it appears in the cookie. | Optional | 
 | path | Enter the path as it appears in the cookie. | Optional | 
@@ -1098,7 +1075,7 @@ There is no context output for this command.
 
 ### fortiwebvm-custom-whitelist-header-field-update
 ***
-Update Custom Global White List Header Field Object (Custom Global White List Header Field Object is an object of Custom Global White List). Supports API version 2 only.
+Update a custom global whitelist header field object. Supports API version 2 only.
 
 
 #### Base Command
@@ -1108,13 +1085,13 @@ Update Custom Global White List Header Field Object (Custom Global White List He
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Custom Global Whitelist Object ID. | Required | 
-| status | Status. Enable to exempt this object from all scans. Possible values are: enable, disable. Default is enable. | Optional | 
-| header_name_type | Indicate whether the type field will contain a literal name (plain), or a regular expression designed to match multiple names (regular). Possible values are: Simple String, Regular Expression. | Optional | 
-| name | Enter the name of the cookie as it appears in the HTTP header. | Optional | 
-| header_value_type | Indicate whether the header name will contain a literal name (plain), or a regular expression designed to match multiple names (regular). Possible values are: Simple String, Regular Expression. | Optional | 
-| value_status | Enable to also check the value of the HTTP header. Only the HTTP headers which match both the name and the value will be allowlisted. Possible values are: enable, disable. | Optional | 
-| value | The value of the HTTP header.Required when value_status is enable. | Optional | 
+| id | Custom global whitelist object ID. | Required | 
+| status | Enable to exempt this object from all scans. Possible values are: enable, disable. Default is enable. | Optional | 
+| header_name_type | Indicate whether the type field will contain a literal name (Simple String), or a regular expression designed to match multiple names (Regular Expression). Possible values are: Simple String, Regular Expression. | Optional | 
+| name | The name of the cookie as it appears in the HTTP header. | Optional | 
+| header_value_type | Indicate whether the header name will contain a literal name (Simple String), or a regular expression designed to match multiple names (Regular Expression). Possible values are: Simple String, Regular Expression. | Optional | 
+| value_status | Enable to also check the value of the HTTP header. Only the HTTP headers that match both the name and the value will be allowlisted. Possible values are: enable, disable. | Optional | 
+| value | The value of the HTTP header. Required when value_status is enabled. | Optional | 
 
 
 #### Context Output
@@ -1122,7 +1099,7 @@ Update Custom Global White List Header Field Object (Custom Global White List He
 There is no context output for this command.
 ### fortiwebvm-custom-whitelist-delete
 ***
-Delete Custom Global White List Object from Custom Global White List.
+Delete a custom global whitelist object from the custom global whitelist.
 
 
 #### Base Command
@@ -1132,7 +1109,7 @@ Delete Custom Global White List Object from Custom Global White List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Object id number. | Required | 
+| id | Object ID number. | Required | 
 
 
 #### Context Output
@@ -1140,7 +1117,7 @@ Delete Custom Global White List Object from Custom Global White List.
 There is no context output for this command.
 ### fortiwebvm-custom-whitelist-list
 ***
-List the Custom Global Whitelist Objects.
+List the custom global whitelist objects.
 
 
 #### Base Command
@@ -1150,7 +1127,7 @@ List the Custom Global Whitelist Objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Custom Global Whitelist Object ID. | Optional | 
+| id | Custom global whitelist object ID. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -1160,22 +1137,22 @@ List the Custom Global Whitelist Objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist object ID. | 
-| FortiwebVM.CustomGlobalWhitelist.name | Number | Custom Global Whitelist object Name. | 
-| FortiwebVM.CustomGlobalWhitelist.type | Number | Custom Global Whitelist object Type. | 
-| FortiwebVM.CustomGlobalWhitelist.status | Boolean | Custom Global Whitelist object status. | 
-| FortiwebVM.CustomGlobalWhitelist.request_type | Number | Custom Global Whitelist object Request Type. | 
-| FortiwebVM.CustomGlobalWhitelist.request_url | String | Custom Global Whitelist object Request URL. | 
-| FortiwebVM.CustomGlobalWhitelist.header_name_type | String | Custom Global Whitelist object Header Type. Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.domain_type | String | Custom Global Whitelist object Domain Type. Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.name_type | String | Custom Global Whitelist object Name Type.  Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.request_url_status | String | Custom Global Whitelist object Request File Status. Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.domain_status | String | Custom Global Whitelist object Domain Status. Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.domain | String | Custom Global Whitelist object Domain. Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.path | String | Custom Global Whitelist object Path. Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.header_value_type | String | Custom Global Whitelist object Value Type. Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.value | String | Custom Global Whitelist object Value. Supports API version 2 only. | 
-| FortiwebVM.CustomGlobalWhitelist.value_status | String | Custom Global Whitelist object Value Status. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom global whitelist object ID. | 
+| FortiwebVM.CustomGlobalWhitelist.name | Number | Custom global whitelist object name. | 
+| FortiwebVM.CustomGlobalWhitelist.type | Number | Custom global whitelist object type. | 
+| FortiwebVM.CustomGlobalWhitelist.status | Boolean | Custom global whitelist object status. | 
+| FortiwebVM.CustomGlobalWhitelist.request_type | Number | Custom global whitelist object request type. | 
+| FortiwebVM.CustomGlobalWhitelist.request_url | String | Custom global whitelist object request URL. | 
+| FortiwebVM.CustomGlobalWhitelist.header_name_type | String | Custom global whitelist object header type. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.domain_type | String | Custom global whitelist object domain type. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.name_type | String | Custom global whitelist object name type. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.request_url_status | String | Custom global whitelist object request file status. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.domain_status | String | Custom global whitelist object domain status. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.domain | String | Custom global whitelist object domain. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.path | String | Custom global whitelist object path. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.header_value_type | String | Custom global whitelist object value type. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.value | String | Custom global whitelist object value. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.value_status | String | Custom global whitelist object value status. Supports API version 2 only. | 
 
 #### Command example
 ```!fortiwebvm-custom-whitelist-list limit=1```
@@ -1243,7 +1220,7 @@ List the Custom Global Whitelist Objects.
 
 ### fortiwebvm-geo-ip-member-add
 ***
-Create Geo IP Member (Geo IP Member is a member of Geo IP).
+Create Geo IP member.
 
 
 #### Base Command
@@ -1253,8 +1230,8 @@ Create Geo IP Member (Geo IP Member is a member of Geo IP).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Geo IP Group Name. | Required | 
-| countries | Country name to add to the GEO IP List name.(Comma-separated value). Possible values are: Afghanistan, Aland Islands, Albania, Algeria, American Samoa, Andorra, Angola, Anguilla, Antarctica, Antigua And Barbuda, Argentina, Armenia, Aruba, Australia, Austria, Azerbaijan, Bahamas, Bahrain, Bangladesh, Barbados, Belarus, Belgium, Belize, Benin, Bermuda, Bhutan, Bolivia, Bonaire Saint Eustatius And Saba, Bosnia And Herzegovina, Botswana, Brazil, British Indian Ocean Territory, British Virgin Islands, Brunei Darussalam, Bulgaria, Burkina Faso, Burundi, Cambodia, Cameroon, Canada, Cape Verde, Cayman Islands, Central African Republic, Chad, Chile, China, Colombia, Comoros, Congo, Cook Islands, Costa Rica, Cote D Ivoire, Croatia, Cuba, Curacao, Cyprus, Czech Republic, Democratic People S Republic Of Korea, Democratic Republic Of The Congo, Denmark, Djibouti, Dominica, Dominican Republic, Ecuador, Egypt, El Salvador, Equatorial Guinea, Eritrea, Estonia, Ethiopia, Falkland Islands  Malvinas, Faroe Islands, Federated States Of Micronesia, Fiji, Finland, France, French Guiana, French Polynesia, Gabon, Gambia, Georgia, Germany, Ghana, Gibraltar, Greece, Greenland, Grenada, Guadeloupe, Guam, Guatemala, Guernsey, Guinea, Guinea-Bissau, Guyana, Haiti, Honduras, Hong Kong, Hungary, Iceland, India, Indonesia, Iran, Iraq, Ireland, Isle Of Man, Israel, Italy, Jamaica, Japan, Jersey, Jordan, Kazakhstan, Kenya, Kiribati, Kosovo, Kuwait, Kyrgyzstan, Lao People S Democratic Republic, Latvia, Lebanon, Lesotho, Liberia, Libya, Liechtenstein, Lithuania, Luxembourg, Macao, Macedonia, Madagascar, Malawi, Malaysia, Maldives, Mali, Malta, Marshall Islands, Martinique, Mauritania, Mauritius, Mayotte, Mexico, Moldova, Monaco, Mongolia, Montenegro, Montserrat, Morocco, Mozambique, Myanmar, Namibia, Nauru, Nepal, Netherlands, New Caledonia, New Zealand, Nicaragua, Niger, Nigeria, Niue, Norfolk Island, Northern Mariana Islands, Norway, Oman, Pakistan, Palau, Palestine, Panama, Papua New Guinea, Paraguay, Peru, Philippines, Poland, Portugal, Puerto Rico, Qatar, Republic Of Korea, Reunion, Romania, Russian Federation, Rwanda, Saint Bartelemey, Saint Kitts And Nevis, Saint Lucia, Saint Martin, Saint Pierre And Miquelon, Saint Vincent And The Grenadines, Samoa, San Marino, Sao Tome And Principe, Saudi Arabia, Senegal, Serbia, Seychelles, Sierra Leone, Singapore, Sint Maarten, Slovakia, Slovenia, Solomon Islands, Somalia, South Africa, South Georgia And The South Sandwich Islands, South Sudan, Spain, Sri Lanka, Sudan, Suriname, Swaziland, Sweden, Switzerland, Syria, Taiwan, Tajikistan, Tanzania, Thailand, Timor-Leste, Togo, Tokelau, Tonga, Trinidad And Tobago, Tunisia, Turkey, Turkmenistan, Turks And Caicos Islands, Tuvalu, Uganda, Ukraine, United Arab Emirates, United Kingdom, United States, Uruguay, U S  Virgin Islands, Uzbekistan, Vanuatu, Vatican, Venezuela, Vietnam, Wallis And Futuna, Yemen, Zambia, Zimbabwe. Default is Low. | Required | 
+| group_name | Geo IP group name. | Required | 
+| countries | Comma-separated list of country names to add to the GEO IP list name. Possible values are: Afghanistan, Aland Islands, Albania, Algeria, American Samoa, Andorra, Angola, Anguilla, Antarctica, Antigua And Barbuda, Argentina, Armenia, Aruba, Australia, Austria, Azerbaijan, Bahamas, Bahrain, Bangladesh, Barbados, Belarus, Belgium, Belize, Benin, Bermuda, Bhutan, Bolivia, Bonaire Saint Eustatius And Saba, Bosnia And Herzegovina, Botswana, Brazil, British Indian Ocean Territory, British Virgin Islands, Brunei Darussalam, Bulgaria, Burkina Faso, Burundi, Cambodia, Cameroon, Canada, Cape Verde, Cayman Islands, Central African Republic, Chad, Chile, China, Colombia, Comoros, Congo, Cook Islands, Costa Rica, Cote D Ivoire, Croatia, Cuba, Curacao, Cyprus, Czech Republic, Democratic People S Republic Of Korea, Democratic Republic Of The Congo, Denmark, Djibouti, Dominica, Dominican Republic, Ecuador, Egypt, El Salvador, Equatorial Guinea, Eritrea, Estonia, Ethiopia, Falkland Islands  Malvinas, Faroe Islands, Federated States Of Micronesia, Fiji, Finland, France, French Guiana, French Polynesia, Gabon, Gambia, Georgia, Germany, Ghana, Gibraltar, Greece, Greenland, Grenada, Guadeloupe, Guam, Guatemala, Guernsey, Guinea, Guinea-Bissau, Guyana, Haiti, Honduras, Hong Kong, Hungary, Iceland, India, Indonesia, Iran, Iraq, Ireland, Isle Of Man, Israel, Italy, Jamaica, Japan, Jersey, Jordan, Kazakhstan, Kenya, Kiribati, Kosovo, Kuwait, Kyrgyzstan, Lao People S Democratic Republic, Latvia, Lebanon, Lesotho, Liberia, Libya, Liechtenstein, Lithuania, Luxembourg, Macao, Macedonia, Madagascar, Malawi, Malaysia, Maldives, Mali, Malta, Marshall Islands, Martinique, Mauritania, Mauritius, Mayotte, Mexico, Moldova, Monaco, Mongolia, Montenegro, Montserrat, Morocco, Mozambique, Myanmar, Namibia, Nauru, Nepal, Netherlands, New Caledonia, New Zealand, Nicaragua, Niger, Nigeria, Niue, Norfolk Island, Northern Mariana Islands, Norway, Oman, Pakistan, Palau, Palestine, Panama, Papua New Guinea, Paraguay, Peru, Philippines, Poland, Portugal, Puerto Rico, Qatar, Republic Of Korea, Reunion, Romania, Russian Federation, Rwanda, Saint Bartelemey, Saint Kitts And Nevis, Saint Lucia, Saint Martin, Saint Pierre And Miquelon, Saint Vincent And The Grenadines, Samoa, San Marino, Sao Tome And Principe, Saudi Arabia, Senegal, Serbia, Seychelles, Sierra Leone, Singapore, Sint Maarten, Slovakia, Slovenia, Solomon Islands, Somalia, South Africa, South Georgia And The South Sandwich Islands, South Sudan, Spain, Sri Lanka, Sudan, Suriname, Swaziland, Sweden, Switzerland, Syria, Taiwan, Tajikistan, Tanzania, Thailand, Timor-Leste, Togo, Tokelau, Tonga, Trinidad And Tobago, Tunisia, Turkey, Turkmenistan, Turks And Caicos Islands, Tuvalu, Uganda, Ukraine, United Arab Emirates, United Kingdom, United States, Uruguay, U S  Virgin Islands, Uzbekistan, Vanuatu, Vatican, Venezuela, Vietnam, Wallis And Futuna, Yemen, Zambia, Zimbabwe. Default is Low. | Required | 
 
 
 #### Context Output
@@ -1284,7 +1261,7 @@ There is no context output for this command.
 
 ### fortiwebvm-geo-ip-member-delete
 ***
-Delete Geo IP Member (Geo IP Member is a member of Geo IP).
+Delete Geo IP member .
 
 
 #### Base Command
@@ -1294,8 +1271,8 @@ Delete Geo IP Member (Geo IP Member is a member of Geo IP).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Geo IP Group Name. | Required | 
-| member_id | Geo IP Member ID Number. (The ID of the Geo IP Member is the ID of the country in the Geo IP List). | Required | 
+| group_name | Geo IP group name. | Required | 
+| member_id | Geo IP member ID number. (The ID of the Geo IP member is the ID of the country in the Geo IP list.). | Required | 
 
 
 #### Context Output
@@ -1313,7 +1290,7 @@ There is no context output for this command.
 
 ### fortiwebvm-geo-ip-member-list
 ***
-Get Geo IP Member (Geo IP Member is a member of Geo IP).
+Get Geo IP member.
 
 
 #### Base Command
@@ -1324,7 +1301,7 @@ Get Geo IP Member (Geo IP Member is a member of Geo IP).
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_name | Geo IP Name. | Required | 
-| member_id | Geo IP Member ID Number. (The ID of the Geo IP Member is the ID of the country in the Geo IP List). | Optional | 
+| member_id | Geo IP member ID number. (The ID of the Geo IP Member is the ID of the country in the Geo IP list.). | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -1334,9 +1311,9 @@ Get Geo IP Member (Geo IP Member is a member of Geo IP).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.GeoIpMember.group_name | String | Geo IP Member Group Name. | 
-| FortiwebVM.GeoIpMember.countries.id | String | Geo IP Member ID. | 
-| FortiwebVM.GeoIpMember.countries.country | Number | Geo IP Member Country Name. | 
+| FortiwebVM.GeoIpMember.group_name | String | Geo IP member group name. | 
+| FortiwebVM.GeoIpMember.countries.id | String | Geo IP member ID. | 
+| FortiwebVM.GeoIpMember.countries.country | Number | Geo IP member country name. | 
 
 #### Command example
 ```!fortiwebvm-geo-ip-member-list group_name=example member_id=1```
@@ -1378,13 +1355,13 @@ Create Geo IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Geo IP Group Name. | Required | 
+| name | Geo IP group name. | Required | 
 | trigger_policy | Enter the name of the trigger to apply when this rule is violated. | Optional | 
-| severity | Select the severity level to use in logs and reports generated when a violation of the rule occurs. Possible values are: High, Medium, Low, Info. Default is Low. | Optional | 
-| exception_rule | Geo IP Exception groups. | Optional | 
-| action | Select which action FortiWeb will take when it detects a violation of the rule:alert_deny—Block the request (or reset the connection) and generate an alert and/or log message.deny_no_log—Block the request (or reset the connection).block-period—Block subsequent requests from the client for a number of seconds. Also configure block-period. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). Default is Block period. | Optional | 
-| block_period | Block Period.The number of seconds that you want to block subsequent requests.The valid range is 1–3,600 seconds.Relevant when action=Block period True. Supports API version 2 only. Default is 600. | Optional | 
-| ignore_x_forwarded_for | enable Ignore X-Forwarded-For so that the IP addresses will be scanned at the TCP layer instead of HTTP layer. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
+| severity | The severity level to use in logs and reports generated when a violation of the rule occurs. Possible values are: High, Medium, Low, Info. Default is Low. | Optional | 
+| exception_rule | Geo IP exception groups. | Optional | 
+| action | Select which action FortiWeb will take when it detects a violation of the rule: alert_deny — Block the request (or reset the connection) and generate an alert and/or log message. deny_no_log — Block the request (or reset the connection). block-period — Block subsequent requests from the client for a number of seconds. Also configure block-period. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). Default is Block period. | Optional | 
+| block_period | The number of seconds to block subsequent requests. The valid range is 1–3,600 seconds. Relevant when action=Block period True. Supports API version 2 only. Default is 600. | Optional | 
+| ignore_x_forwarded_for | Whether to enable so that IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
 
 
 #### Context Output
@@ -1412,13 +1389,13 @@ Update Geo IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Geo IP Group Name. | Required | 
+| name | Geo IP group name. | Required | 
 | trigger_policy | Enter the name of the trigger to apply when this rule is violated. | Optional | 
-| severity | Select the severity level to use in logs and reports generated when a violation of the rule occurs. Possible values are: High, Medium, Low, Info. | Optional | 
-| exception_rule | Geo IP Exception groups. | Optional | 
-| action | Select which action FortiWeb will take when it detects a violation of the rule:alert_deny—Block the request (or reset the connection) and generate an alert and/or log message.deny_no_log—Block the request (or reset the connection).block-period—Block subsequent requests from the client for a number of seconds. Also configure block-period. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). | Optional | 
-| block_period | Block Period.The number of seconds that you want to block subsequent requests.The valid range is 1–3,600 seconds. Supports API version 2 only. | Optional | 
-| ignore_x_forwarded_for | enable Ignore X-Forwarded-For so that the IP addresses will be scanned at the TCP layer instead of HTTP layer. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
+| severity | The severity level to use in logs and reports generated when a violation of the rule occurs. Possible values are: High, Medium, Low, Info. | Optional | 
+| exception_rule | Geo IP exception groups. | Optional | 
+| action | The action FortiWeb will take when it detects a violation of the rule: alert_deny — Block the request (or reset the connection) and generate an alert and/or log message.deny_no_log — Block the request (or reset the connection). block-period — Block subsequent requests from the client for a number of seconds. Also configure block-period. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). | Optional | 
+| block_period | The number of seconds to block subsequent requests. The valid range is 1–3,600 seconds. Supports API version 2 only. | Optional | 
+| ignore_x_forwarded_for | Whether to enable so that the IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
 
 
 #### Context Output
@@ -1446,7 +1423,7 @@ Delete Geo IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Geo IP Group Name. | Required | 
+| name | Geo IP group name. | Required | 
 
 
 #### Context Output
@@ -1474,7 +1451,7 @@ Get Geo IP list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Geo IP Group Name. | Optional | 
+| name | Geo IP group name. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -1484,71 +1461,19 @@ Get Geo IP list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.GeoIpGroup.id | Number | Geo IP Group ID. | 
-| FortiwebVM.GeoIpGroup.count | Number | Geo IP Group Members Count. | 
-| FortiwebVM.GeoIpGroup.trigger_policy | String | Geo IP Group Trigger Policy Name. | 
-| FortiwebVM.GeoIpGroup.severity | String | Geo IP Group Severity Number. | 
-| FortiwebVM.GeoIpGroup.except | String | Geo IP Group Exception groups. | 
-| FortiwebVM.GeoIpGroup.can_delete | Boolean | Geo IP Group Can delete flag. Supports API version 1 only. | 
-| FortiwebVM.GeoIpGroup.action | String | Geo IP Group Action. Supports API version 2 only. | 
-| FortiwebVM.GeoIpGroup.block_period | Number | Geo IP Group Block Period. Supports API version 2 only. | 
-| FortiwebVM.GeoIpGroup.ignore_x_forwarded_for | String | Geo IP Group Ignore X-Forwarded-For flag. Supports API version 2 only. | 
-
-#### Command example
-```!fortiwebvm-geo-ip-group-list name=example```
-#### Context Example - API Version 1
-```json
-{
-    "FortiwebVM": {
-        "GeoIpGroup": {
-            "can_delete": true,
-            "count": 0,
-            "except": "",
-            "id": "example",
-            "severity": "Low",
-            "trigger_policy": ""
-        }
-    }
-}
-```
-
-#### Human Readable Output - API Version 1
-
->### Geo IP group:
->Showing 1 rows out of 1.
->|Id|Count|Trigger Policy|Severity|Except|
->|---|---|---|---|---|
->| example | 0 |  | Low |  |
-
-#### Context Example - API Version 2
-```json
-{
-    "FortiwebVM": {
-        "GeoIpGroup": {
-            "action": "Block period",
-            "block_period": 600,
-            "count": 0,
-            "except": "",
-            "id": "example",
-            "ignore_x_forwarded_for": "disable",
-            "severity": "Low",
-            "trigger_policy": ""
-        }
-    }
-}
-```
-
-#### Human Readable Output - API Version 2
-
->### Geo IP group:
->Showing 1 rows out of 1.
->|Id|Count|Trigger Policy|Severity|Except|Action|Block Period|Ignore X Forwarded For|
->|---|---|---|---|---|---|---|---|
->| example | 0 |  | Low |  | Block period | 600 | disable |
+| FortiwebVM.GeoIpGroup.id | Number | Geo IP group ID. | 
+| FortiwebVM.GeoIpGroup.count | Number | The number of Geo IP group members. | 
+| FortiwebVM.GeoIpGroup.trigger_policy | String | Geo IP group trigger policy name. | 
+| FortiwebVM.GeoIpGroup.severity | String | Geo IP group severity number. | 
+| FortiwebVM.GeoIpGroup.except | String | Geo IP group exception groups. | 
+| FortiwebVM.GeoIpGroup.can_delete | Boolean | Geo IP group Can delete flag. Supports API version 1 only. | 
+| FortiwebVM.GeoIpGroup.action | String | Geo IP group action. Supports API version 2 only. | 
+| FortiwebVM.GeoIpGroup.block_period | Number | Geo IP group block period. Supports API version 2 only. | 
+| FortiwebVM.GeoIpGroup.ignore_x_forwarded_for | String | Whether IP addresses will be scanned at the TCP layer instead of the HTTP layer. Supports API version 2 only. | 
 
 ### fortiwebvm-system-operation-status-get
 ***
-Get Operation Status
+Get operation status.
 
 
 #### Base Command
@@ -1702,7 +1627,7 @@ There is no context output for this command.
 
 ### fortiwebvm-system-policy-status-get
 ***
-Get Policy Status.
+Get policy status.
 
 
 #### Base Command
@@ -1774,7 +1699,7 @@ There are no input arguments for this command.
 
 ### fortiwebvm-system-status-get
 ***
-Get System Status.
+Get system status.
 
 
 #### Base Command
@@ -1904,7 +1829,7 @@ There is no context output for this command.
 
 ### fortiwebvm-virtual-server-list
 ***
-List the Virtual Servers.
+List the virtual servers.
 
 
 #### Base Command
@@ -1923,7 +1848,7 @@ List the Virtual Servers.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.VirtualServer.id | String | Virtual Server Name. | 
+| FortiwebVM.VirtualServer.id | String | Virtual Server name. | 
 
 #### Command example
 ```!fortiwebvm-virtual-server-list limit=1```
@@ -1949,7 +1874,7 @@ List the Virtual Servers.
 
 ### fortiwebvm-geo-exception-list
 ***
-List the Geo Exception Groups.
+List the Geo exception groups.
 
 
 #### Base Command
@@ -1968,7 +1893,7 @@ List the Geo Exception Groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.GeoExceptionGroup.id | String | Geo Exception Group Name. | 
+| FortiwebVM.GeoExceptionGroup.id | String | Geo Exception Group Name. |
 
 #### Command example
 ```!fortiwebvm-geo-exception-list limit=1```
@@ -1994,7 +1919,7 @@ List the Geo Exception Groups.
 
 ### fortiwebvm-trigger-policy-list
 ***
-List the Trigger Policies Rules.
+List the trigger policy rules.
 
 
 #### Base Command
@@ -2013,7 +1938,7 @@ List the Trigger Policies Rules.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.TriggerPolicy.id | String | Trigger Policy Name. | 
+| FortiwebVM.TriggerPolicy.id | String | Trigger policy name. | 
 
 #### Command example
 ```!fortiwebvm-trigger-policy-list limit=1```
@@ -2039,7 +1964,7 @@ List the Trigger Policies Rules.
 
 ### fortiwebvm-certificate-intermediate-group-list
 ***
-List the Certificate intermediate groups.
+List the certificate intermediate groups.
 
 
 #### Base Command
@@ -2058,7 +1983,7 @@ List the Certificate intermediate groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.CertificateIntermediateGroup.id | String | Certificate Intermediate Group Name. | 
+| FortiwebVM.CertificateIntermediateGroup.id | String | Certificate intermediate group name. | 
 
 #### Command example
 ```!fortiwebvm-certificate-intermediate-group-list limit=1```
@@ -2084,7 +2009,7 @@ List the Certificate intermediate groups.
 
 ### fortiwebvm-server-pool-list
 ***
-List the Server Pools.
+List the server pools.
 
 
 #### Base Command
@@ -2103,7 +2028,7 @@ List the Server Pools.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.ServerPool.id | String | Server Pool Name. | 
+| FortiwebVM.ServerPool.id | String | Server pool name. | 
 
 #### Command example
 ```!fortiwebvm-server-pool-list limit=1```
@@ -2129,7 +2054,7 @@ List the Server Pools.
 
 ### fortiwebvm-http-service-list
 ***
-List the  HTTP Services.
+List the  HTTP services.
 
 
 #### Base Command
@@ -2148,7 +2073,7 @@ List the  HTTP Services.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.HttpServiceList.id | String | HTTP Service Name. | 
+| FortiwebVM.HttpServiceList.id | String | HTTP service name. | 
 
 #### Command example
 ```!fortiwebvm-http-service-list limit=1```
@@ -2174,7 +2099,7 @@ List the  HTTP Services.
 
 ### fortiwebvm-inline-protection-profile-list
 ***
-List the Inline Protection Profiles.
+List the inline protection profiles.
 
 
 #### Base Command
@@ -2219,7 +2144,7 @@ List the Inline Protection Profiles.
 
 ### fortiwebvm-server-policy-create
 ***
-Create Server Policy.
+Create a server policy.
 
 
 #### Base Command
@@ -2230,39 +2155,39 @@ Create Server Policy.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Policy Name. | Required | 
-| json_template_id | Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration . | Optional | 
-| deployment_mode | Deployment Mode. Specify the distribution method that FortiWeb uses when it forwards connections accepted by this policy. Possible values are: HTTP Content Routing, Single Server/Server Balance. | Optional | 
-| virtual_server | Enter the name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters. | Optional | 
-| mach_once | Match once enabled.Required when: deployment_mode = "HTTP Content Routing". Possible values are: enable, disable. Default is disable. | Optional | 
-| server_pool | Enter the name of the server pool whose members receive the connections. Required when: deployment_mode = "Single Server/Server Balance". | Optional | 
-| protected_hostnames | Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon whether the Host. | Optional | 
+| json_template_id | Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. | Optional | 
+| deployment_mode | The distribution method that FortiWeb uses when it forwards connections accepted by this policy. Possible values are: HTTP Content Routing, Single Server/Server Balance. | Optional | 
+| virtual_server | The name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters. | Optional | 
+| match_once | Enable to forward subsequent requests from an identified client connection to the same server pool as the initial connection from the client. Required when: deployment_mode = "HTTP Content Routing". Possible values are: enable, disable. Default is disable. | Optional | 
+| server_pool | The name of the server pool whose members receive the connections. Required when: deployment_mode = "Single Server/Server Balance". | Optional | 
+| protected_hostnames | The name of a protected hosts group to allow or reject connections based upon their host. | Optional | 
 | client_real_ip | Enable to configure FortiWeb to use the source IP address of the client that originated the request when it connects to a back-end server on behalf of that client. Possible values are: enable, disable. Default is disable. | Optional | 
-| ip_range | Specify an IP address or address range to directly connect to the back-end server. Required when: client_real_ip = "enable". Supports API version 2 only. | Optional | 
+| ip_range | An IP address or address range to directly connect to the back-end server. Required when: client_real_ip = "enable". Supports API version 2 only. | Optional | 
 | syn_cookie | Enable to detect TCP SYN flood attacks. Possible values are: enable, disable. Default is disable. | Optional | 
-| half_open_thresh | The maximum number of TCP SYN packets, including retransmission, that FortiWeb allows to be sent per second to a destination address. If this threshold is exceeded, the FortiWeb appliance treats the traffic as a DoS attack and ignores additional traffic from that source address. The valid range is 10–10,000.. Default is 8192. | Optional | 
-| http_service | HTTP service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | Optional | 
-| https_service | HTTPS service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | Optional | 
-| multi_certificate | Enable to allow FortiWeb to use multiple local certificates.. | Optional | 
-| certificate_group | Select the multi-certificate file you have created.Required when:  multi-certificate is enable. | Optional | 
-| proxy | Missing. | Optional | 
+| half_open_thresh | The maximum number of TCP SYN packets, including retransmissions, that FortiWeb allows to be sent per second to a destination address. If this threshold is exceeded, the FortiWeb appliance treats the traffic as a DoS attack and ignores additional traffic from that source address. The valid range is 10–10,000. Default is 8192. | Optional | 
+| http_service | Custom or predefined service that defines the port number on which the virtual server receives HTTP traffic. | Optional | 
+| https_service | Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | Optional | 
+| multi_certificate | Enable to allow FortiWeb to use multiple local certificates. | Optional | 
+| certificate_group | The multi-certificate file you created. Required when:  multi_certificate is enabled. | Optional | 
+| proxy | Certificate group name. | Optional | 
 | redirect_to_https | Enable to automatically redirect all HTTP requests to the HTTPS service with the same URL and parameters. Possible values are: enable, disable. Default is disable. | Optional | 
 | inline_protection_profile | Inline web protection profile name. | Optional | 
 | monitor_mode | Enable to override deny and redirect actions defined in the server protection rules for the selected policy. This setting enables FortiWeb to log attacks without performing the deny or redirect action. Disable to allow FortiWeb to perform attack deny/redirect actions as defined by the server protection rules. Possible values are: enable, disable. Default is disable. | Optional | 
 | url_case_sensitivity | Enable to differentiate uniform resource locators (URLs) according to upper case and lower case letters for features that act upon the URLs in the headers of HTTP requests, such as block list rules, and allow list rules. Possible values are: enable, disable. Default is disable. | Optional | 
-| comments | Enter a description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes ( " ). The maximum length is 999 characters. | Optional | 
-| certificate_type | Enable allow FortiWeb to automatically retrieve CA certificates from Let's Encrypt. Supports API version 2 only. Possible values are: Local, Multi Certificate, Letsencrypt. Default is Local. | Optional | 
-| lets_certificate | Select the Letsencrypt certificate you have created. Supports API version 2 only.Required when: certificate-type is enable. | Optional | 
+| comments | A description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes ( " ). The maximum length is 999 characters. | Optional | 
+| certificate_type | Certificate type. Supports API version 2 only. Possible values are: Local, Multi Certificate, Letsencrypt. Default is Local. | Optional | 
+| lets_certificate | Select the Letsencrypt certificate you created. Supports API version 2 only. Required when: certificate_type is 'Letsencrypt'. | Optional | 
 | retry_on | Enable to configure whether to retry a failed TCP connection or HTTP request in Reverse Proxy mode. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
-| retry_on_cache_size | Enter a cache size limit for the HTTP request packet. Supports API version 2 only.Required when: retry_on is enable. Default is 512. | Optional | 
-| retry_on_connect_failure | Enable to configure the retry times in case of any TCP connection failure. Supports API version 2 only. Required when: retry_on is enable. Possible values are: enable, disable. Default is disable. | Optional | 
-| retry_times_on_connect_failure | Enter the retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only.Required when: retry_on_connect_failure and retry_on are enable. Possible values are: 1, 2, 3, 4, 5. Default is 3. | Optional | 
-| retry_on_http_layer | Enable to configure the retry times and failure response code in case of any HTTP connection failure. Supports API version 2 only.Required when: retry_on is enable. Possible values are: enable, disable. Default is disable. | Optional | 
-| retry_times_on_http_layer | Enter the retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only.Required when: retry_on and retry_on_http_layer are enable. Possible values are: 1, 2, 3, 4, 5. Default is 3. | Optional | 
-| retry_on_http_response_codes | Select the failure return code when pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enable. Possible values are: 404, 408, 500, 501, 502, 503, 504. | Optional | 
-| scripting | Not documented. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
-| scripting_list | Not documented. Required when: scripting is enable. Supports API version 2 only. | Optional | 
-| allow_list | Supports API version 2 only. | Optional | 
-| replace_msg | Select the replacement message to apply to the policy. Supports API version 2 only. | Optional | 
+| retry_on_cache_size | A cache size limit for the HTTP request packet. Supports API version 2 only. Required when: retry_on is enabled. Default is 512. | Optional | 
+| retry_on_connect_failure | Enable to configure the retry times in case of any TCP connection failure. Supports API version 2 only. Required when: retry_on is enabled. Possible values are: enable, disable. Default is disable. | Optional | 
+| retry_times_on_connect_failure | The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on_connect_failure and retry_on are enabled. Possible values are: 1, 2, 3, 4, 5. Default is 3. | Optional | 
+| retry_on_http_layer | Enable to configure the retry times and failure response code in case of any HTTP connection failure. Supports API version 2 only. Required when: retry_on is enabled. Possible values are: enable, disable. Default is disable. | Optional | 
+| retry_times_on_http_layer | The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled. Possible values are: 1, 2, 3, 4, 5. Default is 3. | Optional | 
+| retry_on_http_response_codes | The failure return code when the pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled. Possible values are: 404, 408, 500, 501, 502, 503, 504. | Optional | 
+| scripting | Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
+| scripting_list | Scripting list to perform actions that are not currently supported by the built-in feature set. Required when: scripting is enabled. Supports API version 2 only. | Optional | 
+| allow_list | The Policy Based Allow list to use instead of the Global Allow List. Supports API version 2 only. | Optional | 
+| replace_msg | The replacement message to apply to the policy. Supports API version 2 only. | Optional | 
 
 
 #### Context Output
@@ -2280,7 +2205,7 @@ There is no context output for this command.
 
 ### fortiwebvm-server-policy-update
 ***
-Update Server Policy.
+Update the server policy.
 
 
 #### Base Command
@@ -2290,43 +2215,43 @@ Update Server Policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Policy Name. | Required | 
-| deployment_mode | Deployment Mode. Possible values are: HTTP Content Routing, Single Server/Server Balance. | Optional | 
-| virtual_server | Enter the name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters. | Optional | 
-| mach_once | Match once enabled.Required when: deployment_mode = "HTTP Content Routing". Possible values are: enable, disable. Default is disable. | Optional | 
+| name | Policy name. | Required | 
+| deployment_mode | Deployment mode. Possible values are: HTTP Content Routing, Single Server/Server Balance. | Optional | 
+| virtual_server | The name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters. | Optional | 
+| match_once | Enable to forward subsequent requests from an identified client connection to the same server pool as the initial connection from the client. Required when: deployment_mode = "HTTP Content Routing". Possible values are: enable, disable. Default is disable. | Optional | 
 | server_pool | Enter the name of the server pool whose members receive the connections. Required when: deployment_mode = "Single Server/Server Balance". | Optional | 
-| protected_hostnames | Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon whether the Host. | Optional | 
+| protected_hostnames | Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon their host. | Optional | 
 | client_real_ip | Enable to configure FortiWeb to use the source IP address of the client that originated the request when it connects to a back-end server on behalf of that client. | Optional | 
 | ip_range | Specify an IP address or address range to directly connect to the back-end server. Required when: client_real_ip = "enable". Supports API version 2 only. | Optional | 
 | syn_cookie | Enable to detect TCP SYN flood attacks. Possible values are: enable, disable. Default is disable. | Optional | 
-| half_open_thresh | The maximum number of TCP SYN packets, including retransmission, that FortiWeb allows to be sent per second to a destination address. If this threshold is exceeded, the FortiWeb appliance treats the traffic as a DoS attack and ignores additional traffic from that source address. The valid range is 10–10,000.. | Optional | 
-| http_service | HTTP service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | Optional | 
+| half_open_thresh | The maximum number of TCP SYN packets, including retransmissions, that FortiWeb allows to be sent per second to a destination address. If this threshold is exceeded, the FortiWeb appliance treats the traffic as a DoS attack and ignores additional traffic from that source address. The valid range is 10–10,000. | Optional | 
+| http_service | Custom or predefined service that defines the port number on which the virtual server receives HTTP traffic. | Optional | 
 | https_service | HTTPS service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | Optional | 
-| http2 | Enable HTTP/2.Required when: HTTPSService is not null. Possible values are: enable, disable. Default is disable. | Optional | 
+| http2 | Enable HTTP/2. Required when: HTTPSService is not null. Possible values are: enable, disable. Default is disable. | Optional | 
 | multi_certificate | Enable to allow FortiWeb to use multiple local certificates. | Optional | 
-| certificate_group | Required  when:  multi-certificate is enable.Select the multi-certificate file you have created. | Optional | 
-| certificate | Required  when:  multi-certificate is disable. | Optional | 
-| intergroup | Certificate intermediate group.Required  when: HTTPSService is not null. | Optional | 
-| proxy | Missing in version 1. Possible values are: enable, disable. Default is disable. | Optional | 
+| certificate_group | Required  when:  multi-certificate is enabled. Select the multi-certificate file you created. | Optional | 
+| certificate | Certificate group name. Required when:  multi-certificate is disabled. | Optional | 
+| intergroup | Certificate intermediate group. Required when: HTTPSService is not null. | Optional | 
+| proxy | Enable this option when proxy servers or load balancers are installed before FortiWeb. Possible values are: enable, disable. Default is disable. | Optional | 
 | redirect_to_https | Enable to automatically redirect all HTTP requests to the HTTPS service with the same URL and parameters. | Optional | 
 | inline_protection_profile | Inline web protection profile name. | Optional | 
 | monitor_mode | Enable to override deny and redirect actions defined in the server protection rules for the selected policy. This setting enables FortiWeb to log attacks without performing the deny or redirect action. Disable to allow FortiWeb to perform attack deny/redirect actions as defined by the server protection rules. Possible values are: enable, disable. Default is disable. | Optional | 
 | url_case_sensitivity | Enable to differentiate uniform resource locators (URLs) according to upper case and lower case letters for features that act upon the URLs in the headers of HTTP requests, such as block list rules, and allow list rules. | Optional | 
-| comments | Enter a description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes ( " ). The maximum length is 999 characters. | Optional | 
-| certificate_type | Enable allow FortiWeb to automatically retrieve CA certificates from Let's Encrypt. Supports API version 2 only. Possible values are: Local, Multi Certificate, Letsencrypt. | Optional | 
-| lets_certificate | Select the Letsencrypt certificate you have created. Supports API version 2 only.Required  when: certificate-type is enable. | Optional | 
+| comments | A description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes ( " ). The maximum length is 999 characters. | Optional | 
+| certificate_type | Certificate type. Supports API version 2 only. Possible values are: Local, Multi Certificate, Letsencrypt. Default is Local. | Optional | 
+| lets_certificate | Select the Letsencrypt certificate you created. Supports API version 2 only. Required when: certificate-type is enabled. | Optional | 
 | retry_on | Enable to configure whether to retry a failed TCP connection or HTTP request in Reverse Proxy mode. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
-| retry_on_cache_size | Enter a cache size limit for the HTTP request packet. Supports API version 2 only.Required when: retry_on is enable. | Optional | 
-| retry_on_connect_failure | Enable to configure the retry times in case of any TCP connection failure. Supports API version 2 only. Required when: retry_on is enable. Possible values are: enable, disable. | Optional | 
-| retry_times_on_connect_failure | Enter the retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only.Required when: retry_on_connect_failure and retry_on are enable. Possible values are: 1, 2, 3, 4, 5. | Optional | 
-| retry_on_http_layer | Enable to configure the retry times and failure response code in case of any HTTP connection failure. Supports API version 2 only.Required when: retry_on is enable. Possible values are: enable, disable. | Optional | 
-| retry_times_on_http_layer | Enter the retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only.Required when: retry_on and retry_on_http_layer are enable. Possible values are: 1, 2, 3, 4, 5. | Optional | 
-| retry_on_http_response_codes | Select the failure return code when pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enable. Possible values are: 404, 408, 500, 501, 502, 503, 504. | Optional | 
-| scripting | Not documented. Supports API version 2 only. | Optional | 
-| scripting_list | Not documented. Supports API version 2 only.Required  when: scripting-on is enable. | Optional | 
-| allow_list | Not documented. Required when: scripting is enable. Supports API version 2 only. | Optional | 
-| replacemsg | Select the replacement message to apply to the policy. Supports API version 2 only. | Optional | 
-| json_template_id | Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration . | Optional | 
+| retry_on_cache_size | The cache size limit for the HTTP request packet. Supports API version 2 only. Required when: retry_on is enabled. | Optional | 
+| retry_on_connect_failure | Enable to configure the retry times in case of any TCP connection failure. Supports API version 2 only. Required when: retry_on is enabled. Possible values are: enable, disable. | Optional | 
+| retry_times_on_connect_failure | The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on_connect_failure and retry_on are enabled. Possible values are: 1, 2, 3, 4, 5. | Optional | 
+| retry_on_http_layer | Enable to configure the retry times and failure response code in case of any HTTP connection failure. Supports API version 2 only. Required when: retry_on is enabled. Possible values are: enable, disable. | Optional | 
+| retry_times_on_http_layer | The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled. Possible values are: 1, 2, 3, 4, 5. | Optional | 
+| retry_on_http_response_codes | The failure return code when the pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled. Possible values are: 404, 408, 500, 501, 502, 503, 504. | Optional | 
+| scripting | Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only. | Optional | 
+| scripting_list | Scripting list to perform actions that are not currently supported by the built-in feature set. Required when: scripting is enabled. Supports API version 2 only. | Optional | 
+| allow_list | The Policy Based Allow list to use instead of the Global Allow List. Supports API version 2 only. | Optional | 
+| replacemsg | The replacement message to apply to the policy. Supports API version 2 only. | Optional | 
+| json_template_id | Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration. | Optional | 
 
 
 #### Context Output
@@ -2344,7 +2269,7 @@ There is no context output for this command.
 
 ### fortiwebvm-server-policy-delete
 ***
-Delete Server Policy.
+Delete the server policy.
 
 
 #### Base Command
@@ -2354,7 +2279,7 @@ Delete Server Policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Policy Name. | Required | 
+| name | Policy name. | Required | 
 
 
 #### Context Output
@@ -2372,7 +2297,7 @@ There is no context output for this command.
 
 ### fortiwebvm-server-policy-list
 ***
-List the Server Policies.
+List the server policies.
 
 
 #### Base Command
@@ -2382,7 +2307,7 @@ List the Server Policies.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Server Policy Name. | Optional | 
+| name | Server policy name. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
@@ -2392,33 +2317,33 @@ List the Server Policies.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.ServerPolicy.name | String | Server Policy Name. | 
-| FortiwebVM.ServerPolicy.deployment_mode | String | Server Policy Deployment Mode. | 
-| FortiwebVM.ServerPolicy.protocol | String | Server Policy protocol. | 
-| FortiwebVM.ServerPolicy.web_protection_profile | String | Server Policy inherit web protection profile flag. | 
-| FortiwebVM.ServerPolicy.monitor_mode | String | Enable to override deny and redirect actions defined in the server protection rules for the selected policy. This setting enables FortiWeb to log attacks without performing the deny or redirect action. Disable to allow FortiWeb to perform attack deny/redirect actions as defined by the server protection rules. | 
-| FortiwebVM.ServerPolicy.http_service | String | HTTP service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | 
-| FortiwebVM.ServerPolicy.https_service | String | HTTPS service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | 
-| FortiwebVM.ServerPolicy.certificate | String | Server Polciy certificate. | 
-| FortiwebVM.ServerPolicy.certificate_intermediate_group | String | Server Polciy certificate intermediate group. | 
-| FortiwebVM.ServerPolicy.server_pool | String | Server Policy Server Pool name. | 
-| FortiwebVM.ServerPolicy.protected_hostnames | String | Server Policy Protected Hostname name. | 
+| FortiwebVM.ServerPolicy.name | String | Server policy name. | 
+| FortiwebVM.ServerPolicy.deployment_mode | String | Server policy deployment mode. | 
+| FortiwebVM.ServerPolicy.protocol | String | Server policy protocol. | 
+| FortiwebVM.ServerPolicy.web_protection_profile | String | Server policy inherit web protection profile flag. | 
+| FortiwebVM.ServerPolicy.monitor_mode | String | This setting enables FortiWeb to log attacks without performing the deny or redirect action. Disable to allow FortiWeb to perform attack deny/redirect actions as defined by the server protection rules. | 
+| FortiwebVM.ServerPolicy.http_service | String | Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | 
+| FortiwebVM.ServerPolicy.https_service | String | Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | 
+| FortiwebVM.ServerPolicy.certificate | String | Server policy certificate. | 
+| FortiwebVM.ServerPolicy.certificate_intermediate_group | String | Server policy certificate intermediate group. | 
+| FortiwebVM.ServerPolicy.server_pool | String | Server policy server pool name. | 
+| FortiwebVM.ServerPolicy.protected_hostnames | String | Server policy protected hostname name. | 
 | FortiwebVM.ServerPolicy.client_real_ip | String | Enable to configure FortiWeb to use the source IP address of the client that originated the request when it connects to a back-end server on behalf of that client. | 
-| FortiwebVM.ServerPolicy.syn_cookie | String | Enable to detect TCP SYN flood attacks. | 
-| FortiwebVM.ServerPolicy.redirect_to_https | String | Enable to automatically redirect all HTTP requests to the HTTPS service with the same URL and parameters. | 
-| FortiwebVM.ServerPolicy.http2 | String | Enable HTTP/2.Required when: HTTPSService is not null. | 
-| FortiwebVM.ServerPolicy.url_case_sensitivity | String | Enable to differentiate uniform resource locators \(URLs\) according to upper case and lower case letters for features that act upon the URLs in the headers of HTTP requests, such as block list rules, and allow list rules. | 
-| FortiwebVM.ServerPolicy.comments | String | Enter a description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes \( " \). The maximum length is 999 characters. | 
-| FortiwebVM.ServerPolicy.retry_on | String | Enable to configure whether to retry a failed TCP connection or HTTP request in Reverse Proxy mode. Supports API version 2 only. | 
-| FortiwebVM.ServerPolicy.retry_on_cache_size | String | Enter a cache size limit for the HTTP request packet. Supports API version 2 only.Required when: retry_on is enable. | 
-| FortiwebVM.ServerPolicy.retry_times_on_connect_failure | String | Enable to configure the retry times in case of any TCP connection failure. Supports API version 2 only. Required when: retry_on is enable. | 
-| FortiwebVM.ServerPolicy.retry_on_http_layer | String | Enable to configure the retry times and failure response code in case of any HTTP connection failure. Supports API version 2 only.Required when: retry_on is enable. | 
-| FortiwebVM.ServerPolicy.retry_times_on_http_layer | String | The retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only.Required when: retry_on and retry_on_http_layer are enable. | 
-| FortiwebVM.ServerPolicy.retry_on_http_response_codes | String | The failure return code when pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enable. | 
-| FortiwebVM.ServerPolicy.scripting | String | Not documented. Supports API version 2 only. | 
-| FortiwebVM.ServerPolicy.scripting_list | String | Not documented. Required when: scripting is enable. Supports API version 2 only. | 
-| FortiwebVM.ServerPolicy.allow_list | String | Server Policy Allow List. Supports API version 2 only. | 
-| FortiwebVM.ServerPolicy.replace_msg | String | Server Policy replacement message. Supports API version 2 only. API version 2 only. | 
+| FortiwebVM.ServerPolicy.syn_cookie | String | Whether to detect TCP SYN flood attacks. | 
+| FortiwebVM.ServerPolicy.redirect_to_https | String | Whether to automatically redirect all HTTP requests to the HTTPS service with the same URL and parameters. | 
+| FortiwebVM.ServerPolicy.http2 | String | Whether to enable HTTP/2. Required when: HTTPSService is not null. | 
+| FortiwebVM.ServerPolicy.url_case_sensitivity | String | Whether to differentiate uniform resource locators \(URLs\) according to upper case and lower case letters for features that act upon the URLs in the headers of HTTP requests, such as block list rules, and allow list rules. | 
+| FortiwebVM.ServerPolicy.comments | String | A description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes \( " \). The maximum length is 999 characters. | 
+| FortiwebVM.ServerPolicy.retry_on | String | Whether to configure whether to retry a failed TCP connection or HTTP request in Reverse Proxy mode. Supports API version 2 only. | 
+| FortiwebVM.ServerPolicy.retry_on_cache_size | String | A cache size limit for the HTTP request packet. Supports API version 2 only. Required when: retry_on is enabled. | 
+| FortiwebVM.ServerPolicy.retry_times_on_connect_failure | String | The number of retry times in case of any TCP connection failure. Supports API version 2 only. Required when: retry_on is enabled. | 
+| FortiwebVM.ServerPolicy.retry_on_http_layer | String | The number of retry times and failure response code in case of any HTTP connection failure. Supports API version 2 only. Required when: retry_on is enabled. | 
+| FortiwebVM.ServerPolicy.retry_times_on_http_layer | String | The number of retry times when FortiWeb reconnects the single server or switch to the other pserver. The valid range is 1-5. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled. | 
+| FortiwebVM.ServerPolicy.retry_on_http_response_codes | String | The failure return code when the pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enabled. | 
+| FortiwebVM.ServerPolicy.scripting | String | Whether to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only. | 
+| FortiwebVM.ServerPolicy.scripting_list | String | Server policy scripting list. Required when: scripting is enabled. Supports API version 2 only. | 
+| FortiwebVM.ServerPolicy.allow_list | String | Server policy allow list. Supports API version 2 only. | 
+| FortiwebVM.ServerPolicy.replace_msg | String | Server policy replacement message. Supports API version 2 only. API version 2 only. | 
 
 #### Command example
 ```!fortiwebvm-server-policy-list name=example```
@@ -2509,7 +2434,7 @@ List the Server Policies.
 
 ### fortiwebvm-content-routing-policy-list
 ***
-List the HTTP Content Routing Policies.
+List the HTTP content routing policies.
 
 
 #### Base Command
@@ -2528,7 +2453,7 @@ List the HTTP Content Routing Policies.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.HttpContentRoutingPolicy.id | String | Policy Name. | 
+| FortiwebVM.HttpContentRoutingPolicy.id | String | Policy name. | 
 
 #### Command example
 ```!fortiwebvm-content-routing-policy-list limit=1```
@@ -2554,7 +2479,7 @@ List the HTTP Content Routing Policies.
 
 ### fortiwebvm-http-content-routing-member-add
 ***
-Create Server Policy HTTP Content Routing Member (HTTP Content Routing Member is a member of HTTP Content Routing).
+Create the server policy HTTP content routing member.
 
 
 #### Base Command
@@ -2564,11 +2489,11 @@ Create Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy Name. | Required | 
-| is_default | Is FortiWeb applies the protection profile to any traffic that does not match conditions specified in the HTTP content routing policies?. Possible values are: yes, no. Default is no. | Optional | 
+| policy_name | Policy name. | Required | 
+| is_default | Whether FortiWeb applies the protection profile to any traffic that does not match conditions specified in the HTTP content routing policies. Possible values are: yes, no. Default is no. | Optional | 
 | http_content_routing_policy | HTTP content routing policy name. | Required | 
-| inherit_web_protection_profile | Enable inherit web protection profile. Possible values are: enable, disable. Default is disable. | Optional | 
-| profile | Web protection profile, it is required when inherit web protection profile is disabled. | Optional | 
+| inherit_web_protection_profile | Whether to enable the inherit web protection profile. Possible values are: enable, disable. Default is disable. | Optional | 
+| profile | Web protection profile. This is required when inherit web protection profile is disabled. | Optional | 
 | status | HTTP content routing member status. Supports API version 2 only. Possible values are: enable, disable. Default is enable. | Optional | 
 
 
@@ -2576,7 +2501,7 @@ Create Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.HttpContentRoutingMember.id | Number | Http Content Routing Member ID. | 
+| FortiwebVM.HttpContentRoutingMember.id | Number | HTTP content routing member ID. | 
 
 #### Command example
 ```!fortiwebvm-http-content-routing-member-add policy_name=example http_content_routing_policy=content1```
@@ -2601,7 +2526,7 @@ Create Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 
 ### fortiwebvm-http-content-routing-member-update
 ***
-Update Server Policy HTTP Content Routing Member (HTTP Content Routing Member is a member of HTTP Content Routing).
+Update the server policy HTTP content routing member.
 
 
 #### Base Command
@@ -2611,13 +2536,13 @@ Update Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy Name. | Required | 
+| policy_name | Policy name. | Required | 
 | http_content_routing_policy | HTTP content routing policy name. | Optional | 
-| id | Server Policy HTTP Content Routing Member ID. | Required | 
-| is_default | Is FortiWeb applies the protection profile to any traffic that does not match conditions specified in the HTTP content routing policies?. Possible values are: yes, no. | Optional | 
-| inherit_web_protection_profile | Enable inherit web protection profile. Possible values are: enable, disable. | Optional | 
-| profile | Web protection profile, it is required when inherit web protection profile is disabled. Supports API version 1 only. | Optional | 
-| status | Supports API version 2 only. Possible values are: enable, disable. | Optional | 
+| id | Server policy HTTP content routing member ID. | Required | 
+| is_default | Whether FortiWeb applies the protection profile to any traffic that does not match conditions specified in the HTTP content routing policies. Possible values are: yes, no. | Optional | 
+| inherit_web_protection_profile | Whether to enable inherit web protection profile. Possible values are: enable, disable. | Optional | 
+| profile | Web protection profile. This is required when inherit web protection profile is disabled. Supports API version 1 only. | Optional | 
+| status | HTTP content routing member status. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
 
 
 #### Context Output
@@ -2635,7 +2560,7 @@ There is no context output for this command.
 
 ### fortiwebvm-http-content-routing-member-delete
 ***
-Delete Server Policy HTTP Content Routing Member (HTTP Content Routing Member is a member of HTTP Content Routing).
+Delete the server policy HTTP content routing member.
 
 
 #### Base Command
@@ -2645,8 +2570,8 @@ Delete Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy Name. | Required | 
-| id | Server Policy HTTP Content Routing Member ID. | Required | 
+| policy_name | Policy name. | Required | 
+| id | Server policy HTTP content routing member ID. | Required | 
 
 
 #### Context Output
@@ -2664,7 +2589,7 @@ There is no context output for this command.
 
 ### fortiwebvm-http-content-routing-member-list
 ***
-List the Server Policy HTTP Content Routing Members (HTTP Content Routing Member is a member of HTTP Content Routing).
+List the Server policy HTTP content routing members.
 
 
 #### Base Command
@@ -2674,52 +2599,21 @@ List the Server Policy HTTP Content Routing Members (HTTP Content Routing Member
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy Name. | Required | 
-| id | Server Policy HTTP Content Routing Member ID. | Optional | 
+| policy_name | Policy name. | Required | 
+| id | Server policy HTTP content routing member ID. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of records to retrieve per page. | Optional | 
-| limit | The maximum number of records to retrieve. . Default is 50. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.HttpContentRoutingMember.policy_name | String | HTTP Content Routing Policy Name. | 
-| FortiwebVM.HttpContentRoutingMember.Members.id | String | HTTP Content Routing ID. | 
-| FortiwebVM.HttpContentRoutingMember.Members.default | String | HTTP Content Routing Is Default. | 
+| FortiwebVM.HttpContentRoutingMember.policy_name | String | HTTP content routing policy name. | 
+| FortiwebVM.HttpContentRoutingMember.Members.id | String | HTTP content routing ID. | 
+| FortiwebVM.HttpContentRoutingMember.Members.default | String | Whether the HTTP content routing is the default. | 
 | FortiwebVM.HttpContentRoutingMember.Members.http_content_routing_policy | String | HTTP content routing policy name. | 
-| FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile | Boolean | HTTP Content Routing inherit web protection profile flag. | 
-| FortiwebVM.HttpContentRoutingMember.Members.profile | String | HTTP Content Routing Profile. | 
-| FortiwebVM.HttpContentRoutingMember.Members.status | String | HTTP Content Routing Status. Supports API version 2 only. | 
-
-#### Command example
-```!fortiwebvm-http-content-routing-member-list policy_name=example```
-#### Context Example
-```json
-{
-    "FortiwebVM": {
-        "HttpContentRoutingMember": {
-            "Members": [
-                {
-                    "default": "No",
-                    "http_content_routing_policy": "content1",
-                    "id": "1",
-                    "inherit_web_protection_profile": false,
-                    "profile": ""
-                }
-            ],
-            "policy_name": "example"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### HTTP Content Routing Policy Members:
->Showing 1 rows out of 1.
->|Id|Default|Http Content Routing Policy|Inherit Web Protection Profile|Profile|
->|---|---|---|---|---|
->| 1 | No | content1 | false |  |
-
+| FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile | Boolean | HTTP content routing inherit web protection profile flag. | 
+| FortiwebVM.HttpContentRoutingMember.Members.profile | String | HTTP content routing profile. | 
+| FortiwebVM.HttpContentRoutingMember.Members.status | String | HTTP content routing status. Supports API version 2 only. | 
