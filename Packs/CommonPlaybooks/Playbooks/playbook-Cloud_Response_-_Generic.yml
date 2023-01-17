@@ -73,8 +73,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.OriginalAlert.event
-                accessor: cloud_provider
+                root: inputs.cloudProvider
             iscontext: true
           right:
             value:
@@ -86,8 +85,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.OriginalAlert.event
-                accessor: cloud_provider
+                root: inputs.cloudProvider
             iscontext: true
           right:
             value:
@@ -99,8 +97,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.OriginalAlert.event
-                accessor: cloud_provider
+                root: inputs.cloudProvider
             iscontext: true
           right:
             value:
@@ -221,7 +218,7 @@ tasks:
       autoBlockIndicators:
         simple: "False"
       autoResourceRemediation:
-        simple: "True"
+        simple: "False"
       autoUserRemediation:
         simple: "False"
       region:
@@ -491,7 +488,12 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: cloudProvider
+  value: {}
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

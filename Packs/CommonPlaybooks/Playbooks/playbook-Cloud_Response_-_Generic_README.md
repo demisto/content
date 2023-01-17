@@ -28,7 +28,10 @@ This playbook does not use any commands.
 
 ## Playbook Inputs
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| cloudProvider | The cloud service provider involved. |  | Optional |
 
 ## Playbook Outputs
 ---
