@@ -254,7 +254,6 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
                             previous_commit_hash: str = None, landing_page_sections: dict = None,
                             artifacts_dir: Optional[str] = None,
                             storage_bucket: Optional[Bucket] = None,
-                            id_set=None,
                             ):
     """
     Upload updated index zip to cloud storage.
@@ -328,7 +327,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
             # Store index.json in CircleCI artifacts
             shutil.copyfile(
                 os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
-                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}{"" if id_set else "-graph"}.json'),
+                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}.json'),
             )
         shutil.rmtree(index_folder_path)
 
@@ -1277,7 +1276,7 @@ def main():
                             force_upload=force_upload, previous_commit_hash=previous_commit_hash,
                             landing_page_sections=statistics_handler.landing_page_sections,
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
-                            storage_bucket=storage_bucket, id_set=id_set)
+                            storage_bucket=storage_bucket)
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
