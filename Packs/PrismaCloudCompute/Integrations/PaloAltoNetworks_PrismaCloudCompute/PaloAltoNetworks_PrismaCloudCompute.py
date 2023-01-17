@@ -1667,8 +1667,8 @@ def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandRe
     """
     policies = client.get_waas_policies()
     entry = []
-    for rule in policies.get("rules"):
-        for spec in rule.get("applicationsSpec"):
+    for rule in policies.get("rules") or {}:
+        for spec in rule.get("applicationsSpec") or {}:
             formatted_waas_policy = {
                 "SQLInjection": spec.get("sqli").get("effect"),
                 "CrossSiteScriptingXSS": spec.get("xss").get("effect"),
@@ -1716,7 +1716,8 @@ def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> Comman
     for index, rule in enumerate(policy["rules"]):
         if rule["name"] != args.get("rule_name"):
             continue
-        policy["rules"][index]["applicationsSpec"][0][args.get("attack_type")] = {"effect": args.get("action") }
+        for spec in policy["rules"][index]["applicationsSpec"]: 
+            spec[args.get("attack_type")] = {"effect": args.get("action") }
 
     res = client.update_waas_policies(policy)
 
@@ -1724,10 +1725,9 @@ def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> Comman
     if res.status_code != 200:
         txt = f"Error: {res.status_code} - {res.text}"
     
-    entry = CommandResults(
+    return CommandResults(
         readable_output=txt
     )
-    return entry
 
 
 def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
