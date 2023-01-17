@@ -109,8 +109,8 @@ validate-content-conf:
     - section_end "Create or update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - export ENV_DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION
-    - echo DEMISTO_SDK_MARKETPLACE=$ENV_DEMISTO_SDK_MARKETPLACE
+    - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because in the demisto-sdk uses this environment variable.
+    - echo "DEMISTO_SDK_MARKETPLACE=$DEMISTO_SDK_MARKETPLACE"
     - |
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
