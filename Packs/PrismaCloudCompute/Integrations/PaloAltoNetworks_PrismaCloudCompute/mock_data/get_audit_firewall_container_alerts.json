@@ -17,14 +17,14 @@
             "All",
             "dvwa"
         ],
-        "containerId": "d0b596caa57aeecff1d0d6ea1167e696fdbe41c1c0a8ef460e331c45db2613fe",
-        "containerName": "/k8s_nginx_nginx-deployment-bb6558558-dxqtl_default_6cb1fae9-0289-4b47-ab1d-fa6c3cbe1ad4_0",
+        "containerId": "d0b59",
+        "containerName": "/k8s_nginx_nginx-deployment-bb6558558-dxqtl_default",
         "count": 1,
         "effect": "alert",
-        "eventID": "185c00d3-387e-589f-bfce-7074463a5351",
+        "eventID": "bfce-7074463a5351",
         "fqdn": "",
         "host": false,
-        "hostname": "ip-192-168-17-75.us-west-1.compute.internal",
+        "hostname": "compute.internal",
         "imageName": "vulnerables/web-dvwa:latest",
         "method": "POST",
         "msg": "Detected Local File Inclusion attack in request body parameter \"ip\", match etc/passwd, value 1.1.1.1; tail /etc/passwd",
@@ -48,11 +48,11 @@
             "Upgrade-Insecure-Requests",
             "User-Agent"
         ],
-        "requestHeaders": "POST /vulnerabilities/exec/ HTTP/1.1\r\nHost: a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\nAccept-Encoding: gzip, deflate\r\nAccept-Language: en-US,en;q=0.9\r\nCache-Control: max-age=0\r\nConnection: keep-alive\r\nContent-Length: 48\r\nContent-Type: application/x-www-form-urlencoded\r\nCookie: PHPSESSID=ihg0qsi11j388td1s617e2nqf5; security=low\r\nOrigin: http://a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com\r\nReferer: http://a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com/vulnerabilities/exec/\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36\r\n",
-        "requestHost": "a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com",
+        "requestHeaders": "",
+        "requestHost": "us-west-1.elb.amazonaws.com",
         "resource": {
             "accountIDs": [
-                "470460512026"
+                "4XXXXXXX"
             ],
             "images": [
                 "vulnerables/web-dvwa:latest"
@@ -75,10 +75,10 @@
         "ruleAppID": "app-DF33",
         "ruleName": "WaaS rule for DVWA",
         "statusCode": 200,
-        "subnet": "192.168.17.75",
+        "subnet": "",
         "time": "2023-01-12T02:19:22Z",
         "type": "lfi",
-        "url": "a1f9826965a4e43e2ae22570b950935a-1681592327.us-west-1.elb.amazonaws.com/vulnerabilities/exec/",
+        "url": "us-west-1.elb.amazonaws.com/vulnerabilities/exec/",
         "urlPath": "/vulnerabilities/exec/",
         "userAgentHeader": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
         "version": "22.06.229"
