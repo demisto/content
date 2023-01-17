@@ -15,7 +15,7 @@ filter
     xdm.source.location.city = json_extract_scalar(client, "$.geographicalContext.city"),
     xdm.source.location.country = json_extract_scalar(client, "$.geographicalContext.country"),
     xdm.event.type = eventType,
-    xdm.event.outcome = if(outcome_result="SUCCESS", XDM_CONST.OUTCOME_SUCCESS, outcome_result="FAILURE", XDM_CONST.OUTCOME_FAILED, outcome_result="ALLOW", XDM_CONST.OUTCOME_SUCCESS, outcome_result="DENY", XDM_CONST.OUTCOME_FAILED, outcome_result="CHALLENGE", XDM_CONST.OUTCOME_PARTIAL , XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome = if(outcome_result="SUCCESS", XDM_CONST.OUTCOME_SUCCESS, outcome_result="FAILURE", XDM_CONST.OUTCOME_FAILED, outcome_result="ALLOW", XDM_CONST.OUTCOME_SUCCESS, outcome_result="DENY", XDM_CONST.OUTCOME_FAILED, outcome_result="CHALLENGE", XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = json_extract_scalar(outcome, "$.reason"),
     xdm.target.resource.id = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.alternateId")),","),
     xdm.target.resource.type = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type")),",")
