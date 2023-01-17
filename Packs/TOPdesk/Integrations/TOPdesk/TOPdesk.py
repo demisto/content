@@ -1282,7 +1282,7 @@ def fetch_incidents(client: Client,
             # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError when it is not
             # possible to load json.
             except DemistoException as error:
-                demisto.log(f'{error=}')
+                demisto.debug(f'{error=}')
                 if 'Failed to parse json object from response' in str(error):
                     actions = []
                 else:
