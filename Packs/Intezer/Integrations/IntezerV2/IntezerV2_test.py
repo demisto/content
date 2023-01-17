@@ -52,7 +52,7 @@ def test_analyze_by_hash_command_success(requests_mock):
     command_results = analyze_by_hash_command(args, intezer_api)
 
     # Assert
-    assert command_results.response.outputs['ID'] == analysis_id
+    assert command_results.outputs['ID'] == analysis_id
 
 
 def test_analyze_by_hash_command_success_polling_true(requests_mock, mocker):
@@ -103,7 +103,7 @@ def test_analyze_by_hash_command_missing_hash(requests_mock):
     command_results = analyze_by_hash_command(args, intezer_api)
 
     # Assert
-    assert command_results.response.readable_output == f'The Hash {file_hash} was not found on Intezer genome database'
+    assert command_results.readable_output == f'The Hash {file_hash} was not found on Intezer genome database'
 
 
 def test_analyze_by_hash_command_already_running(requests_mock):
@@ -122,7 +122,7 @@ def test_analyze_by_hash_command_already_running(requests_mock):
     command_results = analyze_by_hash_command(args, intezer_api)
 
     # Assert
-    assert command_results.response.readable_output == 'Analysis is still in progress'
+    assert command_results.readable_output == 'Analysis is still in progress'
 
 
 # endregion
@@ -226,9 +226,9 @@ def test_analyze_by_uploaded_file_command_success(requests_mock, mocker):
         command_results = analyze_by_uploaded_file_command(args, intezer_api)
 
     # Assert
-    assert command_results.response.outputs['ID'] == analysis_id
-    assert command_results.response.scheduled_command is None
-    assert command_results.response.outputs == {'ID': analysis_id, 'Status': 'Created', 'Type': 'File'}
+    assert command_results.outputs['ID'] == analysis_id
+    assert command_results.scheduled_command is None
+    assert command_results.outputs == {'ID': analysis_id, 'Status': 'Created', 'Type': 'File'}
 
 
 def test_analyze_by_uploaded_file_command_polling_true(requests_mock, mocker):
@@ -286,7 +286,7 @@ def test_analyze_by_uploaded_file_command_analysis_already_running(requests_mock
         command_results = analyze_by_uploaded_file_command(args, intezer_api)
 
     # Assert
-    assert command_results.response.readable_output == 'Analysis is still in progress'
+    assert command_results.readable_output == 'Analysis is still in progress'
 
 
 # endregion
@@ -1700,7 +1700,7 @@ def test_analyze_url_command_success(requests_mock):
     command_results = analyze_url_command(args, intezer_api)
 
     # Assert
-    assert command_results.response.outputs['ID'] == analysis_id
+    assert command_results.outputs['ID'] == analysis_id
 
 
 def test_analyze_url_command_success_polling_true(requests_mock, mocker):
@@ -1752,8 +1752,8 @@ def test_analyze_url_command_missing_url(requests_mock):
     command_results = analyze_url_command(args, intezer_api)
 
     # Assert
-    assert command_results.response.readable_output == ('The Url 123test was not found on Intezer. '
-                                                        'Error Server returned bad request error: Bad url. Error:Bad url')
+    assert command_results.readable_output == ('The Url 123test was not found on Intezer. '
+                                               'Error Server returned bad request error: Bad url. Error:Bad url')
 
 
 def test_analyze_url_command_url_not_found(requests_mock):
