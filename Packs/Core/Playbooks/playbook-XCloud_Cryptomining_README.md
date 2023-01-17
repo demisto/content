@@ -51,7 +51,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | incident_id | The incident ID. |  | Optional |
 | alert_id | The alert ID. |  | Optional |
-| SOCEmailAddress | The SOC email address to use for the alert status notification. | analyst@xsoartemp.com | Optional |
+| SOCEmailAddress | The SOC email address to use for the alert status notification. |  | Optional |
 | requireAnalystReview | Whether to require an analyst review after the alert remediation. | True | Optional |
 | ShouldCloseAutomatically | Should we automatically close false positive alerts? Specify true/false. | False | Optional |
 | ShouldHandleFPautomatically | Should we automatically handle false positive alerts? Specify true/false. | False | Optional |
