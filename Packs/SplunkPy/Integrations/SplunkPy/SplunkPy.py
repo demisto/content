@@ -2115,7 +2115,9 @@ def splunk_search_command(service: client.Service) -> CommandResults:
     entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
     print(total_parsed_results)
     print("type" + str(type(total_parsed_results)))
-    print(total_parsed_results['_raw'])
+    for item in total_parsed_results:
+        if item['_raw']:
+            print('no')
     human_readable = build_search_human_readable(args, total_parsed_results)
 
     return CommandResults(
