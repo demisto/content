@@ -17,7 +17,13 @@ trigger-private-build:
     - if: '$NIGHTLY'
   script:
     - echo "====Trigger Private Build===="
-    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    - |
+      if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t $GITHUB_TOKEN --repo demisto/content-private -b $CI_COMMIT_BRANCH) ]; then
+        PRIVATE_BRANCH_NAME=$CI_COMMIT_BRANCH
+      else
+        PRIVATE_BRANCH_NAME='master'
+      fi
+    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --private-branch-name $PRIVATE_BRANCH_NAME
     - sleep 60
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
   timeout: 2 hours
@@ -97,12 +103,13 @@ validate-content-conf:
 
     - echo "Updating the content graph"
     - mkdir $ARTIFACTS_FOLDER/content_graph
-    - demisto-sdk update-content-graph --marketplace $MARKETPLACE_VERSION -g -o $ARTIFACTS_FOLDER/content_graph
+    - demisto-sdk create-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph  # TODO: return to update with -g when fixed issues
     - echo "Successfully updated content graph"
       
     - section_end "Create or update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
     - |
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
