@@ -1482,8 +1482,8 @@
         ]
     },
     "group": "incident",
-    "id": "ServiceNow SIR Incident (Updated)",
-    "name": "ServiceNow SIR Incident (Updated)",
+    "id": "ServiceNow SIR Incident",
+    "name": "ServiceNow SIR Incident",
     "quickView": {
         "sections": [
             {
