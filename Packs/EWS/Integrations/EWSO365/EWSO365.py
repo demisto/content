@@ -1109,11 +1109,9 @@ def move_item_between_mailboxes(
         destination_folder_path, destination_account, is_public
     )
     item = client.get_item_from_mailbox(source_account, item_id)
-
     exported_items = source_account.export([item])
     destination_account.upload([(destination_folder, exported_items[0])])
     source_account.bulk_delete([item])
-
     move_result = {
         MOVED_TO_MAILBOX: destination_mailbox,
         MOVED_TO_FOLDER: destination_folder_path,
@@ -2385,16 +2383,14 @@ def sub_main():
     params = demisto.params()
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
-    params['default_target_mailbox'] = args.get('target_mailbox',
-                                                args.get('source_mailbox', params['default_target_mailbox']))
-
+    params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
+    if params.get('upn_mailbox') and not(args.get('target_mailbox')):
+        params['default_target_mailbox'] = params.get('upn_mailbox')
     try:
         client = EWSClient(**params)
         start_logging()
-
         # replace sensitive access_token value in logs
         add_sensitive_log_strs(client.credentials.access_token.get('access_token', ''))
-
         command = demisto.command()
         # commands that return a single note result
         normal_commands = {

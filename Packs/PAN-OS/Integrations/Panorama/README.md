@@ -50,6 +50,40 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [pan-os-get-logs](#pan-os-get-logs)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
 
+## Fetch Incidents
+The Panorama integration now supports fetch incidents.
+The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
+
+##### Max incidents per fetch
+The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
+
+##### Log Type
+The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
+- Selecting "All" will use all the log type queries in the fetch.
+- To choose a specific set of queries, select their log types from the dropdown (make sure "All" option is unselected).
+
+##### Log Type Query
+- Each log type has its own query field in the instance configuration.
+- Note that the default query values has some example text in it, make sure to enter a valid query.
+
+##### Log Type Query Examples
+
+| Log Type            | Query Example                                                                                                                                           |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Traffic             | (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action})                                                                         |
+| Threat              | (severity geq high)                                                                                                                                     |
+| URL                 | ((action eq block-override) or (action eq block-url)) and (severity geq high)                                                                           |
+| Data                | ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high)                                               |
+| Correlation         | (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}') and (src in {source_address}) |
+| System              | (subtype eq {sub_type}) and (severity geq {severity})                                                                                                   |
+| Wildfire Submission | ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole))                                                          |
+| Decryption          | (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination}))                                            |
+
+##### Classifiers and Mappers
+
+This integration supports a default Classifier (Panorama Classifier) and Mapper (Panorama Mapper) that handles incidents returned from the API.
+
+
 ## Configure Panorama on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -68,9 +102,20 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 | additional_suspicious | URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious. | False |
 | additional_malicious | URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious. | False |
 | insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| First fetch timestamp  | First fetch time interval | False |
+| Max incidents per fetch | Max incidents per fetch for each selected Log Type Query | False |
+| Log Type | Log Types incidents to fetch | False |
+| Traffic Log Type Query | Traffic Query for fetch incidents | False |
+| Threat Log Type Query | Threat Query for fetch incidents | False |
+| URL Log Type Query | URL Query for fetch incidents | False |
+| Data Log Type Query | Data Query for fetch incidents | False |
+| Correlation Log Type Query | Correlation Query for fetch incidents | False |
+| System Log Type Query | System Query for fetch incidents | False |
+| Wildfire Submission Log Type Query | Wildfire Submission Query for fetch incidents | False |
+| Decryption Log Type Query | Decryption Query for fetch incidents | False |
+| Incidents Fetch Interval | Time interval between incident fetches | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Debugging in Panorama
