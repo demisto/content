@@ -416,7 +416,7 @@
         ]
     },
     "group": "incident",
-    "id": "ServiceNow Create Ticket and Mirror (Updated)",
+    "id": "ServiceNow Create Ticket and Mirror",
     "mobile": {
         "sections": [
             {
@@ -789,7 +789,7 @@
             }
         ]
     },
-    "name": "ServiceNow Create Ticket and Mirror (Updated)",
+    "name": "ServiceNow Create Ticket and Mirror",
     "quickView": {
         "sections": [
             {
