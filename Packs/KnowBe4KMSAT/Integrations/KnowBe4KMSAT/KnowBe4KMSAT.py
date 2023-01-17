@@ -67,6 +67,15 @@ class Client(BaseClient):
             params=params,
         )
 
+    def kmsat_groups_members(self, group_id, params):
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/groups/{group_id}/members",
+            resp_type="json",
+            ok_codes=(200,),
+            params=params,
+        )
+
     def kmsat_users_risk_score_history(self, user_id, params):
         return self._http_request(
             method="GET",
@@ -268,11 +277,71 @@ def kmsat_groups_risk_score_history_list_command(
     )
     if response is None:
         raise DemistoException(
-            "Translation failed: the response from server did not include `groups_risk_score_history`.",
+            "Translation failed: the response from server did not include `kmsat_groups_risk_score_history_list_command`.",
             res=response,
         )
     return CommandResults(
         outputs_prefix="KMSAT.GroupsRiskScoreHistory",
+        outputs_key_field="id",
+        raw_response=response,
+        outputs=response,
+        readable_output=markdown,
+    )
+
+
+def kmsat_groups_members_list_command(
+    client: Client, args: dict
+) -> CommandResults:
+    group_id = remove_empty_elements(args.get("group_id"))
+    params = get_pagination(args)
+    response = client.kmsat_groups_members(group_id, params)
+    markdown = tableToMarkdown(
+        "Groups Members",
+        response,
+        headers=[
+            "id",
+            "employee_number",
+            "first_name",
+            "last_name",
+            "job_title",
+            "email",
+            "phish_prone_percentage",
+            "phone_number",
+            "extension",
+            "mobile_phone_number",
+            "location",
+            "division",
+            "manager_name",
+            "manager_email",
+            "provisioning_managed",
+            "provisioning_guid",
+            "groups",
+            "current_risk_score",
+            "aliases",
+            "joined_on",
+            "last_sign_in",
+            "status",
+            "organization",
+            "department",
+            "language",
+            "comment",
+            "employee_start_date",
+            "archived_at",
+            "custom_field_1",
+            "custom_field_2",
+            "custom_field_3",
+            "custom_field_4",
+            "custom_date_1",
+            "custom_date_2",
+        ]
+    )
+    if response is None:
+        raise DemistoException(
+            "Translation failed: the response from server did not include `kmsat_groups_members_list_command`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="KMSAT.GroupsMembers",
         outputs_key_field="id",
         raw_response=response,
         outputs=response,
@@ -581,7 +650,7 @@ def kmsat_user_event_create_command(
         outputs_prefix="KMSAT.UserEventCreate",
         outputs_key_field="id",
         raw_response=response,
-        outputs=response
+        outputs=response,
         readable_output=tableToMarkdown(name="KMSAT Create User Event", t=data),
     )
 
@@ -727,6 +796,8 @@ def main() -> None:
             return_results(kmsat_account_risk_score_history_list_command(client, args))
         elif command == "kmsat-groups-risk-score-history-list":
             return_results(kmsat_groups_risk_score_history_list_command(client, args))
+        elif command == "kmsat-groups-members-list":
+            return_results(kmsat_groups_members_list_command(client, args))
         elif command == "kmsat-users-risk-score-history-list":
             return_results(kmsat_users_risk_score_history_list_command(client, args))
         elif command == "kmsat-phishing-security-tests-list":

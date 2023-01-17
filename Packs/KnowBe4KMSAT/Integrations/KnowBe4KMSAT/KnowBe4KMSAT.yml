@@ -108,6 +108,119 @@ script:
           description: Groups Risk score history date
           type: String
       description: Returns KMSAT Group Specific Risk Score History.
+    - name: kmsat-groups-members-list
+      arguments:
+        - name: group_id
+          required: true
+          description: Group ID
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
+      outputs:
+        - contextPath: KMSAT.GroupsMembers.id
+          description: Groups Member ID
+          type: Number
+        - contextPath: KMSAT.GroupsMembers.employee_number
+          description: Groups Member Employee Number
+          type: String
+        - contextPath: KMSAT.GroupsMembers.first_name
+          description: Groups Member First Name
+          type: String
+        - contextPath: KMSAT.GroupsMembers.last_name
+          description: Groups Member Last Name
+          type: String
+        - contextPath: KMSAT.GroupsMembers.job_title
+          description: Groups Member Job Title
+          type: String
+        - contextPath: KMSAT.GroupsMembers.email
+          description: Groups Member Email
+          type: String
+        - contextPath: KMSAT.GroupsMembers.phish_prone_percentage
+          description: Groups Member Phish Prone Percentage
+          type: Number
+        - contextPath: KMSAT.GroupsMembers.phone_number
+          description: Groups Member Phone Number
+          type: String
+        - contextPath: KMSAT.GroupsMembers.extension
+          description: Groups Member Extension
+          type: String
+        - contextPath: KMSAT.GroupsMembers.mobile_phone_number
+          description: Groups Member Phone Number
+          type: String
+        - contextPath: KMSAT.GroupsMembers.location
+          description: Groups Member Location
+          type: String
+        - contextPath: KMSAT.GroupsMembers.division
+          description: Groups Member Division
+          type: String
+        - contextPath: KMSAT.GroupsMembers.manager_name
+          description: Groups Member Manager Name
+          type: String
+        - contextPath: KMSAT.GroupsMembers.manager_email
+          description: Groups Member Manager Email
+          type: String
+        - contextPath: KMSAT.GroupsMembers.provisioning_managed
+          description: Groups Member Provisioning Managed
+          type: Boolean
+        - contextPath: KMSAT.GroupsMembers.provisioning_guid
+          description: Groups Member Provisioning GUID
+          type: Unknown
+        - contextPath: KMSAT.GroupsMembers.groups
+          description: Groups Member Groups
+          type: Number
+        - contextPath: KMSAT.GroupsMembers.current_risk_score
+          description: Groups Member Current Risk Score
+          type: Number
+        - contextPath: KMSAT.GroupsMembers.aliases
+          description: Groups Member Aliases
+          type: String
+        - contextPath: KMSAT.GroupsMembers.joined_on
+          description: Groups Member Joined On
+          type: Date
+        - contextPath: KMSAT.GroupsMembers.last_sign_in
+          description: Groups Member Last Sign In
+          type: Date
+        - contextPath: KMSAT.GroupsMembers.status
+          description: Groups Member Status
+          type: String
+        - contextPath: KMSAT.GroupsMembers.organization
+          description: Groups Member Organization
+          type: String
+        - contextPath: KMSAT.GroupsMembers.department
+          description: Groups Member Department
+          type: String
+        - contextPath: KMSAT.GroupsMembers.language
+          description: Groups Member Language
+          type: String
+        - contextPath: KMSAT.GroupsMembers.comment
+          description: Groups Member Comment
+          type: String
+        - contextPath: KMSAT.GroupsMembers.employee_start_date
+          description: Groups Member Employee Start Date
+          type: Date
+        - contextPath: KMSAT.GroupsMembers.archived_at
+          description: Groups Member Archived At
+          type: Unknown
+        - contextPath: KMSAT.GroupsMembers.custom_field_1
+          description: Groups Member Custom Field 1
+          type: String
+        - contextPath: KMSAT.GroupsMembers.custom_field_2
+          description: Groups Member Custom Field 2
+          type: Unknown
+        - contextPath: KMSAT.GroupsMembers.custom_field_3
+          description: Groups Member Custom Field 3
+          type: Unknown
+        - contextPath: KMSAT.GroupsMembers.custom_field_4
+          description: Groups Member Custom Field 4
+          type: Unknown
+        - contextPath: KMSAT.GroupsMembers.custom_date_1
+          description: Groups Member Custom Date 1
+          type: Date
+        - contextPath: KMSAT.GroupsMembers.custom_date_2
+          description: Groups Member Custom Date 2
+          type: Unknown
+      description: Returns KMSAT Groups Members.
     - name: kmsat-users-risk-score-history-list
       arguments:
         - name: user_id
