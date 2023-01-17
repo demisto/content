@@ -3,10 +3,16 @@ commonfields:
   id: JsonWhoIs
   version: -1
 configuration:
+- name: credentials
+  required: false
+  type: 9
+  displaypassword: API Token
+  hiddenusername: true
 - display: API Token
   name: token
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -77,7 +83,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Phone
       description: Admin phone number.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: false
   longRunning: false
   longRunningPort: false
