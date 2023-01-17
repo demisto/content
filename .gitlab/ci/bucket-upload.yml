@@ -180,6 +180,7 @@ install-packs-in-server-master:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     INSTANCE_CREATED: "true"
     TIME_TO_LIVE: ""
+    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
