@@ -1606,7 +1606,7 @@ def build_mail_object(raw_response: Union[dict, list], get_body: bool = False, u
     return mails_list
 
 
-def main():
+def main():     # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
 

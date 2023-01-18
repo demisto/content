@@ -2537,7 +2537,7 @@ def process_main():
     sub_main()
 
 
-def main():
+def main():     # pragma: no cover
     # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.

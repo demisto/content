@@ -388,7 +388,7 @@ def test_module():
     demisto.results('ok')
 
 
-def main():
+def main():     # pragma: no cover
     global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream, config
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']

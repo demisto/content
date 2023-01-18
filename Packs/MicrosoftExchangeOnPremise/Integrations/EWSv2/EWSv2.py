@@ -2266,7 +2266,7 @@ def process_main():
     sub_main()
 
 
-def main():
+def main():     # pragma: no cover
     try:
         handle_proxy()
         # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
