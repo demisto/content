@@ -63,7 +63,7 @@ def main():
     try:
         args = demisto.args()
         data = args.get("data")
-        file_name = args.get("file_name")
+        file_name = is_filename_valid(args.get("file_name"))
         sheet_name = args.get("sheet_name")
         headers = args.get("headers")
         is_bold = argToBoolean(args.get("bold", "true"))

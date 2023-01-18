@@ -20,7 +20,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, \
+    return_outputs, is_filename_valid, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
@@ -8618,3 +8618,38 @@ def test_append_metrics(mocker):
 
     results = CommonServerPython.append_metrics(metrics, results)
     assert len(results) == 1
+
+
+@pytest.mark.parametrize(
+    'filename',
+    ['/test', '\\test', ',test', ':test']
+)
+def test_is_valid_filename_faild(filename):
+    """
+    Given:
+        Filename.
+    When:
+        Checking if the filename is invalid
+    Then:
+        Test - Assert the function returns Exception
+    """
+    with pytest.raises(DemistoException) as e:
+        is_filename_valid(filename=filename)
+    assert 'The file name is invalid' in str(e)
+
+
+@pytest.mark.parametrize(
+    'filename',
+    ['test', 'test.txt', 'test.xslx', 'Test', 'טסט']
+)
+def test_is_valid_filename(filename):
+    """
+    Given:
+        Filename.
+    When:
+        Checking if the filename is invalid
+    Then:
+        Test - Assert the function returns the filename
+    """
+    valid_filename = is_filename_valid(filename)
+    assert valid_filename == filename
