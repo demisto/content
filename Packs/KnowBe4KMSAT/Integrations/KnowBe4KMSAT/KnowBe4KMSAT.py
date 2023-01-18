@@ -503,11 +503,23 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
 def kmsat_training_enrollments_list_command(
     client: Client, args: dict
 ) -> CommandResults:
-    params = get_pagination(args)
-    response = client.kmsat_training_enrollments(params)
+    status = remove_empty_elements(args.get("status"))
+
+    if status is not None:
+        args = {}
+        data = []
+        params = get_pagination(args)
+        response = client.kmsat_training_enrollments(params)
+        for i in range(len(response)):
+            if response[i]['status'] == f"{status}":
+                data.append(response[i])
+    else:
+        params = get_pagination(args)
+        data = client.kmsat_training_enrollments(params)
+
     markdown = tableToMarkdown(
         "Training Enrollments",
-        response,
+        data,
         [
             "enrollment_id",
             "content_type",
@@ -522,16 +534,16 @@ def kmsat_training_enrollments_list_command(
             "policy_acknowledged",
         ],
     )
-    if response is None:
+    if data is None:
         raise DemistoException(
             "Translation failed: the response from server did not include `training_enrollments`.",
-            res=response,
+            res=data,
         )
     return CommandResults(
         outputs_prefix="KMSAT.TrainingEnrollments",
         outputs_key_field="enrollment_id",
-        raw_response=response,
-        outputs=response,
+        raw_response=data,
+        outputs=data,
         readable_output=markdown,
     )
 

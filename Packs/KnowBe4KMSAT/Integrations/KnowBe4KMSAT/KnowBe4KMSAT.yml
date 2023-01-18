@@ -486,6 +486,8 @@ script:
       description: Returns all Training Campaigns
     - name: kmsat-training-enrollments-list
       arguments:
+        - name: status
+          description: Status
         - name: page
           description: Page Number
         - name: per_page
