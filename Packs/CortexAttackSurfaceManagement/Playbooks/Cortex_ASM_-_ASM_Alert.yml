@@ -2613,10 +2613,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: a03a1f9f-7644-474e-8e08-34a23c3a8de6
+    taskid: 3a855207-da7b-4b65-8637-54aaeb9b9cc1
     type: regular
     task:
-      id: a03a1f9f-7644-474e-8e08-34a23c3a8de6
+      id: 3a855207-da7b-4b65-8637-54aaeb9b9cc1
       version: -1
       name: Create ServiceNow incident
       description: Creates new ServiceNow ticket.
@@ -2642,7 +2642,15 @@ tasks:
         simple: 'ServiceNowDomain=.={"url": val.result.sys_domain.link.split(''api/now'')[0]}'
       short_description:
         complex:
-          root: inputs.OwnerNotificationSubject
+          root: alert
+          accessor: name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Cortex ASM Alert: '
+              suffix: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
