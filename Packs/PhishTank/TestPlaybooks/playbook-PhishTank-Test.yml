@@ -1,14 +1,15 @@
 id: PhishTank Testing
-version: -1
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
 name: PhishTank Testing
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7b004c73-1ada-49e1-82d8-709d7b05c06e
+    taskid: 41ceb8b1-7261-4219-82de-e3d0341fb89b
     type: start
     task:
-      id: 7b004c73-1ada-49e1-82d8-709d7b05c06e
+      id: 41ceb8b1-7261-4219-82de-e3d0341fb89b
       version: -1
       name: ""
       iscommand: false
@@ -17,6 +18,7 @@ tasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -29,12 +31,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 220873c2-c1d1-4e85-8f71-3ae4944303bb
+    taskid: 91618b7a-1c32-4c9c-8d3d-efd7b1dfc0a4
     type: regular
     task:
-      id: 220873c2-c1d1-4e85-8f71-3ae4944303bb
+      id: 91618b7a-1c32-4c9c-8d3d-efd7b1dfc0a4
       version: -1
       name: Check URL Command
       description: Checks the reputation of the supplied URLs.
@@ -47,16 +51,11 @@ tasks:
       - "2"
       - "3"
     scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
       url:
         complex:
           root: ${badURL}
-      wait: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -69,12 +68,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 71bdc909-4c90-4047-8507-77252880ffe6
+    taskid: 824532aa-1073-4736-89df-df2557735842
     type: condition
     task:
-      id: 71bdc909-4c90-4047-8507-77252880ffe6
+      id: 824532aa-1073-4736-89df-df2557735842
       version: -1
       name: Verify URL Data
       description: Check whether the values provided in arguments are equal. If either
@@ -94,6 +95,7 @@ tasks:
     results:
     - AreValuesEqual
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -106,12 +108,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: aaab9be4-bd43-4541-8b24-a0ce8e724079
+    taskid: fb981786-8591-457a-8fd6-519ac92d5b0c
     type: condition
     task:
-      id: aaab9be4-bd43-4541-8b24-a0ce8e724079
+      id: fb981786-8591-457a-8fd6-519ac92d5b0c
       version: -1
       name: Verify DBotScore
       description: |-
@@ -138,30 +142,12 @@ tasks:
           right:
             value:
               simple: url
-      - - operator: in
+      - - operator: isExists
           left:
             value:
-              simple: ${DBotScore.Score}
+              simple: DBotScore.Score
             iscontext: true
-          right:
-            value:
-              simple: "0"
-        - operator: in
-          left:
-            value:
-              simple: ${DBotScore.Score}
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-        - operator: in
-          left:
-            value:
-              simple: ${DBotScore.Score}
-            iscontext: true
-          right:
-            value:
-              simple: "3"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -174,18 +160,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7de9f275-9b7e-4593-8f89-267e9a4ec080
+    taskid: fe487820-5ac0-4dcc-81bb-582bb80cfff1
     type: title
     task:
-      id: 7de9f275-9b7e-4593-8f89-267e9a4ec080
+      id: fe487820-5ac0-4dcc-81bb-582bb80cfff1
       version: -1
       name: Success
       type: title
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -198,12 +187,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e63333f6-00f6-4415-87b8-76d1de30e0cf
+    taskid: d58331b1-70fb-442d-846e-becf524260a5
     type: regular
     task:
-      id: e63333f6-00f6-4415-87b8-76d1de30e0cf
+      id: d58331b1-70fb-442d-846e-becf524260a5
       version: -1
       name: Download phishtank CSV
       scriptName: http
@@ -214,21 +205,16 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      body: {}
       filename:
         simple: phishtank.csv
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
       url:
         simple: http://data.phishtank.com/data/online-valid.csv
-      username: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -241,12 +227,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: fb9e1494-9ea9-4188-8763-56e977f771df
+    taskid: b1aa7b8c-4b5e-4f72-8c22-0d5fb09d1a94
     type: regular
     task:
-      id: fb9e1494-9ea9-4188-8763-56e977f771df
+      id: b1aa7b8c-4b5e-4f72-8c22-0d5fb09d1a94
       version: -1
       name: Load file to context
       scriptName: ReadFile
@@ -262,6 +250,7 @@ tasks:
       maxFileSize:
         simple: "2000"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -274,12 +263,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a0887324-df52-4be7-84bc-0c2480ded1ca
+    taskid: 0da10b25-d092-4647-8fa5-e91a25c0b523
     type: regular
     task:
-      id: a0887324-df52-4be7-84bc-0c2480ded1ca
+      id: 0da10b25-d092-4647-8fa5-e91a25c0b523
       version: -1
       name: Set badURL
       scriptName: Set
@@ -290,13 +281,12 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
       key:
         simple: badURL
-      stringify: {}
       value:
-        simple: "hxxp://login.rakuten.co.jp.reise"
+        simple: ${FileData=val.split('\n')[1].split(',')[1]}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -309,12 +299,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7891cc13-1712-40ee-8c7c-0378280c356a
+    taskid: bc604490-996a-47b9-82b5-f47f18ca3726
     type: regular
     task:
-      id: 7891cc13-1712-40ee-8c7c-0378280c356a
+      id: bc604490-996a-47b9-82b5-f47f18ca3726
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -327,8 +319,8 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      key: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -341,12 +333,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8d1f8ca8-5ef1-4b7e-8353-8e3a7a1a7ddc
+    taskid: c22cb2b9-29a5-47c2-8ec4-907ab1e790c7
     type: regular
     task:
-      id: 8d1f8ca8-5ef1-4b7e-8353-8e3a7a1a7ddc
+      id: c22cb2b9-29a5-47c2-8ec4-907ab1e790c7
       version: -1
       name: Set badURL without last slash
       description: Set a value in context under the key you entered.
@@ -375,6 +369,7 @@ tasks:
                   simple: \/$
               replaceWith: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -387,6 +382,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
