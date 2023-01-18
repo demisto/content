@@ -9,13 +9,15 @@ configuration:
   required: true
   type: 0
 - name: api_key_id
-  display: API key ID
+  type: 9
   required: true
-  type: 4
+  displaypassword: API key ID
+  hiddenusername: true
 - name: api_key_secret
-  display: API key secret
+  type: 9
   required: true
-  type: 4
+  displaypassword: API key secret
+  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -1601,7 +1603,7 @@ script:
     - contextPath: CheckPointDome9.FindingsBundle.region
       description: The CloudTrail account ID.
       type: String
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.44472
   feed: false
   isfetch: true
   longRunning: false

@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
+
 class Client(BaseClient):
 
     def __init__(self, base_url: str, key_id: str, key_secret: str, proxy: bool, verify: bool):
@@ -2126,8 +2127,8 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     base_url = params.get('base_url')
-    key_id = params.get('api_key_id')
-    key_secret = params.get('api_key_secret')
+    key_id = params.get('api_key_id', {}).get('password')
+    key_secret = params.get('api_key_secret', {}).get('password')
 
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
