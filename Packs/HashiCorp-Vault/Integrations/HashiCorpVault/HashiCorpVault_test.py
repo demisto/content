@@ -37,7 +37,6 @@ def test_get_aws_secrets(mocker):
     assert mock.call_args.args[0] == 'test/roles/1'
 
 
-
 def test_get_headers():
     assert get_headers() == {'Content-Type': 'application/json'}
 
