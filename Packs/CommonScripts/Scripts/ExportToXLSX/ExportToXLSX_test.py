@@ -1,7 +1,7 @@
 from ExportToXLSX import parse_data
 import pytest
 from unittest.mock import patch
-from CommonServerPython import *
+
 
 DATA_INPUT_SINGLE_DICT = {"key1": "val1", "key2": "val2"}
 DATA_INPUT_MULTIPLE_DICTS = '{\"key1\":\"val1\",\"key2\":\"val2\"},{\"key1\":\"val3\",\"key2\":\"val4\"}'
