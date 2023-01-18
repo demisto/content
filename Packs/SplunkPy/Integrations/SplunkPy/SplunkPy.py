@@ -1976,7 +1976,7 @@ def schedule_polling_command(command: str, args: dict, interval_in_secs: int):
     )
 
 
-def build_search_human_readable(args: dict, parsed_search_results) -> str:
+def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
     headers = ""
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
@@ -2004,7 +2004,7 @@ def build_search_human_readable(args: dict, parsed_search_results) -> str:
             headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
-    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
+    human_readable = tableToMarkdown(f"Splunk Search results for query: {query} \n using sid:{sid}",
                                      parsed_search_results, headers)
     return human_readable
 
@@ -2087,8 +2087,6 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         else:
             # Get the job by its SID.
             search_job = service.job(job_sid)
-            print('job_sid3: ' + str(job_sid))
-            print('search_job5: ' + str(search_job))
 
     num_of_results_from_query = search_job["resultCount"] if search_job else None
 
@@ -2111,25 +2109,9 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
-
+    total_parsed_results.append({'SID': str(job_sid)})
     entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
-    print(total_parsed_results)
-    print("type" + str(type(total_parsed_results)))
-    for item in total_parsed_results:
-        item_raw = item['_raw']
-        if item_raw:
-            print(item_raw)
-            print('type: ' + str(type(item_raw)))
-            if ite:
-                print(item_raw.get('sid'))
-    print("*************************\n entry_context \n")    
-    for item in entry_context:
-        item_raw = item['_raw']
-        if item_raw:
-            print(item_raw)
-            print('type: ' + str(type(item_raw)))
-            
-    human_readable = build_search_human_readable(args, total_parsed_results)
+    human_readable = build_search_human_readable(args, total_parsed_results, str(job_sid))
 
     return CommandResults(
         outputs=entry_context,

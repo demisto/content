@@ -1245,7 +1245,8 @@ def test_build_search_human_readable(mocker):
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
                         'comma', 'separated', 'Single,Header,with,Commas', 'new_header_1', 'new_header_2']
 
-    splunk.build_search_human_readable(args, results)
+    s = splunk.build_search_human_readable(args, results)
+    print(s)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
 
