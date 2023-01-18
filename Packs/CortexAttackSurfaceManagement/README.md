@@ -35,21 +35,16 @@ Automated remediation is only possible when the right conditions are met.  These
   - "dev" found in either the keys or values of tags associated with the asset (case insensitive)
   
 ### Playbooks
-- [What does this pack do?](#what-does-this-pack-do)
-  - [Automated Remediation requirements](#automated-remediation-requirements)
-  - [Playbooks](#playbooks)
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
-    - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
-    - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
-    - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
-    - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-    - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
-    - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
-    - [Cortex ASM - Remediation](#cortex-asm---remediation)
-    - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
-  - [Automation Scripts](#automation-scripts)
-    - [GenerateASMReport](#generateasmreport)
-
+  - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
+  - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
+  - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
+  - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+  - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
+  - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+  - [Cortex ASM - Remediation](#cortex-asm---remediation)
+  - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+  - [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
 
 ### Cortex ASM - ASM Alert
 Playbook that enriches asset information for ASM alerts and provides means of remediation.
@@ -82,9 +77,14 @@ Playbook that pulls remediation guidance off of a list based on ASM RuleID to be
 #### Cortex ASM - Remediation	
 Playbook that is used as a container folder for all remediation of ASM alerts.	
 ![Cortex ASM - Remediation](https://raw.githubusercontent.com/demisto/content/23747a450237bb3762d7ec7788d5ff582c8576db/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation.png)	
+
 #### Cortex ASM - GCP Enrichment	
 Playbook that given the IP address enriches GCP information relevant to ASM alerts.	
 ![Cortex ASM - GCP Enrichment](https://raw.githubusercontent.com/demisto/content/23747a450237bb3762d7ec7788d5ff582c8576db/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
+
+#### Cortex ASM - SNMP Check
+Playbook that given the IP address checks if SNMP is enabled or not and returns versions running.
+![Cortex ASM - SNMP Check]()
 
 ### Automation Scripts
 This content pack includes the [generateASMReport](#generateasmreport) script: 
