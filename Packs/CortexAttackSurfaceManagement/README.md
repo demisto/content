@@ -22,6 +22,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Unencrypted FTP Server
   - OpenSSH
   - SSH Server
+  - SNMP Server
 - Asset is a cloud compute instance:	
   - AWS EC2 Instance	
   - GCP Compute Engine (VM)
@@ -34,15 +35,20 @@ Automated remediation is only possible when the right conditions are met.  These
   - "dev" found in either the keys or values of tags associated with the asset (case insensitive)
   
 ### Playbooks
+- [What does this pack do?](#what-does-this-pack-do)
+  - [Automated Remediation requirements](#automated-remediation-requirements)
+  - [Playbooks](#playbooks)
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
-  - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
-  - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
-  - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
-  - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-  - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
-  - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
-  - [Cortex ASM - Remediation](#cortex-asm---remediation)
-  - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+    - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
+    - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
+    - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
+    - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+    - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
+    - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+    - [Cortex ASM - Remediation](#cortex-asm---remediation)
+    - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+  - [Automation Scripts](#automation-scripts)
+    - [GenerateASMReport](#generateasmreport)
 
 
 ### Cortex ASM - ASM Alert
@@ -50,7 +56,7 @@ Playbook that enriches asset information for ASM alerts and provides means of re
 ![Cortex ASM - ASM Alert](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ASM_Alert.png)
 
 #### Cortex ASM - Detect Service
-Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
+Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP, SNMP).
 ![Cortex ASM - Detect Service](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Detect_Service.png)
 
 #### Cortex ASM - Enrichment
