@@ -17,8 +17,9 @@ configuration:
   name: environment
   required: true
   type: 0
-- display: Assign all alert CSV files to the incident
-  name: assign_multiple
+- additionalinfo: Allow to duplicate the alert for each alert CSV file record.
+  display: Assign all alert CSV files to the incident
+  name: duplicate_alert
   required: false
   type: 8
 - display: Fetch incidents

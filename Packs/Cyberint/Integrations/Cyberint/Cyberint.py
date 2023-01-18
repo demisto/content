@@ -6,7 +6,6 @@ from contextlib import closing
 import json
 import dateparser
 from typing import Dict, List, Optional, Tuple, Iterable
-import urllib3
 
 requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
@@ -478,7 +477,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                     fetch_severity: Optional[List[str]], fetch_status: Optional[List[str]],
                     fetch_type: Optional[List[str]], fetch_environment: Optional[List[str]],
                     max_fetch: Optional[int],
-                    fetch_assign_multiple: bool) -> Tuple[Dict[str, int], List[dict]]:
+                    duplicate_alert: bool) -> Tuple[Dict[str, int], List[dict]]:
     """
     Fetch incidents (alerts) each minute (by default).
     Args:
@@ -542,14 +541,14 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
         alert["attachments"] = attachments
         incident = {}
 
-        incident_csvs = dict_safe_get(alert, ['alert_data', 'csv', 'content']) or []
+        incident_csv_records = dict_safe_get(alert, ['alert_data', 'csv', 'content']) or []
 
-        if not fetch_assign_multiple:
-            if incident_csvs:
+        if duplicate_alert:
+            if incident_csv_records:
                 index = 1
-                for incident_csv in incident_csvs:
+                for index, incident_csv_record in enumerate(incident_csv_records):
                     alert.update({'ref_id': f'{alert_id} ({index})'})
-                    alert['alert_data']['csv'].update({'content': incident_csv})
+                    alert['alert_data']['csv'].update({'content': incident_csv_record})
 
                     incident = {
                         'name': f'Cyberint alert {alert_id} ({index}): {alert_title}',
@@ -627,11 +626,10 @@ def main():
             fetch_type = params.get('fetch_type', [])
             fetch_severity = params.get('fetch_severity', [])
             max_fetch = int(params.get('max_fetch', '50'))
-            fetch_assign_multiple = params.get('assign_multiple', True)
+            duplicate_alert = params.get('duplicate_alert', True)
             next_run, incidents = fetch_incidents(client, demisto.getLastRun(), first_fetch_time,
                                                   fetch_severity, fetch_status, fetch_type,
-                                                  fetch_environment, max_fetch,
-                                                  fetch_assign_multiple)
+                                                  fetch_environment, max_fetch, duplicate_alert)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
