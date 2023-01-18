@@ -103,6 +103,7 @@ class Client:
                 verify=self._verify,
                 proxies=self._proxies,
             )
+            # TODO we use this?
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -209,7 +210,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                         raw_data.update({key: val})
 
                 indicator_mapping_fields = {}
-
+                # TODO remove?
                 """
                 indicator_mapping_fields = {
                     "port": argToList(item.get('tcpPorts', '')),
@@ -252,7 +253,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     """
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
+    limit = int(demisto.args().get('limit')) | 10
     indicators = fetch_indicators(client, indicator_type_lower, limit)
     human_readable = tableToMarkdown('Indicators from WebEx Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
@@ -283,7 +284,6 @@ def main():
     tlp_color = params.get('tlp_color')
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
 
     try:
         client = Client(use_ssl, tags, tlp_color)
