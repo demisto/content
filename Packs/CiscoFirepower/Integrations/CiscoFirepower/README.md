@@ -2,8 +2,8 @@
 ---
 
 Use the Cisco Firepower integration for unified management of firewalls, application control, intrusion prevention, URL filtering, and advanced malware protection.
-This integration was integrated and tested with version xx of Cisco Firepower
-Supports FMC 6.2.3 and above
+This integration was integrated and tested with version 7.0.4 of Cisco Firepower
+Supports FMC 7.2.0 and above
 
 Authentication from a REST API Client
 Cisco recommends that you use different accounts for interfacing with the API and the Firepower User Interface. Credentials cannot be used for both interfaces simultaneously, and will be logged out without warning if used for both.
