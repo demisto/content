@@ -2,19 +2,40 @@ var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
-serverURL = serverURL + '/xsoar'
+
+if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
+    serverURL + '/xsoar'
+}
+
 var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
 
-getStandardAuthMethodHeaders = function(key, auth_id) {
+getTenantAccountName = function () {
+    // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
+    const urls = demistoUrls()
+    const server_url = urls['server'].toString()
+    // server_url example - https://account-testing-ysdkvou:443/acc_Test
+    var account_name = ''
+    // check if server_url contains "/acc_" string
+    if (server_url.indexOf("/acc_") >= 0){
+        const words = server_url.split('acc_')
+        const tenant_name = words[words.length - 1]
+        if (tenant_name !== "") {
+            account_name = 'acc_' + tenant_name
+        }
+    }
+    return account_name
+}
+
+getStandardAuthMethodHeaders = function(key, auth_id, content_type) {
     return {
                 'Authorization': [key],
                 'x-xdr-auth-id': [auth_id],
-                'Content-Type': ['multipart/form-data'],
+                'Content-Type': [content_type],
                 'Accept': ['application/json']
             }
 }
 
-getAdvancedAuthMethodHeaders = function(key, auth_id) {
+getAdvancedAuthMethodHeaders = function(key, auth_id, content_type,) {
     const nonce = Array.from({length: 64}, () => Math.random().toString(36).charAt(2)).join("");
     const timestamp = Date.now().toString();
     var auth_key = key + nonce + timestamp
@@ -26,36 +47,44 @@ getAdvancedAuthMethodHeaders = function(key, auth_id) {
                 'x-xdr-nonce': [nonce],
                 'x-xdr-auth-id': [auth_id],
                 'Authorization': [auth_key_hash],
-                'Content-Type': ['multipart/form-data'],
+                'Content-Type': [content_type],
                 'Accept': ['application/json']
             }
     }
 
-sendMultipart = function (uri, entryID, body) {
+getRequestURL = function (uri) {
     var requestUrl = serverURL;
-    if (uri.slice(-1) !== '/') {
+    if (params.use_tenant){
+        requestUrl += '/' + getTenantAccountName();
+    }
+    if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
     requestUrl += uri;
+    return requestUrl
+}
+
+sendMultipart = function (uri, entryID, body) {
+    var requestUrl =  getRequestURL(uri)
     try {
         body = JSON.parse(body);
     } catch (ex) {
         // do nothing, use the body as is in the request.
         logDebug('could not parse body as a JSON object, passing as is. body: ' + JSON.stringify(body));
     }
-    var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
+    var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
     }
-    var auth_id = [params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '')];
+    var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
     var headers = {}
     // in case the integration was installed before auth_method was added, the auth_method param will be empty so
     // we will use the standard auth method
     if (!params.auth_method || params.auth_method == 'standard'){
-        headers = getStandardAuthMethodHeaders(key, auth_id)
+        headers = getStandardAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
     else if (params.auth_method == 'advanced') {
-        headers = getAdvancedAuthMethodHeaders(key, auth_id)
+        headers = getAdvancedAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
     var res = httpMultipart(
         requestUrl,
@@ -87,25 +116,20 @@ sendMultipart = function (uri, entryID, body) {
 };
 
 var sendRequest = function(method, uri, body, raw) {
-    var requestUrl = serverURL;
-    if (uri.slice(0, 1) !== '/') {
-        requestUrl += '/';
-    }
-    requestUrl += uri;
+    var requestUrl = getRequestURL(uri)
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
     }
     var auth_id = params.auth_id? params.auth_id : (params.creds_apikey? params.creds_apikey.identifier : '');
-        if (auth_id == ''){
-            throw 'Auth ID must be provided.';
-    }
     var headers = {}
-    if (params.auth_method == 'standard'){
-        headers = getStandardAuthMethodHeaders(key, auth_id)
+    // in case the integration was installed before auth_method was added, the auth_method param will be empty so
+    // we will use the standard auth method
+    if (!params.auth_method || params.auth_method == 'standard'){
+        headers = getStandardAuthMethodHeaders(key, auth_id, 'application/json')
     }
     else if (params.auth_method == 'advanced') {
-        headers = getAdvancedAuthMethodHeaders(key, auth_id)
+        headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
     var res = http(
         requestUrl,
