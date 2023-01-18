@@ -836,4 +836,3 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     except Exception as e:
         demisto.debug(f'An error occurred: {e}')
         return_error(f'An error occurred: {e}')
-
