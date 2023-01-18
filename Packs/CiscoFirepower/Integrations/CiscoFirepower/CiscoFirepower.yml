@@ -48,7 +48,7 @@ script:
       description: 'Define whether to validate or to validate and import rules. True is the default value and sets that rules should be validated and not imported.'
       required: false
       isArray: false
-      defaultvalue: 'True'
+      defaultValue: 'True'
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -343,7 +343,7 @@ script:
       description: 'The update method to use in the command. Can be "MERGE" or "OVERRIDE". If "MERGE" is used, new rule groups will be appended. If "OVERRIDE" is used, old rule groups will be overwritten.'
       required: false
       isArray: false
-      defaultvalue: OVERRIDE
+      defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
       - MERGE
@@ -439,7 +439,7 @@ script:
       description: 'Whether the number of rules should be included in the response.'
       required: false
       isArray: false
-      defaultvalue: 'False'
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -448,7 +448,7 @@ script:
       description: 'Whether to display an expanded response with a list of objects with additional attributes.'
       required: false
       isArray: false
-      defaultvalue: 'False'
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -1878,7 +1878,7 @@ script:
     - name: update_strategy
       description: The update method to use in the command. Can be "MERGE" or "OVERRIDE". When merging, the changes requested are added to the existing rule. When overriding, the fields with the inputs provided will be overridden and any fields that were not provided will be deleted.
       required: false
-      defaultvalue: OVERRIDE
+      defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
       - MERGE
@@ -3199,7 +3199,7 @@ script:
         If merged, the requested changes will be added to the existing rule.
         If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
       required: false
-      defaultvalue: OVERRIDE
+      defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
       - MERGE
@@ -3417,7 +3417,7 @@ script:
         If merged, the requested changes will be added to the existing rule.
         If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
       required: false
-      defaultvalue: OVERRIDE
+      defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
       - MERGE
