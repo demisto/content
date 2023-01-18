@@ -13,11 +13,6 @@ configuration:
   required: true
   type: 9
   displaypassword: API Client Secret
-- defaultvalue: 'false'
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
   display: Tenant Services Group ID
   name: tsg_id
@@ -26,6 +21,11 @@ configuration:
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
   required: false
   type: 8
 description: Provides commands for interaction with Prisma SASE API.
@@ -1592,7 +1592,6 @@ script:
       - daily
       - weekly
       - monthly
-      defaultValue: hourly
     - default: false
       isArray: false
       name: frequency_hour

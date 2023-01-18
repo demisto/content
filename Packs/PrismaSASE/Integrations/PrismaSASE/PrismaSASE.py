@@ -798,9 +798,9 @@ def get_url_according_to_type(args):
 
 
 def build_recurring_according_to_params(args):
-    frequency = args.get('frequency')
-    if not frequency:
-        raise DemistoException('Please provide the frequency argument when using IP, URL or Domain types')
+    frequency = args.get('frequency') or 'hourly'
+    # if not frequency:
+    #     raise DemistoException('Please provide the frequency argument when using IP, URL or Domain types')
     frequency_object = {frequency: {}}
     if frequency in ('daily', 'weekly', 'monthly'):
         frequency_hour = args.get('frequency_hour')
@@ -1416,7 +1416,6 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     if group_type == 'dynamic' and (not dynamic_filter and static_addresses):
         raise DemistoException("noooo")
     if group_type == 'static':
-        print(overwrite)
         if overwrite:
             original_address_group['static'] = static_addresses
         else:
@@ -1426,7 +1425,6 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     else:  # type == 'dynamic'
         if not overwrite:
             dynamic_filter = original_address_group.get('dynamic', {}).get('filter', '') + ' ' + dynamic_filter
-            print(f"after {dynamic_filter}")
 
         original_address_group['dynamic'] = {'filter': dynamic_filter}
 
@@ -1682,8 +1680,6 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
     if dynamic_list_type in ('ip', 'domain', 'url'):
         external_dynamic_list['type'][dynamic_list_type]['recurring'] = build_recurring_according_to_params(args)
-
-    print(external_dynamic_list)
 
     raw_response = client.create_external_dynamic_list(query_params, external_dynamic_list)  # type: ignore
 
