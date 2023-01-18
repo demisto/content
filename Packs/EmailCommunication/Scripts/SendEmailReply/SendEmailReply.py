@@ -546,7 +546,7 @@ def get_unique_code():
         code = f'{random.randrange(1, 10 ** 8):08}'
         query = f'emailgeneratedcode: {code}'
         incidents_details = get_incident_by_query(query)
-        if len(incidents_details) == 0:
+        if incidents_details is None or len(incidents_details) == 0:
             code_is_unique = True
     return code
 

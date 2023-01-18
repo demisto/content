@@ -159,6 +159,9 @@ def get_incident_by_query(query):
         raise DemistoException(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
 
     incidents_details = res['Contents']['data']
+    if incidents_details is None:
+        return []
+        
     for inc in incidents_details:
         inc['emailsubject'] = inc['CustomFields']['emailsubject']
 
