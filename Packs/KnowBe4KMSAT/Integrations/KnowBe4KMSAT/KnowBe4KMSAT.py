@@ -103,6 +103,15 @@ class Client(BaseClient):
             params=params,
         )
 
+    def kmsat_phishing_campaign_security_tests(self, campaign_id, params):
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/phishing/campaigns/{campaign_id}/security_tests",
+            resp_type="json",
+            ok_codes=(200,),
+            params=params,
+        )
+
     def kmsat_training_campaigns(self, params):
         return self._http_request(
             method="GET",
@@ -465,6 +474,52 @@ def kmsat_phishing_security_tests_recipients_list_command(
     )
 
 
+def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) -> CommandResults:
+    campaign_id = remove_empty_elements(args.get("campaign_id"))
+    params = get_pagination(args)
+    response = client.kmsat_phishing_campaign_security_tests(campaign_id, params)
+    markdown = tableToMarkdown(
+        "Phishing Campaign Security Tests",
+        response,
+        [
+            "campaign_id",
+            "pst_id",
+            "status",
+            "name",
+            "groups",
+            "phish_prone_percentage",
+            "started_at",
+            "duration",
+            "categories",
+            "template",
+            "landing-page",
+            "scheduled_count",
+            "delivered_count",
+            "opened_count",
+            "clicked_count",
+            "replied_count",
+            "attachment_open_count",
+            "macro_enabled_count",
+            "data_entered_count",
+            "qr_code_scanned_count",
+            "reported_count",
+            "bounced_count",
+        ]
+    )
+    if response is None:
+        raise DemistoException(
+            "Translation failed: the response from server did not include `kmsat_phishing_campaign_security_tests_list_command`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="KMSAT.CampaignPST",
+        outputs_key_field="",
+        raw_response=response,
+        outputs=response,
+        readable_output=markdown,
+    )
+
+
 def kmsat_training_campaigns_list_command(client: Client, args: dict) -> CommandResults:
     params = get_pagination(args)
     response = client.kmsat_training_campaigns(params)
@@ -754,6 +809,8 @@ def main() -> None:
             return_results(
                 kmsat_phishing_security_tests_recipients_list_command(client, args)
             )
+        elif command == "kmsat-phishing-campaigns-security-tests-list":
+            return_results(kmsat_phishing_campaign_security_tests_list_command)(client, args)
         elif command == "kmsat-training-campaigns-list":
             return_results(kmsat_training_campaigns_list_command(client, args))
         elif command == "kmsat-training-enrollments-list":

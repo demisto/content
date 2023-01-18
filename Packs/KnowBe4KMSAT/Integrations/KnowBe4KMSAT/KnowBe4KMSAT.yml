@@ -391,7 +391,96 @@ script:
         - contextPath: KMSAT.PhishingSecurityPST.os
           description: Phishing Security OS
           type: String
-      description: Returns a Specific Recipient's Results
+      description: Returns a Specific Recipient's Results.
+    - name: kmsat-phishing-campaigns-security-test-list
+      arguments:
+        - name: campaign_id
+          required: true
+          description: Campaign ID
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
+      outputs:
+        - contextPath: KMSAT.CampaignPST.campaign_id
+          description: Campaign Phishing Security Campaign ID
+          type: Number
+        - contextPath: KMSAT.CampaignPST.pst_id
+          description: Campaign Phishing Security PST ID
+          type: Number
+        - contextPath: KMSAT.CampaignPST.status
+          description: Campaign Phishing Security Status
+          type: String
+        - contextPath: KMSAT.CampaignPST.name
+          description: Campaign Phishing Security Name
+          type: String
+        - contextPath: KMSAT.CampaignPST.groups.group_id
+          description: Campaign Phishing Security Group ID
+          type: Number
+        - contextPath: KMSAT.CampaignPST.groups.name
+          description: Campaign Phishing Security Name
+          type: String
+        - contextPath: KMSAT.CampaignPST.phish_prone_percentage
+          description: Campaign Phishing Security Phish Prone Percentage
+          type: Number
+        - contextPath: KMSAT.CampaignPST.started_at
+          description: Campaign Phishing Security Started At
+          type: Date
+        - contextPath: KMSAT.CampaignPST.duration
+          description: Campaign Phishing Security Duration
+          type: Number
+        - contextPath: KMSAT.CampaignPST.categories.category_id
+          description: Campaign Phishing Security Categories Category ID
+          type: Number
+        - contextPath: KMSAT.CampaignPST.categories.name
+          description: Campaign Phishing Security Categories Name
+          type: String
+        - contextPath: KMSAT.CampaignPST.template.id
+          description: Campaign Phishing Security Template ID
+          type: Number
+        - contextPath: KMSAT.CampaignPST.template.name
+          description: Campaign Phishing Security Template Name
+          type: String
+        - contextPath: KMSAT.CampaignPST.landing-page.id
+          description: Campaign Phishing Security Landing Page ID
+          type: Number
+        - contextPath: KMSAT.CampaignPST.landing-page.name
+          description: Campaign Phishing Security Landing Page Name
+          type: String
+        - contextPath: KMSAT.CampaignPST.scheduled_count
+          description: Campaign Phishing Security Scheduled Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.delivered_count
+          description: Campaign Phishing Security Delivered Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.opened_count
+          description: Campaign Phishing Security Opened Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.clicked_count
+          description: Campaign Phishing Security Clicked Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.replied_count
+          description: Campaign Phishing Security Replied Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.attachment_open_count
+          description: Campaign Phishing Security Attachment Open Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.macro_enabled_count
+          description: Campaign Phishing Security Macro Enabled Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.data_entered_count
+          description: Campaign Phishing Security Data Entered Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.qr_code_scanned_count
+          description: Campaign Phishing Security QR Code Scanned Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.reported_count
+          description: Campaign Phishing Security Reported Count
+          type: Number
+        - contextPath: KMSAT.CampaignPST.bounced_count
+          description: Campaign Phishing Security Bounced Count
+          type: Number
+      description: Returns All Campaign Phishing Security Tests (PSTs).
     - name: kmsat-training-campaigns-list
       arguments:
         - name: page
@@ -483,7 +572,7 @@ script:
         - contextPath: KMSAT.TrainingCampaigns.completion_percentage
           description: Training Campaigns Completion Percentage
           type: Number
-      description: Returns all Training Campaigns
+      description: Returns All Training Campaigns.
     - name: kmsat-training-enrollments-list
       arguments:
         - name: status
