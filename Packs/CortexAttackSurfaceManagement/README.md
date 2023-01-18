@@ -85,7 +85,7 @@ Playbook that given the IP address enriches GCP information relevant to ASM aler
 
 #### Cortex ASM - SNMP Check
 Playbook that given the IP address checks if SNMP is enabled or not and returns versions running.
-![Cortex ASM - SNMP Check]()
+![Cortex ASM - SNMP Check](https://raw.githubusercontent.com/demisto/content/348579775c6c9b239d156f5398fd5c5a98e9458c/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_SNMP_Check.png)
 
 ### Automation Scripts
 This content pack includes the [generateASMReport](#generateasmreport) script: 
