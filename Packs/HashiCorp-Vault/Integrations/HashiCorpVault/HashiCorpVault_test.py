@@ -104,3 +104,8 @@ def test_unseal_vault(mocker):
 def test_seal_vault(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
     assert seal_vault() == {}
+
+
+def test_disable_engine(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert disable_engine('test') == {}

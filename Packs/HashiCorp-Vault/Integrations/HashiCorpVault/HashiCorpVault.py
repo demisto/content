@@ -357,7 +357,7 @@ def disable_engine_command():  # pragma: no cover
     demisto.results('Engine disabled successfully')
 
 
-def disable_engine(engine_path):  # pragma: no cover
+def disable_engine(engine_path):
     path = 'sys/mounts/' + engine_path
 
     return send_request(path, 'delete')
