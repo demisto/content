@@ -69,6 +69,8 @@ def grab_ip_table(html_section):
         data.append([ele for ele in cols if ele])  # Get rid of empty values
     return data
 
+# TODO why Overrides BaseClient.
+
 
 class Client:
     """
@@ -253,6 +255,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     """
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
+    # TODO do i need it?? if yes, it shuld be an input, not "demisto.args"
     limit = int(demisto.args().get('limit')) | 10
     indicators = fetch_indicators(client, indicator_type_lower, limit)
     human_readable = tableToMarkdown('Indicators from WebEx Feed:', indicators,
@@ -260,7 +263,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
 
     return human_readable, {}, {'raw_response': indicators}
 
-
+# TODO remove?
 def fetch_indicators_command(client: Client) -> List[Dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
@@ -287,11 +290,13 @@ def main():
 
     try:
         client = Client(use_ssl, tags, tlp_color)
+        # TODO change to "if else"?
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'webex-get-indicators': get_indicators_command
         }
         if command in commands:
+            # TODO change to command results?
             return_outputs(*commands[command](client, demisto.args()))
 
         elif command == 'fetch-indicators':
