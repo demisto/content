@@ -8622,7 +8622,7 @@ def test_append_metrics(mocker):
 
 @pytest.mark.parametrize(
     'filename',
-    ['/test', '\\test', ',test', ':test']
+    ['/test', '\\test', ',test', ':test', 't/est.pdf', '../../test.xslx', '~test.png']
 )
 def test_is_valid_filename_faild(filename):
     """
@@ -8640,7 +8640,7 @@ def test_is_valid_filename_faild(filename):
 
 @pytest.mark.parametrize(
     'filename',
-    ['test', 'test.txt', 'test.xslx', 'Test', 'טסט']
+    ['test', 'test.txt', 'test.xslx', 'Test', 'טסט', 'test-test.pdf', 'test test.md']
 )
 def test_is_valid_filename(filename):
     """
