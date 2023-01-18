@@ -451,6 +451,15 @@ script:
     - contextPath: VisionOne.File_Analysis_Status.report_id
       description: ID used to get the report and suspicious object. Empty means no report.
       type: string
+    - contextPath: VisionOne.File_Analysis_Status.DBotScore.score
+      description: The DBot score.
+      type: number
+    - contextPath: VisionOne.File_Analysis_Status.DBotScore.Vendor
+      description: The Vendor name.
+      type: string
+    - contextPath: VisionOne.File_Analysis_Status.DBotScore.Reliability
+      description: The Reliability level.
+      type: string
   - arguments:
     - description: report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command
       name: report_id
@@ -639,6 +648,15 @@ script:
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.report_id
       description: ID used to get the report and suspicious object. Empty means no report.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.score
+      description: The DBot score.
+      type: number
+    - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.Vendor
+      description: The Vendor name.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.Reliability
+      description: The Reliability level.
       type: string
     description: Runs a polling command to retrieve the status of a sandbox analysis submission
     name: trendmicro-visionone-run-sandbox-submission-polling
