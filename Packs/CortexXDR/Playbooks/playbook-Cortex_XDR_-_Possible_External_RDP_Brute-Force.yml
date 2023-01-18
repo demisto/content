@@ -2900,14 +2900,12 @@ view: |-
   }
 inputs:
 - key: Username
-  value:
-    simple: momi
+  value: {}
   required: false
   description: RDP connection username.
   playbookInputQuery:
 - key: ExternalIP
-  value:
-    simple: 85.86.242.245
+  value: {}
   required: false
   description: Source external IP address.
   playbookInputQuery:

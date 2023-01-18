@@ -17,36 +17,36 @@ Set verdict method:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* User Investigation - Generic
-* Threat Hunting - Generic
-* TIM - Indicator Relationships Analysis
-* Block IP - Generic v3
 * Account Enrichment - Generic v2.1
+* Threat Hunting - Generic
+* Block IP - Generic v3
 * Cortex XDR - Get entity alerts by MITRE tactics
+* TIM - Indicator Relationships Analysis
 * Cortex XDR - Isolate Endpoint
-* Cortex XDR - Possible External RDP Brute-Force - Set Verdict
+* User Investigation - Generic
 * Block Account - Generic v2
+* Cortex XDR - Possible External RDP Brute-Force - Set Verdict
 
 ### Integrations
-* CortexXDRIR
-* XDR_iocs
 * XQLQueryingEngine
+* XDR_iocs
+* CortexXDRIR
 
 ### Scripts
 * Set
 
 ### Commands
-* ip
 * ad-expire-password
 * setIncident
+* ip
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Username | RDP connection username. | momi | Optional |
-| ExternalIP | Source external IP address. | 85.86.242.245 | Optional |
+| Username | RDP connection username. |  | Optional |
+| ExternalIP | Source external IP address. |  | Optional |
 | AutoRemediation | Set value "true" to enable auto remediation\(IP Block and User Block\). | false | Optional |
 | FinalThreshold | The threshold number of suspicious elements required to determine a 'True Positive' verdict. | 3 | Optional |
 | CriticalElement | You can select a specific element that, if identified as suspicious, will automatically set the final verdict as true positive. The following options are available:<br/>IP Reputation<br/>Related Campaign<br/>Hunting Results<br/>Related Alerts<br/>Unusual Country<br/><br/>NOTE: you can read about the meaning of every element in the playbook description. |  | Optional |
