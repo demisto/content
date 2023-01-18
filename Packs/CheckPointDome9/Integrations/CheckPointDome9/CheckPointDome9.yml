@@ -11,11 +11,11 @@ configuration:
 - name: api_key_id
   display: API key ID
   required: true
-  type: 0
+  type: 4
 - name: api_key_secret
   display: API key secret
   required: true
-  type: 0
+  type: 4
 - display: Use system proxy settings
   name: proxy
   required: false
