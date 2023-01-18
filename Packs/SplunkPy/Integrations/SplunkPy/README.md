@@ -268,7 +268,7 @@ There is no context output for this command.
 
 ### Search for events
 ***
-Searches Splunk for events.
+Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
 
 
 ##### Base Command
