@@ -73,7 +73,7 @@ Playbook that given the IP address enriches ServiceNow CMDB information relevant
 
 #### Cortex ASM - Tenable.io Enrichment
 Playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
-![ortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/2f4222f6855c448395f0981bf6b5574efdda0f80/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
+![Cortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/2f4222f6855c448395f0981bf6b5574efdda0f80/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
 
 #### Cortex ASM - Remediation Guidance
 Playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
