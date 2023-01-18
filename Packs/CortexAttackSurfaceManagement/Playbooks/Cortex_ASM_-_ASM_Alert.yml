@@ -3002,7 +3002,7 @@ inputs:
       Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}<br><br>
       Description: ${alert.details}
       <br><br>
-      
+
   required: true
   description: Body of the notification (email or ticket) sent to potential service owner.
   playbookInputQuery:
