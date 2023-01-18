@@ -3,7 +3,7 @@ from typing import Callable, Dict, Iterable, List, Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+import mimetypes
 
 # disable insecure warnings
 import urllib3
@@ -771,9 +771,12 @@ class Client(BaseClient):
         Returns:
             the content type - image with right type for images , and general for other types..
         """
-        file_type = str.split(file_name, '.')[-1]
-        content_type = f'image/{file_type}' if file_type in ['jpeg', 'img', 'png', 'gif'] else '*/*'
-        return content_type
+        file_type = None
+        if not file_name:
+            demisto.log("file name was not supllied, uploading with general type")
+        else:
+            file_type, _ = mimetypes.guess_type(file_name)
+        return file_type or '*/*'
 
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
