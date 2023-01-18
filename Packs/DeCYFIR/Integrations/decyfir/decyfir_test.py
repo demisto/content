@@ -2,8 +2,6 @@ from datetime import datetime, timedelta
 import json
 import io
 
-import pytest
-
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
