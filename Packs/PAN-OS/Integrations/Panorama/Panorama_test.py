@@ -1947,13 +1947,15 @@ class TestPanoramaPushToDeviceGroupCommand:
         import Panorama
         from Panorama import panorama_push_to_device_group_command
         from CommonServerPython import ScheduledCommand
-        Panorama.DEVICE_GROUP = 'device-group-from-integration-params'
 
         args = {
             'description': 'a simple push',
             'polling': 'true',
             'device-group': 'device-group-from-command-arg'
         }
+
+        # mimcs the piece of code which decides which device-group will be set into DEVICE_GROUP parameter.
+        Panorama.DEVICE_GROUP = args.get('device-group') or 'device-group-from-integration-params'
 
         Panorama.API_KEY = 'APIKEY'
         mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
