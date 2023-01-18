@@ -118,25 +118,17 @@ class Client(BaseClient):
         else:
             return IncidentSeverity.UNKNOWN
 
-    def request_decyfir_api(self, url_path, category, category_type, api_param_query) -> str:
-        try:
-            response = self._http_request(
-                full_url=f"{url_path}" + f"/{category}?" + f"type={category_type}" + api_param_query,
-                resp_type='response',
-                method='GET')
+    def request_decyfir_api(self, url_path, category, category_type, api_param_query):
 
-            if response.status_code == 200:
-                if len(response.content) > 0:
-                    return json.dumps(response.json())
-                else:
-                    return response.text
-            else:
-                return ''
-        except Exception as e:
-            demisto.error(e.__cause__)
-            return ''
+        response = self._http_request(
+            full_url=f"{url_path}" + f"/{category}?" + f"type={category_type}" + api_param_query,
+            resp_type='response',
+            method='GET')
 
-    def get_decyfir_data(self, after_val: int, decyfir_api_key: str, incident_type: str, max_fetch) -> str:
+        if response.status_code == 200:
+            return response.json() if response.content else []
+
+    def get_decyfir_data(self, after_val: int, decyfir_api_key: str, incident_type: str, max_fetch):
         endpoint_env = f"{PROD_API_PATH}"
 
         size = max_fetch if max_fetch else MAX_INCIDENTS_TO_FETCH
@@ -183,7 +175,7 @@ class Client(BaseClient):
                                                                          cat_type,
                                                                          api_param_query)
 
-        return json.dumps(return_data)
+        return return_data
 
     def prepare_incident_json(self, source_brand: str, alert_type: str, alert_subtype: str, name: str, date_val: str,
                               severity: int, details: str, record_id: str) -> Dict[str, Any]:
@@ -226,7 +218,7 @@ class Client(BaseClient):
     def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> List[dict]:
         try:
             incidents_json = []
-            for json_ in json.loads(json_data):
+            for json_ in json_data:
                 severity = self.get_severity(json_.get("risk_score"))
                 ip = json_.get("ip")
                 details = str(json.dumps(json_))
@@ -257,7 +249,7 @@ class Client(BaseClient):
     def prepare_incidents_for_digital_risk(self, json_data, alert_type: str, alert_subtype: str) -> List:
         try:
             incidents_json = []
-            for json_ in json.loads(json_data):
+            for json_ in json_data:
                 severity = self.get_severity(json_.get("risk_score"))
                 date_val = json_.get("alert_created_date")
                 details = str(json.dumps(json_))
@@ -274,109 +266,110 @@ class Client(BaseClient):
 
     def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents):
         try:
-            json_val = json.loads(decyfir_alerts_incidents)
+            # json_val = json.loads(decyfir_alerts_incidents)
+
             return_data: List[dict] = []
 
             # Attack Surface
             # Open Ports
-            if json_data := json_val.get(VAR_OPEN_PORTS):
+            if json_data := decyfir_alerts_incidents.get(VAR_OPEN_PORTS):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_OPEN_PORTS)
                 return_data = return_data + incidents_json_data
 
             # IP Vulnerability
-            if json_data := json_val.get(VAR_IP_VULNERABILITY):
+            if json_data := decyfir_alerts_incidents.get(VAR_IP_VULNERABILITY):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_IP_VULNERABILITY)
                 return_data = return_data + incidents_json_data
 
             # "Configuration"
-            if json_data := json_val.get(VAR_CONFIGURATION):
+            if json_data := decyfir_alerts_incidents.get(VAR_CONFIGURATION):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_CONFIGURATION)
                 return_data = return_data + incidents_json_data
 
             # Cloud Weakness
-            if json_data := json_val.get(VAR_CLOUD_WEAKNESS):
+            if json_data := decyfir_alerts_incidents.get(VAR_CLOUD_WEAKNESS):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_CLOUD_WEAKNESS)
                 return_data = return_data + incidents_json_data
 
             # IP Reputation
-            if json_data := json_val.get(VAR_IP_REPUTATION):
+            if json_data := decyfir_alerts_incidents.get(VAR_IP_REPUTATION):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_IP_REPUTATION)
                 return_data = return_data + incidents_json_data
 
             # Certificates
-            if json_data := json_val.get(VAR_CERTIFICATES):
+            if json_data := decyfir_alerts_incidents.get(VAR_CERTIFICATES):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_CERTIFICATES)
                 return_data = return_data + incidents_json_data
 
             # Digital Risk
             # impersonation & infringement
-            if json_data := json_val.get(VAR_DOMAIN_IT_ASSET):
+            if json_data := decyfir_alerts_incidents.get(VAR_DOMAIN_IT_ASSET):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_IM_IN,
                                                                               LABEL_DOMAIN_IT_ASSET)
                 return_data = return_data + incidents_json_data
 
             # Executive People
-            if json_data := json_val.get(VAR_EXECUTIVE_PEOPLE):
+            if json_data := decyfir_alerts_incidents.get(VAR_EXECUTIVE_PEOPLE):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_IM_IN,
                                                                               LABEL_EXECUTIVE_PEOPLE)
                 return_data = return_data + incidents_json_data
 
             # Product Solution
-            if json_data := json_val.get(VAR_PRODUCT_SOLUTION):
+            if json_data := decyfir_alerts_incidents.get(VAR_PRODUCT_SOLUTION):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_IM_IN,
                                                                               LABEL_PRODUCT_SOLUTION)
                 return_data = return_data + incidents_json_data
 
             # Social Handlers
-            if json_data := json_val.get(VAR_SOCIAL_HANDLERS):
+            if json_data := decyfir_alerts_incidents.get(VAR_SOCIAL_HANDLERS):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_IM_IN,
                                                                               LABEL_SOCIAL_HANDLERS)
                 return_data = return_data + incidents_json_data
 
             # PHISHING
-            if json_data := json_val.get(VAR_PHISHING):
+            if json_data := decyfir_alerts_incidents.get(VAR_PHISHING):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_DB_WM,
                                                                               LABEL_PHISHING)
                 return_data = return_data + incidents_json_data
 
             # ransomware
-            if json_data := json_val.get(VAR_RANSOMWARE):
+            if json_data := decyfir_alerts_incidents.get(VAR_RANSOMWARE):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_DB_WM,
                                                                               LABEL_RANSOMWARE)
                 return_data = return_data + incidents_json_data
 
                 # Dark web
-            if json_data := json_val.get(VAR_DARK_WEB):
+            if json_data := decyfir_alerts_incidents.get(VAR_DARK_WEB):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_DB_WM,
                                                                               LABEL_DARK_WEB)
                 return_data = return_data + incidents_json_data
 
             # Source Code
-            if json_data := json_val.get(VAR_SOURCE_CODE):
+            if json_data := decyfir_alerts_incidents.get(VAR_SOURCE_CODE):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_S_PE,
                                                                               LABEL_SOURCE_CODE)
                 return_data = return_data + incidents_json_data
 
             # malicious-mobile-apps
-            if json_data := json_val.get(VAR_MALICIOUS_MOBILE_APPS):
+            if json_data := decyfir_alerts_incidents.get(VAR_MALICIOUS_MOBILE_APPS):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_S_PE,
                                                                               LABEL_MALICIOUS_MOBILE_APPS)
                 return_data = return_data + incidents_json_data
 
             # confidential-files
-            if json_data := json_val.get(VAR_CONFIDENTIAL_FILES):
+            if json_data := decyfir_alerts_incidents.get(VAR_CONFIDENTIAL_FILES):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_S_PE,
                                                                               LABEL_CONFIDENTIAL_FILES)
                 return_data = return_data + incidents_json_data
 
             # dumps-pii-cii
-            if json_data := json_val.get(VAR_DUMPS_PII_CII):
+            if json_data := decyfir_alerts_incidents.get(VAR_DUMPS_PII_CII):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_S_PE,
                                                                               LABEL_DUMPS_PII_CII)
                 return_data = return_data + incidents_json_data
@@ -418,14 +411,11 @@ def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_typ
 
         decyfir_incidents = client.convert_decyfir_data_to_incidents_format(json_decyfir_data)
 
-        # Pushing Incidents data to XSOAR
-        demisto.incidents(decyfir_incidents)
-
         # Assigning the current date time value to last_fetch for next run
         last_fetch_time = datetime.now().strftime(DATE_FORMAT)
         last_fetch = {"last_fetch": last_fetch_time}
 
-        return last_fetch
+        return last_fetch, decyfir_incidents
     except Exception as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -464,7 +454,7 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            next_run = fetch_incidents(
+            next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch=first_fetch,
@@ -472,6 +462,8 @@ def main():
                 incident_type=incident_type,
                 max_fetch=max_fetch
             )
+            # Pushing Incidents data to XSOAR
+            demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
         else:
