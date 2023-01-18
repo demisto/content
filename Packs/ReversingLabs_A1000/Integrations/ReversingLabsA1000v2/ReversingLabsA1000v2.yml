@@ -348,7 +348,7 @@ script:
     - contextPath: ReversingLabs.a1000_advanced_search_report
       description: A1000 classification report
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.43342
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.44887
   feed: false
   isfetch: false
   longRunning: false
