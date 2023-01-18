@@ -76,7 +76,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "83"
+      - "99"
     separatecontext: false
     view: |-
       {
@@ -2267,58 +2267,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "83":
-    id: "83"
-    taskid: 46cf87bc-ebcd-4630-8990-849d2bda22fd
-    type: playbook
-    task:
-      id: 46cf87bc-ebcd-4630-8990-849d2bda22fd
-      version: -1
-      name: Cortex ASM - Detect Service
-      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
-      playbookName: Cortex ASM - Detect Service
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      ASMRuleID:
-        complex:
-          root: alert
-          accessor: asmattacksurfaceruleid
-      RemoteIP:
-        complex:
-          root: alert
-          accessor: remoteip
-      RemotePort:
-        complex:
-          root: alert
-          accessor: remoteport
-      ScanNumber:
-        simple: "1"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "86":
     id: "86"
     taskid: a35c5886-7223-43fa-8b84-077545ca37b4
@@ -2780,10 +2728,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "96":
     id: "96"
-    taskid: 11132e44-5449-4f6f-82d2-41b9fc61033f
+    taskid: 0a258708-d7b0-4a77-82f7-e734c51313d8
     type: condition
     task:
-      id: 11132e44-5449-4f6f-82d2-41b9fc61033f
+      id: 0a258708-d7b0-4a77-82f7-e734c51313d8
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -2814,7 +2762,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer
+              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer
       - - operator: inList
           left:
             value:
@@ -2832,27 +2780,13 @@ tasks:
                 root: alert
                 accessor: asmserviceowner
             iscontext: true
-      - - operator: containsString
+      - - operator: isTrue
           left:
             value:
               complex:
-                root: alert.asmtags
-                accessor: Key
+                root: alert
+                accessor: asmdevcheck
             iscontext: true
-          right:
-            value:
-              simple: dev
-          ignorecase: true
-        - operator: containsString
-          left:
-            value:
-              complex:
-                root: alert.asmtags
-                accessor: Value
-            iscontext: true
-          right:
-            value:
-              simple: dev
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -2972,6 +2906,58 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 8fd375b8-dc22-470d-835a-9afc2253c2ac
+    type: playbook
+    task:
+      id: 8fd375b8-dc22-470d-835a-9afc2253c2ac
+      version: -1
+      name: Cortex ASM - Detect Service
+      playbookName: Cortex ASM - Detect Service
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ASMRuleID:
+        complex:
+          root: alert
+          accessor: asmattacksurfaceruleid
+      RemoteIP:
+        complex:
+          root: alert
+          accessor: remoteip
+      RemotePort:
+        complex:
+          root: alert
+          accessor: remoteport
+      ScanNumber:
+        simple: "1"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3005,9 +2991,9 @@ inputs:
 - key: OwnerNotificationBody
   value:
     simple: |+
-      Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}<br><br>
+      Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}
+
       Description: ${alert.details}
-      <br><br>
 
   required: true
   description: Body of the notification (email or ticket) sent to potential service owner.

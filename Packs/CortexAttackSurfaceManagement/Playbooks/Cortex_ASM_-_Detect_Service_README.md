@@ -1,4 +1,4 @@
-Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
+Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP, SNMP).
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -6,6 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 * NMAP - Single Port Scan
 * NMAP - Banner Check
+* Cortex ASM - SNMP Check
 
 ### Integrations
 This playbook does not use any integrations.
