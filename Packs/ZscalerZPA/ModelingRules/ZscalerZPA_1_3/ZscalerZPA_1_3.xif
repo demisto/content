@@ -5,7 +5,7 @@ filter
     xdm.network.rule = policy,
     xdm.source.port=to_integer(0),
     xdm.target.ipv4 = if(cat="ZPA User Status", srcPreNAT, dst),
-    xdm.target.port=if(cat="ZPA User Status", to_integer(0), dstPort),
+    xdm.target.port=if(cat="ZPA User Status", to_integer(0), to_integer(dstPort)),
     xdm.source.ipv4 = src,
     xdm.observer.vendor = _vendor,
     xdm.observer.product = _product,
