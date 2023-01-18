@@ -773,7 +773,7 @@ class Client(BaseClient):
         """
         file_type = None
         if not file_name:
-            demisto.log("file name was not supllied, uploading with general type")
+            demisto.debug("file name was not supllied, uploading with general type")
         else:
             file_type, _ = mimetypes.guess_type(file_name)
         return file_type or '*/*'
