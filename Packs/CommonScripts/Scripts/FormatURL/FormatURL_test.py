@@ -155,7 +155,9 @@ FORMAT_FRAGMENT = [
 ]
 
 FORMAT_REFANG = [
-    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),
+    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),  # disable-secrets-detection
+    ('https[:]//www.test.com/foo', 'https://www.test.com/foo'),  # disable-secrets-detection
+    ('https[:]//www[.]test[.]com/foo', 'https://www.test.com/foo'),  # disable-secrets-detection
 ]
 
 FORMAT_NON_ASCII = [
