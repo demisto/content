@@ -370,14 +370,14 @@ def main():
     items_dict = read_json(os.path.join(args.artifacts_path, 'packs_items.json'))
 
     storage_bucket_names_list = storage_bucket_names.split(',')
-        
+
     are_buckets_valid = [validate_bucket(
-                            service_account=service_account,
-                            storage_base_path=storage_base_path,
-                            bucket_name=storage_bucket_name,
-                            versions_dict=versions_dict,
-                            items_dict=items_dict
-                        ) for storage_bucket_name in storage_bucket_names_list]
+        service_account=service_account,
+        storage_base_path=storage_base_path,
+        bucket_name=storage_bucket_name,
+        versions_dict=versions_dict,
+        items_dict=items_dict
+    ) for storage_bucket_name in storage_bucket_names_list]
 
     if not all(are_buckets_valid):
         sys.exit(1)

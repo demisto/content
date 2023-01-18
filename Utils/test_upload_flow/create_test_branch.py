@@ -50,18 +50,18 @@ def get_pack_content_paths(pack_path: Path, marketplace='xsoar'):
 
     try:
         logging.debug(f"Running the SDK prepare-content command for pack {pack_path.name} - "
-                    f"Command: `{' '.join(create_artifacts_command)}`")
+                      f"Command: `{' '.join(create_artifacts_command)}`")
         res = subprocess.run(create_artifacts_command, capture_output=True, check=True)
-        logging.debug(f"Result from prepare-content - stdout: [{res.stdout}] stderr: [{res.stderr}]")
+        logging.debug(f"Result from prepare-content - stdout: [{str(res.stdout)}] stderr: [{str(res.stderr)}]")
     except subprocess.CalledProcessError as se:
         logging.error(f'Subprocess exception: {se}. stderr: [{se.stderr}] stdout: [{se.stdout}]')
         raise
-    
+
     pack_artifacts_path = f'./{pack_path.name}'
     with ZipFile(f'{pack_path.name}.zip') as pack_artifacts_zip:
         pack_artifacts_zip.extractall(pack_artifacts_path)
     os.remove(f'{pack_path.name}.zip')
-    
+
     content_dict = {}
     sub_dirs = os.listdir(pack_artifacts_path)
     sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
