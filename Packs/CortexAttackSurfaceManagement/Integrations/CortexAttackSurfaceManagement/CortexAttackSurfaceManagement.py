@@ -14,11 +14,11 @@ class Client(BaseClient):
     Client class to interact with the service API.
     """
 
-    def __init__(self, base_url, verify, proxy, headers, auth):
+    def __init__(self, base_url, verify, proxy, headers):
         """
         Class initialization.
         """
-        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
 
     def list_remediation_rule_request(self, request_data: Dict) -> Dict[str, Any]:
         """Get a list of all your remediation rules using the 'xpanse_remediation_rules/rules/' endpoint.
@@ -29,10 +29,8 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of external services.
         """
-        headers = self._headers
 
-        response = self._http_request('POST', '/xpanse_remediation_rules/rules/',
-                                      json_data=request_data, headers=headers)
+        response = self._http_request('POST', '/xpanse_remediation_rules/rules/', json_data=request_data)
 
         return response
 
@@ -46,10 +44,8 @@ class Client(BaseClient):
             dict: dict containing list of external services.
         """
         data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_services/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_services/', json_data=data)
 
         return response
 
@@ -63,10 +59,8 @@ class Client(BaseClient):
             dict: dict containing information on single external service.
         """
         data = {"request_data": {"service_id_list": service_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_service',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_service', json_data=data)
 
         return response
 
@@ -77,10 +71,8 @@ class Client(BaseClient):
             dict: dict containing list of external ip address ranges.
         """
         data = {"request_data": {"search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/', json_data=data)
 
         return response
 
@@ -94,10 +86,8 @@ class Client(BaseClient):
             dict: dict containing information on external ip address range.
         """
         data = {"request_data": {"range_id_list": range_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_range/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_ip_address_range/', json_data=data)
 
         return response
 
@@ -111,10 +101,8 @@ class Client(BaseClient):
             dict: dict containing list of internet exposure assets.
         """
         data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_assets_internet_exposure/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_assets_internet_exposure/', json_data=data)
 
         return response
 
@@ -128,10 +116,8 @@ class Client(BaseClient):
             dict: dict containing information on an internet exposure asset.
         """
         data = {"request_data": {"asm_id_list": asm_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_asset_internet_exposure/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_asset_internet_exposure/', json_data=data)
 
         return response
 
@@ -482,8 +468,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy,
-            auth=None)
+            proxy=proxy)
 
         commands = {
             'asm-list-external-service': list_external_service_command,
