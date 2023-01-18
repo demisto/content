@@ -1470,11 +1470,35 @@
             "toversion": "5.0.0"
         },
         {
-            "playbookID": "Indicators reputation-.json Test",
+            "playbookID": "URL extraction test",
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "URL extraction test",
+            "playbookID": "Domain extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Email extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "File extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IPv4 extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IPv4 CIDR extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IPv6 CIDR extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IPv6 extraction test",
             "fromversion": "5.5.0"
         },
         {
@@ -5223,8 +5247,8 @@
             "fromversion": "6.5.0"
         },
         {
-            "integrations": "CiscoAMP",
-            "playbookID": "CiscoAMP",
+            "integrations": "AMPv2",
+            "playbookID": "AMPv2_Test",
             "fromversion": "6.5.0"
         },
         {
@@ -5401,6 +5425,8 @@
         "GCS - Test": "No instance",
         "GCS Object Policy (ACL) - Test": "No instance",
         "GCS Bucket Policy (ACL) - Test": "No instance",
+        "playbook-AzureDataExplorer-Test": "No Instance",
+        "OTRS Test": "No Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
@@ -5507,7 +5533,8 @@
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
         "CiscoSMA": "No instance - developed by Qmasters",
-        "CiscoAMP": "No instance - developed by Qmasters",
+        "CiscoAMP": "No instance & Depreceated, replaced by AMPV2",
+        "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
