@@ -166,7 +166,10 @@ class Client(BaseClient):
             response = {"data": resp.json(), "status": status_code}
             return response
         except requests.exceptions.HTTPError:
-            return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
+            if status_code == HTTPStatus.NOT_FOUND:
+                return_error(f"Your CTIX version does not support this command.")
+            else:
+                return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
     def post_http_request(self, full_url: str, payload: dict, params: dict):
         """
@@ -194,7 +197,10 @@ class Client(BaseClient):
             response = {"data": resp.json(), "status": status_code}
             return response
         except requests.exceptions.HTTPError:
-            return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
+            if status_code == HTTPStatus.NOT_FOUND:
+                return_error(f"Your CTIX version does not support this command.")
+            else:
+                return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
     def put_http_request(self, full_url: str, payload: dict, params: dict):
         """
@@ -222,7 +228,10 @@ class Client(BaseClient):
             response = {"data": resp.json(), "status": status_code}
             return response
         except requests.exceptions.HTTPError:
-            return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
+            if status_code == HTTPStatus.NOT_FOUND:
+                return_error(f"Your CTIX version does not support this command.")
+            else:
+                return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
     def delete_http_request(self, full_url: str, payload: dict = None, **kwargs):
         """
