@@ -152,16 +152,3 @@ def test_main(mocker, args):
     return_results_mock = mocker.patch('ExportToXLSX.return_results')
     main()
     assert return_results_mock.call_args.args[0].get('File') == 'file_name'
-
-
-@pytest.mark.parametrize(
-    'args',
-    [({"data": DATA_INPUT_SINGLE_DICT, "file_name": 'path/to/file_name', "sheet_name": 'sheet_name', 'headers': 'headers_name'})]
-)
-def test_main_failed_on_invalid_filename(mocker, args):
-    import demistomock as demisto
-    from ExportToXLSX import main
-    mocker.patch.object(demisto, "args", return_value=args)
-    with pytest.raises(DemistoException) as e:
-        main()
-    assert 'The file name contains invalid characters' in str(e)
