@@ -832,14 +832,14 @@ def edit_status(issue_id, status, issue):
         issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
     # When changing the status we search the transition that leads to this status
-    transitions = [transition.get('to', {}).get('name', '') for transition in j_res.get('transitions')]
-    for i, transition in enumerate(transitions):
+    statuses = [transition.get('to', {}).get('name', '') for transition in j_res.get('transitions')]
+    for i, transition in enumerate(statuses):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
             return jira_req('POST', url, json.dumps(issue))
 
-    return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
+    return_error(f'Status "{status}" not found. \nValid statuses are: {statuses} \n')
 
 
 def list_transitions_data_for_issue(issue_id):
