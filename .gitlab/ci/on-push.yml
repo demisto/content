@@ -190,6 +190,7 @@ mpv2-prepare-testing-bucket:
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCTNAME: "Cortex XSIAM"
+    EXTRACT_PRIVATE_TESTDATA: "true"
   extends:
     - .generic-prepare-testing-bucket
 
@@ -324,6 +325,7 @@ slack-notify-nightly-build:
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     SERVER_TYPE: "XSIAM"
+    EXTRACT_PRIVATE_TESTDATA: "true"
   needs: ["mpv2-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -370,6 +372,15 @@ slack-notify-nightly-build:
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
     - section_end "Run Tests"
+
+    - section_start "Test Modeling Rules"
+    - |
+      if [[ -s "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt" ]]; then
+        ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
+      else
+        echo "No modeling rules were marked for testing during test collection"
+      fi
+    - section_end "Test Modeling Rules"
 
     - section_start "XSIAM Machine information"
     - ./Tests/scripts/print_xsiam_machine_details.sh
