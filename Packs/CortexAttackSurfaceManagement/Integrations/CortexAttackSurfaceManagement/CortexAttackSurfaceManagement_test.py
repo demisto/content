@@ -250,6 +250,7 @@ def test_get_asset_internet_exposure_command(requests_mock):
     assert response.outputs_prefix == 'ASM.AssetInternetExposure'
     assert response.outputs_key_field == 'asm_ids'
 
+
 def test_list_remediation_rule_command(requests_mock):
     """Tests list_remediation_rule_command function.
 
@@ -278,11 +279,11 @@ def test_list_remediation_rule_command(requests_mock):
         },
         proxy=False)
     args = {
-        'asm_id': 'testdomain.com'
+        'asm_rule_id': 'RdpServer'
     }
 
     response = list_remediation_rule_command(client, args)
 
     assert response.outputs == REMEDIATION_RULES_RESULTS
-    assert response.outputs_prefix == 'ASM.RemediationRulee'
+    assert response.outputs_prefix == 'ASM.RemediationRule'
     assert response.outputs_key_field == 'rule_id'

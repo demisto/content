@@ -1053,3 +1053,74 @@ Get internet exposure asset details according to the asset ID.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 3c176460-8735-333c-b618-8262e2fb660c | Acme | SHA1withRSA | Wildcard,<br/>Expired,<br/>InsecureSignature | Thawte | 1663030146931 | providerDetails: <br/>domain: null<br/>topLevelAssetMapperDomain: null<br/>domainAssetType: null<br/>isPaidLevelDomain: false<br/>domainDetails: null<br/>dnsZone: null<br/>latestSampledIp: null<br/>subdomainMetadata: null<br/>recentIps: <br/>businessUnits: {'name': 'Acme'}<br/>certificateDetails: {"issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA", "issuerAlternativeNames": "", "issuerCountry": "US", "issuerEmail": null, "issuerLocality": null, "issuerName": "Thawte SSL CA", "issuerOrg": "Thawte\\\\, Inc.", "formattedIssuerOrg": "Thawte", "issuerOrgUnit": null, "issuerState": null, "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp21W/QVHuo0Nyy9l6Qp6Ye7yniuCccplWLdkL34pB0roNWBiklLJFftFTXJLtUuYEBhEbUtOPtNr5QRZFo+LQSj+JMQsGajEgNvIIMDms2xtc+vYkuJeNRsN/0zRm8iBjCNEZ0zBbWdupO6xee+Lngq5RiyRzAN2+Q5HlmHmVOcc7NtY5VIQhajp3a5Gc7tmLXa7ZxwQb+afdlpmE0iv4ZxmXFyHwlPXUlIxfETDDjtv2EzAgrnpZ5juo7TEFZA7AjsT0lO6cC2qPE9x9kC02PeC1Heg4hWf70CsXcKQBsprLqusrPYM9+OYfZnj+Dq9j6FjZD314Nz4qTGwmZrwDQIDAQAB", "publicKeyAlgorithm": "RSA", "publicKeyRsaExponent": 65537, "signatureAlgorithm": "SHA1withRSA", "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.babiesrus.com", "subjectAlternativeNames": "*.babiesrus.com", "subjectCountry": "US", "subjectEmail": null, "subjectLocality": "Wayne", "subjectName": "*.babiesrus.com", "subjectOrg": "Acme", "subjectOrgUnit": "MIS", "subjectState": "New Jersey", "serialNumber": "91384582774546160650506315451812470612", "validNotBefore": 1413158400000, "validNotAfter": 1444780799000, "version": "3", "publicKeyBits": 2048, "publicKeyModulus": "a76d56fd0547ba8d0dcb2f65e90a7a61eef29e2b8271ca6558b7642f7e29074ae83560629252c915fb454d724bb54b981018446d4b4e3ed36be50459168f8b4128fe24c42c19a8c480dbc820c0e6b36c6d73ebd892e25e351b0dff4cd19bc8818c2344674cc16d676ea4eeb179ef8b9e0ab9462c91cc0376f90e479661e654e71cecdb58e5521085a8e9ddae4673bb662d76bb671c106fe69f765a661348afe19c665c5c87c253d75252317c44c30e3b6fd84cc082b9e96798eea3b4c415903b023b13d253ba702daa3c4f71f640b4d8f782d477a0e2159fef40ac5dc29006ca6b2eabacacf60cf7e3987d99e3f83abd8fa163643df5e0dcf8a931b0999af00d", "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=", "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb", "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8", "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"}<br/>inferredCvesObserved: <br/>ip_ranges: {} | *.babiesrus.com | false | Certificate |
 
+### asm-list-remediation-rule
+***
+Returns list of remediation path rules.
+
+
+#### Base Command
+
+`asm-list-remediation-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asm_rule_id | A string representing the ASM Rule ID you want to get association remediation path rules for. | Required | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.RemediationRule.rule_id | String | Remediation path rule UUID. | 
+| ASM.RemediationRule.rule_name | String | Remediation path rule name. | 
+| ASM.RemediationRule.description | String | Remediation path rule description. | 
+| ASM.RemediationRule.attack_surface_rule_id | String | Association ASM rule ID for Remediation path rules. | 
+| ASM.RemediationRule.criteria | Unknown | Array of remediation path rule criteria. | 
+| ASM.RemediationRule.criteria_conjunction | String | Whether criteria is processes with AND or OR. | 
+| ASM.RemediationRule.action | String | Action to take on rule match. | 
+| ASM.RemediationRule.created_by | String | Email of who created the rule. | 
+| ASM.RemediationRule.created_by_pretty | String | Readable name of who created the rule. | 
+| ASM.RemediationRule.created_at | Date | Date the rule was created. | 
+
+#### Command example
+```!asm-list-remediation-rule asm_rule_id=RdpServer sort_by_creation_time=desc```
+#### Context Example
+```json
+{
+    "ASM": {
+        "RemediationRule": {
+            "action": "Email",
+            "attack_surface_rule_id": "RdpServer",
+            "created_at": 1672897301000,
+            "created_by": "test@test.com",
+            "created_by_pretty": "Test User",
+            "criteria": [
+                {
+                    "field": "severity",
+                    "operator": "eq",
+                    "value": "high"
+                },
+                {
+                    "field": "isCloudManaged",
+                    "operator": "eq",
+                    "value": "true"
+                }
+            ],
+            "criteria_conjunction": "AND",
+            "description": "for testing",
+            "rule_id": "b935cf69-add9-4e75-8c3d-fe32ee471554",
+            "rule_name": "TestRule"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Remediation Rules
+>|Action|Attack Surface Rule Id|Created At|Created By|Created By Pretty|Criteria|Criteria Conjunction|Description|Rule Id|Rule Name|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Email | RdpServer | 1672897301000 | test@test.com | Test User | {'field': 'severity', 'value': 'high', 'operator': 'eq'},<br/>{'field': 'isCloudManaged', 'value': 'true', 'operator': 'eq'} | AND | for testing | b935cf69-add9-4e75-8c3d-fe32ee471554 | TestRule |
+
