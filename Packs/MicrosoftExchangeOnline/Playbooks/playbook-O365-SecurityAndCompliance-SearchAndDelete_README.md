@@ -51,7 +51,7 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![O365 - Security And Compliance - Search And Delete](../doc_imgs/O365-SecurityAndCompliance-SearchAndDelete.png)
+![O365 - Security And Compliance - Search And Delete](../doc_files/O365-SecurityAndCompliance-SearchAndDelete.png)
 
 ## Known Limitations
 ---

@@ -123,7 +123,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![O365 - Security And Compliance - Search](../doc_imgs/O365-SecurityAndCompliance-Search.png)
+![O365 - Security And Compliance - Search](../doc_files/O365-SecurityAndCompliance-Search.png)
 
 
 ## Known Limitations

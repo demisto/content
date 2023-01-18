@@ -75,7 +75,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![O365 - Security And Compliance - Search Action - Delete](../doc_imgs/O365-SecurityAndCompliance-SearchAction-Delete.png)
+![O365 - Security And Compliance - Search Action - Delete](../doc_files/O365-SecurityAndCompliance-SearchAction-Delete.png)
 
 ## Known Limitations
 ---

@@ -74,7 +74,7 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![O365 - Security And Compliance - Search Action - Preview](../doc_imgs/O365-SecurityAndCompliance-SearchAction-Preview.png)
+![O365 - Security And Compliance - Search Action - Preview](../doc_files/O365-SecurityAndCompliance-SearchAction-Preview.png)
 
 ## Known Limitations
 ---

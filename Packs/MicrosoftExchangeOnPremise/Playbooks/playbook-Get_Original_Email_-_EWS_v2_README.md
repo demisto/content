@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Get Original Email - EWS v2](../doc_imgs/Get_Original_Email_-_EWS_v2.png)
+![Get Original Email - EWS v2](../doc_files/Get_Original_Email_-_EWS_v2.png)
