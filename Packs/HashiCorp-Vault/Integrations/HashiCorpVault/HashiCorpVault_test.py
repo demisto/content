@@ -99,3 +99,8 @@ def test_get_kv1_secret(mocker):
 def test_unseal_vault(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
     assert unseal_vault('test', 'test') == {}
+
+
+def test_seal_vault(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert seal_vault() == {}

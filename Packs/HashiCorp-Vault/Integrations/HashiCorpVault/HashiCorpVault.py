@@ -434,7 +434,7 @@ def seal_vault_command():  # pragma: no cover
     demisto.results('Vault sealed successfully')
 
 
-def seal_vault():  # pragma: no cover
+def seal_vault():
     path = 'sys/seal'
 
     return send_request(path, 'put')
