@@ -718,7 +718,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: 
 
 def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     secrets = []
-    roles_list_url = engine_path
+    roles_list_url = engine_path + '/roles'
     demisto.debug('roles_list_url: {}'.format(roles_list_url))
     params = {'list': 'true'}
     res = send_request(roles_list_url, 'get', params=params)
@@ -733,7 +733,7 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
             if diff <= int(ttl) - AWS_TOKEN_OVERLAP_TIME:
                 continue
         integration_context[f'{role}_ttl'] = now.timestamp()
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
         role_url = urljoin(engine_path, urljoin('/roles/', role))
         demisto.debug('role_url: {}'.format(role_url))
         role_data = send_request(role_url, 'get')
@@ -779,7 +779,7 @@ def get_ch_secret(engine_path, secret):  # pragma: no cover
 
 ''' EXECUTION CODE '''
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
 
     handle_proxy()
 
@@ -836,3 +836,4 @@ if __name__ == '__main__':  # pragma: no cover
     except Exception as e:
         demisto.debug(f'An error occurred: {e}')
         return_error(f'An error occurred: {e}')
+
