@@ -1327,9 +1327,9 @@ def test_splunk_search_command(mocker, polling, status):
         assert search_result.outputs['Status'] == status
         assert search_result.scheduled_command._args['sid'] == '123456'
     else:
-        assert search_result.outputs['Splunk.Result'] == [{'SID': '123456'}]
-        assert search_result.readable_output == '### Splunk Search results for query: query \n' \
-                                                ' using sid:123456\n|SID|\n|---|\n| 123456 |\n'
+        assert search_result.outputs['Splunk.Result'] == []
+        assert search_result.readable_output == '### Splunk Search results for query:\n' \
+                                                'sid: 123456\n**No entries.**\n'
 
 
 @pytest.mark.parametrize(
