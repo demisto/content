@@ -744,6 +744,21 @@ def modify_group_address(outputs) -> List[dict]:
     return outputs
 
 
+def modify_external_dynamic_list(outputs) -> List[dict]:
+    if isinstance(outputs, dict):
+        outputs = [outputs]
+    for output in outputs:
+        dynamic_list_type_object = output.get('type', {})
+        # The object should contain exactly one key, and the key indicates the type of the dynamic list.
+        dynamic_list_type = list(dynamic_list_type_object.keys())[0]
+        output['description'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('description')
+        output['source'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('url')
+        output['frequency'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring')
+        output['type'] = dynamic_list_type
+
+    return outputs
+
+
 def get_address_group_type(original_address_group: dict) -> str:
     return 'static' if 'static' in original_address_group else 'dynamic'
 
@@ -784,6 +799,8 @@ def get_url_according_to_type(args):
 
 def build_recurring_according_to_params(args):
     frequency = args.get('frequency')
+    if not frequency:
+        raise DemistoException('Please provide the frequency argument when using IP, URL or Domain types')
     frequency_object = {frequency: {}}
     if frequency in ('daily', 'weekly', 'monthly'):
         frequency_hour = args.get('frequency_hour')
@@ -1604,7 +1621,7 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
     }
     if external_dynamic_list_id := args.get('id'):
         raw_response = client.get_external_dynamic_list_by_id(query_params, external_dynamic_list_id)
-        outputs = [raw_response]
+        outputs = raw_response
     else:
         page = arg_to_number(args.get('page')) or 1
         page_size = arg_to_number(args.get('page_size'))
@@ -1618,6 +1635,10 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
 
         outputs = raw_response.get('data')
 
+    #print(outputs)
+
+    #outputs = modify_external_dynamic_list(outputs)
+
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
         outputs_key_field='id',
@@ -1630,7 +1651,7 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new custom url category
+    """Command to create new external dynamic list
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1651,6 +1672,9 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
     url = get_url_according_to_type(args)
 
+    if exception_list := argToList(args.get('exception_list')):
+        external_dynamic_list['type'][dynamic_list_type]['exception_list'] = exception_list
+
     if description := args.get('description'):
         external_dynamic_list['type'][dynamic_list_type]['description'] = description
 
@@ -1662,6 +1686,8 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     print(external_dynamic_list)
 
     raw_response = client.create_external_dynamic_list(query_params, external_dynamic_list)  # type: ignore
+
+    raw_response = modify_external_dynamic_list(raw_response)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
