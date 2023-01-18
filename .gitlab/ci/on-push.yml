@@ -319,6 +319,8 @@ slack-notify-nightly-build:
   extends:
     - .default-job-settings
     - .push-rule
+  variables:
+    EXTRACT_PRIVATE_TESTDATA: "true"
   stage: run-instances
   script:
     - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
@@ -363,6 +365,15 @@ slack-notify-nightly-build:
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
     - section_end "Run Tests"
+
+    - section_start "Test Modeling Rules"
+    - |
+      if [[ -s "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt" ]]; then
+        ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
+      else
+        echo "No modeling rules were marked for testing during test collection"
+      fi
+    - section_end "Test Modeling Rules"
 
     - section_start "Cloud Machine information"
     - ./Tests/scripts/print_cloud_machine_details.sh
