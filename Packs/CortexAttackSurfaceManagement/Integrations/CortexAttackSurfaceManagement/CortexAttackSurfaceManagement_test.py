@@ -249,3 +249,40 @@ def test_get_asset_internet_exposure_command(requests_mock):
     assert response.outputs == EXTERNAL_EXPOSURE_RESULTS
     assert response.outputs_prefix == 'ASM.AssetInternetExposure'
     assert response.outputs_key_field == 'asm_ids'
+
+def test_list_remediation_rule_command(requests_mock):
+    """Tests list_remediation_rule_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate list_remediation_rule_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'list_remediation_rule_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexAttackSurfaceManagement import Client, list_remediation_rule_command
+
+    from test_data.raw_response import REMEDIATION_RULES_RESPONSE
+    from test_data.expected_results import REMEDIATION_RULES_RESULTS
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/xpanse_remediation_rules/rules/',
+                       json=REMEDIATION_RULES_RESPONSE)
+
+    client = Client(
+        base_url='https://test.com/api/webapp/public_api/v1',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'asm_id': 'testdomain.com'
+    }
+
+    response = list_remediation_rule_command(client, args)
+
+    assert response.outputs == REMEDIATION_RULES_RESULTS
+    assert response.outputs_prefix == 'ASM.RemediationRulee'
+    assert response.outputs_key_field == 'rule_id'
