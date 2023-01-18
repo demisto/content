@@ -14,13 +14,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex XDR - Cloud Cryptomining
 
 ### Integrations
-* Cortex XDR - IR
+Cortex XDR - IR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-get-incident-extra-data
+xdr-get-incident-extra-data
 
 ## Playbook Inputs
 ---
