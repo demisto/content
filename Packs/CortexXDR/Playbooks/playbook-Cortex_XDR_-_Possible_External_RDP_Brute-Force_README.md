@@ -3,10 +3,10 @@ This playbook investigates a “Possible External RDP Brute Force” XDR Alert b
 - "Source geolocation" - Connection from unusual country 
 -  Related to campaign - IP address related to campaign, based on TIM module
 -  Hunting results - hunt for indicators related to the source IP and the related campaign returned results
--  XDR Alert search -XDR Alerts related to the same username and endpoint
+-  XDR Alert search -XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after "Credential Access"
 
 Set verdict method:
-* Suspicious Element - The "Suspicious Element" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a "True Positive".
+* Critical Element - The "Critical Element" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a "True Positive".
 
 * Final Verdict -  Each suspicious element is being added to an array called "Suspicious Elements", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a "True Positive".
 
@@ -17,26 +17,27 @@ Set verdict method:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Indicators - Generic v3
+* User Investigation - Generic
 * Threat Hunting - Generic
-* Cortex XDR - Possible External RDP Brute-Force - Set Verdict
 * TIM - Indicator Relationships Analysis
+* Block IP - Generic v3
+* Account Enrichment - Generic v2.1
 * Cortex XDR - Get entity alerts by MITRE tactics
 * Cortex XDR - Isolate Endpoint
-* Account Enrichment - Generic v2.1
-* User Investigation - Generic
+* Cortex XDR - Possible External RDP Brute-Force - Set Verdict
+* Block Account - Generic v2
 
 ### Integrations
-* XQLQueryingEngine
-* XDR_iocs
 * CortexXDRIR
+* XDR_iocs
+* XQLQueryingEngine
 
 ### Scripts
 * Set
 
 ### Commands
-* ad-expire-password
 * ip
+* ad-expire-password
 * setIncident
 
 ## Playbook Inputs
@@ -44,11 +45,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Username | RDP connection username. |  | Optional |
-| ExternalIP | Source external IP address. |  | Optional |
+| Username | RDP connection username. | momi | Optional |
+| ExternalIP | Source external IP address. | 85.86.242.245 | Optional |
 | AutoRemediation | Set value "true" to enable auto remediation\(IP Block and User Block\). | false | Optional |
 | FinalThreshold | The threshold number of suspicious elements required to determine a 'True Positive' verdict. | 3 | Optional |
-| CriticalElement | You can select a specific element that, if identified as suspicious, will automatically set the final verdict as true positive. The following options are available:<br/>IP Reputation<br/>Related Campaign<br/>Hunting Results<br/>Related Alerts<br/>Unusual Country |  | Optional |
+| CriticalElement | You can select a specific element that, if identified as suspicious, will automatically set the final verdict as true positive. The following options are available:<br/>IP Reputation<br/>Related Campaign<br/>Hunting Results<br/>Related Alerts<br/>Unusual Country<br/><br/>NOTE: you can read about the meaning of every element in the playbook description. |  | Optional |
 | UserEngagementThreshold | the threshold number of suspicious elements that will trigger a user engagement. set "false" to disable user engagement.<br/><br/>NOTICE: if this threshold will be equal or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation. | 2 | Optional |
 | Hostname | RDP connection destination hostname. |  | Optional |
 | EndpointID | RDP connection destination endpoint ID. |  | Optional |

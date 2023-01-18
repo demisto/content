@@ -1,10 +1,10 @@
 This playbook creating an array called "Suspicious Elements", which is used to count potential security threats. The following elements can be added to the array:
 
-"IP Reputation": This element will be added if the IP reputation is deemed suspicious or malicious.
-"Related Campaign": This element will be added if an RDP brute force attack from an external IP is found to be related to a specific campaign, as determined by threat intelligence management (TIM).
-"Hunting Results": This element will be added if the results of "Threat Hunting - Generic" are returned.
-"Related Alerts": This element will be added if any additional alerts related to the attacked user and hostname are found.
-"Unusual Country": This element will be added if the RDP connection originates from an unusual country.
+- "IP Reputation" - Dbot Score is 2-3 
+- "Source geolocation" - Connection from unusual country 
+-  Related to campaign - IP address related to campaign, based on TIM module
+-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results
+-  XDR Alert search -XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after "Credential Access"
 
 The array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a "True Positive."
 
