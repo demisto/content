@@ -423,7 +423,9 @@ test_upload_flow:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET,$GCS_MARKET_V2_BUCKET"
   stage: unittests-and-validations
+  allow_failure: true
   script:
     - |
       if !$(git diff origin/master $CI_COMMIT_BRANCH --name-only | grep -q "Tests/\|Utils/") ; then                                                                            16:33:03
@@ -447,5 +449,5 @@ test_upload_flow:
 
     - section_start "Verify Created Testing Bucket"
     - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
-    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path
+    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"

@@ -28,8 +28,6 @@ MSG_DICT = {
     "verify_dependency": "verified the new dependency is in the pack metadata",
     "verify_new_image": "verified the new image was uploaded"
 }
-XSOAR_BUCKET = "marketplace-dist-dev"
-XSIAM_BUCKET = "marketplace-v2-dist-dev"
 
 
 def read_json(path):
@@ -276,14 +274,14 @@ class BucketVerifier:
 
     def run_xsiam_bucket_validations(self):
         """
-        Runs the XSIAM verifications.
+        Runs the only XSIAM bucket verifications.
         """
         self.verify_modified_item_path('AlibabaActionTrail', 'AlibabaActionTrail/ModelingRules/modelingrule-Alibaba.yml',
                                        self.items_dict.get('AlibabaActionTrail'))
 
     def run_xsoar_bucket_validations(self):
         """
-        Runs the XSIAM verifications.
+        Runs the only XSOAR bucket verifications.
         """
         self.verify_modified_item_path('CortexXDR', 'CortexXDR/Scripts/script-XDRSyncScript_new_name.yml',
                                        self.items_dict.get('CortexXDR'))
@@ -324,10 +322,10 @@ class BucketVerifier:
         self.verify_new_image('Armis', Path(
             __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
 
-        if self.bucket_name == XSIAM_BUCKET:
+        if 'v2' in self.bucket_name or 'xsiam' in self.bucket_name:
             self.run_xsiam_bucket_validations()
 
-        if self.bucket_name == XSOAR_BUCKET:
+        if self.bucket_name == 'marketplace-dist' or 'xsoar' in self.bucket_name:
             self.run_xsoar_bucket_validations()
 
     def is_bucket_valid(self):
@@ -353,7 +351,7 @@ def get_args():
     parser.add_argument('-s', '--service-account', help="Path to gcloud service account", required=False)
     parser.add_argument('-sb', '--storage-base_path', help="Path to storage under the marketplace-dist-dev bucket",
                         required=False)
-    parser.add_argument('-b', '--bucket-name', help="Storage bucket name", default='All')
+    parser.add_argument('-b', '--bucket-names', help="Storage bucket names as a comma separated value")
     parser.add_argument('-a', '--artifacts-path', help="path to artifacts from the script creating the test branch, "
                                                        "should contain json with dict of pack names and items to verify"
                                                        "and json with dict of pack names and versions to verify",
@@ -367,26 +365,24 @@ def main():
     args = get_args()
     storage_base_path = args.storage_base_path
     service_account = args.service_account
-    storage_bucket_name = args.bucket_name
+    storage_bucket_names = args.bucket_names
     versions_dict = read_json(os.path.join(args.artifacts_path, 'versions_dict.json'))
     items_dict = read_json(os.path.join(args.artifacts_path, 'packs_items.json'))
 
-    is_valid = True
-    if storage_bucket_name != 'All':
-        if storage_bucket_name not in [XSOAR_BUCKET, XSIAM_BUCKET]:
-            logging.error('The given storage bucket is invalid.')
-            sys.exit(1)
+    storage_bucket_names_list = storage_bucket_names.split(',')
+        
+    are_buckets_valid = [validate_bucket(
+                            service_account=service_account,
+                            storage_base_path=storage_base_path,
+                            bucket_name=storage_bucket_name,
+                            versions_dict=versions_dict,
+                            items_dict=items_dict
+                        ) for storage_bucket_name in storage_bucket_names_list]
 
-        is_valid = validate_bucket(service_account, storage_base_path, storage_bucket_name, versions_dict, items_dict)
-    else:
-        is_xsoar_bucket_valid = validate_bucket(service_account, storage_base_path, XSOAR_BUCKET, versions_dict, items_dict)
-        is_valid = validate_bucket(service_account, storage_base_path, XSIAM_BUCKET, versions_dict, items_dict) \
-            and is_xsoar_bucket_valid
-
-    if not is_valid:
+    if not all(are_buckets_valid):
         sys.exit(1)
 
 
 if __name__ == "__main__":
     main()
-    logging.success('XSOAR and XSIAM buckets are valid!')
+    logging.success('All buckets are valid!')
