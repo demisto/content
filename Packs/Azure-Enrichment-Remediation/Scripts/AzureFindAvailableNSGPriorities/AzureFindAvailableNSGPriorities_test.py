@@ -1,5 +1,14 @@
 import pytest
-from AzureFindAvailableNSGPriorities import find_available_priorities
+
+import demistomock as demisto
+from AzureFindAvailableNSGPriorities import find_available_priorities, main
+
+
+BASE_TEST_PARAMS = {
+    'target_rule_priority': '300',
+    'number_of_available_priorities_to_retrieve': '2',
+    'list_of_priorities_from_rules': '[105, 200, 300]',
+}
 
 TEST_LIST = list(range(1, 1110))
 
@@ -102,3 +111,29 @@ def test_input_value_errors(
             list_of_priorities_from_rules,
         )
     assert expected_error_message in str(error_message.value)
+
+
+def test_main(mocker):
+    """
+    Given:
+        - All return values from helper functions are valid
+    When:
+        - main function is executed
+    Then:
+        - Return results to War-Room
+    """
+    expected_closest_numbers = [299, 298]
+
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "target_rule_priority": 300,
+            "number_of_available_priorities_to_retrieve": 2,
+            "list_of_priorities_from_rules": [105, 200, 300],
+        },
+    )
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    assert results[0]['Contents'] == expected_closest_numbers
