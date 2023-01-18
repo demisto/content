@@ -32,7 +32,7 @@ def test_send_request(mocker):
 def test_get_aws_secrets(mocker):
     mocker.patch('HashiCorpVault.SERVER_URL', return_value='test')
     get_aws_secrets('test', '999', False)
-    assert mock.call_args.args[0] == 'test'
+    assert mock.call_args.args[0] == 'test/roles'
     get_aws_secrets('test', '999', False)
     assert mock.call_args.args[0] == 'test/roles/1'
     get_aws_secrets('test', '999', False)
