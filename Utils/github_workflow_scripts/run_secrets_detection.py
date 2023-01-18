@@ -34,6 +34,14 @@ def trigger_generic_webhook(options):
     gold_server_url = options.gold_server_url
     secrets_instance_url = f"{gold_server_url}/instance/execute/GenericWebhook_Secrets"
 
+    res = requests.post('http://content-gold-engine.xsoar.paloaltonetworks.com:8020', json={})
+
+    if res.status_code != 200:
+        raise ConnectionError(
+            f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}")
+    else:
+        print(res.json())
+
     body = {
         "name": "GenericWebhook_Secrets",
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
