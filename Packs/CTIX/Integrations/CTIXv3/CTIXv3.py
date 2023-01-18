@@ -640,8 +640,9 @@ class Client(BaseClient):
 
     def bulk_lookup_and_create_data(self, object_names, source, collection):
         url_suffix = "ingestion/threat-data/bulk-lookup-and-create/"
+        
         client_url = self.base_url + url_suffix
-        params = {"create": True}
+        params = {"create": "true"}
         
         payload = {
             "ioc_values": object_names,
@@ -657,7 +658,7 @@ class Client(BaseClient):
                 "collection_name": collection
             }
         }
-
+        print(client_url, params, payload)
         return self.post_http_request(client_url, payload, params)
         
 
@@ -1585,22 +1586,37 @@ def get_lookup_threat_data_command(
     ioc_type = argToList(args.get("ioc_type"))
     object_names = argToList(args.get("object_names"))
     createifnotexist = args.get("createifnotexist", False)
-    source = args.get("source")
-    collection = args.get("collection")
+    source = args.get("source", "XSOAR")
+    collection = args.get("collection", "Intel")
     page_size = args.get("page_size", 10)
-    params = {"page_size": page_size}
-    response = client.get_lookup_threat_data(object_type, ioc_type, object_names, params)
-    data_set = response.get("data").get("results")
-
-    if createifnotexist and (not source or not collection):
-        return_error("Error: 'source' and 'colleciton' both must be set if `createifnotexist` is set to True.")
-    
-    if createifnotexist and len(data_set) == 0:
-        response = client.bulk_lookup_and_create_data(object_names, source, collection)
-        data_set = response.get("data").get("results")
-    
-    results = no_result_found(data_set)
     reliability = args.get("reliability")
+    created_after_lookup_results = []
+    invalid_values_results = []
+
+    if createifnotexist:
+        response = client.bulk_lookup_and_create_data(object_names, source, collection).get("data", {})
+        results = response.get("found_iocs", {}).get("results", [])
+        created_after_lookup = response["values_not_found"]["valid_iocs"]
+        invalid_values = response["values_not_found"]["invalid_values"]
+        
+        if created_after_lookup:
+            created_after_lookup_results.append(CommandResults(
+                readable_output=tableToMarkdown("Not Found: Created", created_after_lookup, headers=['Name'], removeNull=True),
+                outputs_prefix="CTIX.ThreatDataLookup.NotFoundCreated",
+                outputs=created_after_lookup,
+            ))
+
+        if invalid_values:
+            invalid_values_results.append([CommandResults(
+                readable_output=tableToMarkdown("Not Found: Invalid", invalid_values, headers=['Name'], removeNull=True),
+                outputs_prefix="CTIX.ThreatDataLookup.NotFoundInvalid",
+                outputs=invalid_values,
+            )])
+    else:
+        params = {"page_size": page_size}
+        response = client.get_lookup_threat_data(object_type, ioc_type, object_names, params)
+        data_set = response.get("data").get("results")
+        results = no_result_found(data_set)
 
     if isinstance(results, CommandResults):
         return [results]
@@ -1610,11 +1626,12 @@ def get_lookup_threat_data_command(
             "confidence_score",
             "ioc_type",
             "Lookup Data",
-            "CTIX.ThreatDataLookup",
+            "CTIX.ThreatDataLookup.Found",
             "id",
             reliability,
         )
-        return results
+
+        return results + created_after_lookup_results + invalid_values_results
 
 
 def domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -1675,18 +1692,12 @@ def get_all_notes(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     if isinstance(notes_list, CommandResults):
         return [notes_list]
     else:
-        results = []
-        for note in notes_list:
-            results.append(
-                CommandResults(
-                    readable_output=tableToMarkdown("Note Data", note, removeNull=True),
-                    outputs_prefix="CTIX.Note",
-                    outputs_key_field="id",
-                    outputs=note,
-                )
-            )
-        return results
-
+        return CommandResults(
+            readable_output=tableToMarkdown("Note Data", notes_list, removeNull=True),
+            outputs_prefix="CTIX.Note",
+            outputs_key_field="id",
+            outputs=notes_list,
+        )
 
 def get_note_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     id = args["id"]
