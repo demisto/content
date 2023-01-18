@@ -9,7 +9,6 @@ import urllib3
 
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
@@ -188,8 +187,9 @@ class MsGraphClient:
         if page_url:
             response = self.ms_client.http_request(method='GET', url_suffix='users', full_url=page_url)
         else:
-            response = self.ms_client.http_request(method='GET', url_suffix='users', headers={"ConsistencyLevel": "eventual"}, params={
-                                                   '$filter': filters, '$select': properties, "$count": "true"})
+            response = self.ms_client.http_request(method='GET', url_suffix='users',
+                                                   headers={"ConsistencyLevel": "eventual"}, params={
+                    '$filter': filters, '$select': properties, "$count": "true"})
                                                    
         next_page_url = response.get('@odata.nextLink')
         users = response.get('value')
