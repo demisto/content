@@ -536,68 +536,6 @@ def kmsat_training_enrollments_list_command(
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_time):
-    """
-    This function will execute each interval (default is 1 minute).
-
-    Args:
-        client: KMSAT client
-        last_run: The greatest incident created_time we fetched from last fetch
-        first_fetch_time: If last_run is None then fetch all incidents since first_fetch_time
-
-    Returns:
-        next_run: This will be last_run in the next fetch-incidents
-        incidents: Incidents that will be created in Cortex XSOAR
-    """
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get("last_fetch")
-
-    # Handle first time fetch
-    if last_fetch is None:
-        last_fetch, _ = dateparser.parse(first_fetch_time)
-    else:
-        last_fetch = dateparser.parse(last_fetch)
-
-    latest_created_time = last_fetch
-    incidents = []
-    items = client.list_incidents()
-    for item in items:
-        incident_created_time = dateparser.parse(item["created_time"])
-        incident = {
-            "name": item["description"],
-            "occurred": incident_created_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "rawJSON": json.dumps(item),
-        }
-
-        incidents.append(incident)
-
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
-
-    next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
-    return next_run, incidents
-
-
-def fetch_incidents_command(client: Client) -> None:
-    """
-    Function that calls the fetch incidents and writing all incidents to demisto.incidents
-
-    args:
-        client (Client): Phisher client
-    """
-    first_fetch_time = client.first_fetch_time
-    fetch_limit = arg_to_number(client.max_fetch)
-    next_run, incidents = fetch_incidents(
-        client=client,
-        last_run=demisto.getLastRun(),
-        first_fetch_time=first_fetch_time,
-        max_fetch=fetch_limit,
-    )  # type: ignore
-    demisto.setLastRun({"last_fetch": next_run})
-    demisto.incidents(incidents)
-
-
 def kmsat_user_events_list_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
@@ -788,8 +726,6 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client, userEventClient)
             return_results(result)
-        elif command == "fetch-incidents":
-            fetch_incidents_command(client)
         elif command == "kmsat-account-info-list":
             return_results(kmsat_account_info_list_command(client))
         elif command == "kmsat-account-risk-score-history-list":
