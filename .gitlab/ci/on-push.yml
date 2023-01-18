@@ -425,12 +425,12 @@ test_upload_flow:
   stage: unittests-and-validations
   script:
     - |
-      if !$(git diff origin/master upload_testing_flow --name-only | grep -q "Tests/\|Utils/") ; then                                                                            16:33:03
+      if !$(git diff origin/master $CI_COMMIT_BRANCH --name-only | grep -q "Tests/\|Utils/") ; then                                                                            16:33:03
         echo "No upload related files were modified, skipping upload test "
         exit 0
       fi
     - section_start "Create Testing Branch"
-    - export BRANCH="${CI_COMMIT_BRANCH}_upload_test_branch_$(date +%s)"
+    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
     - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
     - echo $BRANCH
     - section_end "Create Testing Branch"

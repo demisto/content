@@ -69,10 +69,6 @@ class GCP:
         self.extracting_destination = tempfile.mkdtemp()
         self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
                                                            self.storage_base_path)
-        # TODO: FOR TESTING - use these lines instead of the 2 above
-        # self.extracting_destination = os.path.join(os.getcwd(), 'results')
-        # TODO: FOR TESTING - download the index once to this path and then work with it
-        # self.index_path = '/Users/nmaimon/dev/demisto/content/Utils/test_upload_flow/results/index'
 
     def download_and_extract_pack(self, pack_id, pack_version):
         """
@@ -186,7 +182,7 @@ class BucketVerifier:
         self.bucket_name = bucket_name
         self.versions = versions_dict
         self.items_dict = items_dict
-        self.is_valid = True
+        self.is_valid = True  # This will be modified in the @logger wrapper function
 
     @logger
     def verify_new_pack(self, pack_id, pack_items):

@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 from typing import Union
 from git import GitCommandError, Head, Repo
+from zipfile import ZipFile
 
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -34,6 +35,8 @@ def json_write(file_path: str, data: Union[list, dict]):
 def get_pack_content_paths(pack_path: Path, marketplace='xsoar'):
     """
     Gets a dict of all the paths of the given pack content items as it is in the bucket.
+    To get these paths we are running the `demisto-sdk prepare-content` command and saving the result
+    paths for each created item in the pack into a dict that will be saved in a file result `packs_items.json`.
 
     Args:
         pack_path (Path): The pack path.
@@ -41,23 +44,33 @@ def get_pack_content_paths(pack_path: Path, marketplace='xsoar'):
     Returns:
         dict: The content items paths dict.
     """
-    create_artifacts_command = ['demisto-sdk', 'create-content-artifacts', '-a',
-                                '.', "-p", f'{pack_path.name}', '--no-zip', '--packs']
-    if marketplace == 'marketplacev2':
+    create_artifacts_command = ['demisto-sdk', 'prepare-content', '-i', f'Packs/{pack_path.name}', '-o', '.']
+    if marketplace != 'xsoar':
         create_artifacts_command.extend(['-mp', f'{marketplace}'])
 
-    subprocess.call(create_artifacts_command, stdout=subprocess.DEVNULL)
-
+    try:
+        logging.debug(f"Running the SDK prepare-content command for pack {pack_path.name} - "
+                    f"Command: `{' '.join(create_artifacts_command)}`")
+        res = subprocess.run(create_artifacts_command, capture_output=True, check=True)
+        logging.debug(f"Result from prepare-content - stdout: [{res.stdout}] stderr: [{res.stderr}]")
+    except subprocess.CalledProcessError as se:
+        logging.error(f'Subprocess exception: {se}. stderr: [{se.stderr}] stdout: [{se.stdout}]')
+        raise
+    
+    pack_artifacts_path = f'./{pack_path.name}'
+    with ZipFile(f'{pack_path.name}.zip') as pack_artifacts_zip:
+        pack_artifacts_zip.extractall(pack_artifacts_path)
+    os.remove(f'{pack_path.name}.zip')
+    
     content_dict = {}
-    new_pack_path = os.path.join('content_packs', pack_path.name)
-    sub_dirs = os.listdir(new_pack_path)
+    sub_dirs = os.listdir(pack_artifacts_path)
     sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
 
     for content_item_type in sub_dirs:
         if content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
-            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path),
+            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(pack_artifacts_path),
                                                                                                 content_item_type)).glob('*')]
-    shutil.rmtree('./content_packs')
+    shutil.rmtree(pack_artifacts_path)
     return content_dict
 
 
