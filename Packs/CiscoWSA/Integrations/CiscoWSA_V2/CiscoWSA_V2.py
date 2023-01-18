@@ -81,41 +81,47 @@ class Client(BaseClient):
         policy_name: str,
         policy_status: str,
         identification_profile_name: str,
-        policy_order: Optional[str] = None,
+        policy_order: int,
         policy_description: Optional[str] = None,
         policy_expiry: Optional[str] = None,
     ):
 
-        data = {
-            "access_policies": [
-                {
-                    "policy_name": policy_name,
-                    "policy_order": policy_order,
-                    "policy_status": policy_status,
-                    "policy_description": policy_description,
-                    "policy_expiry": policy_expiry,
-                    "membership": {
-                        "identification_profiles": [
-                            {
-                                "auth": "No Authentication",
-                                "profile_name": identification_profile_name,
-                            }
-                        ],
-                    },
-                }
-            ]
-        }
+        data = remove_empty_elements(
+            {
+                "access_policies": [
+                    {
+                        "policy_name": policy_name,
+                        "policy_order": policy_order,
+                        "policy_status": policy_status,
+                        "policy_description": policy_description,
+                        "policy_expiry": policy_expiry,
+                        "membership": {
+                            "identification_profiles": [
+                                {
+                                    "auth": "No Authentication",
+                                    "profile_name": identification_profile_name,
+                                }
+                            ],
+                        },
+                    }
+                ]
+            }
+        )
 
         return self._http_request(
-            "POST", f"{V3_PREFIX}/web_security/access_policies", json_data=data
+            "POST",
+            f"{V3_PREFIX}/web_security/access_policies",
+            json_data=data,
+            resp_type="response",
         )
 
     def access_policy_update_request(
         self,
         policy_name: str,
+        new_policy_name: Optional[str] = None,
         policy_status: Optional[str] = None,
         policy_description: Optional[str] = None,
-        policy_order: Optional[str] = None,
+        policy_order: Optional[int] = None,
         policy_expiry: Optional[str] = None,
     ):
         """
@@ -123,6 +129,7 @@ class Client(BaseClient):
 
         Args:
             policy_name (str): Policy name to update.
+            new_policy_name (Optional[str], optional): Policy status. Defaults to None.
             policy_status (Optional[str], optional): Policy status. Defaults to None.
             policy_description (Optional[str], optional): Policy description. Defaults to None.
             policy_order (Optional[str], optional): Policy order. Defaults to None.
@@ -136,6 +143,7 @@ class Client(BaseClient):
                 "access_policies": [
                     {
                         "policy_name": policy_name,
+                        "new_policy_name": new_policy_name,
                         "policy_status": policy_status,
                         "policy_description": policy_description,
                         "policy_order": policy_order,
@@ -162,6 +170,11 @@ class Client(BaseClient):
         custom_categories_action: Optional[str] = None,
         custom_categories: Optional[List[str]] = None,
         uncategorized_url: Optional[str] = None,
+        update_categories_action: Optional[str] = None,
+        content_rating_action: Optional[str] = None,
+        content_rating_status: Optional[str] = None,
+        safe_search_status: Optional[str] = None,
+        unsupported_safe_search_engine: Optional[str] = None,
     ):
         data = remove_empty_elements(
             {
@@ -176,11 +189,17 @@ class Client(BaseClient):
                             "custom_cats": {
                                 custom_categories_action: custom_categories
                             },
-                            "safe_search": {"status": "disable"},
-                            "content_rating": {"status": "disable"},
-                            "exception_referred_embedded_content": {"state": "disable"},
-                            "update_cats_action": "least restrictive",
+                            # "exception_referred_embedded_content": {"state": "disable"},
                             "uncategorized_url": uncategorized_url,
+                            "update_cats_action": update_categories_action,
+                            "content_rating": {
+                                "status": content_rating_status,
+                                "action": content_rating_action,
+                            },
+                            "safe_search": {
+                                "status": safe_search_status,
+                                "unsupported_safe_search_engine": unsupported_safe_search_engine,
+                            },
                         },
                     }
                 ]
@@ -231,8 +250,8 @@ class Client(BaseClient):
         object_action: Optional[str] = None,
         object_values: Optional[List[str]] = None,
         block_custom_mime_types: Optional[List[str]] = None,
-        http_or_https_max_object_size_mb: Optional[List[str]] = None,
-        ftp_max_object_size_mb: Optional[List[str]] = None,
+        http_or_https_max_object_size_mb: Optional[int] = None,
+        ftp_max_object_size_mb: Optional[int] = None,
     ):
         data = remove_empty_elements(
             {
@@ -245,8 +264,8 @@ class Client(BaseClient):
                             },
                             "block_custom_mime_types": block_custom_mime_types,
                             "max_object_size_mb": {
-                                "ftp": ftp_max_object_size_mb,
                                 "http_or_https": http_or_https_max_object_size_mb,
+                                "ftp": ftp_max_object_size_mb,
                             },
                             "state": "custom",
                         },
@@ -265,17 +284,15 @@ class Client(BaseClient):
     def access_policy_anti_malware_update_request(
         self,
         policy_name: str,
-        # file_analysis: Optional[str] = None,
-        # file_reputation_action: Optional[str] = None,
-        # file_reputation_values: Optional[List[str]] = None,
-        # file_reputation_filtering: Optional[str] = None,
-        # web_reputation: Optional[str] = None,
-        # suspect_user_agent_scanning: Optional[str] = None,
-        # anti_malware_categories_action: Optional[str] = None,
-        # anti_malware_categories: Optional[List[str]] = None,
-        # anti_malware_scanning: Optional[str] = None,
-        malware_action: Optional[str] = None,
-        malware_values: Optional[List[str]] = None,
+        web_reputation_status: Optional[str] = None,
+        file_reputation_filtering_status: Optional[str] = None,
+        file_reputation_action: Optional[str] = None,
+        anti_malware_scanning_status: Optional[str] = None,
+        suspect_user_agent_scanning: Optional[str] = None,
+        malware_categories_action: Optional[str] = None,
+        malware_categories_values: Optional[List[str]] = None,
+        other_categories_action: Optional[str] = None,
+        other_categories_values: Optional[List[str]] = None,
     ):
         data = remove_empty_elements(
             {
@@ -283,37 +300,24 @@ class Client(BaseClient):
                     {
                         "policy_name": policy_name,
                         "amw_reputation": {
-                            # "adv_malware_protection": {
-                            #     "file_analysis": "enable",
-                            #     "file_reputation": {
-                            #         "monitor": ["Known Malicious and High-Risk Files"]
-                            #     },
-                            #     "file_reputation_filtering": "enable",
-                            # },
-                            # "web_reputation": {"filtering": "enable"},
-                            # -----------------------------------------------------
-                            # "adv_malware_protection": {
-                            #     "file_analysis": file_analysis,
-                            #     "file_reputation": {
-                            #         file_reputation_action: file_reputation_values
-                            #     },
-                            #     "file_reputation_filtering": file_reputation_filtering,
-                            # },
-                            # "web_reputation": {"filtering": web_reputation},
+                            "web_reputation": {"filtering": web_reputation_status},
+                            "adv_malware_protection": {
+                                "file_reputation_filtering": file_reputation_filtering_status,
+                                "file_reputation": {
+                                    file_reputation_action: "Known Malicious and High-Risk Files"
+                                    if file_reputation_action
+                                    else None
+                                },
+                            },
                             "cisco_dvs_amw": {
-                                # "suspect_user_agent_scanning": "scan",
-                                # "other_categories": {
-                                #     "monitor": ["Encrypted File", "Unscannable"],
-                                #     "block": ["Outbreak Heuristics"],
-                                # },
-                                # "amw_scanning": {"amw_scan_status": "enable"},
-                                # -----------------------------------------------------
-                                # "suspect_user_agent_scanning": suspect_user_agent_scanning,
-                                # "other_categories": {
-                                #     anti_malware_categories_action: anti_malware_categories,
-                                # },
-                                # "amw_scanning": {"amw_scan_status": anti_malware_scanning},
-                                "malware_categories": {malware_action: malware_values},
+                                "amw_scanning": {
+                                    "amw_scan_status": anti_malware_scanning_status
+                                },
+                                "suspect_user_agent_scanning": suspect_user_agent_scanning,
+                                "malware_categories": {malware_categories_action: malware_categories_values},
+                                "other_categories": {
+                                    other_categories_action: other_categories_values,
+                                },
                             },
                         },
                     }
@@ -330,24 +334,24 @@ class Client(BaseClient):
 
     def access_policy_applications_update_request(
         self,
-        application: Optional[str] = None,
-        action: Optional[str] = None,
-        values: Optional[List[str]] = None,
+        policy_name: str,
+        application: str,
+        action: str,
+        values: List[str],
     ):
-        data = remove_empty_elements(
-            {
-                "access_policies": [
-                    {
-                        "policy_name": "global_policy",
-                        "avc": {
-                            "applications": {
-                                application: {action: {value: {} for value in values}},
-                            }
+        data = {
+            "access_policies": [
+                {
+                    "policy_name": policy_name,
+                    "avc": {
+                        "applications": {
+                            application: {action: {value: {} for value in values}},
                         },
-                    }
-                ]
-            }
-        )
+                        "state": "custom",
+                    },
+                }
+            ]
+        }
 
         return self._http_request(
             "PUT",
@@ -663,7 +667,7 @@ def access_policy_create_command(
 ) -> CommandResults:
     policy_name = args["policy_name"]
     policy_status = args["policy_status"]
-    policy_order = args["policy_order"]
+    policy_order = arg_to_number(args["policy_order"])
     identification_profile_name = args["identification_profile_name"]
     policy_description = args.get("policy_description")
     policy_expiry = args.get("policy_expiry")
@@ -677,9 +681,12 @@ def access_policy_create_command(
         policy_expiry=policy_expiry,
     )
 
-    return CommandResults(
-        # readable_output=readable_output,
-    )
+    if response.status_code == 204:
+        return CommandResults(
+            readable_output=f'Created "{policy_name}" access policy successfully.'
+        )
+    else:
+        raise DemistoException(response.json())
 
 
 def access_policy_update_command(
@@ -696,13 +703,15 @@ def access_policy_update_command(
         CommandResults: readable outputs for XSOAR.
     """
     policy_name = args["policy_name"]
+    new_policy_name = args.get("new_policy_name")
     policy_status = args.get("policy_status")
     policy_description = args.get("policy_description")
-    policy_order = args.get("policy_order")
+    policy_order = arg_to_number(args.get("policy_order"))
     policy_expiry = args.get("policy_expiry")
 
     response = client.access_policy_update_request(
         policy_name=policy_name,
+        new_policy_name=new_policy_name,
         policy_status=policy_status,
         policy_description=policy_description,
         policy_order=policy_order,
@@ -710,7 +719,7 @@ def access_policy_update_command(
     )
 
     if response.status_code == 204:
-        readable_output = f"{policy_name} policy updated successfully."
+        readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
         raise Exception(response.json())
 
@@ -723,7 +732,7 @@ def access_policy_protocols_user_agents_update_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     """
-    Update an access policy.
+    Update access policy's protocols and user agents settings.
 
     Args:
         client (Client): Cisco WSA API client.
@@ -733,21 +742,19 @@ def access_policy_protocols_user_agents_update_command(
         CommandResults: readable outputs for XSOAR.
     """
     policy_name = args["policy_name"]
-    # policy_status = args.get("policy_status")
-    # policy_description = args.get("policy_description")
-    # policy_order = args.get("policy_order")
-    # policy_expiry = args.get("policy_expiry")
+    block_custom_user_agents = argToList(args.get("block_custom_user_agents"))
+    allow_connect_ports = argToList(args.get("allow_connect_ports"))
+    block_protocols = argToList(args.get("block_protocols"))
 
     response = client.access_policy_protocols_user_agents_update_request(
         policy_name=policy_name,
-        # policy_status=policy_status,
-        # policy_description=policy_description,
-        # policy_order=policy_order,
-        # policy_expiry=policy_expiry,
+        block_custom_user_agents=block_custom_user_agents,
+        allow_connect_ports=allow_connect_ports,
+        block_protocols=block_protocols,
     )
 
     if response.status_code == 204:
-        readable_output = f"{policy_name} policy updated successfully."
+        readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
         raise Exception(response.json())
 
@@ -760,7 +767,7 @@ def access_policy_url_filtering_update_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     """
-    Update an access policy.
+    Update access policy's URL filtering settings.
 
     Args:
         client (Client): Cisco WSA API client.
@@ -770,21 +777,37 @@ def access_policy_url_filtering_update_command(
         CommandResults: readable outputs for XSOAR.
     """
     policy_name = args["policy_name"]
-    # policy_status = args.get("policy_status")
-    # policy_description = args.get("policy_description")
-    # policy_order = args.get("policy_order")
-    # policy_expiry = args.get("policy_expiry")
+    predefined_categories_action = args.get("predefined_categories_action")
+    predefined_categories = argToList(args.get("predefined_categories"))
+    youtube_categories_action = args.get("youtube_categories_action")
+    youtube_categories = argToList(args.get("youtube_categories"))
+    custom_categories_action = args.get("custom_categories_action")
+    custom_categories = argToList(args.get("custom_categories"))
+    uncategorized_url = args.get("uncategorized_url")
+    update_categories_action = args.get("update_categories_action")
+    content_rating_action = args.get("content_rating_action")
+    content_rating_status = args.get("content_rating_status")
+    safe_search_status = args.get("safe_search_status")
+    unsupported_safe_search_engine = args.get("unsupported_safe_search_engine")
 
     response = client.access_policy_url_filtering_update_request(
         policy_name=policy_name,
-        # policy_status=policy_status,
-        # policy_description=policy_description,
-        # policy_order=policy_order,
-        # policy_expiry=policy_expiry,
+        predefined_categories_action=predefined_categories_action,
+        predefined_categories=predefined_categories,
+        youtube_categories_action=youtube_categories_action,
+        youtube_categories=youtube_categories,
+        custom_categories_action=custom_categories_action,
+        custom_categories=custom_categories,
+        uncategorized_url=uncategorized_url,
+        update_categories_action=update_categories_action,
+        content_rating_action=content_rating_action,
+        content_rating_status=content_rating_status,
+        safe_search_status=safe_search_status,
+        unsupported_safe_search_engine=unsupported_safe_search_engine,
     )
 
     if response.status_code == 204:
-        readable_output = f"{policy_name} policy updated successfully."
+        readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
         raise Exception(response.json())
 
@@ -797,7 +820,7 @@ def access_policy_applications_update_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     """
-    Update an access policy.
+    Update access policy's applications settings.
 
     Args:
         client (Client): Cisco WSA API client.
@@ -807,21 +830,19 @@ def access_policy_applications_update_command(
         CommandResults: readable outputs for XSOAR.
     """
     policy_name = args["policy_name"]
-    # policy_status = args.get("policy_status")
-    # policy_description = args.get("policy_description")
-    # policy_order = args.get("policy_order")
-    # policy_expiry = args.get("policy_expiry")
+    application = args["application"]
+    action = args["action"]
+    values = argToList(args["values"])
 
     response = client.access_policy_applications_update_request(
         policy_name=policy_name,
-        # policy_status=policy_status,
-        # policy_description=policy_description,
-        # policy_order=policy_order,
-        # policy_expiry=policy_expiry,
+        application=application,
+        action=action,
+        values=values,
     )
 
     if response.status_code == 204:
-        readable_output = f"{policy_name} policy updated successfully."
+        readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
         raise Exception(response.json())
 
@@ -844,21 +865,27 @@ def access_policy_objects_update_command(
         CommandResults: readable outputs for XSOAR.
     """
     policy_name = args["policy_name"]
-    # policy_status = args.get("policy_status")
-    # policy_description = args.get("policy_description")
-    # policy_order = args.get("policy_order")
-    # policy_expiry = args.get("policy_expiry")
+    object_type = args.get("object_type")
+    object_action = args.get("object_action")
+    object_values = argToList(args.get("object_values"))
+    block_custom_mime_types = argToList(args.get("block_custom_mime_types"))
+    http_or_https_max_object_size_mb = arg_to_number(
+        args.get("http_or_https_max_object_size_mb")
+    )
+    ftp_max_object_size_mb = arg_to_number(args.get("ftp_max_object_size_mb"))
 
     response = client.access_policy_objects_update_request(
         policy_name=policy_name,
-        # policy_status=policy_status,
-        # policy_description=policy_description,
-        # policy_order=policy_order,
-        # policy_expiry=policy_expiry,
+        object_type=object_type,
+        object_action=object_action,
+        object_values=object_values,
+        block_custom_mime_types=block_custom_mime_types,
+        http_or_https_max_object_size_mb=http_or_https_max_object_size_mb,
+        ftp_max_object_size_mb=ftp_max_object_size_mb,
     )
 
     if response.status_code == 204:
-        readable_output = f"{policy_name} policy updated successfully."
+        readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
         raise Exception(response.json())
 
@@ -881,21 +908,31 @@ def access_policy_anti_malware_update_command(
         CommandResults: readable outputs for XSOAR.
     """
     policy_name = args["policy_name"]
-    # policy_status = args.get("policy_status")
-    # policy_description = args.get("policy_description")
-    # policy_order = args.get("policy_order")
-    # policy_expiry = args.get("policy_expiry")
+    web_reputation_status = args.get('web_reputation_status')
+    file_reputation_filtering_status = args.get('file_reputation_filtering_status')
+    file_reputation_action = args.get('file_reputation_action')
+    anti_malware_scanning_status = args.get('anti_malware_scanning_status')
+    suspect_user_agent_scanning = args.get('suspect_user_agent_scanning')
+    malware_categories_action = args.get('malware_categories_action')
+    malware_categories_values = args.get('malware_categories_values')
+    other_categories_action = args.get('other_categories_action')
+    other_categories_values = args.get('other_categories_values')
 
     response = client.access_policy_anti_malware_update_request(
         policy_name=policy_name,
-        # policy_status=policy_status,
-        # policy_description=policy_description,
-        # policy_order=policy_order,
-        # policy_expiry=policy_expiry,
+        web_reputation_status=web_reputation_status,
+        file_reputation_filtering_status=file_reputation_filtering_status,
+        file_reputation_action=file_reputation_action,
+        anti_malware_scanning_status=anti_malware_scanning_status,
+        suspect_user_agent_scanning=suspect_user_agent_scanning,
+        malware_categories_action=malware_categories_action,
+        malware_categories_values=malware_categories_values,
+        other_categories_action=other_categories_action,
+        other_categories_values=other_categories_values,
     )
 
     if response.status_code == 204:
-        readable_output = f"{policy_name} policy updated successfully."
+        readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
         raise Exception(response.json())
 
@@ -922,7 +959,7 @@ def access_policy_delete_command(
     response = client.access_policy_delete_request(policy_names)
 
     if response.status_code == 204:
-        readable_output = f"{policy_names} policy deleted successfully."
+        readable_output = f"{policy_names} access policy deleted successfully."
     else:
         raise Exception(response.json())
 
@@ -1202,12 +1239,16 @@ def identification_profiles_delete_command(
         response = response.json()
         command_results_list = []
         for profile in response.get("success_list"):
-            readable_output = f'Identification profile "{profile.get("profile_name")}" '\
-                f'was successfully deleted.'
+            readable_output = (
+                f'Identification profile "{profile.get("profile_name")}" '
+                f"was successfully deleted."
+            )
             command_results_list.append(CommandResults(readable_output=readable_output))
         for profile in response.get("failure_list"):
-            readable_output = f'Identification profile "{profile.get("profile_name")}" '\
+            readable_output = (
+                f'Identification profile "{profile.get("profile_name")}" '
                 f'deletion failed, message: "{profile.get("message")}".'
+            )
             command_results_list.append(CommandResults(readable_output=readable_output))
 
         return command_results_list
