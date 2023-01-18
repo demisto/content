@@ -30,6 +30,33 @@ def find_available_priorities(
         list: a number of available priorities before the offending rules' priority (target_rule_priority).
     """
 
+    list_of_priorities_from_rules = validate_input(
+        target_rule_priority,
+        number_of_available_priorities_to_retrieve,
+        list_of_priorities_from_rules,
+    )
+
+    not_in_list = set(range(100, target_rule_priority)).difference(
+        set(list_of_priorities_from_rules)
+    )
+    closest_numbers = sorted(
+        not_in_list, key=lambda entry: abs(entry - target_rule_priority)
+    )[:number_of_available_priorities_to_retrieve]
+
+    if (
+        not closest_numbers
+        or len(closest_numbers) != number_of_available_priorities_to_retrieve
+    ):
+        raise ValueError("Available priorities not found.")
+
+    return closest_numbers
+
+
+def validate_input(
+    target_rule_priority: int,
+    number_of_available_priorities_to_retrieve: int,
+    list_of_priorities_from_rules: list,
+):
     if not target_rule_priority:
         raise ValueError("target_rule_priority not specified.")
     elif target_rule_priority <= 100:
@@ -58,31 +85,19 @@ def find_available_priorities(
             "list_of_priorities_from_rules does not support list over 999 entries, please reduce the list."
         )
 
-    list_of_numbers = list_of_priorities_from_rules
-    target_number = target_rule_priority
-
-    not_in_list = set(range(100, target_number)).difference(set(list_of_numbers))
-    closest_numbers = sorted(not_in_list, key=lambda entry: abs(entry - target_number))[
-        :number_of_available_priorities_to_retrieve
-    ]
-
-    if (
-        not closest_numbers
-        or len(closest_numbers) != number_of_available_priorities_to_retrieve
-    ):
-        raise ValueError("Available priorities not found.")
-
-    return closest_numbers
+    return list_of_priorities_from_rules
 
 
 def main():
     try:
-        target_rule_priority = int(demisto.args().get("target_rule_priority"))
+        args = demisto.args()
+
+        target_rule_priority = int(args.get("target_rule_priority"))
         number_of_available_priorities_to_retrieve = int(
-            demisto.args().get("number_of_available_priorities_to_retrieve")
+            args.get("number_of_available_priorities_to_retrieve")
         )
-        list_of_priorities_from_rules = demisto.args().get(
-            "list_of_priorities_from_rules"
+        list_of_priorities_from_rules = argToList(
+            args.get("list_of_priorities_from_rules")
         )
 
         closest_numbers = find_available_priorities(

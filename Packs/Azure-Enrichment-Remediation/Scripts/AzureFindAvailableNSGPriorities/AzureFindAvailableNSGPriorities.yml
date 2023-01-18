@@ -11,11 +11,17 @@ args:
   required: true
 comment: 'This script takes in a list of numbers that represent Azure priorities for NSG rules, a target priority number, and a number available priorities to return available priorities from the provided list. '
 commonfields:
-  id: AzureFindAvailableNSGPriorities
+  id: 4040aec2-b5bd-4eb7-88c4-8cb93c394f97
   version: -1
-dockerimage: demisto/python3:3.10.9.44472
+dockerimage: demisto/python3:3.10.9.42476
 enabled: true
+engineinfo: {}
+mainengineinfo: {}
 name: AzureFindAvailableNSGPriorities
+outputs:
+- contextPath: AvailableAzureNSGPriorities
+  description: List of numbers that represent available Azure NSG priorities
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
