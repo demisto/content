@@ -101,7 +101,8 @@ def main():
     args = demisto.args()
 
     limit = sys.maxsize if not args.get('limit') else arg_to_number(args.get('limit'))
-    url = "https://live.paloaltonetworks.com/twzvq79624/rss/search?filter=includeBlogs%2Clabels&collapse_discussion=true&search_type=thread&include_blogs=true&labels=cortex+xsoar"
+    url = "https://live.paloaltonetworks.com/twzvq79624/rss/search?filter=includeBlogs%2Clabels&" \
+          "collapse_discussion=true&search_type=thread&include_blogs=true&labels=cortex+xsoar"
 
     try:
         parsed_feed_data = parse_feed_data(url)
