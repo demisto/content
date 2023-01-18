@@ -144,15 +144,20 @@ def get_events_command(
 
 
 def parse_event(event: dict):
-    event_id = event['id']
-    event_created_time = int(event.get('created_at', '0'))
-    _time = event_created_time
-    event_created_time_ms = event_created_time * 1000
+    _time = int(event.get('created_at', '0'))
+    event_created_time_ms = _time * 1000
     parsed_event = {
-        'id': event_id,
+        'id': event.get('id', ''),
+        'action': event.get('action', ''),
+        'success': event.get('success', ''),
+        'target_type': event.get('target_type', ''),
+        'target_name': event.get('target_name', ''),
+        'target_id': event.get('target_id', ''),
+        'source_name': event.get('source_name', ''),
+        'source_id': event.get('source_id', ''),
+        'source_type': event.get('source_type', ''),
         'occurred': timestamp_to_datestring(event_created_time_ms),
-        '_time': _time,
-        'rawJSON': json.dumps(event),
+        '_time': timestamp_to_datestring(event_created_time_ms),
     }
     return parsed_event
 

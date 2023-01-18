@@ -48,7 +48,38 @@ import io
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
-    
+
+
+def get_actual_events():
+    return [
+        {
+            'id': '991926c7-2d35-47fb-a146-e587db439c8e',
+            'occurred': '2023-01-14T21:41:02.000Z',
+            '_time': '2023-01-14T21:41:02.000Z',
+            'action': 'agent-offline',
+            'source_id': 'source_uuid',
+            'source_name': 'M-source_name_identifier',
+            'source_type': 'agent',
+            'target_id': 'organization_uuid',
+            'target_name': 'target_name',
+            'target_type': 'organization',
+            'success': True
+        },
+        {
+            'id': 'a0d93736-fe84-4948-be43-d862011ab7e2',
+            'occurred': '2023-01-14T23:20:08.000Z',
+            '_time': '2023-01-14T23:20:08.000Z',
+            'action': 'agent-status',
+            'source_id': 'source_uuid',
+            'source_name': 'M-source_name_identifier',
+            'source_type': 'agent',
+            'target_id': 'organization_uuid',
+            'target_name': 'target_name',
+            'target_type': 'organization',
+            'success': True
+        }
+    ]
+
 
 def test_sort_events_by_ids():
     from RunZeroEventCollector import sort_events
@@ -95,20 +126,7 @@ def test_get_events_command(requests_mock):
         limit=2
     )
 
-    assert events == [
-        {
-            'id': '991926c7-2d35-47fb-a146-e587db439c8e',
-            'occurred': '2023-01-14T21:41:02.000Z',
-            '_time': 1673732462,
-            'rawJSON': json.dumps(mock_response[0])
-        },
-        {
-            'id': 'a0d93736-fe84-4948-be43-d862011ab7e2',
-            'occurred': '2023-01-14T23:20:08.000Z',
-            '_time': 1673738408,
-            'rawJSON': json.dumps(mock_response[1])
-        }
-    ]
+    assert events == get_actual_events()
 
 
 def test_fetch_events(requests_mock):
@@ -155,17 +173,11 @@ def test_fetch_events(requests_mock):
         first_fetch_time=1673719953,
     )
 
-    assert events == [
-        {
-            'id': '991926c7-2d35-47fb-a146-e587db439c8e',
-            'occurred': '2023-01-14T21:41:02.000Z',
-            '_time': 1673732462,
-            'rawJSON': json.dumps(mock_response[0])
-        },
-        {
-            'id': 'a0d93736-fe84-4948-be43-d862011ab7e2',
-            'occurred': '2023-01-14T23:20:08.000Z',
-            '_time': 1673738408,
-            'rawJSON': json.dumps(mock_response[1])
-        }
-    ]
+    assert events == get_actual_events()
+
+
+def test_parse_event():
+    from RunZeroEventCollector import parse_event
+    my_json = util_load_json('test_data/system_event_logs.json')
+    parsed_event = parse_event(my_json[0])
+    assert parsed_event == get_actual_events()[0]
