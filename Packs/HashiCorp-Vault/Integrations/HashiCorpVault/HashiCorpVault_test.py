@@ -89,3 +89,13 @@ def test_get_ch_secret(mocker):
 def test_get_kv2_secret(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
     assert get_kv2_secret('test', 'test') == {}
+
+
+def test_get_kv1_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert get_kv1_secret('test', 'test') == {}
+
+
+def test_unseal_vault(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert unseal_vault('test', 'test') == {}

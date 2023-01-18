@@ -468,7 +468,7 @@ def unseal_vault_command():  # pragma: no cover
     })
 
 
-def unseal_vault(key, reset):  # pragma: no cover
+def unseal_vault(key, reset):
     path = 'sys/unseal'
     body = {}
     if reset:
@@ -644,7 +644,7 @@ def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):  # pragma:
     return secrets
 
 
-def get_kv1_secret(engine_path, secret):  # pragma: no cover
+def get_kv1_secret(engine_path, secret):
     path = engine_path + secret
 
     return send_request(path, 'get')
