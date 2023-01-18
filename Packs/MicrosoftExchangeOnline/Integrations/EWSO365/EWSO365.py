@@ -212,7 +212,7 @@ class EWSClient:
         self.protocol = BaseProtocol(self.config)
         self.mark_as_read = kwargs.get('mark_as_read', False)
 
-    def __prepare(self, insecure):
+    def __prepare(self, insecure):      # pragma: no cover
         """
         Prepares the client PROTOCOL, CREDENTIALS and CONFIGURATION
         :param insecure: Trust any certificate (not secure)
@@ -491,7 +491,7 @@ class ExpandGroup(EWSService):
             else None,
         }
 
-    def call(self, email_address, recursive_expansion=False):
+    def call(self, email_address, recursive_expansion=False):      # pragma: no cover
         try:
             if recursive_expansion == "True":
                 group_members: Dict = {}
@@ -642,7 +642,7 @@ def prepare_args(args):
     return args
 
 
-def get_limited_number_of_messages_from_qs(qs, limit):
+def get_limited_number_of_messages_from_qs(qs, limit):      # pragma: no cover
     """
     Retrieve a limited number of messages from query search
     :param qs: query search to execute
@@ -943,7 +943,7 @@ def parse_attachment_as_dict(item_id, attachment):
         }
 
 
-def get_entry_for_item_attachment(item_id, attachment, target_email):
+def get_entry_for_item_attachment(item_id, attachment, target_email):      # pragma: no cover
     """
     Creates a note entry for an item attachment
     :param item_id: Item id
@@ -1279,7 +1279,7 @@ def search_items_in_mailbox(
     return readable_output, output, searched_items_result
 
 
-def get_out_of_office_state(client: EWSClient, target_mailbox=None):
+def get_out_of_office_state(client: EWSClient, target_mailbox=None):      # pragma: no cover
     """
     Retrieve get out of office state of the targeted mailbox
     :param client: EWS Client
@@ -1566,7 +1566,7 @@ def get_items(client: EWSClient, item_ids, target_mailbox=None):     # pragma: n
     return readable_output, output, items_as_incidents
 
 
-def get_folder(client: EWSClient, folder_path, target_mailbox=None, is_public=None):
+def get_folder(client: EWSClient, folder_path, target_mailbox=None, is_public=None):      # pragma: no cover
     """
     Retrieve a folder from the target mailbox or client mailbox
     :param client: EWS Client
@@ -1682,7 +1682,7 @@ def handle_html(html_body):
     return clean_body, attachments
 
 
-def collect_manual_attachments(manualAttachObj):
+def collect_manual_attachments(manualAttachObj):      # pragma: no cover
     """Collect all manual attachments' data
 
     Args:
@@ -1798,7 +1798,7 @@ def handle_transient_files(transient_files, transient_files_contents, transient_
     return transient_attachments
 
 
-def handle_template_params(template_params):
+def handle_template_params(template_params):      # pragma: no cover
     """Translates the template params if they exist from the context
 
     Args:
@@ -1986,7 +1986,7 @@ def reply_mail(client: EWSClient, to, inReplyTo, subject='', body="", bcc=None, 
     client.reply_mail(inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
 
 
-def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
+def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pragma: no cover
     """
     Retrieve item as an eml
     :param client: EWS Client

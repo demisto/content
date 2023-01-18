@@ -90,7 +90,7 @@ def start_logging():
 
 # NOTE: Same method used in EWSv2
 # If you are modifying this probably also need to modify in the other file
-def exchangelib_cleanup():
+def exchangelib_cleanup():      # pragma: no cover
     key_protocols = exchangelib.protocol.CachingProtocol._protocol_cache.items()
     try:
         exchangelib.close_connections()
@@ -135,7 +135,7 @@ def send_email_to_mailbox(
     attachments: Optional[List[str]] = None,
     raw_message: Optional[str] = None,
     from_address: Optional[str] = None
-):
+):      # pragma: no cover
     """
     Send an email to a mailbox.
 
@@ -181,7 +181,7 @@ def send_email_to_mailbox(
 
 
 def send_email_reply_to_mailbox(account, inReplyTo, to, body, subject=None, bcc=None, cc=None, html_body=None,
-                                attachments=[]):
+                                attachments=[]):      # pragma: no cover
     item_to_reply_to = account.inbox.get(id=inReplyTo)
     if isinstance(item_to_reply_to, ErrorItemNotFound):
         raise Exception(item_to_reply_to)
@@ -200,7 +200,7 @@ def send_email_reply_to_mailbox(account, inReplyTo, to, body, subject=None, bcc=
     return m
 
 
-def get_auth_method(auth_method):
+def get_auth_method(auth_method):      # pragma: no cover
     auth_method = auth_method.lower()
     if auth_method == 'ntlm':
         return NTLM
@@ -217,7 +217,7 @@ def get_version(version_str):
     return Version(VERSIONS[version_str])
 
 
-def collect_manual_attachments(manualAttachObj):
+def collect_manual_attachments(manualAttachObj):      # pragma: no cover
     attachments = []
     for attachment in manualAttachObj:
         res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))

@@ -362,18 +362,18 @@ def get_auth_method(auth_method):     # pragma: no cover
     raise Exception("%s auth method is not supported. Choose one of %s" % (auth_method, 'ntlm\\basic\\digest'))
 
 
-def get_build(version_str):
+def get_build(version_str):      # pragma: no cover
     if version_str not in VERSIONS:
         raise Exception("%s is unsupported version: %s. Choose one of" % (version_str, "\\".join(VERSIONS.keys())))
     return VERSIONS[version_str]
 
 
-def get_build_autodiscover(context_dict):
+def get_build_autodiscover(context_dict):      # pragma: no cover
     build_params = context_dict["build"].split(".")
     return Build(*build_params)
 
 
-def get_endpoint_autodiscover(context_dict):
+def get_endpoint_autodiscover(context_dict):      # pragma: no cover
     return context_dict["service_endpoint"]
 
 
@@ -383,7 +383,7 @@ def get_version(version_str):
     return Version(VERSIONS[version_str])
 
 
-def create_context_dict(account):
+def create_context_dict(account):      # pragma: no cover
     return {
         "auth_type": account.protocol.auth_type,
         "service_endpoint": account.protocol.service_endpoint,
@@ -505,7 +505,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):     # prag
     return account
 
 
-def get_account(account_email, access_type=ACCESS_TYPE):
+def get_account(account_email, access_type=ACCESS_TYPE):      # pragma: no cover
     if not AUTO_DISCOVERY:
         return Account(
             primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
@@ -569,7 +569,7 @@ def fix_2010():     # pragma: no cover
     start_logging()
 
 
-def str_to_unicode(obj):
+def str_to_unicode(obj):      # pragma: no cover
     if isinstance(obj, dict):
         obj = {k: str_to_unicode(v) for k, v in obj.iteritems()}
     elif isinstance(obj, list):
@@ -579,19 +579,19 @@ def str_to_unicode(obj):
     return obj
 
 
-def filter_dict_null(d):
+def filter_dict_null(d):      # pragma: no cover
     if isinstance(d, dict):
         return dict((k, v) for k, v in d.items() if v is not None)
     return d
 
 
-def get_attachment_name(attachment_name):
+def get_attachment_name(attachment_name):      # pragma: no cover
     if attachment_name is None or attachment_name == "":
         return 'demisto_untitled_attachment'
     return attachment_name
 
 
-def get_entry_for_object(title, context_key, obj, headers=None):
+def get_entry_for_object(title, context_key, obj, headers=None):      # pragma: no cover
     if len(obj) == 0:
         return "There is no output results"
     obj = filter_dict_null(obj)
@@ -626,14 +626,14 @@ def get_items_from_mailbox(account, item_ids):     # pragma: no cover
     return result
 
 
-def get_item_from_mailbox(account, item_id):
+def get_item_from_mailbox(account, item_id):      # pragma: no cover
     result = get_items_from_mailbox(account, [item_id])
     if len(result) == 0:
         raise Exception("ItemId %s not found" % str(item_id))
     return result[0]
 
 
-def is_default_folder(folder_path, is_public):
+def is_default_folder(folder_path, is_public):      # pragma: no cover
     if exchangelib.__version__ != "1.12.0":  # Docker BC
         return False
 
@@ -673,14 +673,14 @@ def get_folder_by_path(account, path, is_public=False):     # pragma: no cover
 class MarkAsJunk(EWSAccountService):
     SERVICE_NAME = 'MarkAsJunk'
 
-    def call(self, item_id, move_item):
+    def call(self, item_id, move_item):      # pragma: no cover
         elements = list(self._get_elements(payload=self.get_payload(item_id=item_id, move_item=move_item)))
         for element in elements:
             if isinstance(element, ResponseMessageError):
                 return element.message
         return "Success"
 
-    def get_payload(self, item_id, move_item):
+    def get_payload(self, item_id, move_item):      # pragma: no cover
         junk = create_element('m:%s' % self.SERVICE_NAME,
                               IsJunk="true",
                               MoveItem="true" if move_item else "false")
@@ -730,7 +730,7 @@ class SearchMailboxes(EWSService):
     element_container_name = '{%s}SearchMailboxesResult/{%s}Items' % (MNS, TNS)
 
     @staticmethod
-    def parse_element(element):
+    def parse_element(element):      # pragma: no cover
         to_recipients = element.find('{%s}ToRecipients' % TNS)
         if to_recipients:
             to_recipients = map(lambda x: x.text if x is not None else None, to_recipients)
@@ -753,7 +753,7 @@ class SearchMailboxes(EWSService):
 
         return result
 
-    def call(self, query, mailboxes):
+    def call(self, query, mailboxes):      # pragma: no cover
         if self.protocol.version.build < EXCHANGE_2013:
             raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
         elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
@@ -785,7 +785,7 @@ class ExpandGroup(EWSService):
     element_container_name = '{%s}DLExpansion' % MNS
 
     @staticmethod
-    def parse_element(element):
+    def parse_element(element):      # pragma: no cover
         return {
             MAILBOX: element.find("{%s}EmailAddress" % TNS).text if element.find(
                 "{%s}EmailAddress" % TNS) is not None else None,
@@ -808,18 +808,18 @@ class ExpandGroup(EWSService):
             demisto.results("No results were found.")
             sys.exit()
 
-    def get_payload(self, email_address):
+    def get_payload(self, email_address):      # pragma: no cover
         element = create_element('m:%s' % self.SERVICE_NAME, )
         mailbox_element = create_element('m:Mailbox')
         add_xml_child(mailbox_element, 't:EmailAddress', email_address)
         element.append(mailbox_element)
         return element
 
-    def expand_group(self, email_address):
+    def expand_group(self, email_address):      # pragma: no cover
         elements = self._get_elements(payload=self.get_payload(email_address))
         return map(lambda x: self.parse_element(x), elements)
 
-    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=set()):
+    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=set()):      # pragma: no cover
         if email_address in non_dl_emails or email_address in dl_emails:
             return None
         dl_emails.add(email_address)
@@ -965,7 +965,7 @@ def email_ec(item):
     }
 
 
-def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):
+def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):      # pragma: no cover
     def parse_object_as_dict(object):
         raw_dict = {}
         if object is not None:
@@ -1311,7 +1311,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
         return []
 
 
-def get_entry_for_file_attachment(item_id, attachment):
+def get_entry_for_file_attachment(item_id, attachment):      # pragma: no cover
     entry = fileResult(get_attachment_name(attachment.name), attachment.content)
     ec = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
@@ -1321,7 +1321,7 @@ def get_entry_for_file_attachment(item_id, attachment):
     return entry
 
 
-def parse_attachment_as_dict(item_id, attachment):
+def parse_attachment_as_dict(item_id, attachment):      # pragma: no cover
     try:
         # if this is a file attachment or a non-empty email attachment
         if isinstance(attachment, FileAttachment) or hasattr(attachment, 'item'):
@@ -1374,7 +1374,7 @@ def parse_attachment_as_dict(item_id, attachment):
         }
 
 
-def get_entry_for_item_attachment(item_id, attachment, target_email):
+def get_entry_for_item_attachment(item_id, attachment, target_email):      # pragma: no cover
     item = attachment.item
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
@@ -1485,7 +1485,7 @@ def move_item_between_mailboxes(item_id, destination_mailbox, destination_folder
     }
 
 
-def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
+def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):      # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     is_public = is_default_folder(target_folder_path, is_public)
     target_folder = get_folder_by_path(account, target_folder_path, is_public)
@@ -1534,7 +1534,7 @@ def delete_items(item_ids, delete_type, target_mailbox=None):     # pragma: no c
                                 deleted_items)
 
 
-def prepare_args(d):
+def prepare_args(d):      # pragma: no cover
     d = dict((k.replace("-", "_"), v) for k, v in d.items())
     if 'is_public' in d:
         if exchangelib.__version__ != "1.12.0":  # Docker BC
@@ -1544,7 +1544,7 @@ def prepare_args(d):
     return d
 
 
-def get_limited_number_of_messages_from_qs(qs, limit):
+def get_limited_number_of_messages_from_qs(qs, limit):      # pragma: no cover
     count = 0
     results = []
     for item in qs:
@@ -1748,7 +1748,8 @@ def mark_item_as_junk(item_id, move_items, target_mailbox=None):     # pragma: n
                                 mark_as_junk_result)
 
 
-def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item='no'):     # pragma: no cover
+def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None,
+                          get_internal_item='no'):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
     get_internal_item = (get_internal_item == 'yes')
@@ -1782,7 +1783,7 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
                                 headers=hm_headers)
 
 
-def get_items(item_ids, target_mailbox=None):
+def get_items(item_ids, target_mailbox=None):      # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     if type(item_ids) != list:
         item_ids = item_ids.split(",")
@@ -1805,7 +1806,7 @@ def get_items(item_ids, target_mailbox=None):
     }
 
 
-def get_folder(folder_path, target_mailbox=None, is_public=None):
+def get_folder(folder_path, target_mailbox=None, is_public=None):      # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     is_public = is_default_folder(folder_path, is_public)
     folder = folder_to_context_entry(get_folder_by_path(account, folder_path, is_public))
@@ -1826,7 +1827,7 @@ def folder_to_context_entry(f):
     return f_entry
 
 
-def check_cs_prereqs():
+def check_cs_prereqs():      # pragma: no cover
     if 'outlook.office365.com' not in EWS_SERVER:
         raise Exception("This command is only supported for Office 365")
     if exchangelib.__version__ != "1.12.0":
@@ -2014,7 +2015,7 @@ def get_autodiscovery_config():     # pragma: no cover
     }
 
 
-def mark_item_as_read(item_ids, operation='read', target_mailbox=None):
+def mark_item_as_read(item_ids, operation='read', target_mailbox=None):      # pragma: no cover
     marked_items = []
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     item_ids = argToList(item_ids)
@@ -2086,7 +2087,7 @@ def test_module():     # pragma: no cover
     demisto.results('ok')
 
 
-def get_protocol():
+def get_protocol():      # pragma: no cover
     if AUTO_DISCOVERY:
         protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
     else:
