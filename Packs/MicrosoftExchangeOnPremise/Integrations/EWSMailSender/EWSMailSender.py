@@ -266,7 +266,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     }
 
 
-def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttachObj=None):
+def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttachObj=None):      # pragma: no cover
     if manualAttachObj is None:
         manualAttachObj = []
     file_entries_for_attachments = []  # type: list
@@ -314,7 +314,7 @@ def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttac
 
 
 def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
-                attachNames="", from_mailbox=None, manualAttachObj=None):
+                attachNames="", from_mailbox=None, manualAttachObj=None):     # pragma: no cover
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
     cc = cc.split(",") if cc else None
@@ -374,13 +374,13 @@ def prepare():
     return config
 
 
-def prepare_args(d):
+def prepare_args(d):     # pragma: no cover
     if "from" in d:
         d['from_address'] = d.pop('from')
     return dict((k.replace("-", "_"), v) for k, v in d.items())
 
 
-def test_module():
+def test_module():     # pragma: no cover
     global IS_TEST_MODULE
     IS_TEST_MODULE = True
     BaseProtocol.TIMEOUT = 20

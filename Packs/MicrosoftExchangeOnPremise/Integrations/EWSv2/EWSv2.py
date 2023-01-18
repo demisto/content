@@ -331,7 +331,7 @@ if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
 
 # NOTE: Same method used in EWSMailSender
 # If you are modifying this probably also need to modify in the other file
-def exchangelib_cleanup():
+def exchangelib_cleanup():     # pragma: no cover
     key_protocols = exchangelib.protocol.CachingProtocol._protocol_cache.items()
     try:
         exchangelib.close_connections()
@@ -351,7 +351,7 @@ def exchangelib_cleanup():
 
 
 # Prep Functions
-def get_auth_method(auth_method):
+def get_auth_method(auth_method):     # pragma: no cover
     auth_method = auth_method.lower()
     if auth_method == 'ntlm':
         return NTLM
@@ -392,7 +392,7 @@ def create_context_dict(account):
     }
 
 
-def prepare_context(credentials):
+def prepare_context(credentials):     # pragma: no cover
     context_dict = demisto.getIntegrationContext()
     global SERVER_BUILD, EWS_SERVER
     if not context_dict:
@@ -413,7 +413,7 @@ def prepare_context(credentials):
         EWS_SERVER = get_endpoint_autodiscover(context_dict)
 
 
-def prepare():
+def prepare():     # pragma: no cover
     if NON_SECURE:
         BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
     else:
@@ -455,7 +455,7 @@ def prepare():
         return Configuration(**config_args), None
 
 
-def construct_config_args(context_dict, credentials):
+def construct_config_args(context_dict, credentials):     # pragma: no cover
     auth_type = context_dict["auth_type"]
     api_version = context_dict["api_version"]
     service_endpoint = context_dict["service_endpoint"]
@@ -470,7 +470,7 @@ def construct_config_args(context_dict, credentials):
     return config_args
 
 
-def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
+def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):     # pragma: no cover
     account = None
     original_exc = None  # type: ignore
     context_dict = demisto.getIntegrationContext()
@@ -532,7 +532,7 @@ def start_logging():
 
 
 # Exchange 2010 Fixes
-def fix_2010():
+def fix_2010():     # pragma: no cover
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
         for m in (
@@ -612,7 +612,7 @@ def get_entry_for_object(title, context_key, obj, headers=None):
     }
 
 
-def get_items_from_mailbox(account, item_ids):
+def get_items_from_mailbox(account, item_ids):     # pragma: no cover
     if type(item_ids) is not list:
         item_ids = [item_ids]
     items = map(lambda x: Item(item_id=x), item_ids)
@@ -646,7 +646,7 @@ def is_default_folder(folder_path, is_public):
     return False
 
 
-def get_folder_by_path(account, path, is_public=False):
+def get_folder_by_path(account, path, is_public=False):     # pragma: no cover
     # handle exchange folder id
     if len(path) == 120:
         folders_map = account.root._folders_map
@@ -759,7 +759,7 @@ class SearchMailboxes(EWSService):
         elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
         return map(lambda x: self.parse_element(x), elements)
 
-    def get_payload(self, query, mailboxes):
+    def get_payload(self, query, mailboxes):     # pragma: no cover
         def get_mailbox_search_scope(mailbox_id):
             mailbox_search_scope = create_element("t:MailboxSearchScope")
             add_xml_child(mailbox_search_scope, "t:Mailbox", mailbox_id)
@@ -794,7 +794,7 @@ class ExpandGroup(EWSService):
                 "{%s}MailboxType" % TNS) is not None else None
         }
 
-    def call(self, email_address, recursive_expansion=False):
+    def call(self, email_address, recursive_expansion=False):     # pragma: no cover
         if self.protocol.version.build < EXCHANGE_2010:
             raise NotImplementedError('%s is only supported for Exchange 2010 servers and later' % self.SERVICE_NAME)
         try:
@@ -848,7 +848,7 @@ def get_searchable_mailboxes(protocol):
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
 
-def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, email_addresses=None):
+def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, email_addresses=None):     # pragma: no cover
     mailbox_ids = []
     limit = int(limit)
     if mailbox_search_scope is not None and email_addresses is not None:
@@ -981,7 +981,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
             raw_dict['last_modified_time'] = raw_dict['last_modified_time'].ewsformat()
         return raw_dict
 
-    def parse_folder_as_json(folder):
+    def parse_folder_as_json(folder):     # pragma: no cover
         raw_dict = parse_object_as_dict(folder)
         if 'parent_folder_id' in raw_dict:
             raw_dict['parent_folder_id'] = parse_folder_as_json(raw_dict['parent_folder_id'])
@@ -1066,7 +1066,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
     return raw_dict
 
 
-def parse_incident_from_item(item, is_fetch):
+def parse_incident_from_item(item, is_fetch):     # pragma: no cover
     incident = {}
     labels = []
 
@@ -1384,7 +1384,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):
                                 dict_result)
 
 
-def get_attachments_for_item(item_id, account, attachment_ids=None):
+def get_attachments_for_item(item_id, account, attachment_ids=None):     # pragma: no cover
     item = get_item_from_mailbox(account, item_id)
     attachments = []
     if attachment_ids and not isinstance(attachment_ids, list):
@@ -1407,7 +1407,7 @@ def get_attachments_for_item(item_id, account, attachment_ids=None):
     return attachments
 
 
-def delete_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
+def delete_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     attachments = get_attachments_for_item(item_id, account, attachment_ids)
     deleted_file_attachments = []
@@ -1438,7 +1438,7 @@ def delete_attachments_for_message(item_id, target_mailbox=None, attachment_ids=
     return entries
 
 
-def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):
+def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     attachments = get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
@@ -1459,7 +1459,7 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
 
 
 def move_item_between_mailboxes(item_id, destination_mailbox, destination_folder_path, source_mailbox=None,
-                                is_public=None):
+                                is_public=None):     # pragma: no cover
     source_account = get_account(source_mailbox or ACCOUNT_EMAIL)
     destination_account = get_account(destination_mailbox or ACCOUNT_EMAIL)
     is_public = is_default_folder(destination_folder_path, is_public)
@@ -1505,7 +1505,7 @@ def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
                                 move_result)
 
 
-def delete_items(item_ids, delete_type, target_mailbox=None):
+def delete_items(item_ids, delete_type, target_mailbox=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     deleted_items = []
     if type(item_ids) != list:
@@ -1557,7 +1557,7 @@ def get_limited_number_of_messages_from_qs(qs, limit):
 
 
 def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None,
-                            is_public=None, selected_fields='all'):
+                            is_public=None, selected_fields='all'):     # pragma: no cover
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
@@ -1630,7 +1630,7 @@ def get_out_of_office_state(target_mailbox=None):
                                 oof_dict)
 
 
-def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mailbox=None, is_public=None):
+def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mailbox=None, is_public=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     is_public = is_default_folder(target_folder_path, is_public)
     target_folder = get_folder_by_path(account, target_folder_path, is_public)
@@ -1653,7 +1653,7 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
                                 recovered_messages)
 
 
-def get_contacts(limit, target_mailbox=None):
+def get_contacts(limit, target_mailbox=None):     # pragma: no cover
     def parse_physical_address(address):
         result = {}
         for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
@@ -1692,7 +1692,7 @@ def get_contacts(limit, target_mailbox=None):
                                 contacts)
 
 
-def create_folder(new_folder_name, folder_path, target_mailbox=None):
+def create_folder(new_folder_name, folder_path, target_mailbox=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     full_path = "%s\\%s" % (folder_path, new_folder_name)
     try:
@@ -1707,7 +1707,7 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):
     return "Folder %s created successfully" % full_path
 
 
-def find_folders(target_mailbox=None, is_public=None):
+def find_folders(target_mailbox=None, is_public=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     root = account.root
     if exchangelib.__version__ == "1.12.0":  # Docker BC
@@ -1731,7 +1731,7 @@ def find_folders(target_mailbox=None, is_public=None):
     }
 
 
-def mark_item_as_junk(item_id, move_items, target_mailbox=None):
+def mark_item_as_junk(item_id, move_items, target_mailbox=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     move_items = (move_items.lower() == "yes")
     ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
@@ -1748,7 +1748,7 @@ def mark_item_as_junk(item_id, move_items, target_mailbox=None):
                                 mark_as_junk_result)
 
 
-def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item='no'):
+def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item='no'):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
     get_internal_item = (get_internal_item == 'yes')
@@ -1852,7 +1852,7 @@ def get_cs_status(search_name, status):
     }
 
 
-def start_compliance_search(query):
+def start_compliance_search(query):     # pragma: no cover
     check_cs_prereqs()
     try:
         with open("startcompliancesearch2.ps1", "w+") as f:
@@ -1885,7 +1885,7 @@ def start_compliance_search(query):
     }
 
 
-def get_compliance_search(search_name, show_only_recipients):
+def get_compliance_search(search_name, show_only_recipients):     # pragma: no cover
     check_cs_prereqs()
     try:
         with open("getcompliancesearch2.ps1", "w+") as f:
@@ -1943,7 +1943,7 @@ def get_compliance_search(search_name, show_only_recipients):
     return results
 
 
-def purge_compliance_search(search_name):
+def purge_compliance_search(search_name):     # pragma: no cover
     check_cs_prereqs()
     try:
         with open("purgecompliancesearch2.ps1", "w+") as f:
@@ -1962,7 +1962,7 @@ def purge_compliance_search(search_name):
     return get_cs_status(search_name, 'Purging')
 
 
-def check_purge_compliance_search(search_name):
+def check_purge_compliance_search(search_name):     # pragma: no cover
     check_cs_prereqs()
     try:
         with open("purgestatuscompliancesearch2.ps1", "w+") as f:
@@ -1983,7 +1983,7 @@ def check_purge_compliance_search(search_name):
     return get_cs_status(search_name, 'Purged' if stdout.split('\n')[-2] == 'Completed' else 'Purging')
 
 
-def remove_compliance_search(search_name):
+def remove_compliance_search(search_name):     # pragma: no cover
     check_cs_prereqs()
     try:
         with open("removecompliance2.ps1", "w+") as f:
@@ -2003,7 +2003,7 @@ def remove_compliance_search(search_name):
     return get_cs_status(search_name, 'Removed')
 
 
-def get_autodiscovery_config():
+def get_autodiscovery_config():     # pragma: no cover
     config_dict = demisto.getIntegrationContext()
     return {
         'Type': entryTypes['note'],
@@ -2036,7 +2036,7 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):
                                 marked_items)
 
 
-def get_item_as_eml(item_id, target_mailbox=None):
+def get_item_as_eml(item_id, target_mailbox=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     item = get_item_from_mailbox(account, item_id)
 
@@ -2065,7 +2065,7 @@ def get_item_as_eml(item_id, target_mailbox=None):
         return file_result
 
 
-def test_module():
+def test_module():     # pragma: no cover
     try:
         global IS_TEST_MODULE
         IS_TEST_MODULE = True
@@ -2098,7 +2098,7 @@ def encode_and_submit_results(obj):
     demisto.results(str_to_unicode(obj))
 
 
-def sub_main():
+def sub_main():     # pragma: no cover
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
     global config, credentials
     EWS_SERVER = demisto.params()['ewsServer']

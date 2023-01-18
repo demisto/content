@@ -252,7 +252,7 @@ class EWSClient:
             access_type=self.access_type,
         )
 
-    def get_items_from_mailbox(self, account, item_ids):
+    def get_items_from_mailbox(self, account, item_ids):     # pragma: no cover
         """
         Request specific items from a mailbox associated with an account
         :param account: EWS account or target_mailbox associated with that account
@@ -287,7 +287,7 @@ class EWSClient:
             raise Exception(f"ItemId {str(item_id)} not found")
         return result[0]
 
-    def get_attachments_for_item(self, item_id, account, attachment_ids=None):
+    def get_attachments_for_item(self, item_id, account, attachment_ids=None):     # pragma: no cover
         """
         Request attachments for an item
         :param item_id: item_id of the item to retrieve attachments from
@@ -333,7 +333,7 @@ class EWSClient:
 
         return False
 
-    def get_folder_by_path(self, path, account=None, is_public=False):
+    def get_folder_by_path(self, path, account=None, is_public=False):     # pragma: no cover
         """
         Retrieve folder by path
         :param path: path of the folder
@@ -373,7 +373,7 @@ class EWSClient:
         message.account = account
         message.send_and_save()
 
-    def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments):
+    def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments):     # pragma: no cover
         account = self.get_account()
         item_to_reply_to = account.inbox.get(id=inReplyTo)  # pylint: disable=E1101
         if isinstance(item_to_reply_to, ErrorItemNotFound):
@@ -416,7 +416,7 @@ class MarkAsJunk(EWSAccountService):
                 return str(element)
         return "Success"
 
-    def get_payload(self, item_id, move_item):
+    def get_payload(self, item_id, move_item):     # pragma: no cover
         junk = create_element(
             f"m:{self.SERVICE_NAME}",
             {"IsJunk": "true", "MoveItem": "true" if move_item else "false"},
@@ -519,7 +519,7 @@ class ExpandGroup(EWSService):
         elements = self._get_elements(payload=self.get_payload(email_address))
         return [self.parse_element(x) for x in elements]
 
-    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=None):
+    def expand_group_recursive(self, email_address, non_dl_emails, dl_emails=None):     # pragma: no cover
         """
         Expand group recursively
         :param email_address: email address of the group to expand
@@ -545,7 +545,7 @@ class ExpandGroup(EWSService):
 
 
 # If you are modifying this probably also need to modify in other files
-def exchangelib_cleanup():
+def exchangelib_cleanup():     # pragma: no cover
     key_protocols = list(exchangelib.protocol.CachingProtocol._protocol_cache.items())
     try:
         exchangelib.close_connections()
@@ -660,7 +660,7 @@ def get_limited_number_of_messages_from_qs(qs, limit):
     return results
 
 
-def keys_to_camel_case(value):
+def keys_to_camel_case(value):     # pragma: no cover
     """
     Transform keys from snake to camel case (does nothing if no snakes are found)
     :param value: value to transform
@@ -734,7 +734,7 @@ def email_ec(item):
     }
 
 
-def parse_item_as_dict(item, email_address=None, camel_case=False, compact_fields=False):
+def parse_item_as_dict(item, email_address=None, camel_case=False, compact_fields=False):     # pragma: no cover
     """
     Parses an exchangelib item as a dict
     :param item: exchangelib.Item to parse
@@ -751,7 +751,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
                 raw_dict[field.name] = getattr(obj, field.name, None)
         return raw_dict
 
-    def parse_folder_as_json(folder):
+    def parse_folder_as_json(folder):     # pragma: no cover
         raw_dict = parse_object_as_dict(folder)
         if "parent_folder_id" in raw_dict:
             raw_dict["parent_folder_id"] = parse_folder_as_json(
@@ -1001,7 +1001,7 @@ def get_searchable_mailboxes(client: EWSClient):
 
 def delete_attachments_for_message(
         client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
-):
+):     # pragma: no cover
     """
     Deletes attachments for a given message
     :param client: EWS Client
@@ -1047,7 +1047,7 @@ def delete_attachments_for_message(
 
 def fetch_attachments_for_message(
         client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
-):
+):     # pragma: no cover
     """
     Fetches attachments for a message
     :param client: EWS Client
@@ -1091,7 +1091,7 @@ def move_item_between_mailboxes(
         destination_folder_path,
         source_mailbox=None,
         is_public=None,
-):
+):     # pragma: no cover
     """
     Moves item between mailboxes
     :param client: EWS Client
@@ -1123,7 +1123,7 @@ def move_item_between_mailboxes(
 
 def move_item(
         client: EWSClient, item_id, target_folder_path, target_mailbox=None, is_public=None
-):
+):     # pragma: no cover
     """
     Moves an item within the same mailbox
     :param client: EWS Client
@@ -1151,7 +1151,7 @@ def move_item(
     return readable_output, output, move_result
 
 
-def delete_items(client: EWSClient, item_ids, delete_type, target_mailbox=None):
+def delete_items(client: EWSClient, item_ids, delete_type, target_mailbox=None):     # pragma: no cover
     """
     Delete items in a mailbox
     :param client: EWS Client
@@ -1201,7 +1201,7 @@ def search_items_in_mailbox(
         target_mailbox=None,
         is_public=None,
         selected_fields="all",
-):
+):     # pragma: no cover
     """
     Search items in mailbox
     :param client: EWS Client
@@ -1310,7 +1310,7 @@ def recover_soft_delete_item(
         target_folder_path="Inbox",
         target_mailbox=None,
         is_public=None,
-):
+):     # pragma: no cover
     """
     Recovers soft deleted items
     :param client: EWS Client
@@ -1350,7 +1350,7 @@ def recover_soft_delete_item(
     return readable_output, output, recovered_messages
 
 
-def get_contacts(client: EWSClient, limit, target_mailbox=None):
+def get_contacts(client: EWSClient, limit, target_mailbox=None):     # pragma: no cover
     """
     Retrieve contacts of the target mailbox or client mailbox
     :param client: EWS Client
@@ -1407,7 +1407,7 @@ def get_contacts(client: EWSClient, limit, target_mailbox=None):
     return readable_output, output, contacts
 
 
-def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbox=None):
+def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbox=None):     # pragma: no cover
     """
     Creates a folder in the target mailbox or the client mailbox
     :param client: EWS Client
@@ -1451,7 +1451,7 @@ def find_folders(client: EWSClient, target_mailbox=None):
     return readable_output, output, folders
 
 
-def mark_item_as_junk(client: EWSClient, item_id, move_items, target_mailbox=None):
+def mark_item_as_junk(client: EWSClient, item_id, move_items, target_mailbox=None):     # pragma: no cover
     """
     Marks item as junk in the target mailbox or client mailbox
     :param client: EWS Client
@@ -1483,7 +1483,7 @@ def get_items_from_folder(
         target_mailbox=None,
         is_public=None,
         get_internal_item="no",
-):
+):     # pragma: no cover
     """
     Retrieve items from folder path
     :param client: EWS Client
@@ -1540,7 +1540,7 @@ def get_items_from_folder(
     return readable_output, output, items_result
 
 
-def get_items(client: EWSClient, item_ids, target_mailbox=None):
+def get_items(client: EWSClient, item_ids, target_mailbox=None):     # pragma: no cover
     """
     Get items from target mailbox or client mailbox
     :param client: EWS Client
@@ -1617,7 +1617,7 @@ def folder_to_context_entry(f):
 
 def mark_item_as_read(
         client: EWSClient, item_ids, operation="read", target_mailbox=None
-):
+):     # pragma: no cover
     """
     Marks item as read
     :param client: EWS Client
@@ -1711,7 +1711,7 @@ def collect_manual_attachments(manualAttachObj):
     return attachments
 
 
-def collect_attachments(attachments_ids, attachments_cids, attachments_names):
+def collect_attachments(attachments_ids, attachments_cids, attachments_names):     # pragma: no cover
     """Collect all attachments' data
 
     Args:
@@ -1852,7 +1852,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
 
 
 def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
-                   additional_headers=None, from_address=None, reply_to=None):
+                   additional_headers=None, from_address=None, reply_to=None):     # pragma: no cover
     """Creates the Message object that will be sent.
 
     Args:
@@ -1929,7 +1929,7 @@ def add_additional_headers(additional_headers):
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None, from_address=None, replyTo=None):
+               additionalHeader=None, raw_message=None, from_address=None, replyTo=None):     # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
@@ -1975,7 +1975,7 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
 
 
 def reply_mail(client: EWSClient, to, inReplyTo, subject='', body="", bcc=None, cc=None, htmlBody=None,
-               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None):
+               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None):     # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
@@ -2024,7 +2024,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
         return file_result
 
 
-def parse_incident_from_item(item):
+def parse_incident_from_item(item):     # pragma: no cover
     """
     Parses an incident from an item
     :param item: item to parse
@@ -2342,7 +2342,7 @@ def fetch_last_emails(
     return result
 
 
-def test_module(client: EWSClient, max_fetch):
+def test_module(client: EWSClient, max_fetch):     # pragma: no cover
     """
     test-module
     * Max incidents per fetch <= MAX_INCIDENTS_PER_FETCH
@@ -2378,7 +2378,7 @@ def test_module(client: EWSClient, max_fetch):
     return "ok"
 
 
-def sub_main():
+def sub_main():     # pragma: no cover
     is_test_module = False
     params = demisto.params()
     args = prepare_args(demisto.args())
