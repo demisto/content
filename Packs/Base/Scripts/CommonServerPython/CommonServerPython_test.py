@@ -8635,7 +8635,7 @@ def test_is_valid_filename_faild(filename):
     """
     with pytest.raises(DemistoException) as e:
         is_filename_valid(filename=filename)
-    assert 'The file name is invalid' in str(e)
+    assert 'The file name contains invalid characters' in str(e)
 
 
 @pytest.mark.parametrize(

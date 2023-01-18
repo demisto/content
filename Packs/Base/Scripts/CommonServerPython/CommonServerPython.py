@@ -7605,7 +7605,7 @@ def is_filename_valid(filename):
     :return: None
     """
     if not re.match(r"^[^~)('\\!*<>:;,?\"*|/]+$", filename):
-        raise DemistoException('The file name is invalid')
+        raise DemistoException('The file name contains invalid characters')
 
 
 def underscoreToCamelCase(s, upper_camel=True):
