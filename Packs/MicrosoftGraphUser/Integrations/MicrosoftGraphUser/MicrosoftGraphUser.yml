@@ -438,6 +438,12 @@ script:
       name: next_page
       required: false
       secret: false
+    - default: false
+      description: Filter to be plugged directly into the API.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Retrieves a list of user objects.
