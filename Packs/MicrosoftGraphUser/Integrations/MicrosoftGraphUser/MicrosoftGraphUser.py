@@ -188,9 +188,9 @@ class MsGraphClient:
             response = self.ms_client.http_request(method='GET', url_suffix='users', full_url=page_url)
         else:
             response = self.ms_client.http_request(method='GET', url_suffix='users',
-                                                   headers={"ConsistencyLevel": "eventual"}, params={
-                    '$filter': filters, '$select': properties, "$count": "true"})
-                                                   
+                                                   headers={"ConsistencyLevel": "eventual"},
+                                                   params={'$filter': filters, '$select': properties, "$count": "true"})
+
         next_page_url = response.get('@odata.nextLink')
         users = response.get('value')
         return users, next_page_url
