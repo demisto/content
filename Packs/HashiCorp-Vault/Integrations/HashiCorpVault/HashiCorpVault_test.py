@@ -79,3 +79,13 @@ def test_list_policies(mocker):
 def test_get_policy(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
     assert get_policy('test') == {}
+
+
+def test_get_ch_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert get_ch_secret('test', 'test') == {}
+
+
+def test_get_kv2_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert get_kv2_secret('test', 'test') == {}

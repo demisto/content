@@ -677,7 +677,7 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
     return secrets
 
 
-def get_kv2_secret(engine_path, secret, folder=None):  # pragma: no cover
+def get_kv2_secret(engine_path, secret, folder=None):
     path = urljoin(engine_path, 'data/')
     if folder:
         path += os.path.join(folder)
@@ -771,7 +771,7 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     return secrets
 
 
-def get_ch_secret(engine_path, secret):  # pragma: no cover
+def get_ch_secret(engine_path, secret):
     path = engine_path + secret
 
     return send_request(path, 'get')
