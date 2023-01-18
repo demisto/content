@@ -115,13 +115,13 @@ class GCP:
         metadata_path = os.path.join(self.extracting_destination, 'index', pack_id, 'metadata.json')
         return read_json(metadata_path)
 
-    def is_items_in_pack(self, item_file_paths: list):
+    def is_items_in_pack(self, item_file_paths: list, pack_id: str):
         """
         Check if an item is inside the pack.
         """
         not_exists = []
         for item_path in item_file_paths:
-            if not os.path.exists(os.path.join(self.extracting_destination, item_path)):
+            if not os.path.exists(os.path.join(self.extracting_destination, pack_id, item_path)):
                 not_exists.append(item_path)
 
         if not_exists:
@@ -188,7 +188,7 @@ class BucketVerifier:
         Verify the pack is in the index, verify version 1.0.0 zip exists under the pack's path
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
-        items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
+        items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
         expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note"""
         rn_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
@@ -202,7 +202,7 @@ class BucketVerifier:
         """
         self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         changelog_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
-        items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
+        items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
         return changelog_as_expected and all(items_exists), pack_id
 
@@ -251,8 +251,8 @@ class BucketVerifier:
         Verify the path of the item is modified
         """
         self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        modified_item_exist = self.gcp.is_items_in_pack([modified_item_path])
-        items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
+        modified_item_exist = self.gcp.is_items_in_pack([modified_item_path], pack_id)
+        items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
         return modified_item_exist and all(items_exists), pack_id
 
