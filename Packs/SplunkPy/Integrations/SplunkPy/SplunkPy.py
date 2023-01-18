@@ -1952,7 +1952,7 @@ def build_search_query(args):
     return query
 
 
-def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res):
+def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res, job_id):
     ec = {}
 
     if args.get('update_context', "true") == "true":
@@ -1961,6 +1961,11 @@ def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_
             ec['DBotScore'] = dbot_scores
         if status_res:
             ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = status_res.outputs
+    if job_id:
+        ec_sid = {'sid': job_id, 'total_results': len(parsed_search_results)}
+        if status_res:
+            ec_sid['status'] = status_res
+        ec['Splunk.SID'] = [ec_sid]
     return ec
 
 
@@ -2004,7 +2009,10 @@ def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
             headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
-    human_readable = tableToMarkdown(f"Splunk Search results for query: {query} \n using sid:{sid}",
+    hr_headline = f"Splunk Search results for query:"
+    if sid:
+        hr_headline+=f'  \n sid: {str(sid)}'
+    human_readable = tableToMarkdown(hr_headline,
                                      parsed_search_results, headers)
     return human_readable
 
@@ -2061,7 +2069,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
 
 def splunk_search_command(service: client.Service) -> CommandResults:
     args = demisto.args()
-
+    print('what1')
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
     search_kwargs = build_search_kwargs(args, polling)
@@ -2080,14 +2088,16 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         status = status_cmd_result.outputs['Status']  # type: ignore[index]
         if status.lower() != 'done':
             # Job is still running, schedule the next run of the command.
+            print('what2')
             scheduled_command = schedule_polling_command("splunk-search", args, interval_in_secs)
+            print('what3')
             status_cmd_result.scheduled_command = scheduled_command
             status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
             return status_cmd_result
         else:
             # Get the job by its SID.
             search_job = service.job(job_sid)
-
+    print('what4')
     num_of_results_from_query = search_job["resultCount"] if search_job else None
 
     results_limit = float(args.get("event_limit", 100))
@@ -2109,9 +2119,8 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
-    total_parsed_results.append({'SID': str(job_sid)})
-    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
-    human_readable = build_search_human_readable(args, total_parsed_results, str(job_sid))
+    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result, job_sid)
+    human_readable = build_search_human_readable(args, total_parsed_results, job_sid)
 
     return CommandResults(
         outputs=entry_context,
