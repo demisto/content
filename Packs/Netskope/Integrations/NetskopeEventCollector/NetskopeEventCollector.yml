@@ -7,12 +7,14 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: API token
   hidden: false
   hiddenusername: true
   name: credentials
   required: true
   type: 9
+  section: Connect
 - additionalinfo: The API version to use (v1 or v2).
   defaultvalue: v2
   display: API Version
@@ -20,6 +22,7 @@ configuration:
   name: api_version
   required: false
   type: 15
+  section: Connect
   options:
     - v1
     - v2
@@ -30,19 +33,23 @@ configuration:
   hidden: false
   name: first_fetch
   required: false
+  section: Collect
   type: 0
 - additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
   defaultvalue: '1000'
-  display: Max Fetch
+  display: Max events per fetch
+  section: Collect
   hidden: false
   name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
+  section: Connect
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
+  section: Connect
   name: proxy
   required: false
   type: 8
@@ -71,7 +78,7 @@ script:
     description: Returns events extracted from SaaS traffic and or logs.
     execution: false
     name: netskope-get-events
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.44472
   feed: false
   isfetch: false
   longRunning: false
