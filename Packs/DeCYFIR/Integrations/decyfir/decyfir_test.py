@@ -10,8 +10,8 @@ def util_load_json(path):
 
 def test_decyfir():
     from decyfir import Client, test_module
-    client = Client(base_url='https://test.com/api/v1', verify=False, auth=('', ''))
-    response = test_module(client, "2dMGo7FOWvkJWDXHoRWjsyUtj4uGDPMq")
+    client = Client(base_url='https://qadecyfir.cyfirma.com', verify=False)
+    response = test_module(client, "MWthAjKRzPMDkjWEw6LI6mHD7OB8AxUw")
     assert response == 'ok'
 
 
@@ -21,11 +21,8 @@ def test_fetch_incidents(requests_mock, mocker):
     mock_response = util_load_json('test_data/search_alerts.json')
 
     client = Client(
-        base_url='https://test.com/api/v1',
+        base_url='https://qadecyfir.cyfirma.com',
         verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
     )
     mocker.patch.object(Client, 'request_decyfir_api', return_value=mock_response['alerts'])
     last_fetch = (datetime.now() - timedelta(days=80)).strftime(date_format)
