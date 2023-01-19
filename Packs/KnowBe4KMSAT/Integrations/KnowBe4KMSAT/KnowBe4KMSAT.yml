@@ -392,7 +392,71 @@ script:
           description: Phishing Security OS
           type: String
       description: Returns a Specific Recipient's Results.
-    - name: kmsat-phishing-campaigns-security-test-list
+    - name: kmsat-phishing-security-tests-failed-recipients-list
+      arguments:
+        - name: pst_id
+          required: true
+          description: PST ID
+      outputs:
+        - contextPath: KMSAT.PhishingSecurityPST.recipient_id
+          description: Phishing Security Recipient ID
+          type: Number
+        - contextPath: KMSAT.PhishingSecurityPST.psd_id
+          description: Phishing Security PST ID
+          type: Number
+        - contextPath: KMSAT.PhishingSecurityPST.user
+          description: Phishing Security User
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.template
+          description: Phishing Security Template
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.scheduled_at
+          description: Phishing Security Scheduled At
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.delivered_at
+          description: Phishing Security Delivered At
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.opened_at
+          description: Phishing Security Opened At
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.clicked_at
+          description: Phishing Security Clicked At
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.replied_at
+          description: Phishing Security Replied At
+          type: Date
+        - contextPath: KMSAT.PhishingSecurityPST.attachment_opened_at
+          description: Phishing Security Attachment Opened At
+          type: Date
+        - contextPath: KMSAT.PhishingSecurityPST.macro_enabled_at
+          description: Phishing Security Macro Enabled At
+        - contextPath: KMSAT.PhishingSecurityPST.data_entered_at
+          description: Phishing Security Date Entered At
+          type: Date
+        - contextPath: KMSAT.PhishingSecurityPST.qr_code_scanned
+          description: Phishing Security QR Scanned At
+          type: Date
+        - contextPath: KMSAT.PhishingSecurityPST.reported_at
+          description: Phishing Security Reported At
+        - contextPath: KMSAT.PhishingSecurityPST.bounced_at
+          description: Phishing Security Bounced At
+        - contextPath: KMSAT.PhishingSecurityPST.ip
+          description: Phishing Security IP
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.ip_location
+          description: Phishing Security IP Location
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.browser
+          description: Phishing Security Browser
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.browser_version
+          description: Phishing Security Browser Security
+          type: String
+        - contextPath: KMSAT.PhishingSecurityPST.os
+          description: Phishing Security OS
+          type: String
+      description: Returns a Specific Failed Recipient's Results.
+    - name: kmsat-phishing-campaigns-security-tests-list
       arguments:
         - name: campaign_id
           required: true

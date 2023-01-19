@@ -474,8 +474,67 @@ def kmsat_phishing_security_tests_recipients_list_command(
     )
 
 
+def kmsat_phishing_security_tests_failed_recipients_list_command(
+    client: Client, args
+) -> CommandResults:
+    pst_id = remove_empty_elements(args.get("pst_id"))
+    response = client.kmsat_phishing_security_tests_recipients(pst_id, None)
+
+    data = []
+    for i in range(len(response)):
+        clicked_at = response[i]['clicked_at']
+        replied_at = response[i]['replied_at']
+        attachment_opened_at = response[i]['attachment_opened_at']
+        macro_enabled_at = response[i]['macro_enabled_at']
+        data_entered_at = response[i]['data_entered_at']
+        qr_code_scanned = response[i]['qr_code_scanned']
+
+        if any([clicked_at, replied_at, attachment_opened_at, macro_enabled_at, data_entered_at, qr_code_scanned]):
+            data.append(response[i])
+
+    markdown = tableToMarkdown(
+        "Phishing Security Tests Recipients",
+        data,
+        [
+            "recipient_id",
+            "pst_id",
+            "user",
+            "template",
+            "scheduled_at",
+            "delivered_at",
+            "opened_at",
+            "clicked_at",
+            "replied_at",
+            "attachment_opened_at",
+            "macro_enabled_at",
+            "data_entered_at",
+            "qr_code_scanned",
+            "reported_at",
+            "bounced_at",
+            "ip",
+            "ip_location",
+            "browser",
+            "browser_version",
+            "os",
+        ],
+    )
+    if response is None:
+        raise DemistoException(
+            "Translation failed: the response from server did not include `phishing_security_tests_failed_recipients_list`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="KMSAT.PhishingSecurityPST",
+        outputs_key_field="recipient_id",
+        raw_response=data,
+        outputs=data,
+        readable_output=markdown,
+    )
+
+
 def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) -> CommandResults:
     campaign_id = remove_empty_elements(args.get("campaign_id"))
+    return_results(campaign_id)
     params = get_pagination(args)
     response = client.kmsat_phishing_campaign_security_tests(campaign_id, params)
     markdown = tableToMarkdown(
@@ -809,8 +868,12 @@ def main() -> None:
             return_results(
                 kmsat_phishing_security_tests_recipients_list_command(client, args)
             )
+        elif command == "kmsat-phishing-security-tests-failed-recipients-list":
+            return_results(
+                kmsat_phishing_security_tests_failed_recipients_list_command(client, args)
+            )
         elif command == "kmsat-phishing-campaigns-security-tests-list":
-            return_results(kmsat_phishing_campaign_security_tests_list_command)(client, args)
+            return_results(kmsat_phishing_campaign_security_tests_list_command(client, args))
         elif command == "kmsat-training-campaigns-list":
             return_results(kmsat_training_campaigns_list_command(client, args))
         elif command == "kmsat-training-enrollments-list":
