@@ -36,8 +36,8 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Server URL | False |
     | Tenant ID | True |
     | Client ID | True |
-    | Subscription ID | True |
-    | Resource Group Name | True |
+    | Subscription ID | False |
+    | Resource Group Name | False |
     | Workspace Name | True |
     | Fetch incidents | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
@@ -45,6 +45,10 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Incident type | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | Fetch Incident Alerts | False |
+    | Fetch Incident Entities | False |
+    | Fetch Incident Comments | False |
+    | Fetch Incident Relations | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -63,6 +67,8 @@ Gets a single incident from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -163,6 +169,8 @@ Gets a list of incidents from Azure Sentinel.
 | limit | The maximum number of incidents to return. The maximum value is 200. Default is 50. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -393,6 +401,8 @@ Gets a list of watchlists from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | watchlist_alias | Alias of specific watchlist to get. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -510,6 +520,8 @@ Delete a watchlists from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | watchlist_alias | Alias of the watchlist to be deleted. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -545,6 +557,8 @@ Create or update a watchlist in Azure Sentinel.
 | file_entry_id | A file entry with raw content that represents the watchlist items to create. | Required | 
 | items_search_key | The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address. | Required | 
 | content_type | The content type of the raw content. For now, only text/csv is valid. Default is Text/Csv. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -621,6 +635,8 @@ Updates a single incident in Azure Sentinel.
 | assignee_email         | The email address of the incident assignee. It is recommended to update *user_principal_name* instead of this field. Note that the updated API field is `owner.email`.                                                                         | Optional | 
 | user_principal_name    | The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.                                                                                                                                           | Optional | 
 | labels                 | Incident labels. Note that all labels will be set as labelType='User'.                                                                                                                                                                         | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -718,6 +734,8 @@ Deletes a single incident in Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -758,6 +776,8 @@ Gets the comments of an incident from Azure Sentinel.
 | incident_id | The incident ID. | Required | 
 | limit | The maximum number of incident comments to return. The maximum value is 50. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -844,6 +864,8 @@ Adds a comment to an incident in Azure Sentinel.
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
 | message | The comment message. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -899,6 +921,8 @@ Deletes a comment from incident in Azure Sentinel.
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
 | comment_id | The comment ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -930,6 +954,8 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 | entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -980,6 +1006,8 @@ Gets a list of an incident's entities from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1058,6 +1086,8 @@ Gets a list of an incident's alerts from Azure Sentinel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1136,6 +1166,8 @@ Get a single watchlist item or list of watchlist items.
 | --- | --- | --- |
 | watchlist_alias | The alias of the watchlist. | Required | 
 | watchlist_item_id | The ID of the single watchlist item. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1213,6 +1245,8 @@ Delete a watchlist item.
 | --- | --- | --- |
 | watchlist_alias | The watchlist alias. | Required | 
 | watchlist_item_id | The watchlist item ID to be deleted. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1241,6 +1275,8 @@ Create or update a watchlist item.
 | watchlist_alias | The watchlist alias. | Required | 
 | watchlist_item_id | The watchlist item ID (GUID) to update. | Optional | 
 | item_key_value | The JSON for the itemsKeyValue of the item (the key value is different from watchlist to watchlist). | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1303,6 +1339,8 @@ Returns a list of threat indicators.
 | indicator_name | The name of the indicator. | Optional | 
 | limit | The maximum number of indicators to return. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls.<br/>This argument overrides all of the other command arguments. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1372,6 +1410,8 @@ Returns a list of threat indicators with specific entities.
 | indicator_types | The indicator types of the threat indicator. Possible values are: ipv4, ipv6, file, url, domain. | Optional | 
 | threat_types | A comma-separated list of threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Optional | 
 | keywords | A comma-separated list of keywords. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1443,6 +1483,8 @@ Creates a new threat indicator.
 | valid_until | The date until which the indicator is valid. | Optional | 
 | created_by | The creator of the new indicator. | Optional | 
 | revoked | If true, the indicator is revoked. Possible values are: true, false. Default is false. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1514,6 +1556,8 @@ Updates an existing threat indicator.
 | valid_from | The date from which the indicator is valid. | Optional | 
 | valid_until | The date until which the indicator is valid. | Optional | 
 | created_by | The creator of the indicator. | Optional | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1573,6 +1617,8 @@ Deletes an existing threat indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_names | A comma-separated list of indicators to delete. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1601,6 +1647,8 @@ Appends new tags to an existing indicator.
 | --- | --- | --- |
 | indicator_name | The name of the indicator. | Required | 
 | tags | A comma-separated list of tags to append. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
@@ -1657,6 +1705,8 @@ Replaces the tags of a given indicator.
 | --- | --- | --- |
 | indicator_name | The name of the indicator. | Required | 
 | tags | A comma-separated list of tags to replace. | Required | 
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 
 #### Context Output
