@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import argparse
 import shutil
@@ -27,6 +28,8 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
+
+METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
 
 def get_packs_names(packs_to_upload: str) -> set:
@@ -118,7 +121,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
 
 
 def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, pack_version: str = '',
-                        hidden_pack: bool = False) -> bool:
+                        hidden_pack: bool = False, pack_versions_to_keep: list = None) -> bool:
     """
     Copies pack folder into index folder.
 
@@ -128,6 +131,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         pack_path (str): pack folder full path.
         pack_version (str): pack latest version.
         hidden_pack (bool): whether pack is hidden/internal or regular pack.
+        pack_versions_to_keep (list): pack versions to keep its metadata. If empty, do not remove any versions.
 
     Returns:
         bool: whether the operation succeeded.
@@ -151,6 +155,10 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
+                elif (metadata_version := re.findall(METADATA_FILE_REGEX_GET_VERSION, d.name)) \
+                        and pack_versions_to_keep:
+                    if metadata_version[0] not in pack_versions_to_keep:
+                        os.remove(d.path)
 
         # skipping index update in case hidden is set to True
         if hidden_pack:
@@ -246,7 +254,6 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
                             previous_commit_hash: str = None, landing_page_sections: dict = None,
                             artifacts_dir: Optional[str] = None,
                             storage_bucket: Optional[Bucket] = None,
-                            id_set=None,
                             ):
     """
     Upload updated index zip to cloud storage.
@@ -320,7 +327,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
             # Store index.json in CircleCI artifacts
             shutil.copyfile(
                 os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
-                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}{"" if id_set else "-graph"}.json'),
+                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}.json'),
             )
         shutil.rmtree(index_folder_path)
 
@@ -790,22 +797,25 @@ def get_packs_summary(packs_list):
     Args:
         packs_list (list): The full packs list
 
-    Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
+    Returns: 4 lists of packs - successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs & failed_packs
 
     """
 
     successful_packs = []
+    successful_uploaded_dependencies_zip_packs = []
     skipped_packs = []
     failed_packs = []
     for pack in packs_list:
         if pack.status == PackStatus.SUCCESS.name:
             successful_packs.append(pack)
+        elif pack.status == PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name:
+            successful_uploaded_dependencies_zip_packs.append(pack)
         elif pack.status in SKIPPED_STATUS_CODES:
             skipped_packs.append(pack)
         else:
             failed_packs.append(pack)
 
-    return successful_packs, skipped_packs, failed_packs
+    return successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs
 
 
 def handle_private_content(public_index_folder_path, private_bucket_name, extract_destination_path, storage_client,
@@ -922,8 +932,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
     logging.info("Starting to collect pack with dependencies zips")
     for pack_name, pack in packs_for_current_marketplace_dict.items():
         try:
-            if pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]:
-                # avoid trying to upload dependencies zip for failed packs
+            if (pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]) or pack.hidden:
+                # avoid trying to upload dependencies zip for failed or hidden packs
                 continue
             pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in
                                          pack.all_levels_dependencies] + [pack]
@@ -935,6 +945,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
                 Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
                 for current_pack in pack_and_its_dependencies:
+                    if current_pack.hidden:
+                        continue
                     logging.debug(f"Starting to collect zip of pack {current_pack.name}")
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
                     if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
@@ -960,6 +972,9 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
+                else:
+                    if pack.status != PackStatus.SUCCESS.name:
+                        pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
         except Exception as e:
             logging.error(traceback.format_exc())
             logging.error(f"Failed uploading packs with dependencies: {e}")
@@ -1165,9 +1180,12 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                    modified_rn_files_paths,
-                                                                    marketplace, id_set)
+        task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
+            index_folder_path,
+            build_number,
+            modified_rn_files_paths,
+            marketplace, id_set
+        )
 
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
@@ -1207,9 +1225,9 @@ def main():
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
             pack.cleanup()
             continue
-
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden,
+                                          pack_versions_to_keep=pack_versions_to_keep)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
@@ -1258,7 +1276,7 @@ def main():
                             force_upload=force_upload, previous_commit_hash=previous_commit_hash,
                             landing_page_sections=statistics_handler.landing_page_sections,
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
-                            storage_bucket=storage_bucket, id_set=id_set)
+                            storage_bucket=storage_bucket)
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
@@ -1267,13 +1285,14 @@ def main():
                                            packs_for_current_marketplace_dict)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
-        updated_private_packs_ids, images_data=get_images_data(packs_list)
+        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+        successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
+        images_data=get_images_data(packs_list)
     )
 
     # summary of packs status
