@@ -48,6 +48,7 @@ configuration:
   type: 0
   additionalinfo: The maximum number of incidents to fetch per sub-category.
   hidden: false
+  additionalinfo: The maximum number of incidents to fetch per sub-category.
 description: DeCYFIR API's provides External Threat Landscape Management insights.
 display: DeCYFIR
 name: decyfir
