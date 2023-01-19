@@ -94,3 +94,7 @@ This content pack includes the [generateASMReport](#generateasmreport) script:
 #### GenerateASMReport
 This automation helps generate an ASM alert summary report with important information found via the playbook run.
 ![GenerateASMReport](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
+
+#### SnmpDetection
+This automation helps check if SNMP is enabled or not and gets the running version on the remote server.
+![SnmpDetection](https://raw.githubusercontent.com/demisto/content/bf435b470c2ed192b2d6c65c98ce488012d51636/Packs/CortexAttackSurfaceManagement/doc_files/SnmpDetection.png)
