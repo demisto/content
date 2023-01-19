@@ -1,6 +1,6 @@
 # Delinea Account Lifecycle Manager
 
-(Formly known as "Thycotic Account Lifecycle Manager")
+(Formally known as "Thycotic Account Lifecycle Manager")
 
 This pack includes XSIAM content.
 
@@ -12,15 +12,15 @@ service accounts, from workflow-based provisioning to account decommissioning.
 
 1. Navigate to **Integrations** > **SIEM** on the left-hand navigation menu.
 
-2. Click the **Create SIEM Integration** Create SIEM Integration.
+2. Click the **Create SIEM Integration**.
 
 3. Fill in the required values.
 
 4. Click **Add**.
 
-5. On the **Manage SIEM Integration** page click edit, change the output type to **CEF** and Set the **Enabled* toggle to Yes.
+5. On the **Manage SIEM Integration** page click **edit**, change the output type to **CEF** and set the **Enabled* toggle to Yes.
 
-6. When the integration is configured, click Test SIEM Integration in the upper right-hand corner. Clicking will immediately send ALM data to your chosen server.
+6. When the integration is configured, click **Test SIEM Integration** in the upper right-hand corner. Clicking will immediately send ALM data to your chosen server.
  
  More information on SIEM integrations can be found [here](https://docs.thycotic.com/alm/current/configuration/other-int/integ-siem#siem_integration).
 
