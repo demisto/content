@@ -59,6 +59,15 @@ run-unittests-and-lint-upload-flow:
     - .run-unittests-and-lint
     - .bucket-upload-rule
 
+jobs-done-check-upload-flow:
+  extends:
+    - .jobs-done-check
+    - .bucket-upload-rule
+  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_5', 'install-packs-in-server6_6', 'install-packs-in-server6_8', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace', 'upload-packs-to-xpanse-marketplace']
+  tags:
+    - gke
+
+
 
 xsoar-prepare-testing-bucket-upload-flow:
   extends:

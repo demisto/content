@@ -361,3 +361,10 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+
+.jobs-done-check:
+  stage: are-jobs-realy-done
+  script:
+    - section_start "Check that all build jobs passed"
+    - python3 Tests/scripts/check_jobs_done.py --job-done-files $PIPELINE_JOBS_FOLDER
+    - section_end "Check that all build jobs passed"
