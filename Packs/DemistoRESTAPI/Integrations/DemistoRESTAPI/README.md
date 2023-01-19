@@ -9,7 +9,7 @@ Deprecated. Use Core REST API instead.
     | **Parameter** | **Description** | **Required** |
     | --- |--------------| --- |
     | Demisto Server URL |  | True         |
-    | Dem``isto Server API Key |  | False        |
+    | Demisto Server API Key |  | False        |
     | Base marketplace url |  | False           |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False        |
     | Demisto Server API Key |  | False        |
@@ -26,7 +26,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### demisto-api-post
 ***
 send HTTP POST request
-``
 
 #### Base Command
 
