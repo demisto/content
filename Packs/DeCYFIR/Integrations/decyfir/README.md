@@ -1,5 +1,5 @@
 DeCYFIR API's provides External Threat Landscape Management insights.
-This integration was integrated and tested with version 6.5.0 of decyfir
+This integration was integrated and tested with version xx of decyfir
 
 ## Configure DeCYFIR on Cortex XSOAR
 
@@ -7,17 +7,18 @@ This integration was integrated and tested with version 6.5.0 of decyfir
 2. Search for DeCYFIR.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Incident type | False |
-    | Server URL (e.g. https://example.net) | True |
-    | Username | True |
-    | Password | True |
-    | DeCYFIR API key | True |
-    | Fetch incidents | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | How much time before the first fetch to retrieve incidents | False |
-    | None | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Incident type |  | False |
+    | DeCYFIR Server URL (e.g. https://example.net) |  | True |
+    | DeCYFIR API Key |  | True |
+    | Fetch incidents |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | How much time before the first fetch to retrieve incidents |  | False |
+    | None | The maximum number of incidents to fetch per sub-category. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
