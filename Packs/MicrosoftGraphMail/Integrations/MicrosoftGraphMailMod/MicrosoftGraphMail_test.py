@@ -4,7 +4,7 @@ import pytest
 import requests_mock
 
 from CommonServerPython import *
-from MicrosoftGraphMail import *
+from Packs.MicrosoftGraphMail.Integrations.MicrosoftGraphMail.MicrosoftGraphMailMod import *
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -13,7 +13,6 @@ class MockedResponse:
 
     def __init__(self, status_code):
         self.status_code = status_code
-
 
 @pytest.mark.parametrize('params, expected_result', [
     ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Key must be provided.'),
@@ -663,7 +662,7 @@ def test_get_attachments_without_attachment_id(mocker, client):
         - Validate that the message object created successfully and all the attachment where downloaded.
 
     """
-    from MicrosoftGraphMail import get_attachment_command
+    from Packs.MicrosoftGraphMail.Integrations.MicrosoftGraphMail.MicrosoftGraphMailMod import get_attachment_command
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachments') as mail_json:
         user_id = 'ex@example.com'
@@ -868,6 +867,7 @@ def test_send_mail_command(mocker, client, args):
         from_email = args.get('from')
 
         mocker.patch.object(client.ms_client, 'get_access_token')
+        mocker.patch.object(demisto, 'params', return_value={'intercept_recipients': False})
         send_mail_mocker = request_mocker.post(
             f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
         )
@@ -882,7 +882,6 @@ def test_send_mail_command(mocker, client, args):
         assert message.get('subject') == args.get('subject')
         assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')[0]
         assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
-
 
 class TestCommandsWithLargeAttachments:
 
@@ -1032,10 +1031,8 @@ class TestCommandsWithLargeAttachments:
             Case 1: send email command arguments and attachment > 3mb.
             Case 2: send email command arguments and attachment < 3mb.
             Case 3: send email command arguments and one attachment > 3m and one attachment < 3mb.
-
         When:
             - sending a mail
-
         Then:
             Case1:
              * make sure an upload session was created and that the correct headers were sent
@@ -1050,7 +1047,6 @@ class TestCommandsWithLargeAttachments:
              * make sure the endpoint to send an email without creating draft mail was not called.
              * make sure the endpoint to create a draft email and send the draft mail were called.
              * make sure the the attachment < 3mb was sent when creating a draft mail not through an upload session.
-
             - Make sure for all three cases the expected context output is returned.
         """
         with requests_mock.Mocker() as request_mocker:
@@ -1112,10 +1108,8 @@ class TestCommandsWithLargeAttachments:
             Case 1: reply email command arguments and attachment > 3mb.
             Case 2: reply email command arguments and attachment < 3mb.
             Case 3: reply email command arguments and one attachment > 3m and one attachment < 3mb.
-
         When:
             - sending a reply mail
-
         Then:
             Case1:
              * make sure an upload session was created and that the correct headers were sent
@@ -1129,7 +1123,6 @@ class TestCommandsWithLargeAttachments:
              * make sure the endpoint to send a reply without creating draft mail was not called.
              * make sure the endpoint to create a draft reply mail and send a reply draft mail were called.
              * make sure the the attachment < 3mb was sent when creating a draft reply not through an upload session.
-
             - Make sure for all three cases the expected context output is returned.
         """
         with requests_mock.Mocker() as request_mocker:
@@ -1184,10 +1177,8 @@ class TestCommandsWithLargeAttachments:
             Case 1: create draft command arguments and attachment > 3mb.
             Case 2: create draft command arguments and attachment < 3mb.
             Case 3: create draft command arguments and one attachment > 3m and one attachment < 3mb.
-
         When:
             creating a draft mail.
-
         Then:
             Case1:
              * make sure an upload session was created and that the correct headers were sent
@@ -1199,11 +1190,10 @@ class TestCommandsWithLargeAttachments:
              * make sure an upload session was created and that the correct headers were sent.
              * make sure the endpoint to create a draft mail was called.
              * make sure the the attachment < 3mb was sent when creating a draft reply not through an upload session
-
             - Make sure for all three cases the expected context output is returned.
         """
-        from MicrosoftGraphMail import create_draft_command
-        import MicrosoftGraphMail
+        from Packs.MicrosoftGraphMail.Integrations.MicrosoftGraphMail.MicrosoftGraphMailMod import create_draft_command
+        import Packs.MicrosoftGraphMail.Integrations.MicrosoftGraphMail.MicrosoftGraphMailMod as MicrosoftGraphMailMod
 
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
@@ -1212,7 +1202,7 @@ class TestCommandsWithLargeAttachments:
                 f'https://graph.microsoft.com/v1.0/users/{from_email}/messages', json={'id': '123'}
             )
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
-            return_outputs_mocker = mocker.patch.object(MicrosoftGraphMail, 'return_outputs')
+            return_outputs_mocker = mocker.patch.object(MicrosoftGraphMailMod, 'return_outputs')
 
             create_upload_mock = mocker.patch.object(
                 client, 'get_upload_session', return_value={"uploadUrl": "test.com"}

@@ -464,7 +464,9 @@ class MsGraphClient:
         :return: The address of recipient
         :rtype: ``str``
         """
-        return email_address.get('emailAddress', {}).get('address', '')
+        recipientAddr = email_address.get('emailAddress', {}).get('address', '')
+        demisto.debug(recipientAddr)
+        return recipientAddr
 
     @staticmethod
     def _build_headers_input(internet_message_headers):
@@ -1776,6 +1778,14 @@ def get_email_as_eml_command(client: MsGraphClient, args):
     demisto.results(file_result)
 
 
+def rewrite_recipients(to, cc, bcc):
+    if bool(demisto.getParam('rewrite_recipient')):
+        to = argToList(demisto.getParam('replacement_recipient'))
+        return list(to), list(to), list(to)
+    else:
+        return list(to), list(cc), list(bcc)
+
+
 def prepare_args(command, args):
     """
     Receives command and prepares the arguments for future usage.
@@ -1789,15 +1799,18 @@ def prepare_args(command, args):
     :return: Prepared args
     :rtype: ``dict``
     """
+    to, cc, bcc = rewrite_recipients(argToList(args.get('to')),
+                                     argToList(args.get('cc')),
+                                     argToList(args.get('bcc')))  # pylint: disable=unbalanced-tuple-unpacking
     if command in ['create-draft', 'send-mail']:
         if args.get('htmlBody', None):
             email_body = args.get('htmlBody')
         else:
             email_body = args.get('body', '')
         return {
-            'to_recipients': argToList(args.get('to')),
-            'cc_recipients': argToList(args.get('cc')),
-            'bcc_recipients': argToList(args.get('bcc')),
+            'to_recipients': to,
+            'cc_recipients': cc,
+            'bcc_recipients': bbc,
             'reply_to': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
@@ -1813,7 +1826,7 @@ def prepare_args(command, args):
 
     elif command == 'reply-to':
         return {
-            'to_recipients': argToList(args.get('to')),
+            'to_recipients': to,
             'message_id': args.get('ID', ''),
             'comment': args.get('body'),
             'attach_ids': argToList(args.get('attachIDs')),

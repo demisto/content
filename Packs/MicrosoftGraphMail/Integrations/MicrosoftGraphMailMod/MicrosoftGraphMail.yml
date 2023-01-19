@@ -92,6 +92,15 @@ configuration:
   type: 0
   section: Collect
   defaultvalue: '50'
+- display: Rewrite Recipient(s)
+  name: rewrite_recipients
+  required: false
+  type: 8
+- display: Rewritten Email Address
+  additionalinfo: "Email address that replaces 'to', 'cc', and 'bcc' values supplied in automations, the CLI or playbooks to the integration instance."
+  name: replacement_recipient
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
