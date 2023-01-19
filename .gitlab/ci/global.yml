@@ -185,6 +185,8 @@
   extends:
     - .default-cache
     - .default-before-script
+  after_script:
+    - echo "done" > ${PIPELINE_JOBS_FOLDER}/${CI_JOB_NAME}.txt
 
 
 .trigger-slack-notification:
@@ -209,6 +211,7 @@
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   services:
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
@@ -283,6 +286,7 @@
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   script:
     - section_start "Look For Secrets"

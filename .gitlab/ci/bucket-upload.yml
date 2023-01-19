@@ -108,6 +108,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -174,6 +175,7 @@ install-packs-in-server-master:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -250,6 +252,7 @@ upload-packs-to-marketplace:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xsoar"
@@ -327,6 +330,7 @@ upload-packs-to-marketplace-v2:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "marketplacev2"
@@ -385,6 +389,7 @@ upload-packs-to-xpanse-marketplace:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xpanse"
