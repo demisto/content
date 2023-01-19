@@ -417,7 +417,7 @@ def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_typ
             raise e
 
 
-def main():
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
