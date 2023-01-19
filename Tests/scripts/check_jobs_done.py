@@ -76,15 +76,9 @@ def get_build_jobs():
 def main():
     args = parse_args()
 
-    if getenv('NIGHTLY'):
-        jobs = JOBS_PER_BUILD_TYPE['nightly']
-    elif
-    else:
-        jobs = ['push']
-
     base_path = Path(args.job_done_files)
     should_fail = False
-    for job in jobs:
+    for job in get_build_jobs():
         job_file = base_path / f'{job}.txt'
         if not job_file.exists():
             logging.error(f"somthing isn't OK with jom name {job}")
