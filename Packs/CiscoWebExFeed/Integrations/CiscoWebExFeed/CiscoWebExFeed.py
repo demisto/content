@@ -69,7 +69,7 @@ def grab_ip_table(html_section):
         data.append([ele for ele in cols if ele])  # Get rid of empty values
     return data
 
-# TODO why Overrides BaseClient.
+# TODO use a client that inherts from BaseClient.
 
 
 class Client:
@@ -105,9 +105,9 @@ class Client:
                 verify=self._verify,
                 proxies=self._proxies,
             )
-            # TODO we use this?
+            # TODO  remove
             response.raise_for_status()
-
+            # TODO remove all tha parsing outside
             soup = BeautifulSoup(response.text, "html.parser")
 
             # Get the IP and Domain Sections from WebEx website
@@ -121,11 +121,12 @@ class Client:
             # Get IPS from IP Table
             ipTable = grab_ip_table(ipsSection)
             retIPs = grab_ips(ipTable)
-
+            # TODO use a list of dicts
             jsonStr = '[{"urls": ' + json.dumps(retDomains) + ',' + '"ips": ' + json.dumps(retIPs) + '}]'
             data = json.loads(jsonStr)
             indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
             result.extend(indicators)
+            # TODO remove
         except requests.exceptions.SSLError as err:
             demisto.debug(str(err))
             raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
@@ -174,6 +175,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     client.build_iterator()
     return 'ok', {}, {}
 
+# TODO limit = None, and inside if limit...
+
 
 def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
     """Retrieves indicators from the feed
@@ -186,9 +189,10 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
     Returns:
         Indicators.
     """
+    # TODO explain how dose it look and what i want to get
     iterator = client.build_iterator()
     # filter indicator_type specific entries
-
+    # TODO cleanup and make it nice and clean
     if not indicator_type_lower == 'both':
         iterator = [i for i in iterator if indicator_type_lower in i]
     indicators = []
@@ -202,6 +206,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
             values = item.get(indicator_type_lower)
         if values:
             for value in values:
+                # TODO use class ip from common, shuld make the futer lines unnecessary
                 type_ = Client.check_indicator_type(value)
                 raw_data = {
                     'value': value,
@@ -263,7 +268,9 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
 
     return human_readable, {}, {'raw_response': indicators}
 
-# TODO remove?
+# TODO remove? yes
+
+
 def fetch_indicators_command(client: Client) -> List[Dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
@@ -296,7 +303,7 @@ def main():
             'webex-get-indicators': get_indicators_command
         }
         if command in commands:
-            # TODO change to command results?
+            # TODO change to command results? indicators
             return_outputs(*commands[command](client, demisto.args()))
 
         elif command == 'fetch-indicators':
