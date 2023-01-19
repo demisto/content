@@ -1,4 +1,4 @@
-Use Demisto REST APIs
+Deprecated. Use Core REST API instead.
 
 ## Configure Demisto REST API on Cortex XSOAR
 
@@ -9,7 +9,7 @@ Use Demisto REST APIs
     | **Parameter** | **Description** | **Required** |
     | --- |--------------| --- |
     | Demisto Server URL |  | True         |
-    | Demisto Server API Key |  | False        |
+    | Dem``isto Server API Key |  | False        |
     | Base marketplace url |  | False           |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False        |
     | Demisto Server API Key |  | False        |
@@ -26,7 +26,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### demisto-api-post
 ***
 send HTTP POST request
-
+``
 
 #### Base Command
 
