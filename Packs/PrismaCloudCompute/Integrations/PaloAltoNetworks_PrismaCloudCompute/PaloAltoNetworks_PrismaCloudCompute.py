@@ -326,7 +326,7 @@ class PrismaCloudComputeClient(BaseClient):
         )
 
 
-    def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str):
+    def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str) -> dict:
         """
         Get the container audit alerts for a specific image.
 
@@ -348,8 +348,8 @@ class PrismaCloudComputeClient(BaseClient):
             "limit": limit
         }
         return self._http_request(
-            method="GET", url_suffix="audits/firewall/app/container", params=params, resp_type="response"
-        ).json()
+            method="GET", url_suffix="audits/firewall/app/container", params=params
+        )
 
 
 
@@ -1713,10 +1713,10 @@ def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> Comman
 
     policy = args.get("policy")
 
-    for index, rule in enumerate(policy["rules"]):
+    for index, rule in enumerate(policy.get("rules")):
         if rule["name"] != args.get("rule_name"):
             continue
-        for spec in policy["rules"][index]["applicationsSpec"]: 
+        for spec in policy.get("rules")[index].get("applicationsSpec"): 
             spec[args.get("attack_type")] = {"effect": args.get("action") }
 
     res = client.update_waas_policies(policy)
