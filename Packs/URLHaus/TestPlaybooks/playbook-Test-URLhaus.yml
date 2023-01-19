@@ -1,19 +1,19 @@
 id: Test_URLhaus
-version: 17
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Test_URLhaus
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 11ad010b-60cb-4edf-88e9-e3141d74588d
+    taskid: 1447f2fb-33d6-4d19-823e-d70dd9f2356a
     type: start
     task:
-      id: 11ad010b-60cb-4edf-88e9-e3141d74588d
+      id: 1447f2fb-33d6-4d19-823e-d70dd9f2356a
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 52dab957-785c-4d74-8715-4be5915ef6c9
+    taskid: 4dc86288-852b-499f-876a-695851509ba2
     type: regular
     task:
-      id: 52dab957-785c-4d74-8715-4be5915ef6c9
+      id: 4dc86288-852b-499f-876a-695851509ba2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 46701d7f-91e4-42b1-8696-be7b6a3499e1
+    taskid: e26221d2-20b3-470a-8e1d-529c1ddb8201
     type: regular
     task:
-      id: 46701d7f-91e4-42b1-8696-be7b6a3499e1
+      id: e26221d2-20b3-470a-8e1d-529c1ddb8201
       version: -1
       name: url - with data
       description: Retrieve URL information from URLhaus
@@ -112,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a5f68306-bea9-49fd-872b-15dbf1cabb93
+    taskid: c9da3940-9f93-4b7f-8e91-bbd44b9843d9
     type: condition
     task:
-      id: a5f68306-bea9-49fd-872b-15dbf1cabb93
+      id: c9da3940-9f93-4b7f-8e91-bbd44b9843d9
       version: -1
       name: verify url context
       type: condition
@@ -199,15 +199,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5985fd3d-363c-421b-8acb-5e3543f833db
+    taskid: b23301a6-f6a0-4426-88de-c2a2731eda0c
     type: title
     task:
-      id: 5985fd3d-363c-421b-8acb-5e3543f833db
+      id: b23301a6-f6a0-4426-88de-c2a2731eda0c
       version: -1
       name: complete
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -226,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 83f3c507-7fee-4dd8-8925-2c62d43cd508
+    taskid: 46c5d563-21a1-4cc1-8f13-25539a90ddcd
     type: regular
     task:
-      id: 83f3c507-7fee-4dd8-8925-2c62d43cd508
+      id: 46c5d563-21a1-4cc1-8f13-25539a90ddcd
       version: -1
       name: url - nonexisting
       description: Retrieve URL information from URLhaus
@@ -261,10 +262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b1b04054-9a1f-48c3-8ccb-6dad0b7d1eee
+    taskid: 8cbebcb0-62c6-4626-8bd6-6cbc6956b9f0
     type: condition
     task:
-      id: b1b04054-9a1f-48c3-8ccb-6dad0b7d1eee
+      id: 8cbebcb0-62c6-4626-8bd6-6cbc6956b9f0
       version: -1
       name: verify url nonexsiting
       type: condition
@@ -321,10 +322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ef6171ed-f4a1-4501-86c8-43505b53a8f0
+    taskid: 90ba6cd3-1992-4299-82bc-dfaf5b7b0891
     type: regular
     task:
-      id: ef6171ed-f4a1-4501-86c8-43505b53a8f0
+      id: 90ba6cd3-1992-4299-82bc-dfaf5b7b0891
       version: -1
       name: domain - with data
       description: Retrieve domain information from URLhaus
@@ -356,10 +357,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8375ee25-a6ac-4afa-851d-8cb70dfdba28
+    taskid: be67fa47-992b-458c-8379-e59ff2c3b086
     type: condition
     task:
-      id: 8375ee25-a6ac-4afa-851d-8cb70dfdba28
+      id: be67fa47-992b-458c-8379-e59ff2c3b086
       version: -1
       name: verify domain context
       type: condition
@@ -372,7 +373,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -388,9 +389,6 @@ tasks:
                         simple: chobemaster.com
                 accessor: Score
             iscontext: true
-          right:
-            value:
-              simple: "3"
       - - operator: greaterThanOrEqual
           left:
             value:
@@ -429,10 +427,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: fbdc5aaf-05a3-41ca-88ab-8b49d534a9bd
+    taskid: 6781fe7b-70a0-4c2e-8d5f-c7c7de899bab
     type: regular
     task:
-      id: fbdc5aaf-05a3-41ca-88ab-8b49d534a9bd
+      id: 6781fe7b-70a0-4c2e-8d5f-c7c7de899bab
       version: -1
       name: domain - no data
       description: Retrieve domain information from URLhaus
@@ -464,10 +462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 552328eb-2622-4c6e-8dcb-d70b799991aa
+    taskid: eb8a6ad9-bbd9-4fb0-8bdb-1a1cd3373ee0
     type: condition
     task:
-      id: 552328eb-2622-4c6e-8dcb-d70b799991aa
+      id: eb8a6ad9-bbd9-4fb0-8bdb-1a1cd3373ee0
       version: -1
       name: verify context
       type: condition
@@ -516,10 +514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9459eee5-d7b4-4af4-8f93-b8b318270784
+    taskid: ad051a16-a01c-473b-8a7c-2a526ef7c0cd
     type: regular
     task:
-      id: 9459eee5-d7b4-4af4-8f93-b8b318270784
+      id: ad051a16-a01c-473b-8a7c-2a526ef7c0cd
       version: -1
       name: file - no data
       description: Retrieve file information from URLhaus
@@ -555,10 +553,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6e48bf6e-44f5-469d-8113-1405d17be279
+    taskid: df8ab07a-b51a-4569-8af3-dab70e16f372
     type: condition
     task:
-      id: 6e48bf6e-44f5-469d-8113-1405d17be279
+      id: df8ab07a-b51a-4569-8af3-dab70e16f372
       version: -1
       name: verify file context
       type: condition
@@ -633,10 +631,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: fb6baf58-ee9f-4fc2-8fe2-ed0120421530
+    taskid: 21b7dfa4-cae0-48b0-8b43-401216be69f4
     type: regular
     task:
-      id: fb6baf58-ee9f-4fc2-8fe2-ed0120421530
+      id: 21b7dfa4-cae0-48b0-8b43-401216be69f4
       version: -1
       name: urlhaus-download-sample - with data
       description: Download a malware sample from URLhaus
@@ -668,10 +666,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 0a71e592-8f23-4537-8f94-993d30bf6fd2
+    taskid: 4ae37a7b-fdb2-436e-81fe-35369e830674
     type: condition
     task:
-      id: 0a71e592-8f23-4537-8f94-993d30bf6fd2
+      id: 4ae37a7b-fdb2-436e-81fe-35369e830674
       version: -1
       name: verify context
       type: condition
@@ -720,10 +718,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 90d82563-46a8-4d14-861e-69b5a4b6ff03
+    taskid: 6eb5ec28-dd57-45a5-8c6e-9f2e845382ae
     type: regular
     task:
-      id: 90d82563-46a8-4d14-861e-69b5a4b6ff03
+      id: 6eb5ec28-dd57-45a5-8c6e-9f2e845382ae
       version: -1
       name: urlhaus-download-sample - w/o data
       description: Download a malware sample from URLhaus
@@ -755,10 +753,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: ebe26f9c-cb80-4a7f-854c-adf73ae48858
+    taskid: efbdde6b-c93f-45b6-8fe0-f989c40f7c0b
     type: regular
     task:
-      id: ebe26f9c-cb80-4a7f-854c-adf73ae48858
+      id: efbdde6b-c93f-45b6-8fe0-f989c40f7c0b
       version: -1
       name: file - with data
       description: Retrieve file information from URLhaus
@@ -794,10 +792,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 578cd26f-8c16-43f7-8e80-0856116f3914
+    taskid: 413f945e-cf6c-4d5a-8c6d-9ea53b214e3c
     type: condition
     task:
-      id: 578cd26f-8c16-43f7-8e80-0856116f3914
+      id: 413f945e-cf6c-4d5a-8c6d-9ea53b214e3c
       version: -1
       name: verify context
       type: condition
@@ -848,3 +846,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''
