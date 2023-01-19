@@ -1605,6 +1605,8 @@ def build_mail_object(raw_response: Union[dict, list], get_body: bool = False, u
         return build_mail(raw_response)
     return mails_list
 
+def test_foo():
+    pass
 
 def main():     # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
