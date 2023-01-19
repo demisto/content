@@ -823,7 +823,16 @@ def build_recurring_according_to_params(args):
     return frequency_object
 
 
-
+def get_pagination_params(args) -> dict:
+    pagination_params = {}
+    page = arg_to_number(args.get('page')) or 1
+    page_size = arg_to_number(args.get('page_size'))
+    if page and page_size:
+        pagination_params['offset'] = (page - 1) * page_size
+        pagination_params['limit'] = page_size
+    elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
+        pagination_params['limit'] = limit
+    return pagination_params
 
 """COMMANDS"""
 
@@ -989,13 +998,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
         raw_response = client.get_address_by_id(query_params, object_id)
         outputs = [raw_response]
     else:
-        page = arg_to_number(args.get('page')) or 1
-        page_size = arg_to_number(args.get('page_size'))
-        if page and page_size:
-            query_params['offset'] = (page - 1) * page_size
-            query_params['limit'] = page_size
-        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
-            query_params['limit'] = limit
+        query_params.update(get_pagination_params(args))
 
         raw_response = client.list_address_objects(query_params)  # type: ignore
 
@@ -1108,13 +1111,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
         raw_response = client.get_security_rule_by_id(query_params, rule_id)
         outputs = raw_response
     else:
-        page = arg_to_number(args.get('page')) or 1
-        page_size = arg_to_number(args.get('page_size'))
-        if page and page_size:
-            query_params['offset'] = (page - 1) * page_size
-            query_params['limit'] = page_size
-        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
-            query_params['limit'] = limit
+        query_params.update(get_pagination_params(args))
 
         raw_response = client.list_security_rules(query_params)  # type: ignore
         outputs = raw_response.get('data') or {}
@@ -1148,11 +1145,7 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
     if job_id := args.get('job_id'):
         raw_response = client.get_config_job_by_id(job_id)
     else:
-        if limit := arg_to_number(args.get('limit', SEARCH_LIMIT)):
-            query_params['limit'] = limit
-
-        if offset := arg_to_number(args.get('offset', 0)):
-            query_params['offset'] = offset
+        query_params.update(get_pagination_params(args))
 
         raw_response = client.list_config_jobs()  # type: ignore
 
@@ -1188,11 +1181,7 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raw_response = client.get_tag_by_id(query_params, tag_id)
         outputs = raw_response
     else:
-        if limit := arg_to_number(args.get('limit', SEARCH_LIMIT)):
-            query_params['limit'] = limit
-
-        if offset := arg_to_number(args.get('offset', 0)):
-            query_params['offset'] = offset
+        query_params.update(get_pagination_params(args))
 
         raw_response = client.list_tags(query_params)  # type: ignore
         outputs = raw_response.get('data')
@@ -1314,13 +1303,7 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
         raw_response = client.get_address_group_by_id(query_params, group_id)
         outputs = [raw_response]
     else:
-        page = arg_to_number(args.get('page')) or 1
-        page_size = arg_to_number(args.get('page_size'))
-        if page and page_size:
-            query_params['offset'] = (page - 1) * page_size
-            query_params['limit'] = page_size
-        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
-            query_params['limit'] = limit
+        query_params.update(get_pagination_params(args))
 
         raw_response = client.list_address_group(query_params)  # type: ignore
 
@@ -1621,13 +1604,7 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
         raw_response = client.get_external_dynamic_list_by_id(query_params, external_dynamic_list_id)
         outputs = raw_response
     else:
-        page = arg_to_number(args.get('page')) or 1
-        page_size = arg_to_number(args.get('page_size'))
-        if page and page_size:
-            query_params['offset'] = (page - 1) * page_size
-            query_params['limit'] = page_size
-        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
-            query_params['limit'] = limit
+        query_params.update(get_pagination_params(args))
 
         raw_response = client.list_external_dynamic_list(query_params)  # type: ignore
 
@@ -1817,7 +1794,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
         return CommandResults(
             scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args,
                                                next_run_in_seconds=polling_interval),
-            readable_output=f'Waiting for all data to push for job ib {job_id}')
+            readable_output=f'Waiting for all data to push for job id {job_id}')
 
     job_id = args.get('job_id')
     if not argToBoolean(args.get('parent_finished')):
@@ -1827,6 +1804,11 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                 scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                    args=args,
                                                    next_run_in_seconds=polling_interval))
+        if res.get('result_str') != 'OK':
+            raise DemistoException(f'Something went wrong while trying to push job id {job_id}. '
+                                   f'Result: {res.get("result_str")}')
+
+        # Parent is the first push. After finishing, sub processes created for each folder.
         args['parent_finished'] = True
     res = client.list_config_jobs().get('data', {})
     for job in res:
@@ -1836,7 +1818,10 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                     scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                        args=args,
                                                        next_run_in_seconds=polling_interval))
-    return CommandResults(readable_output="finished pushing")
+            if job.get('result_str') != 'OK':
+                raise DemistoException(f'Something went wrong while trying to push job id {job_id}. '
+                                       f'Result: {job.get("result_str")}')
+    return CommandResults(readable_output=f'Finished pushing job {job_id}')
 
 
 def main():
