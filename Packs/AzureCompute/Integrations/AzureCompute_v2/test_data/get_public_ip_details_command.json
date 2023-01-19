@@ -1,6 +1,6 @@
 {
     "name": "webserver-ip",
-    "id": "ip_id",
+    "id": "/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/publicIPAddresses/webserver-ip",
     "etag": "tag",
     "location": "eastus",
     "properties": {
@@ -16,7 +16,7 @@
         },
         "ipTags": [],
         "ipConfiguration": {
-            "id": "ip_id"
+            "id": "/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkInterfaces/fake-network-interface-name-z1/ipConfigurations/ipconfig1"
         }
     },
     "type": "Microsoft.Network/publicIPAddresses",

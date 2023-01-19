@@ -143,6 +143,8 @@ FORMAT_QUERY = [
     ('www.test.test.com/test.html?paramaters=testagain', 'www.test.test.com/test.html?paramaters=testagain'),
     ('https://www.test.test.com/test.html?paramaters=testagain',
      'https://www.test.test.com/test.html?paramaters=testagain'),
+    ('https://test.test.com/v2/test?test&test=[test]test',  # disable-secrets-detection
+     'https://test.test.com/v2/test?test&test=[test]test')  # disable-secrets-detection
 ]
 
 FORMAT_FRAGMENT = [
@@ -153,7 +155,9 @@ FORMAT_FRAGMENT = [
 ]
 
 FORMAT_REFANG = [
-    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),
+    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),  # disable-secrets-detection
+    ('https[:]//www.test.com/foo', 'https://www.test.com/foo'),  # disable-secrets-detection
+    ('https[:]//www[.]test[.]com/foo', 'https://www.test.com/foo'),  # disable-secrets-detection
 ]
 
 FORMAT_NON_ASCII = [
