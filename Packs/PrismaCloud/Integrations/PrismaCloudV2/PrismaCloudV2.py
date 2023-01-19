@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import urllib3
+from typing import Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -11,8 +12,7 @@ FETCH_LOOK_BACK_TIME = 20
 
 ''' CONSTANTS '''
 
-HEADERS = {'Content-Type': 'application/json'}
-ACCEPT_HEADER_VALUE = 'application/json; charset=UTF-8'
+HEADERS = {'Content-Type': 'application/json; charset=UTF-8', 'Accept': 'application/json; charset=UTF-8'}
 RESPONSE_STATUS_HEADER = 'x-redlock-status'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -37,11 +37,36 @@ PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
 
+DEFAULT_LIMIT = '50'
+
+FINDING_TYPES_OPTIONS = ['guard_duty_host', 'guard_duty_iam', 'inspector_sbp', 'compliance_cis', 'host_vulnerability_cve']
+RISK_FACTORS_OPTIONS = ['CRITICAL_SEVERITY', 'HIGH_SEVERITY', 'MEDIUM_SEVERITY', 'HAS_FIX', 'REMOTE_EXECUTION', 'DOS',
+                        'RECENT_VULNERABILITY', 'EXPLOIT_EXISTS', 'ATTACK_COMPLEXITY_LOW', 'ATTACK_VECTOR_NETWORK',
+                        'REACHABLE_FROM_THE_INTERNET', 'LISTENING_PORTS', 'CONTAINER_IS_RUNNING_AS_ROOT',
+                        'NO_MANDATORY_SECURITY_PROFILE_APPLIED', 'RUNNING_AS_PRIVILEGED_CONTAINER', 'PACKAGE_IN_USE']
+
+CATEGORIES_OPTIONS = ['IAM', 'Compute', 'Monitoring', 'Networking', 'Kubernetes', 'General', 'Storage', 'Secrets', 'Public',
+                      'Vulnerabilities', 'Drift', 'BuildIntegrity', 'Licenses']
+FILE_TYPES_OPTIONS = ['tf', 'json', 'yml', 'yaml', 'template', '.checkov.baseline', 'hcl', 'Dockerfile', 'package.json',
+                      'package-lock.json', 'bower.json', 'pom.xml', 'build.gradle', 'build.gradle.kts', 'gradle.properties',
+                      'gradle-wrapper.properties', 'go.sum', 'go.mod', 'requirements.txt', 'METADATA', 'bicep', 'Pipfile.lock',
+                      'Pipfile', 'yarn.lock', 'Gemfile', 'Gemfile.lock', 'gemspec', 'env', 'settings.py', 'main.py',
+                      'application.py', 'config.py', 'app.js', 'config.js', 'dev.js', 'db.properties', 'application.properties',
+                      'private.pem', 'privatekey.pem', 'index.php', 'config.php', 'config.xml', 'strings.xml', 'app.module.ts',
+                      'environment.ts', 'tpl', 'tfvars', 'unknown']
+SEARCH_OPTIONS_OPTIONS = ['path', 'code']
+SEARCH_TITLE_OPTIONS = ['title', 'constructive_title', 'descriptive_title']
+SEVERITIES_OPTIONS = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']
+SOURCE_TYPES_OPTIONS = ['Github', 'Bitbucket', 'Gitlab', 'AzureRepos', 'cli', 'AWS', 'Azure', 'GCP', 'Docker',
+                        'githubEnterprise', 'gitlabEnterprise', 'bitbucketEnterprise', 'terraformCloud', 'githubActions',
+                        'circleci', 'codebuild', 'jenkins', 'tfcRunTasks', 'admissionController', 'terraformEnterprise']
+STATUSES_OPTIONS = ['Errors', 'Suppressed', 'Passed', 'Fixed']
+
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    def __init__(self, server_url, verify, proxy, headers, username, password):
+    def __init__(self, server_url: str, verify: bool, proxy: bool, headers: Dict[str, str], username: str, password: str):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
         self.generate_auth_token(username, password)
 
@@ -51,10 +76,8 @@ class Client(BaseClient):
         The token is valid for 10 minutes.
         """
         data = {'username': username, 'password': password}
-        headers = self._headers
-        headers['accept'] = ACCEPT_HEADER_VALUE
 
-        response = self._http_request('POST', 'login', json_data=data, headers=headers)
+        response = self._http_request('POST', 'login', json_data=data)
         try:
             token = response.get('token')
             if not token:
@@ -64,7 +87,9 @@ class Client(BaseClient):
 
         self._headers['x-redlock-auth'] = token
 
-    def alert_dismiss_request(self, alert_ids, policy_ids, dismissal_note, dismissal_time_range, time_range, filters):
+    def alert_dismiss_request(self, dismissal_note: str, time_range: Dict[str, Any], alert_ids: List[str] = None,
+                              policy_ids: List[str] = None, dismissal_time_range: Dict[str, Any] = None,
+                              filters: List[str] = None):
         data = remove_empty_values_from_dict({'alerts': alert_ids,
                                               'policies': policy_ids,
                                               'dismissalNote': dismissal_note,
@@ -76,11 +101,27 @@ class Client(BaseClient):
 
         self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
 
-    def alert_get_details_request(self, alert_id: str, detailed: str):
+    def alert_get_details_request(self, alert_id: str, detailed: str = None):
         params = assign_params(detailed=detailed)
 
         response = self._http_request('GET', f'alert/{alert_id}', params=params)
+        self._concatenate_url(response, 'resource.url')
 
+        return response
+
+    def _concatenate_url(self, response: Dict[str, Any], url_field: str = 'url'):
+        """
+        Concatenates a url suffix with the base url for the places where only a suffix is returned, so urls we display will be
+        clickable and lead to a real place.
+        Updates the dict given, and returns it.
+        """
+        split_url_field = url_field.split('.')
+        if len(split_url_field) > 1:
+            return self._concatenate_url(response.get(split_url_field[0], {}), '.'.join(split_url_field[1:]))
+
+        if url_field in response:
+            url = urljoin(self._base_url, response[url_field]).replace('https://api', 'https://app')
+            response[url_field] = url
         return response
 
     def alert_filter_list_request(self):
@@ -88,41 +129,35 @@ class Client(BaseClient):
 
         return response
 
-    def remediation_command_list_request(self, time_filter: Dict[str, Any], alert_ids: List[str] = None,
-                                         policy_ids: List[str] = None):
+    def remediation_command_list_request(self, time_range: Dict[str, Any], alert_ids: List[str] = None,
+                                         policy_id: str = None):
         data = remove_empty_values_from_dict({'alerts': alert_ids,
-                                              'filter': {'timeRange': time_filter},  # all other filters are ignored by API
-                                              'policies': policy_ids})
+                                              'filter': {'timeRange': time_range},  # all other filters are ignored by API
+                                              'policies': [policy_id]})
 
         response = self._http_request('POST', 'alert/remediation', json_data=data)
 
         return response
 
     def alert_remediate_request(self, alert_id: str):
-        headers = self._headers
-        headers['Accept'] = ACCEPT_HEADER_VALUE
+        self._http_request('PATCH', f'alert/remediation/{alert_id}', resp_type='response')
 
-        self._http_request('PATCH', f'alert/remediation/{alert_id}', headers=headers, resp_type='response')
-
-    def alert_reopen_request(self, alert_ids, policy_ids, time_range, filters):
+    def alert_reopen_request(self, time_range: Dict[str, Any], alert_ids: List[str] = None, policy_ids: List[str] = None,
+                             filters: List[str] = None):
         data = remove_empty_values_from_dict({'alerts': alert_ids,
                                               'policies': policy_ids,
-                                              'dismissalTimeRange': time_range,  # todo from postman seems like can be removed
+                                              'dismissalTimeRange': time_range,
                                               'filter': {
                                                   'timeRange': time_range,
                                                   'filters': handle_filters(filters),
                                               }})
 
-        headers = self._headers
-        headers['Accept'] = ACCEPT_HEADER_VALUE  # todo check if needed (with resp_type)
+        self._http_request('POST', 'alert/reopen', json_data=data, resp_type='response')
 
-        self._http_request('POST', 'alert/reopen', json_data=data, headers=headers, resp_type='response')
-
-    def alert_search_request(self, time_range, filters: List[str], limit=None, offset=None, detailed=None,
-                             sort_by=None, page_token=None):
+    def alert_search_request(self, time_range: Dict[str, Any], filters: List[str], limit: int = None, detailed: str = None,
+                             page_token: str = None, sort_by: str = None):
         params = assign_params(detailed=detailed)
         data = remove_empty_values_from_dict({'limit': limit,
-                                              'offset': offset,
                                               'filters': handle_filters(filters),
                                               'timeRange': time_range,
                                               'sortBy': sort_by,
@@ -130,14 +165,12 @@ class Client(BaseClient):
                                               })
         demisto.info(f'Executing Prisma Cloud alert search with payload: {data}')
 
-        headers = self._headers
-        headers['Accept'] = 'application/json; charset=UTF-8'  # todo check if needed
-
-        response = self._http_request('POST', 'v2/alert', params=params, json_data=data, headers=headers)
+        response = self._http_request('POST', 'v2/alert', params=params, json_data=data)
 
         return response
 
-    def config_search_request(self, time_range, query, limit, search_id, sort_direction, sort_field):
+    def config_search_request(self, time_range: Dict[str, Any], query: str, limit: int = None, search_id: str = None,
+                              sort_direction: str = None, sort_field: str = None):
         data = remove_empty_values_from_dict({'id': search_id,
                                               'limit': limit,
                                               'query': query,
@@ -145,32 +178,119 @@ class Client(BaseClient):
                                               'timeRange': time_range,
                                               })
 
-        headers = self._headers
-        headers['Accept'] = 'application/json; charset=UTF-8'
-
-        response = self._http_request('POST', 'search/config', json_data=data, headers=headers)
+        response = self._http_request('POST', 'search/config', json_data=data)
 
         return response
 
-    def event_search_request(self, time_range, filters: List[str], query, limit, alert_id, search_id, sort_direction, sort_field):
-        data = remove_empty_values_from_dict({'alertId': alert_id,
-                                              'id': search_id,
-                                              'limit': limit,
+    def event_search_request(self, time_range: Dict[str, Any], query: str, limit: int = None):
+        data = remove_empty_values_from_dict({'limit': limit,
                                               'query': query,
-                                              'sort': [{'direction': sort_direction, 'field': sort_field}],
-                                              'filters': handle_filters(filters),
                                               'timeRange': time_range,
                                               })
 
-        headers = self._headers
-        headers['Accept'] = 'application/json; charset=UTF-8'
+        response = self._http_request('POST', 'search/event', json_data=data)
 
-        response = self._http_request('POST', 'search/event', json_data=data, headers=headers)
+        return response
+
+    def network_search_request(self, query: str, time_range: Dict[str, Any], search_id: str = None, cloud_type: str = None):
+        data = remove_empty_values_from_dict({'cloudType': cloud_type,
+                                              'id': search_id,
+                                              'query': query,
+                                              'timeRange': time_range,
+                                              })
+
+        response = self._http_request('POST', 'search', json_data=data)
 
         return response
 
     def trigger_scan_request(self):
-        response = self._http_request('POST', 'code/api/v1/scans/integrations')
+        headers = self._headers
+        headers['authorization'] = headers.pop('x-redlock-auth')
+
+        response = self._http_request('POST', 'code/api/v1/scans/integrations', headers=headers)
+
+        return response
+
+    def resource_get_request(self, rrn: str):
+        data = remove_empty_values_from_dict({'rrn': rrn})
+
+        response = self._http_request('POST', 'resource', json_data=data)
+
+        return response
+
+    def error_file_list_request(self, repository: str, source_types: List[str], cicd_run_id: float = None,
+                                authors: List[str] = None, branch: str = None, categories: List[str] = None,
+                                code_status: str = None, file_types: List[str] = None, repository_id: str = None,
+                                search_options: List[str] = None, search_text: str = None, search_title: str = None,
+                                severities: List[str] = None, tags: List[str] = None, statuses: List[str] = None):
+        data = remove_empty_values_from_dict({'CICDRunId': cicd_run_id,
+                                              'authors': authors,
+                                              'branch': branch,
+                                              'categories': categories,
+                                              'codeStatus': [code_status],
+                                              'fileTypes': file_types,
+                                              'repository': repository,
+                                              'repositoryId': repository_id,
+                                              'severities': severities,
+                                              'sourceTypes': source_types,
+                                              'tags': handle_tags(tags),
+                                              'types': statuses
+                                              })
+        if search_title:
+            data['search'] = {'options': search_options,
+                              'text': search_text,
+                              'title': search_title}
+        elif search_options or search_text:
+            data['search'] = {'options': search_options,
+                              'text': search_text}
+
+        headers = self._headers
+        headers['authorization'] = headers.pop('x-redlock-auth')
+
+        response = self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
+
+        return response
+
+    def account_list_request(self, exclude_account_group_details: str):
+        data = remove_empty_values_from_dict({'excludeAccountGroupDetails': exclude_account_group_details})
+
+        response = self._http_request('GET', 'cloud', json_data=data)
+
+        return response
+
+    def account_status_get_request(self, account_id: str):
+        response = self._http_request('GET', f'account/{account_id}/config/status')
+
+        return response
+
+    def account_owner_list_request(self, account_id: str):
+        response = self._http_request('GET', f'cloud/{account_id}/owners')
+
+        return response
+
+    def host_finding_list_request(self, rrn: str, finding_types: List[str] = None, risk_factors: List[str] = None):
+        data = remove_empty_values_from_dict({'rrn': rrn,
+                                              'findingType': finding_types,
+                                              'riskFactors': risk_factors})
+
+        response = self._http_request('POST', 'resource/external_finding', json_data=data)
+
+        return response
+
+    def permission_list_request(self, query: str, limit: int, user_id: str = None):
+        data = remove_empty_values_from_dict({'id': user_id,
+                                              'limit': limit,
+                                              'query': query})
+
+        response = self._http_request('POST', 'api/v1/permission', json_data=data)
+
+        return response
+
+    def permission_list_next_page_request(self, next_token: str, limit: int):
+        data = remove_empty_values_from_dict({'limit': limit,
+                                              'pageToken': next_token})
+
+        response = self._http_request('POST', 'api/v1/permission/page', json_data=data)
 
         return response
 
@@ -196,7 +316,8 @@ def extract_nested_values(readable_response: dict, nested_headers: Dict[str, str
 
 
 def change_timestamp_to_datestring_in_dict(readable_response: dict):
-    time_fields = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdated', 'insertTs', 'createdTs']
+    time_fields = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdated', 'insertTs', 'createdTs',
+                   'lastModifiedTs', 'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn']
     for field in time_fields:
         if epoch_value := readable_response.get(field):
             readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT)
@@ -225,14 +346,14 @@ def handle_time_filter(base_case: Dict[str, Any] = None, unit_value: str = None,
             # amount is only for relative time - defines a window of time from a given point of time in the past until now
             if unit_value not in RELATIVE_TIME_UNIT_OPTIONS:
                 raise DemistoException(
-                    f'Time unit for relative time must be one of the following: {",".join(RELATIVE_TIME_UNIT_OPTIONS)}.')
+                    f'Time unit for relative time must be one of the following: {", ".join(RELATIVE_TIME_UNIT_OPTIONS)}.')
             return {'type': 'relative', 'value': {'amount': arg_to_number(amount_value), 'unit': unit_value}}
 
         else:
             # using to_now time - represents a window of time from the start of the time unit given until now
             if unit_value not in TO_NOW_TIME_UNIT_OPTIONS:
                 raise DemistoException(
-                    f'Time unit for to_now time must be one of the following: {",".join(TO_NOW_TIME_UNIT_OPTIONS)}')
+                    f'Time unit for to_now time must be one of the following: {", ".join(TO_NOW_TIME_UNIT_OPTIONS)}')
             return {'type': 'to_now', 'value': unit_value}
 
     elif time_to:
@@ -251,10 +372,40 @@ def handle_filters(filters: List[str]):
     filters_to_send = []
     for filter_ in filters:
         split_filter = filter_.split('=')
+        if len(split_filter) != 2 or not split_filter[0] or not split_filter[1]:
+            raise DemistoException('Filters should be in the format of "filtername1=filtervalue1,filtername2=filtervalue2". '
+                                   f'The filter "{filter_}" doesn\'t meet this requirement.')
         filters_to_send.append({'name': split_filter[0],
                                 'operator': '=',
                                 'value': split_filter[1]})
     return filters_to_send
+
+
+def handle_tags(tags: List[str]):
+    tags_to_send = []
+    for tag in tags:
+        split_tag = tag.split('=')
+        if len(split_tag) != 2 or not split_tag[0] or not split_tag[1]:
+            raise DemistoException('Tags should be in the format of "tagkey1=tagvalue1,tagkey2=tagvalue2". '
+                                   f'The tag "{tag}" doesn\'t meet this requirement.')
+        tags_to_send.append({'key': split_tag[0],
+                             'value': split_tag[1]})
+    return tags_to_send
+
+
+def validate_array_arg(array_arg: List[str], arg_name: str, arg_options: List[str]):
+    if any(arg_value not in arg_options for arg_value in array_arg):
+        raise DemistoException(f'{arg_name} must be of the following: {", ".join(arg_options)}.')
+
+
+def error_file_list_command_args_validation(source_types: List[str], categories: List[str], statuses: List[str],
+                                            file_types: List[str], search_options: List[str], severities: List[str]):
+    validate_array_arg(categories, 'Categories', CATEGORIES_OPTIONS)
+    validate_array_arg(file_types, 'File types', FILE_TYPES_OPTIONS)
+    validate_array_arg(search_options, 'Search options', SEARCH_OPTIONS_OPTIONS)
+    validate_array_arg(severities, 'Severities', SEVERITIES_OPTIONS)
+    validate_array_arg(source_types, 'Source types', SOURCE_TYPES_OPTIONS)
+    validate_array_arg(statuses, 'Statuses', STATUSES_OPTIONS)
 
 
 def remove_empty_values_from_dict(dict_to_reduce: Dict[str, Any]):
@@ -291,7 +442,7 @@ def get_response_status_header(response):
     return ''
 
 
-def calculate_offset(page_size: int, page_number: int) -> tuple[int, int]:
+def calculate_offset(page_size: int, page_number: int) -> Tuple[int, int]:
     """
     Prisma Cloud receives offset and limit arguments. To follow our convention, we receive page_size and page_number arguments and
     calculate the offset from them.
@@ -353,7 +504,8 @@ def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, l
         return {}
     cleaned_cache = {}
 
-    next_fetch_epoch = add_look_back(updated_last_run_time, look_back * 3)  # in case look_back will be increased
+    next_fetch_epoch = add_look_back(updated_last_run_time, look_back * 3)  # in case look_back needs to be increased
+    # can be increased by up to a multiplier of 3 each time, to avoid duplicate incidents
 
     for fetched_id, alert_time in fetched_ids.items():
         if alert_time > next_fetch_epoch:  # keep if it is later
@@ -379,16 +531,26 @@ def add_look_back(last_run_epoch_time: int, look_back_minutes: int):
     return last_run_epoch_time - look_back_epoch
 
 
-def fetch_request(client, fetched_ids, filters, limit, now, time_range):
-    response = client.alert_search_request(time_range=time_range, filters=filters, detailed='true',
-                                           sort_by=['alertTime:asc'])  # adding sort by 'id:asc' doesn't work
+def fetch_request(client, fetched_ids: Dict[str, int], filters, limit, now, time_range) -> Tuple[List, Dict[str, int], int]:
+    response = client.alert_search_request(time_range=time_range,
+                                           filters=filters,
+                                           detailed='true',
+                                           sort_by=['alertTime:asc'],  # adding sort by 'id:asc' doesn't work
+                                           limit=limit + len(fetched_ids),
+                                           )
     response_items = response.get('items', [])
     updated_last_run_time = response_items[-1].get('alertTime') if response_items else now  # in epoch
     incidents = filter_alerts(fetched_ids, response.get('items'), limit)
 
     while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
-        response = client.alert_search_request(time_range=time_range, filters=filters, detailed='true',
-                                               sort_by=['alertTime:asc'], page_token=response.get('nextPageToken'))
+        # only page_token is being used, also sending other arguments because it is not stated clearly in the API documentation
+        response = client.alert_search_request(time_range=time_range,
+                                               filters=filters,
+                                               detailed='true',
+                                               sort_by=['alertTime:asc'],
+                                               limit=limit + len(fetched_ids),
+                                               page_token=response.get('nextPageToken'),
+                                               )
         response_items = response.get('items', [])
         updated_last_run_time = response_items[-1].get('alertTime') if response_items else updated_last_run_time
         incidents.extend(filter_alerts(fetched_ids, response_items, limit))
@@ -448,7 +610,7 @@ def alert_dismiss_command(client: Client, args: Dict[str, Any]) -> CommandResult
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
 
-    client.alert_dismiss_request(alert_ids, policy_ids, dismissal_note, dismissal_time_filter, time_filter, filters)
+    client.alert_dismiss_request(dismissal_note, time_filter, alert_ids, policy_ids, dismissal_time_filter, filters)
 
     command_results = CommandResults(
         readable_output=(f'### Alerts snoozed successfully.\nSnooze note: {dismissal_note}.'
@@ -489,7 +651,7 @@ def alert_get_details_command(client: Client, args: Dict[str, Any]) -> CommandRe
                       'resource.url': 'Resource Url',
                       }
     headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated', 'eventOccurred'] \
-              + list(nested_headers.values())[1:]
+        + list(nested_headers.values())[1:]
     extract_nested_values(readable_response, nested_headers)
 
     command_results = CommandResults(
@@ -529,9 +691,11 @@ def alert_filter_list_command(client: Client) -> CommandResults:
 
 def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_ids = argToList(args.get('alert_ids'))
-    policy_ids = argToList(args.get('policy_ids'))
-    if not alert_ids and not policy_ids:
-        raise DemistoException('You must provide either "alert_ids" or "policy_ids".')
+    policy_id = args.get('policy_id')
+    if not alert_ids and not policy_id:
+        raise DemistoException('You must provide either "alert_ids" or "policy_id".')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
 
     time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE,
                                      unit_value=args.get('time_range_unit'),
@@ -540,18 +704,23 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
                                      time_to=args.get('time_range_date_to'))
 
     try:
-        response = client.remediation_command_list_request(time_filter, alert_ids, policy_ids)
+        response = client.remediation_command_list_request(time_filter, alert_ids, policy_id)
         description = response.get('cliDescription')
         script_impact = response.get('scriptImpact')
         readable_response = [{'description': description,
                               'scriptImpact': script_impact,
                               'alertId': alert_id,
                               'CLIScript': cli_script}
-                             for alert_id, cli_script in response.get('alertIdVsCliScript', {}).item()]
+                             for alert_id, cli_script in response.get('alertIdVsCliScript', {}).items()]
+        if not all_results and limit and readable_response:
+            readable_response = readable_response[:limit]
 
     except DemistoException as de:
         if de.res.status_code == 405:
-            raise DemistoException('Remediation unavailable.', exception=de)
+            raise DemistoException(f'Remediation unavailable'
+                                   f'{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.', exception=de)
+        elif de.res.status_code == 400:
+            raise DemistoException('Policy type disallowed using this remediation api.', exception=de)
         raise
 
     command_results = CommandResults(
@@ -599,7 +768,7 @@ def alert_reopen_command(client: Client, args: Dict[str, Any]) -> CommandResults
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
 
-    client.alert_reopen_request(alert_ids, policy_ids, time_filter, filters)
+    client.alert_reopen_request(time_filter, alert_ids, policy_ids, filters)
 
     command_results = CommandResults(
         readable_output='### Alerts re-opened successfully.'
@@ -610,16 +779,17 @@ def alert_reopen_command(client: Client, args: Dict[str, Any]) -> CommandResults
 def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     filters = argToList(args.get('filters'))
     detailed = args.get('detailed', 'true')
-    limit, offset = calculate_offset(page_size=arg_to_number(args.get('page_size')) or PAGE_SIZE_DEFAULT_VALUE,
-                                     page_number=arg_to_number(args.get('page')) or PAGE_NUMBER_DEFAULT_VALUE)
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    next_token = args.get('next_token')
     time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
                                      unit_value=args.get('time_range_unit'),
                                      amount_value=arg_to_number(args.get('time_range_value')),
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
 
-    response = client.alert_search_request(time_filter, filters, limit, offset, detailed)
+    response = client.alert_search_request(time_filter, filters, limit, detailed, next_token)
     response_items = response.get('items', [])
+    next_page_token = response.get('nextPageToken')
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
 
@@ -642,20 +812,23 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
                       'resource.cloudType': 'Resource Cloud Type',
                       'resource.rrn': 'Resource RRN',
                       }
-    headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated'] \
-              + list(nested_headers.values())[1:]
     for readable_response in readable_responses:
         extract_nested_values(readable_response, nested_headers)
 
+    headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated'] \
+        + list(nested_headers.values())[1:]
+    output = {
+        'PrismaCloud.Alert(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
+        'PrismaCloud.Alert.Results(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
+    }
     command_results = CommandResults(
-        outputs_prefix='PrismaCloud.Alert',
-        outputs_key_field='id',
         readable_output=tableToMarkdown('Alerts Details:',
                                         readable_responses,
                                         headers=headers,
                                         removeNull=True,
-                                        headerTransform=pascalToSpace),
-        outputs=response_items,
+                                        headerTransform=pascalToSpace)
+        + f'### Next Page Token:\n{next_page_token}',
+        outputs=output,
         raw_response=response_items
     )
     return command_results
@@ -663,8 +836,8 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
-    limit = arg_to_number(args.get('limit', '100'))
-    time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE,
                                      unit_value=args.get('time_range_unit'),
                                      amount_value=arg_to_number(args.get('time_range_value')),
                                      time_from=args.get('time_range_date_from'),
@@ -698,29 +871,20 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
 def event_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get('query')
-    limit = arg_to_number(args.get('limit', '100'))
-    filters = argToList(args.get('filters'))
-    time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE,
                                      unit_value=args.get('time_range_unit'),
                                      amount_value=arg_to_number(args.get('time_range_value')),
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
-    alert_id = args.get('alert_id')
-    search_id = args.get('search_id')
-    sort_direction = args.get('sort_direction', 'desc')
-    sort_field = args.get('sort_field', 'insertTs')
-    if any([sort_direction, sort_field]) and not all([sort_direction, sort_field]):
-        raise DemistoException('Both sort direction and field must be specified if sorting.')
 
-    response = client.event_search_request(time_filter, filters, query, limit, alert_id, search_id, sort_direction, sort_field)
+    response = client.event_search_request(time_filter, query, limit)
     response_items = response.get('data', {}).get('items', [])
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
 
-    headers = ['subject', 'accountName', 'regionName', 'name', 'source', 'ip', 'eventTs', 'countryName', 'stateName', 'cityName',
-               'location', 'anomalyId']
-    # more fields not it UI: 'account', 'regionId', 'type', 'id', 'accessKeyUsed', 'role', 'flaggedFeature', 'success', 'internal'
-
+    headers = ['subject', 'accountName', 'name', 'source', 'ip', 'eventTs', 'countryName', 'stateName', 'cityName',
+               'location', 'account', 'regionId', 'type', 'id', 'role', 'accessKeyUsed', 'success', 'internal']
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.Event',
         outputs_key_field='id',
@@ -730,6 +894,44 @@ def event_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
                                         removeNull=True,
                                         headerTransform=pascalToSpace),
         outputs=response_items,
+        raw_response=response_items
+    )
+    return command_results
+
+
+def network_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    query = args.get('query')
+    search_id = args.get('search_id')
+    cloud_type = args.get('cloud_type')
+    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE,
+                                     unit_value=args.get('time_range_unit'),
+                                     amount_value=arg_to_number(args.get('time_range_value')),
+                                     time_from=args.get('time_range_date_from'),
+                                     time_to=args.get('time_range_date_to'))
+
+    response = client.network_search_request(query, time_filter, search_id, cloud_type)
+    response_items = response.get('data', {})
+    nodes = response_items.get('nodes', [])
+    connections = response_items.get('connections', [])
+
+    output = {
+        'PrismaCloud.Network.Node(val.id && val.id == obj.id)': nodes,  # values are appended to list based on id
+        'PrismaCloud.Network.Connection(val.from && val.from == obj.from && val.to && val.to == obj.to)': connections
+        # values are appended to list based on 'from' and 'to' keys
+    }
+    command_results = CommandResults(
+        readable_output='## Network Details\n'
+                        + tableToMarkdown('Nodes:',
+                                          nodes,
+                                          headers=['id', 'name', 'ipAddr', 'grouped', 'suspicious', 'vulnerable'],
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
+                        + tableToMarkdown('Connections:',
+                                          connections,
+                                          headers=['from', 'to', 'label', 'suspicious'],
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
+        outputs=output,
         raw_response=response_items
     )
     return command_results
@@ -747,7 +949,273 @@ def trigger_scan_command(client: Client) -> CommandResults:
     return command_results
 
 
-def test_module(client: Client) -> str:
+def error_file_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    cicd_run_id = args.get('cicd_run_id')
+    if cicd_run_id:
+        arg_to_number(cicd_run_id)  # for input validation or readable errors
+        cicd_run_id = float(cicd_run_id)
+    authors = argToList(args.get('authors'))
+    branch = args.get('branch')
+    categories = argToList(args.get('categories'))
+    code_status = args.get('code_status')
+    file_types = argToList(args.get('file_types'))
+    repository = args.get('repository')
+    repository_id = args.get('repository_id')
+    search_options = argToList(args.get('search_options'))
+    search_text = args.get('search_text', '')
+    search_title = args.get('search_title')
+    severities = argToList(args.get('severities'))
+    source_types = argToList(args.get('source_types'))
+    tags = argToList(args.get('tags'))
+    statuses = argToList(args.get('statuses'))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
+
+    error_file_list_command_args_validation(source_types, categories, statuses, file_types, search_options, severities)
+
+    response = client.error_file_list_request(repository, source_types, cicd_run_id, authors, branch, categories, code_status,
+                                              file_types, repository_id, search_options, search_text, search_title, severities,
+                                              tags, statuses)
+    response_items = response.get('data', [])
+    if not all_results and limit and response_items:
+        response_items = response_items[:limit]
+
+    headers = ['filePath', 'suppressedErrorsCount', 'passedCount', 'openErrorsCount', 'errorsCount', 'fixedCount', 'type']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.ErrorFile',
+        outputs_key_field='filePath',
+        readable_output=tableToMarkdown('Files Error Details:',
+                                        response_items,
+                                        headers=headers,
+                                        removeNull=True,
+                                        url_keys=['url'],
+                                        headerTransform=pascalToSpace),
+        outputs=response_items,
+        raw_response=response_items
+    )
+    return command_results
+
+
+def resource_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    rrn = args.get('rrn')
+
+    response = client.resource_get_request(rrn)
+    change_timestamp_to_datestring_in_dict(response)
+
+    headers = ['rrn', 'id', 'name', 'url', 'accountId', 'accountName', 'cloudType', 'regionId', 'regionName', 'service',
+               'resourceType', 'insertTs', 'deleted', 'vpcId', 'vpcName', 'tags', 'riskGrade', 'hasNetwork',
+               'hasExternalFinding', 'hasExternalIntegration', 'allowDrillDown', 'hasExtFindingRiskFactors']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.Resource',
+        outputs_key_field='rrn',
+        readable_output=tableToMarkdown('Resource Details:',
+                                        response,
+                                        headers=headers,
+                                        removeNull=True,
+                                        url_keys=['url'],
+                                        headerTransform=pascalToSpace),
+        outputs=response,
+        raw_response=response
+    )
+    return command_results
+
+
+def account_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    exclude_account_group_details = args.get('exclude_account_group_details', 'false')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
+
+    response = client.account_list_request(exclude_account_group_details)
+    if not all_results and limit and response:
+        response = response[:limit]
+    for response_item in response:
+        change_timestamp_to_datestring_in_dict(response_item)
+
+    headers = ['accountId', 'name', 'cloudType', 'accountType', 'enabled', 'addedOn', 'lastModifiedTs', 'lastModifiedBy',
+               'storageScanEnabled', 'protectionMode', 'ingestionMode', 'deploymentType', 'status']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.Account',
+        outputs_key_field='accountId',
+        readable_output=tableToMarkdown('Accounts Details:',
+                                        response,
+                                        headers=headers,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs=response,
+        raw_response=response
+    )
+    return command_results
+
+
+def account_status_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    account_ids = argToList(args.get('account_ids'))
+
+    responses = []
+    for account_id in account_ids:
+        response = client.account_status_get_request(account_id)
+        response[0]['accountId'] = account_id
+        responses.append(response[0])
+
+    headers = ['accountId', 'name', 'status', 'message', 'remediation']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.Account',
+        outputs_key_field='accountId',
+        readable_output=tableToMarkdown('Accounts Status Details:',
+                                        responses,
+                                        headers=headers,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs=responses,
+        raw_response=responses
+    )
+    return command_results
+
+
+def account_owner_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    account_ids = argToList(args.get('account_ids'))
+
+    responses = []
+    for account_id in account_ids:
+        response = client.account_owner_list_request(account_id)
+        responses.append({'accountId': account_id, 'emails': response})
+
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.Account',
+        outputs_key_field='accountId',
+        readable_output=tableToMarkdown('Accounts Owner Details:',
+                                        responses,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs=responses,
+        raw_response=responses
+    )
+    return command_results
+
+
+def host_finding_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    rrn = args.get('rrn')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
+
+    finding_types = argToList(args.get('finding_types'))
+    finding_types = [finding_type.lower() for finding_type in finding_types]
+    validate_array_arg(finding_types, 'Finding types', FINDING_TYPES_OPTIONS)
+
+    risk_factors = argToList(args.get('risk_factors'))
+    risk_factors = [risk_factor.upper() for risk_factor in risk_factors]
+    validate_array_arg(risk_factors, 'Risk factors', RISK_FACTORS_OPTIONS)
+
+    response = client.host_finding_list_request(rrn, finding_types, risk_factors)
+    if not all_results and limit and response:
+        response = response[:limit]
+    for response_item in response:
+        change_timestamp_to_datestring_in_dict(response_item)
+    readable_responses = deepcopy(response)
+
+    nested_headers = {'sourceData.accountId': 'Source Data Account ID',
+                      'sourceData.arn': 'ARN',
+                      }
+    headers = ['accountId', 'regionId', 'findingId', 'type', 'source', 'severity', 'status', 'createdOn', 'updatedOn',
+               'normalizedNames', 'scanId', 'resourceCloudId', 'Source Data Account ID', 'ARN', 'title', 'description',
+               'resourceUrl']
+    for readable_response in readable_responses:
+        extract_nested_values(readable_response, nested_headers)
+
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.HostFinding',
+        outputs_key_field='findingId',
+        readable_output=tableToMarkdown('Host Finding Details:',
+                                        readable_responses,
+                                        headers=headers,
+                                        removeNull=True,
+                                        url_keys=['resourceUrl'],
+                                        headerTransform=pascalToSpace),
+        outputs=response,
+        raw_response=response
+    )
+    return command_results
+
+
+def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    user_id = args.get('user_id')
+    query = args.get('query')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    next_token = args.get('next_token')
+
+    if not query and not next_token:
+        raise DemistoException('You must provide either "query" or "next_token" for getting permission list.')
+    if next_token and (user_id or query):
+        raise DemistoException('You can\'t provide "next_token" with "user_id" or "query".')
+
+    if query:
+        response = client.permission_list_request(query, limit, user_id)
+        response_items = response.get('data', {}).get('items', [])
+        next_page_token = response.get('data', {}).get('nextPageToken')
+    else:
+        response = client.permission_list_next_page_request(next_token, limit)
+        response_items = response.get('items', [])
+        next_page_token = response.get('nextPageToken')
+
+    readable_responses = deepcopy(response_items)
+    nested_headers = {'destCloudType': 'destinationCloudType',
+                      'destCloudServiceName': 'destinationCloudServiceName',
+                      'destResourceType': 'destinationResourceType'}
+    for readable_response in readable_responses:
+        extract_nested_values(readable_response, nested_headers)
+
+    headers = ['id', 'sourceCloudType', 'sourceCloudAccount', 'sourceResourceId', 'destinationCloudType',
+               'destinationCloudServiceName', 'destinationResourceType', 'effectiveActionName', 'grantedByCloudType',
+               'grantedByCloudPolicyId', 'grantedByCloudPolicyName', 'grantedByCloudPolicyType', 'grantedByCloudPolicyRrn',
+               'grantedByCloudEntityId', 'grantedByCloudEntityName', 'grantedByCloudEntityRrn']
+    output = {
+        'PrismaCloud.Permission(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
+        'PrismaCloud.Permission.Results(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
+    }
+    command_results = CommandResults(
+        readable_output=tableToMarkdown('Permissions Details:',
+                                        readable_responses,
+                                        headers=headers,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
+        + f'### Next Page Token:\n{next_page_token}',
+        outputs=output,
+        raw_response=response_items
+    )
+    return command_results
+
+
+def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, Any]):
+    """
+    Retrieve new incidents periodically based on pre-defined instance parameters
+    """
+    last_run_time = last_run.get('time')
+    now = convert_date_to_unix('now')
+    first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
+    look_back = arg_to_number(params.get('look_back', FETCH_LOOK_BACK_TIME))
+    time_range = calculate_fetch_time_range(now, first_fetch, look_back, last_run_time)
+
+    fetched_ids = last_run.get('fetched_ids', {})
+    limit = arg_to_number(params.get('max_fetch', MAX_INCIDENTS_TO_FETCH)) or MAX_INCIDENTS_TO_FETCH
+    filters = get_filters(params)
+
+    incidents, fetched_ids, updated_last_run_time = fetch_request(client, fetched_ids, filters, limit, now, time_range)
+    updated_last_run_time = max(convert_date_to_unix(first_fetch), updated_last_run_time)
+    demisto.debug(f'Fetched {len(incidents)} incidents, {updated_last_run_time=}')
+    ids_to_insert = expire_stored_ids(fetched_ids, updated_last_run_time, look_back)
+
+    return incidents, ids_to_insert, updated_last_run_time
+
+
+def test_module(client: Client, params: Dict[str, Any]) -> str:
+    if params.get('isFetch'):
+        max_fetch = arg_to_number(params.get('max_fetch'))
+        if max_fetch and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
+            return f'Maximum number of incidents to fetch exceeds the limit (restricted to {MAX_INCIDENTS_TO_FETCH}), ' \
+                   f'or is below zero.'
+
+        client.alert_search_request(time_range=ALERT_SEARCH_BASE_TIME_FILTER, filters=get_filters(params), detailed='true',
+                                    limit=max_fetch, sort_by=['alertTime:asc'])
+
     # Authorization is done in client.generate_auth_token
     return 'ok'
 
@@ -772,7 +1240,6 @@ def main() -> None:
         urllib3.disable_warnings()
         client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password)
         commands_without_args = {
-            'test-module': test_module,
             'prisma-cloud-alert-filter-list': alert_filter_list_command,  # redlock-list-alert-filters
             'prisma-cloud-trigger-scan': trigger_scan_command,
         }
@@ -785,21 +1252,22 @@ def main() -> None:
             'prisma-cloud-alert-search': alert_search_command,  # redlock-search-alerts
             'prisma-cloud-config-search': config_search_command,  # redlock-get-rql-response, redlock-search-config
             'prisma-cloud-event-search': event_search_command,  # redlock-search-event
-            'prisma-cloud-network-search': '',  # redlock-search-network
-            # redlock-get-scan-status (deprecated)
-            # redlock-list-scans (deprecated)
-
-            'prisma-cloud-error-file-list': '',  # similar to redlock-get-scan-results (deprecated)
-            'prisma-cloud-resource-get': '',
-            'prisma-cloud-account-list': '',
-            'prisma-cloud-account-status-get': '',
-            'prisma-cloud-account-owner-list': '',
+            'prisma-cloud-network-search': network_search_command,  # redlock-search-network
+            'prisma-cloud-error-file-list': error_file_list_command,  # similar to redlock-get-scan-results (deprecated)
+            'prisma-cloud-resource-get': resource_get_command,
+            'prisma-cloud-account-list': account_list_command,
+            'prisma-cloud-account-status-get': account_status_get_command,
+            'prisma-cloud-account-owner-list': account_owner_list_command,
+            'prisma-cloud-host-finding-list': host_finding_list_command,
+            'prisma-cloud-permission-list': permission_list_command,
         }
 
         if command in commands_without_args:
             return_results(commands_without_args[command](client))
         elif command in commands_with_args:
             return_results(commands_with_args[command](client, args))
+        elif command == 'test-module':
+            return_results(test_module(client, params))
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
             incidents, fetched_ids, last_run_time = fetch_incidents(client, last_run, params)

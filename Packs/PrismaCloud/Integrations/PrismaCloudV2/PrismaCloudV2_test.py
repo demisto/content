@@ -97,3 +97,14 @@ def test_handle_filters():
     assert parsed_filters == [{'name': 'alert.status', 'operator': '=', 'value': 'open'},
                               {'name': 'alert.status', 'operator': '=', 'value': 'resolved'},
                               {'name': 'policy.remediable', 'operator': '=', 'value': 'true'}]
+
+
+@pytest.mark.parametrize('filter_name', ('no_equal_sign', 'too=many=equal_signs', ' ', 'no_value= ', '=no_name'))
+def test_handle_filters_error(filter_name):
+    from PrismaCloudV2 import handle_filters
+
+    filters = argToList(filter_name)
+    with pytest.raises(DemistoException) as de:
+        handle_filters(filters)
+    assert de.value.message == f'Filters should be in the format of "filtername1=filtervalue1,filtername2=filtervalue2". ' \
+                               f'The filter "{filters[0]}" doesn\'t meet this requirement.'
