@@ -11,8 +11,6 @@ from dateparser import parse
 import demistomock as demisto
 from CommonServerPython import *
 
-import re
-
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
 INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
@@ -2083,18 +2081,16 @@ def passive_dns_data(client: Client, args: dict) -> CommandResults:
     if 'ip' in args:
         id['value'] = args['ip']
         id['type'] = 'ip'
+        raise_if_ip_not_valid(id['value'])
     elif 'domain' in args:
         id['value'] = args['domain']
         id['type'] = 'domain'
     elif 'id' in args:
         id['value'] = args['id']
-        if re.search(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", id['value']) is None:
-            id['type'] = 'domain'
-        else:
+        if is_ip_valid(id['value']):
             id['type'] = 'ip'
-            for x in id['value'].split('.'):
-                if int(x) > 255:
-                    id['type'] = 'domain'
+        else:
+            id['type'] = 'domain'
     else:
         return CommandResults(readable_output='No IP address or domain was given.')
 
@@ -2103,7 +2099,12 @@ def passive_dns_data(client: Client, args: dict) -> CommandResults:
         arg_name='limit',
         required=True
     )
-    raw_response = client.passive_dns_data(id, limit)
+
+    try:
+        raw_response = client.passive_dns_data(id, limit)
+    except Exception:
+        return CommandResults(readable_output=f'{"IP" if id["type"] == "ip" else "Domain"} {id["value"]} was not found.')
+
     data = raw_response['data']
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.PassiveDNS',
@@ -2166,7 +2167,6 @@ def get_analysis_command(client: Client, args: dict) -> CommandResults:
             {
                 **data.get('attributes', {}),
                 'id': analysis_id
-
             },
             headers=['id', 'stats', 'status'],
             headerTransform=underscoreToCamelCase
@@ -2290,6 +2290,7 @@ def main(params: dict, args: dict, command: str):
         results = file_sigma_analysis_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
+        
     return_results(results)
 
 
