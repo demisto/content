@@ -21,6 +21,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Twitterv2",
+            "playbookID": "playbook-Test_Twitter_v2"
+        },
+        {
             "playbookID": "IndicatorFormatterFilterTest",
             "timeout": 1200
         },
