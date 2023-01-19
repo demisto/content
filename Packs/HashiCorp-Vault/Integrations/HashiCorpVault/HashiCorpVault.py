@@ -592,8 +592,8 @@ def fetch_credentials():  # pragma: no cover
     for engine_type in engines:
         engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
         engines_to_fetch_from += engines_to_fetch
-    if len(engines_to_fetch_from) == 0:
-        return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
+    # if len(engines_to_fetch_from) == 0:
+    #     return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
 
     for engine in engines_to_fetch_from:
         if engine['type'] == 'KV':
@@ -607,7 +607,9 @@ def fetch_credentials():  # pragma: no cover
             credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
         elif engine['type'] == 'AWS':
-            credentials += get_aws_secrets(engine['path'], engine['ttl'], concat_username_to_cred_name)
+            engine = {'path': 'aws', 'ttl': '3600'}
+            credentials += get_aws_secrets(engine['path'], engine.get('ttl', '3600'), concat_username_to_cred_name,
+                                           engine.get('aws_roles_list', '').split(','))
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
@@ -716,7 +718,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: 
     return secrets
 
 
-def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
+def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name, aws_roles_list):
     secrets = []
     roles_list_url = engine_path + '/roles'
     demisto.debug('roles_list_url: {}'.format(roles_list_url))
@@ -725,6 +727,8 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     if not res or 'data' not in res:
         return []
     for role in res['data'].get('keys', []):
+        if aws_roles_list and role not in aws_roles_list:
+            continue
         integration_context = get_integration_context()
         now = datetime.now()
         if f'{role}_ttl' in integration_context:
