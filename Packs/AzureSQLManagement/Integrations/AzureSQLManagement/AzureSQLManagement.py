@@ -470,7 +470,7 @@ def test_module(client):
     elif params.get('auth_type') == 'Authorization Code':
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !msgraph-user-test command in order to test it")
-    elif params.get('auth_type') == 'Managed Identities':
+    elif params.get('auth_type') == 'Azure Managed Identities':
         if not params.get('managed_identities_client_id'):
             raise Exception("Please provide value for Azure Managed Identities client id filed")
         

@@ -45,3 +45,34 @@ def test_find_managed_devices_command(mocker):
     find_managed_devices_command(client, args=args)
     context_output = outputs.call_args.args[0]
     assert context_output is not None
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftGraphDeviceManagement import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import demistomock as demisto
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
+                                                                client_id='test_client_id')
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'authentication_type': 'Azure Managed Identities'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results', return_value=params)
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]

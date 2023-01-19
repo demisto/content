@@ -3,9 +3,14 @@ commonfields:
   id: AzureKeyVault
   version: -1
 configuration:
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 0
 - display: Client Secret
   name: client_secret

@@ -19,8 +19,10 @@ class Scopes:
 
 class Resources:
     graph = 'https://graph.microsoft.com/'
-    security_center = 'https://api.securitycenter.windows.com/'
+    security_center = 'https://api.securitycenter.microsoft.com/'
     management_azure = 'https://management.azure.com/'
+    manage_office = 'https://manage.office.com/'
+
 
 # authorization types
 OPROXY_AUTH_TYPE = 'oproxy'
@@ -54,8 +56,9 @@ GRAPH_BASE_ENDPOINTS = {
     'https://graph.microsoft.de': 'de',
     'https://microsoftgraph.chinacloudapi.cn': 'cn'
 }
-MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?' \
-                            'api-version=2018-02-01&resource={resource}&client_id={client_id}'
+MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?'\
+                               'api-version=2018-02-01&resource={resource}&client_id={client_id}'
+
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
@@ -155,7 +158,7 @@ class MicrosoftClient(BaseClient):
         if self.multi_resource:
             self.resources = resources if resources else []
             self.resource_to_access_token: Dict[str, str] = {}
-        
+
         # for Azure Managed Identities purpose
         self.managed_identities_client_id = managed_identities_client_id
         self.managed_identities_resource_uri = managed_identities_resource_uri
@@ -386,8 +389,16 @@ class MicrosoftClient(BaseClient):
                                  integration_context: Optional[dict] = None
                                  ) -> Tuple[str, int, str]:
         if self.managed_identities_client_id:
-            return self._get_self_deployed_managed_identities_token()
-        
+
+            if not self.multi_resource:
+                return self._get_self_deployed_managed_identities_token()
+
+            expires_in = -1  # init variable as an int
+            for resource in self.resources:
+                access_token, expires_in, refresh_token = self._get_self_deployed_managed_identities_token(resource=resource)
+                self.resource_to_access_token[resource] = access_token
+            return '', expires_in, refresh_token
+
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
                 return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
@@ -505,23 +516,28 @@ class MicrosoftClient(BaseClient):
 
         return access_token, expires_in, refresh_token
 
-    def _get_self_deployed_managed_identities_token(self):
+    def _get_self_deployed_managed_identities_token(self, resource=None):
         """
         Gets a token based on the Azure Managed Identities mechanism
         in case user was configured the Azure VM and the other Azure resource correctly
         """
         try:
-            url = MANAGED_IDENTITIES_TOKEN_URL.format(resource=self.managed_identities_resource_uri,
+            resource = resource or self.managed_identities_resource_uri
+            url = MANAGED_IDENTITIES_TOKEN_URL.format(resource=resource,
                                                       client_id=self.managed_identities_client_id)
-            demisto.debug(f'try to get token based on the Managed Identities {url=}')
+            demisto.debug('try to get token based on the Managed Identities')
             response_json = requests.get(url, headers={'Metadata': 'True'}).json()
-            access_token = response_json.get('access_token', '')
+            access_token = response_json.get('access_token')
             expires_in = int(response_json.get('expires_in', 3595))
+            if access_token:
+                return access_token, expires_in, ''
 
-            return access_token, expires_in, ''
+            err = response_json.get('error_description')
         except Exception as e:
-            return_error(f'Error in Microsoft authorization with Azure Managed Identities: {str(e)}')
-    
+            err = f'{str(e)}'
+
+        return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+
     def _get_token_device_code(
             self, refresh_token: str = '', scope: Optional[str] = None, integration_context: Optional[dict] = None
     ) -> Tuple[str, int, str]:

@@ -7,10 +7,15 @@ configuration:
   name: resource_group
   required: true
   type: 14
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - display: Client ID.
   defaultvalue: 'f5b37a76-f937-4c57-a9b5-31dab1c7e236'
   name: client_id
-  required: true
+  required: false
   type: 14
 - displaypassword: Subscription ID.
   name: subscription_id

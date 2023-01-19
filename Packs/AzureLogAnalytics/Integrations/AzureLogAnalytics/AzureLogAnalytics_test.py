@@ -140,3 +140,37 @@ def test_tags_arg_to_request_format():
     assert len(parsed_tags) == 2
     assert parsed_tags[0].get('name') == 'name1'
     assert parsed_tags[1].get('value') == 'value2'
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+    Scenario: run test module when managed identities client id provided.
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the output are as expected
+    """
+    from AzureLogAnalytics import main, MANAGED_IDENTITIES_TOKEN_URL
+    import AzureLogAnalytics
+    import demistomock as demisto
+    import re
+
+    managed_id_uri_mancher = re.compile(f"{MANAGED_IDENTITIES_TOKEN_URL.split('?')[0]}.*")
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_uri_mancher, json=mock_token)
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'auth_type': 'Azure Managed Identities',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureLogAnalytics, 'return_results')
+    mocker.patch.object(AzureLogAnalytics, 'execute_query_command')
+
+    main()
+
+    assert 'ok' in AzureLogAnalytics.return_results.call_args[0][0]

@@ -50,6 +50,13 @@ Follow these steps for client-credentials configuration.
 4. Enter your Tenant ID in the **Tenant ID** parameter.
 5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
 
+### Azure Managed Identities Authentication
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
 ## Get the additional instance parameters
 
 To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resource Group** parameters, in the Azure Portal, go to **Log Analytics workspaces > YOUR-WORKSPACE > Settings** and click the **Workspace Settings** tab.

@@ -3,7 +3,13 @@ Full documentation for this integration is available at our [reference docs](htt
 
 ## Authorize Cortex XSOAR for Azure Sentinel
 
-Follow these steps for a self-deployed configuration.
+### Azure Managed Identities Authentication
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
+
+### Self deployed Authentication
+Follow these steps for a self-deployed configuration:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 2. In your registered app - create a new Client secret.

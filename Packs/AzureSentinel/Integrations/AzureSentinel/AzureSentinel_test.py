@@ -1358,6 +1358,40 @@ class TestHappyPath:
         assert output.get('patternType') == 'ipv4-addr'
         assert output.get('source') == DEFAULT_SOURCE
 
+    def test_test_module_command_with_managed_identities(self, mocker, requests_mock):
+        """
+            Given:
+                - Managed Identities client id for authentication.
+            When:
+                - Calling test_module.
+            Then:
+                - Ensure the output are as expected.
+        """
+
+        from AzureSentinel import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+        import AzureSentinel
+        import re
+
+        managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.management_azure,
+                                                                    client_id='test_client_id')
+
+        mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+        requests_mock.get(managed_id_mocked_uri, json=mock_token)
+        requests_mock.get(re.compile(f'^{Resources.management_azure}.*'))
+
+        params = {
+            'managed_identities_client_id': 'test_client_id',
+            'subscription_id': {'password': 'test'},
+            'resource_group': 'test_resource_group'
+        }
+        mocker.patch.object(demisto, 'params', return_value=params)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(AzureSentinel, 'return_results')
+
+        main()
+
+        assert 'ok' in AzureSentinel.return_results.call_args[0][0]
+
 
 class TestEdgeCases:
     """

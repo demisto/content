@@ -271,3 +271,36 @@ def test_storage_blob_containers_single(client, mocker):
 
     assert result.outputs[0] == api_response
     assert result.readable_output == expected_hr
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+
+    from AzureStorage import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import demistomock as demisto
+    import AzureStorage
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.management_azure,
+                                                                client_id='test_client_id')
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'auth_type': 'Azure Managed Identities',
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureStorage, 'return_results', return_value=params)
+
+    main()
+
+    assert 'ok' in AzureStorage.return_results.call_args[0][0]

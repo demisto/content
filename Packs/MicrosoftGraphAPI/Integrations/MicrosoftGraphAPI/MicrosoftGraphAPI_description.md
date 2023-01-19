@@ -1,4 +1,4 @@
-In order to use the integration, there are 2 application authentication methods available:
+In order to use the integration, there are 3 authentication methods available:
 
 Note: Depending on the authentication method that you use, the integration parameters might change.
 
@@ -29,3 +29,11 @@ The ***Application Secret*** and the ***Tenant ID*** integration parameters are 
 Run the ***msgraph-api-test*** command to ensure connectivity to Microsoft.
 
 The integration supports only Application permission type, and does not support Delegated permission type. 
+
+#### Azure Managed Identities Authentication
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.

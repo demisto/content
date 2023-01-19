@@ -31,3 +31,12 @@ https://login.windows.net/common/oauth2/authorize?response_type=code&resource=ht
 7. Enter your client secret in the ***Key*** parameter field.
 8. Enter your tenant ID in the ***Token*** parameter field.
 9. Enter your redirect URI in the ***Redirect URI*** parameter field.
+
+## Authentication using Azure Managed Identities 
+___
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.

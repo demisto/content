@@ -1,3 +1,5 @@
+import pytest
+
 from CommonServerPython import *
 from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, list_key_vaults_command, \
     get_key_vault_command, delete_key_vault_command, update_access_policy_command, list_keys_command, get_key_command, \
@@ -633,3 +635,36 @@ def test_convert_time_attributes_to_iso():
     assert readable_time_attributes['exp'] == "2017-05-04T22:53:30"
     assert readable_time_attributes['created'] == "2017-05-04T22:53:30"
     assert readable_time_attributes['updated'] == "2017-05-04T22:53:30"
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+    Scenario: run test module when managed identities client id provided.
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the out[ut are as expected
+    """
+    from AzureKeyVault import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import AzureKeyVault
+    import re
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.split('?')[0]
+    matcher = re.compile(f'{managed_id_mocked_uri}.*')
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(matcher, json=mock_token)
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureKeyVault, 'return_results')
+    mocker.patch.object(KeyVaultClient, 'list_key_vaults_request')
+
+    main()
+
+    assert 'ok' in AzureKeyVault.return_results.call_args[0][0]

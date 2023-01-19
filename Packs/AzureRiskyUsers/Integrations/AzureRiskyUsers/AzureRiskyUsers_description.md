@@ -43,3 +43,11 @@ In order to connect to Microsoft Risky User using either **Cortex XSOAR App** or
 2. Run the ***!msgraph-identity-auth-start*** command.
 3. Follow the instructions that appear.
 4. Run the ***!msgraph-identity-auth-complete*** command.
+
+### Azure Managed Identities Authentication
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.

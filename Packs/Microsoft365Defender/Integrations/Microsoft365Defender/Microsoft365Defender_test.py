@@ -149,3 +149,36 @@ def test_params(mocker):
     main()
 
     assert 'Application ID must be provided.' in return_error_mock.call_args[0][0]
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+
+    from Microsoft365Defender import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import Microsoft365Defender
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.security_center,
+                                                                client_id='test_client_id')
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'auth_type': 'Azure Managed Identities',
+        'base_url': 'test_base_url'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(Microsoft365Defender, 'return_results', return_value=params)
+
+    main()
+
+    assert 'ok' in Microsoft365Defender.return_results.call_args[0][0]

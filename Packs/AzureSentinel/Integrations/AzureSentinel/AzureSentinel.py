@@ -108,7 +108,7 @@ class AzureSentinelClient:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=DEFAULT_AZURE_SERVER_URL
+            managed_identities_resource_uri=Resources.management_azure
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):

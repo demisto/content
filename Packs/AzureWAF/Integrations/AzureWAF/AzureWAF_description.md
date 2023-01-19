@@ -34,3 +34,11 @@ In order to connect to Azure Web Application Firewall using either the Cortex XS
 4. Follow the instructions that appear.
 5. Run the ***!azure-waf-auth-complete*** command.
 At end of the process, you will see a message that you logged in successfully.
+
+## Authentication Using Azure Managed Identities
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.

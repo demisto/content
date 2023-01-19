@@ -187,3 +187,36 @@ def test_create_client_by_auth_type(authentication_type, expected_grant, expecte
     assert client.ms_client.grant_type == expected_grant
     assert client.ms_client.scope == expected_scope
     assert client.ms_client.token_retrieval_url == expected_token_retrieval
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+    Scenario: run test module when managed identities client id provided.
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the output are as expected
+    """
+    from AzureRiskyUsers import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import AzureRiskyUsers
+    import demistomock as demisto
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
+                                                                client_id='test_client_id')
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'authentication_type': 'Azure Managed Identities',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureRiskyUsers, 'return_results')
+
+    main()
+
+    assert 'ok' in AzureRiskyUsers.return_results.call_args[0][0]

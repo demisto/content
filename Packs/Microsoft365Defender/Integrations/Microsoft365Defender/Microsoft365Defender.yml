@@ -18,6 +18,11 @@ configuration:
   name: base_url
   required: true
   type: 0
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials

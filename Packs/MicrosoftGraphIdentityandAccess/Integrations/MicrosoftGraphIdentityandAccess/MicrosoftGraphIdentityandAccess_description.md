@@ -16,7 +16,18 @@ Detailed explanation on how to register an app can be found [here](https://docs.
 
 #### Self-Deployed Graph App
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with 
+mobile and desktop flows enabled.
 
-#### Required Permissions
+### Required Permissions
 * RoleManagement.ReadWrite.Directory - Application
+
+### Azure Managed Identities Authentication
+___
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
+
+

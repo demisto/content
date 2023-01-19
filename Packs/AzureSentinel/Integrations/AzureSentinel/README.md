@@ -35,7 +35,8 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | --- | --- |
     | Server URL | False |
     | Tenant ID | True |
-    | Client ID | True |
+    | Client ID | False |
+    | Azure Managed Identities client id | False |
     | Subscription ID | True |
     | Resource Group Name | True |
     | Workspace Name | True |

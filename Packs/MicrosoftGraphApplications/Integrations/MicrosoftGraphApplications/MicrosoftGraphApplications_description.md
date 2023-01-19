@@ -2,6 +2,7 @@
 ##### There are two ways to authenticate to the Microsoft Graph Services:
 1. *Client Credentials Flow* (Recommended).
 2. *Device Code Flow*.
+3. *Azure Managed Identities*.
 
 
 ### Client Credentials Flow (Recommended)
@@ -38,6 +39,15 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 #### Self-Deployed Azure App
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
+
+### Azure Managed Identities Authentication
+___
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
 
 ----
 

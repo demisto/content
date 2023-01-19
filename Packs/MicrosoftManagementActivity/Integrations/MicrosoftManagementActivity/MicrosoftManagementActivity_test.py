@@ -658,3 +658,36 @@ def test_timeout(args_timeout, param_timeout, expected_timeout):
     client = create_client(timeout=timeout)
     assert client.timeout == expected_timeout
     assert client.ms_client.timeout == expected_timeout
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftManagementActivity import main, MANAGED_IDENTITIES_TOKEN_URL, Resources, jwt
+    import MicrosoftManagementActivity
+    import demistomock as demisto
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.manage_office,
+                                                                client_id='test_client_id')
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'authentication_type': 'Azure Managed Identities',
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(jwt, 'decode', return_value={'tid': 'test'})
+    mocker.patch.object(MicrosoftManagementActivity, 'return_results', return_value=params)
+
+    main()
+
+    assert 'ok' in MicrosoftManagementActivity.return_results.call_args[0][0]

@@ -3,10 +3,15 @@ commonfields:
   id: MicrosoftGraphApplications
   version: -1
 configuration:
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - defaultvalue: 6b071e63-f701-454b-9e54-ede4c96483e6
   display: Application ID
   name: app_id
-  required: true
+  required: false
   type: 0
   additionalinfo:
 - defaultvalue: https://login.microsoftonline.com
@@ -41,6 +46,7 @@ configuration:
   options:
   - Device Code
   - Client Credentials
+  - Azure Managed Identities
 - name: tenant_id
   display: Tenant ID (for Client Credentials mode)
   required: false

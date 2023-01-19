@@ -1,6 +1,8 @@
-#### Note: This integration supports self-deployed configuration only.
-### Authorize Cortex XSOAR for Azure Key Vault (self-deployed configuration)
-#### Follow these steps for a self-deployed configuration.
+
+### Authorize Cortex XSOAR for Azure Key Vault 
+
+#### Self deployed Authentication
+Follow these steps for a self-deployed configuration:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Azure app registration article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 
@@ -27,7 +29,15 @@
 6. After saving the client secret, the value of the client secret is displayed. 
 7. Copy this value and enter it in the Client Secret parameter.
 
-#### Get Subscription ID and the Resource Group values
+#### Azure Managed Identities Authentication
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
+
+### Get Subscription ID and the Resource Group values
 
 1. In the Azure portal, select Resource groups.
 2. Select your resource group name.

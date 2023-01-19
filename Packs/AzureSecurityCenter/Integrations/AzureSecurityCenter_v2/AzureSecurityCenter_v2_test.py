@@ -83,3 +83,38 @@ def test_get_secure_score_command(mocker):
     args = {"secure_score_name": 'ascScore'}
     _, ec, _ = get_secure_scores_command(client, args)
     assert EXPECTED_GET_SECURE_SCORE_CONTEXT == ec
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+
+    from AzureSecurityCenter_v2 import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import demistomock as demisto
+    import re
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.management_azure,
+                                                                client_id='test_client_id')
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    requests_mock.get(re.compile(f'^{Resources.management_azure}.*'), json={'value': []})
+
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'resource_group': 'test_resource_group',
+        'server_url': Resources.management_azure
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results', return_value=params)
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]

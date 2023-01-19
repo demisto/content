@@ -1,6 +1,12 @@
-To configure an instance of the integration in Cortex XSOAR, you need to supply your Storage Account Name and Storage
-Account SAS Token. When you configure the integration instance, enter the Storage Account name in the Storage Account
-field, and the Storage Account SAS Token in the Account SAS Token field.
+To configure an instance of the integration in Cortex XSOAR, you need to supply your Storage Account Name and credentials.
+
+Credentials are one of the following:
+1. Storage Account SAS Token. 
+2. Azure Managed Identities client id (relevant only if XSOAR installed on Azure VM).
+   
+When you configure the integration instance, enter the Storage Account name in the Storage Account field, and the credentials details in the relevant field.
+
+#### Authentication with storage account SAS Token
 
 To create and copy your storage account SAS Token you have to:
 
@@ -17,13 +23,20 @@ To create and copy your storage account SAS Token you have to:
   4. Allow 'Blob versioning permissions'
 * Review and select "Generate".
 
-A new window will appear with the SAS token.
+  A new window will appear with the SAS token.
+  Copy and paste the SAS token. Note it will only be displayed once and can't be retrieved once the window is closed.
 
-Copy and paste the SAS token. Note it will only be displayed once and can't be retrieved once the window is closed.
+  More information about Azure Storage and SAS can be found here:<br>
+  [Azure Storage services](https://docs.microsoft.com/en-us/rest/api/storageservices/)
 
-More information about Azure Storage and SAS can be found here:<br>
-[Azure Storage services](https://docs.microsoft.com/en-us/rest/api/storageservices/)
+  [Grant limited access to Azure Storage resources using shared access signatures (SAS)](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview)
 
-[Grant limited access to Azure Storage resources using shared access signatures (SAS)](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview)
+  [SAS permissions overview](https://docs.microsoft.com/en-us/rest/api/storageservices/create-service-sas)
 
-[SAS permissions overview](https://docs.microsoft.com/en-us/rest/api/storageservices/create-service-sas)
+#### Azure Managed Identities Authentication
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.

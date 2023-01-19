@@ -7,7 +7,7 @@ configuration:
   display: Application ID
   hidden: false
   name: app_id
-  required: true
+  required: false
   type: 0
 - additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
   display: Authentication Type
@@ -17,7 +17,13 @@ configuration:
   options:
   - Authorization Code
   - Device Code
+  - Azure Managed Identities
   type: 15
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false

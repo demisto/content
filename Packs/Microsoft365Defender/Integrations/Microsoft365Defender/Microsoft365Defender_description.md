@@ -1,6 +1,7 @@
-##### There are two ways to authenticate to the Microsoft 365 Defender:
+##### There are there ways to authenticate to the Microsoft 365 Defender:
 1. *Device Code Flow*.
 2. *Client Credentials Flow*.
+3. *Azure Managed Identities*.
 
 ### Device Code Flow
 ___
@@ -63,4 +64,12 @@ Follow these steps for a self-deployed configuration:
  * AdvancedHunting.Read.All - Application
  * Incident.ReadWrite.All - Application
 
+### Azure Managed Identities Authentication
+
 ----
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.

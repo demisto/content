@@ -3,11 +3,16 @@ commonfields:
   id: Azure Storage
   version: -1
 configuration:
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - defaultvalue: 55f9764e-300a-474a-a2bb-549cece85439
   display: Application ID
   hidden: false
   name: app_id
-  required: true
+  required: false
   type: 0
 - display: Subscription ID
   hidden: false
@@ -36,6 +41,7 @@ configuration:
   options:
   - Authorization Code
   - Device Code
+  - Azure Managed Identities
 - name: tenant_id
   display: Tenant ID (for user-auth mode)
   required: false

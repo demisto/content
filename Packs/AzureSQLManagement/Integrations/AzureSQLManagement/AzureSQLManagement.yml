@@ -3,7 +3,7 @@ commonfields:
   id: Azure SQL Management
   version: -1
 configuration:
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR are on Azure VM.
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
   display: Azure Managed Identities client id
   name: managed_identities_client_id
   required: false
@@ -32,7 +32,7 @@ configuration:
   options:
   - Authorization Code
   - Device Code
-  - Managed Identities
+  - Azure Managed Identities
   type: 15
 - display: Tenant ID (for authorization code mode)
   name: tenant_id

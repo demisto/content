@@ -25,7 +25,8 @@ class AzureNSGClient:
     @logger
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy, connection_type: str,
                  azure_ad_endpoint='https://login.microsoftonline.com', tenant_id: str = None, enc_key: str = None,
-                 auth_code: str = None, redirect_uri: str = None):
+                 auth_code: str = None, redirect_uri: str = None,
+                 managed_identities_client_id=None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -39,19 +40,21 @@ class AzureNSGClient:
                                  # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=GRANT_BY_CONNECTION[connection_type],  # disable-secrets-detection
+            grant_type=GRANT_BY_CONNECTION.get(connection_type),  # disable-secrets-detection
             base_url=base_url,
             verify=verify,
             proxy=proxy,
             resource='https://management.core.windows.net' if 'Device' in connection_type
             else None,   # disable-secrets-detection
-            scope=SCOPE_BY_CONNECTION[connection_type],
+            scope=SCOPE_BY_CONNECTION.get(connection_type),
             ok_codes=(200, 201, 202, 204),
             azure_ad_endpoint=azure_ad_endpoint,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
-            redirect_uri=redirect_uri
+            redirect_uri=redirect_uri,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type
@@ -365,6 +368,13 @@ def test_module(client: AzureNSGClient) -> str:
                                "and `!azure-nsg-auth-complete` to log in."
                                "You can validate the connection by running `!azure-nsg-auth-test`\n"
                                "For more details press the (?) button.")
+    elif client.connection_type == 'Azure Managed Identities':
+        if not client.ms_client.managed_identities_client_id:
+            raise Exception("When using Azure Managed Identities, "
+                        "you should provide the 'Azure Managed Identities client id' value")
+            
+        client.ms_client.get_access_token()
+        return 'ok'
 
     else:
         raise Exception("When using user auth flow configuration, "
@@ -393,7 +403,8 @@ def main() -> None:
             tenant_id=params.get('tenant_id'),
             enc_key=params.get('credentials', {}).get('password', ''),
             auth_code=(params.get('auth_code', {})).get('password'),
-            redirect_uri=params.get('redirect_uri')
+            redirect_uri=params.get('redirect_uri'),
+            managed_identities_client_id=params.get('managed_identities_client_id')
         )
         commands = {
             'azure-nsg-security-groups-list': list_groups_command,
@@ -409,7 +420,7 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
 
-        if command == 'azure-nsg-auth-test':
+        elif command == 'azure-nsg-auth-test':
             return_results(test_connection(client, params))
         else:
             return_results(commands[command](client, **args))

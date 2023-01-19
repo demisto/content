@@ -35,3 +35,11 @@ Follow these steps for a self-deployed configuration:
 5. Run the ***!azure-ks-auth-complete*** command.
 
 At end of the process you'll see a message that you've logged in successfully.
+
+### Azure Managed Identities Authentication
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.

@@ -8,9 +8,14 @@ configuration:
   name: url
   required: true
   type: 0
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
-  required: true
+  required: false
   type: 4
 - display: Token (received from the admin consent - see Detailed Instructions (?)
     section)

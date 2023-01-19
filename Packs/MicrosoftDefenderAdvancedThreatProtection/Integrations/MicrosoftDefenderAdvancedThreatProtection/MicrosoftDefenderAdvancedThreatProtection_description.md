@@ -26,3 +26,10 @@ There are two different authentication methods for self-deployed configuration:
 7. In the **Application redirect URI** field, enter your Application redirect URI.
 8. In the **Authorization code** field, enter your Authorization code.
 9. Save the instance.
+
+### Authentication Using Azure Managed Identities
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.

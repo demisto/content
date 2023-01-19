@@ -114,3 +114,35 @@ def test_test_module_command(mocker, params, expected_results):
     with pytest.raises(Exception) as e:
         test_module(None)
     assert expected_results in str(e.value)
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+    Scenario: run test module when managed identities client id provided.
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the output are as expected
+    """
+    from AzureKubernetesServices import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import AzureKubernetesServices
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.management_azure,
+                                                                client_id='test_client_id')
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'auth_type': 'Azure Managed Identities',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureKubernetesServices, 'return_results')
+
+    main()
+
+    assert 'ok' in AzureKubernetesServices.return_results.call_args[0][0]

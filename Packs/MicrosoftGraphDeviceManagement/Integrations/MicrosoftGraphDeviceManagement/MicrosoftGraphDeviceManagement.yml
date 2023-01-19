@@ -8,13 +8,18 @@ configuration:
   name: url
   required: true
   type: 0
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
-  required: true
+  required: false
   type: 4
 - display: Token or Tenant ID - see Detailed Instructions (?)
   name: tenant_id
-  required: true
+  required: false
   type: 4
 - display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key

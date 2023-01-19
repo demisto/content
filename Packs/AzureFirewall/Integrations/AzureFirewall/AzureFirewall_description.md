@@ -10,7 +10,7 @@ In order to connect to the Azure Firewall, follow these steps:
    2. Copy and save the Application (client) ID.
 4. In the *Client ID* parameter, enter your registered app Application (client) ID.
 
-## Self deployed Authentication
+### Self deployed Authentication
 
 In order to authenticate using the self deployed method, you have to provide the following parameters:
 
@@ -20,7 +20,14 @@ In order to authenticate using the self deployed method, you have to provide the
       - Certificate Thumbprint - The certificate thumbprint as appears when registering the certificate to the app.
       - Private Key - The private key of the registered certificate.  
 
-#### Get Subscription ID and the Resource Group values
+### Azure Managed Identities Authentication
+###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+
+
+Follow these steps for authorization based on Azure Managed Identities:
+1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
+## Get Subscription ID and the Resource Group values
 
 1. In the Azure portal, select **Resource groups**.
 2. Select your resource group name.

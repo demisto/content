@@ -26,6 +26,11 @@ configuration:
   name: private_key
   required: false
   type: 14
+- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  type: 4
 - display: Use a self-deployed Azure application
   name: self_deployed
   required: false

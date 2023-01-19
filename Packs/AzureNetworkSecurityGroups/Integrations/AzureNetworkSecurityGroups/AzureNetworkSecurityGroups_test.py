@@ -109,3 +109,35 @@ def test_get_rule(mocker):
     result = get_rule_command(client, 'groupName', 'wow')
     assert '### Rules wow' in result.readable_output
     assert result.outputs[0].get('name') == 'wow'
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+    Scenario: run test module when managed identities client id provided.
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the output are as expected
+    """
+    from AzureNetworkSecurityGroups import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import AzureNetworkSecurityGroups
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.management_azure,
+                                                                client_id='test_client_id')
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'auth_type': 'Azure Managed Identities',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureNetworkSecurityGroups, 'return_results')
+
+    main()
+
+    assert 'ok' in AzureNetworkSecurityGroups.return_results.call_args[0][0]
