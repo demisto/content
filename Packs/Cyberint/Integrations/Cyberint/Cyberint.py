@@ -1,4 +1,5 @@
 # pylint: disable=unsubscriptable-object
+import copy
 from CommonServerPython import *
 ''' IMPORTS '''
 from requests import Response
@@ -539,52 +540,40 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                         attachments.append(tmp_attachment)
 
         alert["attachments"] = attachments
-        incident = {}
-
+        alert_data = dict_safe_get(alert, ['alert_data', 'csv'])
         incident_csv_records = dict_safe_get(alert, ['alert_data', 'csv', 'content']) or []
+
+        incident = {
+            'name': f'Cyberint alert {alert_id}: {alert_title}',
+            'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
+            'rawJSON': json.dumps(alert),
+            'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
+            'attachment': incident_attachments,
+        }
+
+        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
+        if alert_csv_id:
+            extracted_csv_data = extract_data_from_csv_stream(
+                client,
+                alert_id,  # type: ignore
+                alert_csv_id)
+            alert['alert_data']['csv'] = extracted_csv_data
 
         if duplicate_alert:
             if incident_csv_records:
-                index = 1
                 for index, incident_csv_record in enumerate(incident_csv_records):
-                    alert.update({'ref_id': f'{alert_id} ({index})'})
-                    alert['alert_data']['csv'].update({'content': incident_csv_record})
-
-                    incident = {
-                        'name': f'Cyberint alert {alert_id} ({index}): {alert_title}',
-                        'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
-                        'rawJSON': json.dumps(alert),
-                        'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
-                        'attachment': incident_attachments,
-                    }
-                    incidents.append(incident)
-                    index += 1
+                    alert_data.update({'content': incident_csv_record})
+                    alert.update({'attachments': alert_data})
+                    incident.update({
+                        'name': f'Cyberint alert {alert_id} ({index+1}): {alert_title}',
+                        'rawJSON': json.dumps(alert)
+                    })
+                    incidents.append(copy.deepcopy(incident))
             else:
-
-                incident = {
-                    'name': f'Cyberint alert {alert_id}: {alert_title}',
-                    'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
-                    'rawJSON': json.dumps(alert),
-                    'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
-                    'attachment': incident_attachments,
-                }
                 incidents.append(incident)
         else:
-            alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
-            if alert_csv_id:
-                extracted_csv_data = extract_data_from_csv_stream(
-                    client,
-                    alert_id,  # type: ignore
-                    alert_csv_id)
-                alert['alert_data']['csv'] = extracted_csv_data
 
-            incident = {
-                'name': f'Cyberint alert {alert_id}: {alert_title}',
-                'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
-                'rawJSON': json.dumps(alert),
-                'severity': SEVERITIES.get(alert.get('severity', 'low'), 1),
-                'attachment': incident_attachments,
-            }
+            incident.update({'rawJSON': json.dumps(alert)})
             incidents.append(incident)
 
     if incidents:
@@ -626,7 +615,7 @@ def main():
             fetch_type = params.get('fetch_type', [])
             fetch_severity = params.get('fetch_severity', [])
             max_fetch = int(params.get('max_fetch', '50'))
-            duplicate_alert = params.get('duplicate_alert', True)
+            duplicate_alert = params.get('duplicate_alert', False)
             next_run, incidents = fetch_incidents(client, demisto.getLastRun(), first_fetch_time,
                                                   fetch_severity, fetch_status, fetch_type,
                                                   fetch_environment, max_fetch, duplicate_alert)

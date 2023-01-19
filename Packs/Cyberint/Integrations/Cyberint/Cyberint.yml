@@ -18,7 +18,7 @@ configuration:
   required: true
   type: 0
 - additionalinfo: Allow to duplicate the alert for each alert CSV file record.
-  display: Assign all alert CSV files to the incident
+  display: Duplicate alerts for each alert CSV file record
   name: duplicate_alert
   required: false
   type: 8
