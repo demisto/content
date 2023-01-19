@@ -667,7 +667,7 @@ class Client(BaseClient):
                 "collection_name": collection
             }
         }
-        print(client_url, params, payload)
+
         return self.post_http_request(client_url, payload, params)
         
 
