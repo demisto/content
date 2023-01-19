@@ -3,7 +3,7 @@ from typing import Callable, Dict, Iterable, List, Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+import mimetypes
 
 # disable insecure warnings
 import urllib3
@@ -701,16 +701,17 @@ class Client(BaseClient):
                     file_name = file['name']
                     shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
                     with open(file_name, 'rb') as f:
+                        file_info = (file_name, f, self.get_content_type(file_name))
                         if self.use_oauth:
                             access_token = self.snow_client.get_access_token()
                             headers.update({
                                 'Authorization': f'Bearer {access_token}'
                             })
                             res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': f}, verify=self._verify, proxies=self._proxies)
+                                                   files={'file': file_info}, verify=self._verify, proxies=self._proxies)
                         else:
                             res = requests.request(method, url, headers=headers, data=body, params=params,
-                                                   files={'file': f}, auth=self._auth,
+                                                   files={'file': file_info}, auth=self._auth,
                                                    verify=self._verify, proxies=self._proxies)
                     shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
@@ -760,6 +761,22 @@ class Client(BaseClient):
             num_of_tries += 1
 
         return json_res
+
+    def get_content_type(self, file_name):
+        """Get the correct content type for the POST request.
+
+        Args:
+            file_name: file name
+
+        Returns:
+            the content type - image with right type for images , and general for other types..
+        """
+        file_type = None
+        if not file_name:
+            demisto.debug("file name was not supllied, uploading with general type")
+        else:
+            file_type, _ = mimetypes.guess_type(file_name)
+        return file_type or '*/*'
 
     def get_table_name(self, ticket_type: str = '') -> str:
         """Get the relevant table name from th client.
