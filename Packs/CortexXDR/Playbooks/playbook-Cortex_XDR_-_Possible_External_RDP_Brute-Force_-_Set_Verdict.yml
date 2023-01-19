@@ -1,7 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
 version: -1
 name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+description: "This playbook creates an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - Hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -46,7 +46,7 @@ tasks:
       id: ad4c70ac-fa2f-4d57-84f7-9cbe13790fd1
       version: -1
       name: Related to specific campaign?
-      description: Check if related campaign exist.
+      description: Check if a related campaign exists.
       type: condition
       iscommand: false
       brand: ""
@@ -90,7 +90,7 @@ tasks:
       id: 598f8193-b48c-4682-8ec6-2d3c2240b87f
       version: -1
       name: Has Hunting Results?
-      description: Check if hunting results exists.
+      description: Check if hunting results exist.
       type: condition
       iscommand: false
       brand: ""
@@ -138,7 +138,7 @@ tasks:
       id: faddab4a-86fb-4ba6-8587-f9e75832c152
       version: -1
       name: Has related alerts?
-      description: Check if XDR related alerts exists.
+      description: Check if XDR related alerts exist.
       type: condition
       iscommand: false
       brand: ""
@@ -182,7 +182,7 @@ tasks:
       id: ebf825df-cbb0-44bb-8c6c-217ff1d984be
       version: -1
       name: Connection from unusual country?
-      description: Check if the connection has made from unusual county.
+      description: Check if the connection was made from an unusual country.
       type: condition
       iscommand: false
       brand: ""
@@ -428,7 +428,7 @@ tasks:
       id: ab591416-07d8-4ed8-8433-e9d6e2e45424
       version: -1
       name: IP Reputation is suspicious?
-      description: Check if IP reputation is suspicious or higher
+      description: Check if the IP reputation is suspicious or higher.
       type: condition
       iscommand: false
       brand: ""
@@ -524,7 +524,7 @@ inputs:
 - key: RelatedAlerts
   value: {}
   required: false
-  description: Number of XDR Alerts that related to the same user or endpoint.
+  description: Number of XDR alerts that are related to the same user or endpoint.
   playbookInputQuery:
 - key: RelatedCampaign
   value: {}
@@ -534,12 +534,12 @@ inputs:
 - key: HuntResults
   value: {}
   required: false
-  description: ' determine whether hunting results exists.  the input value should be true or false.'
+  description: Determine whether hunting results exist. The input value should be true or false.
   playbookInputQuery:
 - key: UnusualGeoLocation
   value: {}
   required: false
-  description: ' determine whether the RDP connection has made from unusual country. the input value should be true or false.'
+  description: Determine whether the RDP connection was made from an unusual country. The input value should be true or false.
   playbookInputQuery:
 - key: IpReputation
   value: {}
