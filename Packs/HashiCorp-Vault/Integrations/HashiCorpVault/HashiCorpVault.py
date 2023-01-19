@@ -592,8 +592,8 @@ def fetch_credentials():  # pragma: no cover
     for engine_type in engines:
         engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
         engines_to_fetch_from += engines_to_fetch
-    # if len(engines_to_fetch_from) == 0:
-    #     return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
+    if len(engines_to_fetch_from) == 0:
+        return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
 
     for engine in engines_to_fetch_from:
         if engine['type'] == 'KV':
@@ -607,7 +607,6 @@ def fetch_credentials():  # pragma: no cover
             credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
         elif engine['type'] == 'AWS':
-            engine = {'path': 'aws', 'ttl': '3600'}
             credentials += get_aws_secrets(engine['path'], engine.get('ttl', '3600'), concat_username_to_cred_name,
                                            engine.get('aws_roles_list', '').split(','))
 
