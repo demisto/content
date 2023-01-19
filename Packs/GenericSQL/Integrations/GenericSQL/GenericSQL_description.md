@@ -40,9 +40,9 @@ There are two options to fetch incidents, determined by the 'Fetch by' configura
 #### Fetch events query
 The Generic SQL query or procedure to fetch according to.
 When using queries, there are two requirements, and the third one depends on the database.
-   - 'fetch column' > or >= :'fetch column'
-   - Order by (asc) 'fetch column'
-   - (Optional) limit :limit (It's possible if the database supports it)
+   1. 'fetch column' > or >= :'fetch column'
+   2. Order by (asc) 'fetch column'
+   3. (Optional) limit :limit (It's possible if the database supports it)
 
 ##### Queries examples
 
