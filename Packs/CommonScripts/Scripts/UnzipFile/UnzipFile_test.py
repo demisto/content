@@ -148,7 +148,7 @@ def test_unrar_no_password():
         zipped_file_path = expected_file_unzipped + '.rar'
         # Creation of file object
         zipped_file_object = {
-            'name': 'testFile',
+            'name': 'Untitled_document.pdf.rar',
             'path': zipped_file_path
         }
         # - empty folder _di
