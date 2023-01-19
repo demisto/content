@@ -6,6 +6,7 @@ import requests
 import urllib3
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
+from traceback import format_exc
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -69,204 +70,271 @@ def grab_ip_table(html_section):
         data.append([ele for ele in cols if ele])  # Get rid of empty values
     return data
 
-# TODO use a client that inherts from BaseClient.
+
+def parser(response):
+    soup = BeautifulSoup(response.text, "html.parser")
+    # Get the IP and Domain Sections from WebEx website
+    ipsSection = soup.find("div", {"id": "id_135011"})
+    domainsSection = soup.find("div", {"id": "id_135010"})
+
+    # Get Domains from domain table
+    domainTable = grab_domain_table(domainsSection)
+    all_Domains_lst = grab_domains(domainTable)
+
+    # Get IPS from IP Table
+    ipTable = grab_ip_table(ipsSection)
+    all_IPs_lst = grab_ips(ipTable)
+
+    all_info_dict = {"ips": all_IPs_lst, "urls": all_Domains_lst}
+    return all_info_dict
 
 
-class Client:
-    """
-    Client to use in the WebEx Feed integration. Overrides BaseClient.
-    WebEx IP address and Domain web service announcement:
-    """
+def build_indicators(indicator_lst: List[Dict[str, str]], indicator_type_lower: str, limit: int):
+    for i in indicator_lsd.get("ips"):
+        i = IP(ip=i, asn=indicator_lst.get("asn"), dbot_score=indicator_lst.get("dbot_score"))
 
-    def __init__(self, insecure: bool = False, tags: Optional[list] = None,
-                 tlp_color: Optional[str] = None):
-        """
-        Implements class for WebEx feeds.
-        :param urls_list: List of url, regions and service of each service.
-        :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-        :param tlp_color: Traffic Light Protocol color.
-        """
-        self._url = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
-        self._verify: bool = insecure
-        self.tags = [] if tags is None else tags
-        self.tlp_color = tlp_color
-        self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 
-    def build_iterator(self) -> List:
-        """Retrieves all entries from the feed.
+class Client(BaseClient):
+    """ A client class that implements logic to authenticate with Zoom application. """
 
-        Returns:
-            A list of objects, containing the indicators.
-        """
-        result = []
+    def __init__(
+        self,
+        base_url: str,
+        verify=True,
+        proxy=False,
+    ):
+        super().__init__(base_url, verify, proxy)
+
+    def all_raw_data(self):
         try:
-            response = requests.get(
-                url=self._url,
-                verify=self._verify,
-                proxies=self._proxies,
-            )
-            # TODO  remove
-            response.raise_for_status()
-            # TODO remove all tha parsing outside
-            soup = BeautifulSoup(response.text, "html.parser")
-
-            # Get the IP and Domain Sections from WebEx website
-            ipsSection = soup.find("div", {"id": "id_135011"})
-            domainsSection = soup.find("div", {"id": "id_135010"})
-
-            # Get Domains from domain table
-            domainTable = grab_domain_table(domainsSection)
-            retDomains = grab_domains(domainTable)
-
-            # Get IPS from IP Table
-            ipTable = grab_ip_table(ipsSection)
-            retIPs = grab_ips(ipTable)
-            # TODO use a list of dicts
-            jsonStr = '[{"urls": ' + json.dumps(retDomains) + ',' + '"ips": ' + json.dumps(retIPs) + '}]'
-            data = json.loads(jsonStr)
-            indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
-            result.extend(indicators)
-            # TODO remove
-        except requests.exceptions.SSLError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-        except requests.exceptions.HTTPError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
-        except ValueError as err:
-            demisto.debug(str(err))
-            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
-        return result
-
-    @staticmethod
-    def check_indicator_type(indicator):
-        """Checks the indicator type.
-           The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
-
-        Args:
-            indicator: indicator value
-
-        Returns:
-            The type of the indicator
-        """
-        is_ip_indicator = FeedIndicatorType.ip_to_indicator_type(indicator)
-        if is_ip_indicator:
-            return is_ip_indicator
-        elif '*' in indicator:
-            return FeedIndicatorType.DomainGlob
-        # domain
-        else:
-            return FeedIndicatorType.Domain
+            return self._http_request(
+                method='GET',
+                url_suffix='',
+                resp_type='response')
+        except DemistoException as e:
+            raise DemistoException(e.message)
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-    """Builds the iterator to check that the feed is accessible.
+# class Client:
+#     """
+#     Client to use in the WebEx Feed integration. Overrides BaseClient.
+#     WebEx IP address and Domain web service announcement:
+#     """
+
+#     def __init__(self, insecure: bool = False, tags: Optional[list] = None,
+#                  tlp_color: Optional[str] = None):
+#         """
+#         Implements class for WebEx feeds.
+#         :param urls_list: List of url, regions and service of each service.
+#         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
+#         :param tlp_color: Traffic Light Protocol color.
+#         """
+#         self._url = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
+#         self._verify: bool = insecure
+#         self.tags = [] if tags is None else tags
+#         self.tlp_color = tlp_color
+#         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+
+#     def build_iterator(self) -> List:
+#         """Retrieves all entries from the feed.
+
+#         Returns:
+#             A list of objects, containing the indicators.
+#         """
+#         result = []
+#         try:
+#             response = requests.get(
+#                 url=self._url,
+#                 verify=self._verify,
+#                 proxies=self._proxies,
+#             )
+#             # TODO  remove
+#             response.raise_for_status()
+#             # TODO remove all tha parsing outside
+#             soup = BeautifulSoup(response.text, "html.parser")
+
+#             # Get the IP and Domain Sections from WebEx website
+#             ipsSection = soup.find("div", {"id": "id_135011"})
+#             domainsSection = soup.find("div", {"id": "id_135010"})
+
+#             # Get Domains from domain table
+#             domainTable = grab_domain_table(domainsSection)
+#             retDomains = grab_domains(domainTable)
+
+#             # Get IPS from IP Table
+#             ipTable = grab_ip_table(ipsSection)
+#             retIPs = grab_ips(ipTable)
+#             # TODO use a list of dicts
+#             jsonStr = '[{"urls": ' + json.dumps(retDomains) + ',' + '"ips": ' + json.dumps(retIPs) + '}]'
+#             data = json.loads(jsonStr)
+#             indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
+#             result.extend(indicators)
+#             # TODO remove
+#         except requests.exceptions.SSLError as err:
+#             demisto.debug(str(err))
+#             raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
+#                             f'Check your not secure parameter.\n\n{err}')
+#         except requests.ConnectionError as err:
+#             demisto.debug(str(err))
+#             raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
+#                             f'Check your Server URL parameter.\n\n{err}')
+#         except requests.exceptions.HTTPError as err:
+#             demisto.debug(str(err))
+#             raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
+#         except ValueError as err:
+#             demisto.debug(str(err))
+#             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
+#         return result
+
+# @staticmethod
+def check_indicator_type(indicator):
+    """Checks the indicator type.
+        The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
+
+    Args:
+        indicator: indicator value
+
+    Returns:
+        The type of the indicator
+    """
+    is_ip_indicator = FeedIndicatorType.ip_to_indicator_type(indicator)
+    if is_ip_indicator:
+        return is_ip_indicator
+    elif '*' in indicator:
+        return FeedIndicatorType.DomainGlob
+    # domain
+    else:
+        return FeedIndicatorType.Domain
+
+
+def test_module(client: Client):
+    """Tests connectivity with the client.
     Args:
         client: Client object.
 
     Returns:
-        Outputs.
+        str: ok if test passed
     """
-    client.build_iterator()
-    return 'ok', {}, {}
+    try:
+        client.all_raw_data()
+    except DemistoException as e:
+        return e.message
+    return 'ok'
 
 # TODO limit = None, and inside if limit...
 
 
-def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
-    """Retrieves indicators from the feed
+# def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
+#     """Retrieves indicators from the feed
 
-    Args:
-        client: Client object with request
-        indicator_type_lower: indicator type
-        limit: limit the results
+#     Args:
+#         client: Client object with request
+#         indicator_type_lower: indicator type
+#         limit: limit the results
 
-    Returns:
-        Indicators.
-    """
-    # TODO explain how dose it look and what i want to get
-    iterator = client.build_iterator()
-    # filter indicator_type specific entries
-    # TODO cleanup and make it nice and clean
-    if not indicator_type_lower == 'both':
-        iterator = [i for i in iterator if indicator_type_lower in i]
-    indicators = []
-    if limit > 0:
-        iterator = iterator[:limit]
+#     Returns:
+#         Indicators.
+#     """
+#     # TODO explain how dose it look and what i want to get
+#     iterator = client.build_iterator()
+#     # filter indicator_type specific entries
+#     # TODO cleanup and make it nice and clean
+#     if not indicator_type_lower == 'both':
+#         iterator = [i for i in iterator if indicator_type_lower in i]
+#     indicators = []
+#     if limit > 0:
+#         iterator = iterator[:limit]
 
-    for item in iterator:
-        if indicator_type_lower == 'both':
-            values = item.get('ips', []) + item.get('urls', [])
-        else:
-            values = item.get(indicator_type_lower)
-        if values:
-            for value in values:
-                # TODO use class ip from common, shuld make the futer lines unnecessary
-                type_ = Client.check_indicator_type(value)
-                raw_data = {
-                    'value': value,
-                    'type': type_,
-                }
-                for key, val in item.items():
-                    if key not in ['ips', 'urls']:
-                        raw_data.update({key: val})
+#     for item in iterator:
+#         if indicator_type_lower == 'both':
+#             values = item.get('ips', []) + item.get('urls', [])
+#         else:
+#             values = item.get(indicator_type_lower)
+#         if values:
+#             for value in values:
+#                 # TODO use class ip from common, shuld make the futer lines unnecessary
+#                 type_ = Client.check_indicator_type(value)
+#                 raw_data = {
+#                     'value': value,
+#                     'type': type_,
+#                 }
+#                 for key, val in item.items():
+#                     if key not in ['ips', 'urls']:
+#                         raw_data.update({key: val})
 
-                indicator_mapping_fields = {}
-                # TODO remove?
-                """
-                indicator_mapping_fields = {
-                    "port": argToList(item.get('tcpPorts', '')),
-                    "service": item.get('serviceArea', '')
-                }
+#                 indicator_mapping_fields = {}
 
-                if item.get('expressRoute'):
-                    indicator_mapping_fields["office365expressroute"] = item.get('expressRoute')
-                if item.get('category'):
-                    indicator_mapping_fields["office365category"] = item.get('category')
-                if item.get('required'):
-                    indicator_mapping_fields["office365required"] = item.get('required')
-                if item.get('notes'):
-                    indicator_mapping_fields["description"] = item.get('notes')
-                """
+#                 indicator_mapping_fields['tags'] = client.tags
+#                 if client.tlp_color:
+#                     indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color  # type: ignore
 
-                indicator_mapping_fields['tags'] = client.tags
-                if client.tlp_color:
-                    indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color  # type: ignore
+#                 indicators.append({
+#                     'value': value,
+#                     'type': type_,
+#                     'rawJSON': raw_data,
+#                     'fields': indicator_mapping_fields
+#                 })
 
-                indicators.append({
-                    'value': value,
-                    'type': type_,
-                    'rawJSON': raw_data,
-                    'fields': indicator_mapping_fields
-                })
-
-    return indicators
+#     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-    """Wrapper for retrieving indicators from the feed to the war-room.
-
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
-    """
-    indicator_type = str(args.get('indicator_type'))
+def get_indicators_command(client, **args) -> CommandResults:
+    client = client
+    limit = arg_to_number(args.get('limit', 10))
+    indicator_type = args.get('indicator_type', 'both')
     indicator_type_lower = indicator_type.lower()
-    # TODO do i need it?? if yes, it shuld be an input, not "demisto.args"
-    limit = int(demisto.args().get('limit')) | 10
-    indicators = fetch_indicators(client, indicator_type_lower, limit)
-    human_readable = tableToMarkdown('Indicators from WebEx Feed:', indicators,
-                                     headers=['value', 'type'], removeNull=True)
 
-    return human_readable, {}, {'raw_response': indicators}
+    res = client.all_raw_data()
+    # parse the data
+    clean_res = parser(res)
+    # TODO explain how dose it look and what i want to get
+
+    # filter indicator_type specific entries
+    # clean_res = [i for i in clean_res if indicator_type_lower in i]
+    # indicators = []
+    if limit:
+        if not indicator_type_lower == 'both':
+            indicators = clean_res.get(indicator_type_lower)[:limit]
+        else:
+            indicators = (clean_res.get('ips')[:limit] + clean_res.get('urls')[:limit])
+    finel_lst = []
+    for value in indicators:
+        # TODO use class ip from common, shuld make the futer lines unnecessary
+        type_ = check_indicator_type(value)
+        raw_data = {
+            'value': value,
+            'type': type_
+        }
+        finel_lst.append(raw_data)
+
+    md = tableToMarkdown('Indicators from WebEx Feed:', finel_lst,
+                         headers=['value', 'type'], removeNull=True)
+
+    return CommandResults(
+        readable_output=md,
+        # TODO do i need this???
+        raw_response=clean_res
+    )
+
+# def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+#     """Wrapper for retrieving indicators from the feed to the war-room.
+
+#     Args:
+#         client: Client object with request
+#         args: demisto.args()
+
+#     Returns:
+#         Outputs.
+#     """
+#     indicator_type = str(args.get('indicator_type'))
+#     indicator_type_lower = indicator_type.lower()
+#     # TODO do i need it?? if yes, it shuld be an input, not "demisto.args"
+#     limit = int(demisto.args().get('limit')) | 10
+#     indicators = fetch_indicators(client, indicator_type_lower, limit)
+#     human_readable = tableToMarkdown('Indicators from WebEx Feed:', indicators,
+#                                      headers=['value', 'type'], removeNull=True)
+
+#     return human_readable, {}, {'raw_response': indicators}
 
 # TODO remove? yes
 
@@ -285,38 +353,64 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
 
 
 def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
+    # """
+    # PARSE AND VALIDATE INTEGRATION PARAMS
+    # """
+    # params = demisto.params()
+    # use_ssl = not params.get('insecure', False)
+    # tags = argToList(params.get('feedTags'))
+    # tlp_color = params.get('tlp_color')
+
+    # command = demisto.command()
     params = demisto.params()
-    use_ssl = not params.get('insecure', False)
-    tags = argToList(params.get('feedTags'))
-    tlp_color = params.get('tlp_color')
-
+    args = demisto.args()
+    base_url = params.get('url')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     command = demisto.command()
-
+    #TODO why try?
     try:
-        client = Client(use_ssl, tags, tlp_color)
-        # TODO change to "if else"?
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
-            'test-module': test_module,
-            'webex-get-indicators': get_indicators_command
-        }
-        if command in commands:
-            # TODO change to command results? indicators
-            return_outputs(*commands[command](client, demisto.args()))
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy)
 
+        if command == 'test-module':
+            #TODO why in zoom i used "return_results" and here it will not work?
+            results = test_module(client=client)
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
-            for iter_ in batch(indicators, batch_size=2000):
-                demisto.createIndicators(iter_)
-
+            results = fetch_indicators_command(client=client, **args)
+        elif command == 'webex-get-indicators':
+            results = get_indicators_command(client=client, **args)
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            return_error('Unrecognized command: ' + demisto.command())
+        return_results(results)
 
-    except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
-        return_error(err_msg)
+    except DemistoException as e:
+        # For any other integration command exception, return an error
+        demisto.error(format_exc())
+        return_error(f'Failed to execute {command} command. Error: {str(e)}.')
+        # client = Client(use_ssl, tags, tlp_color)
+        # # TODO change to "if else"?
+        # commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+        #     'test-module': test_module,
+        #     'webex-get-indicators': get_indicators_command
+        # }
+        # if command in commands:
+        #     # TODO change to command results? indicators
+        #     return_outputs(*commands[command](client, demisto.args()))
+
+    #     elif command == 'fetch-indicators':
+    #         indicators = fetch_indicators_command(client)
+    #         for iter_ in batch(indicators, batch_size=2000):
+    #             demisto.createIndicators(iter_)
+
+    #     else:
+    #         raise NotImplementedError(f'Command {command} is not implemented.')
+
+    # except Exception as err:
+    #     err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
+    #     return_error(err_msg)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
