@@ -336,9 +336,11 @@ class Client(BaseClient):
             .get("analysisSummary", "")
             .get("trueFileType", ""),
             "report_id": result.get("data", {}).get("reportId", ""),
-            "DBot_score": dbot_score.score,
-            "Vendor": dbot_score.integration_name,
-            "Reliability": dbot_score.reliability,
+            "DBotScore": {
+                "Score": dbot_score.score,
+                "Vendor": dbot_score.integration_name,
+                "Reliability": dbot_score.reliability,
+            },
         }
         return CommandResults(
             readable_output=tableToMarkdown(
@@ -1134,9 +1136,11 @@ def get_file_analysis_status(
         .get("analysisSummary", "")
         .get("trueFileType", ""),
         "report_id": response.get("data", {}).get("reportId", ""),
-        "DBot_score": dbot_score.score,
-        "Vendor": dbot_score.integration_name,
-        "Reliability": dbot_score.reliability,
+        "DBotScore": {
+            "Score": dbot_score.score,
+            "Vendor": dbot_score.integration_name,
+            "Reliability": dbot_score.reliability,
+        },
     }
     results = CommandResults(
         readable_output=tableToMarkdown(

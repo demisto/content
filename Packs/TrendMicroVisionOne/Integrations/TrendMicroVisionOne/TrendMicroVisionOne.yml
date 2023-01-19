@@ -451,7 +451,7 @@ script:
     - contextPath: VisionOne.File_Analysis_Status.report_id
       description: ID used to get the report and suspicious object. Empty means no report.
       type: string
-    - contextPath: VisionOne.File_Analysis_Status.DBotScore.score
+    - contextPath: VisionOne.File_Analysis_Status.DBotScore.Score
       description: The DBot score.
       type: number
     - contextPath: VisionOne.File_Analysis_Status.DBotScore.Vendor
@@ -649,7 +649,7 @@ script:
     - contextPath: VisionOne.Sandbox_Submission_Polling.report_id
       description: ID used to get the report and suspicious object. Empty means no report.
       type: string
-    - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.score
+    - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.Score
       description: The DBot score.
       type: number
     - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.Vendor
