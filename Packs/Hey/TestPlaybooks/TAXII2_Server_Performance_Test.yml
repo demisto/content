@@ -125,7 +125,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=10000
       z:
         simple: ${inputs.z}
     separatecontext: false
@@ -174,7 +174,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=50000
     separatecontext: false
     loop:
       iscommand: false
@@ -281,7 +281,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=100000
     separatecontext: false
     loop:
       iscommand: false
@@ -1101,7 +1101,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=url
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=10000&match[type]=url
     separatecontext: false
     view: |-
       {
@@ -1191,7 +1191,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=ip
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=10000&match[type]=ip
     separatecontext: false
     view: |-
       {
@@ -1355,7 +1355,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=domain-name
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=10000&match[type]=domain-name
     separatecontext: false
     view: |-
       {
@@ -1445,7 +1445,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=url
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=50000&match[type]=url
     separatecontext: false
     view: |-
       {
@@ -1572,7 +1572,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=ip
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=50000&match[type]=ip
     separatecontext: false
     view: |-
       {
@@ -1699,7 +1699,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=domain-name
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=50000&match[type]=domain-name
     separatecontext: false
     view: |-
       {
@@ -1789,7 +1789,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=url
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=100000&match[type]=url
     separatecontext: false
     view: |-
       {
@@ -1916,7 +1916,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=ip
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=100000&match[type]=ip
     separatecontext: false
     view: |-
       {
@@ -2043,7 +2043,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=domain-name
+                  simple: threatintel/collections/9234b314-5b9e-5baa-a029-a590507b9feb/objects/?limit=100000&match[type]=domain-name
     separatecontext: false
     view: |-
       {
