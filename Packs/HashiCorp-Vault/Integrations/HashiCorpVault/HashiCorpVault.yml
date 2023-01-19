@@ -283,6 +283,12 @@ script:
     - name: aws_roles_list
       description: A comma delimited list of roles names to generate credentials for, if not mentiond 
           we will generate credentials for all roles in path.
+    - name: aws_method
+      auto: PREDEFINED
+      predefined:
+        - "GET"
+        - "POST"
+      description: A parameter to indicate which type of request we would like to use to generate credentials.
     - name: type
       auto: PREDEFINED
       predefined:

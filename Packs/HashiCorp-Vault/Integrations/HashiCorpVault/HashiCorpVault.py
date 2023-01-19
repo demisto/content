@@ -607,8 +607,11 @@ def fetch_credentials():  # pragma: no cover
             credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
         elif engine['type'] == 'AWS':
+            aws_roles_list = []
+            if engine.get('aws_roles_list'):
+                aws_roles_list = engine.get('aws_roles_list').split(',')
             credentials += get_aws_secrets(engine['path'], engine.get('ttl', '3600'), concat_username_to_cred_name,
-                                           engine.get('aws_roles_list', '').split(','))
+                                           aws_roles_list, engine.get('aws_method', None))
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
@@ -717,7 +720,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: 
     return secrets
 
 
-def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name, aws_roles_list):
+def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name, aws_roles_list, aws_method):
     secrets = []
     roles_list_url = engine_path + '/roles'
     demisto.debug('roles_list_url: {}'.format(roles_list_url))
@@ -743,7 +746,11 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name, aws_roles_li
         if not role_data or 'data' not in role_data:
             return []
         credential_type = role_data['data'].get('credential_type')
-
+        if aws_method:
+            if aws_method == 'POST':
+                credential_type = 'sts'
+            else:
+                credential_type = 'iam_user'
         if credential_type != 'iam_user':
             method = 'POST'
             credential_type = 'sts'
