@@ -1,5 +1,7 @@
 import pytest
 
+from CommonServerPython import *
+
 from CrowdStrikeFalconX import Client, \
     send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command, \
     get_full_report_command, get_report_summary_command, get_analysis_status_command, \
@@ -557,3 +559,40 @@ def test_download_ioc_command(requests_mock, mocker, mocked_address, ioc_id, moc
         assert command_results.get('File') == command_results_output
     else:
         assert command_results.outputs.get('File') == command_results_output
+
+
+def test_get_new_access_token(mocker):
+    mocker.patch.object(Client, '_get_token_request', return_value=('123', '100'))
+    client = Client(
+        server_url="https://api.crowdstrike.com/",
+        username="user1",
+        password="12345",
+        use_ssl=False,
+        proxy=False,
+        reliability=DBotScoreReliability.B
+    )
+    access_token = client._get_access_token()
+    assert access_token == '123'
+
+
+def test_get_existing_access_token(mocker):
+    mocker.patch.object(
+        demisto,
+        'getIntegrationContextVersioned',
+        return_value={
+            'context': {
+                'access_token': '123', 'token_initiate_time': '10000.941587', 'token_expiration_seconds': '7200'
+            }
+        }
+    )
+    mocker.patch.object(time, 'time', return_value=16999.941587)
+    client = Client(
+        server_url="https://api.crowdstrike.com/",
+        username="user1",
+        password="12345",
+        use_ssl=False,
+        proxy=False,
+        reliability=DBotScoreReliability.B
+    )
+    access_token = client._get_access_token()
+    assert access_token == '123'
