@@ -5030,8 +5030,13 @@
         },
         {
             "playbookID": "IAMInitOktaUser - Test",
-            "integrations": ["Okta v2","EWSO365"],
-            "instance_names": ["ewso365_dev_team"],
+            "integrations": [
+                "Okta v2",
+                "EWSO365"
+            ],
+            "instance_names": [
+                "ewso365_dev_team"
+            ],
             "fromversion": "6.5.0"
         },
         {
@@ -5242,6 +5247,16 @@
             "playbookID": "testplaybook- JoeSecuirtyV2"
         },
         {
+            "integrations": "FortinetFortiwebVM",
+            "playbookID": "playbook-FortiwebVM_V1_Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "FortinetFortiwebVM",
+            "playbookID": "playbook-FortiwebVM_V2_Test",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "Cisco Umbrella Reporting",
             "playbookID": "Cisco Umbrella Reporting Test",
             "fromversion": "6.5.0"
@@ -5261,7 +5276,6 @@
             "scripts": [
                 "PublishThreatIntelReport",
                 "UnpublishThreatIntelReport"
-
             ]
         },
         {            
