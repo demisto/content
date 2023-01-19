@@ -118,19 +118,22 @@ def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:  # type:
     }
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]] = None):
+def add_time_key_to_events(events: Optional[List[Dict[str, Any]]]):
     """
     Adds the _time key to the events.
     Args:
         events: list, the events to add the time key to.
     """
-    for event in events:
+    for event in events or []:
         if alert_info := event.get('alertInfo'):
             event["_time"] = alert_info.get("createdAt")
+            event["eventType"] = 'Alert'
         if threat_info := event.get('threatInfo'):
             event["_time"] = threat_info.get("createdAt")
+            event["eventType"] = 'Threat'
         else:  # Otherwise, it's an activity.
             event["_time"] = event.get("createdAt")
+            event["eventType"] = 'Activity'
 
 
 ''' COMMAND FUNCTIONS '''
@@ -255,7 +258,7 @@ def main() -> None:
                 next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
                 demisto.setLastRun(next_run)
 
-            if events and should_push_events:
+            if should_push_events:
                 add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 

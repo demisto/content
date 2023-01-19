@@ -1,5 +1,9 @@
 {
   "sentinelone_xdr_raw": {
+    "eventType": {
+      "type": "string",
+      "is_array": false
+    },
     "agentDetectionInfo": {
       "type": "string",
       "is_array": false
