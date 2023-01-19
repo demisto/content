@@ -1,11 +1,9 @@
 [MODEL: dataset=cisco_asa_raw]
 alter
-    event_id = to_integer(arrayindex(regextract(_raw_log, "ASA\-\d\-(\d+)\:"),0)),
+    event_id = to_integer(arrayindex(regextract(_raw_log, "ASA\-[session]*\-*\d\-(\d+)\:"),0)),
     priority = arrayindex(regextract(_raw_log, "\<(\d+)\>"),0),
-    severity = arrayindex(regextract(_raw_log, "\%ASA\-(\d)\-\d+\:\s"),0),
-    message = arrayindex(regextract(_raw_log, "\%ASA\-\d\-\d+\:\s(.*)"),0),
-//direction = arrayindex(regextract(_raw_log,"Built\s+([A-Za-z]+)\s+[A-Z]+\s+connection"),0),// the field not exits on data model network
-    duration = arrayindex(regextract(_raw_log,"duration\s*(\d+\:\d+\:\d+)\s*"),0), // not have function in xql to change it to milliseconds
+    severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
+    message = arrayindex(regextract(_raw_log, "\%ASA\-\d\-\d+[\:|\s\-]+\s(.*)"),0),
     bytes = arrayindex(regextract(_raw_log,"bytes\s*(\d+)\s+"),0),
     threat_level = arrayindex(regextract(_raw_log,"threat-level\:\s*([^\,]+)\,"),0)
 // Action
