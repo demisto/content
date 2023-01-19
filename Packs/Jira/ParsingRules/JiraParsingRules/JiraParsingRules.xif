@@ -2,8 +2,9 @@
 alter 
     tmp_date_part = arraystring(regextract(created, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
     tmp_time_part = arraystring(regextract(created, "T(\d{2}\:\d{2}\:\d{2})\."), ""),
-    tmp_mili_part = arraystring(regextract(created, "\.(\d{3})[\-|\+]"), "")
-| alter tmp_time_format = to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", arraystring(arraycreate(tmp_date_part, tmp_time_part), " ")), "seconds")
+    tmp_mili_part = arraystring(regextract(created, "\.(\d{3})[\-|\+]"), ""),
+    tmp_zone_part=arraystring(regextract(created, "\.[\d]+([+|-]\d+)"), "")
+| alter tmp_time_format = to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S %z", arraystring(arraycreate(tmp_date_part, tmp_time_part,tmp_zone_part), " ")), "seconds")
 | alter tmp_timeseconds_string = to_integer(arraystring(arraycreate(format_string("%d",tmp_time_format), tmp_mili_part), ""))
 | alter _time = to_timestamp(tmp_timeseconds_string, "millis")
-| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time_format, tmp_timeseconds_string;
+| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time_format, tmp_timeseconds_string,tmp_zone_part;
