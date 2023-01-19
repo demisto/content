@@ -98,3 +98,7 @@ This automation helps generate an ASM alert summary report with important inform
 #### SnmpDetection
 This automation helps check if SNMP is enabled or not and gets the running version on the remote server.
 ![SnmpDetection](https://raw.githubusercontent.com/demisto/content/bf435b470c2ed192b2d6c65c98ce488012d51636/Packs/CortexAttackSurfaceManagement/doc_files/SnmpDetection.png)
+
+#### InferWhetherServiceIsDev
+This automation identifies whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
+
