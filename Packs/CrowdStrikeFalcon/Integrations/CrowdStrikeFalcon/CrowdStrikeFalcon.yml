@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: CrowdstrikeFalcon
+  id: CrowdstrikeFalcon_timeout
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com
@@ -149,8 +149,8 @@ configuration:
   section: Collect
   advanced: true
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon
-name: CrowdstrikeFalcon
+display: CrowdstrikeFalcon_timeout
+name: CrowdstrikeFalcon_timeout
 script:
   commands:
   - arguments:
@@ -2340,6 +2340,12 @@ script:
       isArray: true
       name: multiple_indicators_json
       required: true
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a
+        client to establish a connection to a remote machine before a timeout
+        occurs.
+      defaultValue: "180"
+      type: unknown
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
     outputs:
