@@ -13,6 +13,12 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "dependencies": {
+        "MicrosoftGraphMail": {
+            "mandatory": true,
+            "display_name": "Microsoft Graph Mail"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
