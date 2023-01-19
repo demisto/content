@@ -13,6 +13,9 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 XSIAM_SERVERS_PATH="./xsiam_servers.json"
 echo ${XSIAM_SERVERS_PATH} > xsiam_servers_path
 
+XSOAR_NG_SERVERS_PATH="./xsoar_ng_servers.json"
+echo ${XSOAR_NG_SERVERS_PATH} > xsoar_ng_servers_path
+
 DEMISTO_LIC_PATH="./demisto.lic"
 echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 
@@ -33,6 +36,7 @@ cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
+cp -r ./content-test-conf/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
 
 if [[ "$IS_NIGHTLY" == "true" ]] || [[ "$EXTRACT_PRIVATE_TESTDATA" == "true" && "$TEST_CONF_BRANCH" != "master" ]]; then
     cp -Rvn ./content-test-conf/content/Packs/ ./
