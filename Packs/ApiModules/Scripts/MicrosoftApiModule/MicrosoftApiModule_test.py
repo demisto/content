@@ -514,3 +514,61 @@ def test_general_error_metrics(requests_mock, mocker):
         metric_results = demisto.results.call_args_list[0][0][0]
         assert metric_results.get('Contents') == 'Metrics reported successfully.'
         assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
+
+
+def test_get_token_managed_identities(requests_mock):
+    """
+    Given:
+        managed identity client id
+    When:
+        get access token
+    Then:
+        Verify that the result are as expected
+    """
+    test_client_id = 'test_client_id'
+    test_token = 'test_token'
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
+                                                                client_id=test_client_id)
+
+    mock_token = {'access_token': test_token, 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+
+    client = self_deployed_client()
+    client.managed_identities_client_id = test_client_id
+    client.managed_identities_resource_uri = Resources.graph
+
+    assert test_token == client.get_access_token()
+
+
+def test_get_token_managed_identities__error(requests_mock, mocker):
+    """
+    Given:
+        managed identity client id
+    When:
+        get access token
+    Then:
+        Verify that the result are as expected
+    """
+
+    import MicrosoftApiModule
+
+    test_client_id = 'test_client_id'
+    test_token = 'test_token'
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
+                                                                client_id=test_client_id)
+
+    mock_token = {'error_description': 'test_error_description'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    mocker.patch.object(MicrosoftApiModule, 'return_error', side_effect=Exception())
+
+    client = self_deployed_client()
+    client.managed_identities_client_id = test_client_id
+    client.managed_identities_resource_uri = Resources.graph
+
+    with pytest.raises(Exception):
+        client.get_access_token()
+
+    err_message = 'Error in Microsoft authorization with Azure Managed Identities'
+    assert err_message in MicrosoftApiModule.return_error.call_args[0][0]

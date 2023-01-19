@@ -391,11 +391,11 @@ class MicrosoftClient(BaseClient):
         if self.managed_identities_client_id:
 
             if not self.multi_resource:
-                return self._get_self_deployed_managed_identities_token()
+                return self._get_managed_identities_token()
 
             expires_in = -1  # init variable as an int
             for resource in self.resources:
-                access_token, expires_in, refresh_token = self._get_self_deployed_managed_identities_token(resource=resource)
+                access_token, expires_in, refresh_token = self._get_managed_identities_token(resource=resource)
                 self.resource_to_access_token[resource] = access_token
             return '', expires_in, refresh_token
 
@@ -516,7 +516,7 @@ class MicrosoftClient(BaseClient):
 
         return access_token, expires_in, refresh_token
 
-    def _get_self_deployed_managed_identities_token(self, resource=None):
+    def _get_managed_identities_token(self, resource=None):
         """
         Gets a token based on the Azure Managed Identities mechanism
         in case user was configured the Azure VM and the other Azure resource correctly
