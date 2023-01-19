@@ -281,7 +281,8 @@ script:
       description: The time in seconds until we delete the generated user in AWS. Max value=43200. 
           Supported only for AWS engines in assume role or federation token.
     - name: aws_roles_list
-        description: A comma delimited list of roles names to generate credentials for, if not mentiond we will generate credentials for all roles in path.
+      description: A comma delimited list of roles names to generate credentials for, if not mentiond 
+          we will generate credentials for all roles in path.
     - name: type
       auto: PREDEFINED
       predefined:
