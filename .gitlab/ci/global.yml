@@ -365,6 +365,4 @@
 .jobs-done-check:
   stage: are-jobs-realy-done
   script:
-    - section_start "Check that all build jobs passed"
     - python3 Tests/scripts/check_jobs_done.py --job-done-files $PIPELINE_JOBS_FOLDER
-    - section_end "Check that all build jobs passed"
