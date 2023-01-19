@@ -148,6 +148,14 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdstrikeFalcon
 name: CrowdstrikeFalcon
@@ -2055,6 +2063,12 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2341,9 +2355,7 @@ script:
       name: multiple_indicators_json
       required: true
     - name: timeout
-      description: The amount of time (in seconds) that a request will wait for a
-        client to establish a connection to a remote machine before a timeout
-        occurs.
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
       defaultValue: "180"
       type: unknown
     description: Uploads a batch of indicators.
@@ -2796,6 +2808,12 @@ script:
       name: cve_id
       isArray: true
       required: true
+    - default: true
+      description: ''
+      isArray: true
+      name: cve
+      required: true
+      secret: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -2898,7 +2916,7 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.44472
   isfetch: true
   ismappable: true
   isremotesyncin: true
