@@ -1389,7 +1389,7 @@ class Client(BaseClient):
         ]:
             raise ValueError(ErrorMessage.SEVERITY.value)
         ip: str = args.get("ip_address", "")
-        ips = ip.split('-')
+        ips = ip.split("-")
         if (
             len(ips) == 2
             and not re.match(ipv4Regex, ips[0])
@@ -1398,11 +1398,7 @@ class Client(BaseClient):
             and not re.match(ipv6Regex, ips[1])
         ):
             raise ValueError(f"{ip} {ErrorMessage.IP.value}")
-        if (
-            ip
-            and not re.match(ipv4Regex, ip)
-            and not re.match(ipv6Regex, ip)
-        ):
+        if ip and not re.match(ipv4Regex, ip) and not re.match(ipv6Regex, ip):
             raise ValueError(f"{ip} {ErrorMessage.IP.value}")
 
     def validate_http_content_routing_member(self, args: dict[str, Any]):
@@ -2148,7 +2144,13 @@ class ClientV1(Client):
     COOKIE_TYPE = 3
 
     def __init__(
-        self, base_url: str, username: str, password: str, version: str, proxy: bool, verify: bool
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        version: str,
+        proxy: bool,
+        verify: bool,
     ):
         endpoint_prefix = "api/v1.0/"
         api_key = self.encode_api_key(username=username, password=password)
@@ -2162,7 +2164,7 @@ class ClientV1(Client):
         )
 
     def encode_api_key(self, username: str, password: str):
-        to_encode = f'{username}:{password}:root'
+        to_encode = f"{username}:{password}:root"
         return b64_encode(to_encode)
 
     @property
@@ -3409,7 +3411,13 @@ class ClientV2(Client):
     API_VER = "V2"
 
     def __init__(
-        self, base_url: str, username: str, password: str, version: str, proxy: bool, verify: bool
+        self,
+        base_url: str,
+        username: str,
+        password: str,
+        version: str,
+        proxy: bool,
+        verify: bool,
     ):
         api_key = self.encode_api_key(username=username, password=password)
         super().__init__(
@@ -3431,7 +3439,9 @@ class ClientV2(Client):
         Returns:
             str: API key.
         """
-        to_encode = '{' + f'"username":"{username}","password":"{password}","vdom":"root"' + '}'
+        to_encode = (
+            "{" + f'"username":"{username}","password":"{password}","vdom":"root"' + "}"
+        )
         return b64_encode(to_encode)
 
     @property
@@ -7427,7 +7437,7 @@ def paginate_results(
     if page and page_size:
         if page_size < len(response):
             first_item = page_size * (page - 1)
-            output = response[first_item: (first_item + page_size)]
+            output = response[first_item : (first_item + page_size)]
         else:
             output = response[:page_size]
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
