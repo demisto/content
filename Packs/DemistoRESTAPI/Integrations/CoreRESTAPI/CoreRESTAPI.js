@@ -339,6 +339,7 @@ switch (command) {
         var fields = argToList(args.fields);
         return deleteIncidents(ids, fields);
     case 'demisto-api-install-packs':
+    case 'core-api-install-packs':
         return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
     default:
         throw 'Core REST APIs - unknown command';
