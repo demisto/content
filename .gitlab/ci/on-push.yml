@@ -312,7 +312,7 @@ jobs-done-check-on-push:
   tags:
     - gke
   rules:
-    - if: '$NIGHTLY'
+    - if: '$NIGHTLY == "true"'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
