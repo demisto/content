@@ -64,6 +64,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.REPORT,
     FileType.PARSING_RULE,
     FileType.MODELING_RULE,
+    FileType.MODELING_RULE_TEST_DATA,
     FileType.MODELING_RULE_XIF,
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
@@ -109,3 +110,10 @@ IGNORED_FILE_TYPES: set[FileType] = {
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
+
+MODELING_RULE_COMPONENT_FILES: set[FileType] = {
+    FileType.MODELING_RULE,  # the modeling rule yml file
+    FileType.MODELING_RULE_XIF,
+    FileType.MODELING_RULE_SCHEMA,
+    FileType.MODELING_RULE_TEST_DATA,
+}

@@ -1363,14 +1363,20 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client_secret = params.get('credentials', {}).get('password')
-        certificate_thumbprint = params.get('certificate_thumbprint')
-        private_key = params.get('private_key')
+        certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
+            params.get('certificate_thumbprint')
+        private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
         if not client_secret and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
+        tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id', '')
+
+        if not tenant_id:
+            raise ValueError('Tenant ID must be provided.')
+
         client = AzureSentinelClient(
             server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
-            tenant_id=params.get('tenant_id', ''),
+            tenant_id=tenant_id,
             client_id=params.get('credentials', {}).get('identifier'),
             client_secret=client_secret,
             subscription_id=params.get('subscriptionID', ''),

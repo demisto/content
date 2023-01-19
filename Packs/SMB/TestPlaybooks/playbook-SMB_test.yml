@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7d00ae67-5175-4418-8e8a-d09ee6681135
+    taskid: 9d110a6f-4e2a-4f79-8f2b-2f37401d5317
     type: start
     task:
-      id: 7d00ae67-5175-4418-8e8a-d09ee6681135
+      id: 9d110a6f-4e2a-4f79-8f2b-2f37401d5317
       version: -1
       name: ""
       iscommand: false
@@ -17,6 +17,7 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -26,52 +27,31 @@ tasks:
       }
     note: false
     timertriggers: []
-  "1":
-    id: "1"
-    taskid: 1318b929-317a-4aca-8826-817a73394ccb
-    type: regular
-    task:
-      id: 1318b929-317a-4aca-8826-817a73394ccb
-      version: -1
-      name: smb-download
-      description: Download a file from the SMB server
-      script: "|||smb-download"
-      type: regular
-      iscommand: true
-    scriptarguments:
-      download_and_attach:
-        simple: "no"
-      file_path:
-        simple: Shared/asd.txt
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9a4f14b7-5df9-460b-8268-d292925c51a9
+    taskid: 0a23eb7e-e47e-42b4-8fcc-698dbac975f6
     type: regular
     task:
-      id: 9a4f14b7-5df9-460b-8268-d292925c51a9
+      id: 0a23eb7e-e47e-42b4-8fcc-698dbac975f6
       version: -1
       name: smb-upload
       description: Upload a file to the SMB server
-      script: "|||smb-upload"
+      script: '|||smb-upload'
       type: regular
       iscommand: true
+      brand: ""
     scriptarguments:
       content:
         simple: "123"
-      entryID: {}
       file_path:
         simple: Shared/zxc.txt
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -81,28 +61,34 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5f522da4-b8a8-4a16-8658-7a28f214852b
+    taskid: fb1d0d45-7786-4859-8064-300c5b51c61c
     type: regular
     task:
-      id: 5f522da4-b8a8-4a16-8658-7a28f214852b
+      id: fb1d0d45-7786-4859-8064-300c5b51c61c
       version: -1
       name: smb-upload
       description: Upload a file to the SMB server
-      script: "|||smb-upload"
+      script: '|||smb-upload'
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
-      content: {}
       entryID:
         simple: ${File.EntryID}
       file_path:
         simple: Shared/123.txt
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -112,24 +98,31 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d86019cf-1da9-41ad-802f-c68016511089
+    taskid: a8290ab8-72fc-4958-869b-2dcbf11fbe1f
     type: regular
     task:
-      id: d86019cf-1da9-41ad-802f-c68016511089
+      id: a8290ab8-72fc-4958-869b-2dcbf11fbe1f
       version: -1
       name: smb-download
       description: Download a file from the SMB server
-      script: "|||smb-download"
+      script: '|||smb-download'
       type: regular
       iscommand: true
+      brand: ""
     scriptarguments:
       download_and_attach:
         simple: "yes"
       file_path:
         simple: Shared/asd.txt
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -139,12 +132,17 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 43ed9c1d-0c1e-414a-8f54-963b2158e68e
+    taskid: c345c34e-f8e4-4bbd-8c31-000e7a8b93b4
     type: regular
     task:
-      id: 43ed9c1d-0c1e-414a-8f54-963b2158e68e
+      id: c345c34e-f8e4-4bbd-8c31-000e7a8b93b4
       version: -1
       name: Get file
       description: Sends http request. Returns the response as json.
@@ -156,21 +154,14 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      body: {}
-      filename: {}
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/hebrew_file.txt
-      username: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -180,12 +171,17 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2958dde9-ebbf-4021-8d57-5243e937a375
+    taskid: 4febfc41-a1af-41f6-81a5-810765e5e50b
     type: regular
     task:
-      id: 2958dde9-ebbf-4021-8d57-5243e937a375
+      id: 4febfc41-a1af-41f6-81a5-810765e5e50b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -199,11 +195,8 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -213,12 +206,17 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 9dc730fc-9fbc-4e10-88bb-0db7db5fc498
+    taskid: fc33f473-5c31-47aa-8fa9-57aced414251
     type: regular
     task:
-      id: 9dc730fc-9fbc-4e10-88bb-0db7db5fc498
+      id: fc33f473-5c31-47aa-8fa9-57aced414251
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -229,16 +227,12 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-      - "1"
       - "4"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -248,6 +242,11 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},

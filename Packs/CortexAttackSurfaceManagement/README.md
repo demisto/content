@@ -13,14 +13,36 @@ This pack contains all of the integrations, automations, and playbooks necessary
 - Supports validation rescanning to ensure that remediation efforts have been applied successfully.
 - Includes PDF reporting capabilities for preserving and communicating the investigation summary.
 
+### Automated Remediation requirements
+Automated remediation is only possible when the right conditions are met.  These are the current requirements:
+- One of the following attack surface rule IDs:
+  - Insecure OpenSSH
+  - RDP Server
+  - Telnet Server
+  - Unencrypted FTP Server
+  - OpenSSH
+  - SSH Server
+- Asset is a cloud compute instance:	
+  - AWS EC2 Instance	
+  - GCP Compute Engine (VM)
+- Service owner information found through one of the following:
+  - AWS IAM
+  - ServiceNow CMDB
+  - Tenable.io Assets
+  - GCP IAM
+- Indicators of a non-production host:
+  - "dev" found in either the keys or values of tags associated with the asset (case insensitive)
+  
 ### Playbooks
-- [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
-- [Cortex ASM - Detect Service](#cortex-asm---detect-service)
-- [Cortex ASM - Enrichment](#cortex-asm---enrichment)
-- [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
-- [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-- [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenable.io-enrichment)
-- [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+  - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
+  - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
+  - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
+  - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
+  - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+  - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
+  - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
+  - [Cortex ASM - Remediation](#cortex-asm---remediation)
+  - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
 
 
 ### Cortex ASM - ASM Alert
@@ -50,6 +72,13 @@ Playbook that given the IP address enriches Tenable.io information relevant to A
 #### Cortex ASM - Remediation Guidance
 Playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
 ![Cortex ASM - Remediation Guidance](https://raw.githubusercontent.com/demisto/content/d474d924dd0e7ef7067b15764623804a24c8e1c8/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Guidance.png)
+
+#### Cortex ASM - Remediation	
+Playbook that is used as a container folder for all remediation of ASM alerts.	
+![Cortex ASM - Remediation](https://raw.githubusercontent.com/demisto/content/23747a450237bb3762d7ec7788d5ff582c8576db/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation.png)	
+#### Cortex ASM - GCP Enrichment	
+Playbook that given the IP address enriches GCP information relevant to ASM alerts.	
+![Cortex ASM - GCP Enrichment](https://raw.githubusercontent.com/demisto/content/23747a450237bb3762d7ec7788d5ff582c8576db/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
 
 ### Automation Scripts
 This content pack includes the [generateASMReport](#generateasmreport) script: 

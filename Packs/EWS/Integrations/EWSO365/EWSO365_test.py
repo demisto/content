@@ -59,6 +59,7 @@ class TestNormalCommands:
             self.proxy = ""
             self.account = self.MockAccount()
             self.protocol = ""
+            self.mark_as_read = False
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account
@@ -257,6 +258,50 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     fetch_emails_as_incidents(client, current_last_run)
     assert last_run.call_args[0][0].get('lastRunTime') == expected_last_run.get('lastRunTime')
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
+
+
+def test_fetch_and_mark_as_read(mocker):
+    """
+    Given:
+        - Nothing.
+    When:
+        - Running fetch command.
+    Then:
+        - If the parameter "Mark fetched emails as read" is set to true, the function mark_item_as_read should be called.
+    """
+
+    class MockObject:
+        def filter(self, last_modified_time__gte='', datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            # Return a list of emails
+            class MockQuerySet:
+                def __iter__(self):
+                    return (t for t in [])
+            return MockQuerySet()
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.get_folder_by_path = mock_get_folder_by_path
+    client.folder_name = 'Inbox'
+    mark_item_as_read = mocker.patch('EWSO365.mark_item_as_read')
+
+    fetch_emails_as_incidents(client, {})
+    assert mark_item_as_read.called is False
+
+    client.mark_as_read = True
+    fetch_emails_as_incidents(client, {})
+    assert mark_item_as_read.called is True
 
 
 HEADERS_PACKAGE = [
