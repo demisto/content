@@ -5,7 +5,7 @@ comment: Checks to see if SNMP is enabled on the IP address provided.
 commonfields:
   id: SnmpDetection
   version: -1
-dockerimage: demisto/python3:3.10.8.37233
+dockerimage: demisto/python3:3.10.9.44472
 enabled: true
 name: SnmpDetection
 runas: DBotWeakRole
