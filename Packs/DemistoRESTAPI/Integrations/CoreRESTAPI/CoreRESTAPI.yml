@@ -21,7 +21,7 @@ configuration:
   type: 15
   required: false
   defaultvalue: Advanced
-  additionalinfo: Whether authentication should be using standard API key or advanced API key. For XSOAR version < 8.0.0, choose "Standard".
+  additionalinfo: Whether authentication should be using "Standard" API key or "Advanced" API key. For XSOAR version < 8.0.0, choose "Standard".
   options:
   - Standard
   - Advanced

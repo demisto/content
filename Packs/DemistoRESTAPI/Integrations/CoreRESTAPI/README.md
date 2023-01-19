@@ -11,7 +11,7 @@ Use Core REST APIs
     | --- | --- | --- |
     | Core Server URL |  | True |
     | Auth ID |  | True |
-    | Authentication Method | Whether authentication should be using standard API key or advanced API key. | True |
+    | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
     | Core Server API Key (Password) |  | True |
     | Use system proxy settings | Use system proxy settings. | False |

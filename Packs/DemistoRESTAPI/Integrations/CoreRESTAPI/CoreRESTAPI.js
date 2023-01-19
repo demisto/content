@@ -65,7 +65,7 @@ getRequestURL = function (uri) {
 }
 
 sendMultipart = function (uri, entryID, body) {
-    var requestUrl =  getRequestURL(uri)
+    var requestUrl = getRequestURL(uri)
     try {
         body = JSON.parse(body);
     } catch (ex) {
