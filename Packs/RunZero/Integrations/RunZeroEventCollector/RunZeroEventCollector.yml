@@ -3,20 +3,19 @@ commonfields:
   id: RunZero Event Collector
   version: -1
 configuration:
-- defaultvalue: https://console.runzero.com/
-  display: Server URL (e.g. https://console.runzero.com/)
-  name: url
+- name: url
+  defaultvalue: https://console.runzero.com/
+  display: Server URL  
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- defaultvalue: '10000'
-  display: Maximum number of incidents per fetch
-  name: max_fetch
-  required: false
+  section: Connect  
+- name: client_id
+  defaultvalue: client_id
+  display: Client id  
+  required: true
   type: 0
+  additionalinfo: "The client ID as defined in RunZero."
+  section: Connect
 - name: client_secret
   displaypassword: Client secret
   required: true
@@ -24,25 +23,35 @@ configuration:
   type: 9
   hiddenusername: true
   additionalinfo: "The client secret to access the service REST API."
-- defaultvalue: client_id
-  display: Client id
-  name: client_id
-  required: true
-  type: 0
-  additionalinfo: "The client ID as defined in RunZero."
-- defaultvalue: 3 days
-  display: First fetch time
-  name: first_fetch
-  required: false
-  type: 0
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+  section: Collect
+- display: Max events per fetch
+  additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
+  defaultvalue: '1000'
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
 description: This is the RunZero event collector integration for XSIAM.
 display: RunZero Event Collector
 name: RunZero Event Collector
