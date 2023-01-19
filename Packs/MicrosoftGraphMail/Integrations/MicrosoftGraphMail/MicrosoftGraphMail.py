@@ -1810,7 +1810,7 @@ def prepare_args(command, args):
         return {
             'to_recipients': to,
             'cc_recipients': cc,
-            'bcc_recipients': bbc,
+            'bcc_recipients': bcc,
             'reply_to': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,

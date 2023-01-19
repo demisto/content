@@ -4,7 +4,7 @@ import pytest
 import requests_mock
 
 from CommonServerPython import *
-from Packs.MicrosoftGraphMail.Integrations.MicrosoftGraphMail.MicrosoftGraphMailMod import *
+from MicrosoftGraphMail import *
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -13,6 +13,7 @@ class MockedResponse:
 
     def __init__(self, status_code):
         self.status_code = status_code
+
 
 @pytest.mark.parametrize('params, expected_result', [
     ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Key must be provided.'),
@@ -346,10 +347,8 @@ def test_fetch_incidents(client, email_content_html, email_content_text, mocker,
     Given
      - Case A: emails as text and html including the full body key in the api response.
      - Case B: emails as text and html without the full body key in the api response.
-
     When
      - fetching incidents when there is a body key and when there isn't a body key.
-
     Then
      - Case A: make sure the 'body' key is being taken even when 'uniqueBody' key exists.
      - Case B: make sure the 'uniqueBody' is being taken instead of the 'body' key.
@@ -431,10 +430,8 @@ class TestFetchIncidentsWithLookBack:
         Given
          - a look back parameter.
          - incidents queue.
-
         When
          - trying to fetch emails with the look-back mechanism.
-
         Then
          - make sure only one incident is being returned each time, based on the 'cache' look-back mechanism.
          - make sure the correct timestamp to query the api was called based on the look-back parameter.
@@ -519,10 +516,8 @@ def test_fetch_incidents_with_full_body(
     """
     Given -
         a flag to fetch the entire email body
-
     When -
         fetching incidents
-
     Then -
         Make sure that in the details section, there is the full email body content.
     """
@@ -630,13 +625,10 @@ def test_get_attachment(client):
     """
     Given:
         - raw response returned from get_attachment_command
-
     When:
         - response type is itemAttachment and 'item_result_creator' is called
-
     Then:
         - Validate that the message object created successfully
-
     """
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachment') as mail_json:
@@ -654,15 +646,12 @@ def test_get_attachments_without_attachment_id(mocker, client):
     """
     Given:
         - A user ID 'ex@example.com'
-
     When:
         - Calling 'get_attachment_command' method.
-
     Then:
         - Validate that the message object created successfully and all the attachment where downloaded.
-
     """
-    from Packs.MicrosoftGraphMail.Integrations.MicrosoftGraphMail.MicrosoftGraphMailMod import get_attachment_command
+    from MicrosoftGraphMail import get_attachment_command
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachments') as mail_json:
         user_id = 'ex@example.com'
@@ -683,13 +672,10 @@ def test_get_attachment_unsupported_type(client):
     """
     Given:
         - raw response returned from get_attachment_command
-
     When:
         - response type is itemAttachment with attachment that is not supported
-
     Then:
         - Validate the human readable which explain we do not support the type
-
     """
     with open('test_data/mail_with_unsupported_attachment') as mail_json:
         user_id = 'ex@example.com'
@@ -708,13 +694,10 @@ def test_create_attachment(mocker, function_name, attachment_type):
         - raw response returned from api:
             1. @odata.type is fileAttachment
             2. @odata.type is itemAttachment
-
     When:
         - create_attachment checks the attachment type and decide which function will handle the response
-
     Then:
         - item_result_creator and file_result_creator called respectively to the type
-
     """
     mocked_function = mocker.patch(f'MicrosoftGraphMail.{function_name}', return_value={})
     raw_response = {'@odata.type': f'#microsoft.graph.{attachment_type}'}
@@ -729,13 +712,10 @@ def test_list_attachments_with_name(mocker, client):
     Given:
         - list attachments command
         - all attachments has a name
-
     When:
         - parsing email attachments
-
     Then:
         - Validate that the attachments are being parsed correctly
-
     """
     output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
     with open('test_data/list_attachment_result.json') as attachment_result:
@@ -757,13 +737,10 @@ def test_list_attachments_without_name(mocker, client):
     Given:
         - list attachments command
         - there is an attachment without a name
-
     When:
         - parsing email attachments
-
     Then:
         - Validate that the attachments are being parsed correctly and the name is equal to the ID
-
     """
     output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
     with open('test_data/list_attachment_result_no_name.json') as attachment_result:
@@ -784,13 +761,10 @@ def test_reply_mail_command(client, mocker):
     """
     Given:
         - reply-mail arguments
-
     When:
         - send a reply mail message
-
     Then:
         - validates that the outputs fit the updated reply mail message
-
     """
     args = {'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "id",
             'from': "ex1@example.com", 'replyTo': ["ex2@example.com"]}
@@ -856,10 +830,8 @@ def test_send_mail_command(mocker, client, args):
     """
         Given:
             - send-mail command's arguments
-
         When:
             - sending a mail
-
         Then:
             - validates that http request to send-mail was called with the correct values.
     """
@@ -867,7 +839,6 @@ def test_send_mail_command(mocker, client, args):
         from_email = args.get('from')
 
         mocker.patch.object(client.ms_client, 'get_access_token')
-        mocker.patch.object(demisto, 'params', return_value={'intercept_recipients': False})
         send_mail_mocker = request_mocker.post(
             f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
         )
@@ -882,6 +853,7 @@ def test_send_mail_command(mocker, client, args):
         assert message.get('subject') == args.get('subject')
         assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')[0]
         assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
+
 
 class TestCommandsWithLargeAttachments:
 
@@ -1192,8 +1164,8 @@ class TestCommandsWithLargeAttachments:
              * make sure the the attachment < 3mb was sent when creating a draft reply not through an upload session
             - Make sure for all three cases the expected context output is returned.
         """
-        from Packs.MicrosoftGraphMail.Integrations.MicrosoftGraphMail.MicrosoftGraphMailMod import create_draft_command
-        import Packs.MicrosoftGraphMail.Integrations.MicrosoftGraphMail.MicrosoftGraphMailMod as MicrosoftGraphMailMod
+        from MicrosoftGraphMail import create_draft_command
+        import MicrosoftGraphMail
 
         with requests_mock.Mocker() as request_mocker:
             from_email = args.get('from')
@@ -1202,7 +1174,7 @@ class TestCommandsWithLargeAttachments:
                 f'https://graph.microsoft.com/v1.0/users/{from_email}/messages', json={'id': '123'}
             )
             mocker.patch.object(demisto, 'getFilePath', side_effect=self.get_attachment_file_details_by_attachment_id)
-            return_outputs_mocker = mocker.patch.object(MicrosoftGraphMailMod, 'return_outputs')
+            return_outputs_mocker = mocker.patch.object(MicrosoftGraphMail, 'return_outputs')
 
             create_upload_mock = mocker.patch.object(
                 client, 'get_upload_session', return_value={"uploadUrl": "test.com"}
