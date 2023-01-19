@@ -904,7 +904,7 @@ tasks:
       id: 41ea1dab-1062-4835-8f3f-ea99bc964815
       version: -1
       name: Has Indicator?
-      description: Check if input indicator is exist.
+      description: Check if an input indicator exists.
       type: condition
       iscommand: false
       brand: ""
