@@ -71,7 +71,7 @@ xsoar-prepare-testing-bucket-upload-flow:
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
-  
+
 
 mpv2-prepare-testing-bucket-upload-flow:
  extends:
@@ -180,6 +180,7 @@ install-packs-in-server-master:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     INSTANCE_CREATED: "true"
     TIME_TO_LIVE: ""
+    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
@@ -191,18 +192,18 @@ install-packs-in-server-master:
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
     - section_end "Download configuration"
-    - section_start "Lock XSIAM Machine"
+    - section_start "Lock Machine"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
-    - source XSIAMEnvVariables
-    - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
-    - section_end "Lock XSIAM Machine"
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - source CloudEnvVariables
+    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
+    - section_end "Lock Machine"
 
-    - section_start "Clean XSIAM Machine"
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
-    - section_end "Clean XSIAM Machine"
+    - section_start "Clean Machine"
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
+    - section_end "Clean Machine"
 
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
@@ -224,16 +225,20 @@ install-packs-in-server-master:
 #install-packs-in-xsiam-dev:
 #  extends: .install-mpv2-packs-on-xsiam-instances
 #  variables:
-#    INSTANCE_ROLE: "XSIAM Master"
+#    INSTANCE_ROLE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
 install-packs-in-xsiam-ga:
   extends: .install-mpv2-packs-on-xsiam-instances
   variables:
-    INSTANCE_ROLE: "XSIAM 1.2"
+    INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
+    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    CLOUD_SERVERS_FILE: "xsiam_servers_path"
+    CLOUD_API_KEYS: $XSIAM_API_KEYS
 
 
 upload-packs-to-marketplace:
