@@ -8,7 +8,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_say_hello():
+def test_decyfir():
     from decyfir import Client, test_module
     client = Client(base_url='https://test.com/api/v1', verify=False, auth=('', ''))
     response = test_module(client, "2dMGo7FOWvkJWDXHoRWjsyUtj4uGDPMq")
