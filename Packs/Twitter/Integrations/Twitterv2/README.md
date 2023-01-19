@@ -36,7 +36,7 @@ This command will search for tweets posted over the past week and return all inf
 | query | Search query to submit to the recent search endpoint. | Required | 
 | start_time | The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. | Optional | 
 | end_time | The most recent UTC timestamp to which the Tweets will be provided. | Optional | 
-| limit | Maximum number of results to return a number between 10 and 100. Default value is 50. Default is 50. | Optional | 
+| limit | Maximum number of results to return a number between 10 and 100. Default is 50. | Optional | 
 | next_token | When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Twitter returns a NextToken value in the response. To retrieve the next batch of objects, use the token returned from the prior request in your next request. | Optional | 
 
 
@@ -44,30 +44,186 @@ This command will search for tweets posted over the past week and return all inf
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Twitter.Tweet.conversation_id | String | The Tweet ID of the original Tweet of the conversation \(which includes direct replies, replies of replies\). | 
-| Twitter.Tweet.id | String | Unique identifier of this Tweet. | 
-| Twitter.Tweet.created_at | Date | Creation time of the Tweet. | 
-| Twitter.Tweet.text | String | The content of the Tweet. | 
-| Twitter.Tweet.edit_history_tweet_ids | String | Unique identifiers indicating all versions of an edited Tweet. | 
-| Twitter.Tweet.next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
-| Twitter.Tweet.public_metrics.retweet_count | Number | Number of times this Tweet has been Retweeted. | 
-| Twitter.Tweet.public_metrics.reply_count | Number | Number of Replies of this Tweet. | 
-| Twitter.Tweet.public_metrics.like_count | Number | Number of Likes of this Tweet. | 
-| Twitter.Tweet.public_metrics.quote_count | Number | Number of times this Tweet has been Retweeted with a comment. | 
-| Twitter.Tweet.author.name | String | The unique identifier of this user. | 
-| Twitter.Tweet.author.verified | Boolean | Indicates if this user is a verified Twitter User. | 
-| Twitter.Tweet.author.description | String | The text of this user's profile description \(also known as bio\), if the user provided one. | 
-| Twitter.Tweet.author.id | String | The unique identifier of this user. | 
-| Twitter.Tweet.author.created_at | Date | The UTC datetime that the user account was created on Twitter. | 
-| Twitter.Tweet.author.username | String | The Twitter screen name, handle, or alias that this user identifies themselves with. | 
-| Twitter.Tweet.media.type | String | Type of content \(animated_gif, photo, video\). | 
-| Twitter.Tweet.media.url | String | A direct URL to the media file on Twitter. | 
-| Twitter.Tweet.media.media_key | String | Unique identifier of the expanded media content | 
-| Twitter.Tweet.media.alt_text | String | A description of an image to enable and support accessibility. Can be up to 1000 characters long. | 
-| Twitter.tweet_next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
+| Twitter.Tweet.TweetList.conversation_id | String | The Tweet ID of the original Tweet of the conversation \(which includes direct replies, replies of replies\). | 
+| Twitter.Tweet.TweetList.id | String | Unique identifier of this Tweet. | 
+| Twitter.Tweet.TweetList.created_at | Date | Creation time of the Tweet. | 
+| Twitter.Tweet.TweetList.text | String | The content of the Tweet. | 
+| Twitter.Tweet.TweetList.edit_history_tweet_ids | String | Unique identifiers indicating all versions of an edited Tweet. | 
+| Twitter.Tweet.TweetList.public_metrics.impression_count | Number | Number of times the Tweet has been seen. | 
+| Twitter.Tweet.TweetList.public_metrics.retweet_count | Number | Number of times this Tweet has been Retweeted. | 
+| Twitter.Tweet.TweetList.public_metrics.reply_count | Number | Number of Replies of this Tweet. | 
+| Twitter.Tweet.TweetList.public_metrics.like_count | Number | Number of Likes of this Tweet. | 
+| Twitter.Tweet.TweetList.public_metrics.quote_count | Number | Number of times this Tweet has been Retweeted with a comment. | 
+| Twitter.Tweet.TweetList.author.name | String | The unique identifier of this user. | 
+| Twitter.Tweet.TweetList.author.verified | Boolean | Indicates if this user is a verified Twitter User. | 
+| Twitter.Tweet.TweetList.author.description | String | The text of this user's profile description \(also known as bio\), if the user provided one. | 
+| Twitter.Tweet.TweetList.author.id | String | The unique identifier of this user. | 
+| Twitter.Tweet.TweetList.author.created_at | Date | The UTC datetime that the user account was created on Twitter. | 
+| Twitter.Tweet.TweetList.author.username | String | The Twitter screen name, handle, or alias that this user identifies themselves with. | 
+| Twitter.Tweet.TweetList.media.type | String | Type of content \(animated_gif, photo, video\). | 
+| Twitter.Tweet.TweetList.media.url | String | A direct URL to the media file on Twitter. | 
+| Twitter.Tweet.TweetList.media.media_key | String | Unique identifier of the expanded media content | 
+| Twitter.Tweet.TweetList.media.alt_text | String | A description of an image to enable and support accessibility. Can be up to 1000 characters long. | 
+| Twitter.Tweet.NextToken.next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
 
 #### Command example
 ```!twitter-tweet-search query="twitter" limit="10"```
+#### Context Example
+```json
+{
+    "Twitter": {
+        "Tweet": {
+            "NextToken": {
+                "next_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            },
+            "TweetList": [
+                {
+                    "author": {
+                        "created_at": "2006-03-21T06:33:38.000Z",
+                        "description": "some_description",
+                        "id": "1111111111",
+                        "name": "some_name_1",
+                        "username": "some_username_1",
+                        "verified": false
+                    },
+                    "conversation_id": "2323232323232323232",
+                    "created_at": "2024-01-19T12:58:27.000Z",
+                    "edit_history_tweet_ids": [
+                        "2323232323232323232"
+                    ],
+                    "id": "2323232323232323232",
+                    "media": {
+                        "media_key": "3_3333333333333333333",
+                        "type": "photo",
+                        "url": "https://url.jpg"
+                    },
+                    "public_metrics": {
+                        "impression_count": 59,
+                        "like_count": 2,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 0
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2006-02-12T12:12:07.000Z",
+                        "description": "some_description",
+                        "id": "2222222222",
+                        "name": "some_name_2",
+                        "username": "some_username_2",
+                        "verified": false
+                    },
+                    "conversation_id": "2626262626262626262",
+                    "created_at": "2024-01-18T23:37:11.000Z",
+                    "edit_history_tweet_ids": [
+                        "2626262626262626262"
+                    ],
+                    "id": "2626262626262626262",
+                    "public_metrics": {
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 2
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2006-09-29T19:59:28.000Z",
+                        "description": "some_description",
+                        "id": "3333333333",
+                        "name": "some_name_3",
+                        "username": "some_username_3",
+                        "verified": false
+                    },
+                    "conversation_id": "2828282828282828282",
+                    "created_at": "2024-01-19T16:45:42.000Z",
+                    "edit_history_tweet_ids": [
+                        "2828282828282828282"
+                    ],
+                    "id": "2828282828282828282",
+                    "public_metrics": {
+                        "impression_count": 0,
+                        "like_count": 0,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 2
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2006-04-24T20:56:19.000Z",
+                        "description": "some_description",
+                        "id": "4444444444",
+                        "name": "some_name_4",
+                        "username": "some_username_4",
+                        "verified": false
+                    },
+                    "conversation_id": "4040404040404040404",
+                    "created_at": "2024-01-17T15:30:22.000Z",
+                    "edit_history_tweet_ids": [
+                        "2525252525252525252"
+                    ],
+                    "id": "2525252525252525252",
+                    "public_metrics": {
+                        "impression_count": 1402,
+                        "like_count": 27,
+                        "quote_count": 0,
+                        "reply_count": 1,
+                        "retweet_count": 2
+                    },
+                    "text": "some_text_twitter"
+                },
+                {
+                    "author": {
+                        "created_at": "2006-05-14T08:59:05.000Z",
+                        "description": "some_description",
+                        "id": "5555555555",
+                        "name": "some_name_5",
+                        "username": "some_username_5",
+                        "verified": false
+                    },
+                    "conversation_id": "2424242424242424242",
+                    "created_at": "2024-01-20T20:54:50.000Z",
+                    "edit_history_tweet_ids": [
+                        "2424242424242424242"
+                    ],
+                    "id": "2424242424242424242",
+                    "public_metrics": {
+                        "impression_count": 43,
+                        "like_count": 2,
+                        "quote_count": 0,
+                        "reply_count": 0,
+                        "retweet_count": 0
+                    },
+                    "text": "some_text_twitter"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tweets search results:
+>|Tweet ID|Text|Created At|Author Name|Author Username|Likes Count|Attachments URL|
+>|---|---|---|---|---|---|---|
+>| 2323232323232323232 | some_text_twitter | 2024-01-19T12:58:27.000Z | some_name_1 | some_username_1 | 2 | https:<span>//</span>url.jpg |
+>| 2626262626262626262 | some_text_twitter | 2024-01-18T23:37:11.000Z | some_name_2 | some_username_2 | 0 |  |
+>| 2828282828282828282 | some_text_twitter | 2024-01-19T16:45:42.000Z | some_name_3 | some_username_3 | 0 |  |
+>| 2525252525252525252 | some_text_twitter | 2024-01-17T15:30:22.000Z | some_name_4 | some_username_4 | 27 |  |
+>| 2424242424242424242 | some_text_twitter | 2024-01-20T20:54:50.000Z | some_name_5 | some_username_5 | 2 |  |
+
+>### Tweet Next Token:
+>|Next Token|
+>|---|
+>| xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
+
 
 ### twitter-user-get
 ***
@@ -120,38 +276,56 @@ Lookup users by name to display information about them.Search multiple users sim
 
 #### Command example
 ```!twitter-user-get user_name="Twitter"```
+#### Context Example
+```json
+{
+    "Twitter": {
+        "User": {
+            "created_at": "2006-06-15T14:35:54.000Z",
+            "description": "description",
+            "entities": [
+                {
+                    "display_url": "url.com",
+                    "expanded_url": "https://url.com/",
+                    "url": "https://url"
+                }
+            ],
+            "id": "111111",
+            "location": "everywhere",
+            "name": "Twitter",
+            "profile_image_url": "https://url.jpg",
+            "protected": false,
+            "public_metrics": {
+                "followers_count": 65450397,
+                "following_count": 5,
+                "listed_count": 87323,
+                "tweet_count": 15046
+            },
+            "url": "https://url",
+            "username": "Twitter",
+            "verified": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### twitter user get results:
+>|Name|User name|Created At|Description|Followers Count|Tweet Count|verified|
+>|---|---|---|---|---|---|---|
+>| Twitter | Twitter | 2006-06-15T14:35:54.000Z | description | 11111111 | 15046 | true |
+
+
 
 ## Breaking changes from the previous version of this integration - Twitter v2
 The following sections list the changes in this version.
 
 ### Commands
 #### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
+* *twitter-get-user-info* - this command was removed.
+* *twitter-get-users* - this command was replaced by twitter-user-get.
+* *twitter-get-tweets* - this command was replaced by twitter-tweet-search.
 
 ## Additional Considerations for this version
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
+* Only Bearer Token needed in order to configure this integration.

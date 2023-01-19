@@ -2,7 +2,6 @@ import json
 import io
 import freezegun
 import pytest
-import requests
 
 
 class ResponseMock:
@@ -46,7 +45,7 @@ def test_twitter_tweet_search_command(mocker, response, expected_output, expecte
         'limit': '10',
         'next_token': '',
     }
-    mocker.patch.object(requests, 'request', return_value=ResponseMock(response))
+    mocker.patch.object(Client, '_http_request', return_value=response)
     result = twitter_tweet_search_command(client, args)
 
     assert result[0].outputs == expected_output
@@ -76,10 +75,10 @@ def test_twitter_user_get_command(mocker, response, expected_output, expected_hu
         'return_pinned_tweets': 'True',
         'limit': '100',
     }
-    mocker.patch.object(requests, 'request', return_value=ResponseMock(response))
+    mocker.patch.object(Client, '_http_request', return_value=response)
     result = twitter_user_get_command(client, args)
 
-    mocker.patch.object(requests, 'request', return_value=ResponseMock(response))
+    mocker.patch.object(Client, '_http_request', return_value=response)
 
     assert result.readable_output == expected_human_readable
     assert result.outputs == expected_output

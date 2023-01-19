@@ -16,14 +16,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
     def tweet_search(self, query: str, start_time: Optional[str],
                      end_time: Optional[str], limit: Optional[int],
                      next_token: Optional[str]) -> tuple[dict, List[dict], Optional[str]]:
@@ -41,7 +34,6 @@ class Client(BaseClient):
                 List[dict]: context data.
                 str: next token.
         """
-        search_url = f'{self._base_url}/tweets/search/recent'
         result: List[dict] = []
         query_params = {'query': ''.join(f'"{item}"' for item in query),
                         'tweet.fields': 'id,text,attachments,author_id,conversation_id,created_at,public_metrics',
@@ -53,18 +45,15 @@ class Client(BaseClient):
                         'end_time': end_time,
                         'next_token': next_token}
         try:
-            response = requests.request("GET", search_url, headers=self._headers, params=query_params)
-            response_json: dict = response.json()
-            if response.status_code == 200:
-                result, next_token = create_context_data_search_tweets(response.json())
-            else:
-                response.raise_for_status()
+            response = self._http_request(method="GET", url_suffix='/tweets/search/recent',
+                                          headers=self._headers, params=query_params,
+                                          ok_codes=[200])
+            result, next_token = create_context_data_search_tweets(response)
         except Exception as e:
             raise e
-        return response_json, result, next_token
+        return response, result, next_token
 
-    def twitter_user_get(self, users_names: list[str], return_pinned_tweets: str,
-                         limit: Optional[int]) -> tuple[dict, list[dict]]:
+    def twitter_user_get(self, users_names: list[str], return_pinned_tweets: str) -> tuple[dict, list[dict]]:
         """ Gets users according to the provided user names.
             Args:
                 user_name: list[str] - List of users names.
@@ -77,34 +66,22 @@ class Client(BaseClient):
                 dict: context data.
         """
         result = []
-        search_url = f'{self._base_url}/users/by'
-        usernames = ','.join(f'{item}' for item in users_names)
-        query_params = {'usernames': usernames,
+        query_params = {'usernames': ','.join(f'{item}' for item in users_names),
                         'user.fields': 'created_at,description,entities,id,location,name,pinned_tweet_id,profile_image_url'
                         ',protected,public_metrics,url,username,verified,withheld'}
         if return_pinned_tweets == 'true':
-            search_url = f'{self._base_url}/users/by'
-            query_params = {'usernames': usernames,
-                            'expansions': 'pinned_tweet_id',
-                            'user.fields': "created_at,description,entities,id,location,name,pinned_tweet_id,"
-                                           "profile_image_url,protected,public_metrics,url,username,verified,withheld"}
+            query_params['expansions'] = 'pinned_tweet_id'
         try:
-            response = requests.request("GET", search_url, headers=self._headers, params=query_params)
-            response_json: dict = response.json()
-            if response.status_code == 200:
-                result = create_context_data_get_user(response_json)
-            else:
-                response.raise_for_status()
+            response = self._http_request(method="GET", url_suffix='/users/by',
+                                          headers=self._headers, params=query_params,
+                                          ok_codes=[200])
+            result = create_context_data_get_user(response)
         except Exception as e:
             raise e
-        return response_json, result
+        return response, result
 
 
 ''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
 
 
 def create_context_data_search_tweets(response: dict) -> tuple[List[dict], str]:
@@ -179,6 +156,9 @@ def create_context_data_get_user(response: dict) -> list[dict]:
     return data
 
 
+''' COMMAND FUNCTIONS '''
+
+
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
@@ -195,15 +175,12 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        search_url = f'{client._base_url}/tweets/counts/recent'
         query_params = {'query': 'from:Twitter', 'granularity': 'day'}
-        response = requests.request("GET", search_url, headers=client._headers, params=query_params)
-        if response.status_code == 200:
-            message = 'ok'
-        # else:
-        #     response.raise_for_status()
+        client._http_request(method="GET", url_suffix='/tweets/counts/recent',
+                             headers=client._headers, params=query_params, ok_codes=[200])
+        message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
@@ -320,17 +297,15 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
     human_readable = tableToMarkdown("Tweets search results:", dict_to_tableToMarkdown,
                                      headers=headers, removeNull=False, headerTransform=header_transform_tweet_search)
     if next_token:
-        outputs_next_token = {'next_token': next_token}
+        outputs = {'Twitter.Tweet.NextToken(val.next_token)': {'next_token': next_token}}
         return [CommandResults(
-            outputs_prefix='Twitter.Tweet',
+            outputs_prefix='Twitter.Tweet.TweetList',
             outputs=result,
             outputs_key_field='id',
             readable_output=human_readable,
             raw_response=raw_response
         ), CommandResults(
-            outputs_prefix='Twitter',
-            outputs_key_field='next_token',
-            outputs=outputs_next_token,
+            outputs=outputs,
             readable_output=tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
                                             headers=['next_token'], removeNull=False,
                                             headerTransform=header_transform_tweet_search),
@@ -338,7 +313,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
         )]
     else:
         return [CommandResults(
-            outputs_prefix='Twitter.Tweet',
+            outputs_prefix='Twitter.Tweet.TweetList',
             outputs_key_field='id',
             outputs=result,
             readable_output=human_readable,
@@ -360,10 +335,8 @@ def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
     if not user_name:
         raise ValueError('user name not specified')
     return_pinned_tweets = args.get('return_pinned_tweets', 'false')
-    limit = arg_to_number(args.get('limit', 50))
-    limit = 100 if limit and limit >= 100 else limit
     # Call the Client function and get the raw response
-    raw_response, result = client.twitter_user_get(user_name, return_pinned_tweets, limit)
+    raw_response, result = client.twitter_user_get(user_name, return_pinned_tweets)
     dict_to_tableToMarkdown = create_human_readable(result)
     human_readable = tableToMarkdown("twitter user get results:", dict_to_tableToMarkdown,
                                      headers=headers, removeNull=False,

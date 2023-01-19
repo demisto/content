@@ -48,7 +48,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'Maximum number of results to return a number between 10 and 100. Default value is 50'
+      description: 'Maximum number of results to return a number between 10 and 100.'
       isArray: false
       name: limit
       required: false
@@ -64,67 +64,67 @@ script:
     execution: false
     name: twitter-tweet-search
     outputs:
-    - contextPath: Twitter.Tweet.conversation_id
+    - contextPath: Twitter.Tweet.TweetList.conversation_id
       description: The Tweet ID of the original Tweet of the conversation (which includes direct replies, replies of replies).
       type: String
-    - contextPath: Twitter.Tweet.id
+    - contextPath: Twitter.Tweet.TweetList.id
       description: Unique identifier of this Tweet.
       type: String
-    - contextPath: Twitter.Tweet.created_at
+    - contextPath: Twitter.Tweet.TweetList.created_at
       description: Creation time of the Tweet.
       type: Date
-    - contextPath: Twitter.Tweet.text
+    - contextPath: Twitter.Tweet.TweetList.text
       description: The content of the Tweet.
       type: String
-    - contextPath: Twitter.Tweet.edit_history_tweet_ids
+    - contextPath: Twitter.Tweet.TweetList.edit_history_tweet_ids
       description: Unique identifiers indicating all versions of an edited Tweet.
       type: String
-    - contextPath: Twitter.Tweet.next_token
-      description: A value that encodes the next 'page' of results that can be requested, via the next_token request parameter.
-      type: String
-    - contextPath: Twitter.Tweet.public_metrics.retweet_count
+    - contextPath: Twitter.Tweet.TweetList.public_metrics.impression_count
+      description: Number of times the Tweet has been seen.
+      type: Number
+    - contextPath: Twitter.Tweet.TweetList.public_metrics.retweet_count
       description: Number of times this Tweet has been Retweeted.
       type: Number
-    - contextPath: Twitter.Tweet.public_metrics.reply_count
+    - contextPath: Twitter.Tweet.TweetList.public_metrics.reply_count
       description: Number of Replies of this Tweet.
       type: Number
-    - contextPath: Twitter.Tweet.public_metrics.like_count
+    - contextPath: Twitter.Tweet.TweetList.public_metrics.like_count
       description: Number of Likes of this Tweet.
       type: Number
-    - contextPath: Twitter.Tweet.public_metrics.quote_count
+    - contextPath: Twitter.Tweet.TweetList.public_metrics.quote_count
       description: Number of times this Tweet has been Retweeted with a comment.
       type: Number
-    - contextPath: Twitter.Tweet.author.name
+    - contextPath: Twitter.Tweet.TweetList.author.name
       description: The unique identifier of this user.
       type: String
-    - contextPath: Twitter.Tweet.author.verified
+    - contextPath: Twitter.Tweet.TweetList.author.verified
       description: Indicates if this user is a verified Twitter User.
       type: Boolean
-    - contextPath: Twitter.Tweet.author.description
+    - contextPath: Twitter.Tweet.TweetList.author.description
       description: The text of this user's profile description (also known as bio), if the user provided one.
       type: String
-    - contextPath: Twitter.Tweet.author.id
+    - contextPath: Twitter.Tweet.TweetList.author.id
       description: The unique identifier of this user.
       type: String
-    - contextPath: Twitter.Tweet.author.created_at
+    - contextPath: Twitter.Tweet.TweetList.author.created_at
       description: The UTC datetime that the user account was created on Twitter.
       type: Date
-    - contextPath: Twitter.Tweet.author.username
+    - contextPath: Twitter.Tweet.TweetList.author.username
       description: The Twitter screen name, handle, or alias that this user identifies themselves with.
       type: String
-    - contextPath: Twitter.Tweet.media.type
+    - contextPath: Twitter.Tweet.TweetList.media.type
       description: Type of content (animated_gif, photo, video).
       type: String
-    - contextPath: Twitter.Tweet.media.url
+    - contextPath: Twitter.Tweet.TweetList.media.url
       description: A direct URL to the media file on Twitter.
       type: String
-    - contextPath: Twitter.Tweet.media.media_key
+    - contextPath: Twitter.Tweet.TweetList.media.media_key
       description: Unique identifier of the expanded media content
       type: String
-    - contextPath: Twitter.Tweet.media.alt_text
+    - contextPath: Twitter.Tweet.TweetList.media.alt_text
       description: A description of an image to enable and support accessibility. Can be up to 1000 characters long.
       type: String
-    - contextPath: Twitter.tweet_next_token
+    - contextPath: Twitter.Tweet.NextToken.next_token
       description: A value that encodes the next 'page' of results that can be requested, via the next_token request parameter.
       type: String
   - arguments:
