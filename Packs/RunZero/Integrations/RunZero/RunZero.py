@@ -42,25 +42,73 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def asset_search(self, search_str: str = None):
+        url_suffix = f'/org/assets{search_str}' if search_str else '/org/assets'
+        return self._http_request(method='GET',
+                                  url_suffix=url_suffix,
+                                  headers=self._headers)
 
 
 ''' HELPER FUNCTIONS '''
 
+
+def asset_search(client: Client, args: dict):
+    search_string = ''
+    if args.get('ips'):
+        search_string = ','.join(argToList(args.get('ips')))
+        search_string = f'?search=address:{search_string}'
+    elif args.get('hostnames'):
+        search_string = ','.join(argToList(args.get('hostnames')))
+        search_string = f'?search=name:{search_string}'
+    elif args.get('asset_id'):
+        search_string = ','.join(argToList(args.get('asset_id')))
+        search_string = f'/{search_string}'
+    elif args.get('search'):
+        search_string = f'?search={args.get("search")}'
+    raw = client.asset_search(search_string)
+    message = []
+    if type(raw) is list:
+        for item_raw in raw:
+            message.extend(parse_raw_response(item_raw))        
+    if type(raw) is dict:
+        message.extend(parse_raw_response(raw))
+    human_readable = tableToMarkdown('runzero-asset-search',
+                                     message,
+                                     removeNull=True)
+    return CommandResults(
+        outputs_prefix='RunZero',
+        outputs_key_field='Asset',
+        outputs=message,
+        raw_response=raw,
+        readable_output=human_readable
+    )
+
+
+def parse_raw_response(raw: dict) -> list:
+    message = {}
+    message['Addresses'] = raw.get('addresses', [])
+    message['Asset Status'] = raw.get('alive', '')
+    message['Hostname'] = raw.get('names', [])
+    message['OS'] = f'{raw.get("os", "")} {raw.get("os_version","")}'
+    message['Type'] = raw.get('type', '')
+    message['Hardware'] = raw.get('hw', '')
+    message['Outlier'] = raw.get('outlier_score', '')
+    message['MAC vendor'] = raw.get('mac_vendors', [])
+    message['MAC age'] = raw.get('mag_age', '')
+    message['MAC'] = raw.get('macs', [])
+    message['OS EOL'] = raw.get('eol_os', '')
+    message['Sources'] = raw.get('sources', [])
+    message['Comments'] = raw.get('comments', '')
+    message['Tags'] = raw.get('tags', {})
+    message['Svcs'] = raw.get('service_count', '')
+    message['TCP'] = raw.get('service_count_tcp', '')
+    message['UDP'] = raw.get('service_count_udp', '')
+    message['ICMP'] = raw.get('service_count_icmp', '')    
+    return [message]
+
+
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -81,49 +129,33 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
+        client.asset_search()
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     return message
 
 
-
 ''' MAIN FUNCTION '''
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
     :return:
     :rtype:
     """
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1.0')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
+    params = demisto.params()
+    api_key = params.get('api_key', {}).get('password')
+    base_url = urljoin(params.get('url'), '/api/v1.0')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
+        headers = {'Authorization': f'Bearer {api_key}'}
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -131,14 +163,13 @@ def main() -> None:
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
         elif demisto.command() == 'runzero-asset-search':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+            args = demisto.args()
+            commandResult = asset_search(client, args)
+            return_results(commandResult)
 
     # Log exceptions and return errors
     except Exception as e:

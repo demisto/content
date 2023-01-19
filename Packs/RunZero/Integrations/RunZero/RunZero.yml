@@ -3,51 +3,80 @@ commonfields:
   id: RunZero
   version: -1
 configuration:
-- defaultvalue: https://example.com/
+- defaultvalue: https://console.runzero.com
   display: Your server URL
   name: url
   required: true
   type: 0
 - displaypassword: API Key
   additionalinfo: The API Key to use for connection
-  name: credentials
+  name: api_key
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+  section: Collect
+description: 'RunZero integration for XSOAR.'
 display: 'RunZero'
 name: RunZero
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
+  - name: runzero-asset-search
+    description: 'Get all assets (getAssets)'
     deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    arguments:
+    - name: asset_ids
+      description: Search assets by ids comma separated.
+      isArray: true
+      required: false
+      secret: false
+    - name: search
+      description: Search query string.
+      isArray: false
+      required: false
+      secret: false
+    - name: ips
+      description: Search by IPs.
+      isArray: true
+      required: false
+      secret: false
+    - name: hostnames
+      description: Search by hostnames.
+      isArray: true
+      required: false
+      secret: false
+    - name: display_attributes
+      default: false
+      description: Should include attributes section in returned result.
+      isArray: false
+      required: false
+      secret: false
+    - name: display_services
+      default: false
+      description: Should include services section in returned result.
+      isArray: false
+      required: false
+      secret: false
     execution: false
-    name: baseintegration-dummy
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: RunZero.Asset
+      description: 'RunZero raw response.'
       type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.9.44472
 marketplaces:
 - xsoar
 fromversion: 6.5.0
