@@ -6,7 +6,7 @@ import pandas as pd
 
 ALL_LABELS = "*"
 
-
+# comment test
 def get_phishing_map_labels(comma_values):
     if comma_values == ALL_LABELS:
         return comma_values

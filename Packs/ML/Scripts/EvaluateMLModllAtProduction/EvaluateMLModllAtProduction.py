@@ -10,7 +10,7 @@ PREDICTIONS_OUT_FILE_NAME = 'predictions.csv'
 def canonize_label(label):
     return label.replace(" ", "_")
 
-
+# comment test
 def get_phishing_map_labels(comma_values):
     if comma_values == ALL_LABELS:
         return comma_values
