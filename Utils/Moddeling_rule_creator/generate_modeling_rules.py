@@ -43,7 +43,8 @@ def to_string(s: str) -> str:
 
 def to_number(s: str) -> str:
     """
-    Gets a xql and wraps it with a to_number function """
+    Gets a xql and wraps it with a to_number function
+    """
     return f'to_number({s})'
 
 
@@ -83,6 +84,9 @@ def convert_raw_type_to_xdm_type(schema_type: str) -> str:
 
 
 def convert_to_xdm_type(name: str, xdm_type: str) -> str:
+    """
+    Wraps the xql with a conversion to fit the xdm schema if the raw response type is incompatible with the schema type
+    """
     if xdm_type == 'String':
         name = to_string(name)
     elif xdm_type == 'Number':
@@ -149,6 +153,9 @@ def create_scheme_file(mapping_list: List[MappingField]):
 
 
 def process_yml_name():
+    """
+    Returns the name of the modeling rules capitalized
+    """
     name = f"{PRODUCT} {VENDOR} Modeling Rule\n"
     name = name.replace('_', ' ')
     list_names = name.split()
@@ -158,17 +165,10 @@ def process_yml_name():
     return ' '.join(capitalized_name_list)
 
 
-def get_types(d):
-    types = {}
-    for key, value in d.items():
-        if isinstance(value, dict):
-            types[key] = get_types(value)
-        else:
-            types[key] = type(value)
-    return types
-
-
 def create_yml_file():
+    """
+    Creates the yml file of the modeling rules 
+    """
     logging.info('creating modeing rules yml file\n')
     yml_file = (f"fromversion: {sdk_from_version}\n"
                 f"id: {PRODUCT}_{VENDOR}_modeling_rule\n"
@@ -182,6 +182,9 @@ def create_yml_file():
 
 
 def discoverType(value) -> str:
+    """
+    discovers the type of the event fiels and return a type compatible with the modeling rules schema
+    """
     if isinstance(value, list):
         return 'array'
     elif isinstance(value, bool):
@@ -191,19 +194,32 @@ def discoverType(value) -> str:
     return 'string'
 
 
-def extract_raw_type_data(event, keys_from_modeling: str):
-    keys_split = keys_from_modeling.split('.')
-    temp = event
+def extract_raw_type_data(event: dict, path_to_dict_field: str) -> tuple:
+    """
+    Extract the type of the field in the dict event
+    Args:
+        event (dict): A single raw event
+        path_to_dict_field (str): The path to the field in the raw event. 
+    Returns:
+        (tuple): (type of the value - (str): is field of array type - (boolean))
+    """
+    if not event:
+        raise ValueError('The evnet provided is empty')
+    if not isinstance(event, dict):
+        raise ValueError('The array provided is not of type dict')
+
+    keys_split = path_to_dict_field.split('.')
+    temp: dict = event
     for key in keys_split:
         if isinstance(temp, dict):
-            temp = temp.get(key)
+            temp = temp.get(key)        # type: ignore
         else:
             # for example when we have an array inside of a dict
-            logging.info(f'{key=} is not of type dict')
-            temp = None
+            logging.info(f'{key=} is not of type dict, or was not found in the event you provided')
 
     discovered = discoverType(temp)
     if discovered == 'array':
+        # The value is array and we want to check what is the type in the array
         if temp:
             inner_array_type = discoverType(temp[0])
             return inner_array_type, True
@@ -211,6 +227,13 @@ def extract_raw_type_data(event, keys_from_modeling: str):
 
 
 def extract_data_from_all_xdm_schema(path: str) -> tuple:
+    """
+    Extracts for the XDM full schema the columns of the xdm rule, datatype, and data class
+    Args:
+        path (str): The path to the location of the all xdm rules schema 
+    Returns:
+        (tuple): {xdf_rule: data_type}, {xdm_rule: data_class}
+    """
     schema_all_dict = pd.read_csv(path)
 
     columns_to_keep = ['name', 'datatype', 'dataclass']
