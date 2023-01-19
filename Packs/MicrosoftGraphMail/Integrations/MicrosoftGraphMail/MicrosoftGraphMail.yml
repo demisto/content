@@ -95,6 +95,7 @@ configuration:
 - display: Rewrite Recipient(s)
   name: rewrite_recipients
   required: false
+  additionalinfo: "Replaces all 'to', 'cc' and 'bcc' values supplied in automations, the CLI or playbooks when using this integration instance. Intended use is for DEV or QA environments where emails should be sent to a test mailbox instead of end users"
   type: 8
 - display: Rewritten Email Address
   additionalinfo: "Email address that replaces 'to', 'cc', and 'bcc' values supplied in automations, the CLI or playbooks to the integration instance."
