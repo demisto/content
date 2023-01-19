@@ -9,14 +9,12 @@ from dateparser import parse
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 MIRROR_DIRECTION_MAPPING = {
     "None": None,
     "Incoming": "In",
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-
 
 '''HELPER FUNCTIONS'''
 
@@ -557,18 +555,19 @@ def sh_severity_mapping(severity: str):
     return severity_mapper.get(severity, 0)
 
 
-def create_filters_list_dictionaries(arr: List[str]) -> List[Dict]:
+def create_filters_list_dictionaries(arr: List[str], compare_param: str) -> List[Dict]:
     """ Returns the object for the filters dictionary.
         Args:
             arr: List[str] - An array of strings
+            compare_param: str - The comparison string. can be EQUALS or PREFIX.
         Returns:
             The correct object to add to filters.
     """
     result_arr = []
     for item in arr:
         d = {
-            'Comparison': 'EQUALS',
-            'value': item
+            'Comparison': compare_param,
+            'Value': item
         }
         result_arr.append(d)
     return result_arr
@@ -818,28 +817,18 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]):
     findings = response.get('Findings', [{}])
     demisto.debug(f'the findings are {findings}')
     entries = []
-    for finding in findings:
-        confidence = finding.get('Confidence')
-        criticality = finding.get('Criticality')
-        related_findings = finding.get('RelatedFindings')
-        severity_normalized = finding.get('Severity', {}).get('Normalized')
-        finding_types = finding.get('Types')
-        user_defined_fields = finding.get('UserDefinedFields')
-        verification_state = finding.get('VerificationState')
-        workflow_status = finding.get('Workflow', {}).get('Status')
+    # for finding in findings:
 
 
 def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str], aws_sh_severity: str,
-                                     archive_findings: bool, additional_filters: str, finding_types: List[str],
-                                     workflow_status: List[str], product_name: List[str]) \
-        -> GetModifiedRemoteDataResponse:  # TODO: check what archive findings suppose to do
+                                     additional_filters: str, finding_types: List[str], workflow_status: List[str],
+                                     product_name: List[str]) -> GetModifiedRemoteDataResponse:
     """ Checks if there were any updates in the incidents on AWS Security Hub, that match the given filters.
-            Than returns a list of the updated incident ids.
+            Then returns a list of the updated incident ids.
         Args:
             client: boto3.client - An AWS client.
             args: Dict[str, str] - The argument to the function.
             aws_sh_severity: str - The severity we want to filter by.
-            archive_findings: bool
             additional_filters: str - More filters that the user provided.
             finding_types: List[str] - A list of finding types to filter by.
             workflow_status: List[str] - A list of workflow statuses to filter by.
@@ -847,13 +836,13 @@ def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str],
         Returns:
             A GetModifiedRemoteDataResponse object that contains a list of the updated incident ids.
     """
-    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = args.get('lastUpdate', None)
     filters = {}
-    if remote_args.last_update:
-        parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+    if last_update:
+        remote_args = GetModifiedRemoteDataArgs(args)
         now = datetime.now(timezone.utc)
         filters['CreatedAt'] = [{
-            'Start': parsed_date,
+            'Start': remote_args.last_update,
             'End': now.isoformat()
         }]
     if aws_sh_severity:
@@ -863,24 +852,45 @@ def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str],
     if additional_filters:
         filters.update(parse_filter_field(additional_filters))
     if finding_types:
-        filters['Type'] = create_filters_list_dictionaries(finding_types)
+        filters['Type'] = create_filters_list_dictionaries(finding_types, 'PREFIX')
     if workflow_status:
-        filters['WorkflowStatus'] = create_filters_list_dictionaries(workflow_status)
+        statuses = [stat.upper() for stat in workflow_status]
+        filters['WorkflowStatus'] = create_filters_list_dictionaries(statuses, 'EQUALS')
     if product_name:
-        filters['ProductName'] = create_filters_list_dictionaries(product_name)
+        filters['ProductName'] = create_filters_list_dictionaries(product_name, 'EQUALS')
+    demisto.debug(f'The filters are: {filters} \nEND OF FILTERS')
     response = client.get_findings(Filters=filters)
     findings = response.get('Findings')
     next_token = response.get('NextToken')
+    demisto.debug(f'Findings are: {findings}')
     modified_incident_ids = []
     while findings:
         for finding in findings:
-            modified_incident_ids.append(finding.get('Id'))
+            confidence = finding.get('Confidence', None)
+            criticality = finding.get('Criticality', None)
+            related_findings = finding.get('RelatedFindings', None)
+            severity_normalized = finding.get('Severity', {}).get('Normalized', None)
+            finding_types = finding.get('Types', None)
+            user_defined_fields = finding.get('UserDefinedFields', None)
+            verification_state = finding.get('VerificationState', None)
+            workflow_status = finding.get('Workflow', {}).get('Status', None)
+            if confidence or criticality or related_findings or severity_normalized or finding_types or \
+                    user_defined_fields or verification_state or workflow_status:
+                demisto.debug(f'A new incident id: {finding.get("Id")} ** with the product name {finding.get("ProductName")}\n')
+                modified_incident_ids.append(finding.get('Id'))
+            else:
+                demisto.debug('No important changes\n')
         if next_token:
-            response = client.get_findings(NextToken=next_token)
+            demisto.debug(f'In pagination part. The next token is {next_token}\nEND TOKEN')
+            response = client.get_findings(Filters=filters, NextToken=next_token)
+            demisto.debug('After call in pagination.')
             findings = response.get('Findings')
+            demisto.debug(f'The new next token is {next_token}')
             next_token = response.get('NextToken')
         else:
+            demisto.debug('End of loop')
             findings = None
+    demisto.debug(f'The incident ids are: {modified_incident_ids}')
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
 
 
@@ -956,9 +966,8 @@ def main():  # pragma: no cover
             get_remote_data_command(client, args)
             return
         elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, args, aws_sh_severity, archive_findings,
-                                                            additional_filters, finding_type, workflow_status,
-                                                            product_name))
+            return_results(get_modified_remote_data_command(client, args, aws_sh_severity, additional_filters,
+                                                            finding_type, workflow_status, product_name))
         return_outputs(human_readable, outputs, response)
 
     except Exception as e:
