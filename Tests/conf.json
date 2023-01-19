@@ -5277,6 +5277,7 @@
         }
     ],
     "skipped_tests": {
+        "RegPathReputationBasicLists_test" : "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
         "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
         "playbook-CheckPointSandBlast_Test": "Checkpoint playbook no license",
