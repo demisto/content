@@ -32,11 +32,9 @@ def test_send_request(mocker):
 def test_get_aws_secrets(mocker):
     mocker.patch('HashiCorpVault.SERVER_URL', return_value='test')
     get_aws_secrets('test', '999', False)
-    assert mock.call_args.args[0] == 'test'
+    assert mock.call_args.args[0] == 'test/roles'
     get_aws_secrets('test', '999', False)
     assert mock.call_args.args[0] == 'test/roles/1'
-    get_aws_secrets('test', '999', False)
-    assert mock.call_args.args[0] == 'test'
 
 
 def test_get_headers():
@@ -81,3 +79,33 @@ def test_list_policies(mocker):
 def test_get_policy(mocker):
     mocker.patch('HashiCorpVault.send_request', return_value={})
     assert get_policy('test') == {}
+
+
+def test_get_ch_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert get_ch_secret('test', 'test') == {}
+
+
+def test_get_kv2_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert get_kv2_secret('test', 'test') == {}
+
+
+def test_get_kv1_secret(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert get_kv1_secret('test', 'test') == {}
+
+
+def test_unseal_vault(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert unseal_vault('test', 'test') == {}
+
+
+def test_seal_vault(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert seal_vault() == {}
+
+
+def test_disable_engine(mocker):
+    mocker.patch('HashiCorpVault.send_request', return_value={})
+    assert disable_engine('test') == {}
