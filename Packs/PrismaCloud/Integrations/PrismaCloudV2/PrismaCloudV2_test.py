@@ -1,4 +1,5 @@
 import pytest
+from CommonServerPython import *  # noqa: F401
 
 
 @pytest.mark.parametrize('url_to_format, formatted_url', [('https://api.prismacloud.io', 'https://api.prismacloud.io/'),
@@ -86,3 +87,13 @@ def test_remove_empty_values_from_dict():
                             }
 
     assert remove_empty_values_from_dict(dict_input) == dict_expected_output
+
+
+def test_handle_filters():
+    from PrismaCloudV2 import handle_filters
+
+    filters = argToList('alert.status=open,alert.status=resolved, policy.remediable=true ')
+    parsed_filters = handle_filters(filters)
+    assert parsed_filters == [{'name': 'alert.status', 'operator': '=', 'value': 'open'},
+                              {'name': 'alert.status', 'operator': '=', 'value': 'resolved'},
+                              {'name': 'policy.remediable', 'operator': '=', 'value': 'true'}]
