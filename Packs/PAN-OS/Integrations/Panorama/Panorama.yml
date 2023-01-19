@@ -3615,7 +3615,7 @@ script:
       - 'export'
       - 'user-id'
       - 'version'
-      - auto: PREDEFINED
+      auto: PREDEFINED
     - description: The time the PCAP was received on the firewall. Used for threat PCAPs.
       name: search-time
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance. This argument will work only with op type commands.
