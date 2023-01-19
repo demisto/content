@@ -16,15 +16,15 @@ configuration:
   type: 9
   additionalinfo: Please provide Auth ID when using Cortex XSIAM or Cortex XSOAR 8.0.0 and above.
   required: false
-- display: Authentication Method
+- display: Authentication method
   name: auth_method
   type: 15
   required: false
-  defaultvalue: advanced
+  defaultvalue: Advanced
   additionalinfo: Whether authentication should be using standard API key or advanced API key. For XSOAR version < 8.0.0, choose "standard"
   options:
-  - standard
-  - advanced
+  - Standard
+  - Advanced
 - display: Base marketplace url
   name: marketplace_url
   defaultvalue: https://storage.googleapis.com/marketplace-dist/content/packs/

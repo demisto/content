@@ -80,10 +80,10 @@ sendMultipart = function (uri, entryID, body) {
     var headers = {}
     // in case the integration was installed before auth_method was added, the auth_method param will be empty so
     // we will use the standard auth method
-    if (!params.auth_method || params.auth_method == 'standard'){
+    if (!params.auth_method || params.auth_method == 'Standard'){
         headers = getStandardAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
-    else if (params.auth_method == 'advanced') {
+    else if (params.auth_method == 'Advanced') {
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'multipart/form-data')
     }
     var res = httpMultipart(
@@ -99,7 +99,7 @@ sendMultipart = function (uri, entryID, body) {
         'file'
     );
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Demisto REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
     try {
         var response = res.Body;
@@ -110,7 +110,7 @@ sendMultipart = function (uri, entryID, body) {
         }
         return {response: response};
     } catch (ex) {
-        throw 'Demisto REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+        throw 'Core REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
     }
 
 };
@@ -125,10 +125,13 @@ var sendRequest = function(method, uri, body, raw) {
     var headers = {}
     // in case the integration was installed before auth_method was added, the auth_method param will be empty so
     // we will use the standard auth method
-    if (!params.auth_method || params.auth_method == 'standard'){
+    if (!params.auth_method || params.auth_method == 'Standard'){
         headers = getStandardAuthMethodHeaders(key, auth_id, 'application/json')
     }
-    else if (params.auth_method == 'advanced') {
+    else if (params.auth_method == 'Advanced') {
+        if (!auth_id) {
+            throw 'Core REST APIs - please choose "Standard Authentication method" or provide the Auth ID.';
+        }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
     var res = http(
@@ -144,7 +147,7 @@ var sendRequest = function(method, uri, body, raw) {
     );
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Demisto REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        throw 'Core REST APIs - Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
     }
     if (raw) {
         return res;
@@ -158,7 +161,7 @@ var sendRequest = function(method, uri, body, raw) {
             }
             return {response: response};
         } catch (ex) {
-            throw 'Demisto REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
+            throw 'Core REST APIs - Error parsing response - ' + ex + '\nBody:' + res.Body;
         }
     }
 };
@@ -207,7 +210,7 @@ var deleteIncidents = function(ids_to_delete, fields_to_keep) {
     if (fields_to_keep && (fields_to_keep != "all")) {
         response['data'] = reduce_data(response['data'], fields_to_keep);
     }
-    var md = tableToMarkdown('Demisto delete incidents', response, ['data', 'total', "notUpdated"]);
+    var md = tableToMarkdown('Core delete incidents', response, ['data', 'total', "notUpdated"]);
 
     return {
         ContentsFormat: formats.json,
@@ -233,7 +236,7 @@ var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
         });
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
-            throw 'Demisto REST APIs - Failed to download pack file from ' + pack_url;
+            throw 'Core REST APIs - Failed to download pack file from ' + pack_url;
         }
         file_path = res.Path;
     }
