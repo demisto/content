@@ -1171,7 +1171,8 @@ def panorama_push_to_device_group_command(args: dict):
                 'push_job_id': job_id,
                 'polling': argToBoolean(args.get('polling', False)),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-                'description': description
+                'description': description,
+                'device-group': DEVICE_GROUP
             }
 
         return PollResult(
