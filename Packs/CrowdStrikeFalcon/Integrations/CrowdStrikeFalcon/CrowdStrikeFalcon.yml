@@ -149,7 +149,7 @@ configuration:
   section: Collect
   advanced: true
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: Crowdstrike Falcon
+display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
   commands:
