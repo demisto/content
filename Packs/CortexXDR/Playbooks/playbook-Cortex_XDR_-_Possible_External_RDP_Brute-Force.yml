@@ -1,7 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force
 version: -1
 name: Cortex XDR - Possible External RDP Brute-Force
-description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP and hostname information, and investigating if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
+description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -274,12 +274,12 @@ tasks:
           root: ActiveDirectory.Users
           accessor: mail
       subject:
-        simple: Does the following action made by you?
+        simple: Was the following action performed by you?
       body:
         simple: |-
           Hello,
-          Cortex XDR has detected possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.External IP}.
-          does this action made by you and can be considered as autorized?
+          Cortex XDR has detected a possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.External IP}.
+          Was this action performed by you and can be considered as authorized?
       methods:
       - email
       format: ""
@@ -298,7 +298,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Does the following action made by you?
+          simple: Was the following action performed by you?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -311,7 +311,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Does the following action made by you?
+      title: Was the following action performed by you?
       description: ""
       sender: ""
       expired: false
@@ -328,7 +328,7 @@ tasks:
       id: d4da95d2-9620-4858-8b65-44b0f90b66c4
       version: -1
       name: Malicious Activity?
-      description: determine if the activity is malicious
+      description: Determine if the activity is malicious.
       type: condition
       iscommand: false
       brand: ""
@@ -580,7 +580,7 @@ tasks:
       id: cd8f56d5-f212-4188-8afa-37fd8643413f
       version: -1
       name: Authorized Activity?
-      description: check if the user defined the RDP connection as authorized activity.
+      description: Check if the user defined the RDP connection as an authorized activity.
       type: condition
       iscommand: false
       brand: ""
@@ -597,7 +597,7 @@ tasks:
           left:
             value:
               complex:
-                root: Does the following action made by you?.Answers
+                root: Was the following action performed by you?.Answers
                 accessor: "0"
             iscontext: true
           right:
@@ -627,7 +627,7 @@ tasks:
       id: c8b84676-d085-4424-84e7-806522185c01
       version: -1
       name: Has related Indicators to hunt?
-      description: Hunt for indicators that related to the RDP Connection external IP
+      description: Hunt for indicators that are related to the RDP Connection external IP.
       type: condition
       iscommand: false
       brand: ""
@@ -742,7 +742,7 @@ tasks:
       id: e40fd351-db7b-4d7f-8ca5-ef7faedbb720
       version: -1
       name: Critical Element exist?
-      description: Check if critical element is defined
+      description: Check if a critical element is defined.
       type: condition
       iscommand: false
       brand: ""
@@ -936,7 +936,7 @@ tasks:
     task:
       id: 0d7ace88-2aaa-436a-8859-2639c784883f
       version: -1
-      name: Ip and Account block playbooks executed?
+      name: IP and Account block playbooks executed?
       description: Check if containment activities were already made.
       type: condition
       iscommand: false
@@ -1500,7 +1500,7 @@ tasks:
       id: 383d0c2d-91ab-431a-8dc2-5aae5ed9ea7d
       version: -1
       name: Manual Containment
-      description: Remediate an mark task as complete
+      description: Remediate a mark task as complete.
       type: collection
       iscommand: false
       brand: ""
@@ -1621,7 +1621,7 @@ tasks:
       id: b9977847-c2d4-409b-8e45-102933340417
       version: -1
       name: User email address found?
-      description: Check if user email found.
+      description: Check if a user email is found.
       type: condition
       iscommand: false
       brand: ""
@@ -1770,7 +1770,7 @@ tasks:
       version: -1
       name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
       description: |-
-        This playbook creating an array called "Suspicious Elements", which is used to count potential security threats. The following elements can be added to the array:
+        This playbook creates an array called "Suspicious Elements", which is used to count potential security threats. The following elements can be added to the array:
 
         "IP Reputation": This element will be added if the IP reputation is deemed suspicious or malicious.
         "Related Campaign": This element will be added if an RDP brute force attack from an external IP is found to be related to a specific campaign, as determined by threat intelligence management (TIM).
@@ -1842,8 +1842,8 @@ tasks:
     task:
       id: 4a4aa00d-20f1-4a40-8a0e-9197341914dc
       version: -1
-      name: has hunt results?
-      description: check if hunt results found.
+      name: Has hunt results?
+      description: Check if hunt results were found.
       type: condition
       iscommand: false
       brand: ""
@@ -1942,7 +1942,7 @@ tasks:
       id: fb050756-c0eb-448e-8d54-c7845bf6e665
       version: -1
       name: Manager email address found?
-      description: Check if user manager email found.
+      description: Check if a user manager email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -2011,12 +2011,12 @@ tasks:
           root: ActiveDirectory.Users
           accessor: mail
       subject:
-        simple: Does the following action made by you?
+        simple: Was the following action performed by you?
       body:
         simple: |-
           Hello,
-          Cortex XDR has detected possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.External IP}.
-          does this action made by you and can be considered as autorized?
+          Cortex XDR has detected a possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.External IP}.
+          Was this action performed by you and can be considered as authorized?
       methods:
       - email
       format: ""
@@ -2033,7 +2033,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Does the following action made by you?
+          simple: Was the following action performed by you?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -2046,7 +2046,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Does the following action made by you?
+      title: Was the following action performed by you?
       description: ""
       sender: ""
       expired: false
@@ -2125,7 +2125,7 @@ tasks:
       id: b6b7625d-db6d-403d-85d4-fec23a23a9da
       version: -1
       name: Block IP?
-      description: Check if the user asked to block the IP
+      description: Check if the user asked to block the IP.
       type: condition
       iscommand: false
       brand: ""
@@ -2258,7 +2258,7 @@ tasks:
       version: -1
       name: Block Account - Generic v2
       description: |-
-        This playbook blocks malicious usernames using all integrations that you have enabled.
+        This playbook blocks malicious usernames using all integrations that you enabled.
 
         Supported integrations for this playbook:
         * Active Directory
@@ -2314,7 +2314,7 @@ tasks:
       id: 5d208b8f-a31a-447d-82a1-3cc511a9d645
       version: -1
       name: Block account?
-      description: Check if the user asked to block the account
+      description: Check if the user asked to block the account.
       type: condition
       iscommand: false
       brand: ""
@@ -2482,7 +2482,7 @@ tasks:
       id: d7096063-9c6a-49d8-8329-93bb5855f927
       version: -1
       name: Auto Containment?
-      description: Check if AutoRemediation input is true.
+      description: Check if the AutoRemediation input is true.
       type: condition
       iscommand: false
       brand: ""
@@ -2528,7 +2528,7 @@ tasks:
       id: 6c31b325-d2f6-4256-8303-77c9165253a9
       version: -1
       name: Manual Containment
-      description: Remediate an mark task as complete
+      description: Remediate a mark task as complete.
       type: collection
       iscommand: false
       brand: ""
@@ -2616,7 +2616,7 @@ tasks:
       id: c014061b-d3bd-43c1-8f68-cc1f81ba843c
       version: -1
       name: Block IP?
-      description: Check if the user asked to block the IP
+      description: Check if the user asked to block the IP.
       type: condition
       iscommand: false
       brand: ""
@@ -2663,7 +2663,7 @@ tasks:
       id: ff26ecd9-4a31-4891-8184-866131ae69d1
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing).\nNote the following:\n-  Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -2749,7 +2749,7 @@ tasks:
       version: -1
       name: Block Account - Generic v2
       description: |-
-        This playbook blocks malicious usernames using all integrations that you have enabled.
+        This playbook blocks malicious usernames using all integrations that you enabled.
 
         Supported integrations for this playbook:
         * Active Directory
@@ -2805,7 +2805,7 @@ tasks:
       id: b2c9a493-38f3-447f-8943-3ed61d2477fa
       version: -1
       name: Block account?
-      description: Check if the user asked to block the Account
+      description: Check if the user asked to block the account.
       type: condition
       iscommand: false
       brand: ""
@@ -2883,7 +2883,7 @@ tasks:
       id: f7253592-fc4b-4d96-887c-dfc9f81c7da7
       version: -1
       name: Is Active Directory Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -2961,7 +2961,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Set value "true" to enable auto remediation(IP Block and User Block).
+  description: Set this value to "true" to enable auto remediation (IP Block and User Block).
   playbookInputQuery:
 - key: FinalThreshold
   value:
@@ -2980,16 +2980,16 @@ inputs:
     Related Alerts
     Unusual Country
 
-    NOTE: you can read about the meaning of every element in the playbook description.
+    NOTE: You can read about the meaning of every element in the playbook description.
   playbookInputQuery:
 - key: UserEngagementThreshold
   value:
     simple: "2"
   required: false
   description: |-
-    the threshold number of suspicious elements that will trigger a user engagement. set "false" to disable user engagement.
+    The threshold number of suspicious elements that will trigger a user engagement. Set to "false" to disable user engagement.
 
-    NOTICE: if this threshold will be equal or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation.
+    NOTICE: If this threshold is equal to or higher than "FinalThreshold", the final verdict will be deemed by the user response and not by the FinalThreshold calculation.
   playbookInputQuery:
 - key: Hostname
   value: {}
@@ -3009,7 +3009,7 @@ inputs:
 - key: AlertDescription
   value: {}
   required: false
-  description: Alert description
+  description: Alert description.
   playbookInputQuery:
 - key: Country
   value: {}
@@ -3020,7 +3020,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: set value "true" to enable endpoint isolation in case of a true positive.
+  description: Set this value to "true" to enable endpoint isolation in case of a true positive.
   playbookInputQuery:
 outputs: []
 tests:
