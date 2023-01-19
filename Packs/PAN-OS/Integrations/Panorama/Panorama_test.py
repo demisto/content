@@ -1925,7 +1925,7 @@ class TestPanoramaPushToDeviceGroupCommand:
     def test_panorama_push_to_devices_command_with_polling(self, mocker, api_response_queue):
         """
         Given:
-            - pan-os-push-to-device-group command arguments
+            - pan-os-push-to-device-group command arguments including device-group.
             - a queue for api responses of the following:
                 1) first value in the queue is the panorama push to the device group api response
                 2) panorama job status api response which indicates job isn't done yet (different number each time)
@@ -1941,17 +1941,21 @@ class TestPanoramaPushToDeviceGroupCommand:
               that it returns the expected output.
             - make sure readable output is printed out only once.
             - make sure context output is returned only when polling is finished.
+            - make sure the device-group from argument overrides the device-group from parameter in context.
         """
         import requests
         import Panorama
         from Panorama import panorama_push_to_device_group_command
         from CommonServerPython import ScheduledCommand
-        Panorama.DEVICE_GROUP = 'device-group'
 
         args = {
             'description': 'a simple push',
-            'polling': 'true'
+            'polling': 'true',
+            'device-group': 'device-group-from-command-arg'
         }
+
+        # mimcs the piece of code which decides which device-group will be set into DEVICE_GROUP parameter.
+        Panorama.DEVICE_GROUP = args.get('device-group') or 'device-group-from-integration-params'
 
         Panorama.API_KEY = 'APIKEY'
         mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
@@ -1974,6 +1978,7 @@ class TestPanoramaPushToDeviceGroupCommand:
             command_result = panorama_push_to_device_group_command(polling_args)
 
         assert command_result.outputs.get('JobID') == '123'
+        assert command_result.outputs.get('DeviceGroup') == 'device-group-from-command-arg'
         assert command_result.outputs.get('Status') == 'Completed'
         assert command_result.outputs.get('Details')
         assert command_result.outputs.get('Warnings')
