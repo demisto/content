@@ -17,22 +17,23 @@ Set verdict method:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Account Enrichment - Generic v2.1
-* Threat Hunting - Generic
-* Block IP - Generic v3
 * Cortex XDR - Get entity alerts by MITRE tactics
-* TIM - Indicator Relationships Analysis
 * Cortex XDR - Isolate Endpoint
-* User Investigation - Generic
 * Block Account - Generic v2
+* Block IP - Generic v3
+* Threat Hunting - Generic
+* User Investigation - Generic
+* Account Enrichment - Generic v2.1
 * Cortex XDR - Possible External RDP Brute-Force - Set Verdict
+* TIM - Indicator Relationships Analysis
 
 ### Integrations
-* XQLQueryingEngine
 * XDR_iocs
 * CortexXDRIR
+* XQLQueryingEngine
 
 ### Scripts
+* IsIntegrationAvailable
 * Set
 
 ### Commands

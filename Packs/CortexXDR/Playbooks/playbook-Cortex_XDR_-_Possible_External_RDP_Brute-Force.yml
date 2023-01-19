@@ -431,50 +431,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 7cce3384-65d9-41f2-8f06-68840f52038f
-    type: condition
-    task:
-      id: 7cce3384-65d9-41f2-8f06-68840f52038f
-      version: -1
-      name: Auto Remediate?
-      description: Check if AutoRemediation input is true.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "79"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Auto_Remidiate?
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 3515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: 32c4e913-2160-4e54-8a46-158688c84fc4
@@ -500,8 +456,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 5500
+          "x": -180,
+          "y": 5490
         }
       }
     note: false
@@ -528,8 +484,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 5820
+          "x": 695,
+          "y": 5810
         }
       }
     note: false
@@ -997,18 +953,30 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: RDP_Brute_Force_Investigation.User_Containment
+              complex:
+                root: RDP_Brute_Force_Investigation
+                accessor: IP_Containment
             iscontext: true
           right:
             value:
-              simple: Contained
+              simple: Executed
           ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RDP_Brute_Force_Investigation
+                accessor: User_Containment
+            iscontext: true
+          right:
+            value:
+              simple: Executed
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 160,
-          "y": 3680
+          "y": 3510
         }
       }
     note: false
@@ -1072,7 +1040,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4870
+          "y": 4700
         }
       }
     note: false
@@ -1118,7 +1086,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5000
+          "y": 4830
         }
       }
     note: false
@@ -1379,7 +1347,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "23"
+      - "79"
     scriptarguments:
       verdict:
         simple: True Positive
@@ -1468,7 +1436,7 @@ tasks:
       {
         "position": {
           "x": -60,
-          "y": 5170
+          "y": 5000
         }
       }
     note: false
@@ -1556,7 +1524,7 @@ tasks:
       to:
       subject:
       body:
-        simple: 'Choose containment actions:'
+        simple: Do you want to perform containment using playbooks?
       methods: []
       format: ""
       bcc:
@@ -1633,7 +1601,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5675
+          "y": 5665
         }
       }
     note: false
@@ -2110,7 +2078,7 @@ tasks:
         complex:
           root: inputs.Country
       OktaSearch:
-        simple: "false"
+        simple: "true"
       QRadarSearchTime:
         simple: Last 1 days
       SIEMFailedLogonSearch:
@@ -2406,7 +2374,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 3860
+          "y": 3690
         }
       }
     note: false
@@ -2445,7 +2413,7 @@ tasks:
       {
         "position": {
           "x": -1230,
-          "y": 4680
+          "y": 4510
         }
       }
     note: false
@@ -2490,7 +2458,7 @@ tasks:
       {
         "position": {
           "x": -820,
-          "y": 4670
+          "y": 4500
         }
       }
     note: false
@@ -2542,7 +2510,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 3990
+          "y": 3820
         }
       }
     note: false
@@ -2574,7 +2542,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 4165
+          "y": 3995
         }
       }
     note: false
@@ -2584,7 +2552,7 @@ tasks:
       to:
       subject:
       body:
-        simple: 'Choose containment actions:'
+        simple: Do you want to perform containment using playbooks?
       methods: []
       format: ""
       bcc:
@@ -2677,7 +2645,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 4340
+          "y": 4170
         }
       }
     note: false
@@ -2730,7 +2698,7 @@ tasks:
       {
         "position": {
           "x": -1230,
-          "y": 4510
+          "y": 4340
         }
       }
     note: false
@@ -2762,7 +2730,7 @@ tasks:
       {
         "position": {
           "x": -1020,
-          "y": 4360
+          "y": 4190
         }
       }
     note: false
@@ -2819,7 +2787,7 @@ tasks:
       {
         "position": {
           "x": -820,
-          "y": 4510
+          "y": 4340
         }
       }
     note: false
@@ -2866,7 +2834,7 @@ tasks:
       {
         "position": {
           "x": -560,
-          "y": 4340
+          "y": 4170
         }
       }
     note: false
@@ -2890,14 +2858,53 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "31"
+      - "137"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 160,
-          "y": 5360
+          "y": 5190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: f7253592-fc4b-4d96-887c-dfc9f81c7da7
+    type: condition
+    task:
+      id: f7253592-fc4b-4d96-887c-dfc9f81c7da7
+      version: -1
+      name: Is Active Directory Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "31"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 5320
         }
       }
     note: false
@@ -2922,7 +2929,6 @@ view: |-
       "131_86_#default#": 0.65,
       "20_21_yes": 0.4,
       "20_22_#default#": 0.34,
-      "23_79_yes": 0.26,
       "35_21_#default#": 0.1,
       "35_22_yes": 0.7,
       "53_6_#default#": 0.11,
@@ -2933,7 +2939,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7185,
+        "height": 7175,
         "width": 2965,
         "x": -1230,
         "y": -1300
