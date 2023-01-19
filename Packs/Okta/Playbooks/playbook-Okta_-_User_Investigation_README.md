@@ -10,8 +10,8 @@ This playbook does not use any sub-playbooks.
 * Okta v2
 
 ### Scripts
-* Set
 * GetTime
+* Set
 * CountArraySize
 
 ### Commands
@@ -22,7 +22,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| UserEmail | User Email. |  | Optional |
+| UserEmail | The user email to search Okta logs. |  | Optional |
 | LoginCountry | The Country from which the user logged in. |  | Optional |
 
 ## Playbook Outputs
