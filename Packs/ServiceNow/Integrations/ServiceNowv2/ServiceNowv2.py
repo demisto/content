@@ -2452,7 +2452,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Type': EntryType.NOTE,
                 'Contents': {
                     'dbotIncidentClose': True,
-                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                    'closeNotes': ticket.get("close_notes"),
                     'closeReason': converts_state_close_reason(ticket.get("state"))
                 },
                 'ContentsFormat': EntryFormat.JSON
