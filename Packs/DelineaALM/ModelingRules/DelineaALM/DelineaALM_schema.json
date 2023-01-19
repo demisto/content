@@ -1,0 +1,8 @@
+{
+    "thycotic_software_secret_server_raw": {
+          "cefName": {
+            "type": "string",
+            "is_array": false
+          }
+    }
+}

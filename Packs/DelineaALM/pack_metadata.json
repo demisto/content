@@ -1,6 +1,6 @@
 {
     "name": "Delinea Account Lifecycle Manager",
-    "description": "Formly known as \"Thycotic Software Secret Server\", Delinea Account Lifecycle Manager is a ",
+    "description": "Formly known as \"Thycotic Account Lifecycle Manager\", Delinea Account Lifecycle Manager automates and streamlines service account governance to control service account sprawl.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
