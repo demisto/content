@@ -1,10 +1,10 @@
-This playbook creating an array called "Suspicious Elements", which is used to count potential security threats. The following elements can be added to the array:
+This playbook creates an array called "Suspicious Elements", which is used to count potential security threats. The following elements can be added to the array:
 
 - "IP Reputation" - Dbot Score is 2-3 
-- "Source geolocation" - Connection from unusual country 
--  Related to campaign - IP address related to campaign, based on TIM module
--  Hunting results - hunt for indicators related to the source IP and the related campaign returned results
--  XDR Alert search -XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after "Credential Access"
+- "Source geolocation" - Connection from an unusual country. 
+-  Related to campaign - IP address related to a campaign, based on the TIM module.
+-  Hunting results - Hunt for indicators related to the source IP and the related campaign returned results.
+-  XDR Alert search - XDR alerts related to the same username and endpoint, and to the MITRE tactics that comes after "Credential Access".
 
 The array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a "True Positive."
 
@@ -18,7 +18,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+Set
 
 ### Commands
 This playbook does not use any commands.
@@ -28,10 +28,10 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RelatedAlerts | Number of XDR Alerts that related to the same user or endpoint. |  | Optional |
+| RelatedAlerts | Number of XDR alerts that are related to the same user or endpoint. |  | Optional |
 | RelatedCampaign | Campaign related to the external IP. |  | Optional |
-| HuntResults |  determine whether hunting results exists.  the input value should be true or false. |  | Optional |
-| UnusualGeoLocation |  determine whether the RDP connection has made from unusual country. the input value should be true or false. |  | Optional |
+| HuntResults | Determine whether hunting results exists.  The input value should be true or false. |  | Optional |
+| UnusualGeoLocation | Determine whether the RDP connection was made from an unusual country. The input value should be true or false. |  | Optional |
 | IpReputation | The external IP reputation. |  | Optional |
 
 ## Playbook Outputs
