@@ -18,7 +18,7 @@ APP_NAME = 'ms-azure-sentinel'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-API_VERSION = '2021-04-01'
+API_VERSION = '2022-11-01'
 
 DEFAULT_AZURE_SERVER_URL = 'https://management.azure.com'
 
@@ -886,7 +886,27 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int):
+def fetch_incident_additional_info(client: AzureSentinelClient, incidents: list[dict], info_type: str,
+                                   method: str, results_key: str) -> list[dict]:
+    """Fetches additional info of an incident.
+
+    Args:
+        client: An AzureSentinelClient client.
+        incidents: An incidents array to fetch its additional info.
+        info_type: The type of the additional info.
+        method: The method to use to fetch the additional info.
+
+    Returns:
+        An array of the incident with its additional info.
+    """
+    for incident in incidents:
+        id_ = incident.get('ID')
+        incident[info_type] = client.http_request(method, f'incidents/{id_}/{info_type}').get(results_key)
+
+    return incidents
+
+
+def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int) -> tuple:
     """Fetching incidents.
     Args:
         first_fetch_time: The first fetch time.
@@ -930,6 +950,16 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
             'orderby': 'properties/incidentNumber asc',
         }
         raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+
+    additional_fetch = {'fetch_incident_alerts': {'method': 'POST', 'key': 'alerts', 'result_key': 'value'},
+                        'fetch_incident_entities': {'method': 'POST', 'key': 'entities', 'result_key': 'entities'},
+                        'fetch_incident_comments': {'method': 'GET', 'key': 'comments', 'result_key': 'value'},
+                        'fetch_incident_relations': {'method': 'GET', 'key': 'relations', 'result_key': 'value'}}
+    for fetch_incident in additional_fetch:
+        if demisto.params().get(fetch_incident):
+            raw_incidents = fetch_incident_additional_info(client, raw_incidents, additional_fetch[fetch_incident]['key'],
+                                                           additional_fetch[fetch_incident]['method'],
+                                                           additional_fetch[fetch_incident]['result_key'])
 
     return process_incidents(raw_incidents, last_fetch_ids, min_severity,
                              latest_created_time, last_incident_number)  # type: ignore[attr-defined]
