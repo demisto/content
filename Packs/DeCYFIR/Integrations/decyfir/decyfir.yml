@@ -12,15 +12,12 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
-  name: credentials
-  required: true
+- displaypassword: API Key
+  name: api_key
   type: 9
-- display: DeCYFIR API key
-  hidden: false
-  name: decyfir_api_key
   required: true
-  type: 0
+  hiddenusername: true
+  display: ''
 - display: Fetch incidents
   name: isFetch
   required: false
