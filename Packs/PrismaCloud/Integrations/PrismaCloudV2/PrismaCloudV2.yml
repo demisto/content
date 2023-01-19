@@ -29,6 +29,44 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: Maximum is limited to 200.
+  defaultvalue: '50'
+  display: Maximum number of incidents to fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: 3 days
+  display: First fetch time interval
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 20
+  display: 'Advanced: Time in minutes to look back when fetching incidents'
+  name: look_back
+  required: false
+  type: 0
+  section: Collect
+- display: Fetch only incidents matching this rule name
+  name: rule_name
+  required: false
+  type: 0
+- display: Fetch only incidents matching this policy name
+  name: policy_name
+  required: false
+  type: 0
+- display: Fetch only incidents with this severity
+  name: policy_severity
+  required: false
+  type: 0
+- display: Fetch only incidents matching this filters
+  name: filters
+  type: 0
+  required: false
+  additionalinfo: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command.'
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -37,7 +75,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   commands:
   - arguments:

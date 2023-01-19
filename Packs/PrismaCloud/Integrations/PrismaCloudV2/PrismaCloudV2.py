@@ -1,10 +1,13 @@
 from copy import deepcopy
 
 import urllib3
-from pytz import utc
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+MAX_INCIDENTS_TO_FETCH = 200
+FETCH_DEFAULT_TIME = '3 days'
+FETCH_LOOK_BACK_TIME = 20
 
 ''' CONSTANTS '''
 
@@ -115,12 +118,15 @@ class Client(BaseClient):
 
         self._http_request('POST', 'alert/reopen', json_data=data, headers=headers, resp_type='response')
 
-    def alert_search_request(self, time_range, filters: List[str], limit, offset, detailed):
+    def alert_search_request(self, time_range, filters: List[str], limit=None, offset=None, detailed=None,
+                             sort_by=None, page_token=None):
         params = assign_params(detailed=detailed)
         data = remove_empty_values_from_dict({'limit': limit,
                                               'offset': offset,
                                               'filters': handle_filters(filters),
                                               'timeRange': time_range,
+                                              'sortBy': sort_by,
+                                              'pageToken': page_token
                                               })
         demisto.info(f'Executing Prisma Cloud alert search with payload: {data}')
 
@@ -196,12 +202,12 @@ def change_timestamp_to_datestring_in_dict(readable_response: dict):
             readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT)
 
 
-def convert_date_to_unix(date_str):
+def convert_date_to_unix(date_str: str) -> int:
     """
     Convert the given string to milliseconds since epoch.
     """
-    date = dateparser.parse(date_str).replace(tzinfo=utc)
-    return int(date.timestamp() * 1000)
+    date = dateparser.parse(date_str, settings={"TIMEZONE": "UTC"})
+    return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
 
 
 def handle_time_filter(base_case: Dict[str, Any] = None, unit_value: str = None, amount_value: int = None, time_from: str = None,
@@ -245,9 +251,9 @@ def handle_filters(filters: List[str]):
     filters_to_send = []
     for filter_ in filters:
         split_filter = filter_.split('=')
-        filters_to_send.append({"name": split_filter[0],
-                                "operator": "=",
-                                "value": split_filter[1]})
+        filters_to_send.append({'name': split_filter[0],
+                                'operator': '=',
+                                'value': split_filter[1]})
     return filters_to_send
 
 
@@ -301,6 +307,124 @@ def calculate_offset(page_size: int, page_number: int) -> tuple[int, int]:
 
 
 ''' FETCH HELPER FUNCTIONS '''
+
+
+def get_filters(params: Dict[str, Any]) -> List[str]:
+    filters = argToList(params.get('filters'))
+
+    if rule_name := params.get('rule_name'):
+        filters.append(f'alertRule.name={rule_name}')
+    if policy_severity := params.get('policy_severity'):
+        filters.append(f'policy.severity={policy_severity}')
+    if policy_name := params.get('policy_name'):
+        filters.append(f'policy.name={policy_name}')
+
+    return filters
+
+
+def translate_severity(alert):
+    """
+    Translate alert severity to demisto
+    Might take risk grade into account in the future
+    """
+    severity = demisto.get(alert, 'policy.severity')
+    if severity == 'high':
+        return 3
+    if severity == 'medium':
+        return 2
+    if severity == 'low':
+        return 1
+    return 0
+
+
+def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, look_back: int):
+    """
+    Expires stored ids when their alert time will not be fetched in the next fetch.
+
+    Args:
+        fetched_ids: Dict from fetched ids to the epoch alert time from Prisma Cloud.
+        updated_last_run_time: epoch time for next fetch
+        look_back: minutes to add to the next fetch time
+
+    Returns:
+        The dict of fetched ids that their time is after the next fetch time.
+    """
+    if not fetched_ids:
+        return {}
+    cleaned_cache = {}
+
+    next_fetch_epoch = add_look_back(updated_last_run_time, look_back * 3)  # in case look_back will be increased
+
+    for fetched_id, alert_time in fetched_ids.items():
+        if alert_time > next_fetch_epoch:  # keep if it is later
+            cleaned_cache[fetched_id] = alert_time
+    return cleaned_cache
+
+
+def calculate_fetch_time_range(now: int, first_fetch: str, look_back: int, last_run_time: int = None):
+    if last_run_time:
+        last_run_time = add_look_back(int(last_run_time), look_back)
+    else:  # first fetch
+        last_run_time = convert_date_to_unix(first_fetch)
+
+    return {'type': 'absolute',
+            'value': {
+                'startTime': last_run_time,
+                'endTime': now
+            }}
+
+
+def add_look_back(last_run_epoch_time: int, look_back_minutes: int):
+    look_back_epoch = look_back_minutes * 60 * 1000
+    return last_run_epoch_time - look_back_epoch
+
+
+def fetch_request(client, fetched_ids, filters, limit, now, time_range):
+    response = client.alert_search_request(time_range=time_range, filters=filters, detailed='true',
+                                           sort_by=['alertTime:asc'])  # adding sort by 'id:asc' doesn't work
+    response_items = response.get('items', [])
+    updated_last_run_time = response_items[-1].get('alertTime') if response_items else now  # in epoch
+    incidents = filter_alerts(fetched_ids, response.get('items'), limit)
+
+    while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
+        response = client.alert_search_request(time_range=time_range, filters=filters, detailed='true',
+                                               sort_by=['alertTime:asc'], page_token=response.get('nextPageToken'))
+        response_items = response.get('items', [])
+        updated_last_run_time = response_items[-1].get('alertTime') if response_items else updated_last_run_time
+        incidents.extend(filter_alerts(fetched_ids, response_items, limit))
+
+    return incidents, fetched_ids, updated_last_run_time
+
+
+def filter_alerts(fetched_ids: Dict[str, int], response_items: List, limit: int):
+    incidents = []
+
+    for alert in response_items:
+        if alert.get('id') in fetched_ids:
+            demisto.debug(f'Fetched {alert.get("id")} already. Skipping it now.')
+            continue
+
+        demisto.debug(f'{alert.get("id")} has not been fetched yet. Processing it now.')
+        incidents.append(alert_to_incident_context(alert))
+        fetched_ids[alert.get('id')] = alert.get('alertTime')
+
+        if len(incidents) == limit:
+            break
+
+    return incidents
+
+
+def alert_to_incident_context(alert):
+    incident_context = {
+        'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
+        'occurred': timestamp_to_datestring(alert.get('alertTime'), DATE_FORMAT),
+        'severity': translate_severity(alert),
+        'rawJSON': json.dumps(alert)
+    }
+    demisto.debug(f'New PrismaCloud incident is: name: {incident_context["name"]}, occurred: '
+                  f'{incident_context["occurred"]}, severity: {incident_context["severity"]}.')
+    return incident_context
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -676,6 +800,14 @@ def main() -> None:
             return_results(commands_without_args[command](client))
         elif command in commands_with_args:
             return_results(commands_with_args[command](client, args))
+        elif command == 'fetch-incidents':
+            last_run = demisto.getLastRun()
+            incidents, fetched_ids, last_run_time = fetch_incidents(client, last_run, params)
+            demisto.incidents(incidents)
+            demisto.setLastRun({
+                'fetched_ids': fetched_ids,
+                'time': last_run_time
+            })
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
