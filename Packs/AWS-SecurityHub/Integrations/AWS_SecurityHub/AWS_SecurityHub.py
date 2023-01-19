@@ -806,18 +806,37 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]):
             lastUpdate: when was the last time we retrieved data
 
     Returns:
-
+        GetRemoteDataResponse object, which contain the incident or detection data to update.
     """
-    incident_id = args.get('id', '')
-    demisto.debug(f'Getting updated for remote incident {incident_id}')
-    last_update = args.get('lastUpdate')
-    demisto.debug(f'last update is {last_update}')
-    kwargs = generate_kwargs_for_get_findings(args)
-    response = client.get_findings(**kwargs)
-    findings = response.get('Findings', [{}])
-    demisto.debug(f'the findings are {findings}')
+    remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = remote_args.remote_incident_id
+
+    mirrored_data = {}
     entries = []
-    # for finding in findings:
+    demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
+                  f'and last_update: {remote_args.last_update}')
+
+    filters = {
+        'Id': [
+            {
+                'Comparison': 'EQUALS',
+                'Value': remote_incident_id
+            }
+        ]
+    }
+    response = client.get_findings(Filters=filters)
+    finding = response.get('Findings')[0]  # a list with one dict in it
+    mirrored_data = {
+        'Account ID': finding.get('AwsAccountId'),
+        'Occurred': finding.get('createdAt'),
+        'External Start Time': finding.get('FirstObservedAt'),
+        'Description': finding.get('Description'),
+        'Region': finding.get('Region'),
+        'Alert Id': finding.get('Id'),
+        'Title': finding.get('Title'),
+        'Severity': finding.get('Severity', {}).get('Normalized'),
+        '': ""
+    }  # TODO
 
 
 def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str], aws_sh_severity: str,
@@ -858,11 +877,14 @@ def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str],
         filters['WorkflowStatus'] = create_filters_list_dictionaries(statuses, 'EQUALS')
     if product_name:
         filters['ProductName'] = create_filters_list_dictionaries(product_name, 'EQUALS')
+
     demisto.debug(f'The filters are: {filters} \nEND OF FILTERS')
+
     response = client.get_findings(Filters=filters)
     findings = response.get('Findings')
     next_token = response.get('NextToken')
     demisto.debug(f'Findings are: {findings}')
+
     modified_incident_ids = []
     while findings:
         for finding in findings:
@@ -876,17 +898,16 @@ def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str],
             workflow_status = finding.get('Workflow', {}).get('Status', None)
             if confidence or criticality or related_findings or severity_normalized or finding_types or \
                     user_defined_fields or verification_state or workflow_status:
-                demisto.debug(f'A new incident id: {finding.get("Id")} ** with the product name {finding.get("ProductName")}\n')
+                demisto.debug(f'A new incident id: {finding.get("Id")}\n')
                 modified_incident_ids.append(finding.get('Id'))
             else:
                 demisto.debug('No important changes\n')
         if next_token:
             demisto.debug(f'In pagination part. The next token is {next_token}\nEND TOKEN')
             response = client.get_findings(Filters=filters, NextToken=next_token)
-            demisto.debug('After call in pagination.')
             findings = response.get('Findings')
-            demisto.debug(f'The new next token is {next_token}')
             next_token = response.get('NextToken')
+            demisto.debug(f'The new next token is {next_token}')
         else:
             demisto.debug('End of loop')
             findings = None
