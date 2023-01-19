@@ -119,7 +119,6 @@ class Client(BaseClient):
             return IncidentSeverity.UNKNOWN
 
     def request_decyfir_api(self, url_path, category, category_type, api_param_query):
-
         response = self._http_request(
             full_url=f"{url_path}" + f"/{category}?" + f"type={category_type}" + api_param_query,
             resp_type='response',
@@ -180,7 +179,6 @@ class Client(BaseClient):
     def prepare_incident_json(self, source_brand: str, alert_type: str, alert_subtype: str, name: str, date_val: str,
                               severity: int, details: str, record_id: str) -> Dict[str, Any]:
 
-        # incident_owner = "Administrator"
         occurred_date = dateparser.parse(date_val)
         occurred = occurred_date.strftime(DATE_FORMAT) if isinstance(occurred_date, datetime) else None
 
@@ -188,7 +186,6 @@ class Client(BaseClient):
             "type": "" + f"{alert_type}",
             "name": name,
             "occurred": occurred,
-            # "owner": incident_owner,
             "severity": severity,
             "details": details,
             "rawJSON": details,
@@ -266,8 +263,6 @@ class Client(BaseClient):
 
     def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents):
         try:
-            # json_val = json.loads(decyfir_alerts_incidents)
-
             return_data: List[dict] = []
 
             # Attack Surface
@@ -382,19 +377,18 @@ class Client(BaseClient):
 # commands
 # This is the call made when pressing the integration Test button.
 def test_module(client, decyfir_api_key):
+
     url = f"{PROD_API_PATH}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" \
           + "&size=1" + "&key=" + f"{decyfir_api_key}"
-    response = client._http_request(
-        full_url=url,
-        method='GET',
-        resp_type='response')
+
+    response = client._http_request(full_url=url, method='GET', resp_type='response')
 
     if response.status_code == 200:
         return 'ok'
     elif response.status_code == 401 or response.status_code == 403:
         return 'Not Authorized'
     else:
-        return f"Error_code: {response.status_code}" + ", Please contact the DeCYFIR team to assist you further on this."
+        return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
 
 
 def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_type, max_fetch):
@@ -427,7 +421,6 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-
     # get the service API url
     params = demisto.params()
     base_url = urljoin(params['url'], '/api/v1/suffix')
