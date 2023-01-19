@@ -19,7 +19,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 500
 DEFAULT_INDICATORS_THRESHOLD = 65
 
-PROD_API_PATH: str = 'https://decyfir.cyfirma.com/core/api-ua/v2/alerts'
+# PROD_API_PATH: str = 'https://decyfir.cyfirma.com/core/api-ua/v2/alerts'
+API_PATH_SUFFIX: str = '/core/api-ua/v2/alerts'
 
 LABEL_DECYFIR = "DeCYFIR"
 LABEL_ATTACK_SURFACE = "Attack Surface"
@@ -118,9 +119,9 @@ class Client(BaseClient):
         else:
             return IncidentSeverity.UNKNOWN
 
-    def request_decyfir_api(self, url_path, category, category_type, api_param_query):
+    def request_decyfir_api(self, category, category_type, api_param_query):
         response = self._http_request(
-            full_url=f"{url_path}" + f"/{category}?" + f"type={category_type}" + api_param_query,
+            url_suffix=f"{API_PATH_SUFFIX}" + f"/{category}?" + f"type={category_type}" + api_param_query,
             resp_type='response',
             method='GET')
 
@@ -128,7 +129,6 @@ class Client(BaseClient):
             return response.json() if response.content else []
 
     def get_decyfir_data(self, after_val: int, decyfir_api_key: str, incident_type: str, max_fetch):
-        endpoint_env = f"{PROD_API_PATH}"
 
         size = max_fetch if max_fetch else MAX_INCIDENTS_TO_FETCH
 
@@ -148,30 +148,21 @@ class Client(BaseClient):
             for type_ in incident_types:
                 if type_ == LABEL_ATTACK_SURFACE:
                     for cat_type in VAR_ATTACK_SURFACES_SUB_TYPES:
-                        return_data[cat_type] = self.request_decyfir_api(endpoint_env,
-                                                                         VAR_ATTACK_SURFACE,
-                                                                         cat_type,
-                                                                         api_param_query)
+                        return_data[cat_type] = self.request_decyfir_api(VAR_ATTACK_SURFACE, cat_type, api_param_query)
 
                 if type_ == LABEL_DIGITAL_RISK_IM_IN:
                     for cat_type in VAR_IMPERSONATION_AND_INFRINGEMENT_SUB_TYPE:
-                        return_data[cat_type] = self.request_decyfir_api(endpoint_env,
-                                                                         VAR_IMPERSONATION_AND_INFRINGEMENT,
-                                                                         cat_type,
+                        return_data[cat_type] = self.request_decyfir_api(VAR_IMPERSONATION_AND_INFRINGEMENT, cat_type,
                                                                          api_param_query)
 
                 if type_ == LABEL_DIGITAL_RISK_DB_WM:
                     for cat_type in VAR_DATA_BREACH_AND_WEB_MONITORING_SUB_TYPES:
-                        return_data[cat_type] = self.request_decyfir_api(endpoint_env,
-                                                                         VAR_DATA_BREACH_AND_WEB_MONITORING,
-                                                                         cat_type,
+                        return_data[cat_type] = self.request_decyfir_api(VAR_DATA_BREACH_AND_WEB_MONITORING, cat_type,
                                                                          api_param_query)
 
                 if type_ == LABEL_DIGITAL_RISK_S_PE:
                     for cat_type in VAR_SOCIAL_AND_PUBLIC_EXPOSURE_SUB_TYPES:
-                        return_data[cat_type] = self.request_decyfir_api(endpoint_env,
-                                                                         VAR_SOCIAL_AND_PUBLIC_EXPOSURE,
-                                                                         cat_type,
+                        return_data[cat_type] = self.request_decyfir_api(VAR_SOCIAL_AND_PUBLIC_EXPOSURE, cat_type,
                                                                          api_param_query)
 
         return return_data
@@ -377,11 +368,10 @@ class Client(BaseClient):
 # commands
 # This is the call made when pressing the integration Test button.
 def test_module(client, decyfir_api_key):
-
-    url = f"{PROD_API_PATH}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" \
+    url = f"{API_PATH_SUFFIX}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" \
           + "&size=1" + "&key=" + f"{decyfir_api_key}"
 
-    response = client._http_request(full_url=url, method='GET', resp_type='response')
+    response = client._http_request(url_suffix=url, method='GET', resp_type='response')
 
     if response.status_code == 200:
         return 'ok'
@@ -418,15 +408,10 @@ def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_typ
 
 
 def main():  # pragma: no cover
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
-    # get the service API url
+
     params = demisto.params()
-    base_url = urljoin(params['url'], '/api/v1/suffix')
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
-    decyfir_api_key: str = params.get('decyfir_api_key')
+    decyfir_url = params['url'].rstrip('/')
+    decyfir_api_key = params.get('api_key').get("password")
     incident_type: str = params.get('incidentType')
     max_fetch: str = params.get('max_fetch')
     verify_certificate = not params.get('insecure', False)
@@ -437,9 +422,8 @@ def main():  # pragma: no cover
     demisto.info(f'Command being called is {demisto.command()}')
     try:
         client = Client(
-            base_url=base_url,
+            base_url=decyfir_url,
             verify=verify_certificate,
-            auth=(username, password),
             proxy=proxy)
 
         if demisto.command() == 'test-module':
