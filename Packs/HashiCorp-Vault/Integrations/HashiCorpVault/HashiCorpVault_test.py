@@ -17,7 +17,7 @@ mock_role_data = {'data': {'credential_type': 'iam_user', 'role_arns': 'test'}}
 mock_aws_credentials = {'data': {'access_key': 'test', 'secret_key': 'test', 'security_token': 'test'}}
 mock = Mock()
 mock.side_effect = iter(
-    [{}, mock_res, {}, mock_res, mock_role_data, {}, mock_res, mock_role_data, mock_aws_credentials])
+    [{}, mock_res, {}, mock_res, mock_role_data, mock_aws_credentials, mock_res])
 
 
 def test_send_request(mocker):
@@ -35,6 +35,10 @@ def test_get_aws_secrets(mocker):
     assert mock.call_args.args[0] == 'test/roles'
     get_aws_secrets('test', '999', False, None)
     assert mock.call_args.args[0] == 'test/roles/1'
+    # test aws_roles_list
+    assert get_aws_secrets('test', '999', False, ['2', '1']) == [
+        {'name': '1', 'password': 'test@@@test', 'user': 'test'}]
+    assert get_aws_secrets('test', '999', False, ['2']) == []
 
 
 def test_get_headers():
