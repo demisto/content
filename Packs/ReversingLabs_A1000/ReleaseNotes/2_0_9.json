@@ -1,4 +1,0 @@
-{
-  "breakingChanges":true,
-  "breakingChangesNotes":"This version adds a new optional ticloud argument to the reversinglabs-a1000-advanced-search command."
-}
