@@ -20,10 +20,6 @@ def test_fetch_incidents(requests_mock, mocker):
     date_format = '%Y-%m-%dT%H:%M:%SZ'
     mock_response = util_load_json('test_data/search_alerts.json')
 
-    # requests_mock.get(
-    #     'https://test.com/api/v1/get_alerts?alert_status=ACTIVE', json=mock_response['alerts'])
-    #
-
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
