@@ -2077,8 +2077,9 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not argToBoolean(params.get('insecure', False))
     proxy: bool = params.get('proxy', False)
-    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
-    private_key: str = params.get('private_key', '')
+    certificate_thumbprint: str = params.get('creds_certificate', {}).get(
+        'identifier', '') or params.get('certificate_thumbprint', '')
+    private_key: str = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
     managed_identities_client_id: Optional[str] = params.get('managed_identities_client_id')
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
 
