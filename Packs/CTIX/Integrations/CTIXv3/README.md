@@ -1,20 +1,22 @@
-This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
-This integration was integrated and tested with version xx of CTIX v3 Beta
+This is example Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
+This integration was integrated and tested with version 3.0.0 of CTIX
 
-## Configure CTIX v3 Beta on Cortex XSOAR
+## Configure CTIX on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CTIX v3 Beta.
+2. Search for CTIX.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Endpoint URL | Enter the endpoint URL of your CTIX Instance, e.g. https://example.cyware.com/ctixapi/. | True |
+    | Endpoint URL | Enter the endpoint URL of your CTIX Instance. | True |
     | Access Key | Enter the Access Key from the CTIX application. | True |
     | Secret Key | Enter the Secret Key from the CTIX application. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+    | Fetch incidents |  | False |
+    | Incidents Fetch Interval |  | False |
+    | Incident type |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -33,7 +35,7 @@ Create new tag in the ctix platform
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tag_name | New tag's name. | Required | 
-| color | New tag's name for the defined colour. If no colour selected, colour grey will be given. Possible values are: blue, purple, orange, red, green, yellow, turquoise, pink, light-red, grey. | Required | 
+| color_code | New tag's hex colour code e.g #111111. | Required | 
 
 
 #### Context Output
@@ -47,6 +49,22 @@ Create new tag in the ctix platform
 | CTIX.Tag.created | number | Created at timestamp | 
 | CTIX.Tag.modified | number | Modified at timestamp | 
 
+#### Command Example
+```!ctix-create-tag tag_name=xsoar_test_trial color_code=#95A1B1```
+
+#### Context Example
+```json
+{
+    "colour_code": null,
+    "created": 1652077948,
+    "created_by": "40ab0f84-fb39-4444-95b2-cd155f574aa2",
+    "id": "47662c77-b419-419c-9bcf-420e05b01067",
+    "modified": 1652077948,
+    "modified_by": "40ab0f84-fb39-4444-95b2-cd155f574aa2",
+    "name": "xsoar_test_temp",
+    "type": "manual"
+}
+```
 ### ctix-get-tags
 ***
 Get paginated list of tags
@@ -75,6 +93,31 @@ Get paginated list of tags
 | CTIX.Tag.created | number | Created at timestamp | 
 | CTIX.Tag.modified | number | Modified at timestamp | 
 
+#### Command Example
+```!ctix-get-tags```
+
+#### Context Example
+```json
+{"next": "tags/?page=2&page_size=1&AccessID=sasfafs-asasvsfasf-vasvasf&Expires=1652078371&Signature=jndjaksbdakbsjdkabscbkjb",
+ "page_size": 1,
+ "previous": null,
+ "results": [{"colour_code": null,
+              "created": 1652077948,
+              "created_by": {"email": "dummy.account@test.com",
+                             "first_name": "dummy",
+                             "id": "40ab0f84-fb39-4444-95b2-cd155f574aa2",
+                             "last_name": "account"},
+              "id": "47662c77-b419-419c-9bcf-420e05b01067",
+              "modified": 1652077948,
+              "modified_by": {"email": "dummy.account@test.com",
+                              "first_name": "dummy",
+                              "id": "40ab0f84-fb39-4444-95b2-cd155f574aa2",
+                              "last_name": "account"},
+              "name": "xsoar_test_temp",
+              "type": "manual"}],
+ "total": 10}
+```
+
 ### ctix-delete-tag
 ***
 Delete a tag with given tag_name
@@ -96,6 +139,13 @@ Delete a tag with given tag_name
 | --- | --- | --- |
 | CTIX.DeleteTag.result | string | Status | 
 
+#### Command Example
+```!ctix-delete-tag tag_name=xsoar_test_trial```
+
+#### Context Example
+```json
+{"result": "Action Successfully Executed"}
+```
 ### ctix-allowed-iocs
 ***
 Adds list of same type of iocs to allowed
@@ -118,8 +168,26 @@ Adds list of same type of iocs to allowed
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CTIX.Details.invalid | unknown | Invalid iocs sent in request | 
-| CTIX.Details.new_created | unknown | List of iocs added to allowed | 
+| CTIX.Details.new_created | unknown | List of iocs added to whitelist | 
 | CTIX.Details.already_exists | unknown | List of iocs already existing | 
+
+
+#### Command Example
+```!ctix-allowed-iocs reason=test type="ipv4-addr" values=x.x.x.x,x.x.xx.x```
+
+#### Context Example
+```json
+{
+		"details":{
+			"already_exists": [
+				"x.x.x.x",
+				"x.x.xx.x"
+			],
+			"invalid": [],
+			"new_created": []
+		}
+}
+```
 
 ### ctix-get-allowed-iocs
 ***
@@ -143,17 +211,33 @@ get paginated list of allowed iocs
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CTIX.IOC.id | string | ID of the object | 
-| CTIX.IOC.include_emails | boolean | If enabled then the emails to the corresponding emails will be allowed | 
-| CTIX.IOC.include_sub_domains | boolean | If enabled then the emails to the corresponding sub domains will be allowed | 
-| CTIX.IOC.include_urls | boolean | If enabled then the emails to the corresponding urls will be allowed | 
+| CTIX.IOC.include_emails | boolean | If enabled then the emails to the corresponding emails will be whitelisted | 
+| CTIX.IOC.include_sub_domains | boolean | If enabled then the emails to the corresponding sub domains will be whitelisted | 
+| CTIX.IOC.include_urls | boolean | If enabled then the emails to the corresponding urls will be whitelisted | 
 | CTIX.IOC.type | string | Type of the ioc | 
 | CTIX.IOC.value | string | Value of the ioc | 
 | CTIX.IOC.created | number | Created at timestamp | 
 | CTIX.IOC.modified | number | Modified at timestamp | 
 
+#### Command Example
+```!ctix-get-allowed-iocs q=type=indicator```
+
+#### Context Example
+```json
+{"next": "allowed/?page=2&page_size=1", "page_size": 1, "previous": null, 
+	"results": [{"created": 1652084983, "created_by": {"email": 
+	"dumy.account@example.com", "first_name": "dumy", "id": 
+	"40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "follow": 
+	true, "id": "2df4a0ad-b1dd-4a4c-bf71-dcdefce0dcf9", "include_emails": false, 
+	"include_subdomains": false, "include_urls": false, "modified": 1652097309, 
+	"modified_by": {"email": "dummt.acount@example.com", "first_name": "", "id": 
+	"4a5f744c-800a-4fcd-be06-53f4b1b8f966", "last_name": ""}, "type": 
+	"ipv4-addr", "value": "x.x.x.x"}], "total": 5}
+```
+
 ### ctix-remove-allowed-ioc
 ***
-Removes a allowed ioc with given id
+Removes a alloweded ioc with given id
 
 
 #### Base Command
@@ -171,6 +255,16 @@ Removes a allowed ioc with given id
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | details | string | Operation result | 
+
+#### Command Example
+```!ctix-remove-allowed-ioc ids=7a33a7ac-ab54-412f-a725-f35c208a54ea```
+
+#### Context Example
+```json
+{
+	"details": "Action applied succesfully"
+}
+```
 
 ### ctix-get-threat-data
 ***
@@ -207,7 +301,7 @@ Command for querying and listing threat data
 | CTIX.ThreatData.is_reviewed | boolean | Is reviewed | 
 | CTIX.ThreatData.is_revoked | boolean | Is revoked | 
 | CTIX.ThreatData.is_watchlist | boolean | Is Watchlist | 
-| CTIX.ThreatData.is_whitelisted | boolean | Is allowed | 
+| CTIX.ThreatData.is_whitelisted | boolean | Is alloweded | 
 | CTIX.ThreatData.modified | boolean | When the indicator modified | 
 | CTIX.ThreatData.name | boolean | Name of the indicator | 
 | CTIX.ThreatData.risk_severity | boolean | risk severity of the indicator | 
@@ -218,6 +312,59 @@ Command for querying and listing threat data
 | CTIX.ThreatData.tlp | string | TLP of the indicator | 
 | CTIX.ThreatData.type | string | Type of the IOC | 
 | CTIX.ThreatData.valid_from | number | Date from which IOC is valid | 
+
+#### Command Example
+```!ctix-get-threat-data query=type=indicator```
+
+#### Context Example
+```json
+{
+		"next": null,
+		"page_size": 10,
+		"previous": null,
+		"results": [
+			{"analyst_score": null,
+				 "analyst_tlp": null,
+				 "confidence_score": 50,
+				 "confidence_type": "ctix",
+				 "country": null,
+				 "created": 1652081902,
+				 "ctix_created": 1652081903,
+				 "ctix_modified": 1652081903,
+				 "first_seen": null,
+				 "id": "1ff2a18a-0574-4015-bbec-bc7692dccb14",
+				 "indicator_type": "domain-name",
+				 "ioc_type": "domain-name",
+				 "is_actioned": false,
+				 "is_deprecated": false,
+				 "is_false_positive": false,
+				 "is_reviewed": false,
+				 "is_revoked": false,
+				 "is_watchlist": false,
+				 "is_whitelisted": false,
+				 "last_seen": null,
+				 "modified": 1652081902,
+				 "name": "example.com",
+				 "null": [],
+				 "primary_attribute": null,
+				 "published_collections": [],
+				 "risk_severity": "UNKNOWN",
+				 "source_collections": [{"id": "1981f5f6-49d4-4cad-97b7-8b2d276d2956",
+										 "name": "dummy"}],
+				 "source_confidence": "HIGH",
+				 "sources": [{"id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
+							  "name": "dummy",
+							  "source_type": "RSS_FEED"}],
+				 "sub_type": "value",
+				 "subscriber_collections": [],
+				 "subscribers": [],
+				 "tags": [],
+				 "tlp": "AMBER",
+				 "type": "indicator",
+				 "valid_from": 1652081902,
+				 "valid_until": null}],
+	"total": 1}
+```
 
 ### ctix-get-saved-searches
 ***
@@ -231,8 +378,8 @@ Saved Search listing api with pagination
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page from where to start. | Optional | 
-| page_size | page size of the result. | Optional | 
+| page | page. | Optional | 
+| page_size | page size. | Optional | 
 
 
 #### Context Output
@@ -240,15 +387,52 @@ Saved Search listing api with pagination
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CTIX.SavedSearch.id | string | ID of the object | 
-| CTIX.SavedSearch.editable | boolean | editable object details | 
-| CTIX.SavedSearch.is_threat_data_search | boolean | is threat data search | 
-| CTIX.SavedSearch.name | string | name of the IOC | 
-| CTIX.SavedSearch.order | number | order details | 
-| CTIX.SavedSearch.pinned | boolean | Pinned details | 
-| CTIX.SavedSearch.query | string | CQL used | 
-| CTIX.SavedSearch.shared_type | string | shared type | 
-| CTIX.SavedSearch.type | string | type of the object | 
-| CTIX.SavedSearch.meta_data | unknown | meta data of the object | 
+| CTIX.SavedSearch.editable | boolean |  | 
+| CTIX.SavedSearch.is_threat_data_search | boolean |  | 
+| CTIX.SavedSearch.name | string |  | 
+| CTIX.SavedSearch.order | number |  | 
+| CTIX.SavedSearch.pinned | boolean |  | 
+| CTIX.SavedSearch.query | string |  | 
+| CTIX.SavedSearch.shared_type | string |  | 
+| CTIX.SavedSearch.type | string |  | 
+| CTIX.SavedSearch.meta_data | unknown |  | 
+
+#### Command Example
+```!ctix-get-saved-searches```
+
+#### Context Example
+```json
+{
+	"next": null,
+	"page_size": 10,
+	"previous": null,
+	"results": [
+	  {
+		"created_by": {
+		  "email": "system.default@example.com",
+		  "first_name": "System",
+		  "id": "e99b5f93-4ae8-4560-a848-a4fbae3f4f26",
+		  "last_name": "Default"
+		},
+		"description": null,
+		"editable": false,
+		"id": "d5b54bc7-3b3f-424b-b08d-5e8cf746e998",
+		"is_threat_data_search": true,
+		"meta_data": null,
+		"name": "Indicator",
+		"order": 0,
+		"pinned": false,
+		"query": "type =indicator",
+		"shared_type": "global",
+		"shared_users": [
+		  
+		],
+		"type": "cql"
+	  }
+	],
+	"total": 1
+}
+```
 
 ### ctix-get-server-collections
 ***
@@ -262,8 +446,8 @@ Source Collection listing api with pagination
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page of the result. | Optional | 
-| page_size | page size of the result. | Optional | 
+| page | page. | Optional | 
+| page_size | page size. | Optional | 
 
 
 #### Context Output
@@ -276,9 +460,21 @@ Source Collection listing api with pagination
 | CTIX.ServerCollection.is_active | boolean | Object if active or not | 
 | CTIX.ServerCollection.is_editable | boolean | Object if editable or not | 
 | CTIX.ServerCollection.polling | boolean | Object polling is enabled or not | 
-| CTIX.ServerCollection.type | string | Object type | 
+| CTIX.ServerCollection.type | string | Object type  | 
 | CTIX.ServerCollection.description | string | description of the object | 
 | CTIX.ServerCollection.created | number | Created timestamp | 
+
+#### Command Example
+```!ctix-get-server-collections```
+
+#### Context Example
+```json
+{"next": "collection/?page=2&page_size=1", "previous": null, "page_size": 1,
+	"total": 7, "results": [{"id": "83b5fd74-8ca0-4f28-a173-1d6863b2acb4",
+	"name": "collection", "description": "with description", "is_active": true,
+	"type": "DATA_FEED", "is_editable": true, "polling": false, "inbox": true, 
+	"created": 1652080268, "has_subscribed": null}], "subscriber_name": ""}
+```
 
 ### ctix-get-actions
 ***
@@ -292,10 +488,10 @@ Enrichment tools listing API
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page of the result. | Optional | 
-| page_size | page size of the result. | Optional | 
-| object_type | object type of the indicator. | Optional | 
-| action_type | action type of the indicator. | Optional | 
+| page | page. | Optional | 
+| page_size | page size. | Optional | 
+| object_type | object type. | Optional | 
+| action_type | action type. | Optional | 
 
 
 #### Context Output
@@ -305,14 +501,52 @@ Enrichment tools listing API
 | CTIX.Action.action_name | string | Name of the Action | 
 | CTIX.Action.action_type | unknown | Description of the action | 
 | CTIX.Action.actioned_on | number | Timestamp of when the action was taken  | 
-| CTIX.Action.app_name | string | Name of the app for the action in CTIX | 
-| CTIX.app_type | string | Type of the app | 
+| CTIX.Action.app_name | string | Name of the app for the action | 
+| CTIX.app_type | string | Type of the app  | 
 | CTIX.Action.id | string | ID of the action | 
 | CTIX.Action.object_type | string | Type of the action | 
 
+#### Command Example
+```!ctix-get-actions action_type=manual object_type=indicator```
+
+#### Context Example
+```json
+{
+	"next": "actions/?page=2&page_size=1&actions_type=manual&object_type=indicator",
+	"page_size": 1,
+	"previous": null,
+	"results": [
+	  {
+		"action_name": "Update Analyst Score",
+		"action_type": "manual",
+		"actioned_by": {
+		  "email": "dummy.email@test.com",
+		  "first_name": "test",
+		  "id":"40ab0f84-fb39-4444-95b2-cd155f574aa2",
+		  "last_name": "account"
+		},
+		"actioned_on": 1651646873,
+		"app_name": "CTIX",
+		"app_response": {
+		  
+		},
+		"app_type": "ctix",
+		"id": "e8fe8d27-6329-4c0b-a3c0-be104be4de55",
+		"object_id": "19176d96-716d-48aa-af15-dfeff22e72e2",
+		"object_type": "indicator",
+		"rule_id": null,
+		"rule_name": null,
+		"source_id": null,
+		"tool": null
+	  }
+	],
+	"total": 38459
+  }
+```
+
 ### ctix-add-indicator-as-false-positive
 ***
-Add indicators as false positive in CTIX
+ 
 
 
 #### Base Command
@@ -331,6 +565,14 @@ Add indicators as false positive in CTIX
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CTIX.IndicatorFalsePositive.message | unknown | Indicator change result | 
+
+#### Command Example
+```!ctix-add-indicator-as-false-positive object_ids=19176d96-716d-48aa-af15-dfeff22e72e2,531e47a6-d7cd-47be-ae21-a3260518d4a5 object_type=indicator```
+
+#### Context Example
+```json
+{"message":"Action Successfully Executed"}
+```
 
 ### ctix-ioc-manual-review
 ***
@@ -354,6 +596,16 @@ Adds ioc to manual review bulk api
 | --- | --- | --- |
 | CTIX.IOCManualReview.message | unknown | IOC Manual Review result | 
 
+#### Command Example
+```!ctix-ioc-manual-review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator```
+
+#### Context Example
+```json
+{
+    "message": "Action Successfully Executed"
+}
+```
+
 ### ctix-deprecate-ioc
 ***
 Deprecate ioc bulk api
@@ -375,6 +627,16 @@ Deprecate ioc bulk api
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CTIX.DeprecateIOC | unknown | Result of the IOC deprecation request | 
+
+#### Command Example
+```!ctix-deprecate-ioc object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator```
+
+#### Context Example
+```json
+{
+    "message": "Action Successfully Executed"
+}
+```
 
 ### ctix-add-analyst-tlp
 ***
@@ -399,6 +661,16 @@ Add Analyst TLP
 | --- | --- | --- |
 | CTIX.AddAnalystTLP | unknown | Result of the addition of analyst TLP | 
 
+#### Command Example
+```!ctix-add-analyst-tlp object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator data={\"analyst_tlp\":\"GREEN\"}```
+
+#### Context Example
+```json
+{
+    "message": "Action Successfully Executed"
+}
+```
+
 ### ctix-add-analyst-score
 ***
 Add Analyst Score for a Threat data
@@ -421,6 +693,16 @@ Add Analyst Score for a Threat data
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CTIX.AddAnalystScore | unknown | Result of adding analyst score to threat data | 
+
+#### Command Example
+```!ctix-add-analyst-score data={"analyst_score":10} object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator```
+
+#### Context Example
+```json
+{
+    "message": "Action Successfully Executed"
+}
+```
 
 ### ctix-saved-result-set
 ***
@@ -462,7 +744,7 @@ Saved Result Set
 | CTIX.SavedResultSet.is_reviewed | boolean | Whether the indicator reviewed or not  | 
 | CTIX.SavedResultSet.is_revoked | boolean | Whether the indicator is revoked or not | 
 | CTIX.SavedResultSet.is_watchlist | boolean | Whether the indicator is under watchlist or not | 
-| CTIX.SavedResultSet.is_whitelisted | boolean | Whether the indicator is allowed or not | 
+| CTIX.SavedResultSet.is_whitelisted | boolean | Whether the indicator is whitelisted or not | 
 | CTIX.SavedResultSet.last_seen | date | Timestamp of the when the IOC was last seen | 
 | CTIX.SavedResultSet.modified | date | Timestamp of the when the IOC was modified | 
 | CTIX.SavedResultSet.name | string | Name of the indicator | 
@@ -481,6 +763,30 @@ Saved Result Set
 | CTIX.SavedResultSet.type | unknown | Type of the IOC | 
 | CTIX.SavedResultSet.valid_from | unknown | Timestamp from when the IOC is valid | 
 | CTIX.SavedResultSet.valid_until | unknown | Timestamp till then the IOC is valid | 
+
+#### Command Example
+```!ctix-saved-result-set label_name=test query=type=indicator```
+
+#### Context Example
+```json
+{"next": "threat-data/list/?page=2&page_size=1", "page_size": 1, "previous": 
+	null, "results": [{"analyst_score": null, "analyst_tlp": null, 
+	"confidence_score": null, "confidence_type": "ctix", "country": null, 
+	"created": 1652111918, "ctix_created": 1652111957, "ctix_modified": 
+	1652111957, "first_seen": null, "id": 
+	"670afacb-2f72-42fe-84cc-b2022ba6a7ed", "indicator_type": null, "ioc_type": 
+	null, "is_actioned": false, "is_deprecated": false, "is_false_positive": 
+	false, "is_reviewed": false, "is_revoked": false, "is_watchlist": false, 
+	"is_whitelisted": false, "last_seen": null, "modified": 1652111949, "name": 
+	"Test12344", "null": [], "primary_attribute": null, "published_collections": 
+	[], "risk_severity": null, "source_collections": [{"id": 
+	"32b98724-8625-4af2-ad83-43b4b5c50885", "name": "Test12344"}], 
+	"source_confidence": "NONE", "sources": [{"id": 
+	"5968d895-424f-4271-a1d3-2b01041a17bb", "name": "Test12344", "source_type": 
+	"WEB_SCRAPPER"}], "sub_type": null, "subscriber_collections": [], 
+	"subscribers": [], "tags": [], "tlp": "AMBER", "type": "report", 
+	"valid_from": null, "valid_until": null}], "total": 353243}
+```
 
 ### ctix-add-tag-indicator
 ***
@@ -508,6 +814,16 @@ Adding Tag to Indicator
 | --- | --- | --- |
 | CTIX.TagUpdation.meesage | unknown | Result of the add indicator tag request | 
 
+#### Command Example
+```!ctix-add-tag-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372```
+
+#### Context Example
+```json
+{
+    "message": "Action Successfully Executed"
+}
+```
+
 ### ctix-remove-tag-from-indicator
 ***
 Remove Tag From Indicator
@@ -533,6 +849,16 @@ Remove Tag From Indicator
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CTIX.TagUpdation.message | unknown | Result of the remove indicator tag request | 
+
+#### Command Example
+```!ctix-remove-tag-from-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372```
+
+#### Context Example
+```json
+{
+    "message": "Action Successfully Executed"
+}
+```
 
 ### ctix-search-for-tag
 ***
@@ -563,6 +889,21 @@ Search for tag
 | CTIX.SearchTag.modified_by | unknown | Details of the person who modified the tag | 
 | CTIX.SearchTag.name | unknown | Name of the tag | 
 | CTIX.SearchTag.type | unknown | type of the tag | 
+
+#### Command Example
+```!ctix-search-for-tag q=xsoar_test_trial```
+
+#### Context Example
+```json
+{"next": "tags/?page=2&page_size=1", "page_size": 1, "previous": null, 
+	"results": [{"colour_code": null, "created": 1652113918, "created_by": 
+	{"email": "dummy.account@example.com", "first_name": "dummy", "id": 
+	"40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "id": 
+	"68981db8-6deb-41f0-9727-74ad81cf47b2", "modified": 1652113918, 
+	"modified_by": {"email": "dummy.account@example.com", "first_name": 
+	"dummy", "id": "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": 
+	"account"}, "name": "xsoar_test", "type": "manual"}], "total": 39893}
+```
 
 ### ctix-get-indicator-details
 ***
@@ -621,6 +962,27 @@ Get Indicator Details
 | CTIX.IndicatorDetails.valid_from | number | Timestamp of the indicator from then it was valid | 
 | CTIX.IndicatorDetails.valid_until | unknown | Timestamp of the indicator till  | 
 
+#### Command Example
+```!ctix-get-indicator-details object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+
+#### Context Example
+```json
+{"aliases": null, "analyst_description": null, "analyst_score": null, 
+ "analyst_tlp": null, "asn": null, "attribute_field": "value", 
+ "attribute_value": "x.x.x.x", "base_type": "sdo", "confidence_score": 
+ 18, "confidence_type": "CTIX", "country": "Netherlands", "created": 
+ 1651648700, "ctix_created": 1651648700, "ctix_modified": 1652113922, 
+ "ctix_score": 18, "ctix_tlp": null, "defang_analyst_description": null, 
+ "description": null, "fang_analyst_description": null, "first_seen": null, 
+ "last_seen": null, "modified": 1651648700, "name": "x.x.x.x", 
+ "pattern": "[ipv4-addr:value = x.x.x.x]", "pattern_type": "stix", 
+ "pattern_version": "2.1", "sources": [{"id": 
+ "e941f6fb-387b-452c-b77d-b5b05c5e9df2", "name": "Dummy", 
+ "source_type": "API_FEEDS"}], "sub_type": "ipv4-addr", "tld": "", "tlp": 
+ "WHITE", "type": "indicator", "types": ["anomalous-activity"], "valid_from": 
+ 1644335851, "valid_until": null}
+```
+
 ### ctix-get-indicator-tags
 ***
 Get Indicator Tags
@@ -650,12 +1012,45 @@ Get Indicator Tags
 | CTIX.IndicatorTags.is_false_positive | boolean | If the indicator's tag is false positive or not | 
 | CTIX.IndicatorTags.name | string | Name of the indicator | 
 | CTIX.IndicatorTags.is_reviewed | boolean | If the indicator reviewed or not | 
-| CTIX.IndicatorTags.is_whitelisted | boolean | If the indicator allowed or not | 
+| CTIX.IndicatorTags.is_whitelisted | boolean | If the indicator whitelisted or not | 
 | CTIX.IndicatorTags.is_under_review | boolean | If the indicator is under review or not | 
 | CTIX.IndicatorTags.is_watchlist | boolean | If the indicator is under watchlist or not | 
 | CTIX.IndicatorTags.tags | unknown | Tags of the indicator | 
 | CTIX.IndicatorTags.sub_type | unknown | Sub type of the indicator | 
 | CTIX.IndicatorTags.type | unknown | Type of Indicator | 
+
+#### Command Example
+```!ctix-get-indicator-tags object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+
+#### Context Example
+```json
+{
+    "notes": [],
+    "is_deprecated": false,
+    "is_revoked": false,
+    "ctix_created": 1651648700,
+    "is_false_positive": false,
+    "name": "x.x.x.x",
+    "is_reviewed": false,
+    "is_whitelisted": false,
+    "is_under_review": false,
+    "is_watchlist": false,
+    "tags": [
+        {
+            "colour_code": null,
+            "id": "e2139fd5-fe05-48c5-8aaf-a5dfce900919",
+            "name": "test crowd"
+        },
+        {
+            "colour_code": null,
+            "id": "fb22e904-ad74-4b6e-987e-46e81caec9ed",
+            "name": "MaliciousConfidence/Low"
+        }
+    ],
+    "sub_type": "ipv4-addr",
+    "type": "indicator"
+}
+```
 
 ### ctix-get-indicator-relations
 ***
@@ -682,6 +1077,40 @@ Get Indicator Relations
 | CTIX.IndicatorRelations.relationship_type | unknown | Indicator relation types | 
 | CTIX.IndicatorRelations.sources | unknown | Indicator sources | 
 | CTIX.IndicatorRelations.target_ref | unknown | Indicator target reference  | 
+
+#### Command Example
+```!ctix-get-indicator-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+
+#### Context Example
+```json
+{
+    "next": null,
+    "page_size": 10,
+    "previous": null,
+    "results": [
+        {
+            "relationship_type": "related-to",
+            "sources": [
+                {
+                    "id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
+                    "name": "dummy",
+                    "source_type": "RSS_FEED"
+                }
+            ],
+            "target_ref": {
+                "created": 1652081903,
+                "id": "cb728d0e-3e31-4c3d-8f7d-09726a8bf7a8",
+                "modified": 1652081903,
+                "name": "Feed 6",
+                "object_type": "report",
+                "sub_type": null,
+                "tlp": "AMBER"
+            }
+        }
+    ],
+    "total": 1
+}
+```
 
 ### ctix-get-indicator-observations
 ***
@@ -730,9 +1159,72 @@ Get Indicator Observations
 | CTIX.IndicatorObservations.granular_markings | unknown | Granular Markings if any | 
 | CTIX.IndicatorObservations.collection | unknown | Collection details of the indicator | 
 
+#### Command Example
+```!ctix-get-indicator-observations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+
+#### Context Example
+```json
+{
+	"result": {
+		"next": null,
+		"page_size": 10,
+		"previous": null,
+		"results": [
+			{
+				"custom_attributes": [],
+				"ctix_modified": 1651648700,
+				"created": 1644335851,
+				"pattern_type": "stix",
+				"modified": 1651648700,
+				"ctix_created": 1651648700,
+				"pattern_version": "2.1",
+				"confidence": "LOW",
+				"valid_from": 1644335851,
+				"pattern": "[ipv4-addr:value = 'x.x.x.x']",
+				"fang_description": null,
+				"defang_description": null,
+				"spec_version": "2.1",
+				"tags": [
+					{
+						"colour_code": null,
+						"id": "e2139fd5-fe05-48c5-8aaf-a5dfce900919",
+						"name": "test crowd"
+					},
+					{
+						"colour_code": null,
+						"id": "fb22e904-ad74-4b6e-987e-46e81caec9ed",
+						"name": "MaliciousConfidence/Low"
+					}
+				],
+				"received_id": "indicator--16a66ac2-3524-44a6-9b9d-5bec6bc80d91",
+				"types": [
+					"anomalous-activity"
+				],
+				"source": {
+					"id": "e941f6fb-387b-452c-b77d-b5b05c5e9df2",
+					"name": "Dummy",
+					"source_type": "API_FEEDS"
+				},
+				"id": "0a11d417-3501-4230-8454-c70e700cf1b8",
+				"valid_until": null,
+				"sco_object_id": "20067ec2-8ad1-470e-b0bb-3c4a72b15883",
+				"unique_hash": "babea09af794cc5ae1403302e9ec5c2d",
+				"description": "None",
+				"granular_markings": [],
+				"collection": {
+					"id": "3d7df0f3-8c88-43d2-8742-deee21eb6ee0",
+					"name": "test-crowd-ip"
+				}
+			}
+		],
+		"total": 1
+	}
+}
+```
+
 ### ctix-get-conversion-feed-source
 ***
-Get Conversion feed source
+ 
 
 
 #### Base Command
@@ -756,6 +1248,29 @@ Get Conversion feed source
 | CTIX.ConversionFeedSource.id | string | ID of the indicator | 
 | CTIX.ConversionFeedSource.name | string | name of the indicator | 
 | CTIX.ConversionFeedSource.taxii_option | string | TAXII option | 
+
+#### Command Example
+```!ctix-get-conversion-feed-source object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+
+#### Context Example
+```json
+{
+	"result": {
+		"next": "feed-sources/?page=2&page_size=10&object_id=1ff2a18a-0574-4015-bbec-bc7692dccb14&object_type=indicator",
+		"page_size": 10,
+		"previous": null,
+		"results": [
+			{
+				"created": 1651841206,
+				"id": "9c82a682-254f-410d-a1c0-dc3514415f79",
+				"name": "dummy-threatmailbox",
+				"taxii_option": "2.1"
+			}
+		],
+		"total": 31
+	}
+}
+```
 
 ### ctix-get-lookup-threat-data
 ***
@@ -821,6 +1336,301 @@ Lookup to get threat data
 | CTIX.ThreatDataLookup.NotFoundCreated | string | IOCs that weren't found, but were created because \`createifnotexist\` was set to True | 
 | CTIX.ThreatDataLookup.NotFoundInvalid | string | IOCs that were found to be invalid, so they were not created, despite \`createifnotexist\` was set to True | 
 
+#### Command example
+```!ctix-get-lookup-threat-data object_names=example.com,x.x.x.x object_type=indicator```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "ThreatDataLookup": {
+            "Found": {
+                "analyst_cvss_score": null,
+                "analyst_score": null,
+                "analyst_tlp": null,
+                "confidence_score": 100,
+                "confidence_type": "ctix",
+                "country": null,
+                "created": 1674080000,
+                "ctix_created": 1674080000,
+                "ctix_modified": 1674080000,
+                "custom_attributes": [],
+                "first_seen": null,
+                "id": "6779a969-6404-4dd7-97ef-dec877c03c4f",
+                "indicator_type": "domain-name",
+                "ioc_type": "domain-name",
+                "is_actioned": false,
+                "is_deprecated": false,
+                "is_false_positive": false,
+                "is_reviewed": false,
+                "is_revoked": false,
+                "is_watchlist": false,
+                "is_whitelisted": false,
+                "last_seen": null,
+                "modified": 1674080001,
+                "name": "example.com",
+                "null": [],
+                "primary_attribute": null,
+                "published_collections": [],
+                "risk_severity": null,
+                "severity": "UNKNOWN",
+                "source_collections": [
+                    {
+                        "id": "a9d67cc1-5de8-460b-8bf4-63abc7ceaa54",
+                        "name": "anotherone (OpenAPI)"
+                    }
+                ],
+                "source_confidence": "HIGH",
+                "sources": [
+                    {
+                        "id": "38102b0e-1af4-4ee2-a62e-dd5f2ffaff5a",
+                        "name": "testing (OpenAPI)",
+                        "source_type": "MISCELLANEOUS"
+                    }
+                ],
+                "sub_type": "value",
+                "subscriber_collections": [],
+                "subscribers": [],
+                "tags": [
+                    {
+                        "colour_code": "#5236E2",
+                        "id": "9635c41b-80fb-4a98-a1f3-e5796c72bb29",
+                        "name": "created_using_openapi_lookup"
+                    }
+                ],
+                "tlp": "AMBER",
+                "type": "indicator",
+                "valid_from": 1674080000,
+                "valid_until": null
+            }
+        }
+    },
+    "DBotScore": {
+        "Indicator": "example.com",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "domain",
+        "Vendor": "CTIX v3 Beta"
+    },
+    "Domain": {
+        "Malicious": {
+            "Description": null,
+            "Vendor": "CTIX v3 Beta"
+        },
+        "Name": "example.com"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lookup Data
+>|confidence_score|confidence_type|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|severity|source_collections|source_confidence|sources|sub_type|tags|tlp|type|valid_from|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 100 | ctix | 1674080000 | 1674080000 | 1674080000 | 6779a969-6404-4dd7-97ef-dec877c03c4f | domain-name | domain-name | false | false | false | false | false | false | false | 1674080001 | example.com | UNKNOWN | {'id': 'a9d67cc1-5de8-460b-8bf4-63abc7ceaa54', 'name': 'anotherone (OpenAPI)'} | HIGH | {'id': '38102b0e-1af4-4ee2-a62e-dd5f2ffaff5a', 'name': 'testing (OpenAPI)', 'source_type': 'MISCELLANEOUS'} | value | {'colour_code': '#5236E2', 'id': '9635c41b-80fb-4a98-a1f3-e5796c72bb29', 'name': 'created_using_openapi_lookup'} | AMBER | indicator | 1674080000 |
+
+
+#### Command example
+```!ctix-get-lookup-threat-data object_names=example.com,x.x.x.x,zzzzz object_type=indicator createifnotexist=yes collection=some_collection source=some_source```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "ThreatDataLookup": {
+            "Found": {
+                "analyst_cvss_score": null,
+                "analyst_score": null,
+                "analyst_tlp": null,
+                "confidence_score": 100,
+                "confidence_type": "ctix",
+                "country": null,
+                "created": 1674080000,
+                "ctix_created": 1674080000,
+                "ctix_modified": 1674080000,
+                "custom_attributes": [],
+                "first_seen": null,
+                "id": "6779a969-6404-4dd7-97ef-dec877c03c4f",
+                "indicator_type": "domain-name",
+                "ioc_type": "domain-name",
+                "is_actioned": false,
+                "is_deprecated": false,
+                "is_false_positive": false,
+                "is_reviewed": false,
+                "is_revoked": false,
+                "is_watchlist": false,
+                "is_whitelisted": false,
+                "last_seen": null,
+                "modified": 1674080001,
+                "name": "example.com",
+                "null": [],
+                "primary_attribute": null,
+                "published_collections": [],
+                "risk_severity": null,
+                "severity": "UNKNOWN",
+                "source_collections": [
+                    {
+                        "id": "a9d67cc1-5de8-460b-8bf4-63abc7ceaa54",
+                        "name": "anotherone (OpenAPI)"
+                    }
+                ],
+                "source_confidence": "HIGH",
+                "sources": [
+                    {
+                        "id": "38102b0e-1af4-4ee2-a62e-dd5f2ffaff5a",
+                        "name": "testing (OpenAPI)",
+                        "source_type": "MISCELLANEOUS"
+                    }
+                ],
+                "sub_type": "value",
+                "subscriber_collections": [],
+                "subscribers": [],
+                "tags": [
+                    {
+                        "colour_code": "#5236E2",
+                        "id": "9635c41b-80fb-4a98-a1f3-e5796c72bb29",
+                        "name": "created_using_openapi_lookup"
+                    }
+                ],
+                "tlp": "AMBER",
+                "type": "indicator",
+                "valid_from": 1674080000,
+                "valid_until": null
+            },
+            "NotFoundCreated": [
+                "x.x.x.x"
+            ],
+            "NotFoundInvalid": [
+                "zzzzz"
+            ]
+        }
+    },
+    "DBotScore": {
+        "Indicator": "example.com",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "domain",
+        "Vendor": "CTIX v3 Beta"
+    },
+    "Domain": {
+        "Malicious": {
+            "Description": null,
+            "Vendor": "CTIX v3 Beta"
+        },
+        "Name": "example.com"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Not Found: Invalid***
+Lookup to get threat data
+
+
+#### Base Command
+
+`ctix-get-lookup-threat-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | object type. | Optional | 
+| object_names | Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1. | Optional | 
+| page_size | size of the page. Default is 10. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTIX.ThreatDataLookup.analyst_score | number | Analyst score of the indicator | 
+| CTIX.ThreatDataLookup.analyst_tlp | string | Analyst TLP of the indicator | 
+| CTIX.ThreatDataLookup.confidence_score | number | Confidence score of the indicator | 
+| CTIX.ThreatDataLookup.confidence_type | string | Confidence type of the indicator | 
+| CTIX.ThreatDataLookup.country | string | Indicator origin country | 
+| CTIX.ThreatDataLookup.created | number | Timestamp of when the indicator was created | 
+| CTIX.ThreatDataLookup.ctix_created | number | Timestamp of when the indicator was created in CTIX | 
+| CTIX.ThreatDataLookup.ctix_modified | number | Timestamp of when the indicator was modified in CTIX | 
+| CTIX.ThreatDataLookup.first_seen | number | Timestamp of when the indicator was first seen | 
+| CTIX.ThreatDataLookup.id | string | Indicator ID | 
+| CTIX.ThreatDataLookup.indicator_type | string | Indicator type | 
+| CTIX.ThreatDataLookup.ioc_type | string | IOC type | 
+| CTIX.ThreatDataLookup.is_actioned | boolean | Is actioned | 
+| CTIX.ThreatDataLookup.is_deprecated | boolean | is deprecated | 
+| CTIX.ThreatDataLookup.is_false_positive | boolean | is false positive | 
+| CTIX.ThreatDataLookup.is_reviewed | boolean | is reviewed  | 
+| CTIX.ThreatDataLookup.is_revoked | boolean | is revoked | 
+| CTIX.ThreatDataLookup.is_watchlist | boolean | is watchlisted | 
+| CTIX.ThreatDataLookup.is_whitelisted | boolean | is whitelisted | 
+| CTIX.ThreatDataLookup.last_seen | number | Timestamp of when the indicator was last seen | 
+| CTIX.ThreatDataLookup.modified | number | Timestamp of when the indicator was modified | 
+| CTIX.ThreatDataLookup.name | string | name of the indicator | 
+| CTIX.ThreatDataLookup.null | unknown | null | 
+| CTIX.ThreatDataLookup.primary_attribute | string | Primary Attribute | 
+| CTIX.ThreatDataLookup.published_collections | unknown | published collections | 
+| CTIX.ThreatDataLookup.risk_severity | string | Risk severity | 
+| CTIX.ThreatDataLookup.source_collections | unknown | sources collections | 
+| CTIX.ThreatDataLookup.source_confidence | string | Source confidence  | 
+| CTIX.ThreatDataLookup.sources | unknown | sources | 
+| CTIX.ThreatDataLookup.sub_type | string | Sub type | 
+| CTIX.ThreatDataLookup.subscriber_collections | unknown | subscriber collections | 
+| CTIX.ThreatDataLookup.subscribers | unknown | subscribers | 
+| CTIX.ThreatDataLookup.tags | unknown | Tags | 
+| CTIX.ThreatDataLookup.tlp | string | TLP | 
+| CTIX.ThreatDataLookup.type | string | Type | 
+| CTIX.ThreatDataLookup.valid_from | number | Timestamp from when the indicator was valid | 
+| CTIX.ThreatDataLookup.valid_until | number | Timestamp till when the indicator was valid | 
+
+#### Command Example
+```!ctix-get-lookup-threat-data object_names=example.com, test.com object_type=indicator```
+
+#### Context Example
+```json
+{"next": null,
+ "page_size": 10,
+ "previous": null,
+ "results": [{"analyst_score": null,
+              "analyst_tlp": null,
+              "confidence_score": 50,
+              "confidence_type": "ctix",
+              "country": null,
+              "created": 1652081902,
+              "ctix_created": 1652081903,
+              "ctix_modified": 1652081903,
+              "first_seen": null,
+              "id": "1ff2a18a-0574-4015-bbec-bc7692dccb14",
+              "indicator_type": "domain-name",
+              "ioc_type": "domain-name",
+              "is_actioned": false,
+              "is_deprecated": false,
+              "is_false_positive": false,
+              "is_reviewed": false,
+              "is_revoked": false,
+              "is_watchlist": false,
+              "is_whitelisted": false,
+              "last_seen": null,
+              "modified": 1652081902,
+              "name": "example.com",
+              "null": [],
+              "primary_attribute": null,
+              "published_collections": [],
+              "risk_severity": "UNKNOWN",
+              "source_collections": [{"id": "1981f5f6-49d4-4cad-97b7-8b2d276d2956",
+                                      "name": "dummy"}],
+              "source_confidence": "HIGH",
+              "sources": [{"id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
+                           "name": "dummy",
+                           "source_type": "RSS_FEED"}],
+              "sub_type": "value",
+              "subscriber_collections": [],
+              "subscribers": [],
+              "tags": [],
+              "tlp": "AMBER",
+              "type": "indicator",
+              "valid_from": 1652081902,
+              "valid_until": null}],
+ "total": 1}
+```
+
 ### domain
 ***
 Lookup domain threat data
@@ -846,6 +1656,104 @@ Lookup domain threat data
 | DBotScore.Score | Number | The actual score. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
 
+#### Command example
+```!domain domain="example.com" using="CTIX v3 Beta_instance"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "ThreatDataLookup": {
+            "Found": {
+                "analyst_score": null,
+                "analyst_tlp": null,
+                "confidence_score": 31,
+                "confidence_type": "ctix",
+                "country": null,
+                "created": 1666709826,
+                "ctix_created": 1666874647,
+                "ctix_modified": 1670548277,
+                "first_seen": null,
+                "id": "10104a10-74a9-45d7-a412-f11531d64a38",
+                "indicator_type": "domain-name",
+                "ioc_type": "domain-name",
+                "is_actioned": false,
+                "is_deprecated": false,
+                "is_false_positive": false,
+                "is_reviewed": false,
+                "is_revoked": false,
+                "is_watchlist": false,
+                "is_whitelisted": false,
+                "last_seen": null,
+                "modified": 1667442806,
+                "name": "example.com",
+                "null": [],
+                "primary_attribute": null,
+                "published_collections": [],
+                "risk_severity": "UNKNOWN",
+                "source_collections": [
+                    {
+                        "id": "2a5a9989-030d-466b-b676-223d2b1f4d1e",
+                        "name": "Indicators v4"
+                    },
+                    {
+                        "id": "5f4230a4-cc3a-4d32-b3ee-c53a373e2a8f",
+                        "name": "https://www.us-cert.gov/ncas/alerts.xml"
+                    },
+                    {
+                        "id": "2dc18ee7-ee80-4fa7-953d-4df824f8e8ce",
+                        "name": "https://www.us-cert.gov/ncas/alerts.xml"
+                    }
+                ],
+                "source_confidence": "MEDIUM",
+                "sources": [
+                    {
+                        "id": "131392bb-ecdf-45ae-8f22-b1160cf03401",
+                        "name": "Mandiant Threat Intelligence",
+                        "source_type": "API_FEEDS"
+                    },
+                    {
+                        "id": "87e622e3-e8e5-4692-9b79-00efead3f874",
+                        "name": "https://www.us-cert.gov/ncas/alerts.xml",
+                        "source_type": "RSS_FEED"
+                    },
+                    {
+                        "id": "0647eb19-c559-4d27-a441-b70117315e18",
+                        "name": "https://www.us-cert.gov/ncas/alerts.xml",
+                        "source_type": "RSS_FEED"
+                    }
+                ],
+                "sub_type": "value",
+                "subscriber_collections": [],
+                "subscribers": [],
+                "tags": [],
+                "tlp": "AMBER",
+                "type": "indicator",
+                "valid_from": 1530174464,
+                "valid_until": null
+            }
+        }
+    },
+    "DBotScore": {
+        "Indicator": "example.com",
+        "Reliability": "C - Fairly reliable",
+        "Score": 2,
+        "Type": "domain",
+        "Vendor": "CTIX v3 Beta"
+    },
+    "Domain": {
+        "Name": "example.com"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lookup Data
+>|confidence_score|confidence_type|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|risk_severity|source_collections|source_confidence|sources|sub_type|tlp|type|valid_from|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 31 | ctix | 1666709826 | 1666874647 | 1670548277 | 10104a10-74a9-45d7-a412-f11531d64a38 | domain-name | domain-name | false | false | false | false | false | false | false | 1667442806 | example.com | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'},<br/>{'id': '5f4230a4-cc3a-4d32-b3ee-c53a373e2a8f', 'name': 'https:<span>//</span>www.us-cert.gov/ncas/alerts.xml'},<br/>{'id': '2dc18ee7-ee80-4fa7-953d-4df824f8e8ce', 'name': 'https:<span>//</span>www.us-cert.gov/ncas/alerts.xml'} | MEDIUM | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'},<br/>{'id': '87e622e3-e8e5-4692-9b79-00efead3f874', 'name': 'https:<span>//</span>www.us-cert.gov/ncas/alerts.xml', 'source_type': 'RSS_FEED'},<br/>{'id': '0647eb19-c559-4d27-a441-b70117315e18', 'name': 'https:<span>//</span>www.us-cert.gov/ncas/alerts.xml', 'source_type': 'RSS_FEED'} | value | AMBER | indicator | 1530174464 |
+
+
 ### ip
 ***
 Lookup ip threat data
@@ -870,6 +1778,105 @@ Lookup ip threat data
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | IP.Address | String | The IP address, for example: 1.2.3.4. | 
+
+#### Command example
+```!ip ip="x.x.x.x" using="CTIX v3 Beta_instance"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "ThreatDataLookup": {
+            "Found": {
+                "analyst_score": null,
+                "analyst_tlp": null,
+                "confidence_score": 100,
+                "confidence_type": "ctix",
+                "country": "United States",
+                "created": 1666710084,
+                "ctix_created": 1666874647,
+                "ctix_modified": 1671604244,
+                "first_seen": null,
+                "id": "5c2517a2-759f-4eb8-b9fa-346ff20cfaaf",
+                "indicator_type": "ipv4-addr",
+                "ioc_type": "ipv4-addr",
+                "is_actioned": false,
+                "is_deprecated": false,
+                "is_false_positive": false,
+                "is_reviewed": false,
+                "is_revoked": false,
+                "is_watchlist": false,
+                "is_whitelisted": false,
+                "last_seen": null,
+                "modified": 1669170873,
+                "name": "x.x.x.x",
+                "null": [],
+                "primary_attribute": null,
+                "published_collections": [],
+                "risk_severity": "UNKNOWN",
+                "source_collections": [
+                    {
+                        "id": "2a5a9989-030d-466b-b676-223d2b1f4d1e",
+                        "name": "Indicators v4"
+                    },
+                    {
+                        "id": "fe150b23-6354-4a9b-8c27-202abc758ba3",
+                        "name": "NCAS JG Test"
+                    }
+                ],
+                "source_confidence": "HIGH",
+                "sources": [
+                    {
+                        "id": "131392bb-ecdf-45ae-8f22-b1160cf03401",
+                        "name": "Mandiant Threat Intelligence",
+                        "source_type": "API_FEEDS"
+                    },
+                    {
+                        "id": "50cbaaee-8083-494c-b42a-7c7fb73ca2dc",
+                        "name": "NCAS JG Test",
+                        "source_type": "RSS_FEED"
+                    }
+                ],
+                "sub_type": "value",
+                "subscriber_collections": [],
+                "subscribers": [],
+                "tags": [
+                    {
+                        "colour_code": "#5236E2",
+                        "id": "f82fa004-75cc-4824-b129-914ec13728b5",
+                        "name": "Destruction"
+                    }
+                ],
+                "tlp": "AMBER",
+                "type": "indicator",
+                "valid_from": 1409607591,
+                "valid_until": null
+            }
+        }
+    },
+    "DBotScore": {
+        "Indicator": "x.x.x.x",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "ip",
+        "Vendor": "CTIX v3 Beta"
+    },
+    "IP": {
+        "Address": "x.x.x.x",
+        "Malicious": {
+            "Description": null,
+            "Vendor": "CTIX v3 Beta"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lookup Data
+>|confidence_score|confidence_type|country|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|risk_severity|source_collections|source_confidence|sources|sub_type|tags|tlp|type|valid_from|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 100 | ctix | United States | 1666710084 | 1666874647 | 1671604244 | 5c2517a2-759f-4eb8-b9fa-346ff20cfaaf | ipv4-addr | ipv4-addr | false | false | false | false | false | false | false | 1669170873 | x.x.x.x | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'},<br/>{'id': 'fe150b23-6354-4a9b-8c27-202abc758ba3', 'name': 'NCAS JG Test'} | HIGH | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'},<br/>{'id': '50cbaaee-8083-494c-b42a-7c7fb73ca2dc', 'name': 'NCAS JG Test', 'source_type': 'RSS_FEED'} | value | {'colour_code': '#5236E2', 'id': 'f82fa004-75cc-4824-b129-914ec13728b5', 'name': 'Destruction'} | AMBER | indicator | 1409607591 |
+
 
 ### file
 ***
@@ -898,6 +1905,91 @@ Lookup file threat data
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 
+#### Command example
+```!file file="9c57753557ed258d731987834c56fa4c" using="CTIX v3 Beta_instance"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "ThreatDataLookup": {
+            "Found": {
+                "analyst_score": null,
+                "analyst_tlp": null,
+                "confidence_score": 100,
+                "confidence_type": "ctix",
+                "country": null,
+                "created": 1673710318,
+                "ctix_created": 1674124925,
+                "ctix_modified": 1674124925,
+                "first_seen": null,
+                "id": "4ea5874d-0d6e-4a65-a8db-61d825d9fb8e",
+                "indicator_type": "file",
+                "ioc_type": "MD5",
+                "is_actioned": false,
+                "is_deprecated": false,
+                "is_false_positive": false,
+                "is_reviewed": false,
+                "is_revoked": false,
+                "is_watchlist": false,
+                "is_whitelisted": false,
+                "last_seen": null,
+                "modified": 1673710318,
+                "name": "9c57753557ed258d731987834c56fa4c",
+                "null": [],
+                "primary_attribute": null,
+                "published_collections": [],
+                "risk_severity": "UNKNOWN",
+                "source_collections": [
+                    {
+                        "id": "2a5a9989-030d-466b-b676-223d2b1f4d1e",
+                        "name": "Indicators v4"
+                    }
+                ],
+                "source_confidence": "HIGH",
+                "sources": [
+                    {
+                        "id": "131392bb-ecdf-45ae-8f22-b1160cf03401",
+                        "name": "Mandiant Threat Intelligence",
+                        "source_type": "API_FEEDS"
+                    }
+                ],
+                "sub_type": "MD5",
+                "subscriber_collections": [],
+                "subscribers": [],
+                "tags": [],
+                "tlp": "AMBER",
+                "type": "indicator",
+                "valid_from": 1671281161,
+                "valid_until": null
+            }
+        }
+    },
+    "DBotScore": {
+        "Indicator": "9c57753557ed258d731987834c56fa4c",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "file",
+        "Vendor": "CTIX v3 Beta"
+    },
+    "File": {
+        "Hashes": [],
+        "Malicious": {
+            "Description": null,
+            "Vendor": "CTIX v3 Beta"
+        },
+        "Name": "9c57753557ed258d731987834c56fa4c"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lookup Data
+>|confidence_score|confidence_type|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|risk_severity|source_collections|source_confidence|sources|sub_type|tlp|type|valid_from|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 100 | ctix | 1673710318 | 1674124925 | 1674124925 | 4ea5874d-0d6e-4a65-a8db-61d825d9fb8e | file | MD5 | false | false | false | false | false | false | false | 1673710318 | 9c57753557ed258d731987834c56fa4c | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'} | HIGH | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'} | MD5 | AMBER | indicator | 1671281161 |
+
+
 ### url
 ***
 Lookup url threat data
@@ -922,6 +2014,95 @@ Lookup url threat data
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | URL.Data | String | The URL | 
+
+#### Command example
+```!url url="http://example.com/" using="CTIX v3 Beta_instance"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "ThreatDataLookup": {
+            "Found": {
+                "analyst_score": null,
+                "analyst_tlp": null,
+                "confidence_score": 100,
+                "confidence_type": "ctix",
+                "country": null,
+                "created": 1674166009,
+                "ctix_created": 1674166009,
+                "ctix_modified": 1674166009,
+                "first_seen": null,
+                "id": "dcada258-5fc2-4c42-b7d6-e8ffda6c5a9e",
+                "indicator_type": "url",
+                "ioc_type": "url",
+                "is_actioned": false,
+                "is_deprecated": false,
+                "is_false_positive": false,
+                "is_reviewed": false,
+                "is_revoked": false,
+                "is_watchlist": false,
+                "is_whitelisted": false,
+                "last_seen": null,
+                "modified": 1674166010,
+                "name": "http://example.com/",
+                "null": [],
+                "primary_attribute": null,
+                "published_collections": [
+                    {
+                        "id": "ad842594-8faa-49fb-841e-7ff99a685718",
+                        "name": null
+                    }
+                ],
+                "risk_severity": "UNKNOWN",
+                "source_collections": [
+                    {
+                        "id": "5432c580-e1f9-40c3-b40a-a47686dfcf22",
+                        "name": "Free Text"
+                    }
+                ],
+                "source_confidence": "HIGH",
+                "sources": [
+                    {
+                        "id": "7eb93036-688e-4916-ab1f-fe9015c16b78",
+                        "name": "Import",
+                        "source_type": "CUSTOM_STIX_SOURCES"
+                    }
+                ],
+                "sub_type": "value",
+                "subscriber_collections": [],
+                "subscribers": [],
+                "tags": [],
+                "tlp": "AMBER",
+                "type": "indicator",
+                "valid_from": 1674166009,
+                "valid_until": null
+            }
+        }
+    },
+    "DBotScore": {
+        "Indicator": "http://example.com/",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "url",
+        "Vendor": "CTIX v3 Beta"
+    },
+    "URL": {
+        "Data": "http://example.com/",
+        "Malicious": {
+            "Description": null,
+            "Vendor": "CTIX v3 Beta"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Lookup Data
+>|confidence_score|confidence_type|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|published_collections|risk_severity|source_collections|source_confidence|sources|sub_type|tlp|type|valid_from|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 100 | ctix | 1674166009 | 1674166009 | 1674166009 | dcada258-5fc2-4c42-b7d6-e8ffda6c5a9e | url | url | false | false | false | false | false | false | false | 1674166010 | http:<span>//</span>example.com/ | {'id': 'ad842594-8faa-49fb-841e-7ff99a685718', 'name': None} | UNKNOWN | {'id': '5432c580-e1f9-40c3-b40a-a47686dfcf22', 'name': 'Free Text'} | HIGH | {'id': '7eb93036-688e-4916-ab1f-fe9015c16b78', 'name': 'Import', 'source_type': 'CUSTOM_STIX_SOURCES'} | value | AMBER | indicator | 1674166009 |
+
 
 ### ctix-get-all-notes
 ***
@@ -965,6 +2146,51 @@ Get paginated list of Notes
 | CTIX.Note.title | string | The title of the Note | 
 | CTIX.Note.type | string | The type of the Note | 
 
+#### Command example
+```!ctix-get-all-notes page_size=1```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Note": {
+            "created": 1674173772,
+            "created_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "id": "f8f67182-bf72-47df-9a90-31b2bd829a9d",
+            "is_json": false,
+            "meta_data": {
+                "component": "threatdata",
+                "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+                "type": "indicator"
+            },
+            "modified": 1674173772,
+            "modified_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+            "text": "this is the old text",
+            "title": null,
+            "type": "threatdata"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Note Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1674173772 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata<br/>object_id: ba82b524-15b3-4071-8008-e58754f8d134<br/>type: indicator | 1674173772 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
+
+
 ### ctix-get-note-details
 ***
 Get details of a Note as specified by its ID
@@ -1004,6 +2230,51 @@ Get details of a Note as specified by its ID
 | CTIX.Note.text | string | The text of the Note | 
 | CTIX.Note.title | string | The title of the Note | 
 | CTIX.Note.type | string | The type of the Note | 
+
+#### Command example
+```!ctix-get-note-details id="7d739870-ce7d-415b-bbbf-25f4bbc6be66"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Note": {
+            "created": 1671821868,
+            "created_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "id": "7d739870-ce7d-415b-bbbf-25f4bbc6be66",
+            "is_json": false,
+            "meta_data": {
+                "component": "threatdata",
+                "object_id": "fake",
+                "type": "indicator"
+            },
+            "modified": 1674173787,
+            "modified_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "object_id": "fake",
+            "text": "this is the new text",
+            "title": null,
+            "type": "threatdata"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Note Detail Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1671821868 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata<br/>object_id: fake<br/>type: indicator | 1674173787 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | fake | this is the new text | threatdata |
+
 
 ### ctix-create-note
 ***
@@ -1046,6 +2317,94 @@ Creates a new Note from the parameter 'text'
 | CTIX.Note.text | string | The text of the Note | 
 | CTIX.Note.title | string | The title of the Note | 
 | CTIX.Note.type | string | The type of the Note | 
+
+#### Command example
+```!ctix-create-note text="hello world x100"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Note": {
+            "created": 1674173831,
+            "created_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "id": "35ee1841-8357-43e0-b372-aff9800cdc55",
+            "is_json": false,
+            "meta_data": {
+                "component": "notes"
+            },
+            "modified": 1674173831,
+            "modified_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "object_id": null,
+            "text": "hello world x100",
+            "title": null,
+            "type": "notes"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created Note Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|text|type|
+>|---|---|---|---|---|---|---|---|---|
+>| 1674173831 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 35ee1841-8357-43e0-b372-aff9800cdc55 | false | component: notes | 1674173831 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | hello world x100 | notes |
+
+
+#### Command example
+```!ctix-create-note text="hello world x100" object_id="da1a6268-e589-4231-a334-68fb0c2cc1e0" object_type=indicator```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Note": {
+            "created": 1674173838,
+            "created_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "id": "e5584583-6d45-4fe8-82b4-a802007c38f0",
+            "is_json": false,
+            "meta_data": {
+                "component": "threatdata",
+                "object_id": "da1a6268-e589-4231-a334-68fb0c2cc1e0",
+                "type": "indicator"
+            },
+            "modified": 1674173838,
+            "modified_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "object_id": "da1a6268-e589-4231-a334-68fb0c2cc1e0",
+            "text": "hello world x100",
+            "title": null,
+            "type": "threatdata"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created Note Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1674173838 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | e5584583-6d45-4fe8-82b4-a802007c38f0 | false | component: threatdata<br/>object_id: da1a6268-e589-4231-a334-68fb0c2cc1e0<br/>type: indicator | 1674173838 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | da1a6268-e589-4231-a334-68fb0c2cc1e0 | hello world x100 | threatdata |
+
 
 ### ctix-update-note
 ***
@@ -1090,6 +2449,96 @@ Updates the Note text from an existing Note, as specified by its ID
 | CTIX.Note.title | string | The title of the Note | 
 | CTIX.Note.type | string | The type of the Note | 
 
+#### Command example
+```!ctix-update-note id="7d739870-ce7d-415b-bbbf-25f4bbc6be66" text="this is a test"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Note": {
+            "created": 1671821868,
+            "created_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "id": "7d739870-ce7d-415b-bbbf-25f4bbc6be66",
+            "is_json": false,
+            "meta_data": {
+                "component": "threatdata",
+                "object_id": "fake",
+                "type": "indicator"
+            },
+            "modified": 1674173815,
+            "modified_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "object_id": "fake",
+            "text": "this is a test",
+            "title": null,
+            "type": "threatdata"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Note Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1671821868 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata<br/>object_id: fake<br/>type: indicator | 1674173815 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | fake | this is a test | threatdata |
+
+
+#### Command example
+```!ctix-update-note id="7d739870-ce7d-415b-bbbf-25f4bbc6be66" object_id="da1a6268-e589-4231-a334-68fb0c2cc1e0" object_type=indicator```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Note": {
+            "created": 1671821868,
+            "created_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "id": "7d739870-ce7d-415b-bbbf-25f4bbc6be66",
+            "is_json": false,
+            "meta_data": {
+                "component": "threatdata",
+                "object_id": "fake",
+                "type": "indicator"
+            },
+            "modified": 1674173824,
+            "modified_by": {
+                "email": "some.user@example.com",
+                "first_name": "some",
+                "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                "last_name": "user"
+            },
+            "object_id": "da1a6268-e589-4231-a334-68fb0c2cc1e0",
+            "text": "this is a test",
+            "title": null,
+            "type": "threatdata"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Note Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1671821868 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata<br/>object_id: fake<br/>type: indicator | 1674173824 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | da1a6268-e589-4231-a334-68fb0c2cc1e0 | this is a test | threatdata |
+
+
 ### ctix-delete-note
 ***
 Deletes an existing Note, as specified by its ID
@@ -1110,6 +2559,27 @@ Deletes an existing Note, as specified by its ID
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CTIX.Note.deletion.details | string | Returns "success" if the deletion request was successful, otherwise "failure" | 
+
+#### Command example
+```!ctix-delete-note id="7d739870-ce7d-415b-bbbf-25f4bbc6be66"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Note": {
+            "details": "success"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Deleted Note Data
+>|details|
+>|---|
+>| success |
+
 
 ### ctix-make-request
 ***
@@ -1132,3 +2602,174 @@ allows you to make any HTTP request using CTIX endpoints
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!ctix-make-request type=POST endpoint=ingestion/notes/ body="{\"text\": \"this is the old text\",\"type\": \"threatdata\",\"meta_data\": {\"component\": \"threatdata\",\"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\",\"type\": \"indicator\"},\"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\"}"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Request": {
+            "POST": {
+                "ingestion/notes/": {
+                    "created": 1674173772,
+                    "created_by": {
+                        "email": "some.user@example.com",
+                        "first_name": "some",
+                        "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                        "last_name": "user"
+                    },
+                    "id": "f8f67182-bf72-47df-9a90-31b2bd829a9d",
+                    "is_json": false,
+                    "meta_data": {
+                        "component": "threatdata",
+                        "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+                        "type": "indicator"
+                    },
+                    "modified": 1674173772,
+                    "modified_by": {
+                        "email": "some.user@example.com",
+                        "first_name": "some",
+                        "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                        "last_name": "user"
+                    },
+                    "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+                    "text": "this is the old text",
+                    "title": null,
+                    "type": "threatdata"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP Response Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1674173772 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata<br/>object_id: ba82b524-15b3-4071-8008-e58754f8d134<br/>type: indicator | 1674173772 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
+
+
+#### Command example
+```!ctix-make-request type=GET endpoint=ingestion/notes/ params="{\"page\": 1, \"page_size\": 1}"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Request": {
+            "GET": {
+                "ingestion/notes/": {
+                    "created": 1674173772,
+                    "created_by": {
+                        "email": "some.user@example.com",
+                        "first_name": "some",
+                        "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                        "last_name": "user"
+                    },
+                    "id": "f8f67182-bf72-47df-9a90-31b2bd829a9d",
+                    "is_json": false,
+                    "meta_data": {
+                        "component": "threatdata",
+                        "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+                        "type": "indicator"
+                    },
+                    "modified": 1674173772,
+                    "modified_by": {
+                        "email": "some.user@example.com",
+                        "first_name": "some",
+                        "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                        "last_name": "user"
+                    },
+                    "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+                    "text": "this is the old text",
+                    "title": null,
+                    "type": "threatdata"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP Response Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1674173772 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | f8f67182-bf72-47df-9a90-31b2bd829a9d | false | component: threatdata<br/>object_id: ba82b524-15b3-4071-8008-e58754f8d134<br/>type: indicator | 1674173772 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | ba82b524-15b3-4071-8008-e58754f8d134 | this is the old text | threatdata |
+
+
+#### Command example
+```!ctix-make-request type=PUT endpoint=ingestion/notes/7d739870-ce7d-415b-bbbf-25f4bbc6be66/ body="{\"text\": \"this is the new text\"}"```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Request": {
+            "PUT": {
+                "ingestion/notes/7d739870-ce7d-415b-bbbf-25f4bbc6be66/": {
+                    "created": 1671821868,
+                    "created_by": {
+                        "email": "some.user@example.com",
+                        "first_name": "some",
+                        "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                        "last_name": "user"
+                    },
+                    "id": "7d739870-ce7d-415b-bbbf-25f4bbc6be66",
+                    "is_json": false,
+                    "meta_data": {
+                        "component": "threatdata",
+                        "object_id": "fake",
+                        "type": "indicator"
+                    },
+                    "modified": 1674173787,
+                    "modified_by": {
+                        "email": "some.user@example.com",
+                        "first_name": "some",
+                        "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+                        "last_name": "user"
+                    },
+                    "object_id": "fake",
+                    "text": "this is the new text",
+                    "title": null,
+                    "type": "threatdata"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP Response Data
+>|created|created_by|id|is_json|meta_data|modified|modified_by|object_id|text|type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1671821868 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | 7d739870-ce7d-415b-bbbf-25f4bbc6be66 | false | component: threatdata<br/>object_id: fake<br/>type: indicator | 1674173787 | email: some.user@example.com<br/>first_name: some<br/>id: 5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a<br/>last_name: user | fake | this is the new text | threatdata |
+
+
+#### Command example
+```!ctix-make-request type=DELETE endpoint=ingestion/notes/1e2f348b-8168-4330-933b-24263ab9116a/```
+#### Context Example
+```json
+{
+    "CTIX": {
+        "Request": {
+            "DELETE": {
+                "ingestion/notes/1e2f348b-8168-4330-933b-24263ab9116a/": {
+                    "details": "success"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP Response Data
+>|details|
+>|---|
+>| success |
+

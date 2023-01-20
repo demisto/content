@@ -167,7 +167,7 @@ class Client(BaseClient):
             return response
         except requests.exceptions.HTTPError:
             if status_code == HTTPStatus.NOT_FOUND:
-                return_error(f"Your CTIX version does not support this command.")
+                return_error("Your CTIX version does not support this command.")
             else:
                 return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
@@ -198,7 +198,7 @@ class Client(BaseClient):
             return response
         except requests.exceptions.HTTPError:
             if status_code == HTTPStatus.NOT_FOUND:
-                return_error(f"Your CTIX version does not support this command.")
+                return_error("Your CTIX version does not support this command.")
             else:
                 return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
@@ -229,7 +229,7 @@ class Client(BaseClient):
             return response
         except requests.exceptions.HTTPError:
             if status_code == HTTPStatus.NOT_FOUND:
-                return_error(f"Your CTIX version does not support this command.")
+                return_error("Your CTIX version does not support this command.")
             else:
                 return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
@@ -649,10 +649,9 @@ class Client(BaseClient):
 
     def bulk_lookup_and_create_data(self, object_names, source, collection):
         url_suffix = "ingestion/threat-data/bulk-lookup-and-create/"
-        
         client_url = self.base_url + url_suffix
         params = {"create": "true"}
-        
+
         payload = {
             "ioc_values": object_names,
             "metadata": {
@@ -669,7 +668,7 @@ class Client(BaseClient):
         }
 
         return self.post_http_request(client_url, payload, params)
-        
+
 
 """ HELPER FUNCTIONS """
 
@@ -1607,7 +1606,7 @@ def get_lookup_threat_data_command(
         results = response.get("found_iocs", {}).get("results", [])
         created_after_lookup = response["values_not_found"]["valid_iocs"]
         invalid_values = response["values_not_found"]["invalid_values"]
-        
+
         if created_after_lookup:
             created_after_lookup_results.append(CommandResults(
                 readable_output=tableToMarkdown("Not Found: Created", created_after_lookup, headers=['Name'], removeNull=True),
@@ -1675,7 +1674,7 @@ def file(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return get_lookup_threat_data_command(client, args)
 
 
-def get_all_notes(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_all_notes(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = args["page"]
     page = check_for_empty_variable(page, 1)
     page_size = args["page_size"]
@@ -1699,7 +1698,7 @@ def get_all_notes(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     notes_list = no_result_found(notes_list)
 
     if isinstance(notes_list, CommandResults):
-        return [notes_list]
+        return notes_list
     else:
         return CommandResults(
             readable_output=tableToMarkdown("Note Data", notes_list, removeNull=True),
@@ -1707,6 +1706,7 @@ def get_all_notes(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             outputs_key_field="id",
             outputs=notes_list,
         )
+
 
 def get_note_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     id = args["id"]

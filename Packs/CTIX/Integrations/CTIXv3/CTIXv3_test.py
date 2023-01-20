@@ -766,7 +766,7 @@ def test_get_lookup_threat_data_command(requests_mock):
     response = get_lookup_threat_data_command(client, args)
 
     assert response[0].outputs == mock_response["results"][0]
-    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup.Found"
 
     assert isinstance(response[0].raw_response, dict)
     assert len(response[0].raw_response) == 37
@@ -795,7 +795,7 @@ def test_domain(requests_mock):
     response = domain(client, args)
 
     assert response[0].outputs == mock_response["results"][0]
-    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup.Found"
 
     assert isinstance(response[0].raw_response, dict)
     assert len(response[0].raw_response) == 37
@@ -824,7 +824,7 @@ def test_url(requests_mock):
     response = url(client, args)
 
     assert response[0].outputs == mock_response["results"][0]
-    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup.Found"
 
     assert isinstance(response[0].raw_response, dict)
     assert len(response[0].raw_response) == 37
@@ -853,7 +853,7 @@ def test_ip(requests_mock):
     response = ip(client, args)
 
     assert response[0].outputs == mock_response["results"][0]
-    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup.Found"
 
     assert isinstance(response[0].raw_response, dict)
     assert len(response[0].raw_response) == 37
@@ -882,7 +882,7 @@ def test_file(requests_mock):
     response = file(client, args)
 
     assert response[0].outputs == mock_response["results"][0]
-    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup.Found"
 
     assert isinstance(response[0].raw_response, dict)
     assert len(response[0].raw_response) == 37
@@ -907,11 +907,11 @@ def test_get_all_notes(requests_mock):
 
     response = get_all_notes(client, args)
 
-    assert response[0].outputs == mock_response["results"][0]
-    assert response[0].outputs_prefix == "CTIX.Note"
+    assert response.outputs == mock_response["results"]
+    assert response.outputs_prefix == "CTIX.Note"
 
-    assert isinstance(response[0].raw_response, dict)
-    assert len(response[0].raw_response) == 11
+    assert isinstance(response.raw_response, list)
+    assert len(response.raw_response[0]) == 11
 
 
 def test_get_note_details(requests_mock):
