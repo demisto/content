@@ -1044,7 +1044,6 @@ script:
       - name: object_names
         description: "Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1"
         isArray: true
-        required: true
       - name: page_size
         description: size of the page
         defaultValue: "10"
