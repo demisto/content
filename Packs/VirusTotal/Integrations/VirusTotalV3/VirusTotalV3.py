@@ -2290,7 +2290,6 @@ def main(params: dict, args: dict, command: str):
         results = file_sigma_analysis_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
-        
     return_results(results)
 
 
