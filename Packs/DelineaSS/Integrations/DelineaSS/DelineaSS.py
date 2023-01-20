@@ -478,8 +478,28 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
     )
 
 
+def get_credentials(client,secret_id):
+    obj={}
+    secret = client.getSecret(secret_id)
+    items = secret.get('items')
+    for item in items:
+        if item.get('fieldName') == 'Username':
+            username = item.get('itemValue')
+        if item.get('fieldName') == 'Password':
+            password = item.get('itemValue')
+            obj = {
+                "user": username,
+                "password": password,
+                "name": str(secret.get('id'))
+            }
+    return obj
+
+
 def fetch_credentials_command(client, secretids):
-    credentials: List[Any] = []
+    credentials = []
+    args: dict = demisto.args()
+    credentials_name: str = args.get('identifier')
+
     try:
         secretsid = argToList(secretids)
     except Exception as e:
@@ -492,24 +512,20 @@ def fetch_credentials_command(client, secretids):
 
     if len(secretsid) == 0:
         demisto.credentials(credentials)
-        demisto.debug("Could not fetch credentials:\
-        Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
+        demisto.debug(
+            "Could not fetch credentials: Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
         credentials = []
     else:
-        for secret_id in secretsid:
-            secret = client.getSecret(secret_id)
-            items = secret.get('items')
-            for item in items:
-                if item.get('fieldName') == 'Username':
-                    username = item.get('itemValue')
-                if item.get('fieldName') == 'Password':
-                    password = item.get('itemValue')
-                    obj = {
-                        "user": username,
-                        "password": password,
-                        "name": str(secret.get('id'))
-                    }
-                    credentials.append(obj)
+        if credentials_name:
+            try:
+                credentials= [get_credentials(credentials_name)]
+            except Exception as e:
+                demisto.debug(f"Could not fetch credentials: {creds_name}. Error: {e}")
+                credentials = []
+        else:
+            for secret_id in secretsid:
+                obj =get_credentials(secret_id)
+                credentials.append(obj)
 
     demisto.credentials(credentials)
     markdown = tableToMarkdown('Fetched Credentials', credentials)
@@ -521,7 +537,6 @@ def fetch_credentials_command(client, secretids):
         raw_response=credentials,
         outputs=credentials
     )
-
 
 def main():
     params = demisto.params()
