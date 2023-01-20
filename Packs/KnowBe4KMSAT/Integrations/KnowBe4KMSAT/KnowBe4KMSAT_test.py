@@ -54,6 +54,8 @@ def test_account_info(requests_mock):
     )
 
     result = kmsat_account_info_list_command(client)
+
+    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.AccountInfo"
     assert result.outputs_key_field == "name"
     assert result.outputs == mock_response_data
@@ -158,6 +160,8 @@ def test_get_user_events(requests_mock):
 
     args: Dict = {}
     result = kmsat_user_events_list_command(userEventClient, args)
+    
+    assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.UserEvents"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]

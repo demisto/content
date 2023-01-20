@@ -42,6 +42,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url, verify, proxy, headers=None, max_fetch=None):
         self.max_fetch = max_fetch
+        headers["X-KB4-Integration"] = "Cortex XSOAR KMSAT"
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def kmsat_account_info(self):
@@ -136,7 +137,7 @@ class UserEventClient(BaseClient):
 
     def __init__(self, base_url, verify, proxy, headers=None, max_fetch=None):
         self.max_fetch = max_fetch
-
+        headers["X-KB4-Integration"] = "Cortex XSOAR KMSAT"
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def user_events(self, args: dict, page: int = None, page_size: int = None):
