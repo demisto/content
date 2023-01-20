@@ -506,7 +506,7 @@ sync-buckets-between-projects:
   tags:
     - gke
   extends:
-    - .bucket-upload-rule-always
+    - .bucket-upload-rule
   stage: upload-to-marketplace
   needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
   script:
