@@ -112,7 +112,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
-- display: 'DetectionSource to filter out alerts for fetching as incidents (not available for v2).'
+- display: 'DetectionSource to filter out alerts for fetching as incidents.'
   name: fetch_detectionsource
   required: false
   type: 16
