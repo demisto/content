@@ -866,13 +866,9 @@ def main() -> None:
         elif command == "kmsat-phishing-security-tests-list":
             return_results(kmsat_phishing_security_tests_list_command(client, args))
         elif command == "kmsat-phishing-security-tests-recipients-list":
-            return_results(
-                kmsat_phishing_security_tests_recipients_list_command(client, args)
-            )
+            return_results(kmsat_phishing_security_tests_recipients_list_command(client, args))
         elif command == "kmsat-phishing-security-tests-failed-recipients-list":
-            return_results(
-                kmsat_phishing_security_tests_failed_recipients_list_command(client, args)
-            )
+            return_results(kmsat_phishing_security_tests_failed_recipients_list_command(client, args))
         elif command == "kmsat-phishing-campaigns-security-tests-list":
             return_results(kmsat_phishing_campaign_security_tests_list_command(client, args))
         elif command == "kmsat-training-campaigns-list":
