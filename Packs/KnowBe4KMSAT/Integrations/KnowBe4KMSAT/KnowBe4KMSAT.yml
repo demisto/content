@@ -85,11 +85,11 @@ script:
           description: Per Page Amount
       outputs:
         - contextPath: KMSAT.AccountRiskScoreHistory.risk_score
-          description: Account Risk score and associated date
+          description: Account Risk Score and Associated Date
           type: String
         - contextPath: KMSAT.AccountRiskScoreHistory.date
-          description: Account Risk score history date
-          type: String
+          description: Account Risk Score History Date
+          type: Date
       description: Returns KMSAT Account Risk Score History.
     - name: kmsat-groups-risk-score-history-list
       arguments:
@@ -106,7 +106,7 @@ script:
           type: String
         - contextPath: KMSAT.GroupsRiskScoreHistory.date
           description: Groups Risk score history date
-          type: String
+          type: Date
       description: Returns KMSAT Group Specific Risk Score History.
     - name: kmsat-groups-members-list
       arguments:
@@ -201,25 +201,25 @@ script:
           type: Date
         - contextPath: KMSAT.GroupsMembers.archived_at
           description: Groups Member Archived At
-          type: Unknown
+          type: Date
         - contextPath: KMSAT.GroupsMembers.custom_field_1
           description: Groups Member Custom Field 1
           type: String
         - contextPath: KMSAT.GroupsMembers.custom_field_2
           description: Groups Member Custom Field 2
-          type: Unknown
+          type: String
         - contextPath: KMSAT.GroupsMembers.custom_field_3
           description: Groups Member Custom Field 3
-          type: Unknown
+          type: String
         - contextPath: KMSAT.GroupsMembers.custom_field_4
           description: Groups Member Custom Field 4
-          type: Unknown
+          type: String
         - contextPath: KMSAT.GroupsMembers.custom_date_1
           description: Groups Member Custom Date 1
           type: Date
         - contextPath: KMSAT.GroupsMembers.custom_date_2
           description: Groups Member Custom Date 2
-          type: Unknown
+          type: Date
       description: Returns KMSAT Groups Members.
     - name: kmsat-users-risk-score-history-list
       arguments:
@@ -268,10 +268,10 @@ script:
           type: Number
         - contextPath: KMSAT.PhishingSecurity.started_at
           description: Phishing Security Started At Date
-          type: String
+          type: Date
         - contextPath: KMSAT.PhishingSecurity.duration
           description: Phishing Security Duration
-          type: number
+          type: Number
         - contextPath: KMSAT.PhishingSecurity.categories.category_id
           description: Phishing Security Category ID
           type: Number
@@ -315,7 +315,7 @@ script:
           description: Phishing Security Data Entered Count
           type: Number
         - contextPath: KMSAT.PhishingSecurity.qr_code_scanned_count
-          description: Phishing Security QA Code Scanned Count
+          description: Phishing Security QR Code Scanned Count
           type: Number
         - contextPath: KMSAT.PhishingSecurity.reported_count
           description: Phishing Security Reported Count
@@ -348,16 +348,16 @@ script:
           type: String
         - contextPath: KMSAT.PhishingSecurityPST.scheduled_at
           description: Phishing Security Scheduled At
-          type: String
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.delivered_at
           description: Phishing Security Delivered At
-          type: String
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.opened_at
           description: Phishing Security Opened At
-          type: String
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.clicked_at
           description: Phishing Security Clicked At
-          type: String
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.replied_at
           description: Phishing Security Replied At
           type: Date
@@ -366,6 +366,7 @@ script:
           type: Date
         - contextPath: KMSAT.PhishingSecurityPST.macro_enabled_at
           description: Phishing Security Macro Enabled At
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.data_entered_at
           description: Phishing Security Date Entered At
           type: Date
@@ -374,8 +375,10 @@ script:
           type: Date
         - contextPath: KMSAT.PhishingSecurityPST.reported_at
           description: Phishing Security Reported At
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.bounced_at
           description: Phishing Security Bounced At
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.ip
           description: Phishing Security IP
           type: String
@@ -430,6 +433,7 @@ script:
           type: Date
         - contextPath: KMSAT.PhishingSecurityPST.macro_enabled_at
           description: Phishing Security Macro Enabled At
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.data_entered_at
           description: Phishing Security Date Entered At
           type: Date
@@ -438,8 +442,10 @@ script:
           type: Date
         - contextPath: KMSAT.PhishingSecurityPST.reported_at
           description: Phishing Security Reported At
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.bounced_at
           description: Phishing Security Bounced At
+          type: Date
         - contextPath: KMSAT.PhishingSecurityPST.ip
           description: Phishing Security IP
           type: String
@@ -568,16 +574,16 @@ script:
           description: Training Campaigns Status
           type: String
         - contextPath: KMSAT.TrainingCampaigns.content.store_purchase_id
-          description: Training Campaigns Store Purchase ID
+          description: Training Campaigns Content Store Purchase ID
           type: Number
         - contextPath: KMSAT.TrainingCampaigns.content.content_type
           description: Training Campaigns Content Type
           type: String
         - contextPath: KMSAT.TrainingCampaigns.content.name
-          description: Training Campaigns Name
+          description: Training Campaigns Content Name
           type: String
         - contextPath: KMSAT.TrainingCampaigns.content.description
-          description: Training Campaigns Description
+          description: Training Campaigns Content Description
           type: String
         - contextPath: KMSAT.TrainingCampaigns.content.type
           description: Training Campaigns Type
@@ -590,7 +596,7 @@ script:
           type: Boolean
         - contextPath: KMSAT.TrainingCampaigns.content.retirement_date
           description: Training Campaigns Retirement Date
-          type: Unknown
+          type: Date
         - contextPath: KMSAT.TrainingCampaigns.content.publish_date
           description: Training Campaigns Publish Date
           type: Date
