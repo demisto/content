@@ -1485,7 +1485,7 @@ Gets or creates threat data
 | CTIX.ThreatDataGetCreate.NotFoundInvalid | string | IOCs that were found to be invalid, so they were not created | 
 
 #### Command example
-```!ctix-get-create-threat-data object_names=example.com,3.4.5.6,zzzzz object_type=indicator collection=some_collection source=some_source```
+```!ctix-get-create-threat-data object_names=example.com,x.x.x.x,zzzzz collection=some_collection source=some_source```
 #### Context Example
 ```json
 {
@@ -1551,7 +1551,7 @@ Gets or creates threat data
                 "valid_until": null
             },
             "NotFoundCreated": [
-                "3.4.5.6"
+                "x.x.x.x"
             ],
             "NotFoundInvalid": [
                 "zzzzz"

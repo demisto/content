@@ -20,7 +20,7 @@
 !ctix-ioc-manual-review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator
 !ctix-remove-allowed-ioc ids=7a33a7ac-ab54-412f-a725-f35c208a54ea
 !ctix-get-lookup-threat-data object_names=example.com, test.com object_type=indicator
-!ctix-get-create-threat-data object_names=example.com,8.8.8.8,zzzzz object_type=indicator createifnotexist=yes collection=anotherone source=testing
+!ctix-get-create-threat-data object_names=example.com,8.8.8.8,zzzzz collection=anotherone source=testing
 !ctix-get-actions action_type=manual object_type=indicator
 !ctix-saved-result-set label_name=test query=type=indicator
 !ctix-allowed-iocs reason=test type="ipv4-addr" values=127.0.0.1,127.0.0.2

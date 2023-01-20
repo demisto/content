@@ -1156,8 +1156,6 @@ script:
     description: Lookup to get threat data
   - name: ctix-get-create-threat-data
     arguments:
-    - name: object_type
-      description: object type
     - name: object_names
       description: "Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1"
       isArray: true

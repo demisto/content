@@ -647,10 +647,10 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         return self.post_http_request(client_url, payload, params)
 
-    def bulk_lookup_and_create_data(self, object_names, source, collection):
+    def bulk_lookup_and_create_data(self, object_names, source, collection, page_size):
         url_suffix = "ingestion/threat-data/bulk-lookup-and-create/"
         client_url = self.base_url + url_suffix
-        params = {"create": "true"}
+        params = {"create": "true", "page_size": page_size}
 
         payload = {
             "ioc_values": object_names,
@@ -1626,8 +1626,6 @@ def get_create_threat_data_command(
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     """
-    object_type = args.get("object_type", "indicator")
-    ioc_type = argToList(args.get("ioc_type"))
     object_names = argToList(args.get("object_names"))
     source = args.get("source", "XSOAR")
     collection = args.get("collection", "Intel")
@@ -1636,7 +1634,7 @@ def get_create_threat_data_command(
     created_after_lookup_results = []
     invalid_values_results = []
 
-    response = client.bulk_lookup_and_create_data(object_names, source, collection).get("data", {})
+    response = client.bulk_lookup_and_create_data(object_names, source, collection, page_size).get("data", {})
     results = response.get("found_iocs", {}).get("results", [])
     created_after_lookup = response["values_not_found"]["valid_iocs"]
     invalid_values = response["values_not_found"]["invalid_values"]
