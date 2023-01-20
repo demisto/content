@@ -54,7 +54,7 @@ def test_account_info(requests_mock):
     )
 
     result = kmsat_account_info_list_command(client)
-    assert result.outputs_prefix == "Account.Info"
+    assert result.outputs_prefix == "KMSAT.AccountInfo"
     assert result.outputs_key_field == "name"
     assert result.outputs == mock_response_data
 
@@ -90,7 +90,7 @@ def test_account_risk_score_history(requests_mock):
     )
     args: Dict = {}
     result = kmsat_account_risk_score_history_list_command(client, args)
-    assert result.outputs_prefix == "AccountRiskScore.History"
+    assert result.outputs_prefix == "KMSAT.AccountRiskScoreHistory"
     assert result.outputs_key_field == ""
     assert result.outputs == mock_response_data
 
@@ -124,7 +124,7 @@ def test_get_user_event_types(requests_mock):
 
     args: Dict = {}
     result = kmsat_user_event_types_list_command(userEventClient, args)
-    assert result.outputs_prefix == "KMSAT_User_Event_Types_Returned"
+    assert result.outputs_prefix == "KMSAT.UserEventTypes"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]
 
@@ -158,7 +158,7 @@ def test_get_user_events(requests_mock):
 
     args: Dict = {}
     result = kmsat_user_events_list_command(userEventClient, args)
-    assert result.outputs_prefix == "KMSAT_User_Events_Returned"
+    assert result.outputs_prefix == "KMSAT.UserEvents"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response_data["data"]
 
