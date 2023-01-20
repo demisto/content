@@ -105,6 +105,7 @@ HTTP_ERRORS = {
     502: '502 Bad Gateway - Could not connect to the origin server',
     503: '503 Service Unavailable'
 }
+
 ''' CLIENT CLASS '''
 
 
@@ -119,7 +120,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
                  first_fetch: str = '3 days', fetch_limit: int = 50, is_incident_event: bool = False,
                  is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None,
-                 sid: Optional[str] = None):
+                 token: Optional[str] = None):
 
         super().__init__(
             base_url=base_url,
@@ -135,11 +136,11 @@ class Client(BaseClient):
         self.is_fetch_comment = is_fetch_comment
         self.fetch_status = fetch_status
         self.fetch_priority = fetch_priority
-        self.sid = sid if sid is not None else self.get_access_token
+        self.access_token = token if token is not None else self._get_access_token_or_login
 
 
     @property
-    def get_access_token(self):
+    def _get_access_token_or_login(self):
         """
         Generate Access token
         Returns:
@@ -149,9 +150,9 @@ class Client(BaseClient):
             "grant_type": 'client_credentials'
         }
 
-        if last_sid := get_sid_from_context():
-            demisto.debug(f"Last login sid still active. Return last sid {self.sid}")
-            return last_sid
+        if last_access_token := get_last_access_token_from_context():
+            demisto.debug(f"Last login access token still active. Return token {self.access_token}")
+            return last_access_token
         else:
             try:
                 response = self._http_request(
@@ -163,12 +164,18 @@ class Client(BaseClient):
                 )
                 status = response.status_code
 
-                sid = response.json().get("access_token", '')
-                self.sid = sid
+                new_access_token = response.json().get("access_token", '')
+                self.access_token = new_access_token
                 timestamp_string = int(time.time() * 1000)
-                demisto.debug(f"login: success, saving sid={sid} , sid_last_datetime={timestamp_string} to integrationContext")
-                demisto.setIntegrationContext({'sedr_sid': sid, 'sedr_last_sid_datatime': timestamp_string})
-                return sid
+                demisto.debug(f"login: success, saving access token {new_access_token}\n,"
+                              f"Created Timestamp : {timestamp_string}")
+                if global_integration_context := demisto.getIntegrationContext():
+                    global_integration_context['access_token'] = new_access_token
+                    global_integration_context['created_timestamp_access_token'] = timestamp_string
+                    demisto.setIntegrationContext(global_integration_context)
+                else:
+                    demisto.setIntegrationContext({'access_token': None, 'created_timestamp_access_token': None})
+                return new_access_token
 
             except requests.exceptions.HTTPError as err:
                 if status in HTTP_ERRORS:
@@ -179,9 +186,8 @@ class Client(BaseClient):
                 else:
                     # if it is unknown error - get the message from the error itself
                     raise DemistoException(f'Failed to execute. Error: {str(err)}', res=response)
-
- # def http_request(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None, **kwargs):
-    def query_request_api(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None):
+                    
+    def query_request_api(self, method: str, url_suffix: str, params: dict[str, Any] = None, json_data: dict[str, Any] = None):
         """
         Call Symantec EDR On-prem POST and GET Request API
         Args:
@@ -197,7 +203,7 @@ class Client(BaseClient):
             response = self._http_request(
                 method=method.upper(),
                 url_suffix=url_suffix,
-                headers={'Authorization': f'Bearer {self.sid}', 'Content-Type': 'application/json'},
+                headers={'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'},
                 json_data=json_data if method == 'POST' else {},
                 params=params if method == 'GET' else {},
                 resp_type='response',
@@ -217,19 +223,19 @@ class Client(BaseClient):
 
         return response.json()
 
-    def query_patch_api(self, endpoint: str, payload: list) -> dict:
+    def query_patch_api(self, endpoint: str, payload: list[dict[str, Any]]):
         """
         Call the PATCH api to add/modify or update to the endpoint
         Args:
             endpoint (str): Symantec EDR endpoint resources operation add, update, delete
             payload (List): request body
         Returns:
-            return response status code
+            return response
         """
         try:
             response = self._http_request(
                 method="PATCH",
-                headers={'Authorization': f'Bearer {self.sid}', 'Content-Type': 'application/json'},
+                headers={'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'},
                 json_data=payload,
                 url_suffix=endpoint,
                 resp_type="response",
@@ -253,18 +259,17 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_sid_from_context():
-    if sid := demisto.getIntegrationContext().get('sedr_sid', None):
-        last_datetime = demisto.getIntegrationContext().get('sedr_last_sid_datatime', None)
+def get_last_access_token_from_context():
+    if token := demisto.getIntegrationContext().get('access_token', None):
+        last_datetime = demisto.getIntegrationContext().get('created_timestamp_access_token', None)
         now_datetime = int(time.time() * 1000)  # Convert to Millisecond
         time_diff = int(now_datetime - last_datetime)
         demisto.debug(
-            f"Last Sid: {sid}, Last datetime: {last_datetime}, now_datetime: {now_datetime}, time_diff: {time_diff}.")
-        return sid if time_diff <= SESSION_TIMEOUT_SEC * 1000 else None
+            f"Last token: {token}, Last datetime: {last_datetime}, now_datetime: {now_datetime}, time_diff: {time_diff}.")
+        return token if time_diff <= SESSION_TIMEOUT_SEC * 1000 else None
 
-    demisto.debug("No last SID found in Context.")
+    demisto.debug("No last token found in Context.")
     return None
-
 
 
 def iso_creation_date(date: str):
@@ -280,6 +285,25 @@ def iso_creation_date(date: str):
         iso_date = dateparser.parse(date).strftime(SYMANTEC_ISO_DATE_FORMAT)[:23] + "Z"  # type: ignore
 
     return iso_date
+
+
+def get_headers_from_summary_data(summary_data: list[dict]):
+    """
+    Symantec EDR formatting Readable output Header
+    Args:
+        summary_data (list[dict]): Human readable output summary data
+
+    Returns:
+        Return list with camelize string headers.
+
+    """
+    if not summary_data:
+        demisto.debug(f'Unable to find Readable Summary Data.')
+        return list()
+
+    headers = summary_data[0] if summary_data else {}
+    headers = list(headers.keys())
+    return list(camelize_string(column) for column in headers)
 
 
 def get_data_of_current_page(offset: int, limit: int, data_list: list[dict[str, Any]]):
@@ -457,7 +481,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         'event_actor', 'file', 'intrusion', 'kernel', 'link_following', 'receivers', 'process', 'reg_key', 'reg_value',
         'sandbox', 'scan', 'sender', 'service', 'session', 'monitor_source'
     ]
-    # event_dict = extract_raw_data(data, ignore_list)
+
     result = extract_raw_data(data, ignore_list)
 
     for key, func in (
@@ -477,28 +501,6 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         if values := data.get(item):
             result |= {f'{item}': values}
 
-    # All these below event sub objects left from this implementation,
-    # Only can be implemented if required for future enhancement
-
-    # av # TODO
-    # bash # TODO
-    # Entity => AuditEntityData TODO
-    # directory , TODO
-    # File TODO
-    # Intrusion TODO
-    # kernel TODO
-    # link following TODO
-    # Receivers TODO
-    # reg_key TODO
-    # reg_value TODO
-    # sandbox TODO
-    # scan TODO
-    # sender TODO
-    # service TODO
-    # session TODO
-    # threat TODO
-    # Entity_result , Duplicate with Entity can be Ignored
-
     return result
 
 
@@ -514,7 +516,7 @@ def domain_instance_readable_output(results: list[dict], title: str):
     summary_data = []
     for data in results:
         disposition_val = data.get('disposition', '')
-        new = {
+        domain_instance = {
             'data_source_url_domain': data.get('data_source_url_domain', ''),
             'first_seen': data.get('first_seen', ''),
             'last_seen': data.get('last_seen', ''),
@@ -522,11 +524,10 @@ def domain_instance_readable_output(results: list[dict], title: str):
             'disposition': DOMAIN_DISPOSITION_STATUS.get(str(disposition_val), ''),
             'data_source_url': data.get('data_source_url', '')
         }
-        summary_data.append(new)
-    headers = summary_data[0] if summary_data else {}
-    headers = list(headers.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=column_order, removeNull=True)
+        summary_data.append(domain_instance)
+
+    headers = get_headers_from_summary_data(summary_data)
+    markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=headers, removeNull=True)
     return markdown, summary_data
 
 
@@ -551,7 +552,7 @@ def system_activity_readable_output(results: list[dict], title: str):
         event_data['atp_node_role'] = EVENT_ATPNODE_ROLE.get(str(event_data.get('atp_node_role')))
         event_data['status_id'] = EVENT_STATUS.get(str(event_data.get('status_id')))
         # ------------- Symantec EDR Console logging System Activity -------
-        new = {
+        system_activity = {
             'time': event_data.get('device_time', ''),
             'type_id': event_data.get('type_id', ''),
             'severity_id': event_data.get('severity_id', ''),
@@ -560,14 +561,11 @@ def system_activity_readable_output(results: list[dict], title: str):
             'atp_node_role': event_data.get('atp_node_role', ''),
             'status_id': event_data.get('status_id', '')
         }
-        summary_data.append(new)
+        summary_data.append(system_activity)
         context_data.append(event_data)
 
-    row = summary_data[0] if summary_data else {}
-    headers = list(row.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    # , headers=headers,
-    markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=column_order, removeNull=True)
+    headers = get_headers_from_summary_data(summary_data)
+    markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=headers, removeNull=True)
     return markdown, context_data
 
 
@@ -584,7 +582,7 @@ def endpoint_instance_readable_output(results: list[dict], title: str) -> str:
     summary_data = []
     for data in results:
         ip_addresses = data.get("ip_addresses", [])
-        new = {
+        endpoint_instance = {
             'device_uid': data.get('device_uid', ''),
             'device_name': data.get('device_name', ''),
             'device_ip': data.get('device_ip', ''),
@@ -592,12 +590,10 @@ def endpoint_instance_readable_output(results: list[dict], title: str) -> str:
             'time': data.get('time', ''),
             'ip_addresses': ip_addresses
         }
-        summary_data.append(new)
+        summary_data.append(endpoint_instance)
 
-    headers = summary_data[0] if summary_data else {}
-    headers = list(headers.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    markdown = tableToMarkdown(title, camelize(summary_data, "_"), headers=column_order,
+    headers = get_headers_from_summary_data(summary_data)
+    markdown = tableToMarkdown(title, camelize(summary_data, "_"), headers=headers,
                                removeNull=True)
     return markdown
 
@@ -617,7 +613,7 @@ def incident_readable_output(results: list[dict], title: Optional[str] = None):
         priority = data.get('priority_level', '')
         state = data.get('state', '')
         resolution = data.get('resolution', '')
-        new = {
+        incident = {
             # EDR CONSOLE Headers : ID , Description, incident Created, Detection Type, Last Updated,priority
             'incident_id': data.get('atp_incident_id', ''),
             'description': data.get('summary', ''),
@@ -632,18 +628,15 @@ def incident_readable_output(results: list[dict], title: Optional[str] = None):
             'incident_uuid': data.get('uuid'),
             'log_name': data.get('log_name'),
             'recommended_action': data.get('recommended_action'),
-            # 'summary': data.get('summary'),
             'resolution': INCIDENT_RESOLUTION.get(str(resolution), ''),
             'first_seen': data.get('first_event_seen'),
             'last_seen': data.get('last_event_seen')
         }
-        summary_data.append(new)
+        summary_data.append(incident)
     summary_data_sorted = sorted(summary_data, key=lambda d: d['incident_id'], reverse=True)
-    row = summary_data[0] if summary_data else {}
-    headers = list(row.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    # , headers=headers,
-    markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=column_order, removeNull=True)
+
+    headers = get_headers_from_summary_data(summary_data)
+    markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=headers, removeNull=True)
     return markdown, summary_data
 
 
@@ -664,7 +657,7 @@ def audit_event_readable_output(results: list[dict], title: str):
         event_dict['severity_id'] = EVENT_SEVERITY.get(str(event_dict.get('severity_id')))
         event_dict['status_id'] = EVENT_STATUS.get(str(event_dict.get('status_id')))
         # ---- Display Data ----
-        new = {
+        event = {
             'time': event_dict.get('device_time', ''),
             'type_id': event_dict.get('type_id', ''),
             'feature_name': event_dict.get("feature_name", ''),
@@ -677,14 +670,13 @@ def audit_event_readable_output(results: list[dict], title: str):
             'uuid': event_dict.get('uuid', ''),
             'status_id': event_dict.get('status_id', '')
         }
-        summary_data.append(new)
+        summary_data.append(event)
         context_data.append(event_dict)
 
     summary_data_sorted = sorted(summary_data, key=lambda d: d['time'], reverse=True)
-    row = summary_data[0] if summary_data else {}
-    headers = list(row.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=column_order, removeNull=True)
+
+    headers = get_headers_from_summary_data(summary_data)
+    markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=headers, removeNull=True)
     return markdown, context_data
 
 
@@ -705,7 +697,7 @@ def incident_event_readable_output(results: list[dict], title: Optional[str] = N
         severity_id = event_dict.get('severity_id', '')
         event_dict['severity_id'] = EVENT_SEVERITY.get(str(severity_id), '')
         # ---- Display Data ----
-        new = {
+        incident_for_event = {
             'time': event_dict.get('device_time', ''),
             'type_id': event_dict.get('type_id', ''),
             'description': f'{event_dict.get("event_actor_file_name", "")} '
@@ -719,14 +711,13 @@ def incident_event_readable_output(results: list[dict], title: Optional[str] = N
             'device_domain': event_dict.get('device_domain', ''),
             'user_name': event_dict.get('user_name', ''),
         }
-        summary_data.append(new)
+        summary_data.append(incident_for_event)
         context_data.append(event_dict)
 
     summary_data_sorted = sorted(summary_data, key=lambda d: d['time'], reverse=True)
-    row = summary_data[0] if summary_data else {}
-    headers = list(row.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=column_order, removeNull=True)
+
+    headers = get_headers_from_summary_data(summary_data)
+    markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=headers, removeNull=True)
     return markdown, context_data
 
 
@@ -744,19 +735,17 @@ def incident_comment_readable_output(results: list[dict], title: str, incident_i
 
     summary_data: list[dict[str, Any]] = []
     for data in results:
-        new = {
+        incident_comment = {
             'incident_id': incident_id,
             'comment': data.get('comment', ''),
             'time': data.get('time', ''),
             'user_id': data.get('user_id', ''),
             'incident_responder_name': data.get('incident_responder_name', '')
         }
-        summary_data.append(new)
-    headers = summary_data[0] if summary_data else {}
-    headers = list(headers.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    # markdown = tableToMarkdown(title, summary_data, headers=headers,removeNull=True)
-    markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=column_order, removeNull=True)
+        summary_data.append(incident_comment)
+
+    headers = get_headers_from_summary_data(summary_data)
+    markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=headers, removeNull=True)
     return markdown, summary_data
 
 
@@ -776,10 +765,8 @@ def generic_readable_output(results_list: list[dict], title: str) -> str:
         row = extract_raw_data(data, ignore_key_list, prefix)
         readable_output.append(row)
 
-    headers = readable_output[0] if readable_output else {}
-    headers = list(headers.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    markdown = tableToMarkdown(title, camelize(readable_output, "_"), headers=column_order,
+    headers = get_headers_from_summary_data(readable_output)
+    markdown = tableToMarkdown(title, camelize(readable_output, "_"), headers=headers,
                                removeNull=True)
     return markdown
 
@@ -794,7 +781,6 @@ def extract_raw_data(data: list | dict, ignore_key: list[str] = [], prefix: str 
      Returns:
          Return dict according to table field name and value
      """
-    # ignore_key = ['event_actor', 'process', 'enriched_data']
     dataset: dict = {}
     if isinstance(data, dict):
         for key, val in data.items():
@@ -802,7 +788,7 @@ def extract_raw_data(data: list | dict, ignore_key: list[str] = [], prefix: str 
                 field_name = f'{prefix}_{key}' if prefix else f'{key}'
                 dataset[field_name] = val
 
-    if isinstance(data, list):
+    elif isinstance(data, list):
         cnt = 0
         for d in data:
             for key, val in d.items():
@@ -810,6 +796,9 @@ def extract_raw_data(data: list | dict, ignore_key: list[str] = [], prefix: str 
                     field_name = f'{prefix}_{key}_{cnt}' if prefix else f'{key}_{cnt}'
                     dataset[field_name] = val
             cnt = cnt + 1
+    else:
+        raise ValueError(f'Unable to determined "data" argument type. Data must be either list or dict')
+
     return dataset
 
 
@@ -1001,7 +990,6 @@ def get_params_query(args: dict, p_limit: int = 0) -> dict:
     md5 = args.get('md5')
     sha256 = args.get('sha256')
 
-    # if ip := args.get('ip'):
     if ip:
         check_valid_indicator_value('ip', ip)
 
@@ -1023,7 +1011,6 @@ def get_params_query(args: dict, p_limit: int = 0) -> dict:
     query_param['ip'] = ip
     query_param['url'] = url
     query_param['sha256'] = sha256
-    # query_param['incident_trigger_sig_id'] = args.get('incident_trigger_sig_id') # Parameter is Deprecated
     query_param['id'] = arg_to_number(args.get('allowlist_id'), arg_name='allowlist_id')
     query_param['domain'] = args.get('domain')
 
@@ -1044,19 +1031,21 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
         if not re.match(sha256Regex, indicator_value):
             raise ValueError(f'SHA256 value"{indicator_value}" is invalid')
 
-    if indicator_type == 'urls':
+    elif indicator_type == 'urls':
         if not re.match(urlRegex, indicator_value):
             raise ValueError(
                 f'URL {indicator_value} is invalid')
 
-    if indicator_type == 'ip':
+    elif indicator_type == 'ip':
         if not is_ip_valid(indicator_value):
             raise ValueError(f'IP "{indicator_value}" is invalid')
 
-    if indicator_type == 'md5':
+    elif indicator_type == 'md5':
         if not re.match(md5Regex, indicator_value):
             raise ValueError(
                 f'MD5 value {indicator_value} is invalid')
+    else:
+        raise ValueError(f'Kindly provide indicator type. Possible Indicator type are : sha256, urls, domain, ip, md5')
 
     return True
 
@@ -1093,7 +1082,7 @@ def get_incident_uuid(client: Client, args: dict[str, Any]) -> str:
         Return Incident UUID
     """
     data_list = get_incident_raw_response('/atpapi/v2/incidents', client, args, 1).get('result', [])
-    if len(data_list) >= 1:
+    if data_list:
         if uuid := data_list[0].get('uuid'):
             return uuid
     else:
@@ -1162,7 +1151,7 @@ def test_module(client: Client) -> str:
         res = get_incident_list_command(client, {'limit': 1})
         message = 'ok'
     except DemistoException as e:
-        return_error(f'Failed to execute. Error {e}')
+        raise DemistoException(f'Failed to execute. Error {e}')
 
     return message
 
@@ -1880,7 +1869,6 @@ def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> Command
     result = raw_response.get('status', [])
     if len(result) >= 1:
         for status in result:
-            # summary_data['target'] = status.get('target')
             summary_data['state'] = status.get('state', '')
             summary_data['message'] = status.get('message', '')
             summary_data['error_code'] = status.get('error_code', '')
@@ -1931,7 +1919,7 @@ def fetch_incidents(client: Client) -> list:
         "query": f'priority_level: ({priority}) AND state: ({state})'
     }
     demisto.debug(f'limit: {client.fetch_limit}, priority_level: ({priority}) AND state: ({state})')
-    # demisto.getLastRun() will returns an obj with the previous run in it.
+    # demisto.getLastRun() will return an obj with the previous run in it.
     # set First Fetch starting time in case running first time or reset
     start_time = iso_creation_date(client.first_fetch)
     start_time_n, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=client.first_fetch)
@@ -1940,10 +1928,9 @@ def fetch_incidents(client: Client) -> list:
         start_time_lastrun = iso_creation_date(last_run.get('time'))
 
     payload['start_time'] = start_time if not last_run else start_time_lastrun
-    # results = client.query_request_api('/atpapi/v2/incidents', payload, 'POST').get('result', [])
     results = client.query_request_api(method='POST', url_suffix='/atpapi/v2/incidents', params={}, json_data=payload
                                        ).get('result', [])
-    #incidents = []  # type:List
+
     incidents, events_result, comments_result = [], [], []  # type:List
     # Map severity to Demisto severity for incident creation
     xsoar_severity_map = {'High': 3, 'Medium': 2, 'Low': 1}
@@ -1960,7 +1947,6 @@ def fetch_incidents(client: Client) -> list:
                     "verb": "query",
                     "start_time": start_time
                 } if not last_run else {"verb": "query"}
-                # comments_result = client.query_request_api(f'/atpapi/v2/incidents/{incident_uuid}/comments', payload, 'POST').get('result', [])
                 comments_result = client.query_request_api(method='POST',
                                                            url_suffix=f'/atpapi/v2/incidents/{incident_uuid}/comments',
                                                            params={},
@@ -1973,7 +1959,6 @@ def fetch_incidents(client: Client) -> list:
                     "query": f'incident: {incident_uuid}',
                     "start_time": start_time
                 }
-                # events_result = client.query_request_api('/atpapi/v2/incidentevents', payload).get('result', [])
                 events_result = client.query_request_api(method='POST',
                                                          url_suffix=f'/atpapi/v2/incidentevents',
                                                          params={},
@@ -2035,20 +2020,17 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
     sha2 = args.get('file')
     endpoint = f'/atpapi/v2/sandbox/results/{sha2}/verdict'
 
-    # sandbox_res = client.query_request_api(endpoint, {}, 'GET')
     sandbox_res = client.query_request_api(method='GET',
                                            url_suffix=endpoint,
                                            params={},
                                            json_data={})
 
-    # file_res = client.query_request_api(f'/atpapi/v2/entities/files/{sha2}', {}, 'GET')
     file_res = client.query_request_api(method='GET',
                                         url_suffix=f'/atpapi/v2/entities/files/{sha2}',
                                         params={},
                                         json_data={})
     response: Dict[str, Any] = {**sandbox_res, **file_res}
     # Sandbox verdict
-    # datasets = response_data.get("status", [])
     title = "Sandbox Verdict"
     if response:
         readable_output = generic_readable_output(argToList(response), title)
@@ -2077,10 +2059,8 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> str:
     try:
         endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
     except Exception as e:
-        # f'Failed to execute {demisto.command()} command.\nError: {e}'
-        return_error(message='File not found.', error=f'Unknown..{e}', outputs={'message': 'File Not found', 'status': 'Unknown'})
+        raise DemistoException(f'File not found. Error : {e}')
 
-    # response = client.query_request_api(endpoint, {}, 'GET')
     response = client.query_request_api(method='GET',
                                         url_suffix=endpoint,
                                         params={},
@@ -2090,14 +2070,14 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> str:
     datasets = response.get("status", [])
     if datasets:
         for data in datasets:
-            new = {
+            sandbox_status = {
                 'command_id': command_id,
                 'status': SANDBOX_STATE.get(str(data.get('state'))),
                 'message': data.get('message'),
                 'target': data.get('target'),
                 'error_code': data.get('error_code')
             }
-            summary_data = {**summary_data, **new}
+            summary_data = {**summary_data, **sandbox_status}
 
     title = "File Sandbox Status"
     if datasets:
@@ -2129,16 +2109,13 @@ def issue_sandbox_command(client: Client, args: Dict[str, Any]) -> CommandResult
     if not re.match(sha256Regex, sha2):
         raise ValueError(f'SHA256 value {sha2} is invalid')
 
-    # or (not re.match(md5Regex, sha2))
-
     endpoint = '/atpapi/v2/sandbox/commands'
     payload = {
         'action': 'analyze',
         'targets': argToList(sha2)
     }
-    # response = client.query_request_api(endpoint, payload)
     response = client.query_request_api(method='POST', url_suffix=endpoint, params={}, json_data=payload)
-    # return response.get('command_id', '')
+
     # Get Issue Sandbox Command
     title = "Issue Sandbox Command"
     summary_data = {
@@ -2165,10 +2142,15 @@ def sandbox_issue_polling_command(client: Client, args: Dict[str, Any]):
     if 'command_id' not in args:
         command_results = issue_sandbox_command(client, args)
         outputs = command_results.outputs
-        new_command_id = outputs.get('command_id')
-        demisto.setIntegrationContext({'command_id': new_command_id})
-        if new_command_id:
-            args['command_id'] = new_command_id
+        command_id = outputs.get('command_id')
+
+        if global_integration_context := demisto.getIntegrationContext():
+            global_integration_context['command_id'] = command_id
+        else:
+            demisto.setIntegrationContext({'command_id': command_id})
+
+        if command_id:
+            args['command_id'] = command_id
 
     return file_polling_command(args, client)
 
@@ -2197,13 +2179,18 @@ def file_polling_command(args: Dict[str, Any], client: Client) -> PollResult:
 
     if status == 'Completed':
         command_result = get_sandbox_verdict(client, args)
-        demisto.setIntegrationContext({})
+        
+        if global_integration_context := demisto.getIntegrationContext():
+            del global_integration_context['command_id']
+
         return PollResult(
             response=command_result,
             continue_to_poll=False
         )
     elif status == 'Error':
-        demisto.setIntegrationContext({})
+        if global_integration_context := demisto.getIntegrationContext():
+            del global_integration_context['command_id']
+        
         return PollResult(
             response=command_result,
             continue_to_poll=False
@@ -2240,11 +2227,14 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
     Returns:
 
     """
+    demisto.debug(f'-- Polling Command --\nArguments : {args}')
+    demisto.debug(f'Integration Global Context Data: {demisto.getIntegrationContext()}')
+    
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL))
     timeout_in_seconds = arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT))
 
-    # distinguish between the initial run, which is the Issue the file for scanning
+    # Check for ongoing file scanning command_id if exist
     if pre_cmd_id := demisto.getIntegrationContext().get('command_id'):
         args['command_id'] = pre_cmd_id
     # first run ...
@@ -2252,8 +2242,14 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
         command_results = issue_sandbox_command(client, args)
         outputs = command_results.outputs
         command_id = outputs.get('command_id')
+
         if command_id is not None:
-            demisto.setIntegrationContext({'command_id': command_id})
+            if global_integration_context := demisto.getIntegrationContext():
+                global_integration_context['command_id'] = command_id
+                demisto.setIntegrationContext(global_integration_context)
+            else:
+                demisto.setIntegrationContext({'command_id': command_id})
+
             args['command_id'] = command_id
 
             polling_args = {
@@ -2282,10 +2278,15 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
     status = outputs.get('status')
     if status == 'Completed':
         # # action was completed
-        demisto.setIntegrationContext({})
+        if global_integration_context := demisto.getIntegrationContext():
+            del global_integration_context['command_id']
+            demisto.setIntegrationContext(global_integration_context)
         return results_func(client, args)
     elif status == 'Error':
-        demisto.setIntegrationContext({})
+        if global_integration_context := demisto.getIntegrationContext():
+            del global_integration_context['command_id']
+            demisto.setIntegrationContext(global_integration_context)
+
         return command_result
     else:
         # in case of In progress
@@ -2331,7 +2332,7 @@ def main() -> None:
         verify_certificate = params.get('insecure', False)
         # not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        last_token = get_sid_from_context()
+        last_token = get_last_access_token_from_context()
 
         # Fetches Incident Parameters
         first_fetch_time = params.get('first_fetch', '3 days').strip()
@@ -2344,7 +2345,7 @@ def main() -> None:
         client = Client(base_url=server_url, verify=verify_certificate, proxy=proxy, client_id=client_id,
                         client_secret=client_secret, first_fetch=first_fetch_time, fetch_limit=fetch_limit,
                         is_incident_event=fetch_incident_event, is_fetch_comment=fetch_comments,
-                        fetch_status=fetch_status, fetch_priority=fetch_priority, sid=last_token)
+                        fetch_status=fetch_status, fetch_priority=fetch_priority, token=last_token)
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
