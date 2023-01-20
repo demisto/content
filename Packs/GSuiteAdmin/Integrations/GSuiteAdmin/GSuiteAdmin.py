@@ -1,12 +1,16 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
 
-import urllib.parse
-import urllib3
-import hashlib
 import copy
-from typing import List, Dict, Any, Callable, NamedTuple
+import hashlib
+import urllib.parse
+from typing import Any, Callable, Dict, List, NamedTuple
+
+import urllib3
 from GSuiteApiModule import *  # noqa: E402
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -53,6 +57,7 @@ HR_MESSAGES: Dict[str, str] = {
                                                'PrivilegeName2:ServiceId2".',
     'ROLE_CREATE_SUCCESS': 'A new role created.',
     'TOKEN_REVOKE_SUCCESS': 'All access tokens deleted for {}.',
+    'USER_SIGNOUT_SUCCESS': 'The user: {} has been signed out of all sessions',
     'NO_RECORDS': 'No {} found for the given argument(s).',
     'CUSTOM_USER_SCHEMA_CREATE': 'Custom User Schema Details',
     'CUSTOM_USER_SCHEMA_FIELD_DETAILS': 'Field Details',
@@ -83,6 +88,7 @@ URL_SUFFIX: Dict[str, str] = {
     'MOBILE_DEVICES_LIST': 'admin/directory/v1/customer/{}/devices/mobile',
     'CHROMEOS_DEVICE_ACTION': 'admin/directory/v1/customer/{}/devices/chromeos/{}/action',
     'CHROMEOS_DEVICES_LIST': 'admin/directory/v1/customer/{}/devices/chromeos',
+    'SIGN_OUT_USER': 'admin/directory/v1/users/{}/signOut'
 
 }
 SCOPES: Dict[str, List[str]] = {
@@ -862,6 +868,28 @@ def token_revoke_command(client: Client, args: Dict[str, str]) -> CommandResults
 
 
 @logger
+def gsuite_user_signout_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """
+    Sign a user out of all devices.
+    reference: https://developers.google.com/admin-sdk/directory/reference/rest/v1/users/signOut
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: CommandResults.
+    """
+
+    client.set_authorized_http(scopes=SCOPES['USER_SECURITY'])
+
+    user_key = urllib.parse.quote(args.get('user_key', ''))
+
+    client.http_request(url_suffix=URL_SUFFIX['SIGN_OUT_USER'].format(user_key), method='POST')
+
+    msg = urllib.parse.unquote('User: {}  has been signed out of all sessions...'.format(user_key))
+
+    return CommandResults(readable_output=HR_MESSAGES['USER_SIGNOUT_SUCCESS'].format(args.get('user_key')))
+
+
+@logger
 def datatransfer_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Lists the transfers for a customer by source user, destination user, or status.
@@ -1126,13 +1154,6 @@ def user_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
                           outputs=outputs,
                           readable_output=readable_output,
                           raw_response=response)
-
-
-def mobile_device_list_request(client: Client, customer_id: str, query_params: dict = {}):
-    response = client.http_request(
-        url_suffix=URL_SUFFIX.get('MOBILE_DEVICES_LIST', '').format(urllib.parse.quote(customer_id)),
-        params=query_params)
-    return response
 
 
 def chromeos_device_list_request(client: Client, customer_id: str, query_params: dict = {}):
@@ -1486,7 +1507,8 @@ def main() -> None:
         'gsuite-user-update': user_update_command,
         'gsuite-mobiledevice-list': gsuite_mobile_device_list_command,
         'gsuite-chromeosdevice-action': gsuite_chromeos_device_action_command,
-        'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command
+        'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command,
+        'gsuite-user-signout': gsuite_user_signout_command
 
     }
     command = demisto.command()
