@@ -173,7 +173,7 @@ Adds list of same type of iocs to allowed
 
 
 #### Command Example
-```!ctix-allowed-iocs reason=test type="ipv4-addr" values=x.x.x.x,x.x.xx.x```
+```!ctix-allowed-iocs reason=test type="ipv4-addr" values=x.x.x.x,x.x.x.x```
 
 #### Context Example
 ```json
@@ -181,7 +181,7 @@ Adds list of same type of iocs to allowed
 		"details":{
 			"already_exists": [
 				"x.x.x.x",
-				"x.x.xx.x"
+				"x.x.x.x"
 			],
 			"invalid": [],
 			"new_created": []
@@ -1271,7 +1271,6 @@ Get Indicator Observations
 	}
 }
 ```
-
 ### ctix-get-lookup-threat-data
 ***
 Lookup to get threat data
@@ -1285,123 +1284,116 @@ Lookup to get threat data
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | object type. | Optional | 
-| object_names | Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1. | Required | 
+| object_names | Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1. | Optional | 
 | page_size | size of the page. Default is 10. | Optional | 
-| createifnotexist | Specify whether to create a new threat data entry if it does not exist. | Optional | 
-| source | The source of the threat data. | Optional | 
-| collection | The collection to store the threat data in. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.ThreatDataLookup.Found.analyst_score | number | Analyst score of the indicator | 
-| CTIX.ThreatDataLookup.Found.analyst_tlp | string | Analyst TLP of the indicator | 
-| CTIX.ThreatDataLookup.Found.confidence_score | number | Confidence score of the indicator | 
-| CTIX.ThreatDataLookup.Found.confidence_type | string | Confidence type of the indicator | 
-| CTIX.ThreatDataLookup.Found.country | string | Indicator origin country | 
-| CTIX.ThreatDataLookup.Found.created | number | Timestamp of when the indicator was created | 
-| CTIX.ThreatDataLookup.Found.ctix_created | number | Timestamp of when the indicator was created in CTIX | 
-| CTIX.ThreatDataLookup.Found.ctix_modified | number | Timestamp of when the indicator was modified in CTIX | 
-| CTIX.ThreatDataLookup.Found.first_seen | number | Timestamp of when the indicator was first seen | 
-| CTIX.ThreatDataLookup.Found.id | string | Indicator ID | 
-| CTIX.ThreatDataLookup.Found.indicator_type | string | Indicator type | 
-| CTIX.ThreatDataLookup.Found.ioc_type | string | IOC type | 
-| CTIX.ThreatDataLookup.Found.is_actioned | boolean | Is actioned | 
-| CTIX.ThreatDataLookup.Found.is_deprecated | boolean | is deprecated | 
-| CTIX.ThreatDataLookup.Found.is_false_positive | boolean | is false positive | 
-| CTIX.ThreatDataLookup.Found.is_reviewed | boolean | is reviewed  | 
-| CTIX.ThreatDataLookup.Found.is_revoked | boolean | is revoked | 
-| CTIX.ThreatDataLookup.Found.is_watchlist | boolean | is watchlisted | 
-| CTIX.ThreatDataLookup.Found.is_whitelisted | boolean | is allowed | 
-| CTIX.ThreatDataLookup.Found.last_seen | number | Timestamp of when the indicator was last seen | 
-| CTIX.ThreatDataLookup.Found.modified | number | Timestamp of when the indicator was modified | 
-| CTIX.ThreatDataLookup.Found.name | string | name of the indicator | 
-| CTIX.ThreatDataLookup.Found.null | unknown | null | 
-| CTIX.ThreatDataLookup.Found.primary_attribute | string | Primary Attribute | 
-| CTIX.ThreatDataLookup.Found.published_collections | unknown | published collections | 
-| CTIX.ThreatDataLookup.Found.risk_severity | string | Risk severity | 
-| CTIX.ThreatDataLookup.Found.source_collections | unknown | sources collections | 
-| CTIX.ThreatDataLookup.Found.source_confidence | string | Source confidence  | 
-| CTIX.ThreatDataLookup.Found.sources | unknown | sources | 
-| CTIX.ThreatDataLookup.Found.sub_type | string | Sub type | 
-| CTIX.ThreatDataLookup.Found.subscriber_collections | unknown | subscriber collections | 
-| CTIX.ThreatDataLookup.Found.subscribers | unknown | subscribers | 
-| CTIX.ThreatDataLookup.Found.tags | unknown | Tags | 
-| CTIX.ThreatDataLookup.Found.tlp | string | TLP | 
-| CTIX.ThreatDataLookup.Found.type | string | Type | 
-| CTIX.ThreatDataLookup.Found.valid_from | number | Timestamp from when the indicator was valid | 
-| CTIX.ThreatDataLookup.Found.valid_until | number | Timestamp till when the indicator was valid | 
-| CTIX.ThreatDataLookup.NotFoundCreated | string | IOCs that weren't found, but were created because \`createifnotexist\` was set to True | 
-| CTIX.ThreatDataLookup.NotFoundInvalid | string | IOCs that were found to be invalid, so they were not created, despite \`createifnotexist\` was set to True | 
+| CTIX.ThreatDataLookup.analyst_score | number | Analyst score of the indicator | 
+| CTIX.ThreatDataLookup.analyst_tlp | string | Analyst TLP of the indicator | 
+| CTIX.ThreatDataLookup.confidence_score | number | Confidence score of the indicator | 
+| CTIX.ThreatDataLookup.confidence_type | string | Confidence type of the indicator | 
+| CTIX.ThreatDataLookup.country | string | Indicator origin country | 
+| CTIX.ThreatDataLookup.created | number | Timestamp of when the indicator was created | 
+| CTIX.ThreatDataLookup.ctix_created | number | Timestamp of when the indicator was created in CTIX | 
+| CTIX.ThreatDataLookup.ctix_modified | number | Timestamp of when the indicator was modified in CTIX | 
+| CTIX.ThreatDataLookup.first_seen | number | Timestamp of when the indicator was first seen | 
+| CTIX.ThreatDataLookup.id | string | Indicator ID | 
+| CTIX.ThreatDataLookup.indicator_type | string | Indicator type | 
+| CTIX.ThreatDataLookup.ioc_type | string | IOC type | 
+| CTIX.ThreatDataLookup.is_actioned | boolean | Is actioned | 
+| CTIX.ThreatDataLookup.is_deprecated | boolean | is deprecated | 
+| CTIX.ThreatDataLookup.is_false_positive | boolean | is false positive | 
+| CTIX.ThreatDataLookup.is_reviewed | boolean | is reviewed  | 
+| CTIX.ThreatDataLookup.is_revoked | boolean | is revoked | 
+| CTIX.ThreatDataLookup.is_watchlist | boolean | is watchlisted | 
+| CTIX.ThreatDataLookup.is_whitelisted | boolean | is allowed | 
+| CTIX.ThreatDataLookup.last_seen | number | Timestamp of when the indicator was last seen | 
+| CTIX.ThreatDataLookup.modified | number | Timestamp of when the indicator was modified | 
+| CTIX.ThreatDataLookup.name | string | name of the indicator | 
+| CTIX.ThreatDataLookup.null | unknown | null | 
+| CTIX.ThreatDataLookup.primary_attribute | string | Primary Attribute | 
+| CTIX.ThreatDataLookup.published_collections | unknown | published collections | 
+| CTIX.ThreatDataLookup.risk_severity | string | Risk severity | 
+| CTIX.ThreatDataLookup.source_collections | unknown | sources collections | 
+| CTIX.ThreatDataLookup.source_confidence | string | Source confidence  | 
+| CTIX.ThreatDataLookup.sources | unknown | sources | 
+| CTIX.ThreatDataLookup.sub_type | string | Sub type | 
+| CTIX.ThreatDataLookup.subscriber_collections | unknown | subscriber collections | 
+| CTIX.ThreatDataLookup.subscribers | unknown | subscribers | 
+| CTIX.ThreatDataLookup.tags | unknown | Tags | 
+| CTIX.ThreatDataLookup.tlp | string | TLP | 
+| CTIX.ThreatDataLookup.type | string | Type | 
+| CTIX.ThreatDataLookup.valid_from | number | Timestamp from when the indicator was valid | 
+| CTIX.ThreatDataLookup.valid_until | number | Timestamp till when the indicator was valid | 
 
 #### Command example
-```!ctix-get-lookup-threat-data object_names=example.com,x.x.x.x object_type=indicator```
+```!ctix-get-lookup-threat-data object_names=example.com,3.4.5.6 object_type=indicator```
 #### Context Example
 ```json
 {
     "CTIX": {
         "ThreatDataLookup": {
-            "Found": {
-                "analyst_cvss_score": null,
-                "analyst_score": null,
-                "analyst_tlp": null,
-                "confidence_score": 100,
-                "confidence_type": "ctix",
-                "country": null,
-                "created": 1674080000,
-                "ctix_created": 1674080000,
-                "ctix_modified": 1674080000,
-                "custom_attributes": [],
-                "first_seen": null,
-                "id": "6779a969-6404-4dd7-97ef-dec877c03c4f",
-                "indicator_type": "domain-name",
-                "ioc_type": "domain-name",
-                "is_actioned": false,
-                "is_deprecated": false,
-                "is_false_positive": false,
-                "is_reviewed": false,
-                "is_revoked": false,
-                "is_watchlist": false,
-                "is_whitelisted": false,
-                "last_seen": null,
-                "modified": 1674080001,
-                "name": "example.com",
-                "null": [],
-                "primary_attribute": null,
-                "published_collections": [],
-                "risk_severity": null,
-                "severity": "UNKNOWN",
-                "source_collections": [
-                    {
-                        "id": "a9d67cc1-5de8-460b-8bf4-63abc7ceaa54",
-                        "name": "anotherone (OpenAPI)"
-                    }
-                ],
-                "source_confidence": "HIGH",
-                "sources": [
-                    {
-                        "id": "38102b0e-1af4-4ee2-a62e-dd5f2ffaff5a",
-                        "name": "testing (OpenAPI)",
-                        "source_type": "MISCELLANEOUS"
-                    }
-                ],
-                "sub_type": "value",
-                "subscriber_collections": [],
-                "subscribers": [],
-                "tags": [
-                    {
-                        "colour_code": "#5236E2",
-                        "id": "9635c41b-80fb-4a98-a1f3-e5796c72bb29",
-                        "name": "created_using_openapi_lookup"
-                    }
-                ],
-                "tlp": "AMBER",
-                "type": "indicator",
-                "valid_from": 1674080000,
-                "valid_until": null
-            }
+            "analyst_cvss_score": null,
+            "analyst_score": null,
+            "analyst_tlp": null,
+            "confidence_score": 100,
+            "confidence_type": "ctix",
+            "country": null,
+            "created": 1674080000,
+            "ctix_created": 1674080000,
+            "ctix_modified": 1674080000,
+            "custom_attributes": [],
+            "first_seen": null,
+            "id": "6779a969-6404-4dd7-97ef-dec877c03c4f",
+            "indicator_type": "domain-name",
+            "ioc_type": "domain-name",
+            "is_actioned": false,
+            "is_deprecated": false,
+            "is_false_positive": false,
+            "is_reviewed": false,
+            "is_revoked": false,
+            "is_watchlist": false,
+            "is_whitelisted": false,
+            "last_seen": null,
+            "modified": 1674080001,
+            "name": "example.com",
+            "null": [],
+            "primary_attribute": null,
+            "published_collections": [],
+            "risk_severity": null,
+            "severity": "UNKNOWN",
+            "source_collections": [
+                {
+                    "id": "a9d67cc1-5de8-460b-8bf4-63abc7ceaa54",
+                    "name": "anotherone (OpenAPI)"
+                }
+            ],
+            "source_confidence": "HIGH",
+            "sources": [
+                {
+                    "id": "38102b0e-1af4-4ee2-a62e-dd5f2ffaff5a",
+                    "name": "testing (OpenAPI)",
+                    "source_type": "MISCELLANEOUS"
+                }
+            ],
+            "sub_type": "value",
+            "subscriber_collections": [],
+            "subscribers": [],
+            "tags": [
+                {
+                    "colour_code": "#5236E2",
+                    "id": "9635c41b-80fb-4a98-a1f3-e5796c72bb29",
+                    "name": "created_using_openapi_lookup"
+                }
+            ],
+            "tlp": "AMBER",
+            "type": "indicator",
+            "valid_from": 1674080000,
+            "valid_until": null
         }
     },
     "DBotScore": {
@@ -1429,13 +1421,76 @@ Lookup to get threat data
 >| 100 | ctix | 1674080000 | 1674080000 | 1674080000 | 6779a969-6404-4dd7-97ef-dec877c03c4f | domain-name | domain-name | false | false | false | false | false | false | false | 1674080001 | example.com | UNKNOWN | {'id': 'a9d67cc1-5de8-460b-8bf4-63abc7ceaa54', 'name': 'anotherone (OpenAPI)'} | HIGH | {'id': '38102b0e-1af4-4ee2-a62e-dd5f2ffaff5a', 'name': 'testing (OpenAPI)', 'source_type': 'MISCELLANEOUS'} | value | {'colour_code': '#5236E2', 'id': '9635c41b-80fb-4a98-a1f3-e5796c72bb29', 'name': 'created_using_openapi_lookup'} | AMBER | indicator | 1674080000 |
 
 
+### ctix-get-create-threat-data
+***
+Gets or creates threat data
+
+
+#### Base Command
+
+`ctix-get-create-threat-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | object type. | Optional | 
+| object_names | Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1. | Required | 
+| page_size | size of the page. Default is 10. | Optional | 
+| source | The source of the threat data. | Optional | 
+| collection | The collection to store the threat data in. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CTIX.ThreatDataGetCreate.Found.analyst_score | number | Analyst score of the indicator | 
+| CTIX.ThreatDataGetCreate.Found.analyst_tlp | string | Analyst TLP of the indicator | 
+| CTIX.ThreatDataGetCreate.Found.confidence_score | number | Confidence score of the indicator | 
+| CTIX.ThreatDataGetCreate.Found.confidence_type | string | Confidence type of the indicator | 
+| CTIX.ThreatDataGetCreate.Found.country | string | Indicator origin country | 
+| CTIX.ThreatDataGetCreate.Found.created | number | Timestamp of when the indicator was created | 
+| CTIX.ThreatDataGetCreate.Found.ctix_created | number | Timestamp of when the indicator was created in CTIX | 
+| CTIX.ThreatDataGetCreate.Found.ctix_modified | number | Timestamp of when the indicator was modified in CTIX | 
+| CTIX.ThreatDataGetCreate.Found.first_seen | number | Timestamp of when the indicator was first seen | 
+| CTIX.ThreatDataGetCreate.Found.id | string | Indicator ID | 
+| CTIX.ThreatDataGetCreate.Found.indicator_type | string | Indicator type | 
+| CTIX.ThreatDataGetCreate.Found.ioc_type | string | IOC type | 
+| CTIX.ThreatDataGetCreate.Found.is_actioned | boolean | Is actioned | 
+| CTIX.ThreatDataGetCreate.Found.is_deprecated | boolean | is deprecated | 
+| CTIX.ThreatDataGetCreate.Found.is_false_positive | boolean | is false positive | 
+| CTIX.ThreatDataGetCreate.Found.is_reviewed | boolean | is reviewed  | 
+| CTIX.ThreatDataGetCreate.Found.is_revoked | boolean | is revoked | 
+| CTIX.ThreatDataGetCreate.Found.is_watchlist | boolean | is watchlisted | 
+| CTIX.ThreatDataGetCreate.Found.is_whitelisted | boolean | is allowed | 
+| CTIX.ThreatDataGetCreate.Found.last_seen | number | Timestamp of when the indicator was last seen | 
+| CTIX.ThreatDataGetCreate.Found.modified | number | Timestamp of when the indicator was modified | 
+| CTIX.ThreatDataGetCreate.Found.name | string | name of the indicator | 
+| CTIX.ThreatDataGetCreate.Found.null | unknown | null | 
+| CTIX.ThreatDataGetCreate.Found.primary_attribute | string | Primary Attribute | 
+| CTIX.ThreatDataGetCreate.Found.published_collections | unknown | published collections | 
+| CTIX.ThreatDataGetCreate.Found.risk_severity | string | Risk severity | 
+| CTIX.ThreatDataGetCreate.Found.source_collections | unknown | sources collections | 
+| CTIX.ThreatDataGetCreate.Found.source_confidence | string | Source confidence  | 
+| CTIX.ThreatDataGetCreate.Found.sources | unknown | sources | 
+| CTIX.ThreatDataGetCreate.Found.sub_type | string | Sub type | 
+| CTIX.ThreatDataGetCreate.Found.subscriber_collections | unknown | subscriber collections | 
+| CTIX.ThreatDataGetCreate.Found.subscribers | unknown | subscribers | 
+| CTIX.ThreatDataGetCreate.Found.tags | unknown | Tags | 
+| CTIX.ThreatDataGetCreate.Found.tlp | string | TLP | 
+| CTIX.ThreatDataGetCreate.Found.type | string | Type | 
+| CTIX.ThreatDataGetCreate.Found.valid_from | number | Timestamp from when the indicator was valid | 
+| CTIX.ThreatDataGetCreate.Found.valid_until | number | Timestamp till when the indicator was valid | 
+| CTIX.ThreatDataGetCreate.NotFoundCreated | string | IOCs that weren't found, and therefore were created | 
+| CTIX.ThreatDataGetCreate.NotFoundInvalid | string | IOCs that were found to be invalid, so they were not created | 
+
 #### Command example
-```!ctix-get-lookup-threat-data object_names=example.com,x.x.x.x,zzzzz object_type=indicator createifnotexist=yes collection=some_collection source=some_source```
+```!ctix-get-create-threat-data object_names=example.com,3.4.5.6,zzzzz object_type=indicator collection=some_collection source=some_source```
 #### Context Example
 ```json
 {
     "CTIX": {
-        "ThreatDataLookup": {
+        "ThreatDataGetCreate": {
             "Found": {
                 "analyst_cvss_score": null,
                 "analyst_score": null,
@@ -1496,7 +1551,7 @@ Lookup to get threat data
                 "valid_until": null
             },
             "NotFoundCreated": [
-                "x.x.x.x"
+                "3.4.5.6"
             ],
             "NotFoundInvalid": [
                 "zzzzz"
@@ -1522,114 +1577,12 @@ Lookup to get threat data
 
 #### Human Readable Output
 
->### Not Found: Invalid***
-Lookup to get threat data
+>### Not Found: Invalid
+>|Name|
+>|---|
+>| zzzzz |
 
 
-#### Base Command
-
-`ctix-get-lookup-threat-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_type | object type. | Optional | 
-| object_names | Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1. | Optional | 
-| page_size | size of the page. Default is 10. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CTIX.ThreatDataLookup.analyst_score | number | Analyst score of the indicator | 
-| CTIX.ThreatDataLookup.analyst_tlp | string | Analyst TLP of the indicator | 
-| CTIX.ThreatDataLookup.confidence_score | number | Confidence score of the indicator | 
-| CTIX.ThreatDataLookup.confidence_type | string | Confidence type of the indicator | 
-| CTIX.ThreatDataLookup.country | string | Indicator origin country | 
-| CTIX.ThreatDataLookup.created | number | Timestamp of when the indicator was created | 
-| CTIX.ThreatDataLookup.ctix_created | number | Timestamp of when the indicator was created in CTIX | 
-| CTIX.ThreatDataLookup.ctix_modified | number | Timestamp of when the indicator was modified in CTIX | 
-| CTIX.ThreatDataLookup.first_seen | number | Timestamp of when the indicator was first seen | 
-| CTIX.ThreatDataLookup.id | string | Indicator ID | 
-| CTIX.ThreatDataLookup.indicator_type | string | Indicator type | 
-| CTIX.ThreatDataLookup.ioc_type | string | IOC type | 
-| CTIX.ThreatDataLookup.is_actioned | boolean | Is actioned | 
-| CTIX.ThreatDataLookup.is_deprecated | boolean | is deprecated | 
-| CTIX.ThreatDataLookup.is_false_positive | boolean | is false positive | 
-| CTIX.ThreatDataLookup.is_reviewed | boolean | is reviewed  | 
-| CTIX.ThreatDataLookup.is_revoked | boolean | is revoked | 
-| CTIX.ThreatDataLookup.is_watchlist | boolean | is watchlisted | 
-| CTIX.ThreatDataLookup.is_whitelisted | boolean | is whitelisted | 
-| CTIX.ThreatDataLookup.last_seen | number | Timestamp of when the indicator was last seen | 
-| CTIX.ThreatDataLookup.modified | number | Timestamp of when the indicator was modified | 
-| CTIX.ThreatDataLookup.name | string | name of the indicator | 
-| CTIX.ThreatDataLookup.null | unknown | null | 
-| CTIX.ThreatDataLookup.primary_attribute | string | Primary Attribute | 
-| CTIX.ThreatDataLookup.published_collections | unknown | published collections | 
-| CTIX.ThreatDataLookup.risk_severity | string | Risk severity | 
-| CTIX.ThreatDataLookup.source_collections | unknown | sources collections | 
-| CTIX.ThreatDataLookup.source_confidence | string | Source confidence  | 
-| CTIX.ThreatDataLookup.sources | unknown | sources | 
-| CTIX.ThreatDataLookup.sub_type | string | Sub type | 
-| CTIX.ThreatDataLookup.subscriber_collections | unknown | subscriber collections | 
-| CTIX.ThreatDataLookup.subscribers | unknown | subscribers | 
-| CTIX.ThreatDataLookup.tags | unknown | Tags | 
-| CTIX.ThreatDataLookup.tlp | string | TLP | 
-| CTIX.ThreatDataLookup.type | string | Type | 
-| CTIX.ThreatDataLookup.valid_from | number | Timestamp from when the indicator was valid | 
-| CTIX.ThreatDataLookup.valid_until | number | Timestamp till when the indicator was valid | 
-
-#### Command Example
-```!ctix-get-lookup-threat-data object_names=example.com, test.com object_type=indicator```
-
-#### Context Example
-```json
-{"next": null,
- "page_size": 10,
- "previous": null,
- "results": [{"analyst_score": null,
-              "analyst_tlp": null,
-              "confidence_score": 50,
-              "confidence_type": "ctix",
-              "country": null,
-              "created": 1652081902,
-              "ctix_created": 1652081903,
-              "ctix_modified": 1652081903,
-              "first_seen": null,
-              "id": "1ff2a18a-0574-4015-bbec-bc7692dccb14",
-              "indicator_type": "domain-name",
-              "ioc_type": "domain-name",
-              "is_actioned": false,
-              "is_deprecated": false,
-              "is_false_positive": false,
-              "is_reviewed": false,
-              "is_revoked": false,
-              "is_watchlist": false,
-              "is_whitelisted": false,
-              "last_seen": null,
-              "modified": 1652081902,
-              "name": "example.com",
-              "null": [],
-              "primary_attribute": null,
-              "published_collections": [],
-              "risk_severity": "UNKNOWN",
-              "source_collections": [{"id": "1981f5f6-49d4-4cad-97b7-8b2d276d2956",
-                                      "name": "dummy"}],
-              "source_confidence": "HIGH",
-              "sources": [{"id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
-                           "name": "dummy",
-                           "source_type": "RSS_FEED"}],
-              "sub_type": "value",
-              "subscriber_collections": [],
-              "subscribers": [],
-              "tags": [],
-              "tlp": "AMBER",
-              "type": "indicator",
-              "valid_from": 1652081902,
-              "valid_until": null}],
- "total": 1}
-```
 
 ### domain
 ***
@@ -1697,11 +1650,11 @@ Lookup domain threat data
                     },
                     {
                         "id": "5f4230a4-cc3a-4d32-b3ee-c53a373e2a8f",
-                        "name": "https://www.us-cert.gov/ncas/alerts.xml"
+                        "name": "https://www.example.com/index.xml"
                     },
                     {
                         "id": "2dc18ee7-ee80-4fa7-953d-4df824f8e8ce",
-                        "name": "https://www.us-cert.gov/ncas/alerts.xml"
+                        "name": "https://www.example.com/index.xml"
                     }
                 ],
                 "source_confidence": "MEDIUM",
@@ -1713,12 +1666,12 @@ Lookup domain threat data
                     },
                     {
                         "id": "87e622e3-e8e5-4692-9b79-00efead3f874",
-                        "name": "https://www.us-cert.gov/ncas/alerts.xml",
+                        "name": "https://www.example.com/index.xml",
                         "source_type": "RSS_FEED"
                     },
                     {
                         "id": "0647eb19-c559-4d27-a441-b70117315e18",
-                        "name": "https://www.us-cert.gov/ncas/alerts.xml",
+                        "name": "https://www.example.com/index.xml",
                         "source_type": "RSS_FEED"
                     }
                 ],
@@ -1751,7 +1704,7 @@ Lookup domain threat data
 >### Lookup Data
 >|confidence_score|confidence_type|created|ctix_created|ctix_modified|id|indicator_type|ioc_type|is_actioned|is_deprecated|is_false_positive|is_reviewed|is_revoked|is_watchlist|is_whitelisted|modified|name|risk_severity|source_collections|source_confidence|sources|sub_type|tlp|type|valid_from|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 31 | ctix | 1666709826 | 1666874647 | 1670548277 | 10104a10-74a9-45d7-a412-f11531d64a38 | domain-name | domain-name | false | false | false | false | false | false | false | 1667442806 | example.com | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'},<br/>{'id': '5f4230a4-cc3a-4d32-b3ee-c53a373e2a8f', 'name': 'https:<span>//</span>www.us-cert.gov/ncas/alerts.xml'},<br/>{'id': '2dc18ee7-ee80-4fa7-953d-4df824f8e8ce', 'name': 'https:<span>//</span>www.us-cert.gov/ncas/alerts.xml'} | MEDIUM | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'},<br/>{'id': '87e622e3-e8e5-4692-9b79-00efead3f874', 'name': 'https:<span>//</span>www.us-cert.gov/ncas/alerts.xml', 'source_type': 'RSS_FEED'},<br/>{'id': '0647eb19-c559-4d27-a441-b70117315e18', 'name': 'https:<span>//</span>www.us-cert.gov/ncas/alerts.xml', 'source_type': 'RSS_FEED'} | value | AMBER | indicator | 1530174464 |
+>| 31 | ctix | 1666709826 | 1666874647 | 1670548277 | 10104a10-74a9-45d7-a412-f11531d64a38 | domain-name | domain-name | false | false | false | false | false | false | false | 1667442806 | example.com | UNKNOWN | {'id': '2a5a9989-030d-466b-b676-223d2b1f4d1e', 'name': 'Indicators v4'},<br/>{'id': '5f4230a4-cc3a-4d32-b3ee-c53a373e2a8f', 'name': 'https:<span>//</span>www.example.com/index.xml'},<br/>{'id': '2dc18ee7-ee80-4fa7-953d-4df824f8e8ce', 'name': 'https:<span>//</span>www.example.com/index.xml'} | MEDIUM | {'id': '131392bb-ecdf-45ae-8f22-b1160cf03401', 'name': 'Mandiant Threat Intelligence', 'source_type': 'API_FEEDS'},<br/>{'id': '87e622e3-e8e5-4692-9b79-00efead3f874', 'name': 'https:<span>//</span>www.example.com/index.xml', 'source_type': 'RSS_FEED'},<br/>{'id': '0647eb19-c559-4d27-a441-b70117315e18', 'name': 'https:<span>//</span>www.example.com/index.xml', 'source_type': 'RSS_FEED'} | value | AMBER | indicator | 1530174464 |
 
 
 ### ip

@@ -1039,6 +1039,123 @@ script:
       type: string
   - name: ctix-get-lookup-threat-data
     arguments:
+      - name: object_type
+        description: object type
+      - name: object_names
+        description: "Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1"
+        isArray: true
+      - name: page_size
+        description: size of the page
+        defaultValue: "10"
+    outputs:
+      - contextPath: CTIX.ThreatDataLookup.analyst_score
+        description: Analyst score of the indicator
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.analyst_tlp
+        description: Analyst TLP of the indicator
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.confidence_score
+        description: Confidence score of the indicator
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.confidence_type
+        description: Confidence type of the indicator
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.country
+        description: Indicator origin country
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.created
+        description: Timestamp of when the indicator was created
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.ctix_created
+        description: Timestamp of when the indicator was created in CTIX
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.ctix_modified
+        description: Timestamp of when the indicator was modified in CTIX
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.first_seen
+        description: Timestamp of when the indicator was first seen
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.id
+        description: Indicator ID
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.indicator_type
+        description: Indicator type
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.ioc_type
+        description: IOC type
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.is_actioned
+        description: Is actioned
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_deprecated
+        description: is deprecated
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_false_positive
+        description: is false positive
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_reviewed
+        description: "is reviewed "
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_revoked
+        description: is revoked
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_watchlist
+        description: is watchlisted
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.is_whitelisted
+        description: is allowed
+        type: boolean
+      - contextPath: CTIX.ThreatDataLookup.last_seen
+        description: Timestamp of when the indicator was last seen
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.modified
+        description: Timestamp of when the indicator was modified
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.name
+        description: name of the indicator
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.null
+        description: "null"
+      - contextPath: CTIX.ThreatDataLookup.primary_attribute
+        description: Primary Attribute
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.published_collections
+        description: published collections
+      - contextPath: CTIX.ThreatDataLookup.risk_severity
+        description: Risk severity
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.source_collections
+        description: sources collections
+        type: unknown
+      - contextPath: CTIX.ThreatDataLookup.source_confidence
+        description: "Source confidence "
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.sources
+        description: sources
+      - contextPath: CTIX.ThreatDataLookup.sub_type
+        description: Sub type
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.subscriber_collections
+        description: subscriber collections
+      - contextPath: CTIX.ThreatDataLookup.subscribers
+        description: subscribers
+      - contextPath: CTIX.ThreatDataLookup.tags
+        description: Tags
+      - contextPath: CTIX.ThreatDataLookup.tlp
+        description: TLP
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.type
+        description: Type
+        type: string
+      - contextPath: CTIX.ThreatDataLookup.valid_from
+        description: Timestamp from when the indicator was valid
+        type: number
+      - contextPath: CTIX.ThreatDataLookup.valid_until
+        description: Timestamp till when the indicator was valid
+        type: number
+    description: Lookup to get threat data
+  - name: ctix-get-create-threat-data
+    arguments:
     - name: object_type
       description: object type
     - name: object_names
@@ -1048,11 +1165,6 @@ script:
     - name: page_size
       description: size of the page
       defaultValue: "10"
-    - name: createifnotexist
-      type: boolean
-      description: Specify whether to create a new threat data entry if it does not exist
-      default: false
-      required: false
     - name: source
       type: string
       description: The source of the threat data
@@ -1062,118 +1174,118 @@ script:
       description: The collection to store the threat data in
       required: false
     outputs:
-    - contextPath: CTIX.ThreatDataLookup.Found.analyst_score
+    - contextPath: CTIX.ThreatDataGetCreate.Found.analyst_score
       description: Analyst score of the indicator
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.analyst_tlp
+    - contextPath: CTIX.ThreatDataGetCreate.Found.analyst_tlp
       description: Analyst TLP of the indicator
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.confidence_score
+    - contextPath: CTIX.ThreatDataGetCreate.Found.confidence_score
       description: Confidence score of the indicator
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.confidence_type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.confidence_type
       description: Confidence type of the indicator
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.country
+    - contextPath: CTIX.ThreatDataGetCreate.Found.country
       description: Indicator origin country
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.created
+    - contextPath: CTIX.ThreatDataGetCreate.Found.created
       description: Timestamp of when the indicator was created
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.ctix_created
+    - contextPath: CTIX.ThreatDataGetCreate.Found.ctix_created
       description: Timestamp of when the indicator was created in CTIX
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.ctix_modified
+    - contextPath: CTIX.ThreatDataGetCreate.Found.ctix_modified
       description: Timestamp of when the indicator was modified in CTIX
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.first_seen
+    - contextPath: CTIX.ThreatDataGetCreate.Found.first_seen
       description: Timestamp of when the indicator was first seen
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.id
+    - contextPath: CTIX.ThreatDataGetCreate.Found.id
       description: Indicator ID
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.indicator_type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.indicator_type
       description: Indicator type
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.ioc_type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.ioc_type
       description: IOC type
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.is_actioned
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_actioned
       description: Is actioned
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.Found.is_deprecated
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_deprecated
       description: is deprecated
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.Found.is_false_positive
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_false_positive
       description: is false positive
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.Found.is_reviewed
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_reviewed
       description: "is reviewed "
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.Found.is_revoked
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_revoked
       description: is revoked
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.Found.is_watchlist
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_watchlist
       description: is watchlisted
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.Found.is_whitelisted
+    - contextPath: CTIX.ThreatDataGetCreate.Found.is_whitelisted
       description: is allowed
       type: boolean
-    - contextPath: CTIX.ThreatDataLookup.Found.last_seen
+    - contextPath: CTIX.ThreatDataGetCreate.Found.last_seen
       description: Timestamp of when the indicator was last seen
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.modified
+    - contextPath: CTIX.ThreatDataGetCreate.Found.modified
       description: Timestamp of when the indicator was modified
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.name
+    - contextPath: CTIX.ThreatDataGetCreate.Found.name
       description: name of the indicator
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.null
+    - contextPath: CTIX.ThreatDataGetCreate.Found.null
       description: "null"
-    - contextPath: CTIX.ThreatDataLookup.Found.primary_attribute
+    - contextPath: CTIX.ThreatDataGetCreate.Found.primary_attribute
       description: Primary Attribute
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.published_collections
+    - contextPath: CTIX.ThreatDataGetCreate.Found.published_collections
       description: published collections
-    - contextPath: CTIX.ThreatDataLookup.Found.risk_severity
+    - contextPath: CTIX.ThreatDataGetCreate.Found.risk_severity
       description: Risk severity
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.source_collections
+    - contextPath: CTIX.ThreatDataGetCreate.Found.source_collections
       description: sources collections
       type: unknown
-    - contextPath: CTIX.ThreatDataLookup.Found.source_confidence
+    - contextPath: CTIX.ThreatDataGetCreate.Found.source_confidence
       description: "Source confidence "
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.sources
+    - contextPath: CTIX.ThreatDataGetCreate.Found.sources
       description: sources
-    - contextPath: CTIX.ThreatDataLookup.Found.sub_type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.sub_type
       description: Sub type
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.subscriber_collections
+    - contextPath: CTIX.ThreatDataGetCreate.Found.subscriber_collections
       description: subscriber collections
-    - contextPath: CTIX.ThreatDataLookup.Found.subscribers
+    - contextPath: CTIX.ThreatDataGetCreate.Found.subscribers
       description: subscribers
-    - contextPath: CTIX.ThreatDataLookup.Found.tags
+    - contextPath: CTIX.ThreatDataGetCreate.Found.tags
       description: Tags
-    - contextPath: CTIX.ThreatDataLookup.Found.tlp
+    - contextPath: CTIX.ThreatDataGetCreate.Found.tlp
       description: TLP
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.type
+    - contextPath: CTIX.ThreatDataGetCreate.Found.type
       description: Type
       type: string
-    - contextPath: CTIX.ThreatDataLookup.Found.valid_from
+    - contextPath: CTIX.ThreatDataGetCreate.Found.valid_from
       description: Timestamp from when the indicator was valid
       type: number
-    - contextPath: CTIX.ThreatDataLookup.Found.valid_until
+    - contextPath: CTIX.ThreatDataGetCreate.Found.valid_until
       description: Timestamp till when the indicator was valid
       type: number
-    - contextPath: CTIX.ThreatDataLookup.NotFoundCreated
-      description: IOCs that weren't found, but were created because `createifnotexist` was set to True
+    - contextPath: CTIX.ThreatDataGetCreate.NotFoundCreated
+      description: IOCs that weren't found, and therefore were created
       type: string
-    - contextPath: CTIX.ThreatDataLookup.NotFoundInvalid
-      description: IOCs that were found to be invalid, so they were not created, despite `createifnotexist` was set to True
+    - contextPath: CTIX.ThreatDataGetCreate.NotFoundInvalid
+      description: IOCs that were found to be invalid, so they were not created
       type: string
-    description: Lookup to get threat data
+    description: Gets or creates threat data
   - name: domain
     arguments:
     - name: domain

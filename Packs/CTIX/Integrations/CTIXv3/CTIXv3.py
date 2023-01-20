@@ -1585,7 +1585,6 @@ def get_lookup_threat_data_command(
 ) -> List[CommandResults]:
     """
     Get Lookup Threat Data Command
-
     :Description Get Lookup Threat Data
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
@@ -1593,38 +1592,14 @@ def get_lookup_threat_data_command(
     object_type = args.get("object_type", "indicator")
     ioc_type = argToList(args.get("ioc_type"))
     object_names = argToList(args.get("object_names"))
-    createifnotexist = args.get("createifnotexist", False)
-    source = args.get("source", "XSOAR")
-    collection = args.get("collection", "Intel")
     page_size = args.get("page_size", 10)
+    params = {"page_size": page_size}
+    response = client.get_lookup_threat_data(
+        object_type, ioc_type, object_names, params
+    )
+    data_set = response.get("data").get("results")
+    results = no_result_found(data_set)
     reliability = args.get("reliability")
-    created_after_lookup_results = []
-    invalid_values_results = []
-
-    if createifnotexist:
-        response = client.bulk_lookup_and_create_data(object_names, source, collection).get("data", {})
-        results = response.get("found_iocs", {}).get("results", [])
-        created_after_lookup = response["values_not_found"]["valid_iocs"]
-        invalid_values = response["values_not_found"]["invalid_values"]
-
-        if created_after_lookup:
-            created_after_lookup_results.append(CommandResults(
-                readable_output=tableToMarkdown("Not Found: Created", created_after_lookup, headers=['Name'], removeNull=True),
-                outputs_prefix="CTIX.ThreatDataLookup.NotFoundCreated",
-                outputs=created_after_lookup,
-            ))
-
-        if invalid_values:
-            invalid_values_results.append([CommandResults(
-                readable_output=tableToMarkdown("Not Found: Invalid", invalid_values, headers=['Name'], removeNull=True),
-                outputs_prefix="CTIX.ThreatDataLookup.NotFoundInvalid",
-                outputs=invalid_values,
-            )])
-    else:
-        params = {"page_size": page_size}
-        response = client.get_lookup_threat_data(object_type, ioc_type, object_names, params)
-        data_set = response.get("data").get("results")
-        results = no_result_found(data_set)
 
     if isinstance(results, CommandResults):
         return [results]
@@ -1634,7 +1609,61 @@ def get_lookup_threat_data_command(
             "confidence_score",
             "ioc_type",
             "Lookup Data",
-            "CTIX.ThreatDataLookup.Found",
+            "CTIX.ThreatDataLookup",
+            "id",
+            reliability
+        )
+        return results
+
+
+def get_create_threat_data_command(
+    client: Client, args: Dict[str, Any]
+) -> List[CommandResults]:
+    """
+    Get or Create Threat Data Command
+
+    :Description Gets Threat Data or creates it if it does not exist
+    :param Dict[str, str] args: Paramters to be send to in request
+    :return CommandResults: XSOAR based result
+    """
+    object_type = args.get("object_type", "indicator")
+    ioc_type = argToList(args.get("ioc_type"))
+    object_names = argToList(args.get("object_names"))
+    source = args.get("source", "XSOAR")
+    collection = args.get("collection", "Intel")
+    page_size = args.get("page_size", 10)
+    reliability = args.get("reliability")
+    created_after_lookup_results = []
+    invalid_values_results = []
+
+    response = client.bulk_lookup_and_create_data(object_names, source, collection).get("data", {})
+    results = response.get("found_iocs", {}).get("results", [])
+    created_after_lookup = response["values_not_found"]["valid_iocs"]
+    invalid_values = response["values_not_found"]["invalid_values"]
+
+    if created_after_lookup:
+        created_after_lookup_results.append(CommandResults(
+            readable_output=tableToMarkdown("Not Found: Created", created_after_lookup, headers=['Name'], removeNull=True),
+            outputs_prefix="CTIX.ThreatDataGetCreate.NotFoundCreated",
+            outputs=created_after_lookup,
+        ))
+
+    if invalid_values:
+        invalid_values_results.append([CommandResults(
+            readable_output=tableToMarkdown("Not Found: Invalid", invalid_values, headers=['Name'], removeNull=True),
+            outputs_prefix="CTIX.ThreatDataGetCreate.NotFoundInvalid",
+            outputs=invalid_values,
+        )])
+
+    if isinstance(results, CommandResults):
+        return [results]
+    else:
+        results = iter_dbot_score(
+            results,
+            "confidence_score",
+            "ioc_type",
+            "Lookup Data",
+            "CTIX.ThreatDataGetCreate.Found",
             "id",
             reliability,
         )
@@ -1954,6 +1983,7 @@ def main() -> None:
             "ctix-get-indicator-observations": (get_indicator_observations_command, (client, args)),
             "ctix-get-conversion-feed-source": (get_conversion_feed_source_command, (client, args)),
             "ctix-get-lookup-threat-data": (get_lookup_threat_data_command, (client, args)),
+            "ctix-get-create-threat-data": (get_create_threat_data_command, (client, args)),
             "ctix-add-indicator-as-false-positive": (add_indicator_as_false_positive_command, (client, args)),
             "domain": (domain, (client, args)),
             "url": (url, (client, args)),
