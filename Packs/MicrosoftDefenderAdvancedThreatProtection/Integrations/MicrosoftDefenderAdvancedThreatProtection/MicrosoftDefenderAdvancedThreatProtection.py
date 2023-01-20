@@ -1297,23 +1297,27 @@ class MsClient:
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params,
                                            overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
-    def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
+    def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None, use_v2_endpoint=False):
         """Retrieves a collection of Alerts.
 
         Returns:
             dict. Alerts info
         """
-        cmd_url = '/alerts'
         params = {}
-        if evidence:
+        if evidence and not use_v2_endpoint:
             params['$expand'] = 'evidence'
         if filter_req:
             if creation_time:
-                filter_req += f"and {create_filter_alerts_creation_time(creation_time)}"
+                filter_req += f"and {create_filter_alerts_creation_time(creation_time, use_v2_endpoint)}"
             params['$filter'] = filter_req
         if limit:
             params['$top'] = limit
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        if use_v2_endpoint:
+            cmd_url = 'https://graph.microsoft.com/v1.0/security/alerts_v2'
+            return self.ms_client.http_request(method='GET', full_url=cmd_url, params=params, scope=Scopes.graph)
+        else:
+            cmd_url = '/alerts'
+            return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def update_alert(self, alert_id, json_data):
         """Updates properties of existing Alert.
@@ -1557,7 +1561,7 @@ class MsClient:
         cmd_url = f'/investigations/{investigation_id}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_alert_by_id(self, alert_id):
+    def get_alert_by_id(self, alert_id, use_v2_endpoint):
         """Get the alert ID and return the alert details.
 
         Args:
@@ -1566,8 +1570,12 @@ class MsClient:
         Returns:
             dict. Alert's entity
         """
-        cmd_url = f'/alerts/{alert_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        if use_v2_endpoint:
+            cmd_url = f'https://graph.microsoft.com/v1.0/security/alerts_v2/{alert_id}'
+            return self.ms_client.http_request(method='GET', full_url=cmd_url, scope=Scopes.graph)
+        else:
+            cmd_url = f'/alerts/{alert_id}'
+            return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
     def get_investigation_list(self, ):
         """Retrieves a collection of Investigations.
@@ -2542,9 +2550,10 @@ def list_alerts_command(client: MsClient, args: dict):
         'severity': severity,
         'status': status
     }
+    use_v2_endpoint = argToBoolean(args.get('use_v2_endpoint','false'))
     filter_req = reformat_filter(fields_to_filter_by)
-    alerts_response = client.list_alerts(filter_req, limit, creation_time=creation_time, evidence=True)
-    alerts_list = get_alerts_list(alerts_response)
+    alerts_response = client.list_alerts(filter_req, limit, creation_time=creation_time, evidence=True, use_v2_endpoint=use_v2_endpoint)
+    alerts_list = get_alerts_list(alerts_response, use_v2_endpoint)
 
     entry_context = {
         'MicrosoftATP.Alert(val.ID === obj.ID)': alerts_list
@@ -2554,7 +2563,7 @@ def list_alerts_command(client: MsClient, args: dict):
     return human_readable, entry_context, alerts_response
 
 
-def get_alerts_list(alerts_response):
+def get_alerts_list(alerts_response, use_v2_endpoint=False):
     """Get a raw response of alerts list
 
     Args:
@@ -2565,7 +2574,7 @@ def get_alerts_list(alerts_response):
     """
     alerts_list = []
     for alert in alerts_response['value']:
-        alert_data = get_alert_data(alert)
+        alert_data = get_alert_data_v2(alert) if use_v2_endpoint else get_alert_data(alert)
         alerts_list.append(alert_data)
     return alerts_list
 
@@ -3255,6 +3264,47 @@ def get_alert_data(alert_response):
     return alert_data
 
 
+def get_alert_data_v2(alert_response):
+    """Get alert raw response and returns the alert info in context and human readable format.
+
+    Returns:
+        dict. Alert info
+    """
+    alert_data = {
+        "ID": alert_response.get('id'),
+        "IncidentID": alert_response.get('incidentId'),
+        "AssignedTo": alert_response.get('assignedTo'),
+        "Severity": alert_response.get('severity'),
+        "Status": alert_response.get('status'),
+        "Classification": alert_response.get('classification'),
+        "Determination": alert_response.get('determination'),
+        "ServiceSource": alert_response.get('serviceSource'),
+        "DetectionSource": alert_response.get('detectionSource'),
+        "Category": alert_response.get('category'),
+        "ThreatFamilyName": alert_response.get('threatFamilyName'),
+        "Title": alert_response.get('title'),
+        "Description": alert_response.get('description'),
+        "RecommendedActions": alert_response.get('recommendedActions'),
+        "AlertCreationTime": alert_response.get('createdDateTime'),
+        "FirstEventTime": alert_response.get('firstActivityDateTime'),
+        "LastEventTime": alert_response.get('lastActivityDateTime'),
+        "LastUpdateTime": alert_response.get('lastUpdateDateTime'),
+        "ResolvedTime": alert_response.get('resolvedDateTime'),
+        "Comments": [
+            {
+                "Comment": alert_response.get('comment'),
+                "CreatedBy": alert_response.get('createdBy'),
+                "CreatedTime": alert_response.get('createdTime')
+            }
+        ],
+        "Evidence": alert_response.get('evidence'),
+        "DetectorID": alert_response.get('detectorId'),
+        "ThreatName": alert_response.get('threatName'),
+        "MitreTechniques": alert_response.get('mitreTechniques'),
+    }
+    return alert_data
+
+
 def get_domain_machine_command(client: MsClient, args: dict):
     """Retrieves a collection of Machines that have communicated to or from a given domain address.
 
@@ -3458,6 +3508,7 @@ def get_alert_by_id_command(client: MsClient, args: dict) -> CommandResults:
     headers = ['ID', 'Title', 'Description', 'IncidentID', 'Severity', 'Status', 'Classification', 'Category',
                'ThreatFamilyName', 'MachineID']
     alert_ids = remove_duplicates_from_list_arg(args, 'alert_ids')
+    use_v2_endpoint = argToBoolean(args.get('use_v2_endpoint','false'))
     raw_response = []
     alert_outputs = []
     failed_alerts = {}  # if we got an error, we will return the machine ids that failed
@@ -3465,8 +3516,8 @@ def get_alert_by_id_command(client: MsClient, args: dict) -> CommandResults:
 
     for alert in alert_ids:
         try:
-            alert_response = client.get_alert_by_id(alert)
-            alerts_data = get_alert_data(alert_response)
+            alert_response = client.get_alert_by_id(alert, use_v2_endpoint)
+            alerts_data = get_alert_data_v2(alert_response) if use_v2_endpoint else get_alert_data(alert_response)
             raw_response.append(alert_response)
             alert_outputs.append(alerts_data)
         except NotFoundError:  # in case the error is not found alert id, we want to return "No entries"
@@ -3616,7 +3667,7 @@ def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
     return params
 
 
-def create_filter_alerts_creation_time(last_alert_fetched_time):
+def create_filter_alerts_creation_time(last_alert_fetched_time, use_v2_endpoint):
     """Create filter with the last alert fetched time to send in the request.
 
     Args:
@@ -3625,7 +3676,10 @@ def create_filter_alerts_creation_time(last_alert_fetched_time):
     Returns:
         (str). The filter of alerts creation time that will be send in the  alerts list API request
     """
-    filter_alerts_creation_time = f"alertCreationTime+gt+{last_alert_fetched_time.isoformat()}"
+    if use_v2_endpoint:
+        filter_alerts_creation_time = f"createdDateTime gt {last_alert_fetched_time.isoformat()}"
+    else:
+        filter_alerts_creation_time = f"alertCreationTime+gt+{last_alert_fetched_time.isoformat()}"
 
     if not filter_alerts_creation_time.endswith('Z'):
         filter_alerts_creation_time = filter_alerts_creation_time + "Z"

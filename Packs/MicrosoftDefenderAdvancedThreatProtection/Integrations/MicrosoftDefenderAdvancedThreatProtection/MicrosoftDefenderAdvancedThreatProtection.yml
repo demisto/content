@@ -112,7 +112,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
-- display: 'DetectionSource to filter out alerts for fetching as incidents.'
+- display: 'DetectionSource to filter out alerts for fetching as incidents (not available for v2).'
   name: fetch_detectionsource
   required: false
   type: 16
@@ -737,6 +737,15 @@ script:
       description: Flag for the rate limit retry.
       isArray: false
       name: ran_once_flag
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: Use the new alert v2 Enpoint
+      isArray: false
+      name: use_v2_endpoint
+      predefined:
+      - 'false'
+      - 'true'
       required: false
     deprecated: false
     description: Gets a list of alerts present on the system. Filtering can be done only on a single argument.
@@ -5220,6 +5229,15 @@ script:
       required: false
       isArray: false
       deprecated: true
+    - auto: PREDEFINED
+      default: false
+      description: Use the new alert v2 Enpoint
+      isArray: false
+      name: use_v2_endpoint
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
       description: The alert ID.

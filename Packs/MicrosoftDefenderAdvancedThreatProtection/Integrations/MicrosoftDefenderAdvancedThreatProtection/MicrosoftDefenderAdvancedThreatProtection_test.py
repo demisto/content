@@ -219,11 +219,15 @@ def test_get_domain_alerts_command(mocker):
 
 
 def test_get_alert_data(mocker):
-    from MicrosoftDefenderAdvancedThreatProtection import get_alert_data
+    from MicrosoftDefenderAdvancedThreatProtection import get_alert_data, get_alert_data_v2
     mocker.patch.object(client_mocker, 'get_alert_by_id', return_value=SINGLE_ALERT_API_RESPONSE)
     res = get_alert_data(SINGLE_ALERT_API_RESPONSE)
     assert res['ID'] == '123'
     assert res['Title'] == 'Network connection to a risky host'
+    mocker.patch.object(client_mocker, 'get_alert_by_id', return_value=SINGLE_ALERT_API_RESPONSE_v2)
+    res_v2 = get_alert_data_v2(SINGLE_ALERT_API_RESPONSE_v2)
+    assert res_v2['ID'] == '123'
+    assert res_v2['Title'] == 'Suspicious execution of hidden file'
 
 
 def test_get_domain_machine_command(mocker):
@@ -585,6 +589,46 @@ SINGLE_ALERT_API_RESPONSE = {
     "lastUpdateTime": "2019-11-03T23:55:52.6Z",
     "resolvedTime": None,
     "machineId": "123abc",
+    "comments": [
+        {
+            "comment": "test comment for docs",
+            "createdBy": "test@test.com",
+            "createdTime": "2019-11-05T14:08:37.8404534Z"
+        }
+
+    ]
+}
+
+SINGLE_ALERT_API_RESPONSE_v2 = {
+    "id": "123",
+    "providerAlertId": "123",
+    "incidentId": 123456,
+    "assignedTo": None,
+    "severity": "Low",
+    "status": "New",
+    "classification": "unknown",
+    "determination": 'unknown',
+    "serviceSource": "microsoftDefenderForEndpoint",
+    "detectionSource": "antivirus",
+    "detectorId": "456",
+    "tenantId": "abc",
+    "category": "DefenseEvasion",
+    "actorDisplayName": None,
+    "threatDisplayName": None,
+    "threatFamilyName": None,
+    "mitreTechniques": [
+        "T1564.001"
+    ],
+    "title": "Suspicious execution of hidden file",
+    "description": "A hidden file has been launched. This activity could indicate a compromised host. Attackers often hide files associated with malicious tools to evade file system inspection and defenses.",
+    "recommendedActions": "Collect artifacts and determine scope\n�\tReview the machine timeline for suspicious activities that may have occurred before and after the time of the alert, and record additional related artifacts (files, IPs/URLs) \n�\tLook for the presence of relevant artifacts on other systems. Identify commonalities and differences between potentially compromised systems.\n�\tSubmit relevant files for deep analysis and review resulting detailed behavioral information.\n�\tSubmit undetected files to the MMPC malware portal\n\nInitiate containment & mitigation \n�\tContact the user to verify intent and initiate local remediation actions as needed.\n�\tUpdate AV signatures and run a full scan. The scan might reveal and remove previously-undetected malware components.\n�\tEnsure that the machine has the latest security updates. In particular, ensure that you have installed the latest software, web browser, and Operating System versions.\n�\tIf credential theft is suspected, reset all relevant users passwords.\n�\tBlock communication with relevant URLs or IPs at the organization�s perimeter.",
+    "alertWebUrl": "https://security.microsoft.com/alerts/123",
+    "incidentWebUrl": "https://security.microsoft.com/incidents/123456",
+    "createdDateTime": "2021-04-27T12:19:27.7211305Z",
+    "firstActivityDateTime": "2021-04-26T07:45:50.116Z",
+    "lastActivityDateTime": "2021-05-02T07:56:58.222Z",
+    "lastUpdateDateTime": "2019-11-03T23:55:52.6Z",
+    "resolvedDateTime": None,
     "comments": [
         {
             "comment": "test comment for docs",
