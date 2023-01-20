@@ -31,9 +31,9 @@ AWS - Security Group Remediation playbook replaces current security groups assoc
 #### AWS - Unclaimed S3 Bucket Enrichment
 AWS - Unclaimed S3 Bucket Enrichment playbook enriches the unclaimed S3 bucket details.
 
-![AWS - Unclaimed S3 Bucket Enrichment]()
+![AWS - Unclaimed S3 Bucket Enrichment](https://raw.githubusercontent.com/demisto/content/7f3e223a86964eda5689a9c3e1f22511021c5f40/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Unclaimed_S3_Bucket_Enrichment.png)
 
 #### AWS - Unclaimed S3 Bucket Remediation
 AWS - Unclaimed S3 Bucket Remediation playbook creates the unclaimed S3 bucket so other vectors can't claim the bucket.
 
-![AWS - Unclaimed S3 Bucket Remediation]()
+![AWS - Unclaimed S3 Bucket Remediation](https://raw.githubusercontent.com/demisto/content/7f3e223a86964eda5689a9c3e1f22511021c5f40/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Unclaimed_S3_Bucket_Remediation.png)
