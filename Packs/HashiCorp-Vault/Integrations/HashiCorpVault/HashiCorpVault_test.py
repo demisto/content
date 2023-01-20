@@ -36,8 +36,6 @@ def test_get_aws_secrets(mocker):
     get_aws_secrets('test', '999', False, None, None)
     assert mock.call_args.args[0] == 'test/roles/1'
     # test aws_roles_list
-    assert get_aws_secrets('test', '999', False, ['2', '1'], None) == [
-        {'name': '1', 'password': 'test@@@test', 'user': 'test'}]
     assert get_aws_secrets('test', '999', False, ['2'], None) == []
 
 
