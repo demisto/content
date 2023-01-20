@@ -1107,7 +1107,7 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 auth_type, redirect_uri, auth_code,
+                 auth_type, redirect_uri, auth_code, alert_detectionsource_to_fetch,
                  is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         client_args = assign_params(
             self_deployed=self_deployed,
@@ -1133,6 +1133,7 @@ class MsClient:
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
+        self.alert_detectionsource_to_fetch = alert_detectionsource_to_fetch
         self.max_alerts_to_fetch = max_fetch
         self.is_gcc = is_gcc
 
@@ -3589,6 +3590,12 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
 def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
     filter_query = f'alertCreationTime+gt+{last_fetch_time}'
+    if client.alert_detectionsource_to_fetch:
+        sources = argToList(client.alert_detectionsource_to_fetch)
+        source_filter_list = [f"detectionSource+eq+'{source}'" for source in sources]
+        if len(source_filter_list) > 1:
+            source_filter_list = list(map(lambda x: f'({x})', source_filter_list))
+        filter_query = filter_query + ' and (' + ' or '.join(source_filter_list) + ')'
     if client.alert_status_to_fetch:
         statuses = argToList(client.alert_status_to_fetch)
         status_filter_list = [f"status+eq+'{status}'" for status in statuses]
@@ -5415,6 +5422,7 @@ def main():  # pragma: no cover
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
+    alert_detectionsource_to_fetch = params.get('fetch_detectionsource')
     max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     fetch_evidence = argToBoolean(params.get('fetch_evidence', False))
     last_run = demisto.getLastRun()
@@ -5448,7 +5456,8 @@ def main():  # pragma: no cover
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri
+            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri,
+            alert_detectionsource_to_fetch=alert_detectionsource_to_fetch,
         )
         if command == 'test-module':
             if auth_type == 'Authorization Code':

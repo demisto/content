@@ -112,6 +112,16 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+- display: 'DetectionSource to filter out alerts for fetching as incidents.'
+  name: fetch_detectionsource
+  required: false
+  type: 16
+  options:
+  - CustomDetection
+  - CustomerTI
+  - EDR
+  - MDO
+  - Antivirus
 - defaultvalue: Informational,Low,Medium,High
   display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
