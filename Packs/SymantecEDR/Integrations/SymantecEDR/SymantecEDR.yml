@@ -41,7 +41,7 @@ configuration:
   - Closed
   required: false
   type: 16
-- additionalinfo: If not selected, will fetch high and medium incidents.
+- additionalinfo: If not selected, will fetch High and Medium incidents.
   defaultvalue: High,Medium
   display: Priority to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
   name: fetch_priority
@@ -51,7 +51,7 @@ configuration:
   - High
   required: false
   type: 16
-- additionalinfo: First Fetch timestamp Default 3 days. The maximum time range is 30 days. Example, Let say if configure 90 days, then incidents only be fetch for 30 days starting from start days.
+- additionalinfo: First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days.
   defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 10 minutes, 12 hours, 7 days)
   name: first_fetch
@@ -82,7 +82,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: A comma-separated list of device IDs of the target computers.
+      description: The device ID of the target computers.
       isArray: true
       name: device_id
       required: true
@@ -185,7 +185,7 @@ script:
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.last_seen
       description: |-
-        The timestamp (in ISO 8601 format) that specifies the last time detected the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z".
+        The timestamp (in ISO 8601 format) that specifies the last time detected of the event that resulted in the update of this association. Example: "2018-01-30T04:13:10.669Z".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.name
       description: |-
@@ -271,11 +271,11 @@ script:
       type: String
     - contextPath: SymantecEDR.EndpointDomainAssociation.first_seen
       description: |-
-        The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted in the creation of this association. Example: "2018-01-30T04:13:10.669Z"
+        The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted in the creation of this association. Example: "2018-01-30T04:13:10.669Z."
       type: String
     - contextPath: SymantecEDR.EndpointDomainAssociation.last_seen
       description: |-
-        The timestamp (in ISO 8601 format) that specifies the last time detected the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z"
+        The timestamp (in ISO 8601 format) that specifies the last time detected of the event that resulted in the update of this association. Example: "2018-01-30T04:13:10.669Z."
       type: String
   - arguments:
     - default: false
@@ -344,7 +344,7 @@ script:
       description: 'The folder where the file resides. This attribute does not include the name of the file. Example:c:\windows\system32\.'
       type: String
     - contextPath: SymantecEDR.EndpointFileAssociation.last_seen
-      description: 'The timestamp (in ISO 8601 format) that specifies the last time detected the event that resulted into the creation of this association. Example: YYYY-MM-DDTHH:MM:SS.sssZ'
+      description: 'The timestamp (in ISO 8601 format) that specifies the last time detected of the event that resulted in the update of this association. Example: YYYY-MM-DDTHH:MM:SS.sssZ'
       type: String
     - contextPath: SymantecEDR.EndpointFileAssociation.name
       description: 'The name of the file. This attribute does not include the path of the file. Example: sc.exe.'
@@ -401,7 +401,7 @@ script:
       description: 'The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this instance. Example: YYYY-MM-DDTHH:MM:SS.sssZ'
       type: String
     - contextPath: SymantecEDR.DomainInstance.last_seen
-      description: 'The timestamp (in ISO 8601 format) that specifies the last time detected the event that resulted into the update of this instance. Example: YYYY-MM-DDTHH:MM:SS.sssZ'
+      description: 'The timestamp (in ISO 8601 format) that specifies the last time detected of the event that resulted in the update of this instance. Example: YYYY-MM-DDTHH:MM:SS.sssZ'
       type: String
     - contextPath: SymantecEDR.DomainInstance.external_ip
       description: 'The IP address (IPv4 or IPv6) of the device/machine that accepted the connection. Example: 127.0.0.1.'
@@ -507,7 +507,7 @@ script:
       description: 'The folder where the file resides. This attribute does not include the name of the file. Example: c:\users\public\pictures\.'
       type: String
     - contextPath: SymantecEDR.FileInstance.last_seen
-      description: 'The timestamp (in ISO 8601 format) that Specifies the last time detected the event that resulted into the update of this instance. Example: YYYY-MM-DDTHH:MM:SS.sssZ'
+      description: 'The timestamp (in ISO 8601 format) that Specifies the last time detected of the event that resulted in the update of this instance. Example: YYYY-MM-DDTHH:MM:SS.sssZ'
       type: String
     - contextPath: SymantecEDR.FileInstance.name
       description: 'The name of the file. This attribute does not include the path of the file. Example: virus.exe.'
