@@ -82,7 +82,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The device ID of the target computer.
+      description: A comma-separated list of device IDs of the target computers.
       isArray: true
       name: device_id
       required: true
@@ -559,7 +559,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Request for specific system activities from the following events:  \n0 = Application Activity \n1000 = System Health \nRefer to this <a href=\"https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\">the following</a> to check the type_id for the event type".
+      description: 'Request for specific system activities from the following events:  \n0 = Application Activity \n1000 = System Health \nRefer to this <a href=\"https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\">the following</a> to check the type_id for the event type.'
       isArray: false
       name: type_id
       required: false
@@ -580,7 +580,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The overall success or failure of the action reported by the event. Possible values are: \nUnknown (0)\nSuccess (1)\nFailure  (2)"
+      description: 'The overall success or failure of the action reported by the event. Possible values are: \nUnknown (0)\nSuccess (1)\nFailure  (2).'
       isArray: false
       name: status
       predefined:

@@ -136,7 +136,8 @@ class Client(BaseClient):
         self.is_fetch_comment = is_fetch_comment
         self.fetch_status = fetch_status
         self.fetch_priority = fetch_priority
-        self.access_token = token if token is not None else self._get_access_token_or_login
+        self.access_token = token or self._get_access_token_or_login
+        self.headers = {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
 
 
     @property
@@ -186,15 +187,15 @@ class Client(BaseClient):
                 else:
                     # if it is unknown error - get the message from the error itself
                     raise DemistoException(f'Failed to execute. Error: {str(err)}', res=response)
-                    
+
     def query_request_api(self, method: str, url_suffix: str, params: dict[str, Any] = None, json_data: dict[str, Any] = None):
         """
         Call Symantec EDR On-prem POST and GET Request API
         Args:
             method (str): Request Method support POST and GET
             url_suffix (str): API endpoint
-            params (dict): URL parameters to specify the query.
-            json_data (dict): The dictionary to send in a request.
+            params (dict): URL parameters to specify the query for GET.
+            json_data (dict): The dictionary to send in a request for POST.
 
         Returns:
             Return the raw api response from Symantec EDR on-premise API.
@@ -203,15 +204,15 @@ class Client(BaseClient):
             response = self._http_request(
                 method=method.upper(),
                 url_suffix=url_suffix,
-                headers={'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'},
+                headers=self.headers,
                 json_data=json_data if method == 'POST' else {},
                 params=params if method == 'GET' else {},
                 resp_type='response',
                 allow_redirects=False
             )
-            status = response.status_code
             response.raise_for_status()
         except requests.exceptions.HTTPError as err:
+            status = response.status_code
             if status in HTTP_ERRORS:
                 raise DemistoException(f'{HTTP_ERRORS[status]}, '
                                        f'Error from API: {response.json().get("error")},'
@@ -235,15 +236,15 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="PATCH",
-                headers={'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'},
+                headers=self.headers,
                 json_data=payload,
                 url_suffix=endpoint,
                 resp_type="response",
                 return_empty_response=True
             )
-            status = response.status_code
             response.raise_for_status()
         except requests.exceptions.HTTPError as err:
+            status = response.status_code
             if status in HTTP_ERRORS:
                 raise DemistoException(f'{HTTP_ERRORS[status]}, '
                                        f'Error from API: {response.json().get("error")},'
@@ -280,11 +281,10 @@ def iso_creation_date(date: str):
     Returns:
         Return the ISO Date
     """
-    iso_date = None
     if date:
-        iso_date = dateparser.parse(date).strftime(SYMANTEC_ISO_DATE_FORMAT)[:23] + "Z"  # type: ignore
+        return dateparser.parse(date).strftime(SYMANTEC_ISO_DATE_FORMAT)[:23] + "Z"  # type: ignore
 
-    return iso_date
+    return None
 
 
 def get_headers_from_summary_data(summary_data: list[dict]):
@@ -388,7 +388,8 @@ def parse_attacks_sub_object(data: list[dict]) -> dict:
             tactic_ids_dict = {
                 f'attacks_tactic_ids_{cnt}': convert_list_to_str(tactic_ids_list)
             }
-            attacks_dict = {**attacks_dict, **tactic_ids_dict}
+            # attacks_dict = {**attacks_dict, **tactic_ids_dict}
+            attacks_dict |= tactic_ids_dict
 
         # tactic uids
         tactic_uids_list = attack.get('tactic_uids', [])
@@ -396,7 +397,9 @@ def parse_attacks_sub_object(data: list[dict]) -> dict:
             tactic_uids_dict = {
                 f'attacks_tactic_uids_{cnt}': convert_list_to_str(tactic_uids_list)
             }
-            attacks_dict = {**attacks_dict, **tactic_uids_dict}
+            # attacks_dict = {**attacks_dict, **tactic_uids_dict}
+            attacks_dict |= tactic_uids_dict
+
         cnt = cnt + 1
     return attacks_dict
 
@@ -459,7 +462,7 @@ def parse_connection_sub_object(data: dict[str, Any]) -> dict:
 
 def convert_list_to_str(data: list) -> str:
     seperator = ','
-    return seperator.join(map(str, data)) if isinstance(data, list) else None
+    return seperator.join(map(str, data)) if isinstance(data, list) else ''
 
 
 def parse_event_object_data(data: dict[str, Any]) -> dict:
@@ -1150,8 +1153,8 @@ def test_module(client: Client) -> str:
     try:
         res = get_incident_list_command(client, {'limit': 1})
         message = 'ok'
-    except DemistoException as e:
-        raise DemistoException(f'Failed to execute. Error {e}')
+    except Exception as err:
+        raise DemistoException(f'Failed to execute. Error {err}')
 
     return message
 
@@ -2020,7 +2023,7 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
     sha2 = args.get('file')
     endpoint = f'/atpapi/v2/sandbox/results/{sha2}/verdict'
 
-    sandbox_res = client.query_request_api(method='GET',
+    response = client.query_request_api(method='GET',
                                            url_suffix=endpoint,
                                            params={},
                                            json_data={})
@@ -2029,7 +2032,8 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
                                         url_suffix=f'/atpapi/v2/entities/files/{sha2}',
                                         params={},
                                         json_data={})
-    response: Dict[str, Any] = {**sandbox_res, **file_res}
+    #response: Dict[str, Any] = {**sandbox_res, **file_res}
+    response |= file_res
     # Sandbox verdict
     title = "Sandbox Verdict"
     if response:
@@ -2077,7 +2081,8 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> str:
                 'target': data.get('target'),
                 'error_code': data.get('error_code')
             }
-            summary_data = {**summary_data, **sandbox_status}
+            # summary_data = {**summary_data, **sandbox_status}
+            summary_data |= sandbox_status
 
     title = "File Sandbox Status"
     if datasets:
@@ -2179,7 +2184,7 @@ def file_polling_command(args: Dict[str, Any], client: Client) -> PollResult:
 
     if status == 'Completed':
         command_result = get_sandbox_verdict(client, args)
-        
+
         if global_integration_context := demisto.getIntegrationContext():
             del global_integration_context['command_id']
 
@@ -2190,7 +2195,7 @@ def file_polling_command(args: Dict[str, Any], client: Client) -> PollResult:
     elif status == 'Error':
         if global_integration_context := demisto.getIntegrationContext():
             del global_integration_context['command_id']
-        
+
         return PollResult(
             response=command_result,
             continue_to_poll=False
@@ -2229,7 +2234,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
     """
     demisto.debug(f'-- Polling Command --\nArguments : {args}')
     demisto.debug(f'Integration Global Context Data: {demisto.getIntegrationContext()}')
-    
+
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL))
     timeout_in_seconds = arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT))
@@ -2416,7 +2421,7 @@ def main() -> None:
         elif command in commands:
             command_output = commands[command](client, args)
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"command {command} is not supported")
 
         return_results(command_output)
 
