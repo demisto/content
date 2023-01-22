@@ -255,7 +255,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "139"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -305,8 +305,8 @@ tasks:
         type: singleSelect
         options: []
         optionsarg:
-        - simple: "yes"
-        - simple: "no"
+        - simple: Authorized
+        - simple: Unauthorized
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3035
+          "y": 3095
         }
       }
     note: false
@@ -390,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 3210
+          "y": 3270
         }
       }
     note: false
@@ -421,7 +421,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 3210
+          "y": 3270
         }
       }
     note: false
@@ -457,7 +457,7 @@ tasks:
       {
         "position": {
           "x": -180,
-          "y": 5490
+          "y": 5700
         }
       }
     note: false
@@ -485,7 +485,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5810
+          "y": 6020
         }
       }
     note: false
@@ -567,6 +567,16 @@ tasks:
       output:
         complex:
           root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.ExternalIP
+                iscontext: true
           accessor: Score
     skipunavailable: false
     quietmode: 0
@@ -602,14 +612,14 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "yes"
+              simple: authorized
           ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1155,
-          "y": 2890
+          "y": 3060
         }
       }
     note: false
@@ -976,7 +986,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 3510
+          "y": 3570
         }
       }
     note: false
@@ -1040,7 +1050,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4700
+          "y": 4760
         }
       }
     note: false
@@ -1086,7 +1096,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4830
+          "y": 4890
         }
       }
     note: false
@@ -1357,7 +1367,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 3350
+          "y": 3410
         }
       }
     note: false
@@ -1392,7 +1402,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 3350
+          "y": 3410
         }
       }
     note: false
@@ -1417,7 +1427,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "136"
+      - "138"
     scriptarguments:
       endpoint_id:
         complex:
@@ -1436,7 +1446,7 @@ tasks:
       {
         "position": {
           "x": -60,
-          "y": 5000
+          "y": 5060
         }
       }
     note: false
@@ -1601,7 +1611,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5665
+          "y": 5875
         }
       }
     note: false
@@ -1687,7 +1697,7 @@ tasks:
         complex:
           root: Account
           accessor: Manager
-      passwordchanged:
+      passwordchangeddate:
         complex:
           root: Account
           accessor: PasswordChanged
@@ -1930,6 +1940,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Hunt Results Count
+      output:
+        complex:
+          root: HasHuntResults
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1992,7 +2007,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "139"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2040,8 +2055,8 @@ tasks:
         type: singleSelect
         options: []
         optionsarg:
-        - simple: "yes"
-        - simple: "no"
+        - simple: Authorized
+        - simple: Unauthorized
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -2374,7 +2389,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 3690
+          "y": 3750
         }
       }
     note: false
@@ -2413,7 +2428,7 @@ tasks:
       {
         "position": {
           "x": -1230,
-          "y": 4510
+          "y": 4570
         }
       }
     note: false
@@ -2458,7 +2473,7 @@ tasks:
       {
         "position": {
           "x": -820,
-          "y": 4500
+          "y": 4560
         }
       }
     note: false
@@ -2510,7 +2525,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 3820
+          "y": 3880
         }
       }
     note: false
@@ -2542,7 +2557,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 3995
+          "y": 4055
         }
       }
     note: false
@@ -2645,7 +2660,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 4170
+          "y": 4230
         }
       }
     note: false
@@ -2698,7 +2713,7 @@ tasks:
       {
         "position": {
           "x": -1230,
-          "y": 4340
+          "y": 4400
         }
       }
     note: false
@@ -2730,7 +2745,7 @@ tasks:
       {
         "position": {
           "x": -1020,
-          "y": 4190
+          "y": 4250
         }
       }
     note: false
@@ -2787,7 +2802,7 @@ tasks:
       {
         "position": {
           "x": -820,
-          "y": 4340
+          "y": 4400
         }
       }
     note: false
@@ -2834,7 +2849,7 @@ tasks:
       {
         "position": {
           "x": -560,
-          "y": 4170
+          "y": 4230
         }
       }
     note: false
@@ -2865,7 +2880,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5190
+          "y": 5400
         }
       }
     note: false
@@ -2904,7 +2919,79 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5320
+          "y": 5530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 1e5c45bf-ed96-44e0-8679-cd25ae600259
+    type: regular
+    task:
+      id: 1e5c45bf-ed96-44e0-8679-cd25ae600259
+      version: -1
+      name: Set endpoint isolation status
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "136"
+    scriptarguments:
+      endpointisolationstatus:
+        simple: Executed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 5220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 0456b742-d472-4c38-83df-18c9158d2574
+    type: regular
+    task:
+      id: 0456b742-d472-4c38-83df-18c9158d2574
+      version: -1
+      name: Set user response
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      userengagementresponse:
+        complex:
+          root: Was the following action performed by you?.Answers
+          accessor: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 2880
         }
       }
     note: false
@@ -2939,7 +3026,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7175,
+        "height": 7385,
         "width": 2965,
         "x": -1230,
         "y": -1300
