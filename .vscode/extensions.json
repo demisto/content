@@ -6,7 +6,6 @@
     "recommendations": [
         "cortexxsoarext.xsoar",
         "ms-python.python",
-        "ms-toolsai.jupyter",
         "timonwong.shellcheck",
         "GitHub.vscode-pull-request-github",
         "eamodio.gitlens",
@@ -17,7 +16,6 @@
         "VisualStudioExptTeam.vscodeintellicode",
         "yzhang.markdown-all-in-one",
         "shd101wyy.markdown-preview-enhanced",
-        "Gruntfuggly.todo-tree",
         "redhat.vscode-yaml",
         "PKief.material-icon-theme",
         "mikestead.dotenv",
