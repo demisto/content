@@ -258,7 +258,7 @@ tasks:
     fieldMapping:
     - incidentfield: Source Geolocation
       output:
-        simple: Connection from unusual country - ${inputs.UnusualGeoLocation}
+        simple: Connection from unusual country
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -301,7 +301,8 @@ tasks:
     fieldMapping:
     - incidentfield: XDR Related Alerts
       output:
-        simple: inputs.RelatedAlerts
+        complex:
+          root: inputs.RelatedAlerts
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -344,7 +345,7 @@ tasks:
     fieldMapping:
     - incidentfield: Hunt Results Count
       output:
-        simple: inputs.HuntResults
+        simple: Has campaign hunt results
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -387,7 +388,8 @@ tasks:
     fieldMapping:
     - incidentfield: Part of Campaign
       output:
-        simple: inputs.RelatedCampaign
+        complex:
+          root: inputs.RelatedCampaign
     skipunavailable: false
     quietmode: 0
     isoversize: false
