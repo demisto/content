@@ -1094,9 +1094,6 @@ def main():
         if LooseVersion(demisto_version) < LooseVersion('8.0.0') and not params.get('longRunningPort'):
             raise DemistoException('Please specify a Listen Port, in the integration configuration')
 
-        if int(demisto_version.split('.')[0]) < 8 and not params.get('longRunningPort'):
-            raise DemistoException('Please specify a Listen Port, in the integration configuration')
-
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
