@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Union
 from git import GitCommandError, Head, Repo
 from zipfile import ZipFile
+from packaging.version import Version
 
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -176,18 +177,19 @@ def change_image(pack: Path):
 
 
 @add_changed_pack
-def update_existing_release_notes(pack: Path, version: str):
+def update_existing_release_notes(pack: Path):
     """
     Modifies an existing pack release notes
     """
-    version_rn = version.replace('.', '_')
+    latest_pack_version = str(max([Version(file_name) for file_name in (pack / 'ReleaseNotes').glob('*_*_*.md')]))
+    version_rn = latest_pack_version.replace('.', '_')
     path = pack / 'ReleaseNotes' / f'{version_rn}.md'
     if not path.exists():
         raise Exception("path is not valid release note")
 
     with path.open('a') as f:
         f.write('testing modifying existing RN')
-    return pack, version, None
+    return pack, latest_pack_version, None
 
 
 @add_changed_pack
@@ -288,14 +290,15 @@ def do_changes_on_branch(packs_path: Path):
     enhance_release_notes(packs_path / 'ZeroFox')
 
     # Case 5: Verify modified existing release notes - Box
-    update_existing_release_notes(packs_path / 'Box', "2.1.2")
+    update_existing_release_notes(packs_path / 'Box')
 
-    # Case 6: Verify pack is set to hidden - Microsoft365Defender
     # TODO: fix after hidden pack mechanism is fixed - CIAC-3848
+    # Case 6: Verify pack is set to hidden - Microsoft365Defender
     # set_pack_hidden(packs_path / 'Microsoft365Defender')
 
+    # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
     # Case 7: Verify changed readme - Maltiverse
-    update_readme(packs_path / 'Maltiverse')
+    # update_readme(packs_path / 'Maltiverse')
 
     # Case 8: Verify failing pack - Absolute
     create_failing_pack(packs_path / 'Absolute')

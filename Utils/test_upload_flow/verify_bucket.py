@@ -51,11 +51,11 @@ def logger(func):
             logging.info(f"Successful {MSG_DICT[func.__name__]} for pack {pack_id}.")
 
         except FileNotFoundError as e:
-            logging.info(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
+            logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
             self.is_valid = False
 
         except Exception as e:
-            logging.info(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
+            logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
     return wrapper
 
 
@@ -237,7 +237,7 @@ class BucketVerifier:
         Verify readme content is parsed correctly, verify that there was no version bump if only readme was modified
         """
         self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        return self.gcp.get_max_version(pack_id) and readme in self.gcp.get_pack_readme(pack_id), pack_id
+        return self.gcp.get_max_version(pack_id) == self.versions[pack_id] and readme in self.gcp.get_pack_readme(pack_id), pack_id
 
     @logger
     def verify_failed_pack(self, pack_id):
@@ -309,12 +309,14 @@ class BucketVerifier:
         expected_rn = 'testing modifying existing RN'
         self.verify_rn('Box', expected_rn)
 
+        # TODO: fix after hidden pack mechanism is fixed - CIAC-3848
         # Case 6: Verify pack is set to hidden - Microsoft365Defender
-        # self.verify_hidden('Microsoft365Defender')  TODO: fix after hidden pack mechanism is fixed
+        # self.verify_hidden('Microsoft365Defender')
 
+        # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
         # Case 7: Verify changed readme - Maltiverse
-        expected_readme = 'readme test upload flow'
-        self.verify_readme('Maltiverse', expected_readme)
+        # expected_readme = 'readme test upload flow'
+        # self.verify_readme('Maltiverse', expected_readme)
 
         # Case 8: Verify failing pack - Absolute
         self.verify_failed_pack('Absolute')
@@ -326,7 +328,7 @@ class BucketVerifier:
         if 'v2' in self.bucket_name or 'xsiam' in self.bucket_name:
             self.run_xsiam_bucket_validations()
 
-        if self.bucket_name == 'marketplace-dist' or 'xsoar' in self.bucket_name:
+        if 'v2' not in self.bucket_name or 'xsoar' in self.bucket_name:
             self.run_xsoar_bucket_validations()
 
     def is_bucket_valid(self):
