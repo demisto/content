@@ -8,9 +8,9 @@ from logging.handlers import SysLogHandler
 from distutils.util import strtobool
 from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
-from typing import Union, Tuple, Dict, Any, Generator, Callable
-from gevent.server import StreamServer
-from syslog_rfc5424_parser import SyslogMessage, ParseError
+from typing import Union, Tuple, Dict, Any, Generator
+import ssl
+
 
 ''' CONSTANTS '''
 
@@ -62,7 +62,7 @@ PROTOCOLS = {TCP, UDP}
 
 
 class SyslogManager:
-    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int):
+    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int, syslog_cert_path: str | None):
         """
         Class for managing instances of a syslog logger.
         :param address: The IP address of the syslog server.
@@ -75,6 +75,7 @@ class SyslogManager:
         self.protocol = protocol
         self.logging_level = logging_level
         self.facility = facility
+        self.syslog_cert_path = syslog_cert_path
 
     @contextmanager  # type: ignore[misc, arg-type]
     def get_logger(self) -> Generator:
@@ -99,7 +100,10 @@ class SyslogManager:
         kwargs: Dict[str, Any] = {
             'facility': self.facility
         }
-
+        if self.syslog_cert_path:
+            kwargs['ssl_kwargs'] = {'cert_reqs': ssl.CERT_REQUIRED,
+                                    'ssl_version': ssl.PROTOCOL_TLS,
+                                    'ca_certs': self.syslog_cert_path}
         if self.protocol == TCP:
             kwargs['socktype'] = SOCK_STREAM
         elif self.protocol == 'unix':
@@ -123,91 +127,22 @@ class SyslogManager:
 
 
 ''' HELPER FUNCTIONS '''
-def perform_long_running_loop(socket_data: bytes):
+
+
+def prepare_certificate_file(certificate: str):
     """
-    Performs one loop of a long running execution.
-    - Gets data from socket.
-    - Parses the Syslog message data.
-    - If the Syslog message data passes filter, creates a new incident.
-    - Saves the incident in integration context for samples.
+    Prepares the certificate file for ssl connection.
     Args:
-        socket_data (bytes): Retrieved socket data.
-
+        certificate (str): Certificate. For SSL connection.
     Returns:
-        (None): Creates incident in Cortex XSOAR platform.
-    """
-    incident_type: Optional[str] = demisto.params().get('incident_type', '')
-    extracted_message: Optional[SyslogMessageExtract] = None
-    for format_func in format_funcs:
-        extracted_message = format_func(socket_data)
-        if extracted_message:
-            demisto.debug(f'Succeeded in parsing the message with {format_func}')
-            break
-    if not extracted_message:
-        raise DemistoException(f'Could not parse the following message: {socket_data.decode("utf-8")}')
-
-    if log_message_passes_filter(extracted_message, MESSAGE_REGEX):
-        incident: dict = create_incident_from_syslog_message(extracted_message, incident_type)
-        update_integration_context_samples(incident)
-        demisto.createIncidents([incident])
-
-
-def perform_long_running_execution(sock: Any, address: tuple) -> None:
-    """
-    The long running execution loop. Gets input, and performs a while True loop and logs any error that happens.
-    Stops when there is no more data to read.
-    Args:
-        sock: Socket.
-        address(tuple): Address. Not used inside loop so marked as underscore.
-
-    Returns:
-        (None): Reads data, calls   that creates incidents from inputted data.
-    """
-    demisto.debug('Starting long running execution')
-    file_obj = sock.makefile(mode='rb')
-    try:
-        while True:
-            try:
-                line = file_obj.readline()
-                if not line:
-                    demisto.info(f'Disconnected from {address}')
-                    break
-                perform_long_running_loop(line.strip())
-            except Exception as e:
-                demisto.error(traceback.format_exc())  # print the traceback
-                demisto.error(f'Error occurred during long running loop. Error was: {e}')
-            finally:
-                demisto.debug('Finished reading message')
-    finally:
-        file_obj.close()
-
-
-def prepare_globals_and_create_server(port: int, message_regex: Optional[str], certificate: str,
-                                      private_key: str) -> StreamServer:
-    """
-    Prepares global environments of LOG_FORMAT, MESSAGE_REGEX and creates the server to listen
-    to Syslog messages.
-    Args:
-        port (int): Port
-        message_regex (Optional[str]): Regex. Will create incident only if Syslog message matches this regex.
-        certificate (Optional[str]): Certificate. For SSL connection.
-        private_key (Optional[str]): Private key. For SSL connection.
-
-    Returns:
-        (StreamServer): Server to listen to Syslog messages.
+        (str, str): certificate_path.
     """
     certificate_file = NamedTemporaryFile(delete=False)
     certificate_path = certificate_file.name
     certificate_file.write(bytes(certificate, 'utf-8'))
     certificate_file.close()
-    private_key_file = NamedTemporaryFile(delete=False)
-    private_key_path = private_key_file.name
-    private_key_file.write(bytes(private_key, 'utf-8'))
-    private_key_file.close()
-    server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=private_key_path,
-                          certfile=certificate_path)
     demisto.debug('Starting HTTPS Server')
-    return server
+    return certificate_path
 
 
 def init_manager(params: dict) -> SyslogManager:
@@ -222,15 +157,14 @@ def init_manager(params: dict) -> SyslogManager:
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
     certificate: Optional[str] = params.get('certificate')
-    private_key: Optional[str] = params.get('private_key')
-    message_regex: Optional[str] = params.get('message_regex')  #?
+    certificate_path: Optional[str] = None
     if not address:
         raise ValueError('A Syslog server address must be provided.')
     if not port and protocol in PROTOCOLS:
         raise ValueError('A port must be provided in TCP or UDP protocols.')
-    if certificate and private_key:
-        return prepare_globals_and_create_server(port, message_regex, certificate, private_key)
-    return SyslogManager(address, port, protocol, logging_level, facility)
+    if certificate:
+        certificate_path = prepare_certificate_file(certificate)
+    return SyslogManager(address, port, protocol, logging_level, facility, certificate_path)
 
 
 def send_log(manager: SyslogManager, message: str, log_level: str):
