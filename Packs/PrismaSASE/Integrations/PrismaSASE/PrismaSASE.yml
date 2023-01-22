@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Prisma SASE
+  id:  Palo Alto Networks - Prisma SASE
   version: -1
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
@@ -29,8 +29,8 @@ configuration:
   required: false
   type: 8
 description: Provides commands for interaction with Prisma SASE API.
-display: Prisma SASE
-name: Prisma SASE
+display:  Palo Alto Networks - Prisma SASE
+name:  Palo Alto Networks - Prisma SASE
 script:
   commands:
   - arguments:
@@ -169,6 +169,8 @@ script:
       isArray: false
       name: negate_destination
       required: false
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Create a new security rule.
     execution: false
@@ -270,6 +272,8 @@ script:
       isArray: false
       name: rule_id
       required: false
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Lists all security rules.
     execution: false
@@ -356,6 +360,8 @@ script:
       name: parent_finished
       required: false
       deprecated: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Push the candidate configuration.
     execution: false
@@ -501,6 +507,8 @@ script:
       predefined:
         - 'true'
         - 'false'
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Update an existing security rule.
     execution: false
@@ -597,6 +605,8 @@ script:
       isArray: true
       name: tag
       required: false
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Update an existing address object.
     execution: false
@@ -632,6 +642,8 @@ script:
       isArray: false
       name: limit
       required: false
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Lists all configuration jobs.
     execution: false
@@ -688,6 +700,8 @@ script:
       isArray: false
       name: rule_id
       required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Delete a specific security rule.
     execution: false
@@ -738,6 +752,8 @@ script:
       isArray: false
       name: address_value
       required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Create a new address object.
     execution: false
@@ -767,6 +783,8 @@ script:
       isArray: false
       name: object_id
       required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Delete a specific address object.
     execution: false
@@ -806,6 +824,8 @@ script:
       isArray: false
       name: page_size
       description: Number of results per page to display.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Lists all addresses objects.
     execution: false
@@ -865,6 +885,8 @@ script:
       isArray: false
       name: page_size
       description: Number of results per page to display.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Lists all tags.
     execution: false
@@ -958,6 +980,8 @@ script:
       isArray: false
       name: comments
       required: false
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Create a new tag.
     execution: false
@@ -1051,6 +1075,8 @@ script:
       isArray: false
       name: comments
       required: false
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Update an existing tag.
     execution: false
@@ -1077,6 +1103,8 @@ script:
       isArray: false
       name: tag_id
       required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     description: Delete a specific tag.
     execution: false
@@ -1113,6 +1141,8 @@ script:
       isArray: false
       name: page_size
       description: Number of results per page to display.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Lists all address groups.
@@ -1177,6 +1207,8 @@ script:
       name: name
       required: true
       description: The name of the address group.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Create a new address group.
@@ -1250,6 +1282,8 @@ script:
       - dynamic
       - static
       description: The address group type.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Update an existing address group.
@@ -1279,6 +1313,8 @@ script:
       name: group_id
       description: The name of the address group.
       required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Delete a specific address group.
@@ -1315,6 +1351,8 @@ script:
       isArray: false
       name: page_size
       description: Number of results per page to display.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Lists all custom URL categories.
@@ -1374,6 +1412,8 @@ script:
       name: name
       required: true
       description: The name of the custom URL category.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Create a new url category.
@@ -1440,6 +1480,8 @@ script:
       - URL List
       - Category Match
       required: false
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Update an existing url category.
@@ -1466,6 +1508,8 @@ script:
       name: id
       required: true
       description: The custom URL category id.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Delete a specific url category.
@@ -1502,6 +1546,8 @@ script:
       isArray: false
       name: page_size
       description: Number of results per page to display.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Lists all external dynamic lists.
@@ -1617,6 +1663,8 @@ script:
       isArray: false
       name: exception_list
       description: The user can exclude certain addresses from the list depending on the type of list.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Create a new dynamic list.
@@ -1741,6 +1789,8 @@ script:
       isArray: false
       name: exception_list
       description: The user can exclude certain addresses from the list depending on the type of list.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Update an existing dynamic list.
@@ -1770,6 +1820,8 @@ script:
       name: id
       required: true
       description: The external dynamic list id.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Delete a specific dynamic list.
@@ -1788,6 +1840,8 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+      name: tsg_id
     deprecated: false
     execution: false
     description: Get all predefined URL categories.

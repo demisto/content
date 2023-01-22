@@ -69,9 +69,10 @@ class Client(BaseClient):
                      method: str,
                      url_suffix: str = '',
                      params: dict = None,
-                     json_data: dict = None) -> dict:
+                     json_data: dict = None,
+                     tsg_id: str = None) -> dict:
 
-        headers = self.access_token_to_headers()
+        headers = self.access_token_to_headers(tsg_id)
         return self._http_request(method=method,
                                   url_suffix=url_suffix,
                                   params=params,
@@ -106,33 +107,31 @@ class Client(BaseClient):
 
         return rule
 
-    def create_security_rule(self, rule: dict, folder: str, position: str) -> dict:
+    def create_security_rule(self, rule: dict, query_params: dict, tsg_id: str) -> dict:
         """Command to create new Prisma SASE security rule within the given Folder, Position, and Tenant/TSG
         Args:
             rule: Security rule dictionary
-            folder: Prisma SASE Folder
-            position: Prisma SASE rule position
+            query_params:
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}security-rules'
 
-        query_params = {
-            'folder': encode_string_results(folder),
-            'position': encode_string_results(position)
-        }
         return self.http_request(
             method="POST",
             url_suffix=uri,
             params=query_params,
-            json_data=rule
+            json_data=rule,
+            tsg_id=tsg_id
         )
 
-    def edit_security_rule(self, rule: dict, rule_id: str) -> dict:
+    def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str) -> dict:
         """Edit existing Prisma SASE security rule
         Args:
             rule: Security rule dictionary
             rule_id: identifier of rule to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -141,13 +140,15 @@ class Client(BaseClient):
         return self.http_request(
             method="PUT",
             url_suffix=uri,
-            json_data=rule
+            json_data=rule,
+            tsg_id=tsg_id
         )
 
-    def delete_security_rule(self, rule_id: str) -> dict:
+    def delete_security_rule(self, rule_id: str, tsg_id: str) -> dict:
         """Delete Prisma SASE security rule
         Args:
             rule_id: Identifier of the existing rule to be deleted
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -155,14 +156,16 @@ class Client(BaseClient):
 
         return self.http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            tsg_id=tsg_id
         )
 
-    def create_address_object(self, address: dict, folder: str) -> dict:
+    def create_address_object(self, address: dict, folder: str, tsg_id: str) -> dict:
         """Create new Prisma SASE security rule within the given Folder, Position, and Tenant/TSG
         Args:
             address: address object dictionary
             folder: Prisma SASE Folder
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -175,14 +178,16 @@ class Client(BaseClient):
             method="POST",
             url_suffix=uri,
             params=query_params,
-            json_data=address
+            json_data=address,
+            tsg_id=tsg_id
         )
 
-    def edit_address_object(self, address: dict, address_id: str) -> dict:
+    def edit_address_object(self, address: dict, address_id: str, tsg_id: str) -> dict:
         """Edit existing address object
         Args:
             address: Address object dictionary
             address_id: Identifier of existing address to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -191,13 +196,15 @@ class Client(BaseClient):
         return self.http_request(
             method="PUT",
             url_suffix=uri,
-            json_data=address
+            json_data=address,
+            tsg_id=tsg_id
         )
 
-    def delete_address_object(self, address_id: str) -> dict:
+    def delete_address_object(self, address_id: str, tsg_id: str) -> dict:
         """Delete existing address object
         Args:
             address_id: Identifier of existing address to be deleted
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -205,13 +212,15 @@ class Client(BaseClient):
 
         return self.http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            tsg_id=tsg_id
         )
 
-    def list_address_objects(self, query_params: dict) -> dict:
+    def list_address_objects(self, query_params: dict, tsg_id: str) -> dict:
         """Return list of address objects from Prisma SASE
         Args:
             query_params: query parameters for the request
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -220,13 +229,15 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def list_security_rules(self, query_params: dict) -> dict:
+    def list_security_rules(self, query_params: dict, tsg_id: str) -> dict:
         """Command to list security rules
         Args:
             query_params: query parameters for the request
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -235,14 +246,16 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def push_candidate_config(self, folders: list, description: str = None) -> dict:
+    def push_candidate_config(self, folders: list, tsg_id: str, description: str = None) -> dict:
         """Push candidate configuration
         Args:
             folders: Target Prisma SASE Folders for the configuration commit
             description: Description for the job
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -254,13 +267,15 @@ class Client(BaseClient):
         return self.http_request(
             method="POST",
             url_suffix=uri,
-            json_data=body
+            json_data=body,
+            tsg_id=tsg_id
         )
 
-    def get_config_job_by_id(self, job_id: str) -> dict:
+    def get_config_job_by_id(self, job_id: str, tsg_id: str) -> dict:
         """List config jobs filtered by ID
         Args:
             job_id: ID of the config job
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -269,10 +284,13 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
+            tsg_id=tsg_id
         )
 
-    def list_config_jobs(self) -> dict:
+    def list_config_jobs(self, tsg_id: str) -> dict:
         """List config jobs
+        Args:
+             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -280,14 +298,16 @@ class Client(BaseClient):
 
         return self.http_request(
             method="GET",
-            url_suffix=uri
+            url_suffix=uri,
+            tsg_id=tsg_id
         )
 
-    def get_address_by_id(self, query_params: dict, address_id: str) -> dict:
+    def get_address_by_id(self, query_params: dict, address_id: str, tsg_id: str) -> dict:
         """Get an existing address object
         Args:
             query_params: Address object dictionary
             address_id: Identifier of existing address to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -296,14 +316,16 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def get_security_rule_by_id(self, query_params: dict, rule_id: str) -> dict:
+    def get_security_rule_by_id(self, query_params: dict, rule_id: str, tsg_id: str) -> dict:
         """Get existing security rule
         Args:
             query_params: Address object dictionary
             rule_id: Identifier of existing address to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -312,14 +334,16 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def get_tag_by_id(self, query_params: dict, tag_id: str) -> dict:
+    def get_tag_by_id(self, query_params: dict, tag_id: str, tsg_id: str) -> dict:
         """Get a tag
         Args:
             query_params: Address object dictionary
             tag_id: Identifier of existing tag to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -328,13 +352,15 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def list_tags(self, query_params: dict) -> dict:
+    def list_tags(self, query_params: dict, tsg_id: str) -> dict:
         """Command to list tags
         Args:
             query_params: query parameters for the request
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -343,14 +369,16 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def update_tag(self, tag_id: str, tag: dict) -> dict:
-        """Edit existing address object
+    def update_tag(self, tag_id: str, tag: dict, tsg_id: str) -> dict:
+        """Update existing Tag
         Args:
             tag: Tag dictionary
             tag_id: Identifier of existing address to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -359,13 +387,15 @@ class Client(BaseClient):
         return self.http_request(
             method="PUT",
             url_suffix=uri,
-            json_data=tag
+            json_data=tag,
+            tsg_id=tsg_id
         )
 
-    def delete_tag(self, tag_id: str) -> dict:
-        """Delete Prisma SASE tag
+    def delete_tag(self, tag_id: str, tsg_id: str) -> dict:
+        """Delete a tag
         Args:
             tag_id: Identifier of the existing tag to be deleted
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -373,14 +403,16 @@ class Client(BaseClient):
 
         return self.http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            tsg_id=tsg_id
         )
 
-    def create_tag(self, query_params: dict, tag: dict) -> dict:
+    def create_tag(self, query_params: dict, tag: dict, tsg_id: str) -> dict:
         """Create new Prisma SASE tag within the given Folder
         Args:
             tag: tag dictionary
             query_params: Prisma SASE Folder
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -390,14 +422,16 @@ class Client(BaseClient):
             method="POST",
             url_suffix=uri,
             params=query_params,
-            json_data=tag
+            json_data=tag,
+            tsg_id=tsg_id
         )
 
-    def get_address_group_by_id(self, query_params: dict, group_id: str) -> dict:
+    def get_address_group_by_id(self, query_params: dict, group_id: str, tsg_id: str) -> dict:
         """Get a tag
         Args:
             query_params: Address object dictionary
             group_id: Identifier of existing tag to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -406,13 +440,15 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def list_address_group(self, query_params: dict) -> dict:
+    def list_address_group(self, query_params: dict, tsg_id: str) -> dict:
         """Get all address groups
         Args:
             query_params: Address object dictionary
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -421,14 +457,16 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def update_address_group(self, address_group: dict, group_id: str) -> dict:
+    def update_address_group(self, address_group: dict, group_id: str, tsg_id: str) -> dict:
         """Edit existing address group
         Args:
             address_group: Address object dictionary
             group_id: Identifier of existing address group to update
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -437,14 +475,16 @@ class Client(BaseClient):
         return self.http_request(
             method="PUT",
             url_suffix=uri,
-            json_data=address_group
+            json_data=address_group,
+            tsg_id=tsg_id
         )
 
-    def create_address_group(self, query_params: dict, address_group: dict) -> dict:
+    def create_address_group(self, query_params: dict, address_group: dict, tsg_id: str) -> dict:
         """Create new Prisma SASE addres group
         Args:
             address_group: address group dictionary
             query_params: Prisma SASE Folder
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -454,13 +494,15 @@ class Client(BaseClient):
             method="POST",
             url_suffix=uri,
             params=query_params,
-            json_data=address_group
+            json_data=address_group,
+            tsg_id=tsg_id
         )
 
-    def delete_address_group(self, group_id: str) -> dict:
+    def delete_address_group(self, group_id: str, tsg_id: str) -> dict:
         """Delete Prisma SASE address group
         Args:
             group_id: Identifier of the existing address group to be deleted
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -468,29 +510,33 @@ class Client(BaseClient):
 
         return self.http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            tsg_id=tsg_id
         )
 
-    def get_custom_url_category_by_id(self, query_params: dict, id: str) -> dict:
-        """Get a tag
+    def get_custom_url_category_by_id(self, query_params: dict, url_category_id: str, tsg_id: str) -> dict:
+        """Get a specific custom URL category
         Args:
             query_params: Address object dictionary
-            id: Identifier of existing tag to be edited
+            url_category_id: Identifier of existing tag to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
-        uri = f'{CONFIG_URI_PREFIX}url-categories/{id}'
+        uri = f'{CONFIG_URI_PREFIX}url-categories/{url_category_id}'
 
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def list_custom_url_category(self, query_params: dict) -> dict:
+    def list_custom_url_category(self, query_params: dict, tsg_id: str) -> dict:
         """Get all custom url category
         Args:
             query_params: Address object dictionary
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -499,30 +545,34 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def update_custom_url_category(self, custom_url_category: dict, id: str) -> dict:
-        """Updatr existing custom url category
+    def update_custom_url_category(self, custom_url_category: dict, url_category_id: str, tsg_id: str) -> dict:
+        """Update existing custom url category
         Args:
             custom_url_category: custom url category
-            id: Identifier of existing address group to update
+            url_category_id: Identifier of existing address group to update
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
-        uri = f'{CONFIG_URI_PREFIX}url-categories/{id}'
+        uri = f'{CONFIG_URI_PREFIX}url-categories/{url_category_id}'
 
         return self.http_request(
             method="PUT",
             url_suffix=uri,
-            json_data=custom_url_category
+            json_data=custom_url_category,
+            tsg_id=tsg_id
         )
 
-    def create_custom_url_category(self, query_params: dict, custom_url_category: dict) -> dict:
+    def create_custom_url_category(self, query_params: dict, custom_url_category: dict, tsg_id: str) -> dict:
         """Create new custom url category
         Args:
             custom_url_category: address group dictionary
             query_params: Prisma SASE Folder
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -532,43 +582,49 @@ class Client(BaseClient):
             method="POST",
             url_suffix=uri,
             params=query_params,
-            json_data=custom_url_category
+            json_data=custom_url_category,
+            tsg_id=tsg_id
         )
 
-    def delete_custom_url_category(self, id: str) -> dict:
+    def delete_custom_url_category(self, url_category_id: str, tsg_id: str) -> dict:
         """Delete custom url category
         Args:
-            id: Identifier of the existing custom url category to be deleted
+            url_category_id: Identifier of the existing custom url category to be deleted
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
-        uri = f'{CONFIG_URI_PREFIX}url-categories/{id}'
+        uri = f'{CONFIG_URI_PREFIX}url-categories/{url_category_id}'
 
         return self.http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            tsg_id=tsg_id
         )
 
-    def get_external_dynamic_list_by_id(self, query_params: dict, id: str) -> dict:
-        """Get a external dynamic list
+    def get_external_dynamic_list_by_id(self, query_params: dict, external_dynamic_list_id: str, tsg_id: str) -> dict:
+        """Get all external dynamic list
         Args:
             query_params: Address object dictionary
-            id: Identifier of existing tag to be edited
+            external_dynamic_list_id: Identifier of existing tag to be edited
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
-        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{id}'
+        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{external_dynamic_list_id}'
 
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def list_external_dynamic_list(self, query_params: dict) -> dict:
+    def list_external_dynamic_list(self, query_params: dict, tsg_id: str) -> dict:
         """Get all external dynamic list
         Args:
             query_params: Address object dictionary
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -577,30 +633,34 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def update_external_dynamic_list(self, custom_url_category: dict, id: str) -> dict:
+    def update_external_dynamic_list(self, external_dynamic_list: dict, dynamic_list_id: str, tsg_id: str) -> dict:
         """Update existing external dynamic list
         Args:
-            custom_url_category: external dynamic list
-            id: Identifier of existing address group to update
+            external_dynamic_list: external dynamic list
+            dynamic_list_id: Identifier of existing address group to update
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
-        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{id}'
+        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{dynamic_list_id}'
 
         return self.http_request(
             method="PUT",
             url_suffix=uri,
-            json_data=custom_url_category
+            json_data=external_dynamic_list,
+            tsg_id=tsg_id
         )
 
-    def create_external_dynamic_list(self, query_params: dict, custom_url_category: dict) -> dict:
+    def create_external_dynamic_list(self, query_params: dict, external_dynamic_list: dict, tsg_id: str) -> dict:
         """Create new external dynamic list
         Args:
-            custom_url_category: external dynamic list
+            external_dynamic_list: external dynamic list
             query_params: Prisma SASE Folder
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -610,27 +670,31 @@ class Client(BaseClient):
             method="POST",
             url_suffix=uri,
             params=query_params,
-            json_data=custom_url_category
+            json_data=external_dynamic_list,
+            tsg_id=tsg_id
         )
 
-    def delete_external_dynamic_list(self, id: str) -> dict:
+    def delete_external_dynamic_list(self, dynamic_list_id: str, tsg_id: str) -> dict:
         """Delete external dynamic list
         Args:
-            id: Identifier of the existing external dynamic list to be deleted
+            dynamic_list_id: Identifier of the existing external dynamic list to be deleted
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
-        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{id}'
+        uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{dynamic_list_id}'
 
         return self.http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            tsg_id=tsg_id
         )
 
-    def list_url_access_profile(self, query_params: dict) -> dict:
+    def list_url_access_profile(self, query_params: dict, tsg_id: str) -> dict:
         """Get all external dynamic list
         Args:
             query_params: Address object dictionary
+            tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
@@ -639,10 +703,11 @@ class Client(BaseClient):
         return self.http_request(
             method="GET",
             url_suffix=uri,
-            params=query_params
+            params=query_params,
+            tsg_id=tsg_id
         )
 
-    def get_access_token(self) -> str:
+    def get_access_token(self, tsg_id: str) -> str:
         """Get access token to use for API call.
 
         The SASE API is multi-tenant capable and the tenant structure is hierarchical.
@@ -659,15 +724,15 @@ class Client(BaseClient):
         """
 
         integration_context = get_integration_context()
-        tsg_access_token = f'{self.tsg_id}.access_token'
-        tsg_expiry_time = f'{self.tsg_id}.expiry_time'
+        tsg_access_token = f'{tsg_id}.access_token'
+        tsg_expiry_time = f'{tsg_id}.expiry_time'
         previous_token = integration_context.get(tsg_access_token)
         previous_token_expiry_time = integration_context.get(tsg_expiry_time)
 
         if previous_token and previous_token_expiry_time > date_to_timestamp(datetime.now()):
             return previous_token
         else:
-            tsg = f'tsg_id:{self.tsg_id}'
+            tsg = f'tsg_id:{tsg_id}'
             data = {
                 'grant_type': 'client_credentials',
                 'scope': tsg
@@ -708,8 +773,9 @@ class Client(BaseClient):
                 raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
                                        f' configuration.\n\n{e}')
 
-    def access_token_to_headers(self) -> dict:
-        access_token = self.get_access_token()
+    def access_token_to_headers(self, tsg_id: str = None) -> dict:
+        tsg_id = tsg_id if tsg_id else self.tsg_id
+        access_token = self.get_access_token(tsg_id)
 
         headers = self._headers
         headers['Authorization'] = f"Bearer {access_token}"
@@ -834,6 +900,7 @@ def get_pagination_params(args) -> dict:
         pagination_params['limit'] = limit
     return pagination_params
 
+
 """COMMANDS"""
 
 
@@ -867,8 +934,12 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     """
 
     rule = client.build_security_rule(args)
-
-    raw_response = client.create_security_rule(rule, args.get('folder'), args.get('position'))  # type: ignore
+    query_params = {
+        'folder': encode_string_results(args.get('folder')),
+        'position': encode_string_results(args.get('position'))
+    }
+    tsg_id = args.get('tsg_id')
+    raw_response = client.create_security_rule(rule=rule, query_params=query_params, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
@@ -900,7 +971,9 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     if args.get('tag'):
         address_object['tag'] = args.get('tag')
 
-    raw_response = client.create_address_object(address_object, args.get('folder'))  # type: ignore
+    raw_response = client.create_address_object(address=address_object,
+                                                folder=args.get('folder'),
+                                                tsg_id=args.get('tsg_id'))  # type: ignore
 
     raw_response = modify_address(raw_response)
 
@@ -927,8 +1000,9 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
         'folder': encode_string_results(args.get('folder'))
     }
     object_id = args.get('object_id')
+    tsg_id = args.get('tsg_id')
     # first get the original address, so user won't need to send all data
-    original_address = client.get_address_by_id(query_params, object_id)
+    original_address = client.get_address_by_id(query_params=query_params, address_id=object_id, tsg_id=tsg_id)
     original_address_type = None
     if not args.get('type'):
         for address_type in ADDRESS_TYPES:
@@ -950,7 +1024,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     if tag := args.get('tag'):
         original_address['tag'] = tag
 
-    raw_response = client.edit_address_object(original_address, object_id)  # type: ignore
+    raw_response = client.edit_address_object(address=original_address, address_id=object_id, tsg_id=tsg_id)  # type: ignore
     outputs = modify_address(raw_response)
 
     return CommandResults(
@@ -971,8 +1045,9 @@ def delete_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     Returns:
         Outputs.
     """
-
-    raw_response = client.delete_address_object(args.get('object_id'))  # type: ignore
+    tsg_id = args.get('tsg_id')
+    address_id = args.get('object_id')
+    raw_response = client.delete_address_object(address_id=address_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
         readable_output=f'Address object with id {raw_response.get("id", "")} '
@@ -994,13 +1069,14 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
     if object_id := args.get('object_id'):
-        raw_response = client.get_address_by_id(query_params, object_id)
+        raw_response = client.get_address_by_id(query_params=query_params, address_id=object_id, tsg_id=tsg_id)
         outputs = [raw_response]
     else:
         query_params.update(get_pagination_params(args))
 
-        raw_response = client.list_address_objects(query_params)  # type: ignore
+        raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.get('data')
 
@@ -1028,8 +1104,9 @@ def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     """
 
     rule_id = args.get('rule_id')
+    tsg_id = args.get('tsg_id')
 
-    raw_response = client.delete_security_rule(rule_id)  # type: ignore
+    raw_response = client.delete_security_rule(rule_id=rule_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
         readable_output=f'Security Rule object with id {raw_response.get("id", "")} '
@@ -1049,13 +1126,14 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     rule = client.build_security_rule(args)
     rule_id = args.get('rule_id')
+    tsg_id = args.get('tsg_id')
     overwrite = argToBoolean(args.get('overwrite'))
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
-    original_rule = client.get_security_rule_by_id(query_params, rule_id)
+    original_rule = client.get_security_rule_by_id(query_params=query_params, rule_id=rule_id, tsg_id=tsg_id)
     updated_rule = update_new_rule(rule, original_rule, overwrite=overwrite)
-    raw_response = client.edit_security_rule(updated_rule, rule_id)  # type: ignore
+    raw_response = client.edit_security_rule(rule=updated_rule, rule_id=rule_id, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
@@ -1077,8 +1155,9 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any]) -> Comma
         Outputs.
     """
     folders = argToList(args.get('folders'))  # type: ignore
+    tsg_id = args.get('tsg_id')
 
-    raw_response = client.push_candidate_config(folders, args.get('description'))  # type: ignore
+    raw_response = client.push_candidate_config(folders, args.get('description'), tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response
 
@@ -1106,14 +1185,15 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
         'folder': encode_string_results(args.get('folder')),
         'position': encode_string_results(args.get('position'))
     }
+    tsg_id = args.get('tsg_id')
 
     if rule_id := args.get('rule_id') or '':
-        raw_response = client.get_security_rule_by_id(query_params, rule_id)
+        raw_response = client.get_security_rule_by_id(query_params=query_params, rule_id=rule_id, tsg_id=tsg_id)
         outputs = raw_response
     else:
         query_params.update(get_pagination_params(args))
 
-        raw_response = client.list_security_rules(query_params)  # type: ignore
+        raw_response = client.list_security_rules(query_params=query_params, tsg_id=tsg_id)  # type: ignore
         outputs = raw_response.get('data') or {}
 
     return CommandResults(
@@ -1139,15 +1219,15 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
     Returns:
         Outputs.
     """
-    # TODO - add pagination
 
     query_params = {}
+    tsg_id = args.get('tsg_id')
     if job_id := args.get('job_id'):
-        raw_response = client.get_config_job_by_id(job_id)
+        raw_response = client.get_config_job_by_id(job_id=job_id, tsg_id=tsg_id)
     else:
         query_params.update(get_pagination_params(args))
 
-        raw_response = client.list_config_jobs()  # type: ignore
+        raw_response = client.list_config_jobs(tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.get('data')
 
@@ -1172,18 +1252,18 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         Returns:
             Outputs.
         """
-    # TODO - add pagination
 
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
     if tag_id := args.get('tag_id'):
-        raw_response = client.get_tag_by_id(query_params, tag_id)
+        raw_response = client.get_tag_by_id(query_params=query_params, tag_id=tag_id, tsg_id=tsg_id)
         outputs = raw_response
     else:
         query_params.update(get_pagination_params(args))
 
-        raw_response = client.list_tags(query_params)  # type: ignore
+        raw_response = client.list_tags(query_params=query_params, tsg_id=tsg_id)  # type: ignore
         outputs = raw_response.get('data')
 
     return CommandResults(
@@ -1219,8 +1299,9 @@ def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         tag['comments'] = comments
 
     query_params = {'folder': args.get('folder')}
+    tsg_id = args.get('tsg_id')
 
-    raw_response = client.create_tag(query_params, tag)  # type: ignore
+    raw_response = client.create_tag(query_params=query_params, tag=tag, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
@@ -1245,7 +1326,9 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         'folder': encode_string_results(args.get('folder'))
     }
     # first get the original tag, so user won't need to send all data
-    original_tag = client.get_tag_by_id(query_params, args.get('tag_id'))
+    tag_id = args.get('tag_id')
+    tsg_id = args.get('tsg_id')
+    original_tag = client.get_tag_by_id(query_params=query_params, tag_id=tag_id, tsg_id=tsg_id)
 
     if color := args.get('color'):
         original_tag['color'] = color
@@ -1253,7 +1336,7 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if comments := args.get('comments'):
         original_tag['comments'] = comments
 
-    raw_response = client.update_tag(args.get('tag_id'), original_tag)  # type: ignore
+    raw_response = client.update_tag(tag_id=tag_id, tag=original_tag, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
@@ -1276,8 +1359,9 @@ def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
 
     tag_id = args.get('tag_id')
+    tsg_id = args.get('tsg_id')
 
-    raw_response = client.delete_tag(tag_id)  # type: ignore
+    raw_response = client.delete_tag(tag_id=tag_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
         readable_output=f'Tag with id {raw_response.get("id", "")} '
@@ -1299,13 +1383,14 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
     if group_id := args.get('group_id'):
-        raw_response = client.get_address_group_by_id(query_params, group_id)
+        raw_response = client.get_address_group_by_id(query_params=query_params, group_id=group_id, tsg_id=tsg_id)
         outputs = [raw_response]
     else:
         query_params.update(get_pagination_params(args))
 
-        raw_response = client.list_address_group(query_params)  # type: ignore
+        raw_response = client.list_address_group(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.get('data')
 
@@ -1338,6 +1423,7 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
 
     if description := args.get('description'):
         address_group['description'] = description
@@ -1349,7 +1435,9 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
         else:  # type == 'dynamic'
             if dynamic_filter := args.get('dynamic_filter'):
                 address_group['dynamic'] = {'filter': dynamic_filter}
-    raw_response = client.create_address_group(query_params, address_group)  # type: ignore
+    raw_response = client.create_address_group(query_params=query_params,
+                                               address_group=address_group,
+                                               tsg_id=tsg_id)  # type: ignore
 
     raw_response = modify_group_address(raw_response)
 
@@ -1375,9 +1463,10 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
     group_id = args.get('group_id')
     # first get the original address, so user won't need to send all data
-    original_address_group = client.get_address_group_by_id(query_params, group_id)
+    original_address_group = client.get_address_group_by_id(query_params=query_params, group_id=group_id, tsg_id=tsg_id)
 
     if description := args.get('description'):
         original_address_group['description'] = description
@@ -1413,8 +1502,9 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
         original_address_group.pop('static') if 'static' in original_address_group else None
 
-
-    raw_response = client.update_address_group(original_address_group, group_id)  # type: ignore
+    raw_response = client.update_address_group(address_group=original_address_group,
+                                               group_id=group_id,
+                                               tsg_id=tsg_id)  # type: ignore
 
     outputs = modify_group_address(raw_response)
 
@@ -1436,8 +1526,10 @@ def delete_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         Outputs.
     """
+    group_id = args.get('group_id')
+    tsg_id = args.get('tsg_id')
 
-    raw_response = client.delete_address_group(args.get('group_id'))  # type: ignore
+    raw_response = client.delete_address_group(group_id=group_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
         readable_output=f'Address group with id {raw_response.get("id", "")} '
@@ -1459,8 +1551,11 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
     if url_category_id := args.get('id'):
-        raw_response = client.get_custom_url_category_by_id(query_params, url_category_id)
+        raw_response = client.get_custom_url_category_by_id(query_params=query_params,
+                                                            url_category_id=url_category_id,
+                                                            tsg_id=tsg_id)
         outputs = [raw_response]
     else:
         page = arg_to_number(args.get('page')) or 1
@@ -1471,7 +1566,7 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
         elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
             query_params['limit'] = limit
 
-        raw_response = client.list_custom_url_category(query_params)  # type: ignore
+        raw_response = client.list_custom_url_category(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.get('data')
 
@@ -1504,6 +1599,7 @@ def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
 
     if description := args.get('description'):
         custom_url_category['description'] = description
@@ -1511,7 +1607,9 @@ def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     if value := argToList(args.get('value')):
         custom_url_category['list'] = value
 
-    raw_response = client.create_custom_url_category(query_params, custom_url_category)  # type: ignore
+    raw_response = client.create_custom_url_category(query_params=query_params,
+                                                     custom_url_category=custom_url_category,
+                                                     tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
@@ -1536,9 +1634,12 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
     url_category_id = args.get('id')
     # first get the original, so user won't need to send all data
-    original_custom_url_category = client.get_custom_url_category_by_id(query_params, url_category_id)
+    original_custom_url_category = client.get_custom_url_category_by_id(query_params=query_params,
+                                                                        url_category_id=url_category_id,
+                                                                        tsg_id=tsg_id)
 
     if description := args.get('description'):
         original_custom_url_category['description'] = description
@@ -1556,7 +1657,9 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
         else:
             original_custom_url_category.get('list', []).extend(value)
 
-    raw_response = client.update_custom_url_category(original_custom_url_category, url_category_id)  # type: ignore
+    raw_response = client.update_custom_url_category(custom_url_category=original_custom_url_category,
+                                                     url_category_id=url_category_id,
+                                                     tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
@@ -1577,8 +1680,9 @@ def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     Returns:
         Outputs.
     """
-
-    raw_response = client.delete_custom_url_category(args.get('id'))  # type: ignore
+    url_category_id = args.get('id')
+    tsg_id = args.get('tsg_id')
+    raw_response = client.delete_custom_url_category(url_category_id=url_category_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
         readable_output=f'Custom Url Category with id {raw_response.get("id", "")} '
@@ -1600,13 +1704,16 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
     if external_dynamic_list_id := args.get('id'):
-        raw_response = client.get_external_dynamic_list_by_id(query_params, external_dynamic_list_id)
+        raw_response = client.get_external_dynamic_list_by_id(query_params=query_params,
+                                                              external_dynamic_list_id=external_dynamic_list_id,
+                                                              tsg_id=tsg_id)
         outputs = raw_response
     else:
         query_params.update(get_pagination_params(args))
 
-        raw_response = client.list_external_dynamic_list(query_params)  # type: ignore
+        raw_response = client.list_external_dynamic_list(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
         outputs = raw_response.get('data')
 
@@ -1644,6 +1751,7 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
+    tsg_id = args.get('tsg_id')
 
     url = get_url_according_to_type(args)
 
@@ -1658,7 +1766,9 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     if dynamic_list_type in ('ip', 'domain', 'url'):
         external_dynamic_list['type'][dynamic_list_type]['recurring'] = build_recurring_according_to_params(args)
 
-    raw_response = client.create_external_dynamic_list(query_params, external_dynamic_list)  # type: ignore
+    raw_response = client.create_external_dynamic_list(query_params=query_params,
+                                                       external_dynamic_list=external_dynamic_list,
+                                                       tsg_id=tsg_id)  # type: ignore
 
     raw_response = modify_external_dynamic_list(raw_response)
 
@@ -1686,24 +1796,29 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
-    url_category_id = args.get('id')
+    tsg_id = args.get('tsg_id')
+    dynamic_list_id = args.get('id')
     # first get the original, so user won't need to send all data
-    original_custom_url_category = client.get_external_dynamic_list_by_id(query_params, url_category_id)
+    original_dynamic_list = client.get_external_dynamic_list_by_id(query_params=query_params,
+                                                                   external_dynamic_list_id=dynamic_list_id,
+                                                                   tsg_id=tsg_id)
     # TODO change
 
     if description := args.get('description'):
-        original_custom_url_category['description'] = description
+        original_dynamic_list['description'] = description
     overwrite = args.get('overwrite')
     if category_type := args.get('type'):
-        original_custom_url_category['type'] = category_type
+        original_dynamic_list['type'] = category_type
 
     if value := argToList(args.get('value')):
         if overwrite:
-            original_custom_url_category['list'] = value
+            original_dynamic_list['list'] = value
         else:
-            original_custom_url_category.get('list', []).extend(value)
+            original_dynamic_list.get('list', []).extend(value)
 
-    raw_response = client.update_external_dynamic_list(original_custom_url_category, url_category_id)  # type: ignore
+    raw_response = client.update_external_dynamic_list(external_dynamic_list=original_dynamic_list,
+                                                       dynamic_list_id=dynamic_list_id,
+                                                       tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
@@ -1726,8 +1841,10 @@ def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     Returns:
         Outputs.
     """
+    dynamic_list_id = args.get('id')
+    tsg_id = args.get('tsg_id')
 
-    raw_response = client.delete_external_dynamic_list(args.get('id'))  # type: ignore
+    raw_response = client.delete_external_dynamic_list(dynamic_list_id=dynamic_list_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
         readable_output=f'External Dynamic List with id {raw_response.get("id", "")} '
@@ -1748,7 +1865,8 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
-    raw_response = client.list_url_access_profile(query_params)  # type: ignore
+    tsg_id = args.get('tsg_id')
+    raw_response = client.list_url_access_profile(query_params=query_params, tsg_id=tsg_id)  # type: ignore
     profiles = raw_response.get('data', [])
 
     categories = {'alert': [], 'allow': [], 'block': [], 'continue': [], 'override': []}
@@ -1783,9 +1901,10 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     """
     ScheduledCommand.raise_error_if_not_supported()
     polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
+    tsg_id = args.get('tsg_id')
     if folders := argToList(args.get('folders')):
         #  first call, folder in args
-        res = client.push_candidate_config(folders)
+        res = client.push_candidate_config(folders=folders, tsg_id=tsg_id)
         # remove folders, not needed for the rest
         args['folders'] = []
         job_id = res.get('job_id')
@@ -1798,7 +1917,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
 
     job_id = args.get('job_id')
     if not argToBoolean(args.get('parent_finished')):
-        res = client.get_config_job_by_id(job_id).get('data', [{}])[0]
+        res = client.get_config_job_by_id(job_id=job_id, tsg_id=tsg_id).get('data', [{}])[0]
         if res.get('result_str') == 'PEND':
             return CommandResults(
                 scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
@@ -1810,7 +1929,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
 
         # Parent is the first push. After finishing, sub processes created for each folder.
         args['parent_finished'] = True
-    res = client.list_config_jobs().get('data', {})
+    res = client.list_config_jobs(tsg_id=tsg_id).get('data', {})
     for job in res:
         if job.get('parent_id') == job_id:
             if job.get('result_str') == 'PEND':
