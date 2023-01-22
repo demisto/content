@@ -26,7 +26,7 @@ mock-open = "^1.4.0"
 
 # If mypy requires for a `types-*` package, add it here with `poetry add --group typing <package>`
 [tool.poetry.group.typing.dependencies]
-types-python-dateutil = "^2.8.19.3"
+types-python-dateutil = "^2.8.19.6"
 
 
 [tool.poetry.group.ci]
