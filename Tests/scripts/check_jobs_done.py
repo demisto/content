@@ -1,7 +1,7 @@
 from pathlib import Path
 from argparse import ArgumentParser
 from os import getenv
-import logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 NIGHTLY_JOBS = [
@@ -85,7 +85,7 @@ def main():
             logging.error(f"job {job} is not done yet")
             should_fail = True
         elif job_file.read_text().strip() != 'done':
-            logging.error(f"somthing isn't OK with jom name {job}")
+            logging.error(f"something isn't OK with job name {job}")
             should_fail = True
 
     if should_fail:
