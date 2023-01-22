@@ -1965,9 +1965,9 @@ def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_
                 **status_res.outputs, 'TotalResults': number_of_results}
     if job_id and not status_res:
         status = 'DONE' if (number_of_results > 0) else 'NO RESULTS'
-        ec['Splunk.JobStatus'] = [{'SID': job_id,
-                                   'TotalResults': number_of_results,
-                                   'Status': status}]
+        ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = [{'SID': job_id,
+                                                                   'TotalResults': number_of_results,
+                                                                   'Status': status}]
     return ec
 
 
