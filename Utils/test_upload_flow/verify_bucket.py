@@ -237,7 +237,8 @@ class BucketVerifier:
         Verify readme content is parsed correctly, verify that there was no version bump if only readme was modified
         """
         self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        return self.gcp.get_max_version(pack_id) == self.versions[pack_id] and readme in self.gcp.get_pack_readme(pack_id), pack_id
+        return self.gcp.get_max_version(pack_id) == self.versions[pack_id] and \
+            readme in self.gcp.get_pack_readme(pack_id), pack_id
 
     @logger
     def verify_failed_pack(self, pack_id):

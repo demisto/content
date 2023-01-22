@@ -181,7 +181,8 @@ def update_existing_release_notes(pack: Path):
     """
     Modifies an existing pack release notes
     """
-    latest_pack_version = str(max([Version(file_name) for file_name in (pack / 'ReleaseNotes').glob('*_*_*.md')]))
+    latest_pack_version = str(max([Version(file_name.name.replace('.md', '').replace('_', '.'))
+                                   for file_name in (pack / 'ReleaseNotes').glob('*_*_*.md')]))
     version_rn = latest_pack_version.replace('.', '_')
     path = pack / 'ReleaseNotes' / f'{version_rn}.md'
     if not path.exists():
