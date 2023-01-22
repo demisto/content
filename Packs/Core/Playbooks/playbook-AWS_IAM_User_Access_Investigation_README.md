@@ -21,8 +21,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* core-get-cloud-original-alerts
 * closeInvestigation
+* core-get-cloud-original-alerts
 
 ## Playbook Inputs
 ---

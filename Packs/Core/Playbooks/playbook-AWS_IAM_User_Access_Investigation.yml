@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8a8ad825-1cee-4b65-8bd3-b50b419cdfcc
+    taskid: fe12887f-be44-4444-8b90-274c9ace9599
     type: start
     task:
-      id: 8a8ad825-1cee-4b65-8bd3-b50b419cdfcc
+      id: fe12887f-be44-4444-8b90-274c9ace9599
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": -70
+          "y": -50
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     continueonerrortype: ""
   "8":
     id: "8"
-    taskid: d5e35433-18c5-4ac5-8725-a4e034eed667
+    taskid: 205529a3-a67d-43ce-833a-86239226e1f8
     type: title
     task:
-      id: d5e35433-18c5-4ac5-8725-a4e034eed667
+      id: 205529a3-a67d-43ce-833a-86239226e1f8
       version: -1
       name: 'Remediation '
       type: title
@@ -67,10 +67,10 @@ tasks:
     continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 20b6b05d-6b6a-44d7-843b-498f7a21d442
+    taskid: 4e7774d4-b1ac-44cb-8942-0aa0ae510dd1
     type: title
     task:
-      id: 20b6b05d-6b6a-44d7-843b-498f7a21d442
+      id: 4e7774d4-b1ac-44cb-8942-0aa0ae510dd1
       version: -1
       name: Done
       type: title
@@ -95,10 +95,10 @@ tasks:
     continueonerrortype: ""
   "21":
     id: "21"
-    taskid: 9988a925-09f0-4b12-8c73-585ec6a10430
+    taskid: 35d49e03-be6a-4b97-8fec-3a7c7aadd71f
     type: condition
     task:
-      id: 9988a925-09f0-4b12-8c73-585ec6a10430
+      id: 35d49e03-be6a-4b97-8fec-3a7c7aadd71f
       version: -1
       name: Manual decision making - true/false-positive alert
       description: Based on the collected data investigation and the verdict established by the "Enrichment for Verdict" playbook, is this a true positive event?
@@ -114,7 +114,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
+          "x": -350,
           "y": 920
         }
       }
@@ -128,10 +128,10 @@ tasks:
     continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 0a778e48-7ba1-4367-80ab-db14154497ed
+    taskid: 8031af0e-14cf-4c83-88c8-18a17d5c97a5
     type: title
     task:
-      id: 0a778e48-7ba1-4367-80ab-db14154497ed
+      id: 8031af0e-14cf-4c83-88c8-18a17d5c97a5
       version: -1
       name: False Positive - Done
       type: title
@@ -145,7 +145,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -90,
+          "x": -350,
           "y": 1610
         }
       }
@@ -159,10 +159,10 @@ tasks:
     continueonerrortype: ""
   "48":
     id: "48"
-    taskid: 584f23b5-3af1-43e9-8da9-7d0443e1afdd
+    taskid: e1d7c2be-0ba1-43a9-891b-523d8d0959d1
     type: title
     task:
-      id: 584f23b5-3af1-43e9-8da9-7d0443e1afdd
+      id: e1d7c2be-0ba1-43a9-891b-523d8d0959d1
       version: -1
       name: Enrichment
       type: title
@@ -177,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 80
+          "y": 100
         }
       }
     note: false
@@ -190,10 +190,10 @@ tasks:
     continueonerrortype: ""
   "50":
     id: "50"
-    taskid: 3f0b5ced-1ef7-47a2-8a41-25675867ac99
+    taskid: 4b022aff-bc8e-4514-8ace-cc5e2c7ce1ac
     type: title
     task:
-      id: 3f0b5ced-1ef7-47a2-8a41-25675867ac99
+      id: 4b022aff-bc8e-4514-8ace-cc5e2c7ce1ac
       version: -1
       name: Verdict
       type: title
@@ -202,13 +202,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "66"
+      - "67"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 550,
-          "y": 600
+          "y": 620
         }
       }
     note: false
@@ -221,10 +221,10 @@ tasks:
     continueonerrortype: ""
   "54":
     id: "54"
-    taskid: 56c34066-e6c8-452a-89c6-0a982f639313
+    taskid: 14d50e12-2fb5-4a49-8da5-f8468ef4cf91
     type: playbook
     task:
-      id: 56c34066-e6c8-452a-89c6-0a982f639313
+      id: 14d50e12-2fb5-4a49-8da5-f8468ef4cf91
       version: -1
       name: AWS IAM User Access Investigation - Remediation
       description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage feedback on the quality and usability of the content to help us identify and fix issues, sp we can continually improve content.\n"
@@ -283,10 +283,10 @@ tasks:
     continueonerrortype: ""
   "57":
     id: "57"
-    taskid: 23b257f0-23b3-46c2-8e9d-3b347a6bc9b1
+    taskid: 1a9b407c-4fa2-4a00-84de-aa764ea699d7
     type: condition
     task:
-      id: 23b257f0-23b3-46c2-8e9d-3b347a6bc9b1
+      id: 1a9b407c-4fa2-4a00-84de-aa764ea699d7
       version: -1
       name: Close the alert and finish the investigation?
       description: "Close the alert and finish the investigation?"
@@ -316,10 +316,10 @@ tasks:
     continueonerrortype: ""
   "58":
     id: "58"
-    taskid: b5e4cf03-33df-424d-8bbd-f83d9ede11fe
+    taskid: d5e91e1f-17c2-4b36-8335-f08b5379211d
     type: regular
     task:
-      id: b5e4cf03-33df-424d-8bbd-f83d9ede11fe
+      id: d5e91e1f-17c2-4b36-8335-f08b5379211d
       version: -1
       name: Close alert after remediation
       description: commands.local.cmd.close.inv
@@ -348,10 +348,10 @@ tasks:
     continueonerrortype: ""
   "60":
     id: "60"
-    taskid: 3efcf72d-30f2-4ae1-811b-dcad46f801b2
+    taskid: a613691f-6072-4259-863b-7f97173c35e2
     type: playbook
     task:
-      id: 3efcf72d-30f2-4ae1-811b-dcad46f801b2
+      id: a613691f-6072-4259-863b-7f97173c35e2
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
@@ -403,7 +403,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 420
+          "y": 440
         }
       }
     note: false
@@ -416,10 +416,10 @@ tasks:
     continueonerrortype: ""
   "61":
     id: "61"
-    taskid: 1043efe9-eaa1-4311-8f72-8597ff5de06d
+    taskid: d94dbcca-ca35-4be0-8773-cd9273f86af8
     type: regular
     task:
-      id: 1043efe9-eaa1-4311-8f72-8597ff5de06d
+      id: d94dbcca-ca35-4be0-8773-cd9273f86af8
       version: -1
       name: Get cloud original alert
       description: Returns information about each alert ID.
@@ -440,7 +440,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 220
+          "y": 240
         }
       }
     note: false
@@ -453,10 +453,10 @@ tasks:
     continueonerrortype: ""
   "64":
     id: "64"
-    taskid: 0f46be32-5995-4574-8992-d941ad137547
+    taskid: 5307f38e-4308-4c8c-89f3-703efd440297
     type: playbook
     task:
-      id: 0f46be32-5995-4574-8992-d941ad137547
+      id: 5307f38e-4308-4c8c-89f3-703efd440297
       version: -1
       name: Handle False Positive Alerts
       description: |
@@ -493,8 +493,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -90,
-          "y": 1090
+          "x": -350,
+          "y": 1240
         }
       }
     note: false
@@ -507,10 +507,10 @@ tasks:
     continueonerrortype: ""
   "65":
     id: "65"
-    taskid: 537b3b48-845b-475d-8d62-a0cfaf6578bd
+    taskid: aaf66074-bd14-41c8-8c20-a5b7a3ddb21f
     type: regular
     task:
-      id: 537b3b48-845b-475d-8d62-a0cfaf6578bd
+      id: aaf66074-bd14-41c8-8c20-a5b7a3ddb21f
       version: -1
       name: Continue the investigation
       description: Continue the investigation.
@@ -536,39 +536,43 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-  "66":
-    id: "66"
-    taskid: 401759a1-699c-4dda-8780-0e1449454b10
+  "67":
+    id: "67"
+    taskid: 9e21c9b5-f536-4a60-8828-b9f46e86ab11
     type: condition
     task:
-      id: 401759a1-699c-4dda-8780-0e1449454b10
+      id: 9e21c9b5-f536-4a60-8828-b9f46e86ab11
       version: -1
       name: Is it a suspicious or Tor IP?
-      description: Is it a suspicious or Tor IP?
+      description: Check if the IP address is found suspicious or from Tor exit node
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "21"
-      "yes":
-      - "8"
+      Suspicious and not prevalent:
+      - "69"
+      Tor Exit Node:
+      - "68"
+      Yes by DBot Score:
+      - "70"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Yes by DBot Score
       condition:
       - - operator: containsGeneral
           left:
             value:
               complex:
                 root: DBotScore
-                accessor: Score
             iscontext: true
           right:
             value:
               simple: "3"
-          ignorecase: true
-        - operator: containsGeneral
+    - label: Tor Exit Node
+      condition:
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -579,7 +583,9 @@ tasks:
             value:
               simple: Suspicious API call from a Tor exit node
           ignorecase: true
-        - operator: isEqualString
+    - label: Suspicious and not prevalent
+      condition:
+      - - operator: isEqualString
           left:
             value:
               complex:
@@ -600,6 +606,7 @@ tasks:
             value:
               simple: "false"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -614,21 +621,112 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 62ee048c-48e9-42f4-855e-34a5ba07f320
+    type: title
+    task:
+      id: 62ee048c-48e9-42f4-855e-34a5ba07f320
+      version: -1
+      name: Tor Exit Node
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
     continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: b4c8a874-b9be-40d0-84ab-4207fae1d2e4
+    type: title
+    task:
+      id: b4c8a874-b9be-40d0-84ab-4207fae1d2e4
+      version: -1
+      name: Suspicious not prevalent
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 90c262f0-1f29-472e-8b24-25f58d616d97
+    type: title
+    task:
+      id: 90c262f0-1f29-472e-8b24-25f58d616d97
+      version: -1
+      name: Malicious by DbotScore
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "21_64_False Positive": 0.54,
       "21_8_True positive": 0.48,
-      "57_58_yes": 0.82,
-      "66_8_yes": 0.37
+      "57_58_yes": 0.82
     },
     "paper": {
       "dimensions": {
-        "height": 1885,
-        "width": 1250,
-        "x": -90,
-        "y": -70
+        "height": 1865,
+        "width": 1720,
+        "x": -350,
+        "y": -50
       }
     }
   }
