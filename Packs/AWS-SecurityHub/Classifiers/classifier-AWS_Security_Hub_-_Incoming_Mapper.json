@@ -68,7 +68,7 @@
                 },
                 "AWS Security Hub Workflow Status": {
                     "complex": {
-                        "accessor": "status",
+                        "accessor": "Status",
                         "filters": [],
                         "root": "Workflow",
                         "transformers": []
@@ -81,7 +81,15 @@
                     "simple": "Id"
                 },
                 "Alert URL": {
-                    "simple": "sourceUrl"
+                    "simple": "SourceUrl"
+                },
+                "Comment": {
+                    "complex": {
+                        "accessor": "text",
+                        "filters": [],
+                        "root": "Note",
+                        "transformers": []
+                    }
                 },
                 "Description": {
                     "simple": "Description"
@@ -150,24 +158,16 @@
                     }
                 },
                 "Last Update Time": {
-                    "complex": {
-                        "filters": [],
-                        "root": "updatedAt",
-                        "transformers": []
-                    }
+                    "simple": "UpdatedAt"
                 },
                 "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdAt",
-                        "transformers": []
-                    }
+                    "simple": "CreatedAt"
                 },
                 "severity": {
                     "complex": {
-                        "accessor": "normalized",
+                        "accessor": "Label",
                         "filters": [],
-                        "root": "severity",
+                        "root": "Severity",
                         "transformers": []
                     }
                 }
