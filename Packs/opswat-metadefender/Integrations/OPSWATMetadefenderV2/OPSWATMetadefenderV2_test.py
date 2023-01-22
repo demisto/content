@@ -30,15 +30,12 @@ def mocked_requests_post(*args, **kwargs):
 ])
 def test_file_scan_command(mocker, file_path, file_name):
     """
-    Scenario:
-    -   Create an item for a file item list
     Given:
-    -   The user has entered a file_list_guid and a sha256.
+    - a file_path and file_name to mock file_entry.
     When:
-    -    cisco-amp-file-list-item-create is called.
+    - Running scan_file function.
     Then:
-    -   Ensure outputs_prefix is correct.
-    -   Ensure there are no links in the outputs.
+    - The String type was parsed correctly.
     """
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": file_path, "name": file_name})
     mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
