@@ -162,9 +162,9 @@ def init_manager(params: dict) -> SyslogManager:
         raise ValueError('A Syslog server address must be provided.')
     if not port and protocol in PROTOCOLS:
         raise ValueError('A port must be provided in TCP or UDP protocols.')
-    if protocol == 'TLS' and not certificate:
-        raise ValueError('A certificate must be provided in TLS protocol.')
-    if certificate and protocol == 'TLS':
+    if protocol == 'tls' and not certificate:
+        raise DemistoException('A certificate must be provided in TLS protocol.')
+    if certificate and protocol == 'tls':
         certificate_path = prepare_certificate_file(certificate)
     return SyslogManager(address, port, protocol, logging_level, facility, certificate_path)
 
