@@ -1,0 +1,19 @@
+{
+  "rule_id": "content test",
+  "layout_id": "Content_test",
+  "description": "This trigger is a test trigger",
+  "rule_name": "test content rule name",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "sample"
+        }
+      ]
+    }
+  },
+  "fromVersion": "6.10.0",
+  "toVersion": "6.11.9"
+}
