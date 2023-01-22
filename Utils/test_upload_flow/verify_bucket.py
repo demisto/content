@@ -39,7 +39,8 @@ def logger(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
 
-        logging.info(f"Starting validation - {func.__name__} for pack '{args[0]}'")
+        pack_id = args[0]
+        logging.info(f"Starting validation - {func.__name__} for pack '{pack_id}'")
         try:
             result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
