@@ -123,6 +123,35 @@ class SyslogManager:
 
 
 ''' HELPER FUNCTIONS '''
+def perform_long_running_loop(socket_data: bytes):
+    """
+    Performs one loop of a long running execution.
+    - Gets data from socket.
+    - Parses the Syslog message data.
+    - If the Syslog message data passes filter, creates a new incident.
+    - Saves the incident in integration context for samples.
+    Args:
+        socket_data (bytes): Retrieved socket data.
+
+    Returns:
+        (None): Creates incident in Cortex XSOAR platform.
+    """
+    incident_type: Optional[str] = demisto.params().get('incident_type', '')
+    extracted_message: Optional[SyslogMessageExtract] = None
+    for format_func in format_funcs:
+        extracted_message = format_func(socket_data)
+        if extracted_message:
+            demisto.debug(f'Succeeded in parsing the message with {format_func}')
+            break
+    if not extracted_message:
+        raise DemistoException(f'Could not parse the following message: {socket_data.decode("utf-8")}')
+
+    if log_message_passes_filter(extracted_message, MESSAGE_REGEX):
+        incident: dict = create_incident_from_syslog_message(extracted_message, incident_type)
+        update_integration_context_samples(incident)
+        demisto.createIncidents([incident])
+
+
 def perform_long_running_execution(sock: Any, address: tuple) -> None:
     """
     The long running execution loop. Gets input, and performs a while True loop and logs any error that happens.
@@ -179,7 +208,6 @@ def prepare_globals_and_create_server(port: int, message_regex: Optional[str], c
                           certfile=certificate_path)
     demisto.debug('Starting HTTPS Server')
     return server
-
 
 
 def init_manager(params: dict) -> SyslogManager:
