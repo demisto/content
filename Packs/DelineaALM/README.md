@@ -1,6 +1,6 @@
 # Delinea Account Lifecycle Manager
 
-(Formally known as "Thycotic Account Lifecycle Manager")
+(Formerly known as "Thycotic Account Lifecycle Manager")
 
 This pack includes XSIAM content.
 
