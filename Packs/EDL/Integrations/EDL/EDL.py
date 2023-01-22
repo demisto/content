@@ -17,6 +17,8 @@ import dateparser
 import hashlib
 import json
 import ipaddress
+from distutils.version import LooseVersion
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1085,6 +1087,16 @@ def main():
         err_msg: str = 'If using credentials, both username and password should be provided.'
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
+
+    platform = demisto.demistoVersion.get("platform", 'xsoar')
+    if platform in ['xsoar', 'xsoar_hosted']:
+        demisto_version = demisto.demistoVersion.get('version')
+        if LooseVersion(demisto_version) < LooseVersion('8.0.0') and not params.get('longRunningPort'):
+            raise DemistoException('Please specify a Listen Port, in the integration configuration')
+
+        if int(demisto_version.split('.')[0]) < 8 and not params.get('longRunningPort'):
+            raise DemistoException('Please specify a Listen Port, in the integration configuration')
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
