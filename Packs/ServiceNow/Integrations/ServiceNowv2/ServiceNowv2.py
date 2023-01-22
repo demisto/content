@@ -2476,20 +2476,24 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     return [ticket] + entries
 
 
-def converts_state_close_reason(ticket_state: str, ticket_close_notes: str):
+def converts_state_close_reason(ticket_state: Optional[str], ticket_close_notes: Optional[str]):
     """
-    converts between XSOAR and service now state.
-    will first check if ticket_close_notes contains OOTB close reason, if not will check ticket_state.
+    determine the XSOAR closeReason based on the Service Now ticket close reason state.
+    will check for closeReason value in the following order:
+    1. check if user-defined list of closed reasons exists in server configuration. If so, will check if the close reason is in the list.
+    2. check ticket_close_notes contains OOTB close reason.
+    3. check ticket_state.
     Args:
         ticket_state: Service now state
         ticket_close_notes: Service now close notes
     Returns:
         The XSOAR state
     """
-    if 'false positive' in ticket_close_notes:
-        return 'False Positive'
-    elif 'duplicate' in ticket_close_notes:
-        return 'Duplicate'
+    if ticket_close_notes:
+        if 'false positive' in ticket_close_notes.lower():
+            return 'False Positive'
+        elif 'duplicate' in ticket_close_notes.lower():
+            return 'Duplicate'
     elif ticket_state in ['6', '7']:
         return 'Resolved'
     return 'Other'
@@ -2497,14 +2501,14 @@ def converts_state_close_reason(ticket_state: str, ticket_close_notes: str):
 
 def create_closed_ticket_entry(ticket: Dict[str, Any]):
     demisto.debug(f'ticket is closed: {ticket}')
-    ticket_close_notes = str(ticket.get("close_notes"))
-    ticket_state = str(ticket.get("state"))
+    ticket_close_notes = ticket.get("close_notes")
+    ticket_state = ticket.get("state")
     
     return {'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeNotes': f'From ServiceNow: {ticket_close_notes}',
-                'closeReason': converts_state_close_reason(ticket_state, ticket_close_notes.lower())
+                'closeReason': converts_state_close_reason(ticket_state, ticket_close_notes)
             },
             'ContentsFormat': EntryFormat.JSON
             }
