@@ -6,15 +6,15 @@
     "description": "Cyberint Classifier",
     "feed": false,
     "fromServerVersion": "6.0.0",
-    "id": "24f4a447-064e-4184-8e20-0ec51d23a1fd",
+    "id": "Cyberint - Classifier",
     "incidentSamples": null,
     "indicatorSamples": null,
     "instanceIds": null,
     "itemVersion": "1.0.14",
     "keyTypeMap": {
-        "acknowledged": "Cyberint Incident - Copy",
-        "closed": "Cyberint Incident - Copy",
-        "open": "Cyberint Incident - Copy"
+        "acknowledged": "Cyberint Incident",
+        "closed": "Cyberint Incident",
+        "open": "Cyberint Incident"
     },
     "locked": false,
     "logicalVersion": 1,
