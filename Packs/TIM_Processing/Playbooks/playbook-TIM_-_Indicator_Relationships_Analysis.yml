@@ -774,6 +774,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Related Report
+      output:
+        complex:
+          root: RelatedReport
     skipunavailable: false
     quietmode: 0
     isoversize: false
