@@ -1,9 +1,10 @@
 This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:
+
 - "IP Reputation" - Dbot Score is 2-3 
-- "Source geolocation" - Connection from unusual country 
--  Related to campaign - IP address related to campaign, based on TIM module
--  Hunting results - hunt for indicators related to the source IP and the related campaign returned results
--  XDR Alert search - XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after "Credential Access"
+- "Source geolocation" - RDP Connection made from rare geo-location 
+-  Related to campaign - IP address is related to campaign, based on TIM module
+-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results
+-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after "Credential Access", were found.
 
 Set verdict method:
 * Critical Element - The "Critical Element" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a "True Positive".
@@ -17,29 +18,29 @@ Set verdict method:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Account - Generic v2
-* Cortex XDR - Possible External RDP Brute-Force - Set Verdict
 * TIM - Indicator Relationships Analysis
-* Cortex XDR - Get entity alerts by MITRE tactics
-* Block IP - Generic v3
-* User Investigation - Generic
-* Account Enrichment - Generic v2.1
-* Cortex XDR - Isolate Endpoint
 * Threat Hunting - Generic
+* Cortex XDR - Get entity alerts by MITRE tactics
+* Account Enrichment - Generic v2.1
+* Cortex XDR - Possible External RDP Brute-Force - Set Verdict
+* User Investigation - Generic
+* Block Account - Generic v2
+* Cortex XDR - Isolate Endpoint
+* Block IP - Generic v3
 
 ### Integrations
-* XDR_iocs
-* XQLQueryingEngine
 * CortexXDRIR
+* XQLQueryingEngine
+* XDR_iocs
 
 ### Scripts
 * IsIntegrationAvailable
 * Set
 
 ### Commands
-* setIncident
-* ip
 * ad-expire-password
+* ip
+* setIncident
 
 ## Playbook Inputs
 ---

@@ -1,7 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force
 version: -1
 name: Cortex XDR - Possible External RDP Brute-Force
-description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
+description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -869,7 +869,7 @@ tasks:
     task:
       id: 98bca17a-cf76-456d-8d3e-016d974cbbc4
       version: -1
-      name: Is IP malicious?
+      name: Is the IP malicious?
       description: Check if the IP DbotScore is malicious.
       type: condition
       iscommand: false
@@ -1220,7 +1220,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1293,7 +1293,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1452,7 +1452,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1534,7 +1534,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Do you want to perform containment using playbooks?
+        simple: Would you like to contain the IP and account using playbooks?
       methods: []
       format: ""
       bcc:
@@ -1581,7 +1581,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Do you want to perform containment using playbooks?
+      title: Would you like to contain the IP and account using playbooks?
       description: ""
       sender: ""
       expired: false
@@ -1767,7 +1767,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1779,16 +1779,7 @@ tasks:
       id: 807a9914-b953-4fcb-80a2-c073a311a22a
       version: -1
       name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-      description: |-
-        This playbook creates an array called "Suspicious Elements", which is used to count potential security threats. The following elements can be added to the array:
-
-        "IP Reputation": This element will be added if the IP reputation is deemed suspicious or malicious.
-        "Related Campaign": This element will be added if an RDP brute force attack from an external IP is found to be related to a specific campaign, as determined by threat intelligence management (TIM).
-        "Hunting Results": This element will be added if the results of "Threat Hunting - Generic" are returned.
-        "Related Alerts": This element will be added if any additional alerts related to the attacked user and hostname are found.
-        "Unusual Country": This element will be added if the RDP connection originates from an unusual country.
-
-        The array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a "True Positive."
+      description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\"\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
       playbookName: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
       type: playbook
       iscommand: false
@@ -2128,7 +2119,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2157,7 +2148,7 @@ tasks:
           left:
             value:
               complex:
-                root: Do you want to perform containment using playbooks?.Answers
+                root: Would you like to contain the IP and account using playbooks?.Answers
                 accessor: "1"
             iscontext: true
           right:
@@ -2346,7 +2337,7 @@ tasks:
           left:
             value:
               complex:
-                root: Do you want to perform containment using playbooks?.Answers
+                root: Would you like to contain the IP and account using playbooks?.Answers
                 accessor: "0"
             iscontext: true
           right:
@@ -2567,7 +2558,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Do you want to perform containment using playbooks?
+        simple: Would you like to contain indicators using playbooks?
       methods: []
       format: ""
       bcc:
@@ -2614,7 +2605,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Do you want to perform containment using playbooks?
+      title: Would you like to contain indicators using playbooks?
       description: ""
       sender: ""
       expired: false
@@ -2648,7 +2639,7 @@ tasks:
           left:
             value:
               complex:
-                root: Do you want to perform containment using playbooks?.Answers
+                root: Would you like to contain indicators using playbooks?.Answers
                 accessor: "1"
             iscontext: true
           right:
@@ -2837,7 +2828,7 @@ tasks:
           left:
             value:
               complex:
-                root: Do you want to perform containment using playbooks?.Answers
+                root: Would you like to contain indicators using playbooks?.Answers
                 accessor: "0"
             iscontext: true
           right:
