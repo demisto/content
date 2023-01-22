@@ -104,18 +104,21 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: "Severity level of fetched incidents. Could be Informational, Low, Medium, High and Critical. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. [AWS documantation link about severity](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_Severity.html)"
 - display: Additional Incidents Filters
   name: additionalFilters
   required: false
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: "A comma-separated list of additional incident filters in the form 'name=name1,value=value1,comparison=comparison1. [AWS documantation link about User Defined Fields](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_AwsSecurityFindingFilters.html#securityhub-Type-AwsSecurityFindingFilters-UserDefinedFields)"
 - display: Change findings workflow to 'NOTIFIED'
   name: archiveFindings
   required: false
   type: 8
   section: Collect
   advanced: true
+  additionalinfo: "Notify the resource owner about the security issue. You can use this status when you are not the resource owner, and you need intervention from the resource owner in order to resolve a security issue."
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -3408,6 +3411,9 @@ script:
       isArray: false
       required: false
       secret: false
+  - name: get-mapping-fields
+    arguments: [ ]
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
   dockerimage: demisto/boto3py3:1.0.0.44742
   feed: false
   isfetch: true

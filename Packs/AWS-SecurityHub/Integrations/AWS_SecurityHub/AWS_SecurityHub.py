@@ -745,7 +745,9 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
             'End': now.isoformat()
         }],
         'SeverityLabel': [{
-            'Gte': sh_severity_mapping(aws_sh_severity),
+            # 'Gte': sh_severity_mapping(aws_sh_severity),
+            'Comparision': 'EQUALS',
+            'Value': aws_sh_severity
         }]
     }
     if additional_filters is not None:
@@ -957,6 +959,24 @@ def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str],
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
 
 
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+    Returns the list of fields to map in outgoing mirroring, for incidents and detections.
+    """
+    incident_type_scheme = SchemeTypeMapping(type_name='AWS Security Hub Finding')
+    demisto.debug('Collecting incident mapping.')
+
+    out_fields = ['Confidence', 'Criticality', 'Note.Text', 'Note.UpdatedBy', 'Severity.Label', 'VerificationState',
+                  'Workflow.Status']
+    for field in out_fields:
+        incident_type_scheme.add_field(field)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
+
+
 def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -1032,6 +1052,10 @@ def main():  # pragma: no cover
             return_results(get_modified_remote_data_command(client, args, aws_sh_severity, additional_filters,
                                                             finding_type, workflow_status, product_name))
             return
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+            return
+
         return_outputs(human_readable, outputs, response)
 
     except Exception as e:
