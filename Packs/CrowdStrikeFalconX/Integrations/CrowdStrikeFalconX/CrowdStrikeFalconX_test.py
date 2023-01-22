@@ -562,6 +562,16 @@ def test_download_ioc_command(requests_mock, mocker, mocked_address, ioc_id, moc
 
 
 def test_get_new_access_token(mocker):
+    """
+    Given
+     - no access token in the integration context at all
+
+    When
+     - trying to get the access token
+
+    Then
+     - make sure the integration creates a new access token
+    """
     mocker.patch.object(Client, '_get_token_request', return_value=('123', '100'))
     client = Client(
         server_url="https://api.crowdstrike.com/",
@@ -576,6 +586,16 @@ def test_get_new_access_token(mocker):
 
 
 def test_get_existing_access_token(mocker):
+    """
+    Given
+     - existing access token saved in integration context that its time is not expired yet
+
+    When
+     - trying to get the access token
+
+    Then
+     - make sure the integration gets the token from context.
+    """
     mocker.patch.object(
         demisto,
         'getIntegrationContextVersioned',
