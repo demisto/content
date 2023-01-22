@@ -24,10 +24,13 @@ alter
 	xdm.network.session_id = _id,
 	// Added due to checks;
     xdm.event.outcome = if(outcome="update", XDM_CONST.OUTCOME_SUCCESS, outcome="failure", XDM_CONST.OUTCOME_FAILED, outcome="success", XDM_CONST.OUTCOME_SUCCESS, outcome="database-check", XDM_CONST.OUTCOME_PARTIAL, outcome="failed", XDM_CONST.OUTCOME_FAILED, outcome="unregistered", XDM_CONST.OUTCOME_UNKNOWN, outcome="new", XDM_CONST.OUTCOME_UNKNOWN, to_string(outcome)),
-	xdm.event.id = externalId,
-    xdm.source.sent_bytes = to_integer(out), // Why in XDR its with 0 and I get 150
-    xdm.target.sent_packets = to_integer(FTNTFGTrcvdpkt), // Verify if 'ad' can be JSON in CEF ???
+	xdm.session_context_id = externalId, 								// What was mapped, for backtrace
+    xdm.event.id = externalId,                                          // What was mapped, for event_id
+    xdm.source.sent_bytes = to_integer(out),
+    xdm.target.sent_packets = to_integer(FTNTFGTrcvdpkt),
     xdm.source.sent_packets = to_integer(FTNTFGTsentpkt),
     xdm.event.duration = to_integer(multiply(to_integer(FTNTFGTduration), 1000)),
-    xdm.observer.name = deviceExternalId,
+    xdm.observer.name = deviceExternalId, 								
+    xdm.observer.unique_identifier = deviceExternalId,					// What was mapped by XDR
+    xdm.event.is_completed = to_boolean("TRUE"),
     xdm.observer.version = cefDeviceVersion;
