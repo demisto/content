@@ -87,8 +87,7 @@ cov = ["attrs[tests]", "coverage-enable-subprocess", "coverage[toml] (>=5.3)"]
 dev = ["attrs[docs,tests]"]
 docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope.interface"]
 tests = ["attrs[tests-no-zope]", "zope.interface"]
-tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=0.971,<0.990)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
-tests_no_zope = ["cloudpickle", "hypothesis", "mypy (>=0.971,<0.990)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
+tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy (>=0.971,<0.990)", "mypy (>=0.971,<0.990)", "pympler", "pympler", "pytest (>=4.3.0)", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-mypy-plugins", "pytest-xdist[psutil]", "pytest-xdist[psutil]"]
 
 [[package]]
 name = "autopep8"
@@ -262,7 +261,7 @@ optional = false
 python-versions = ">=3.6.0"
 
 [package.extras]
-unicode_backport = ["unicodedata2"]
+unicode-backport = ["unicodedata2"]
 
 [[package]]
 name = "click"
@@ -421,106 +420,99 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.8.3"
+version = "1.9.0"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
-develop = false
 
 [package.dependencies]
-autopep8 = "^1.6.0"
-bandit = "^1.7.4"
-beautifulsoup4 = "^4.11.1"
+autopep8 = ">=1.6.0,<2.0.0"
+bandit = ">=1.7.4,<2.0.0"
+beautifulsoup4 = ">=4.11.1,<5.0.0"
 chardet = ">=4,<6"
-click = "^8.0.0"
-colorama = "^0.4.4"
-coloredlogs = "^15.0.1"
-configparser = "^5.2.0"
+click = ">=8.0.0,<9.0.0"
+colorama = ">=0.4.4,<0.5.0"
+coloredlogs = ">=15.0.1,<16.0.0"
+configparser = ">=5.2.0,<6.0.0"
 coverage = "6.3.2"
-cryptography = "^36.0.2"
-dateparser = "^1.1.1"
-decorator = "^5.1.1"
-demisto-py = "^3.2.5"
-dictdiffer = "^0.9.0"
-dictor = "^0.1.9"
-docker = "^5.0.3"
-flake8 = "^4.0.1"
-flatten-dict = "^0.4.2"
-gitdb = "^4.0.9"
-GitPython = "^3.1.27"
-giturlparse = "^0.10.0"
-google-cloud-storage = "^2.2.1"
-imagesize = "^1.3.0"
-importlib-resources = "^5.6.0"
-inflection = "^0.5.1"
-isort = "^5.10.1"
-Jinja2 = "^3.1.1"
-jsonschema = "^4.4.0"
-klara = "^0.6.3"
-MarkupSafe = "^2.1.1"
-mergedeep = "^1.3.4"
-mypy = "^0.982"
-neo4j = "^4.4.8"
-networkx = "^2.7.1"
-nltk = "^3.7"
-ordered-set = "^4.1.0"
-orjson = "^3.8.3"
+cryptography = ">=36.0.2,<37.0.0"
+dateparser = ">=1.1.1,<2.0.0"
+decorator = ">=5.1.1,<6.0.0"
+demisto-py = ">=3.2.5,<4.0.0"
+dictdiffer = ">=0.9.0,<0.10.0"
+dictor = ">=0.1.9,<0.2.0"
+docker = ">=5.0.3,<6.0.0"
+flake8 = ">=4.0.1,<5.0.0"
+flatten-dict = ">=0.4.2,<0.5.0"
+gitdb = ">=4.0.9,<5.0.0"
+GitPython = ">=3.1.27,<4.0.0"
+giturlparse = ">=0.10.0,<0.11.0"
+google-cloud-storage = ">=2.2.1,<3.0.0"
+imagesize = ">=1.3.0,<2.0.0"
+importlib-resources = ">=5.6.0,<6.0.0"
+inflection = ">=0.5.1,<0.6.0"
+isort = ">=5.10.1,<6.0.0"
+Jinja2 = ">=3.1.1,<4.0.0"
+jsonschema = ">=4.4.0,<5.0.0"
+klara = ">=0.6.3,<0.7.0"
+MarkupSafe = ">=2.1.1,<3.0.0"
+mergedeep = ">=1.3.4,<2.0.0"
+mypy = ">=0.982,<0.983"
+neo4j = ">=4.4.8,<5.0.0"
+networkx = ">=2.7.1,<3.0.0"
+nltk = ">=3.7,<4.0"
+ordered-set = ">=4.1.0,<5.0.0"
+orjson = ">=3.8.3,<4.0.0"
 packaging = "<22"
-paramiko = "^2.11.0"
+paramiko = ">=2.11.0,<3.0.0"
 Pebble = ">=4.6.3,<6.0.0"
-pipenv = "^2022.3.28"
-prettytable = "^3.2.0"
-pydantic = "^1.9.2"
-pykwalify = "^1.8.0"
+pipenv = ">=2022.3.28,<2023.0.0"
+prettytable = ">=3.2.0,<4.0.0"
+pydantic = ">=1.9.2,<2.0.0"
+pykwalify = ">=1.8.0,<2.0.0"
 pylint = "2.12.2"
-PyPDF2 = "^1.28.6"
-pyspellchecker = "^0.6.3"
-pytest-freezegun = "^0.4.2"
-python-dotenv = "^0.20.0"
-requests = "^2.27.1"
-"ruamel.yaml" = "^0.17.21"
-slackclient = "^2.9.3"
+PyPDF2 = ">=1.28.6,<2.0.0"
+pyspellchecker = ">=0.6.3,<0.7.0"
+pytest-freezegun = ">=0.4.2,<0.5.0"
+python-dotenv = ">=0.20.0,<0.21.0"
+requests = ">=2.27.1,<3.0.0"
+"ruamel.yaml" = ">=0.17.21,<0.18.0"
+slackclient = ">=2.9.3,<3.0.0"
 tabulate = ">=0.8.9,<0.10.0"
-typed-ast = "^1.5.2"
+typed-ast = ">=1.5.2,<2.0.0"
 typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
-types-dateparser = "^1.1.0"
-types-decorator = "^5.1.8"
+types-dateparser = ">=1.1.0,<2.0.0"
+types-decorator = ">=5.1.8,<6.0.0"
 types-emoji = ">=1.2.7,<3.0.0"
-types-filelock = "^3.2.5"
-types-futures = "^3.3.8"
-types-ipaddress = "^1.0.8"
-types-Markdown = "^3.3.21"
-types-mock = "^4.0.15"
-types-paramiko = "^2.8.17"
-types-pkg-resources = "^0.1.3"
-types-protobuf = "^3.19.15"
-types-PyMySQL = "^1.0.15"
-types-python-dateutil = "^2.8.10"
+types-filelock = ">=3.2.5,<4.0.0"
+types-futures = ">=3.3.8,<4.0.0"
+types-ipaddress = ">=1.0.8,<2.0.0"
+types-Markdown = ">=3.3.21,<4.0.0"
+types-mock = ">=4.0.15,<5.0.0"
+types-paramiko = ">=2.8.17,<3.0.0"
+types-pkg-resources = ">=0.1.3,<0.2.0"
+types-protobuf = ">=3.19.15,<4.0.0"
+types-PyMySQL = ">=1.0.15,<2.0.0"
+types-python-dateutil = ">=2.8.10,<3.0.0"
 types-pytz = ">=2021.3.6,<2023.0.0"
 types-pyvmomi = ">=7.0.6,<9.0.0"
-types-PyYAML = "^6.0.5"
+types-PyYAML = ">=6.0.5,<7.0.0"
 types-requests = "2.28.11"
-types-setuptools = "^65.6.0.1"
-types-six = "^1.16.12"
+types-setuptools = ">=65.6.0.1,<66.0.0.0"
+types-six = ">=1.16.12,<2.0.0"
 types-tabulate = ">=0.8.6,<0.10.0"
-types-ujson = "^5.6.0.0"
-typing-extensions = "^4.1.1"
-ujson = "^5.1.0"
-urllib3 = "^1.26.9"
-vulture = "^2.3"
-wcmatch = "^8.3"
-yamlordereddictloader = "^0.4.0"
+types-ujson = ">=5.6.0.0,<6.0.0.0"
+typing-extensions = ">=4.1.1,<5.0.0"
+ujson = ">=5.1.0,<6.0.0"
+urllib3 = ">=1.26.9,<2.0.0"
+vulture = ">=2.3,<3.0"
+wcmatch = ">=8.3,<9.0"
+yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/demisto/demisto-sdk.git"
-reference = "c3205f76eb0321e151f7a90a099a1328804726bb"
-resolved_reference = "c3205f76eb0321e151f7a90a099a1328804726bb"
 
 [[package]]
 name = "Deprecated"
@@ -732,7 +724,7 @@ six = ">=1.9.0"
 
 [package.extras]
 aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)", "requests (>=2.20.0,<3.0.0dev)"]
-enterprise_cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
+enterprise-cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
 pyopenssl = ["cryptography (>=38.0.3)", "pyopenssl (>=20.0.0)"]
 reauth = ["pyu2f (>=0.1.5)"]
 requests = ["requests (>=2.20.0,<3.0.0dev)"]
@@ -1171,7 +1163,7 @@ tqdm = "*"
 [package.extras]
 all = ["matplotlib", "numpy", "pyparsing", "python-crfsuite", "requests", "scikit-learn", "scipy", "twython"]
 corenlp = ["requests"]
-machine_learning = ["numpy", "python-crfsuite", "scikit-learn", "scipy"]
+machine-learning = ["numpy", "python-crfsuite", "scikit-learn", "scipy"]
 plot = ["matplotlib"]
 tgrep = ["pyparsing"]
 twitter = ["twython"]
@@ -1783,7 +1775,7 @@ urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
-use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "requests-mock"
@@ -2443,7 +2435,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "a3bac8f3ea13cc09b502e1433700b842dd7872d6fe9ccc6e9aaccf04f56d94be"
+content-hash = "e83e2373a725878a037bf4273893ad5a4bd187802d4e032d2150975731d0105d"
 
 [metadata.files]
 aiohttp = [
@@ -2820,7 +2812,10 @@ demisto-py = [
     {file = "demisto-py-3.2.5.tar.gz", hash = "sha256:f06011a63b260a8fdc1a2ffaa5985f0445026190551d8b42130304b4189a1a2c"},
     {file = "demisto_py-3.2.5-py3-none-any.whl", hash = "sha256:13921472412bd5aad48a10934508c19016d819713b8b35ad262865771d3ea586"},
 ]
-demisto-sdk = []
+demisto-sdk = [
+    {file = "demisto_sdk-1.9.0-py3-none-any.whl", hash = "sha256:0f89878b20032e947d7598144a1356d77b367efbea129295d056c112fb00b007"},
+    {file = "demisto_sdk-1.9.0.tar.gz", hash = "sha256:11a307e24bdec95445f530406a3d471ce7405216077cf5569b0300f1fe2666da"},
+]
 Deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
@@ -3943,7 +3938,6 @@ rsa = [
     {file = "ruamel.yaml.clib-0.2.7-cp310-cp310-win_amd64.whl", hash = "sha256:d000f258cf42fec2b1bbf2863c61d7b8918d31ffee905da62dede869254d3b8a"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:045e0626baf1c52e5527bd5db361bc83180faaba2ff586e763d3d5982a876a9e"},
     {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-macosx_12_6_arm64.whl", hash = "sha256:721bc4ba4525f53f6a611ec0967bdcee61b31df5a56801281027a3a6d1c2daf5"},
-    {file = "ruamel.yaml.clib-0.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:41d0f1fa4c6830176eef5b276af04c89320ea616655d01327d5ce65e50575c94"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:4b3a93bb9bc662fc1f99c5c3ea8e623d8b23ad22f861eb6fce9377ac07ad6072"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-macosx_12_0_arm64.whl", hash = "sha256:a234a20ae07e8469da311e182e70ef6b199d0fbeb6c6cc2901204dd87fb867e8"},
     {file = "ruamel.yaml.clib-0.2.7-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:15910ef4f3e537eea7fe45f8a5d19997479940d9196f357152a09031c5be59f3"},
