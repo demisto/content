@@ -7595,6 +7595,21 @@ pascalRegex = re.compile('([A-Z]?[a-z]+)')
 # ############################## REGEX FORMATTING end ###############################
 
 
+def is_filename_valid(filename):
+    """
+    Checking if the file name contains invalid characters.
+
+    :param filename: The file name
+    :type filename: ``str``
+
+    :return: True if valid otherwise False.
+    :rtype: ``bool``
+    """
+    if not re.match(r"^[^~)('\\!*<>:;,?\"*|/]+$", filename):
+        return False
+    return True
+
+
 def underscoreToCamelCase(s, upper_camel=True):
     """
        Convert an underscore separated string to camel case
