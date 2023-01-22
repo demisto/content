@@ -183,6 +183,8 @@ class ContentItem(DictFileBased):
             return self['commonfields']['id']
         if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
             return self['layout']['id']
+        if self.path.parent.name == 'LayoutRules' and self.path.suffix == '.json':
+            return self['rule_id']
         return self['id']
 
     @property
