@@ -33,13 +33,13 @@ filter
 | alter
     outcome_result = json_extract_scalar(outcome, "$.result")
 | alter
-    xdm.source.host.device_id = json_extract_scalar(Client, "$.id"),
-    xdm.source.ipv4 = json_extract_scalar(Client, "$.ipAddress"),
+    xdm.source.host.device_id = json_extract_scalar(client, "$.id"),
+    xdm.source.ipv4 = json_extract_scalar(client, "$.ipAddress"),
     xdm.target.ipv4="",
     xdm.source.port=to_integer(0),
     xdm.target.port=to_integer(0),
-    xdm.source.location.city = json_extract_scalar(Client, "$.geographicalContext.city"),
-    xdm.source.location.country = json_extract_scalar(Client, "$.geographicalContext.country"),
+    xdm.source.location.city = json_extract_scalar(client, "$.geographicalContext.city"),
+    xdm.source.location.country = json_extract_scalar(client, "$.geographicalContext.country"),
     xdm.network.session_id = json_extract_scalar(authenticationContext, "$.externalSessionId"),
     xdm.event.type = eventType,
     xdm.event.outcome = if(outcome_result="SUCCESS",XDM_CONST.OUTCOME_SUCCESS, outcome_result="FAILURE", XDM_CONST.OUTCOME_FAILED, outcome_result="ALLOW", XDM_CONST.OUTCOME_SUCCESS, outcome_result="DENY", XDM_CONST.OUTCOME_FAILED, outcome_result="CHALLENGE", XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
