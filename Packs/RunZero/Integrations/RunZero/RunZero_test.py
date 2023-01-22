@@ -14,6 +14,8 @@ import json
 import io
 from CommonServerPython import CommandResults
 
+ASSET_ID = 'bf707048-7ce9-4249-a58c-0aaa257d69f0'
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -22,9 +24,9 @@ def util_load_json(path):
 
 def test_parse_raw():
     from RunZero import parse_raw_response
-    raw_asset = util_load_json('test_data/asset.json')
+    raw_asset = util_load_json('test_data/assets.json')[0]
     actual_response = parse_raw_response(raw=raw_asset)
-    assert actual_response == {
+    assert actual_response[0] == {
         'Addresses': ['192.168.1.91', 'fe80::250:56ff:fe89:b0e1'],
         'Asset Status': True,
         'Hostname': ["RHEL85", "RHEL85.LOCALDOMAIN"],
@@ -48,7 +50,7 @@ def test_parse_raw():
 
 def test_assets_search(requests_mock):
     """
-    Tests the assets command function.
+    Tests the assets-search command function.
         Given:
         When:
         Then:
@@ -69,13 +71,14 @@ def test_assets_search(requests_mock):
         client=client,
         args={}
     )
+    del mock_response[0]['attributes']  # display attributes is defaulted to false
+    del mock_response[0]['services']  # display services is defaulted to false
 
-    readable_output = '### runzero-asset-search\n|Addresses|Asset Status|Comments|Hardware|Hostname|ICMP|MAC|MAC vendor|OS|OS EOL|Outlier|Sources|Svcs|TCP|Tags|Type|UDP|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | My comment2 | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | runZero | 11 | 3 | ThisTag: <br>ThisTag22: <br>tag1: <br>tag2:  | Server | 4 |\n'
-    outputs = [{'Addresses': ['192.168.1.91', 'fe80::250:56ff:fe89:b0e1'], 'Asset Status': True, 'Hostname': ['RHEL85', 'RHEL85.LOCALDOMAIN'], 'OS': 'Red Hat Enterprise Linux 8.5', 'Type': 'Server', 'Hardware': 'VMware VM', 'Outlier': 0, 'MAC vendor': ['VMware, Inc.'], 'MAC age': '', 'MAC': ['00:50:56:89:b0:e1'], 'OS EOL': 0, 'Sources': ['runZero'], 'Comments': 'My comment2', 'Tags': {'ThisTag': '', 'ThisTag22': '', 'tag1': '', 'tag2': ''}, 'Svcs': 11, 'TCP': 3, 'UDP': 4, 'ICMP': 1}]
+    readable_output = '### Asset\n|Addresses|Asset Status|Comments|Hardware|Hostname|ICMP|MAC|MAC vendor|OS|OS EOL|Outlier|Sources|Svcs|TCP|Tags|Type|UDP|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | My comment2 | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | runZero | 11 | 3 | ThisTag: <br>ThisTag22: <br>tag1: <br>tag2:  | Server | 4 |\n'
     expectedCommandResult = CommandResults(outputs_prefix='RunZero',
                                            outputs_key_field='Asset',
                                            raw_response=mock_response,
-                                           outputs=outputs,
+                                           outputs=mock_response,
                                            readable_output=readable_output,
                                            )
 
@@ -94,7 +97,7 @@ def test_asset_search(requests_mock):
         Then:
     """
     from RunZero import Client, asset_search
-    mock_response = util_load_json('test_data/asset.json')
+    mock_response = util_load_json('test_data/assets.json')
     requests_mock.get(
         'https://console.runzero.com/api/v1.0/org/assets?search=address:192.168.1.91',
         json=mock_response)
@@ -107,14 +110,13 @@ def test_asset_search(requests_mock):
 
     actual_commandResult = asset_search(
         client=client,
-        args={'ips': '192.168.1.91'}
+        args={'ips': '192.168.1.91', 'display_attributes': 'true', 'display_services': 'true'}
     )
-    readable_output = '### runzero-asset-search\n|Addresses|Asset Status|Comments|Hardware|Hostname|ICMP|MAC|MAC vendor|OS|OS EOL|Outlier|Sources|Svcs|TCP|Tags|Type|UDP|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | My comment2 | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | runZero | 11 | 3 | ThisTag: <br>ThisTag22: <br>tag1: <br>tag2:  | Server | 4 |\n'
-    outputs = [{'Addresses': ['192.168.1.91', 'fe80::250:56ff:fe89:b0e1'], 'Asset Status': True, 'Hostname': ['RHEL85', 'RHEL85.LOCALDOMAIN'], 'OS': 'Red Hat Enterprise Linux 8.5', 'Type': 'Server', 'Hardware': 'VMware VM', 'Outlier': 0, 'MAC vendor': ['VMware, Inc.'], 'MAC age': '', 'MAC': ['00:50:56:89:b0:e1'], 'OS EOL': 0, 'Sources': ['runZero'], 'Comments': 'My comment2', 'Tags': {'ThisTag': '', 'ThisTag22': '', 'tag1': '', 'tag2': ''}, 'Svcs': 11, 'TCP': 3, 'UDP': 4, 'ICMP': 1}]
+    readable_output = '### Asset\n|Addresses|Asset Status|Comments|Hardware|Hostname|ICMP|MAC|MAC vendor|OS|OS EOL|Outlier|Sources|Svcs|TCP|Tags|Type|UDP|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | My comment2 | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | runZero | 11 | 3 | ThisTag: <br>ThisTag22: <br>tag1: <br>tag2:  | Server | 4 |\n'
     expectedCommandResult = CommandResults(outputs_prefix='RunZero',
                                            outputs_key_field='Asset',
                                            raw_response=mock_response,
-                                           outputs=outputs,
+                                           outputs=mock_response,
                                            readable_output=readable_output,
                                            )
     
@@ -123,3 +125,143 @@ def test_asset_search(requests_mock):
     assert actual_commandResult.outputs_key_field == expectedCommandResult.outputs_key_field
     assert actual_commandResult.outputs_prefix == expectedCommandResult.outputs_prefix
     assert actual_commandResult.outputs == expectedCommandResult.outputs
+
+
+def test_comment_add(requests_mock):
+    """
+    Tests the comment-add command function.
+        Given: An asset
+        When: Posting publishing new comment asset
+        Then: New comment is attached to asset.
+    """
+    from RunZero import Client, comment_add
+    mock_response = util_load_json('test_data/assets.json')
+    requests_mock.patch(
+        f'https://console.runzero.com/api/v1.0/org/assets/{ASSET_ID}/comments',
+        json=mock_response)
+
+    client = Client(
+        base_url='https://console.runzero.com/api/v1.0',
+        verify=False,
+        proxy=False
+    )
+
+    actual_commandResult = comment_add(
+        client=client,
+        args={'asset_id': ASSET_ID,
+              'comment': 'My comment2'}
+    )
+
+    assert 'My comment2' == actual_commandResult.raw_response[0]['comments']
+    assert f'Comment added to {ASSET_ID} successfully.' == actual_commandResult.readable_output
+
+
+def test_tag_add(requests_mock):
+    """
+    Tests the tag-add command function.
+        Given: An asset
+        When: Posting publishing new tags for asset
+        Then: New tags are attached to asset.
+    """
+    from RunZero import Client, tags_add    
+    mock_response = util_load_json('test_data/assets.json')
+    requests_mock.patch(
+        f'https://console.runzero.com/api/v1.0/org/assets/{ASSET_ID}/tags',
+        json=mock_response)
+
+    client = Client(
+        base_url='https://console.runzero.com/api/v1.0',
+        verify=False,
+        proxy=False
+    )
+
+    actual_commandResult = tags_add(
+        client=client,
+        args={'asset_id': ASSET_ID,
+              'tags': 'tag1 tag2'}
+    )
+    tags = actual_commandResult.raw_response[0]['tags']
+    assert 'tag1' in tags
+    assert 'tag2' in tags
+    assert f'Tags added to {ASSET_ID} successfully.' == actual_commandResult.readable_output
+
+
+def test_service_search(requests_mock):
+    """
+    Tests the service-search command function.
+        Given: Services in RunZero
+        When: Calling RunService service search command
+        Then: Returning the expected services
+    """
+    from RunZero import Client, service_search
+    mock_response = util_load_json('test_data/services.json')
+    requests_mock.get(
+        'https://console.runzero.com/api/v1.0/org/services',
+        json=mock_response)
+
+    client = Client(
+        base_url='https://console.runzero.com/api/v1.0',
+        verify=False,
+        proxy=False
+    )
+
+    actual_commandResult = service_search(
+        client=client,
+        args={'display_attributes': 'true'}
+    )
+
+    readable_output = '### Service\n|Addresses|Asset Status|Comments|Hardware|Hostname|ICMP|MAC|MAC vendor|OS|OS EOL|Outlier|Svcs|TCP|Tags|Type|UDP|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n'
+    expectedCommandResult = CommandResults(outputs_prefix='RunZero',
+                                           outputs_key_field='Service',
+                                           raw_response=mock_response,
+                                           outputs=mock_response,
+                                           readable_output=readable_output,
+                                           )
+
+    assert actual_commandResult.readable_output == expectedCommandResult.readable_output
+    assert actual_commandResult.raw_response == expectedCommandResult.raw_response
+    assert actual_commandResult.outputs_key_field == expectedCommandResult.outputs_key_field
+    assert actual_commandResult.outputs_prefix == expectedCommandResult.outputs_prefix
+    assert actual_commandResult.outputs == expectedCommandResult.outputs
+
+
+def test_service_search_using_search_string(requests_mock):
+    """
+    Tests the service-search command function.
+        Given: A service in RunZero
+        When: Calling service-search command with specific search query 
+        Then: Returning the desired service.
+    """
+    from RunZero import Client, service_search
+    mock_response = util_load_json('test_data/services.json')
+    requests_mock.get(
+        'https://console.runzero.com/api/v1.0/org/services',
+        json=mock_response)
+
+    client = Client(
+        base_url='https://console.runzero.com/api/v1.0',
+        verify=False,
+        proxy=False
+    )
+
+    actual_commandResult = service_search(
+        client=client,
+        args={'search': 'service_address:192.168.1.91',
+              'display_attributes': 'false'}
+    )
+
+    readable_output = '### Service\n|Addresses|Asset Status|Comments|Hardware|Hostname|ICMP|MAC|MAC vendor|OS|OS EOL|Outlier|Svcs|TCP|Tags|Type|UDP|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n| 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | integration comment | VMware VM | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 11 | 3 | ThisTag: <br>ThisTag22: <br>danf: <br>guttentag: <br>tag1: <br>tag2: <br>taglich: <br>test1: <br>test2:  | Server | 4 |\n'
+    expectedCommandResult = CommandResults(outputs_prefix='RunZero',
+                                           outputs_key_field='Service',
+                                           raw_response=mock_response,
+                                           outputs=mock_response,
+                                           readable_output=readable_output,
+                                           )
+
+    assert actual_commandResult.readable_output == expectedCommandResult.readable_output
+    assert actual_commandResult.raw_response == expectedCommandResult.raw_response
+    assert actual_commandResult.outputs_key_field == expectedCommandResult.outputs_key_field
+    assert actual_commandResult.outputs_prefix == expectedCommandResult.outputs_prefix
+    assert actual_commandResult.outputs == expectedCommandResult.outputs
+    
+#TODO test with and without display attributes and display services.

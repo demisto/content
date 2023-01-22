@@ -25,7 +25,10 @@ configuration:
   required: false
   type: 8
   section: Collect
-description: 'RunZero integration for XSOAR.'
+description: "RunZero integration for XSOAR.\n
+ runZero is a network discovery and asset inventory\n
+ platform that uncovers every network in use and iden`tifies every device connected–without credentials.\n
+ Scan your network and build your asset inventory in minutes."
 display: 'RunZero'
 name: RunZero
 script:
@@ -69,8 +72,68 @@ script:
     execution: false
     outputs:
     - contextPath: RunZero.Asset
-      description: 'RunZero raw response.'
+      description: 'RunZero assets raw response.'
       type: String
+  - name: runzero-service-search
+    description: 'Get services.'
+    deprecated: false
+    arguments:
+    - name: service_id
+      description: UUID of the service to retrieve.
+      isArray: false
+      required: false
+      secret: false
+    - name: search
+      description: Search query string.
+      isArray: false
+      required: false
+      secret: false
+    - name: service_addresses
+      description: Search services by addresses.
+      isArray: true
+      required: false
+      secret: false
+    - name: display_attributes
+      default: false
+      description: Should include attributes section in returned result.
+      isArray: false
+      required: false
+      secret: false
+    execution: false
+    outputs:
+    - contextPath: RunZero.Service
+      description: 'RunZero services raw response.'
+      type: String
+  - name: runzero-comment-add
+    description: 'Add a comment or overrides existing asset comment'
+    deprecated: false
+    arguments:
+    - name: asset_id
+      description: Choose asset.
+      isArray: false
+      required: true
+      secret: false
+    - name: comment
+      description: Comment to add.
+      isArray: false
+      required: true
+      secret: false
+    execution: false
+  - name: runzero-tag-add
+    description: 'Add tag or tags to asset'
+    deprecated: false
+    arguments:
+    - name: asset_id
+      description: Choose asset.
+      isArray: false
+      required: true
+      secret: false
+    - name: tags
+      description: Tags to add to asset.
+      isArray: false
+      required: true
+      secret: false
+    execution: false
   isfetch: false
   runonce: false
   script: '-'

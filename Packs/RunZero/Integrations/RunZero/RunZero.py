@@ -1,25 +1,9 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+# from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -48,40 +32,32 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   headers=self._headers)
 
+    def comment_add(self, asset_id, comment):
+        url_suffix = f'/org/assets/{asset_id}/comments'
+        body = {}
+        body['comments'] = comment
+        return self._http_request(method='PATCH',
+                                  url_suffix=url_suffix,
+                                  json_data=body,
+                                  headers=self._headers)
+
+    def tags_add(self, asset_id, tags):
+        url_suffix = f'/org/assets/{asset_id}/tags'
+        body = {}
+        body['tags'] = tags
+        return self._http_request(method='PATCH',
+                                  url_suffix=url_suffix,
+                                  json_data=body,
+                                  headers=self._headers)
+
+    def service_search(self, service_str: str = None):
+        url_suffix = f'/org/services{service_str}' if service_str else '/org/services'
+        return self._http_request(method='GET',
+                                  url_suffix=url_suffix,
+                                  headers=self._headers)
+
 
 ''' HELPER FUNCTIONS '''
-
-
-def asset_search(client: Client, args: dict):
-    search_string = ''
-    if args.get('ips'):
-        search_string = ','.join(argToList(args.get('ips')))
-        search_string = f'?search=address:{search_string}'
-    elif args.get('hostnames'):
-        search_string = ','.join(argToList(args.get('hostnames')))
-        search_string = f'?search=name:{search_string}'
-    elif args.get('asset_id'):
-        search_string = ','.join(argToList(args.get('asset_id')))
-        search_string = f'/{search_string}'
-    elif args.get('search'):
-        search_string = f'?search={args.get("search")}'
-    raw = client.asset_search(search_string)
-    message = []
-    if type(raw) is list:
-        for item_raw in raw:
-            message.extend(parse_raw_response(item_raw))        
-    if type(raw) is dict:
-        message.extend(parse_raw_response(raw))
-    human_readable = tableToMarkdown('runzero-asset-search',
-                                     message,
-                                     removeNull=True)
-    return CommandResults(
-        outputs_prefix='RunZero',
-        outputs_key_field='Asset',
-        outputs=message,
-        raw_response=raw,
-        readable_output=human_readable
-    )
 
 
 def parse_raw_response(raw: dict) -> list:
@@ -103,14 +79,114 @@ def parse_raw_response(raw: dict) -> list:
     message['Svcs'] = raw.get('service_count', '')
     message['TCP'] = raw.get('service_count_tcp', '')
     message['UDP'] = raw.get('service_count_udp', '')
-    message['ICMP'] = raw.get('service_count_icmp', '')    
+    message['ICMP'] = raw.get('service_count_icmp', '')
     return [message]
 
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-
 ''' COMMAND FUNCTIONS '''
+
+
+def asset_search(client: Client, args: dict) -> CommandResults:
+    search_string = ''
+    if args.get('ips'):
+        search_string = ','.join(argToList(args.get('ips')))
+        search_string = f'?search=address:{search_string}'
+    elif args.get('hostnames'):
+        search_string = ','.join(argToList(args.get('hostnames')))
+        search_string = f'?search=name:{search_string}'
+    elif args.get('asset_id'):
+        search_string = ','.join(argToList(args.get('asset_id')))
+        search_string = f'/{search_string}'
+    elif args.get('search'):
+        search_string = f'?search={args.get("search")}'
+    raw = client.asset_search(search_string)
+    remove_attr = not args.get('display_attributes')
+    remove_svc = not args.get('display_services')
+    message = []
+    if type(raw) is list:
+        for item_raw in raw:
+            if remove_attr:
+                del item_raw['attributes']
+            if remove_svc:
+                del item_raw['services']
+            message.extend(parse_raw_response(item_raw))
+    if type(raw) is dict:
+        if remove_attr:
+            del raw['attributes']
+        if remove_svc:
+            del raw['services']
+        message.extend(parse_raw_response(raw))
+    human_readable = tableToMarkdown('Asset',
+                                     message,
+                                     removeNull=True)
+    return CommandResults(
+        outputs_prefix='RunZero',
+        outputs_key_field='Asset',
+        outputs=raw,
+        raw_response=raw,
+        readable_output=human_readable
+    )
+
+
+def comment_add(client: Client, args: dict) -> CommandResults:
+    asset_id = args['asset_id']
+    comment = args['comment']
+    raw = client.comment_add(asset_id, comment)
+    message = f'Comment added to {asset_id} successfully.'
+    return CommandResults(
+        outputs_prefix=None,
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=raw,
+        readable_output=message
+    )
+
+
+def tags_add(client: Client, args: dict) -> CommandResults:
+    asset_id = args['asset_id']
+    tags = args['tags']
+    raw = client.tags_add(asset_id, tags)
+    message = f'Tags added to {asset_id} successfully.'
+    return CommandResults(
+        outputs_prefix=None,
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=raw,
+        readable_output=message
+    )
+
+
+def service_search(client: Client, args: dict) -> CommandResults:
+    service_string = ''
+    if args.get('service_id'):
+        service_string = f'/{args["service_id"]}'
+    elif args.get('search'):
+        service_string = f'?search={args["search"]}'
+    elif args.get('service_addresses'):
+        service_string = ' OR service_address:'.join(argToList(args.get('service_addresses')))
+        service_string = f'?search=service_addresses:{service_string}'
+    raw = client.service_search(service_string)
+    remove_attr = not args.get('display_attributes')
+    message = []
+    if type(raw) is list:
+        for item_raw in raw:
+            if remove_attr:
+                del item_raw['attributes']
+            message.extend(parse_raw_response(item_raw))
+    if type(raw) is dict:
+        if remove_attr:
+            del raw['attributes']
+        message.extend(parse_raw_response(raw))
+    human_readable = tableToMarkdown('Service',
+                                     message,
+                                     removeNull=True)
+    return CommandResults(
+        outputs_prefix='RunZero',
+        outputs_key_field='Service',
+        outputs=raw,
+        raw_response=raw,
+        readable_output=human_readable
+    )
 
 
 def test_module(client: Client) -> str:
@@ -162,13 +238,25 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
+        args = demisto.args()
         if demisto.command() == 'test-module':
             result = test_module(client)
             return_results(result)
 
         elif demisto.command() == 'runzero-asset-search':
-            args = demisto.args()
             commandResult = asset_search(client, args)
+            return_results(commandResult)
+
+        elif demisto.command() == 'runzero-comment-add':
+            commandResult = comment_add(client, args)
+            return_results(commandResult)
+
+        elif demisto.command() == 'runzero-tag-add':
+            commandResult = tags_add(client, args)
+            return_results(commandResult)
+
+        elif demisto.command() == 'runzero-service-search':
+            commandResult = service_search(client, args)
             return_results(commandResult)
 
     # Log exceptions and return errors

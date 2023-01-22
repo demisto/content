@@ -1,5 +1,8 @@
 RunZero integration for XSOAR.
-This integration was integrated and tested with version xx of RunZero
+ runZero is a network discovery and asset inventory
+ platform that uncovers every network in use and iden`tifies every device connected–without credentials.
+ Scan your network and build your asset inventory in minutes.
+This integration was integrated and tested with version 3.3.0 of RunZero
 
 ## Configure RunZero on Cortex XSOAR
 
@@ -42,4 +45,67 @@ Get all assets (getAssets)
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RunZero.Asset | String | RunZero raw response. | 
+| RunZero.Asset | String | RunZero assets raw response. | 
+
+### runzero-service-search
+***
+Get services.
+
+
+#### Base Command
+
+`runzero-service-search`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_id | UUID of the service to retrieve. | Optional | 
+| search | Search query string. | Optional | 
+| service_addresses | Search services by addresses. | Optional | 
+| display_attributes | Should include attributes section in returned result. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RunZero.Service | String | RunZero services raw response. | 
+
+### runzero-comment-add
+***
+Add a comment or overrides existing asset comment
+
+
+#### Base Command
+
+`runzero-comment-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Choose asset. | Required | 
+| comment | Comment to add. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### runzero-tag-add
+***
+Add tag or tags to asset
+
+
+#### Base Command
+
+`runzero-tag-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Choose asset. | Required | 
+| tags | Tags to add to asset. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
