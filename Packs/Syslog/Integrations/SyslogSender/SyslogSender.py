@@ -2,13 +2,15 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
-
+from tempfile import NamedTemporaryFile
 from contextlib import contextmanager
 from logging.handlers import SysLogHandler
 from distutils.util import strtobool
 from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
-from typing import Union, Tuple, Dict, Any, Generator
+from typing import Union, Tuple, Dict, Any, Generator, Callable
+from gevent.server import StreamServer
+from syslog_rfc5424_parser import SyslogMessage, ParseError
 
 ''' CONSTANTS '''
 
@@ -121,6 +123,63 @@ class SyslogManager:
 
 
 ''' HELPER FUNCTIONS '''
+def perform_long_running_execution(sock: Any, address: tuple) -> None:
+    """
+    The long running execution loop. Gets input, and performs a while True loop and logs any error that happens.
+    Stops when there is no more data to read.
+    Args:
+        sock: Socket.
+        address(tuple): Address. Not used inside loop so marked as underscore.
+
+    Returns:
+        (None): Reads data, calls   that creates incidents from inputted data.
+    """
+    demisto.debug('Starting long running execution')
+    file_obj = sock.makefile(mode='rb')
+    try:
+        while True:
+            try:
+                line = file_obj.readline()
+                if not line:
+                    demisto.info(f'Disconnected from {address}')
+                    break
+                perform_long_running_loop(line.strip())
+            except Exception as e:
+                demisto.error(traceback.format_exc())  # print the traceback
+                demisto.error(f'Error occurred during long running loop. Error was: {e}')
+            finally:
+                demisto.debug('Finished reading message')
+    finally:
+        file_obj.close()
+
+
+def prepare_globals_and_create_server(port: int, message_regex: Optional[str], certificate: str,
+                                      private_key: str) -> StreamServer:
+    """
+    Prepares global environments of LOG_FORMAT, MESSAGE_REGEX and creates the server to listen
+    to Syslog messages.
+    Args:
+        port (int): Port
+        message_regex (Optional[str]): Regex. Will create incident only if Syslog message matches this regex.
+        certificate (Optional[str]): Certificate. For SSL connection.
+        private_key (Optional[str]): Private key. For SSL connection.
+
+    Returns:
+        (StreamServer): Server to listen to Syslog messages.
+    """
+    certificate_file = NamedTemporaryFile(delete=False)
+    certificate_path = certificate_file.name
+    certificate_file.write(bytes(certificate, 'utf-8'))
+    certificate_file.close()
+    private_key_file = NamedTemporaryFile(delete=False)
+    private_key_path = private_key_file.name
+    private_key_file.write(bytes(private_key, 'utf-8'))
+    private_key_file.close()
+    server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=private_key_path,
+                          certfile=certificate_path)
+    demisto.debug('Starting HTTPS Server')
+    return server
+
 
 
 def init_manager(params: dict) -> SyslogManager:
@@ -134,12 +193,15 @@ def init_manager(params: dict) -> SyslogManager:
     protocol = params.get('protocol', UDP).lower()
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
-
+    certificate: Optional[str] = params.get('certificate')
+    private_key: Optional[str] = params.get('private_key')
+    message_regex: Optional[str] = params.get('message_regex')  #?
     if not address:
         raise ValueError('A Syslog server address must be provided.')
     if not port and protocol in PROTOCOLS:
         raise ValueError('A port must be provided in TCP or UDP protocols.')
-
+    if certificate and private_key:
+        return prepare_globals_and_create_server(port, message_regex, certificate, private_key)
     return SyslogManager(address, port, protocol, logging_level, facility)
 
 
@@ -256,7 +318,6 @@ def syslog_send(manager):
 
 def main():
     LOG(f'Command being called is {demisto.command()}')
-
     try:
         if demisto.command() == 'test-module':
             syslog_manager = init_manager(demisto.params())

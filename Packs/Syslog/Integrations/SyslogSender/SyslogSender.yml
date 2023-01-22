@@ -18,8 +18,19 @@ configuration:
   options:
   - TCP
   - UDP
+  - TLS
   required: false
   type: 15
+- name: certificate
+  display: Certificate
+  additionalinfo: Required for TLS
+  type: 12
+  required: false
+- display: Private Key
+  additionalinfo: Required for TLS
+  name: private_key
+  required: false
+  type: 14
 - defaultvalue: LOG_USER
   display: Facility
   name: facility
