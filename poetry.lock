@@ -420,7 +420,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.8.3"
+version = "1.8.1"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -482,7 +482,7 @@ requests = "^2.27.1"
 slackclient = "^2.9.3"
 tabulate = ">=0.8.9,<0.10.0"
 typed-ast = "^1.5.2"
-typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
+typer = {version = "^0.6.1", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
 types-dateparser = "^1.1.0"
 types-decorator = "^5.1.8"
@@ -518,8 +518,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "c63858f9c31bb52c776433a621313fcd2f1bccf0"
-resolved_reference = "c63858f9c31bb52c776433a621313fcd2f1bccf0"
+reference = "d740fdaf838754c674702e18c25aa0b8cf15bf6a"
+resolved_reference = "d740fdaf838754c674702e18c25aa0b8cf15bf6a"
 
 [[package]]
 name = "Deprecated"
@@ -2039,7 +2039,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "typer"
-version = "0.7.0"
+version = "0.6.1"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 category = "dev"
 optional = false
@@ -2054,8 +2054,8 @@ shellingham = {version = ">=1.3.0,<2.0.0", optional = true, markers = "extra == 
 [package.extras]
 all = ["colorama (>=0.4.3,<0.5.0)", "rich (>=10.11.0,<13.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
 dev = ["autoflake (>=1.3.1,<2.0.0)", "flake8 (>=3.8.3,<4.0.0)", "pre-commit (>=2.17.0,<3.0.0)"]
-doc = ["cairosvg (>=2.5.2,<3.0.0)", "mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "pillow (>=9.3.0,<10.0.0)"]
-test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.910)", "pytest (>=4.4.0,<8.0.0)", "pytest-cov (>=2.10.0,<5.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<4.0.0)", "rich (>=10.11.0,<13.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
+doc = ["mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)"]
+test = ["black (>=22.3.0,<23.0.0)", "coverage (>=5.2,<6.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.910)", "pytest (>=4.4.0,<5.4.0)", "pytest-cov (>=2.10.0,<3.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<2.0.0)", "rich (>=10.11.0,<13.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
 
 [[package]]
 name = "types-chardet"
@@ -2442,7 +2442,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "4615a5c9d25a829c62f5c9d6a099912f81b9a7f519fb8c3fe9f189e8f1e1797c"
+content-hash = "9fa846e3bf2649bc824086ca833f152aedd92b44d0b82148944d13c8919faad1"
 
 [metadata.files]
 aiohttp = [
@@ -4053,8 +4053,8 @@ typed-ast = [
     {file = "typed_ast-1.5.4.tar.gz", hash = "sha256:39e21ceb7388e4bb37f4c679d72707ed46c2fbf2a5609b8b8ebc4b067d977df2"},
 ]
 typer = [
-    {file = "typer-0.7.0-py3-none-any.whl", hash = "sha256:b5e704f4e48ec263de1c0b3a2387cd405a13767d2f907f44c1a08cbad96f606d"},
-    {file = "typer-0.7.0.tar.gz", hash = "sha256:ff797846578a9f2a201b53442aedeb543319466870fbe1c701eab66dd7681165"},
+    {file = "typer-0.6.1-py3-none-any.whl", hash = "sha256:54b19e5df18654070a82f8c2aa1da456a4ac16a2a83e6dcd9f170e291c56338e"},
+    {file = "typer-0.6.1.tar.gz", hash = "sha256:2d5720a5e63f73eaf31edaa15f6ab87f35f0690f8ca233017d7d23d743a91d73"},
 ]
 types-chardet = [
     {file = "types-chardet-5.0.4.1.tar.gz", hash = "sha256:cb04c8ea105220bf44c1c93f227e09117bbb07aa56d743be2972330fd06751de"},
