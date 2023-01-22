@@ -1433,13 +1433,13 @@ def create_security_group_command(args, aws_client):
     )
     kwargs = {
         'GroupName': args.get('groupName'),
-        'Description': args.get('description'),
+        'Description': args.get('description', ''),
         'VpcId': args.get('vpcId'),
     }
     response = client.create_security_group(**kwargs)
     data = ({
         'GroupName': args.get('groupName'),
-        'Description': args.get('description'),
+        'Description': args.get('description', ''),
         'VpcId': args.get('vpcId'),
         'GroupId': response['GroupId']
     })
@@ -1531,19 +1531,19 @@ def create_ip_permissions_dict(args):
     if args.get('IpRangesCidrIp') is not None:
         IpRanges = [{
             'CidrIp': args.get('IpRangesCidrIp'),
-            'Description': args.get('IpRangesDesc', None)
+            'Description': args.get('IpRangesDesc', "")
         }]
         IpPermissions_dict.update({'IpRanges': IpRanges})  # type: ignore
     if args.get('Ipv6RangesCidrIp') is not None:
         Ipv6Ranges = [{
             'CidrIp': args.get('Ipv6RangesCidrIp'),
-            'Description': args.get('Ipv6RangesDesc', None)
+            'Description': args.get('Ipv6RangesDesc', "")
         }]
         IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})  # type: ignore
     if args.get('PrefixListId') is not None:
         PrefixListIds = [{
             'PrefixListId': args.get('PrefixListId'),
-            'Description': args.get('PrefixListIdDesc', None)
+            'Description': args.get('PrefixListIdDesc', "")
         }]
         IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
     return IpPermissions_dict
