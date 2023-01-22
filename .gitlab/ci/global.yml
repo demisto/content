@@ -185,10 +185,6 @@
   extends:
     - .default-cache
     - .default-before-script
-  after_script:
-    - echo "${PIPELINE_JOBS_FOLDER}"
-    - mkdir -p "${PIPELINE_JOBS_FOLDER}"
-    - echo "done" > ${PIPELINE_JOBS_FOLDER}/${CI_JOB_NAME}.txt
 
 
 .trigger-slack-notification:
@@ -276,6 +272,7 @@
         fi
       fi
     - section_end "Run Unit Testing and Lint"
+    - job-done
 
 .run-validations:
   stage: unittests-and-validations
@@ -363,6 +360,7 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - job-done
 
 .jobs-done-check:
   stage: are-jobs-realy-done
