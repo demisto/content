@@ -24,6 +24,9 @@ An API key of type **Advanced** with an **Administrator** role.
 | severity | the severity in Cortex XDR | True |  
 | query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
+| xsoar_severity_field | The Cortex XSOAR indicator field used as severity. | True |  
+| xsoar_comments_field | The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting an XSOAR IOC format of a comment (nested dictionary). See `Comments As Tags` for more.| True |  
+| comments_as_tags | Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`. | True |  
 | proxy | Use system proxy settings | False |  
 | feedReputation | Indicator Reputation | False |  
 | feedReliability | Source Reliability | True |  
