@@ -1,4 +1,4 @@
-[INGEST:vendor="vmware", product="vcenter", target_dataset="vmware_vcenter_raw", no_hit=drop]
+[INGEST:vendor="vmware", product="vcenter", target_dataset="vmware_vcenter_raw", no_hit=keep]
 alter 
     tmp_date_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s(\d{4}\-\d{2}\-\d{2})T"), ""),
     tmp_time_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T(\d{2}\:\d{2}\:\d{2})"), ""),
