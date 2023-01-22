@@ -987,7 +987,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "endpointisolation",
+                                "fieldId": "endpointisolationstatus",
                                 "height": 53,
                                 "id": "4ec0cd80-86be-11ed-b2e7-e58c08fe2d4a",
                                 "index": 2,
@@ -1073,7 +1073,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "userengagement",
+                                "fieldId": "userengagementresponse",
                                 "height": 22,
                                 "id": "f11c0710-8b6f-11ed-afb3-d73a6f2ed22f",
                                 "index": 5,
@@ -1183,7 +1183,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "passwordchanged",
+                                "fieldId": "passwordchangeddate",
                                 "height": 22,
                                 "id": "73938230-8aa4-11ed-91e3-bd2dab60253a",
                                 "index": 5,
