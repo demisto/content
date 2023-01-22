@@ -84,7 +84,7 @@ def main():
         if not job_file.exists():
             logging.error(f"job {job} is not done yet")
             should_fail = True
-        elif job_file.read_text() != 'done':
+        elif job_file.read_text().strip() != 'done':
             logging.error(f"somthing isn't OK with jom name {job}")
             should_fail = True
 
