@@ -7,7 +7,6 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
-demisto-sdk = "1.9.0"
 
 [tool.poetry.group.dev.dependencies]
 demisto-sdk = "1.9.0"
