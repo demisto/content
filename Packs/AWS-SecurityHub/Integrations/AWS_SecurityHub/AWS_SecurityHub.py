@@ -513,7 +513,7 @@ def parse_filter_field(string_filters) -> dict:
     return filters
 
 
-def severity_mapping(severity: int) -> int:
+def severity_mapping(severity: str) -> int:
     """
     Maps AWS finding severity to demisto severity
     Args:
@@ -522,37 +522,18 @@ def severity_mapping(severity: int) -> int:
     Returns:
         Demisto severity
     """
-    if 1 <= severity <= 39:
+    if severity == 'LOW':
         demisto_severity = 1
-    elif 40 <= severity <= 69:
+    elif severity == 'MEDIUM':
         demisto_severity = 2
-    elif 70 <= severity <= 89:
+    elif severity == 'HIGH':
         demisto_severity = 3
-    elif 90 <= severity <= 100:
+    elif severity == 'CRITICAL':
         demisto_severity = 4
     else:
         demisto_severity = 0
 
     return demisto_severity
-
-
-def sh_severity_mapping(severity: str):
-    """
-    Maps AWS finding string severity (LOW, Medium, High) into AWS finding number severity
-    Args:
-        severity: AWS finding string severity
-
-    Returns:
-        The number representation of the AWS finding severity
-    """
-    severity_mapper = {
-        'Informational': 0,
-        'Low': 1,
-        'Medium': 40,
-        'High': 70,
-        'Critical': 90
-    }
-    return severity_mapper.get(severity, 0)
 
 
 def create_filters_list_dictionaries(arr: List[str], compare_param: str) -> List[Dict]:
@@ -571,6 +552,34 @@ def create_filters_list_dictionaries(arr: List[str], compare_param: str) -> List
         }
         result_arr.append(d)
     return result_arr
+
+
+def build_severity_label_obj(label: str) -> List:
+    """ Returns the object for the severity label in the fetch.
+        Args:
+            label: str - The severity label the user provided.
+        Returns:
+            A list of dictionaries to be sent in the filters object.
+    """
+    severity_dict = {
+        'Informational': 0,
+        'Low': 1,
+        'Medium': 2,
+        'High': 3,
+        'Critical': 4
+    }
+    severity_label_obj = []
+    num = severity_dict.get(label, -1)  # -1 is smaller than all -> all the severities will be in the object.
+    for lbl in severity_dict:
+        key = severity_dict.get(lbl, 5)  # 5 is bigger than all -> all the severities will be in the object.
+        # in order to get incident with equal or higher severity we need to add all the relevant severities to this
+        # object, and then the API will return all the incidents that are equal to one of the severities we provided.
+        if key >= num:
+            severity_label_obj.append({
+                'Comparison': 'EQUALS',
+                'Value': lbl.upper()
+            })
+    return severity_label_obj
 
 
 def disable_security_hub_command(client, args):
@@ -743,15 +752,13 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         'CreatedAt': [{
             'Start': last_run,
             'End': now.isoformat()
-        }],
-        'SeverityLabel': [{
-            # 'Gte': sh_severity_mapping(aws_sh_severity),
-            'Comparision': 'EQUALS',
-            'Value': aws_sh_severity
         }]
     }
+    if aws_sh_severity:
+        filters['SeverityLabel'] = build_severity_label_obj(aws_sh_severity)
     if additional_filters is not None:
         filters.update(parse_filter_field(additional_filters))
+    demisto.debug(f'The filters to the fetch are: {filters}')
     if next_token:
         try:
             response = client.get_findings(NextToken=next_token)
@@ -908,9 +915,7 @@ def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str],
             'End': now.isoformat()
         }]
     if aws_sh_severity:
-        filters['SeverityLabel'] = [{
-            'Gte': sh_severity_mapping(aws_sh_severity)
-        }]
+        filters['SeverityLabel'] = build_severity_label_obj(aws_sh_severity)
     if additional_filters:
         filters.update(parse_filter_field(additional_filters))
     if finding_types:

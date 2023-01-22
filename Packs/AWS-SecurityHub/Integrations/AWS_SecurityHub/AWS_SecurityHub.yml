@@ -104,7 +104,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: "Severity level of fetched incidents. Could be Informational, Low, Medium, High and Critical. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. [AWS documantation link about severity](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_Severity.html)"
+  additionalinfo: "Severity level of fetched incidents. Could be Informational, Low, Medium, High and Critical. For example, if you set the severity level to Medium, only findings with severity level Medium, High or Critical will be fetched. [AWS documantation link about severity](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_Severity.html)"
 - display: Additional Incidents Filters
   name: additionalFilters
   required: false
