@@ -322,7 +322,7 @@ script:
       description: Status of the job.
       type: String
     - contextPath: Splunk.JobStatus.TotalResults
-      description: The number of events that were returned by the SID.
+      description: The number of events that were returned by the job.
       type: String
   - arguments:
     - description: Splunk index in which to push data. Run the splunk-get-indexes command to get all indexes.
