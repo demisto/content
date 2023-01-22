@@ -420,7 +420,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.8.1"
+version = "1.8.3"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -482,7 +482,7 @@ requests = "^2.27.1"
 slackclient = "^2.9.3"
 tabulate = ">=0.8.9,<0.10.0"
 typed-ast = "^1.5.2"
-typer = {version = "^0.6.1", extras = ["all"]}
+typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
 types-dateparser = "^1.1.0"
 types-decorator = "^5.1.8"
@@ -518,8 +518,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "d740fdaf838754c674702e18c25aa0b8cf15bf6a"
-resolved_reference = "d740fdaf838754c674702e18c25aa0b8cf15bf6a"
+reference = "c63858f9c31bb52c776433a621313fcd2f1bccf0"
+resolved_reference = "c63858f9c31bb52c776433a621313fcd2f1bccf0"
 
 [[package]]
 name = "Deprecated"
@@ -2442,7 +2442,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "9fa846e3bf2649bc824086ca833f152aedd92b44d0b82148944d13c8919faad1"
+content-hash = "4615a5c9d25a829c62f5c9d6a099912f81b9a7f519fb8c3fe9f189e8f1e1797c"
 
 [metadata.files]
 aiohttp = [
