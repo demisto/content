@@ -6,6 +6,8 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import copy
 from requests import Response
+import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as defused_ET
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 account_sas_token = ""
@@ -228,7 +230,7 @@ def parse_xml_response(xml_string_response: str, tag_path: str = "", find_tag: b
 
     """
 
-    tree = ET.ElementTree(ET.fromstring(xml_string_response))
+    tree = ET.ElementTree(defused_ET.fromstring(xml_string_response))
 
     root = tree.getroot()
 
@@ -322,7 +324,7 @@ def get_pagination_next_marker_element(limit: str, page: int, client_request: Ca
     """
     offset = int(limit) * (page - 1)
     response = client_request(limit=str(offset), **params)
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     return root.findtext('NextMarker')  # type: ignore

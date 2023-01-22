@@ -2,8 +2,10 @@ from datetime import timezone
 from typing import Dict, Tuple, Union
 
 import dateparser
+import json
 import demistomock as demisto  # noqa: F401
 import urllib3
+import xml.etree.ElementTree as ET
 from CommonServerPython import *  # noqa: F401
 
 
@@ -49,96 +51,131 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
 def get_token_soap_request(user, password, instance, domain=None):
 
     if domain:
-        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
-            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-            '    <soap:Body>' + \
-            '        <CreateDomainUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-            f'            <userName>{user}</userName>' + \
-            f'            <instanceName>{instance}</instanceName>' + \
-            f'            <password>{password}</password>' + \
-            f'            <usersDomain>{domain}</usersDomain>' + \
-            '        </CreateDomainUserSessionFromInstance>' + \
-            '    </soap:Body>' + \
-            '</soap:Envelope>'
+        # Create the root element
+        root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance",
+                                            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                            "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+        root.set("version", "1.0")
+        root.set("encoding", "UTF-8")
+        # Create the soap:Body element
+        body = ET.SubElement(root, "soap:Body")
+        # Create the CreateUserSessionFromInstance element
+        create_user_session = ET.SubElement(body, "CreateDomainUserSessionFromInstance",
+                                            {"xmlns": "http://archer-tech.com/webservices/"})
+        # Add the userName, instanceName, and password elements
+        ET.SubElement(create_user_session, "userName").text = user
+        ET.SubElement(create_user_session, "instanceName").text = instance
+        ET.SubElement(create_user_session, "password").text = password
+        ET.SubElement(create_user_session, "usersDomain").text = domain
     else:
-        return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
-            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-            '    <soap:Body>' + \
-            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-            f'            <userName>{user}</userName>' + \
-            f'            <instanceName>{instance}</instanceName>' + \
-            f'            <password>{password}</password>' + \
-            '        </CreateUserSessionFromInstance>' + \
-            '    </soap:Body>' + \
-            '</soap:Envelope>'
-    return return_xml
+        # Create the root element
+        root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                            "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+        root.set("version", "1.0")
+        root.set("encoding", "UTF-8")
+        # Create the soap:Body element
+        body = ET.SubElement(root, "soap:Body")
+        # Create the CreateUserSessionFromInstance element
+        create_user_session = ET.SubElement(body, "CreateUserSessionFromInstance",
+                                            {"xmlns": "http://archer-tech.com/webservices/"})
+        # Add the userName, instanceName, and password elements
+        ET.SubElement(create_user_session, "userName").text = user
+        ET.SubElement(create_user_session, "instanceName").text = instance
+        ET.SubElement(create_user_session, "password").text = password
+
+    return ET.tostring(root)
 
 
 def terminate_session_soap_request(token):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
-           ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <TerminateSession xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           '        </TerminateSession>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    # Create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    root.set("version", "1.0")
+    root.set("encoding", "UTF-8")
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the TerminateSession element
+    terminate_session = ET.SubElement(body, "TerminateSession", {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken element
+    ET.SubElement(terminate_session, "sessionToken").text = token
+
+    return ET.tostring(root)
 
 
 def get_reports_soap_request(token):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <GetReports xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           '        </GetReports>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    root.set("version", "1.0")
+    root.set("encoding", "UTF-8")
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the GetReports element
+    get_reports = ET.SubElement(body, "GetReports", {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken element
+    ET.SubElement(get_reports, "sessionToken").text = token
+    return ET.tostring(root)
 
 
 def get_statistic_search_report_soap_request(token, report_guid, max_results):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
-           ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <ExecuteStatisticSearchByReport xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
-           f'            <pageNumber>{max_results}</pageNumber>' + \
-           '        </ExecuteStatisticSearchByReport>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    # Create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    root.set("version", "1.0")
+    root.set("encoding", "UTF-8")
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the ExecuteStatisticSearchByReport element
+    execute_statistic_search = ET.SubElement(body, "ExecuteStatisticSearchByReport",
+                                             {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken, reportIdOrGuid and pageNumber elements
+    ET.SubElement(execute_statistic_search, "sessionToken").text = token
+    ET.SubElement(execute_statistic_search, "reportIdOrGuid").text = report_guid
+    ET.SubElement(execute_statistic_search, "pageNumber").text = max_results
+
+    return ET.tostring(root)
 
 
 def get_search_options_soap_request(token, report_guid):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <GetSearchOptionsByGuid xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <searchReportGuid>{report_guid}</searchReportGuid>' + \
-           '        </GetSearchOptionsByGuid>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    # Create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    root.set("version", "1.0")
+    root.set("encoding", "UTF-8")
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the GetSearchOptionsByGuid element
+    get_search_options_by_grid = ET.SubElement(body, "GetSearchOptionsByGuid",
+                                             {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken and searchReportGuid elements
+    ET.SubElement(get_search_options_by_grid, "sessionToken").text = token
+    ET.SubElement(get_search_options_by_grid, "searchReportGuid").text = report_guid
+
+    return ET.tostring(root)
 
 
 def search_records_by_report_soap_request(token, report_guid):
-    return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <SearchRecordsByReport xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
-           '            <pageNumber>1</pageNumber>' + \
-           '        </SearchRecordsByReport>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+    # Create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
+    root.set("version", "1.0")
+    root.set("encoding", "UTF-8")
+    # Create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # Create the SearchRecordsByReport element
+    search_records_by_report = ET.SubElement(body, "SearchRecordsByReport",
+                                               {"xmlns": "http://archer-tech.com/webservices/"})
+    # Add the sessionToken, reportIdOrGuid and pageNumber elements
+    ET.SubElement(search_records_by_report, "sessionToken").text = token
+    ET.SubElement(search_records_by_report, "reportIdOrGuid").text = report_guid
+    ET.SubElement(search_records_by_report, "pageNumber").text = '1'
+
+    return ET.tostring(root)
 
 
 def search_records_soap_request(
@@ -146,85 +183,79 @@ def search_records_soap_request(
         field_to_search_by_id='', numeric_operator='', max_results=10, level_id='',
         sort_type: str = 'Ascending'
 ):
-    request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
-                   '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
-                   'xmlns:xsd="http://www.w3.org/2001/XMLSchema"' \
-                   ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + \
-                   '    <soap:Body>' + \
-                   '        <ExecuteSearch xmlns="http://archer-tech.com/webservices/">' + \
-                   f'            <sessionToken>{token}</sessionToken>' + \
-                   '            <searchOptions>' + \
-                   '                <![CDATA[<SearchReport>' + \
-                   f'                <PageSize>{max_results}</PageSize>' + \
-                   '                 <PageNumber>1</PageNumber>' + \
-                   f'                <MaxRecordCount>{max_results}</MaxRecordCount>' + \
-                   '                <ShowStatSummaries>false</ShowStatSummaries>' + \
-                   f'                <DisplayFields>{display_fields}</DisplayFields>' + \
-                   f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
+
+    # create the root element
+    root = ET.Element("soap:Envelope", {"xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
+                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
+                                        "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"})
+    root.set("version", "1.0")
+    root.set("encoding", "UTF-8")
+    # create the soap:Body element
+    body = ET.SubElement(root, "soap:Body")
+    # create the ExecuteSearch element
+    execute_search = ET.SubElement(body, "ExecuteSearch", {"xmlns": "http://archer-tech.com/webservices/"})
+    ET.SubElement(execute_search, "sessionToken").text = token
+    # create the searchOptions element
+    search_options = ET.SubElement(execute_search, "searchOptions").text = ET.CDATA("<SearchReport>")
+    ET.SubElement(search_options, "PageSize").text = max_results
+    ET.SubElement(search_options, "PageNumber").text = "1"
+    ET.SubElement(search_options, "MaxRecordCount").text = max_results
+    ET.SubElement(search_options, "ShowStatSummaries").text = "false"
+    ET.SubElement(search_options, "DisplayFields").text = display_fields
+    # create the Criteria element
+    criteria = ET.SubElement(search_options, "Criteria")
+    module_criteria = ET.SubElement(criteria, "ModuleCriteria")
+    ET.SubElement(module_criteria, "Module", {"name": "appname"}).text = app_id
 
     if search_value:
-        request_body += '<Filter><Conditions>'
+        # create the Filter element
+        filter = ET.SubElement(criteria, "Filter")
+        conditions = ET.SubElement(filter, "Conditions")
 
         if date_operator:
-            request_body += '<DateComparisonFilterCondition>' + \
-                            f'        <Operator>{date_operator}</Operator>' + \
-                            f'        <Field name="{field_name}">{field_id}</Field>' + \
-                            f'        <Value>{search_value}</Value>' + \
-                            '        <TimeZoneId>UTC Standard Time</TimeZoneId>' + \
-                            '        <IsTimeIncluded>TRUE</IsTimeIncluded>' + \
-                            '</DateComparisonFilterCondition >'
+            date_comparison_filter_condition = ET.SubElement(conditions, "DateComparisonFilterCondition")
+            ET.SubElement(date_comparison_filter_condition, "Operator").text = date_operator
+            ET.SubElement(date_comparison_filter_condition, "Field", {"name": field_name}).text = field_id
+            ET.SubElement(date_comparison_filter_condition, "Value").text = search_value
+            ET.SubElement(date_comparison_filter_condition, "TimeZoneId").text = 'UTC Standard Time'
+            ET.SubElement(date_comparison_filter_condition, "IsTimeIncluded").text = 'TRUE'
         elif numeric_operator:
-            request_body += '<NumericFilterCondition>' + \
-                            f'        <Operator>{numeric_operator}</Operator>' + \
-                            f'        <Field name="{field_name}">{field_id}</Field>' + \
-                            f'        <Value>{search_value}</Value>' + \
-                            '</NumericFilterCondition >'
+            numeric_filter_condition = ET.SubElement(conditions, "NumericFilterCondition")
+            ET.SubElement(numeric_filter_condition, "Operator").text = numeric_operator
+            ET.SubElement(numeric_filter_condition, "Field", {"name": field_name}).text = field_id
+            ET.SubElement(numeric_filter_condition, "Value").text = search_value
         else:
 
             if field_to_search_by_id and field_to_search_by_id.lower() == field_name.lower():
-                request_body += '<ContentFilterCondition>' + \
-                                f'        <Level>{level_id}</Level>' + \
-                                '        <Operator>Equals</Operator>' + \
-                                f'        <Values><Value>{search_value}</Value></Values>' + \
-                                '</ContentFilterCondition>'
+                content_filter_condition = ET.SubElement(conditions, "ContentFilterCondition")
+                ET.SubElement(content_filter_condition, "Level").text = level_id
+                ET.SubElement(content_filter_condition, "Operator").text = 'Equals'
+                values = ET.SubElement(content_filter_condition, "Values")
+                ET.SubElement(values, "Value").text = search_value
             else:
-                request_body += '<TextFilterCondition>' + \
-                                '        <Operator>Contains</Operator>' + \
-                                f'        <Field name="{field_name}">{field_id}</Field>' + \
-                                f'        <Value>{search_value}</Value>' + \
-                                '</TextFilterCondition >'
-
-        request_body += '</Conditions></Filter>'
+                text_filter_condition = ET.SubElement(conditions, "TextFilterCondition")
+                ET.SubElement(text_filter_condition, "Operator").text = 'Contains'
+                ET.SubElement(text_filter_condition, "Value").text = search_value
 
     if date_operator:  # Fetch incidents must present date_operator
-        request_body += '<Filter>' + \
-                        '<Conditions>' + \
-                        '    <DateComparisonFilterCondition>' + \
-                        f'        <Operator>{date_operator}</Operator>' + \
-                        f'        <Field name="{field_name}">{field_id}</Field>' + \
-                        f'        <Value>{search_value}</Value>' + \
-                        '        <TimeZoneId>UTC Standard Time</TimeZoneId>' + \
-                        '        <IsTimeIncluded>TRUE</IsTimeIncluded>' + \
-                        '    </DateComparisonFilterCondition >' + \
-                        '</Conditions>' + \
-                        '</Filter>'
+        filter = ET.SubElement(criteria, "Filter")
+        conditions = ET.SubElement(filter, "Conditions")
+        date_comparison_filter_condition = ET.SubElement(conditions, "DateComparisonFilterCondition")
+        ET.SubElement(date_comparison_filter_condition, "Operator").text = date_operator
+        ET.SubElement(date_comparison_filter_condition, "Field", {"name": field_name}).text = field_id
+        ET.SubElement(date_comparison_filter_condition, "Value").text = search_value
+        ET.SubElement(date_comparison_filter_condition, "TimeZoneId").text = 'UTC Standard Time'
+        ET.SubElement(date_comparison_filter_condition, "IsTimeIncluded").text = 'TRUE'
 
     if field_id:
-        request_body += '<SortFields>' + \
-                        '    <SortField>' + \
-                        f'        <Field>{field_id}</Field>' + \
-                        f'        <SortType>{sort_type}</SortType>' + \
-                        '    </SortField >' + \
-                        '</SortFields>'
+        sort_fields = ET.SubElement(criteria, "SortFields")
+        sort_field = ET.SubElement(sort_fields, "SortField")
+        ET.SubElement(sort_field, "Field").text = field_id
+        ET.SubElement(sort_field, "SortType").text = sort_type
 
-    request_body += ' </Criteria></SearchReport>]]>' + \
-                    '</searchOptions>' + \
-                    '<pageNumber>1</pageNumber>' + \
-                    '</ExecuteSearch>' + \
-                    '</soap:Body>' + \
-                    '</soap:Envelope>'
+    ET.SubElement(execute_search, "pageNumber").text = '1'
 
-    return request_body
+    return ET.tostring(root)
 
 
 SOAP_COMMANDS = {
