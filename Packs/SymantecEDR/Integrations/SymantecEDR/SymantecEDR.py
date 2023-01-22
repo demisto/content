@@ -13,7 +13,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DEFAULT_INTERVAL = 10
+DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 600
 
 # Symantec TOKEN timeout 60 mins
@@ -118,7 +118,7 @@ class Client(BaseClient):
     For this implementation, no special attributes defined
     """
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
-                 first_fetch: str = '3 days', fetch_limit: int = 50, is_incident_event: bool = False,
+                 first_fetch: str, fetch_limit: Optional[int], is_incident_event: bool = False,
                  is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None,
                  token: Optional[str] = None):
 
@@ -138,7 +138,6 @@ class Client(BaseClient):
         self.fetch_priority = fetch_priority
         self.access_token = token or self._get_access_token_or_login
         self.headers = {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
-
 
     @property
     def _get_access_token_or_login(self):
@@ -163,7 +162,7 @@ class Client(BaseClient):
                     data=payload,
                     resp_type='response'
                 )
-                status = response.status_code
+                response.raise_for_status()
 
                 new_access_token = response.json().get("access_token", '')
                 self.access_token = new_access_token
@@ -176,9 +175,11 @@ class Client(BaseClient):
                     demisto.setIntegrationContext(global_integration_context)
                 else:
                     demisto.setIntegrationContext({'access_token': None, 'created_timestamp_access_token': None})
+
                 return new_access_token
 
             except requests.exceptions.HTTPError as err:
+                status = response.status_code
                 if status in HTTP_ERRORS:
                     raise DemistoException(f'{HTTP_ERRORS[status]}, '
                                            f'Error from API: {response.json().get("error")},'
@@ -298,7 +299,7 @@ def get_headers_from_summary_data(summary_data: list[dict]):
 
     """
     if not summary_data:
-        demisto.debug(f'Unable to find Readable Summary Data.')
+        demisto.debug('Unable to find Readable Summary Data.')
         return list()
 
     headers = summary_data[0] if summary_data else {}
@@ -388,7 +389,6 @@ def parse_attacks_sub_object(data: list[dict]) -> dict:
             tactic_ids_dict = {
                 f'attacks_tactic_ids_{cnt}': convert_list_to_str(tactic_ids_list)
             }
-            # attacks_dict = {**attacks_dict, **tactic_ids_dict}
             attacks_dict |= tactic_ids_dict
 
         # tactic uids
@@ -397,7 +397,6 @@ def parse_attacks_sub_object(data: list[dict]) -> dict:
             tactic_uids_dict = {
                 f'attacks_tactic_uids_{cnt}': convert_list_to_str(tactic_uids_list)
             }
-            # attacks_dict = {**attacks_dict, **tactic_uids_dict}
             attacks_dict |= tactic_uids_dict
 
         cnt = cnt + 1
@@ -485,7 +484,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         'sandbox', 'scan', 'sender', 'service', 'session', 'monitor_source'
     ]
 
-    result = extract_raw_data(data, ignore_list)
+    result: dict[str, Any] = extract_raw_data(data, ignore_list)
 
     for key, func in (
         ('attacks', parse_attacks_sub_object),
@@ -498,7 +497,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
         ('edr_data_protocols', convert_list_to_str),
     ):
         if values := data.get(key):
-            result |= func(values)
+            result |= func(values)  # type: ignore
 
     for item in ['edr_data_protocols', 'edr_files', 'source_port', 'target_port']:
         if values := data.get(item):
@@ -800,7 +799,7 @@ def extract_raw_data(data: list | dict, ignore_key: list[str] = [], prefix: str 
                     dataset[field_name] = val
             cnt = cnt + 1
     else:
-        raise ValueError(f'Unable to determined "data" argument type. Data must be either list or dict')
+        raise ValueError('Unable to determined "data" argument type. Data must be either list or dict')
 
     return dataset
 
@@ -1048,7 +1047,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
             raise ValueError(
                 f'MD5 value {indicator_value} is invalid')
     else:
-        raise ValueError(f'Kindly provide indicator type. Possible Indicator type are : sha256, urls, domain, ip, md5')
+        raise ValueError('Kindly provide indicator type. Possible Indicator type are : sha256, urls, domain, ip, md5')
 
     return True
 
@@ -1075,7 +1074,7 @@ def get_incident_raw_response(endpoint: str, client: Client, args: dict[str, Any
     return raw_response
 
 
-def get_incident_uuid(client: Client, args: dict[str, Any]) -> str:
+def get_incident_uuid(client: Client, args: dict[str, Any]):
     """
       Get the incident UUID
       Args:
@@ -1152,7 +1151,7 @@ def test_module(client: Client) -> str:
     message: str = ''
     try:
         res = get_incident_list_command(client, {'limit': 1})
-        message = 'ok'
+        message = 'ok' if res else ''
     except Exception as err:
         raise DemistoException(f'Failed to execute. Error {err}')
 
@@ -1907,10 +1906,10 @@ def fetch_incidents(client: Client) -> list:
     rev_incident_state = {v: k for k, v in INCIDENT_STATUS.items()}
 
     seperator = ' OR '
-    priority_list: list[str] = [rev_incident_priority.get(i) for i in client.fetch_priority]
+    priority_list = [rev_incident_priority.get(i) for i in client.fetch_priority]  # type: ignore
     priority = priority_list[0] if len(priority_list) == 1 else seperator.join(map(str, priority_list))
 
-    state_list: list[str] = [rev_incident_state.get(i) for i in client.fetch_status]
+    state_list = [rev_incident_state.get(i) for i in client.fetch_status]  # type: ignore
     state = state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
 
     last_run = demisto.getLastRun()
@@ -1934,7 +1933,7 @@ def fetch_incidents(client: Client) -> list:
     results = client.query_request_api(method='POST', url_suffix='/atpapi/v2/incidents', params={}, json_data=payload
                                        ).get('result', [])
 
-    incidents, events_result, comments_result = [], [], []  # type:List
+    incidents, events_result, comments_result = [], [], []
     # Map severity to Demisto severity for incident creation
     xsoar_severity_map = {'High': 3, 'Medium': 2, 'Low': 1}
 
@@ -1963,7 +1962,7 @@ def fetch_incidents(client: Client) -> list:
                     "start_time": start_time
                 }
                 events_result = client.query_request_api(method='POST',
-                                                         url_suffix=f'/atpapi/v2/incidentevents',
+                                                         url_suffix='/atpapi/v2/incidentevents',
                                                          params={},
                                                          json_data=payload).get('result', [])
 
@@ -2024,16 +2023,16 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
     endpoint = f'/atpapi/v2/sandbox/results/{sha2}/verdict'
 
     response = client.query_request_api(method='GET',
-                                           url_suffix=endpoint,
-                                           params={},
-                                           json_data={})
+                                        url_suffix=endpoint,
+                                        params={},
+                                        json_data={})
 
     file_res = client.query_request_api(method='GET',
                                         url_suffix=f'/atpapi/v2/entities/files/{sha2}',
                                         params={},
                                         json_data={})
-    #response: Dict[str, Any] = {**sandbox_res, **file_res}
     response |= file_res
+
     # Sandbox verdict
     title = "Sandbox Verdict"
     if response:
@@ -2049,7 +2048,7 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def check_sandbox_status(client: Client, args: Dict[str, Any]) -> str:
+def check_sandbox_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
      Query file Sandbox command status,
      Args:
@@ -2070,7 +2069,7 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> str:
                                         params={},
                                         json_data={})
     # Query Sandbox Command Status
-    summary_data = {}
+    summary_data = []
     datasets = response.get("status", [])
     if datasets:
         for data in datasets:
@@ -2081,8 +2080,7 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> str:
                 'target': data.get('target'),
                 'error_code': data.get('error_code')
             }
-            # summary_data = {**summary_data, **sandbox_status}
-            summary_data |= sandbox_status
+            summary_data.append(sandbox_status)
 
     title = "File Sandbox Status"
     if datasets:
@@ -2110,7 +2108,7 @@ def issue_sandbox_command(client: Client, args: Dict[str, Any]) -> CommandResult
              result.
      """
 
-    sha2 = args.get('file')
+    sha2 = args.get('file', '')
     if not re.match(sha256Regex, sha2):
         raise ValueError(f'SHA256 value {sha2} is invalid')
 
@@ -2139,81 +2137,6 @@ def issue_sandbox_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def sandbox_issue_polling_command(client: Client, args: Dict[str, Any]):
-
-    if pre_cmd_id := demisto.getIntegrationContext().get('command_id'):
-        args['command_id'] = pre_cmd_id
-
-    if 'command_id' not in args:
-        command_results = issue_sandbox_command(client, args)
-        outputs = command_results.outputs
-        command_id = outputs.get('command_id')
-
-        if global_integration_context := demisto.getIntegrationContext():
-            global_integration_context['command_id'] = command_id
-        else:
-            demisto.setIntegrationContext({'command_id': command_id})
-
-        if command_id:
-            args['command_id'] = command_id
-
-    return file_polling_command(args, client)
-
-
-@polling_function('file',
-                  interval=arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL)),
-                  timeout=arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT)))
-def file_polling_command(args: Dict[str, Any], client: Client) -> PollResult:
-    """
-    Polling command will show the progress of the sandbox status command after the first issue sandbox command.
-    Once a file scanning is done the status will be shown as 'Completed' and return the file verdict
-
-    Args:
-        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request and a Client.
-        client: client object to use.
-
-    Returns:
-        PollResult: A result to return to the user which will be set as a CommandResults.
-            The result itself will depend on the stage of polling.
-    """
-
-    # time.sleep(90)
-    command_result = check_sandbox_status(client, args)
-    raw_response = command_result.outputs
-    status = dict_safe_get(raw_response, ['status']) if raw_response else None
-
-    if status == 'Completed':
-        command_result = get_sandbox_verdict(client, args)
-
-        if global_integration_context := demisto.getIntegrationContext():
-            del global_integration_context['command_id']
-
-        return PollResult(
-            response=command_result,
-            continue_to_poll=False
-        )
-    elif status == 'Error':
-        if global_integration_context := demisto.getIntegrationContext():
-            del global_integration_context['command_id']
-
-        return PollResult(
-            response=command_result,
-            continue_to_poll=False
-        )
-    else:
-        polling_args = {
-            **args
-        }
-        return PollResult(
-            response=command_result,
-            continue_to_poll=True,
-            args_for_next_run=polling_args,
-            partial_result=CommandResults(
-                readable_output=f'Waiting for Status ... with command id {args.get("command_id")}'
-            )
-        )
-
-
 # ScheduledCommand
 def run_polling_command(client: Client, args: dict, cmd: str, status_func: Callable, results_func: Callable):
     """
@@ -2236,16 +2159,16 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
     demisto.debug(f'Integration Global Context Data: {demisto.getIntegrationContext()}')
 
     ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL))
-    timeout_in_seconds = arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT))
+    interval_in_secs: int = args.get('interval_in_seconds', DEFAULT_INTERVAL)
+    timeout_in_seconds: int = args.get('timeout_in_seconds', DEFAULT_TIMEOUT)
 
     # Check for ongoing file scanning command_id if exist
     if pre_cmd_id := demisto.getIntegrationContext().get('command_id'):
         args['command_id'] = pre_cmd_id
     # first run ...
     if 'command_id' not in args:
-        command_results = issue_sandbox_command(client, args)
-        outputs = command_results.outputs
+        # command_results = issue_sandbox_command(client, args)
+        outputs: Any[object] = issue_sandbox_command(client, args).outputs
         command_id = outputs.get('command_id')
 
         if command_id is not None:
@@ -2279,7 +2202,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
 
     # not a first run
     command_result = status_func(client, args)
-    outputs = command_result.outputs
+    outputs = status_func(client, args).outputs
     status = outputs.get('status')
     if status == 'Completed':
         # # action was completed
@@ -2314,7 +2237,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, status_func: Calla
         return command_result
 
 
-def file_scheduled_polling_command(client, args):
+def file_scheduled_polling_command(client: Client, args: Dict[str, Any]):
     return run_polling_command(client, args, 'file', check_sandbox_status, get_sandbox_verdict)
 
 
@@ -2335,13 +2258,12 @@ def main() -> None:
         client_id = params.get('credentials', {}).get('identifier', '')
         client_secret = params.get('credentials', {}).get('password', '')
         verify_certificate = params.get('insecure', False)
-        # not params.get('insecure', False)
         proxy = params.get('proxy', False)
         last_token = get_last_access_token_from_context()
 
         # Fetches Incident Parameters
         first_fetch_time = params.get('first_fetch', '3 days').strip()
-        fetch_limit = arg_to_number(params.get('fetch_limit'))
+        fetch_limit = arg_to_number(params.get('max_fetch', 50))
         fetch_incident_event = params.get('isIncidentsEvent', False)
         fetch_comments = params.get('isIncidentComment', False)
         fetch_status = argToList(params.get('fetch_status', 'New'))
@@ -2405,7 +2327,6 @@ def main() -> None:
             "symantec-edr-event-list": get_event_list_command,
 
             # file Sandbox (Reputation command)
-            # "file": sandbox_issue_polling_command,
             "file": file_scheduled_polling_command
         }
         command_output: CommandResults | str = ""
@@ -2415,7 +2336,10 @@ def main() -> None:
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
             command_output = "OK"
-        elif command in ['symantec-edr-endpoint-isolate', 'symantec-edr-endpoint-rejoin', 'symantec-edr-endpoint-delete-file', 'symantec-edr-endpoint-cancel-command']:
+        elif command in ['symantec-edr-endpoint-isolate',
+                         'symantec-edr-endpoint-rejoin',
+                         'symantec-edr-endpoint-delete-file',
+                         'symantec-edr-endpoint-cancel-command']:
             # isolate_endpoint, re-join, delete_endpoint_file, cancel_command
             command_output = get_endpoint_command(client, args, command)
         elif command in commands:

@@ -60,7 +60,7 @@ configuration:
 - additionalinfo: Maximum Number of Incidents fetch limit. Maximum Default limit is 50.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -89,7 +89,7 @@ script:
       secret: false
     deprecated: false
     description: |-
-     Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
+      Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
     execution: false
     name: symantec-edr-endpoint-isolate
     outputs:
@@ -230,7 +230,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify a filters option in lieu of “query”. These filters will improve query performance. 
+      description: Specify a filters option in lieu of “query”. These filters will improve query performance.
       isArray: false
       name: search_object
       predefined:
@@ -646,7 +646,7 @@ script:
       description: 'The overall success or failure of the action reported by the event. Possible values are: 0 = Unknown 1 = Success 2 = Failure Applicable events : 1, 20, 21, 1000 Example: 1.'
       type: Number
     - contextPath: SymantecEDR.SystemActivity.uuid
-      description: The unique ID for this event. UUID uniquely identifies an event with a single event type (type_id). 
+      description: The unique ID for this event. UUID uniquely identifies an event with a single event type (type_id).
       type: Unknown
     - contextPath: SymantecEDR.SystemActivity.process_pid
       description: 'PID of the service for which an action was taken. Applicable events: 1000 Example: 31337.'
