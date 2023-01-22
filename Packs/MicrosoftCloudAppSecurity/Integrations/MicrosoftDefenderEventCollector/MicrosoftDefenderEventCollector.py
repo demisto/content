@@ -1,6 +1,7 @@
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -17,7 +18,7 @@ import dateparser
 from MicrosoftApiModule import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
