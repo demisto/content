@@ -472,8 +472,7 @@ def get_mitre_data_by_filter(client, mitre_filter):
         collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
 
         tc_source = TAXIICollectionSource(collection_data)
-        if tc_source.query(mitre_filter):
-            mitre_data = tc_source.query(mitre_filter)[0]
+        if mitre_data := tc_source.query(mitre_filter):
             return mitre_data
     return {}
 
@@ -509,28 +508,29 @@ def build_command_result(value, score, md, attack_obj):
 def attack_pattern_reputation_command(client, args):
     command_results: List[CommandResults] = []
 
+    filter_by_type = [Filter('type', '=', 'attack-pattern')]
+    mitre_data = get_mitre_data_by_filter(client, filter_by_type)
+
     mitre_names = argToList(args.get('attack_pattern'))
     for name in mitre_names:
         if ':' not in name:  # not sub-technique
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
+            attack_pattern = get_attack_pattern_by_name(mitre_data, name=name)
+            if not attack_pattern:
                 continue
 
-            value = mitre_data.get('name')
+            value = attack_pattern.get('name')
 
         else:
             all_name = name.split(':')
             parent = all_name[0]
-            sub = all_name[1][1:]
+            sub = all_name[1][1:]  # removes the space before the name of the sub-technique
             mitre_id = ''
 
             # get parent MITRE ID
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', parent)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
+            attack_pattern = get_attack_pattern_by_name(mitre_data, name=parent)
+            if not attack_pattern:
                 continue
-            indicator_json = json.loads(str(mitre_data))
+            indicator_json = json.loads(str(attack_pattern))
             parent_mitre_id = [external.get('external_id') for external in
                                indicator_json.get('external_references', [])
                                if external.get('source_name', '') == 'mitre-attack']
@@ -538,11 +538,10 @@ def attack_pattern_reputation_command(client, args):
             parent_name = indicator_json['name']
 
             # get sub MITRE ID
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', sub)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
+            attack_pattern = get_attack_pattern_by_name(mitre_data, name=sub)
+            if not attack_pattern:
                 continue
-            indicator_json = json.loads(str(mitre_data))
+            indicator_json = json.loads(str(attack_pattern))
             sub_mitre_id = [external.get('external_id') for external in
                             indicator_json.get('external_references', [])
                             if external.get('source_name', '') == 'mitre-attack']
@@ -550,15 +549,16 @@ def attack_pattern_reputation_command(client, args):
             sub_mitre_id = sub_mitre_id[5:]
 
             mitre_id = f'{parent_mitre_id}{sub_mitre_id}'
-            mitre_filter = [Filter("external_references.external_id", "=", mitre_id),
-                            Filter("type", "=", "attack-pattern")]
-            mitre_data = get_mitre_data_by_filter(client, mitre_filter)
-            if not mitre_data:
+            attack_pattern = list(filter(lambda attack_pattern_obj:
+                                         filter_attack_pattern_object_by_attack_id(mitre_id, attack_pattern_obj),
+                                         mitre_data))
+            if not attack_pattern:
                 continue
 
-            value = f'{parent_name}: {mitre_data.get("name")}'
+            attack_pattern = attack_pattern[0]
+            value = f'{parent_name}: {attack_pattern.get("name")}'
 
-        attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
+        attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(attack_pattern)))
         custom_fields = attack_obj or {}
         score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
         md = f"## MITRE ATTACK \n ## Name: {value} - ID: " \
@@ -566,6 +566,19 @@ def attack_pattern_reputation_command(client, args):
         command_results.append(build_command_result(value, score, md, attack_obj))
 
     return command_results
+
+
+def get_attack_pattern_by_name(mitre_data, name):
+    """
+    Filter attack pattern objects by the attack name
+
+    Returns:
+        The attack pattern object with the name provided, if there is such one.
+    """
+    attack_pattern = [attack_pattern_obj
+                      for attack_pattern_obj in mitre_data
+                      if (attack_pattern_obj.get('name') == name)]
+    return attack_pattern[0] if attack_pattern else {}
 
 
 def filter_attack_pattern_object_by_attack_id(attack_id: str, attack_pattern_object):
