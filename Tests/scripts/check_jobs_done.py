@@ -80,8 +80,9 @@ def main():
     should_fail = False
     for job in get_build_jobs():
         job_file = base_path / f'{job}.txt'
+        logging.info(f'checking job {job} with file {job_file} in {job_file.absolute()}')
         if not job_file.exists():
-            logging.error(f"somthing isn't OK with jom name {job}")
+            logging.error(f"job {job} is not done yet")
             should_fail = True
         elif job_file.read_text() != 'done':
             logging.error(f"somthing isn't OK with jom name {job}")
