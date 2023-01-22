@@ -74,19 +74,16 @@ def apply_filters(incidents: List, args: Dict):
 
 
 def summarize_incidents(args, incidents):
-    print('summarizing')
     summerized_fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
     if args.get("add_fields_to_summarize_context"):
         summerized_fields = summerized_fields + args.get("add_fields_to_summarize_context", '').split(",")
         summerized_fields = [x.strip() for x in summerized_fields]  # clear out whitespace
     summarized_incidents = []
     for incident in incidents:
-        print(incident)
         summarizied_incident = {}
         for field in summerized_fields:
             summarizied_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
         summarized_incidents.append(summarizied_incident)
-        print(summarizied_incident)
     return summarized_incidents
 
 
@@ -184,7 +181,6 @@ def main():  # pragma: no cover
             # in summerized version, ignore auto extract
             ignore_auto_extract=is_summarized_version
         )
-        print(outputs)
         return_results(results)
     except DemistoException as error:
         return_error(str(error), error)
