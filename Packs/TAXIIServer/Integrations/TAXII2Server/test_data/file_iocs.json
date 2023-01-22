@@ -293,7 +293,7 @@
                     "value": "some_sha1_5"
                 }
             },
-            "score": 2,
+            "score": 0,
             "sortValues": [
                 " \u0001\u0016b$<\u0019EZ\f\u0018",
                 "5199192"
@@ -391,7 +391,7 @@
                     "value": "some_sha1_6"
                 }
             },
-            "score": 2,
+            "score": 0,
             "sortValues": [
                 " \u0001\u0016b$<\u0019EY\u000f\u0018",
                 "5197481"
@@ -491,7 +491,7 @@
                     "value": "some_sha1_7"
                 }
             },
-            "score": 2,
+            "score": 0,
             "sortValues": [
                 " \u0001\u0016b$<\u0019EX\n0",
                 "5198982"
