@@ -64,7 +64,7 @@ class GCP:
         storage_client = init_storage_client(service_account)
         self.storage_bucket = storage_client.bucket(storage_bucket_name)
         self.storage_base_path = storage_base_path
-
+        logging.info(f"The var {storage_base_path=}")
         self.extracting_destination = tempfile.mkdtemp()
         self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
                                                            self.storage_base_path)
@@ -82,7 +82,7 @@ class GCP:
                 pack_zip.extractall(os.path.join(self.extracting_destination, pack_id))
             return os.path.join(self.extracting_destination, pack_id)
         else:
-            raise FileNotFoundError(f'{pack_id} pack of version {pack_version} was not found in the bucket')
+            raise FileNotFoundError(f'{pack_id} pack of version {pack_version} was not found in the bucket. {pack_path=}')
 
     def download_image(self, pack_id):
         """
@@ -350,7 +350,7 @@ def validate_bucket(service_account, storage_base_path, bucket_name, versions_di
 def get_args():
     parser = argparse.ArgumentParser(description="Check if the created bucket is valid")
     parser.add_argument('-s', '--service-account', help="Path to gcloud service account", required=False)
-    parser.add_argument('-sb', '--storage-base_path', help="Path to storage under the marketplace-dist-dev bucket",
+    parser.add_argument('-sb', '--storage_base_path', help="Path to storage under the marketplace-dist-dev bucket",
                         required=False)
     parser.add_argument('-b', '--bucket-names', help="Storage bucket names as a comma separated value")
     parser.add_argument('-a', '--artifacts-path', help="path to artifacts from the script creating the test branch, "

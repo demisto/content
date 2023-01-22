@@ -459,7 +459,7 @@ test_upload_flow:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
-    ALL_BUCKETS: "$GCS_MARKET_BUCKET,$GCS_MARKET_V2_BUCKET"
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
   stage: unittests-and-validations
   allow_failure: true
   script:
