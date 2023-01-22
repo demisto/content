@@ -6,7 +6,6 @@ from requests import Response
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import xml.etree.ElementTree as ET
 import defusedxml.ElementTree as defused_ET
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'

@@ -28,7 +28,6 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
-import xml.etree.ElementTree as ET
 import defusedxml.ElementTree as defused_ET
 
 import demistomock as demisto
@@ -2623,7 +2622,6 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
        :rtype: ``dict`` or ``list``
     """
     elem = defused_ET.fromstring(xmlstring)
-
     return elem2json(elem, options, strip_ns=strip_ns, strip=strip)
 
 
