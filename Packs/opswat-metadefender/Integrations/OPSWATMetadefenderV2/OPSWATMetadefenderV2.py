@@ -15,7 +15,6 @@ USE_CLOUD = PARAMS.get('cloud', False)
 HIGH_THRESHOLD = int(PARAMS.get('highPercnt', 66))
 LOW_THRESHOLD = int(PARAMS.get('lowPercnt', 34))
 
-
 DEFAULT_HEADERS = {
     'Accept': 'application/json'
 }
