@@ -88,7 +88,7 @@
                 "packID": "",
                 "params": {
                     "groupBy": [
-                        "type"
+                        "rawType"
                     ],
                     "tableColumns": [
                         {
@@ -918,7 +918,7 @@
                 "packID": "",
                 "params": {
                     "groupBy": [
-                        "closeReason"
+                        "rawCloseReason"
                     ],
                     "tableColumns": [
                         {

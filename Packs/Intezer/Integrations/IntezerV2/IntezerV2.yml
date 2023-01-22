@@ -327,7 +327,7 @@ script:
     - contextPath: Intezer.Analysis.IOCs
       description: The Analysis IOCs
       type: Dict
-  dockerimage: demisto/py3-tools:1.0.0.33659
+  dockerimage: demisto/py3-tools:1.0.0.41100
   isfetch: false
   runonce: false
   script: '-'

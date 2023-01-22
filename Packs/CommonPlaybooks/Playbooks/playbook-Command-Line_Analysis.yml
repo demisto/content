@@ -33,7 +33,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
     taskid: d0ba6b98-7de7-4621-8d6b-85a067f4f314
@@ -64,7 +63,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 95c7a960-8b66-48f0-8510-ed22481ae4f2
@@ -109,7 +107,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 7c5def9c-5b0b-4c84-867e-43de7bfe984c
@@ -148,7 +145,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 81a7238c-3db0-43d4-89e3-5f4e7da0f2f7
@@ -181,7 +177,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "11":
     id: "11"
     taskid: 8a4fdd44-5f23-4285-8e9f-3219392329a5
@@ -221,7 +216,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "12":
     id: "12"
     taskid: 5610ad88-bc53-45a1-865c-6a6b607e1a98
@@ -256,7 +250,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "13":
     id: "13"
     taskid: b027e4bc-d481-4f58-842d-395bd7ef348f
@@ -293,7 +286,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "15":
     id: "15"
     taskid: 961ec942-dacf-4f4a-8b34-7e2847919a5e
@@ -586,7 +578,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "17":
     id: "17"
     taskid: 4191d8a3-0ed7-4abd-8b4d-a2fe3af03fa4
@@ -663,7 +654,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "19":
     id: "19"
     taskid: 6f484473-7f55-4d72-8ce3-07361395169c
@@ -753,7 +743,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "21":
     id: "21"
     taskid: e3b1b82d-4b1c-4cd4-8273-f4b2b3f9477f
@@ -942,7 +931,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
     taskid: b355c8cd-9438-4d16-88cf-367aad8dc5a2
@@ -1082,7 +1070,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "23":
     id: "23"
     taskid: c56fef87-e77c-452f-850d-8a76d44d6e30
@@ -1126,7 +1113,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "24":
     id: "24"
     taskid: 4eb71ce1-0bd1-47e9-8679-293960d28e78
@@ -1188,7 +1174,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "26":
     id: "26"
     taskid: c89fbf52-da5f-4bab-836e-07a697e0fb71
@@ -1225,7 +1210,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "27":
     id: "27"
     taskid: b9b89f0b-8885-4908-8d0f-c785c90feddd
@@ -1262,7 +1246,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 0fbff6eb-dc6e-4a75-876a-7dcb37dffa6b
@@ -1299,7 +1282,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "30":
     id: "30"
     taskid: cb6662a9-4a56-48b9-8b2d-e375410b246d
@@ -1336,7 +1318,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "31":
     id: "31"
     taskid: 7d374634-8e9f-42f4-821e-aae890e35f05
@@ -1387,7 +1368,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "32":
     id: "32"
     taskid: 118d06f7-1309-4b4b-8b2d-6f56454411d9
@@ -1424,7 +1404,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "33":
     id: "33"
     taskid: 1bde910b-a975-4fc5-8a0d-e05230b3ecf6
@@ -1464,7 +1443,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "34":
     id: "34"
     taskid: d02185ac-3059-4ac1-84df-388155f7bfee
@@ -1480,6 +1458,7 @@ tasks:
     nexttasks:
       "yes":
       - "33"
+      '#default#':
       - "9"
     separatecontext: false
     conditions:
@@ -1490,7 +1469,6 @@ tasks:
             value:
               simple: inputs.Commandline
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1532,7 +1510,6 @@ tasks:
       subplaybook:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1573,7 +1550,7 @@ view: |-
 inputs:
 - key: Commandline
   value: {}
-  required: true
+  required: false
   description: The command line.
   playbookInputQuery:
 outputs:

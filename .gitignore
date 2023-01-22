@@ -39,8 +39,7 @@ Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
 requirements.txt
-Tests/scripts/infrastructure_tests/collect_tests.log
-Tests/scripts/collect_tests.log
+**/collect_tests.log
 
 # Environment and reports
 .demisto-sdk-conf
@@ -56,6 +55,7 @@ Packs/**/report_pytest.json
 
 # devcontainer folders
 .devcontainer/certs.crt
+.devcontainer/createCommand_unix.sh
 **/.devcontainer
 !/.devcontainer
 
@@ -66,3 +66,6 @@ Packs/**/report_pytest.json
 
 # neo4j
 neo4j-data
+
+# MicroSocks (Potentially harmful)
+Packs/Whois/Integrations/Whois/test_data/microsocks

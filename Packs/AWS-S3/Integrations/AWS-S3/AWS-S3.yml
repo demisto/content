@@ -39,13 +39,20 @@ configuration:
   required: false
   type: 0
 - display: Access Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Key
+- display: Access Key
   name: access_key
   required: false
   type: 0
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
+  hidden: true
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can
@@ -645,12 +652,12 @@ script:
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     execution: false
     name: aws-s3-put-public-access-block
-  dockerimage: demisto/boto3py3:1.0.0.38419
+  dockerimage: demisto/boto3py3:1.0.0.41271
   isfetch: false
   runonce: false
   script: ''
   type: python
   subtype: python3
 tests:
-- 97393cfc-2fc4-4dfe-8b6e-af64067fc436
+- AWS - S3 Test Playbook
 fromversion: 5.0.0

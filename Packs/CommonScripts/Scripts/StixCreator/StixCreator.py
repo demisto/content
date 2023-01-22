@@ -148,6 +148,10 @@ def main():
                     except KeyError:
                         pass
 
+                elif indicator_type == 'malware':
+
+                    kwargs['is_family'] = argToBoolean(all_args[indicator_fields].get('ismalwarefamily', '').lower())
+
                 indicator = SDOs[indicator_type](
                     name=value,
                     **kwargs

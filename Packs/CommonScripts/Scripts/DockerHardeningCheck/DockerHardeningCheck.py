@@ -6,6 +6,15 @@ import resource
 import re
 import time
 from os.path import exists
+import subprocess
+
+import requests
+import urllib3
+
+
+urllib3.disable_warnings()
+
+CLOUD_METADATA_URL = 'http://169.254.169.254/'  # disable-secrets-detection
 
 
 def big_string(size):
@@ -150,9 +159,51 @@ def check_cpus(num_cpus: int) -> str:
     return ""
 
 
+def get_default_gateway():
+    res = subprocess.check_output(["ip", "route", "list"], text=True, stderr=subprocess.STDOUT)
+    LOG(f'result of ip route list: {res}')
+    line1 = res.splitlines()[0]
+    if not line1.startswith('default via'):
+        raise ValueError(f'Excpected "ip route list" to start with "default via" but not found. Got: [{line1}]')
+    return line1.split()[2]
+
+
+def check_network(network_check: str) -> str:
+    """
+    Check that Cloud provider metadata service is not exposed and that access to localhost is not available.
+    """
+    return_res = ""
+    if network_check in ("all", "cloud_metadata"):
+        LOG('Check cloud metadata server access...')
+        try:
+            res = requests.get(CLOUD_METADATA_URL, timeout=1)
+            LOG(f'cloud metadata server returned successfuly: {res.status_code} {res.headers}')
+            return_res += (f"Access to cloud metadata server: {CLOUD_METADATA_URL} is open. It seems that you haven't blocked "
+                           f"access to the cloud metadata server. Response status code: [{res.status_code}]. "
+                           f"Response headers: {res.headers}")
+        except Exception as ex:
+            LOG(f'Cloud metadata server returned an exception (this is good. It means there is no access to the server.): {ex}')
+    if network_check in ("all", "host_machine"):
+        LOG("Check host access")
+        gateway_ip = get_default_gateway()
+        try:
+            res = requests.get(f'https://{gateway_ip}/', verify=False, timeout=1)  # nosec # guardrails-disable-line
+            LOG(f'Host https request returned successfully: {res.status_code} {res.headers}')
+            if return_res:
+                return_res += "\n"
+            return_res += (f"Access to host server via default gateway ip: {gateway_ip} is open. It seems that "
+                           f"you haven't blocked access to the host server. Response status code: [{res.status_code}]."
+                           f"Response headers: {res.headers}")
+        except Exception as ex:
+            LOG('The host gateway server returned an exception (this is good.'
+                f' It means that there is no access to the host server.): {ex}')
+    return return_res
+
+
 def main():
     mem = demisto.args().get('memory', "1g")
     mem_check = demisto.args().get('memory_check', "cgroup")
+    network_check = demisto.args().get('network_check', "all")
     pids = int(demisto.args().get('pids', 256))
     fds_soft = int(demisto.args().get('fds_soft', 1024))
     fds_hard = int(demisto.args().get('fds_hard', 8192))
@@ -181,6 +232,10 @@ def main():
             check: "PIDs",
             status: check_pids(pids) or success,
         },
+        {
+            check: "Network",
+            status: check_network(network_check) or success
+        },
     ]
     failed = False
     failed_msg = ''
@@ -193,7 +248,7 @@ def main():
     return_outputs(table)
     if failed:
         return_error(f'Failed verifying docker hardening:\n{failed_msg}'
-                     'More details at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/docker-hardening-guide.html')  # noqa
+                     'More details at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/docker/docker-hardening-guide.html')  # noqa
 
 
 # python2 uses __builtin__ python3 uses builtins

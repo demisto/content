@@ -45,7 +45,7 @@ def file_enrichment_command(client, file_hash):
             md += f'SHA256: {file_sha256}\n'
 
             # List the filename(s) if present
-            if 'names' in responseJson['data']['attributes']:
+            if responseJson['data']['attributes']['names']:
                 filenames = []
                 for ind in responseJson['data']['attributes']['names']:
                     if "\\" in ind:
@@ -60,12 +60,12 @@ def file_enrichment_command(client, file_hash):
                 md += f'Filename(s): {filenames_string}\n'
 
             # Count the number of assets if there are seen assets
-            if "assets" in response:
+            if responseJson['data']['attributes']['inception']['assets']:
                 seen_assets = len(responseJson['data']['attributes']['inception']['assets'])
                 md += f'Seen Assets: {seen_assets}\n'
 
             # Show matching YARA intelligence if present
-            if 'crowdsourced_yara_results' in responseJson['data']['attributes']:
+            if responseJson['data']['attributes']['crowdsourced_yara_results']:
                 yara_rules = []
                 for yara in responseJson['data']['attributes']['crowdsourced_yara_results']:
                     yara_rules.append(yara['rule_name'])
@@ -73,7 +73,7 @@ def file_enrichment_command(client, file_hash):
                 md += f'Matching YARA Intel: {yara_string}\n'
 
             # Create readable output if AV results exist
-            if "last_analysis_results" in response:
+            if responseJson['data']['attributes']['last_analysis_results']:
                 avResults = responseJson['data']['attributes']['last_analysis_results']
                 md += '### AV Scanning Results\n'
                 md += 'Engine Name|Result\n'

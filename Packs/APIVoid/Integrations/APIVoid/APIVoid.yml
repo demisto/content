@@ -6,11 +6,17 @@ display: APIVoid
 category: Data Enrichment & Threat Intelligence
 description: APIVoid wraps up a number of services such as ipvoid & urlvoid
 configuration:
+- name: credentials
+  type: 9
+  required: false
+  displaypassword: API KEY
+  hiddenusername: true
 - display: API KEY
   name: apikey
   defaultvalue: ''
   type: 4
-  required: true
+  required: false
+  hidden: true
 - display: Good Reputation (Percentage)
   name: good
   defaultvalue: '10'
@@ -31,9 +37,9 @@ configuration:
   additionalinfo: If the percentage of detections is ABOVE this value, the indicator is considered BAD
 - display: Malicious
   name: malicious
-  defaultvalue: suspicious
   type: 15
   required: true
+  defaultvalue: suspicious
   options:
   - suspicious
   - bad
@@ -44,12 +50,11 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Fairly reliable
-  display: Source Reliability
+  type: 8
+- defaultvalue: C - Fairly reliable
   name: integrationReliability
+  display: 'Source Reliability'
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -60,16 +65,17 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- defaultvalue: indicatorType
+  additionalinfo: Reliability of the source providing the intelligence data.
+- defaultvalue: 'indicatorType'
   name: feedExpirationPolicy
   display: ''
+  required: false
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
@@ -1614,7 +1620,7 @@ script:
       description: ''
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
   runonce: false
   subtype: python3
 fromversion: 5.0.0

@@ -5,6 +5,7 @@ from CommonServerPython import *
 import json
 import os
 import requests
+import urllib3
 import py42.sdk
 import py42.settings
 from datetime import datetime
@@ -31,7 +32,7 @@ class EventId(FileEventFilterStringField):
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """ CONSTANTS """
 CODE42_EVENT_CONTEXT_FIELD_MAPPER = {

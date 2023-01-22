@@ -1,0 +1,18 @@
+[MODEL: dataset="microsoft_ata_raw"]
+alter
+    xdm.observer.unique_identifier = app, 
+    xdm.event.operation = msg,
+    xdm.source.host.hostname = shost, 
+    xdm.source.user.username = suser,
+    xdm.event.description = cefName,
+    // cefVersion
+    xdm.event.id = externalId,
+    xdm.alert.severity = cefSeverity,
+    xdm.observer.vendor = cefDeviceVendor,
+    xdm.observer.product = cefDeviceProduct,
+    xdm.observer.version = cefDeviceVersion,
+    xdm.event.type = cefDeviceEventClassId,
+    xdm.observer.type = cs1,
+    xdm.observer.action = cs1Label,
+    xdm.target.host.hostname = request,
+    xdm.event.operation_sub_type = requestMethod;

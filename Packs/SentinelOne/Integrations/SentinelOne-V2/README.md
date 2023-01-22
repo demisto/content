@@ -17,9 +17,11 @@ This integration was integrated and tested with versions 2.0 and 2.1 of Sentinel
     | Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. |  | False |
     | Fetch limit: The maximum number of incidents to fetch |  | False |
     | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
+    | Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -43,6 +45,7 @@ Returns all agents that match the specified criteria.
 | created_at | Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | min_active_threats | Minimum number of threats per agent. | Optional | 
 | limit | The maximum number of agents to return. Default is 10. | Optional | 
+| params | Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd. | Optional | 
 
 
 #### Context Output
@@ -199,6 +202,8 @@ Lists all exclusion items that match the specified input filter.
 | os_types | A comma-separated list of operating system types by which to filter, for example: "windows, linux". Possible values are: windows, windows_legacy, macos, linux. | Optional | 
 | exclusion_type | Exclusion type. Possible values are: file_type, path, white_hash, certificate, browser. | Optional | 
 | limit | The maximum number of items to return. Default is 10. | Optional | 
+| include_parent | Whether to include parent information of each item. Default value is false. Default is false. | Optional | 
+| include_children | Whether to include children information of each item. Default value is false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -468,7 +473,7 @@ Returns threats according to the specified filters.
 
 ### sentinelone-threat-summary
 ***
-Returns a dashboard threat summary.  Can only be used with API V2.1.
+Returns a dashboard threat summary. Can only be used with API V2.1.
 
 
 #### Base Command
@@ -1511,7 +1516,7 @@ Broadcasts a message to all agents that match the input filters.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.BroadcastMessage.Affected  | String | Number of affected endpoints. | 
+| SentinelOne.BroadcastMessage.Affected | String | Number of affected endpoints. | 
 
 
 #### V2.0 to V2.1 API Changes
@@ -1549,6 +1554,7 @@ Returns all Deep Visibility events that match the query.
 | --- | --- | --- |
 | limit | Maximum number of items to return (1-100). Default is 50. | Optional | 
 | query_id | QueryId obtained when creating a query in the sentinelone-create-query command. Example: "q1xx2xx3". | Required | 
+| cursor | Cursor pointer to get next page of results from query. | Optional | 
 
 
 #### Context Output
@@ -1566,9 +1572,19 @@ Returns all Deep Visibility events that match the query.
 | SentinelOne.Event.EventType | String | Event type. Can be "events", "file", "ip", "url", "dns", "process", "registry", "scheduled_task", or "logins". | 
 | SentinelOne.Event.ProcessName | String | The name of the process. | 
 | SentinelOne.Event.MD5 | String | MD5 hash of the file. | 
+| SentinelOne.Event.SourceIP | String | The source ip. | 
+| SentinelOne.Event.SourcePort | String | The source port. | 
+| SentinelOne.Event.DestinationIP | String | The destination IP. | 
+| SentinelOne.Event.DestinationPort | String | The destination port. | 
+| SentinelOne.Event.SourceProcessUser | String | The source process user. | 
+| SentinelOne.Event.SourceProcessCommandLine | String | The source process command line. | 
+| SentinelOne.Event.DNSRequest | String | The DNS Request. | 
+| SentinelOne.Event.FileFullName | String | The file full name. | 
+| SentinelOne.Event.EventTime | String | The event time. | 
 | Event.ID | String | Event process ID. | 
 | Event.Name | String | Event name. | 
 | Event.Type | String | Event type. | 
+| SentinelOne.Cursor.Event | String | cursor to recieve next page | 
 
 
 #### V2.0 to V2.1 API Changes
@@ -2158,6 +2174,7 @@ Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `
 | account_ids | Comma-separated list of account IDs to filter by. | Optional | 
 | offset | The number of records to skip (for paging). Default is 0. | Optional | 
 | limit | The maximum number of records to return. Default is 1000. | Optional | 
+| hash | Hash to search for in the blocklist. | Optional | 
 
 
 #### Context Output
@@ -2206,6 +2223,29 @@ Add a hash to the global blocklist in SentinelOne.
 
 #### Command Example
 ```!sentinelone-add-hash-to-blocklist os_type=windows description="EICAR Test File" sha1=3395856ce81f2b7382dee72602f798b642f14140 source=XSOAR```
+
+### sentinelone-remove-hash-from-blocklist
+***
+Remove a hash from the global blocklist in SentinelOne
+
+
+#### Base Command
+
+`sentinelone-remove-hash-from-blocklist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sha1 | SHA1 hash to remove from the global blocklist. | Optional | 
+| os_type | Optional operating system type. If not supplied, will remove the SHA1 hash across all platforms. Possible values are: windows, macos, linux. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.RemoveHashFromBlocklist.hash | unknown | Hash of the file. | 
+| SentinelOne.RemoveHashFromBlocklist.status | unknown | Status of the action to remove a hash from the blocklist. | 
 
 ### sentinelone-fetch-file
 ***
@@ -2674,8 +2714,35 @@ Initiate the endpoint virus scan on provided agent IDs.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Agent.AgentID | String | The Agent ID. | 
-| SentinelOne.Agent.Initiated | Boolean | Whether the scan was initiated. |
+| SentinelOne.Agent.Initiated | Boolean | Whether the scan was initiated. | 
 
 #### Command Example
 ```!sentinelone-initiate-endpoint-scan agent_ids="1463801667584541849,1463801667584545236"```
 
+
+### sentinelone-remove-item-from-whitelist
+***
+Remove an item from the SentinelOne exclusion list
+
+
+#### Base Command
+
+`sentinelone-remove-item-from-whitelist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| item | Value of the item to be removed from the exclusion list. | Required | 
+| os_type | OS type. Can be "windows", "windows_legacy", "macos", or "linux". Possible values are: windows, windows_legacy, macos, linux. | Optional | 
+| exclusion_type | Exclusion item type. The options are: file_type, path, white_hash, certificate, or browser. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.RemoveItemFromWhitelist.item | String | Item removed fom whitelist. | 
+| SentinelOne.RemoveItemFromWhitelist.status | String | Status on if items were removed from whitelist or not found on whitelist. |
+
+#### Command Example
+```!sentinelone-remove-item-from-whitelist item="31cb594e8f688521a24dd6f95b95508de42d870d" exclusion_type="white_hash" os_type="windows"```

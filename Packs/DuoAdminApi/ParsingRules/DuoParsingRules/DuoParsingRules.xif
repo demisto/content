@@ -1,6 +1,12 @@
-[INGEST:vendor="duo", product="duo", target_dataset="duo_duo_raw", no_hit=drop]
-alter tmp_time_part = to_string(TIMESTAMP),
-    tmp_mili_part = arraystring(regextract(ISOTIMESTAMP, "\:\d{2}\.(\d{3})"), "")
-| alter tmp_con_time = to_integer(concat(tmp_time_part, tmp_mili_part))
-| alter _time = to_timestamp(tmp_con_time, "millis")
-| fields -tmp_time_part, tmp_mili_part, tmp_con_time;
+[INGEST:vendor="duo", product="duo", target_dataset="duo_duo_raw", no_hit=keep]
+alter 
+    tmp_time_part = to_string(coalesce(timestamp, TIMESTAMP)),
+    tmp_mili_part = arraystring(regextract(to_string(coalesce(isotimestamp, ISOTIMESTAMP)), "\:\d{2}\.(\d{3})"), "")
+| alter
+   tmp_con_time = concat(tmp_time_part, tmp_mili_part)
+| alter
+    tmp_num = len(tmp_con_time),
+    tmp_prepare = to_integer(tmp_con_time)
+|alter
+    _time = if(tmp_num > 10, to_timestamp(tmp_prepare , "millis"), to_timestamp(tmp_prepare , "seconds"))
+| fields -tmp_time_part, tmp_mili_part, tmp_con_time, tmp_num, tmp_prepare;

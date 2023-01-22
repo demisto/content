@@ -644,7 +644,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2050,
+          "x": 2020,
           "y": 510
         }
       }
@@ -675,7 +675,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
+          "x": 1780,
           "y": -140
         }
       }
@@ -706,7 +706,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
+          "x": 1780,
           "y": 145
         }
       }
@@ -777,7 +777,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
+          "x": 1780,
           "y": 920
         }
       }
@@ -796,7 +796,7 @@ tasks:
     task:
       id: e8f22502-f0dd-4c13-899a-9f94b25f38b3
       version: -1
-      name: CrowdStrike Falcon - Isolate Endpoint
+      name: Crowdstrike Falcon - Isolate Endpoint
       description: This playbook auto isolates endpoints by the device ID provided in the playbook.
       playbookName: Crowdstrike Falcon - Isolate Endpoint
       type: playbook
@@ -817,8 +817,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 330
+          "x": 300,
+          "y": 510
         }
       }
     note: false
@@ -874,7 +874,7 @@ tasks:
       description: Is auto isolation allowed?
     nexttasks:
       '#default#':
-      - '31'
+      - "64"
       yes:
       - '28'
     separatecontext: false
@@ -1228,7 +1228,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
+          "x": 1780,
           "y": 315
         }
       }
@@ -1798,6 +1798,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: a9e3db15-a7f5-460a-8a50-57ea9fbc56ee
+    type: condition
+    task:
+      id: a9e3db15-a7f5-460a-8a50-57ea9fbc56ee
+      version: -1
+      name: Approve isolation
+      description: Approve isolation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "Yes":
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Approve isolation
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1806,7 +1857,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3145,
-        "width": 2790,
+        "width": 2760,
         "x": -360,
         "y": -1540
       }
