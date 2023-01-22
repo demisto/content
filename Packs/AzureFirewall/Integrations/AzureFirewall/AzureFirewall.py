@@ -2928,12 +2928,11 @@ def main() -> None:
                 # test-module expected to get 'ok' in case of success
                 test_res = test_connection(client=client)
                 return return_results('ok' if 'Success' in test_res else test_res)
- 
+
             else:
                 return return_results(
                     'The test module is not functional, '
                     'run the azure-firewall-auth-start command instead.')
-
 
         if command == 'azure-firewall-auth-start':
             return_results(start_auth(client))

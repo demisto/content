@@ -1329,19 +1329,18 @@ def main():
     managed_identities_client_id = params.get('managed_identities_client_id')
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
 
-    
     if not managed_identities_client_id:
         if not (tenant and auth_and_token_url):
             raise DemistoException('Token and ID must be provided. For further information see '
-                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-        
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
-                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.'
-                                'For further information see '
-                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+                                   'For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
 
     try:
         if demisto.command() in SUB_ID_REQUIRING_CMD and not subscription_id:

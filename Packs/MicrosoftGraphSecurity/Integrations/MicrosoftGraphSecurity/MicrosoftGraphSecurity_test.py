@@ -279,3 +279,38 @@ def test_filter_query(filter_query, expected_filter_query, mocker):
                                            time_from=None, time_to=None, filter_query=filter_query)
 
     assert response.get('$filter') == expected_filter_query
+
+
+def test_test_module_command_with_managed_identities(mocker, requests_mock):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+
+    from MicrosoftGraphSecurity import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import demistomock as demisto
+    import re
+
+    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
+                                                                client_id='test_client_id')
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={'value': []})
+
+    params = {
+        'managed_identities_client_id': 'test_client_id',
+        'resource_group': 'test_resource_group',
+        'host': Resources.graph
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]['Contents']

@@ -15,8 +15,8 @@ class Client:
     API Client
     """
 
-    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, 
-                 api_version, managed_identities_client_id):
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name,
+                 api_version, managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
                                                 api_version,
                                                 managed_identities_client_id)
@@ -604,7 +604,7 @@ def main() -> None:
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.table.core.windows.net/'
     managed_identities_client_id = params.get('managed_identities_client_id')
-    
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 

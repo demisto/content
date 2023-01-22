@@ -30,6 +30,12 @@ configuration:
   section: Connect
   displaypassword: Key or Client Secret
   hiddenusername: true
+- name: managed_identities_client_id
+  additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
+  display: Azure Managed Identities client id
+  required: false
+  type: 4
+  section: Connect
 - additionalinfo: See the Help tab.
   display: Application ID or Client ID
   name: auth_id

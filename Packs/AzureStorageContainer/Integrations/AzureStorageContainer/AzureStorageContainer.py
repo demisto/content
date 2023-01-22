@@ -17,8 +17,8 @@ class Client:
     API Client
     """
 
-    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, 
-                 api_version, managed_identities_client_id):
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name,
+                 api_version, managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
                                                 api_version, managed_identities_client_id)
 

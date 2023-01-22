@@ -473,7 +473,7 @@ def test_module(client):
     elif params.get('auth_type') == 'Azure Managed Identities':
         if not params.get('managed_identities_client_id'):
             raise Exception("Please provide value for Azure Managed Identities client id filed")
-        
+
         client.ms_client.get_access_token()
         return 'ok'
 

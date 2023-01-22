@@ -215,17 +215,17 @@ def test_module(client: Client):
     user_input_fetch_start_date, _ = parse_date_range(fetch_delta)
     if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
         raise DemistoException('Error: first fetch time delta should not be over one week.')
-    
+
     if params.get('managed_identities_client_id'):
         client.get_access_token_data()
         return 'ok'
-    
+
     if params.get('self_deployed'):
         if not params.get('auth_code') or not params.get('redirect_uri'):
-            raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and ' \
-                'redirect uri cannot be empty.')
-    raise DemistoException('The basic parameters are ok, authentication cannot be checked using the test module. ' \
-           'Please run ms-management-activity-list-subscriptions to test your credentials.')
+            raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and '
+                                   'redirect uri cannot be empty.')
+    raise DemistoException('The basic parameters are ok, authentication cannot be checked using the test module. '
+                           'Please run ms-management-activity-list-subscriptions to test your credentials.')
 
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
@@ -552,11 +552,11 @@ def main():
         enc_key = params.get('enc_key')
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
-        
+
         if not managed_identities_client_id:
             if not self_deployed and not enc_key:
                 raise DemistoException('Key must be provided. For further information see https://xsoar.pan.dev/docs'
-                                        '/reference/articles/microsoft-integrations---authentication')
+                                       '/reference/articles/microsoft-integrations---authentication')
             elif not enc_key and not (certificate_thumbprint and private_key):
                 raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
@@ -578,7 +578,7 @@ def main():
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id
         )
-        
+
         if demisto.command() == 'test-module':
             return_results(test_module(client=client))
 

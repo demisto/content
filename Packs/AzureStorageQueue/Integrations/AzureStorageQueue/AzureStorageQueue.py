@@ -6,6 +6,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import copy
 from requests import Response
+import urllib3
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 account_sas_token = ""
@@ -17,8 +18,8 @@ class Client:
     API Client
     """
 
-    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, 
-                 api_version, managed_identities_client_id):
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name,
+                 api_version, managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
                                                 api_version, managed_identities_client_id)
 
@@ -841,7 +842,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
                                 api_version,
                                 managed_identities_client_id)

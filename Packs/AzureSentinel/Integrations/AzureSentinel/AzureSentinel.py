@@ -87,7 +87,7 @@ class AzureSentinelClient:
 
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
-        
+
         :type managed_identities_client_id: ``str``
         :param managed_identities_client_id: The Azure Managed Identities client id.
         """

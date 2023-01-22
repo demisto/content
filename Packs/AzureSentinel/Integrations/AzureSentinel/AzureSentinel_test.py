@@ -1382,7 +1382,8 @@ class TestHappyPath:
         params = {
             'managed_identities_client_id': 'test_client_id',
             'subscription_id': {'password': 'test'},
-            'resource_group': 'test_resource_group'
+            'resource_group': 'test_resource_group',
+            'tenant_id': 'test_tenant_id'
         }
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'command', return_value='test-module')

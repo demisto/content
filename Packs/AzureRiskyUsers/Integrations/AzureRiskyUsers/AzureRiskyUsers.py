@@ -43,7 +43,7 @@ class Client:
             enc_key=client_secret,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.graph
-            
+
         )
         self.ms_client = MicrosoftClient(**client_args)
 
@@ -398,7 +398,7 @@ def test_module(client: Client):
 
     elif client.authentication_type == 'Azure Managed Identities' and not client.ms_client.managed_identities_client_id:
         raise DemistoException("Please provide value for 'Azure Managed Identities client id' filed")
-    
+
     test_connection(client)
     return "ok"
 

@@ -1318,6 +1318,7 @@ def test_azure_firewall_service_tag_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureFirewall.ServiceTag'
     assert result.outputs[0].get('name') == 'ActionGroup'
 
+
 @pytest.mark.parametrize(argnames='client_id, expected_res', argvalues=[
     ('test_client_id', 'ok'),
     (None, '-auth-start command')
@@ -1334,7 +1335,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     """
     from AzureFirewall import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
     import AzureFirewall
-    
+
     managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.management_azure, client_id=client_id)
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
     requests_mock.get(managed_id_mocked_uri, json=mock_token)

@@ -75,7 +75,10 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
     return 'Authorization completed successfully.'
 
 
-def test_module(client: MsGraphClient, app_secret: str, tenant_id: str, managed_identities_client_id: str) -> str:  # pragma: no cover
+def test_module(client: MsGraphClient,
+                app_secret: str,
+                tenant_id: str,
+                managed_identities_client_id: str) -> str:  # pragma: no cover
     if (app_secret and tenant_id) or managed_identities_client_id:
         client.ms_client.get_access_token()
         return 'ok'

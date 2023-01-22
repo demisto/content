@@ -487,10 +487,10 @@ def main():
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
-                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         if self_deployed and ((auth_code and not redirect_uri) or (not auth_code and redirect_uri)):
             raise DemistoException('Please provide both Application redirect URI and Authorization code '
-                                'for Authorization Code flow, or None for the Client Credentials flow')
+                                   'for Authorization Code flow, or None for the Client Credentials flow')
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 

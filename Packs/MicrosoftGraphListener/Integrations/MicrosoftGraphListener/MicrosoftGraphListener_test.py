@@ -1014,5 +1014,3 @@ class TestCommandsWithLargeAttachments:
         client.get_emails(**command_args)
 
         http_mock.assert_called_with(**expected_http_params)
-
-

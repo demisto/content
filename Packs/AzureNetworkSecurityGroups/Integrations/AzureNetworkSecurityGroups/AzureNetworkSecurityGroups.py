@@ -371,8 +371,8 @@ def test_module(client: AzureNSGClient) -> str:
     elif client.connection_type == 'Azure Managed Identities':
         if not client.ms_client.managed_identities_client_id:
             raise Exception("When using Azure Managed Identities, "
-                        "you should provide the 'Azure Managed Identities client id' value")
-            
+                            "you should provide the 'Azure Managed Identities client id' value")
+
         client.ms_client.get_access_token()
         return 'ok'
 

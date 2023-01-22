@@ -516,7 +516,7 @@ def test_general_error_metrics(requests_mock, mocker):
         assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
 
 
-def test_get_token_managed_identities(requests_mock):
+def test_get_token_managed_identities(requests_mock, mocker):
     """
     Given:
         managed identity client id
@@ -527,12 +527,14 @@ def test_get_token_managed_identities(requests_mock):
     """
     test_client_id = 'test_client_id'
     test_token = 'test_token'
+    import MicrosoftApiModule
 
     managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
                                                                 client_id=test_client_id)
 
     mock_token = {'access_token': test_token, 'expires_in': '86400'}
     requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    mocker.patch.object(MicrosoftApiModule, 'get_integration_context', return_value={})
 
     client = self_deployed_client()
     client.managed_identities_client_id = test_client_id
@@ -554,7 +556,6 @@ def test_get_token_managed_identities__error(requests_mock, mocker):
     import MicrosoftApiModule
 
     test_client_id = 'test_client_id'
-    test_token = 'test_token'
 
     managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
                                                                 client_id=test_client_id)
@@ -562,6 +563,7 @@ def test_get_token_managed_identities__error(requests_mock, mocker):
     mock_token = {'error_description': 'test_error_description'}
     requests_mock.get(managed_id_mocked_uri, json=mock_token)
     mocker.patch.object(MicrosoftApiModule, 'return_error', side_effect=Exception())
+    mocker.patch.object(MicrosoftApiModule, 'get_integration_context', return_value={})
 
     client = self_deployed_client()
     client.managed_identities_client_id = test_client_id

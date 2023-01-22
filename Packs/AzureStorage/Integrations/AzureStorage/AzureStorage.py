@@ -727,13 +727,12 @@ def test_module(client: ASClient) -> str:
     elif client.connection_type == 'Azure Managed Identities':
         if not client.ms_client.managed_identities_client_id:
             raise Exception("Please provide value for Azure Managed Identities client id filed")
-        
+
         client.ms_client.get_access_token()
         return 'ok'
     else:
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !azure-storage-auth-test command in order to test it")
-    
 
 
 def main() -> None:

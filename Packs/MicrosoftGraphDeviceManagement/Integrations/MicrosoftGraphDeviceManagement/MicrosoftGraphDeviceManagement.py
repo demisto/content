@@ -33,7 +33,7 @@ HEADERS: dict = {
 class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                  ok_codes, certificate_thumbprint, private_key,
-                 managed_identities_client_id):
+                 managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
@@ -421,7 +421,7 @@ def main():
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
-                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 

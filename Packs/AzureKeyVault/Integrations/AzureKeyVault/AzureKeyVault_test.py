@@ -1,4 +1,3 @@
-import pytest
 
 from CommonServerPython import *
 from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, list_key_vaults_command, \
@@ -647,7 +646,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock):
     Then:
      - Ensure the out[ut are as expected
     """
-    from AzureKeyVault import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    from AzureKeyVault import main, MANAGED_IDENTITIES_TOKEN_URL
     import AzureKeyVault
     import re
 

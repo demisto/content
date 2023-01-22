@@ -193,8 +193,8 @@ def test_module(client: Client) -> str:
     # either manually or by using an API that uses them.
     if client.connection_type == 'Device Code':
         raise DemistoException(
-            "Test module is available for Client Credentials or Azure Managed Identities only, for other authentication types use the "
-            "msgraph-apps-auth-start command")
+            "Test module is available for Client Credentials or Azure Managed Identities only,"
+            " for other authentication types use the msgraph-apps-auth-start command")
     if client.connection_type == 'Azure Managed Identities' and not client.ms_client.managed_identities_client_id:
         raise DemistoException("Please provide value for 'Azure Managed Identities client id' field")
 

@@ -154,7 +154,7 @@ def test_connection(client, params):
     if not params.get('managed_identities_client_id'):
         if params.get('self_deployed', False) and not params.get('client_credentials') and not params.get('auth_code'):
             return_error('You must enter an authorization code in a self-deployed configuration.')
-    
+
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
     try:
         execute_query_command(client, {'query': 'Usage | take 1'})
@@ -163,6 +163,7 @@ def test_connection(client, params):
                      '\n1. Workspace ID is wrong.'
                      '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
     return 'ok'
+
 
 def execute_query_command(client, args):
     query = args.get('query')
@@ -328,13 +329,13 @@ def main():
         private_key = params.get('private_key')
         managed_identities_client_id = params.get('managed_identities_client_id')
         self_deployed = self_deployed or client_credentials or managed_identities_client_id is not None
-        
+
         if not managed_identities_client_id:
             if client_credentials and not enc_key:
                 raise DemistoException("Client Secret must be provided for client credentials flow.")
             elif not self_deployed and not enc_key:
                 raise DemistoException('Key must be provided. For further information see '
-                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
+                                       'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
             elif not enc_key and not (certificate_thumbprint and private_key):
                 raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
@@ -366,9 +367,10 @@ def main():
 
         if demisto.command() == 'test-module':
             if not managed_identities_client_id:
-                # cannot use test module if not using Managed Identities due to the lack of ability to set refresh token to integration context
+                # cannot use test module if not using Managed Identities
+                # due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !azure-log-analytics-test instead")
-            
+
             test_connection(client, params)
             return_results('ok')
 
