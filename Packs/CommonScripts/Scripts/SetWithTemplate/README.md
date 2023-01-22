@@ -16,6 +16,7 @@ Set a value built by a template in context under the key you entered.
 | --- | --- |
 | key | The key to set. Can be a full path such as "Key.ID". If using append=true can also use a DT selector such as "Data\(val.ID == obj.ID\)". |
 | template | The template text which can include DT expressions such as $\{value\}. |
+| template_type | The template type. |
 | append | If false, the context key will be overwritten. If set to true, the script will be appended to the existing context key. |
 | stringify | Whether to save the argument as a string. The default value is "noop". |
 | force | Whether to force the creation of the context. The default value is "false". |

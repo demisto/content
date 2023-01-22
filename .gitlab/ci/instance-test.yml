@@ -8,10 +8,10 @@ test_instances:
   extends:
     - .default-job-settings
     - .instance-test-rule
-  needs: [ "create-instances" ]
+  needs: [ "xsoar-prepare-testing-bucket" ]
   stage: run-instances
   dependencies:
-    - create-instances
+    - xsoar-prepare-testing-bucket
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]

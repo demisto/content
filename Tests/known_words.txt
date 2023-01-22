@@ -215,3 +215,10 @@ vCenter
 ESXi
 MT
 AWS
+MicrosoftAPIModule
+subplaybook
+IAMApiModule
+Salesforce
+Atlassian
+PTR
+Recursively

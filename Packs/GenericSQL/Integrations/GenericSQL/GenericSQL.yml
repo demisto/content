@@ -48,6 +48,10 @@ configuration:
   name: use_pool
   required: false
   type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 - display: Connection Pool Time to Live (seconds)
   additionalinfo: After this time the connection pool will be refreshed
   defaultvalue: 600
@@ -171,7 +175,7 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.26235
+  dockerimage: demisto/genericsql:1.1.0.44675
   feed: false
   isfetch: false
   longRunning: false

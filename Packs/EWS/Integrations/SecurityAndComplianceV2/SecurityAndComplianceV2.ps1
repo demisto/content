@@ -237,64 +237,60 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
     #>
 }
 
-#### Security And Compliance client - OAUTH2.0 ####
+#### Security And Compliance client ####
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Class')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Class')]
 class SecurityAndComplianceClient {
-    [string]$app_id
-    [string]$organization
-    [SecureString]$certificate_password
     [SecureString]$delegated_password
-    [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
     [string]$upn
+    [string]$tenant_id
+    [string]$connection_uri
+    [string]$azure_ad_authorization_endpoint_uri_base
+    [string]$azure_ad_authorization_endpoint_uri
 
-    SecurityAndComplianceClient([string]$app_id, [string]$organization, [string]$certificate_password,
-                                [string]$delegated_password, [string]$certificate,  [string]$upn) {
-        if ($certificate_password) {
-            $this.certificate_password = ConvertTo-SecureString $certificate_password -AsPlainText -Force
-        } else {
-            $this.certificate_password = $null
-        }
+    SecurityAndComplianceClient([string]$delegated_password, [string]$upn, [string]$tenant_id, [string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
 
         if ($delegated_password) {
-            $this.delegated_password = ConvertTo-SecureString $delegated_password -AsPlainText -Force
+            $this.delegated_password = ConvertTo-SecureString -String $delegated_password -AsPlainText -Force
         } else {
             $this.delegated_password = $null
         }
 
-        if ($null -ne $certificate) {
-            try {
-                $ByteArray = [System.Convert]::FromBase64String($certificate)
-                $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $certificate_password)
-            } catch {
-            throw "Could not decode the certificate. Try to re-enter it"
-            }
-        }
-
-        $this.app_id = $app_id
-        $this.organization = $organization
         $this.upn = $upn
+
+        if ($tenant_id) {
+            $this.tenant_id = $tenant_id
+        } else {
+            $this.tenant_id = $null
+        }
+
+        if ($connection_uri) {
+            $this.connection_uri = $connection_uri
+        } else {
+            $this.connection_uri = $null
+        }
+
+        if ($azure_ad_authorization_endpoint_uri_base) {
+            if ($tenant_id){
+                $this.azure_ad_authorization_endpoint_uri = "$azure_ad_authorization_endpoint_uri_base/$tenant_id"
+            } else {
+                $this.azure_ad_authorization_endpoint_uri = "$azure_ad_authorization_endpoint_uri_base/common"
+            }
+        } else {
+            $this.azure_ad_authorization_endpoint_uri = $null
+        }
     }
 
-    CreateSession([string]$CommandName){
-        if ($null -eq $this.certificate) {
-            ReturnError "Error: For this command, a Certificate is required." | Out-Null
-        }
-        $cmd_params = @{
-            "AppID" = $this.app_id
-            "Organization" = $this.organization
-            "Certificate" = $this.certificate
-            "CommandName" = $CommandName
-        }
-        Connect-IPPSSession @cmd_params -WarningAction:SilentlyContinue | Out-Null
-    }
-
-    CreateDelegatedSession(){
+    CreateDelegatedSession([string]$CommandName){
         if ($null -eq $this.delegated_password) {
             ReturnError "Error: For this command, delegated access is required." | Out-Null
         }
         $delegated_cred = New-Object System.Management.Automation.PSCredential ($this.upn, $this.delegated_password)
-        Connect-IPPSSession -Credential $delegated_cred -CommandName New-ComplianceSearchAction,Start-ComplianceSearch,Get-ComplianceSearchAction -WarningAction:SilentlyContinue | Out-Null
+        if ($this.azure_ad_authorization_endpoint_uri -and $this.connection_uri) {
+            Connect-IPPSSession -Credential $delegated_cred -CommandName $CommandName -WarningAction:SilentlyContinue -ConnectionUri $this.connection_uri -AzureADAuthorizationEndpointUri $this.azure_ad_authorization_endpoint_uri | Out-Null
+        } else {
+            Connect-IPPSSession -Credential $delegated_cred -CommandName $CommandName -WarningAction:SilentlyContinue | Out-Null
+        }
     }
 
     DisconnectSession(){
@@ -305,7 +301,7 @@ class SecurityAndComplianceClient {
                         [string[]]$exchange_location_exclusion, [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
 
         # Establish session to remote
-        $this.CreateSession("New-ComplianceSearch")
+        $this.CreateDelegatedSession("New-ComplianceSearch")
         # Import and Execute command
         $cmd_params = @{
             "Name" = $search_name
@@ -376,7 +372,7 @@ class SecurityAndComplianceClient {
               [string[]]$remove_share_point_location_exclusion) {
 
         # Establish session to remote
-        $this.CreateSession("Set-ComplianceSearch")
+        $this.CreateDelegatedSession("Set-ComplianceSearch")
         # Execute command
         $cmd_params = @{
             "Identity" = $search_name
@@ -453,7 +449,7 @@ class SecurityAndComplianceClient {
 
     RemoveSearch([string]$search_name) {
         # Establish session to remote
-        $this.CreateSession("Remove-ComplianceSearch")
+        $this.CreateDelegatedSession("Remove-ComplianceSearch")
         # Import and Execute command
         Remove-ComplianceSearch -Identity $search_name -Confirm:$false
 
@@ -477,7 +473,7 @@ class SecurityAndComplianceClient {
 
     [array]ListSearch() {
         # Establish session to remote
-        $this.CreateSession("Get-ComplianceSearch")
+        $this.CreateDelegatedSession("Get-ComplianceSearch")
         # Execute command
         $response = Get-ComplianceSearch
 
@@ -503,7 +499,7 @@ class SecurityAndComplianceClient {
 
     [psobject]GetSearch([string]$search_name) {
         # Establish session to remote
-        $this.CreateSession("Get-ComplianceSearch")
+        $this.CreateDelegatedSession("Get-ComplianceSearch")
         # Import and Execute command
         $response = Get-ComplianceSearch -Identity $search_name
 
@@ -531,7 +527,7 @@ class SecurityAndComplianceClient {
 
     StartSearch([string]$search_name) {
         # Establish session to remote
-        $this.CreateDelegatedSession()
+        $this.CreateDelegatedSession("Start-ComplianceSearch")
         # Execute command
         Start-ComplianceSearch -Identity $search_name -Confirm:$false -Force:$true
 
@@ -555,7 +551,7 @@ class SecurityAndComplianceClient {
     StopSearch([string]$search_name) {
 
         # Establish session to remote
-        $this.CreateSession("Stop-ComplianceSearch")
+        $this.CreateDelegatedSession("Stop-ComplianceSearch")
         # Execute command
         Stop-ComplianceSearch -Identity $search_name -Confirm:$false
 
@@ -579,7 +575,7 @@ class SecurityAndComplianceClient {
 
     [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type) {
         # Establish session to remote
-        $this.CreateDelegatedSession()
+        $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
         $cmd_params = @{
             "SearchName" = $search_name
@@ -633,7 +629,7 @@ class SecurityAndComplianceClient {
 
     RemoveSearchAction([string]$search_action_name) {
         # Establish session to remote
-        $this.CreateSession("Remove-ComplianceSearchAction")
+        $this.CreateDelegatedSession("Remove-ComplianceSearchAction")
         # Execute command
         Remove-ComplianceSearchAction -Identity $search_action_name -Confirm:$false
         # Close session to remote
@@ -656,7 +652,7 @@ class SecurityAndComplianceClient {
 
     [array]ListSearchActions() {
         # Establish session to remote
-        $this.CreateSession("Get-ComplianceSearchAction")
+        $this.CreateDelegatedSession("Get-ComplianceSearchAction")
         # Execute command
         $response = Get-ComplianceSearchAction
 
@@ -681,7 +677,7 @@ class SecurityAndComplianceClient {
 
     [psobject]GetSearchAction([string]$search_action_name) {
         # Establish session to remote
-        $this.CreateDelegatedSession()
+        $this.CreateDelegatedSession("Get-ComplianceSearchAction")
 
         # Execute command
         $response = Get-ComplianceSearchAction -Identity $search_action_name
@@ -947,12 +943,11 @@ function Main {
         $Demisto.Debug("Command being called is $Command")
 
         $cs_client = [SecurityAndComplianceClient]::new(
-            $integration_params.app_id,
-            $integration_params.organization,
-            $integration_params.certificate_password,
             $integration_params.delegated_auth.password,
-            $integration_params.certificate,
-            $integration_params.delegated_auth.identifier
+            $integration_params.delegated_auth.identifier,
+            $integration_params.tenant_id,
+            $integration_params.connection_uri,
+            $integration_params.azure_ad_authorized_endpoint_uri_base
         )
 
         # Executing command
@@ -1000,7 +995,6 @@ function Main {
             $Demisto.results($file_entry)
         }
     } catch {
-        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
         $Demisto.debug("Integration: $script:INTEGRATION_NAME
 Command: $command
 Arguments: $($command_arguments | ConvertTo-Json)

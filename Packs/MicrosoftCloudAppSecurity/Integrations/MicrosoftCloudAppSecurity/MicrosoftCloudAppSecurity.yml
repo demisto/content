@@ -17,24 +17,29 @@ configuration:
   name: url
   required: true
   type: 0
+- name: creds_token
+  type: 9
+  displaypassword: User's key to access the API (for legacy method)
+  hiddenusername: true
 - display: User's key to access the API (for legacy method)
   name: token
   required: false
   type: 4
-- additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
-  display: Application ID
+  hidden: true
+- display: Application ID
   name: app_id
   required: false
   type: 0
-- display: Tenant ID (for Client Credentials mode)
+  additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
+- display: 'Tenant ID (for Client Credentials mode)'
   name: tenant_id
-  required: false
   type: 0
-- display: ''
-  displaypassword: Client Secret (for Client Credentials mode)
-  name: client_id
-  type: 9
   required: false
+- display: ''
+  name: client_id
+  required: false
+  type: 9
+  displaypassword: Client Secret (for Client Credentials mode)
   hiddenusername: true
 - display: Fetch incidents
   name: isFetch
@@ -55,41 +60,41 @@ configuration:
 - display: Incident severity
   hidden: false
   name: severity
+  required: false
+  type: 16
   options:
   - Low
   - Medium
   - High
   - All
-  required: false
-  type: 16
-- defaultvalue: '50'
-  display: Maximum alerts to fetch
+- display: Maximum alerts to fetch
   hidden: false
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  display: First fetch time
+  defaultvalue: '50'
+- display: First fetch time
   hidden: false
   name: first_fetch
   required: false
   type: 0
+  additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
 - display: Incident resolution status
   hidden: false
   name: resolution_status
+  required: false
+  type: 16
   options:
   - Open
   - Dismissed
   - Resolved
   - All
-  required: false
-  type: 16
 - additionalinfo: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: {"severity":{"eq":2}}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: {"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"}" please query on {"entity.policy":{"eq":1234}}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
-  display: Custom Filter
-  hidden: false
+  display: 'Custom Filter'
   name: custom_filter
   required: false
   type: 0
+  hidden: false
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: '0'
   display: 'Advanced: Minutes to look back when fetching'
@@ -1113,7 +1118,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.42817
   feed: false
   isfetch: true
   longRunning: false

@@ -6,6 +6,7 @@ if (serverURL.slice(-1) === '/') {
 var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
 
 getTenantAccountName = function () {
+    // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
     const urls = demistoUrls()
     const server_url = urls['server'].toString()
     // server_url example - https://account-testing-ysdkvou:443/acc_Test
@@ -23,7 +24,10 @@ getTenantAccountName = function () {
 
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
-    if (uri.slice(-1) !== '/') {
+    if (params.use_tenant){
+        requestUrl += '/' + getTenantAccountName();
+    }
+    if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
     requestUrl += uri;
@@ -72,11 +76,11 @@ sendMultipart = function (uri, entryID, body) {
 
 var sendRequest = function(method, uri, body, raw) {
     var requestUrl = serverURL;
+    if (params.use_tenant){
+        requestUrl += '/' + getTenantAccountName();
+    }
     if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
-    }
-    if (params.use_tenant){
-        requestUrl += "/" + getTenantAccountName();
     }
     requestUrl += uri;
     var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
@@ -173,21 +177,26 @@ var deleteIncidents = function(ids_to_delete, fields_to_keep) {
     };
 };
 
-var installPackFromUrl = function(pack_url, skip_verify, skip_validation){
-    // download pack zip file
-    var res = http(
-    pack_url,
-    {
-        Method: 'GET',
-        Headers: {},
-        SaveToFile: true
-    });
-
-    if (res.StatusCode < 200 || res.StatusCode >= 300) {
-        throw 'Demisto REST APIs - Failed to download pack file from ' + pack_url;
+var installPack = function(pack_url, entry_id, skip_verify, skip_validation){
+    let file_path;
+    if (entry_id){
+        file_path = entry_id;
     }
+    else{
+        // download pack zip file
+        var res = http(
+        pack_url,
+        {
+            Method: 'GET',
+            Headers: {},
+            SaveToFile: true
+        });
 
-    let file_path = res.Path
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Demisto REST APIs - Failed to download pack file from ' + pack_url;
+        }
+        file_path = res.Path;
+    }
 
     let upload_url = 'contentpacks/installed/upload?'
 
@@ -208,19 +217,23 @@ var installPackFromUrl = function(pack_url, skip_verify, skip_validation){
             upload_url+='&skipValidation=true'
         }
     }
-
     // upload the pack
     sendMultipart(upload_url, file_path,'{}');
 };
 
-var installPacks = function(packs_to_install, file_url, skip_verify, skip_validation) {
-    if ((!packs_to_install) && (!file_url)) {
-        throw 'Either packs_to_install or file_url argument must be provided.';
+var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, skip_validation) {
+    if ((!packs_to_install) && (!file_url) && (!entry_id)) {
+        throw 'Either packs_to_install, file_url or entry_id argument must be provided.';
     }
-    else if (!packs_to_install) {
-        installPackFromUrl(file_url, skip_verify, skip_validation)
+    else if (file_url) {
+        installPack(file_url, undefined, skip_verify, skip_validation)
         logDebug('Pack installed successfully from ' + file_url)
         return 'The pack installed successfully from the file ' + file_url
+    }
+    else if (entry_id) {
+        installPack(undefined, entry_id, skip_verify, skip_validation)
+        logDebug('The pack installed successfully from the file.')
+        return 'The pack installed successfully from the file.'
     }
     else{
         let installed_packs = []
@@ -232,8 +245,7 @@ var installPacks = function(packs_to_install, file_url, skip_verify, skip_valida
             let pack_version = pack[pack_id]
 
             let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
-
-            installPackFromUrl(pack_url, skip_verify, skip_validation)
+            installPack(pack_url, undefined, skip_verify, skip_validation)
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }
@@ -280,7 +292,7 @@ switch (command) {
         var fields = argToList(args.fields);
         return deleteIncidents(ids, fields);
     case 'demisto-api-install-packs':
-        return installPacks(args.packs_to_install, args.file_url, args.skip_verify, args.skip_validation);
+        return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
     default:
         throw 'Demisto REST APIs - unknown command';
 }

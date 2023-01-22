@@ -9,24 +9,38 @@ configuration:
   name: server_url
   required: true
   type: 0
+- name: creds_tenant_id
+  required: false
+  type: 9
+  displaypassword: Tenant ID
+  hiddenusername: true
 - display: Tenant ID
   name: tenant_id
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Client ID
   name: credentials
   required: false
   type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Private Key
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
+  hidden: true
 - display: Subscription ID
   name: subscriptionID
   required: true
@@ -1792,7 +1806,7 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Types
       description: The threat types of the indicator.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.42817
   feed: false
   isfetch: true
   longRunning: false
