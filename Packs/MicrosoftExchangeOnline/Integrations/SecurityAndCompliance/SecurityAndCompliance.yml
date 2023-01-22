@@ -2,6 +2,7 @@ category: Messaging
 commonfields:
   id: SecurityAndCompliance
   version: -1
+deprecated: true
 configuration:
 - defaultvalue: https://ps.compliance.protection.outlook.com
   display: Search and Compliance URL

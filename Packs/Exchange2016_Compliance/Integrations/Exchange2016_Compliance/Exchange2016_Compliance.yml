@@ -1,6 +1,7 @@
 commonfields:
   id: Exchange 2016 Compliance Search
   version: -1
+deprecated: true
 name: Exchange 2016 Compliance Search
 display: Exchange 2016 Compliance Search
 category: Messaging
