@@ -1,6 +1,9 @@
 commonfields:
   id: APIMetricsValidation
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: APIMetricsValidation
 display: APIMetricsValidation
 category: Utilities
@@ -11,6 +14,7 @@ configuration:
   defaultvalue: okay
   type: 0
   required: true
+  section: Connect
 script:
   script: ''
   type: python
@@ -53,7 +57,7 @@ script:
   - name: test-scenario-ten
     arguments: []
     description: This command is executed five times in the PB
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.9.42476
   runonce: false
   subtype: python3
 fromversion: 6.8.0
