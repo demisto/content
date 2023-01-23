@@ -62,4 +62,4 @@ def test_read_encoded_file(filePath, res):
         Then:
             Validate the right data is returned.
     """
-    assert read_file_with_encoding_detection(filePath) == res
+    assert read_file_with_encoding_detection(filePath, 1024 ** 2) == res
