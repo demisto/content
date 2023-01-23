@@ -12,7 +12,6 @@ import demistomock as demisto
 from CommonServerPython import *
 
 ''' GLOBAL VARIABLES '''
-a=5
 HTTP_200_OK = 200
 HTTP_400_BAD_REQUEST = 400
 HTTP_401_UNAUTHORIZED = 401
