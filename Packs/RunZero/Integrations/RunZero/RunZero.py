@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+MAX_RTT = 1_000_000
 
 ''' CLIENT CLASS '''
 
@@ -56,30 +57,94 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   headers=self._headers)
 
+    def get_api_key_info(self):
+        url_suffix = '/org/key'
+        return self._http_request(method='GET',
+                                  url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
 
-def parse_raw_response(raw: dict) -> list:
+def normalize_rtt(raw_rtt: float) -> float:
+    # normalizing a number:
+    # normalized = (x-min(x))/(max(x)-min(x))
+    # min RTT = 0, MAX_RTT = 1_000_000
+    normalized_rtt = raw_rtt / MAX_RTT
+    return round(normalized_rtt, 2)
+
+
+def parse_raw_asset(raw: dict) -> list:
     message = {}
+    message['ID'] = raw.get('id', '')
     message['Addresses'] = raw.get('addresses', [])
-    message['Asset Status'] = raw.get('alive', '')
+    message['Asset_Status'] = raw.get('alive', '')
     message['Hostname'] = raw.get('names', [])
     message['OS'] = f'{raw.get("os", "")} {raw.get("os_version","")}'
     message['Type'] = raw.get('type', '')
     message['Hardware'] = raw.get('hw', '')
-    message['Outlier'] = raw.get('outlier_score', '')
-    message['MAC vendor'] = raw.get('mac_vendors', [])
-    message['MAC age'] = raw.get('mag_age', '')
+    message['Outlier'] = raw.get('outlier_score', 0)
+    message['MAC_Vendor'] = raw.get('mac_vendors', [])
+    message['MAC_Age'] = raw.get('mag_age', '')
     message['MAC'] = raw.get('macs', [])
-    message['OS EOL'] = raw.get('eol_os', '')
+    message['OS_EOL'] = raw.get('eol_os', '')
     message['Sources'] = raw.get('sources', [])
     message['Comments'] = raw.get('comments', '')
+    message['Tags'] = raw.get('tags', [])
+    message['Svcs'] = raw.get('service_count', 0)
+    message['TCP'] = raw.get('service_count_tcp', 0)
+    message['UDP'] = raw.get('service_count_udp', 0)
+    message['ICMP'] = raw.get('service_count_icmp', 0)
+    message['ARP'] = raw.get('service_count_arp', 0)
+    message['SW'] = raw.get('software_count', 0)
+    message['Vulns'] = raw.get('vulnerability_count', 0)
+    message['RTT/ms'] = normalize_rtt(raw.get('lowest_rtt', 0))
+    message['Hops'] = raw.get('lowest_ttl', 0)
+    message['Detected'] = raw.get('detected_by', '')
+    message['First_Seen'] = timestamp_to_datestring(raw.get('first_seen', '') * 1000)
+    message['Last_Seen'] = timestamp_to_datestring(raw.get('last_seen', '') * 1000)
+    message['Explorer'] = raw.get('agent_name', '')
+    message['Hosted_Zone'] = raw.get('hosted_zone_name', '')
+    message['Site'] = raw.get('site_name', '')
+    return [message]
+
+
+def parse_raw_service(raw: dict) -> list:
+    message = {}
+    message['ID'] = raw.get('service_id', '')
+    message['Asset_Status'] = raw.get('alive', '')
+    message['Address'] = raw.get('service_address', '')
+    message['Transport'] = raw.get('service_transport', '')
+    message['Port'] = raw.get('service_port', 0)
+    message['Protocol'] = raw.get('service_protocol', [])
+    message['VHost'] = raw.get('service_vhost', '')
+    message['Summary'] = raw.get('service_summary', '')
+    message['Hostname'] = raw.get('names', [])
+    message['OS'] = f"{raw.get('os', '')} {raw.get('os_version', '')}"
+    message['Type'] = raw.get('type', '')
+    message['Hardware'] = raw.get('hw', '')
+    message['Outlier'] = raw.get('outlier_score', 0)
+    message['MAC_Vendor'] = raw.get('mac_vendors', [])
+    message['MAC_Age'] = raw.get('newest_mac_age', '')
+    message['MAC'] = raw.get('macs', [])
+    message['OS_EOL'] = raw.get('eol_os', 0)
+    message['Comments'] = raw.get('comments', '')
     message['Tags'] = raw.get('tags', {})
-    message['Svcs'] = raw.get('service_count', '')
-    message['TCP'] = raw.get('service_count_tcp', '')
-    message['UDP'] = raw.get('service_count_udp', '')
-    message['ICMP'] = raw.get('service_count_icmp', '')
+    message['Svcs'] = raw.get('service_count', 0)
+    message['TCP'] = raw.get('service_count_tcp', 0)
+    message['UDP'] = raw.get('service_count_udp', 0)
+    message['ICMP'] = raw.get('service_count_icmp', 0)
+    message['ARP'] = raw.get('service_count_arp', 0)
+    message['SW'] = raw.get('software_count', 0)
+    message['Vulns'] = raw.get('vulnerability_count', 0)
+    message['RTT/ms'] = normalize_rtt(raw.get('lowest_rtt', 0))
+    message['Hops'] = raw.get('lowest_ttl', 0)
+    message['Detected'] = raw.get('detected_by', 0)
+    message['First_Seen'] = timestamp_to_datestring(raw.get('first_seen', '') * 1000)
+    message['Last_Seen'] = timestamp_to_datestring(raw.get('last_seen', '') * 1000)
+    message['Explorer'] = raw.get('agent_name', '')
+    message['Hosted_Zone'] = raw.get('hosted_zone_name', '')
+    message['Site'] = raw.get('site_name', '')
     return [message]
 
 
@@ -109,20 +174,20 @@ def asset_search(client: Client, args: dict) -> CommandResults:
                 del item_raw['attributes']
             if remove_svc:
                 del item_raw['services']
-            message.extend(parse_raw_response(item_raw))
+            message.extend(parse_raw_asset(item_raw))
     if type(raw) is dict:
         if remove_attr:
             del raw['attributes']
         if remove_svc:
             del raw['services']
-        message.extend(parse_raw_response(raw))
+        message.extend(parse_raw_asset(raw))
     human_readable = tableToMarkdown('Asset',
                                      message,
                                      removeNull=True)
     return CommandResults(
-        outputs_prefix='RunZero',
-        outputs_key_field='Asset',
-        outputs=raw,
+        outputs_prefix='RunZero.Asset',
+        outputs_key_field='ID',
+        outputs=message,
         raw_response=raw,
         readable_output=human_readable
     )
@@ -144,7 +209,8 @@ def comment_add(client: Client, args: dict) -> CommandResults:
 
 def tags_add(client: Client, args: dict) -> CommandResults:
     asset_id = args['asset_id']
-    tags = args['tags']
+    tagsList = argToList(args['tags'])
+    tags = " ".join(tagsList)
     raw = client.tags_add(asset_id, tags)
     message = f'Tags added to {asset_id} successfully.'
     return CommandResults(
@@ -172,20 +238,31 @@ def service_search(client: Client, args: dict) -> CommandResults:
         for item_raw in raw:
             if remove_attr:
                 del item_raw['attributes']
-            message.extend(parse_raw_response(item_raw))
+            message.extend(parse_raw_service(item_raw))
     if type(raw) is dict:
         if remove_attr:
             del raw['attributes']
-        message.extend(parse_raw_response(raw))
+        message.extend(parse_raw_service(raw))
     human_readable = tableToMarkdown('Service',
                                      message,
                                      removeNull=True)
     return CommandResults(
-        outputs_prefix='RunZero',
-        outputs_key_field='Service',
-        outputs=raw,
+        outputs_prefix='RunZero.Service',
+        outputs_key_field='ID',
+        outputs=message,
         raw_response=raw,
         readable_output=human_readable
+    )
+
+
+def get_api_key_info(client: Client) -> CommandResults:
+    raw = client.get_api_key_info()
+    return CommandResults(
+        outputs_prefix=None,
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=raw,
+        readable_output=raw
     )
 
 
@@ -241,6 +318,10 @@ def main() -> None:
         args = demisto.args()
         if demisto.command() == 'test-module':
             result = test_module(client)
+            return_results(result)
+
+        elif demisto.command() == 'runzero-api-key-info':
+            result = get_api_key_info(client)
             return_results(result)
 
         elif demisto.command() == 'runzero-asset-search':

@@ -1,4 +1,4 @@
-category: Utilities
+category: IT Services
 commonfields:
   id: RunZero
   version: -1
@@ -28,7 +28,7 @@ name: RunZero
 script:
   commands:
   - name: runzero-asset-search
-    description: 'Get all assets (getAssets)'
+    description: Search for assets.
     deprecated: false
     arguments:
     - name: asset_ids
@@ -37,36 +37,130 @@ script:
       required: false
       secret: false
     - name: search
-      description: Search query string.
+      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288"
       isArray: false
       required: false
       secret: false
     - name: ips
-      description: Search by IPs.
+      description: Search assets by IPs.
       isArray: true
       required: false
       secret: false
     - name: hostnames
-      description: Search by hostnames.
+      description: Search assets by hostnames.
       isArray: true
       required: false
       secret: false
-    - name: display_attributes
+    - auto: PREDEFINED
       default: false
-      description: Should include attributes section in returned result.
+      defaultValue: false
+      description: Include attributes section in returned result.
       isArray: false
+      name: display_attributes
+      predefined:
+      - true
+      - false
       required: false
       secret: false
-    - name: display_services
+    - auto: PREDEFINED
       default: false
-      description: Should include services section in returned result.
+      defaultValue: false
+      description: Include services section in returned result.
       isArray: false
+      name: display_services
+      predefined:
+      - true
+      - false
       required: false
       secret: false
     execution: false
     outputs:
-    - contextPath: RunZero.Asset
-      description: 'RunZero assets raw response.'
+    - contextPath: RunZero.Asset.ID
+      description: Asset service id.
+      type: UUID
+    - contextPath: RunZero.Asset.Addresses
+      description: Asset addresses.
+      type: Array
+    - contextPath: RunZero.Asset.Asset_Status
+      description: Asset asset status.
+      type: Boolean
+    - contextPath: RunZero.Asset.Hostname
+      description: Asset hostname.
+      type: Array
+    - contextPath: RunZero.Asset.OS
+      description: OS version.
+      type: String
+    - contextPath: RunZero.Asset.Type
+      description: Asset type.
+      type: String
+    - contextPath: RunZero.Asset.Hardware
+      description: Asset hardware.
+      type: String
+    - contextPath: RunZero.Asset.Outlier
+      description: Asset outlier.
+      type: String
+    - contextPath: RunZero.Asset.MAC_Vendor
+      description: Asset mac vendor.
+      type: String
+    - contextPath: RunZero.Asset.MAC_Age
+      description: Asset outlier.
+      type: Integer
+    - contextPath: RunZero.Asset.MAC
+      description: Asset MAC address.
+      type: UUID
+    - contextPath: RunZero.Asset.OS_EOL
+      description: Asset OS End of Life.
+      type: String
+    - contextPath: RunZero.Asset.Sources
+      description: Asset outlier.
+      type: String
+    - contextPath: RunZero.Asset.Comments
+      description: Commets attached to asset.
+      type: String
+    - contextPath: RunZero.Asset.Tags
+      description: Tags attched to asset.
+      type: Array
+    - contextPath: RunZero.Asset.Svcs
+      description: Number of services on asset.
+      type: Integer
+    - contextPath: RunZero.Asset.TCP
+      description: Asset outlier.
+      type: Integer
+    - contextPath: RunZero.Asset.UDP
+      description: Asset outlier.
+      type: Integer
+    - contextPath: RunZero.Asset.ICMP
+      description: Asset outlier.
+      type: Integer
+    - contextPath: RunZero.Asset.SW
+      description: Asset outlier.
+      type: Integer
+    - contextPath: RunZero.Asset.Vulns
+      description: Asset vulnerability count.
+      type: Integer
+    - contextPath: RunZero.Asset.RTT/ms
+      description: Asset Round Trip Time.
+      type: Integer
+    - contextPath: RunZero.Asset.Hops
+      description: Asset Time To Live.
+      type: Integer
+    - contextPath: RunZero.Asset.Detected
+      description: Asset is detected by.
+      type: String
+    - contextPath: RunZero.Asset.First_Seen
+      description: Asset date time first seen.
+      type: String
+    - contextPath: RunZero.Asset.Last_Seen
+      description: Asset date time last seen.
+      type: String
+    - contextPath: RunZero.Asset.Explorer
+      description: Asset detected by which agent.
+      type: String
+    - contextPath: RunZero.Asset.Hosted_Zone
+      description: Asset hosted zone.
+      type: String
+    - contextPath: RunZero.Asset.Site
+      description: Asset site name.
       type: String
   - name: runzero-service-search
     description: 'Get services.'
@@ -78,7 +172,7 @@ script:
       required: false
       secret: false
     - name: search
-      description: Search query string.
+      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288"
       isArray: false
       required: false
       secret: false
@@ -87,16 +181,117 @@ script:
       isArray: true
       required: false
       secret: false
-    - name: display_attributes
+    - auto: PREDEFINED
       default: false
-      description: Should include attributes section in returned result.
+      defaultValue: false
+      description: Include attributes section in returned result.
       isArray: false
+      name: display_attributes
+      predefined:
+      - true
+      - false
       required: false
       secret: false
     execution: false
     outputs:
-    - contextPath: RunZero.Service
-      description: 'RunZero services raw response.'
+    - contextPath: RunZero.Service.ID
+      description: Service service id.
+      type: UUID
+    - contextPath: RunZero.Service.Address
+      description: Service addresses.
+      type: String
+    - contextPath: RunZero.Service.Asset_Status
+      description: Service asset status.
+      type: Boolean
+    - contextPath: RunZero.Service.Hostname
+      description: Service hostname.
+      type: Array
+    - contextPath: RunZero.Service.Transport
+      description: Service hostname.
+      type: String
+    - contextPath: RunZero.Service.Port
+      description: Service hostname.
+      type: Integer
+    - contextPath: RunZero.Service.Protocol
+      description: Service hostname.
+      type: Array
+    - contextPath: RunZero.Service.VHost
+      description: Service hostname.
+      type: Array
+    - contextPath: RunZero.Service.Summary
+      description: Service hostname.
+      type: Array
+    - contextPath: RunZero.Service.OS
+      description: OS version.
+      type: String
+    - contextPath: RunZero.Service.Type
+      description: Service type.
+      type: String
+    - contextPath: RunZero.Service.Hardware
+      description: Service hardware.
+      type: String
+    - contextPath: RunZero.Service.Outlier
+      description: Service outlier.
+      type: String
+    - contextPath: RunZero.Service.MAC_Vendor
+      description: Service mac vendor.
+      type: String
+    - contextPath: RunZero.Service.MAC_Age
+      description: Service outlier.
+      type: Integer
+    - contextPath: RunZero.Service.MAC
+      description: Service MAC address.
+      type: UUID
+    - contextPath: RunZero.Service.OS_EOL
+      description: Service OS End of Life.
+      type: String
+    - contextPath: RunZero.Service.Comments
+      description: Commets attached to asset.
+      type: String
+    - contextPath: RunZero.Service.Tags
+      description: Tags attched to asset.
+      type: Array
+    - contextPath: RunZero.Service.Svcs
+      description: Number of services on asset.
+      type: Integer
+    - contextPath: RunZero.Service.TCP
+      description: Service outlier.
+      type: Integer
+    - contextPath: RunZero.Service.UDP
+      description: Service outlier.
+      type: Integer
+    - contextPath: RunZero.Service.ICMP
+      description: Service outlier.
+      type: Integer
+    - contextPath: RunZero.Service.SW
+      description: Service outlier.
+      type: Integer
+    - contextPath: RunZero.Service.Vulns
+      description: Service vulnerability count.
+      type: Integer
+    - contextPath: RunZero.Service.RTT/ms
+      description: Service Round Trip Time.
+      type: Integer
+    - contextPath: RunZero.Service.Hops
+      description: Service Time To Live.
+      type: Integer
+    - contextPath: RunZero.Service.Detected
+      description: Service is detected by.
+      type: String
+    - contextPath: RunZero.Service.First_Seen
+      description: Service date time first seen.
+      type: String
+    - contextPath: RunZero.Service.Last_Seen
+      description: Service date time last seen.
+      type: String
+    - contextPath: RunZero.Service.Explorer
+      description: Service detected by which agent.
+      type: String
+    - contextPath: RunZero.Service.Hosted_Zone
+      description: Service hosted zone.
+      type: String
+    - contextPath: RunZero.Service.Site
+      description: Service site name.
       type: String
   - name: runzero-comment-add
     description: 'Add a comment or overrides existing asset comment'
@@ -128,12 +323,16 @@ script:
       required: true
       secret: false
     execution: false
+  - name: runzero-api-key-info
+    description: 'Get information about the key used. Type, Limit, usage etc.'
+    deprecated: false
+    execution: false
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.9.45313
 marketplaces:
 - xsoar
 fromversion: 6.5.0

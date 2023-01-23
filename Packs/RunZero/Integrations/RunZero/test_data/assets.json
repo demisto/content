@@ -34,8 +34,6 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
             "tag1": "",
             "tag2": ""
         },
@@ -310,7 +308,7 @@
         "sources": [
             "runZero"
         ],
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org name",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
         "agent_external_ip": null,

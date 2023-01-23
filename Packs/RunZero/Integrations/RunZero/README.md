@@ -1,6 +1,5 @@
-RunZero integration for XSOAR.
- runZero is a network discovery and asset inventory
- platform that uncovers every network in use and iden`tifies every device connected–without credentials.
+RunZero is a network discovery and asset inventory
+ platform that uncovers every network in use and identifies every device connected–without credentials.
  Scan your network and build your asset inventory in minutes.
 This integration was integrated and tested with version 3.3.0 of RunZero
 

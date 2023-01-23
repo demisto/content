@@ -177,7 +177,7 @@ def test_fetch_events(requests_mock):
 
 
 def test_parse_event():
-    from RunZeroEventCollector import parse_event
+    from RunZeroEventCollector import add_time_to_event
     my_json = util_load_json('test_data/system_event_logs.json')
-    parsed_event = parse_event(my_json[0])
+    parsed_event = add_time_to_event(my_json[0])
     assert parsed_event == get_actual_events()[0]

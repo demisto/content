@@ -22,22 +22,31 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_parse_raw():
-    from RunZero import parse_raw_response
+def test_parse_rtt():
+    from RunZero import normalize_rtt
+    actual_rtt = 837561
+    expected_rtt = 0.84
+    normalized_rtt = normalize_rtt(actual_rtt)
+    assert normalized_rtt == expected_rtt
+
+
+def test_parse_raw_asset():
+    from RunZero import parse_raw_asset
     raw_asset = util_load_json('test_data/assets.json')[0]
-    actual_response = parse_raw_response(raw=raw_asset)
+    actual_response = parse_raw_asset(raw=raw_asset)
     assert actual_response[0] == {
+        'ID': 'bf707048-7ce9-4249-a58c-0aaa257d69f0',
         'Addresses': ['192.168.1.91', 'fe80::250:56ff:fe89:b0e1'],
-        'Asset Status': True,
+        'Asset_Status': True,
         'Hostname': ["RHEL85", "RHEL85.LOCALDOMAIN"],
         'OS': 'Red Hat Enterprise Linux 8.5',
         'Type': 'Server',
         'Hardware': 'VMware VM',
         'Outlier': 0,
-        'MAC vendor': ['VMware, Inc.'],
-        'MAC age': '',
+        'MAC_Vendor': ['VMware, Inc.'],
+        'MAC_Age': '',
         'MAC': ['00:50:56:89:b0:e1'],
-        'OS EOL': 0,
+        'OS_EOL': 0,
         'Sources': ['runZero'],
         'Comments': 'My comment2',
         'Tags': {'ThisTag': '', 'ThisTag22': '', 'tag1': '', 'tag2': ''},
@@ -45,6 +54,59 @@ def test_parse_raw():
         'TCP': 3,
         'UDP': 4,
         'ICMP': 1,
+        'ARP': 1,
+        'SW': 2,
+        'Vulns': 0,
+        'RTT/ms': 0.84,
+        'Hops': 0,
+        'Detected': 'arp',
+        'First_Seen': '2022-12-25T22:28:29.000Z',
+        'Last_Seen': '2022-12-25T22:41:58.000Z',
+        'Explorer': 'RHEL85.LOCALDOMAIN',
+        'Hosted_Zone': None,
+        'Site': 'Primary',
+    }
+
+
+def test_parse_raw_service():
+    from RunZero import parse_raw_service
+    raw_service = util_load_json('test_data/services.json')[0]
+    actual_response = parse_raw_service(raw=raw_service)
+    assert actual_response[0] == {
+        'ID': '04d60ddf-8d28-494c-8186-8cd514e5b9cb',
+        'Asset_Status': True,
+        'Address': 'fe80::250:56ff:fe89:b0e1',
+        'Transport': 'udp',
+        'Port': 111,
+        'Protocol': ['rpcbind', 'sunrpc'],
+        'VHost': '',
+        'Summary': '',
+        'Hostname': ['RHEL85', 'RHEL85.LOCALDOMAIN'],
+        'OS': 'Red Hat Enterprise Linux 8.5',
+        'Type': 'Server',
+        'Hardware': 'VMware VM',
+        'Outlier': 0,
+        'MAC_Vendor': ['VMware, Inc.'],
+        'MAC_Age': None,
+        'MAC': ['00:50:56:89:b0:e1'],
+        'OS_EOL': 0,
+        'Comments': 'integration comment',
+        'Tags': {'ThisTag': '', 'ThisTag22': '', 'tag1': '', 'tag2': ''},
+        'Svcs': 11,
+        'TCP': 3,
+        'UDP': 4,
+        'ICMP': 1,
+        'ARP': 1,
+        'SW': 2,
+        'Vulns': 0,
+        'RTT/ms': 0.84,
+        'Hops': 0,
+        'Detected': 'arp',
+        'First_Seen': '2022-12-25T22:28:29.000Z',
+        'Last_Seen': '2022-12-25T22:41:58.000Z',
+        'Explorer': 'RHEL85.LOCALDOMAIN',
+        'Hosted_Zone': None,
+        'Site': 'Primary',
     }
 
 

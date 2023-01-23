@@ -11,13 +11,7 @@ of a long random token. You must have administrator access to generate API keys.
 
 ### API Limit
 API calls are rate limited.
-You can make as many API calls per day as you have licensed assets in your account.
-For example, if you have 1,000 licensed assets, you can make 1,000 API calls
-per day. 
-Each API call returns rate limit information in the HTTP headers of the response:
-X-API-Usage-Total - Total number of calls made to the API
-X-API-Usage-Today - Number of calls made to the API today
-X-API-Usage-Limit - Your daily API call limit, shared across all API keys
-X-API-Usage-Remaining - The number of API calls remaining from your daily limit
-Please see the Swagger documentation and runZero OpenAPI specification for details on the
-individual API calls.
+
+
+For further details please see 'Leveraging the API' page 356:
+[RunZero Manual](https://www.runzero.com/docs/runzero-manual.pdf)

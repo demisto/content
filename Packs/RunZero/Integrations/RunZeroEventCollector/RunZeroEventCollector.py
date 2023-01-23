@@ -1,10 +1,6 @@
-from requests import Response
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-import json
 import urllib3
 from typing import Any, Dict, Tuple, List, Optional, cast
 
@@ -45,7 +41,6 @@ class Client(BaseClient):
         Returns:
             list: list of RunZero system event logs as dicts.
         """
-
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -135,7 +130,7 @@ def get_events_command(
     if limited_events:
         hr += tableToMarkdown(name='Events', t=limited_events)
         for event in limited_events:
-            event = parse_event(event)
+            event = add_time_to_event(event)
             events.append(event)
     else:
         hr = 'No events found.'
@@ -143,23 +138,11 @@ def get_events_command(
     return events, CommandResults(readable_output=hr)
 
 
-def parse_event(event: dict):
-    _time = int(event.get('created_at', '0'))
-    event_created_time_ms = _time * 1000
-    parsed_event = {
-        'id': event.get('id', ''),
-        'action': event.get('action', ''),
-        'success': event.get('success', ''),
-        'target_type': event.get('target_type', ''),
-        'target_name': event.get('target_name', ''),
-        'target_id': event.get('target_id', ''),
-        'source_name': event.get('source_name', ''),
-        'source_id': event.get('source_id', ''),
-        'source_type': event.get('source_type', ''),
-        'occurred': timestamp_to_datestring(event_created_time_ms),
-        '_time': timestamp_to_datestring(event_created_time_ms),
-    }
-    return parsed_event
+def add_time_to_event(event: dict):
+    event_created_time = int(event.get('created_at', '0'))
+    event_created_time_ms = event_created_time * 1000
+    event['_time'] = timestamp_to_datestring(event_created_time_ms)
+    return event
 
 
 def fetch_events(client: Client, max_results: int, last_run: Dict[str, int],
@@ -200,25 +183,12 @@ def fetch_events(client: Client, max_results: int, last_run: Dict[str, int],
 
     for event in limited_events:
         event_created_time = int(event.get('created_at', '0'))
-        # _time = event_created_time
-        # event_created_time_ms = event_created_time * 1000
 
         if last_fetch:
             if event_created_time <= last_fetch:
                 continue
 
-        # If no id is present it will throw an exception
-        events.append(parse_event(event))
-        # event_id = event['id']
-        # event = {
-            # 'id': event_id,
-            # 'occurred': timestamp_to_datestring(event_created_time_ms),
-            # '_time': _time,
-            # 'rawJSON': json.dumps(event),
-        # }
-
-        # events.append(event)
-
+        events.append(add_time_to_event(event))
         # Update last run and add event if the event is newer than last fetch
         if event_created_time > latest_created_time:
             latest_created_time = event_created_time

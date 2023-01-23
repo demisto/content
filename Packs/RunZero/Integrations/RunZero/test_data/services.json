@@ -61,13 +61,8 @@
         "tags": {
             "ThisTag": "",
             "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
-            "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
+            "tag2": ""
         },
         "domains": [],
         "services": {},
@@ -147,10 +142,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -215,15 +210,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -303,10 +291,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -387,15 +375,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -475,10 +456,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -542,15 +523,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -630,10 +604,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -697,15 +671,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -785,10 +752,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -849,15 +816,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -937,10 +897,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -1008,15 +968,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -1096,10 +1049,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -1163,15 +1116,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -1251,10 +1197,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -1315,15 +1261,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -1403,10 +1342,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -1514,15 +1453,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -1602,10 +1534,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org LTD",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     },
     {
@@ -1666,15 +1598,8 @@
             "RHEL85.LOCALDOMAIN"
         ],
         "tags": {
-            "ThisTag": "",
-            "ThisTag22": "",
-            "danf": "",
-            "guttentag": "",
             "tag1": "",
             "tag2": "",
-            "taglich": "",
-            "test1": "",
-            "test2": ""
         },
         "domains": [],
         "services": {},
@@ -1754,10 +1679,10 @@
         },
         "owners": [],
         "foreign_attributes": null,
-        "org_name": "Palo Alto Networks LTD",
+        "org_name": "org name",
         "site_name": "Primary",
         "agent_name": "RHEL85.LOCALDOMAIN",
-        "agent_external_ip": "82.166.99.236",
+        "agent_external_ip": "127.0.0.1",
         "hosted_zone_name": null
     }
 ]
