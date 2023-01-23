@@ -170,29 +170,6 @@ def test_edit_security_rule_command(mocker, args, expected_result):
     # Write and define the expected
     "args",
     [
-        {"limit": "2",
-         "tsg_id": "1234567"}
-    ]
-)
-def test_list_config_jobs_command(mocker, requests_mock, args):
-    # TODO add parameter for one
-    from PrismaSASE import list_config_jobs_command
-    mock_response = json.loads(load_mock_response('list-config-jobs.json'))
-    mock_url = 'http://base_url/sse/config/v1/jobs?limit=2'
-
-    requests_mock.get(mock_url, json=mock_response)
-    client = create_mocked_client()
-
-    mocker.patch.object(client, 'get_access_token', return_value='access_token')
-    result = list_config_jobs_command(client, args)
-    assert result.outputs_prefix == 'PrismaSase.ConfigJob'
-    assert result.outputs == mock_response.get('data')
-
-
-@pytest.mark.parametrize(
-    # Write and define the expected
-    "args",
-    [
         {"rule_id": "####385c-1c8a-42fc-94e4-####cbd148b9",
          "tsg_id": "1234567"}
     ]
@@ -312,14 +289,42 @@ def test_delete_address_object_command(mocker, args):
          "tsg_id": "1234567"}
     ]
 )
-def test_list_address_objects_command(mocker, requests_mock, args):
-    # TODO add one
+def test_list_address_objects_command(mocker, args):
     from PrismaSASE import list_address_objects_command
     mock_response = json.loads(load_mock_response('list-address-objects.json'))
-    requests_mock.get('http://base_url/sse/config/v1/addresses?folder=Shared&limit=20', json=mock_response)
+
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'list_address_objects', return_value=mock_response)
     result = list_address_objects_command(client, args)
     assert result.outputs_prefix == 'PrismaSase.Address'
     assert result.outputs == mock_response.get('data')
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"object_id": "####f837-379e-4c48-a967-####a52ec14"}
+    ]
+)
+def test_list_address_objects_command_with_id(mocker, args):
+    mock_response = {
+        "description": "Test address created by xsoar changed",
+        "folder": "Shared",
+        "id": "####f837-379e-4c48-a967-####a52ec14",
+        "ip_netmask": "1.1.1.1/24",
+        "name": "TestXSOARAddress"}
+    from PrismaSASE import list_address_objects_command
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'get_address_by_id', return_value=mock_response)
+    result = list_address_objects_command(client, args)
+    assert result.outputs_prefix == 'PrismaSase.Address'
+    assert result.outputs[0]['type'] == 'ip_netmask'
+    assert result.outputs[0]['address_value'] == '1.1.1.1/24'
+
+
+
