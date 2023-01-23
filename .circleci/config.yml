@@ -82,8 +82,6 @@ references:
         sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
         neo4j-admin set-initial-password test
 
-        neo4j start
-
   container_config: &container_config
     docker:
       - image: devdemisto/content-build:3.0.0.33772  # disable-secrets-detection
@@ -196,6 +194,9 @@ references:
           exit 0
         fi
 
+        neo4j start
+        # poll for neo4j status until available
+        while ! neo4j status; do sleep 1; done
 
         ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
