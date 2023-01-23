@@ -101,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 67007ae4-a816-4ffc-884f-493489db91e1
+    taskid: 427f4a6f-a7d5-44b6-8a67-7e32c4c3be3e
     type: playbook
     task:
-      id: 67007ae4-a816-4ffc-884f-493489db91e1
+      id: 427f4a6f-a7d5-44b6-8a67-7e32c4c3be3e
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
@@ -126,7 +126,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=10000
       z:
         simple: ${inputs.z}
     separatecontext: false
@@ -152,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 90b38507-9ca5-4412-8d41-f37aad110946
+    taskid: 9136f288-916e-4b86-8fa5-ed592a5f87f1
     type: playbook
     task:
-      id: 90b38507-9ca5-4412-8d41-f37aad110946
+      id: 9136f288-916e-4b86-8fa5-ed592a5f87f1
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
@@ -175,7 +188,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=50000
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -259,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ba72c957-3120-4214-87ac-55172bd02acc
+    taskid: 0bbe286d-228e-47b9-8fd4-5047604e4b0e
     type: playbook
     task:
-      id: ba72c957-3120-4214-87ac-55172bd02acc
+      id: 0bbe286d-228e-47b9-8fd4-5047604e4b0e
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
@@ -282,7 +308,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=100000
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1094,10 +1133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a106afed-8886-41aa-8aa1-497c67403caf
+    taskid: dc963372-3942-43f0-87e2-2d88f8d314a2
     type: regular
     task:
-      id: a106afed-8886-41aa-8aa1-497c67403caf
+      id: dc963372-3942-43f0-87e2-2d88f8d314a2
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1119,19 +1158,23 @@ tasks:
           transformers:
           - operator: concat
             args:
-              prefix:
+              prefix: {}
+              suffix:
                 value:
                   simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
               suffix:
                 value:
                   simple: TAXIIServer.Collection.id
                 iscontext: true
           - operator: concat
             args:
-              prefix:
+              prefix: {}
+              suffix:
                 value:
                   simple: /objects/?limit=10000&match[type]=url
-              suffix: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1195,10 +1238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 980faa47-7ee4-4e96-85fc-2d0b792c7355
+    taskid: 018015db-908c-4087-885c-3769ea9b0483
     type: regular
     task:
-      id: 980faa47-7ee4-4e96-85fc-2d0b792c7355
+      id: 018015db-908c-4087-885c-3769ea9b0483
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1223,7 +1266,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=ip
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=10000&match[type]=ip
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1363,10 +1419,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 7ea4ffa7-5ee9-4cd9-8fa6-f261ab2e3c5a
+    taskid: b09015ed-04fe-4df3-878c-74c3d3dd5520
     type: regular
     task:
-      id: 7ea4ffa7-5ee9-4cd9-8fa6-f261ab2e3c5a
+      id: b09015ed-04fe-4df3-878c-74c3d3dd5520
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -1391,7 +1447,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=domain-name
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=10000&match[type]=domain-name
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1455,10 +1524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 4f06d353-3baa-43e3-8f95-03eceb11298e
+    taskid: 85d84ae2-94c1-4533-8081-e6e722f2fd9e
     type: regular
     task:
-      id: 4f06d353-3baa-43e3-8f95-03eceb11298e
+      id: 85d84ae2-94c1-4533-8081-e6e722f2fd9e
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1483,7 +1552,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=url
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=50000&match[type]=url
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1585,10 +1667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 0a52980a-cec7-41b7-86cf-ae1f1b26f7fa
+    taskid: 4e75f5f2-67be-4e7b-8c04-76e2bade989d
     type: regular
     task:
-      id: 0a52980a-cec7-41b7-86cf-ae1f1b26f7fa
+      id: 4e75f5f2-67be-4e7b-8c04-76e2bade989d
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1613,7 +1695,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=ip
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=50000&match[type]=ip
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1715,10 +1810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: ac383ae1-46b5-4eee-8c33-ddfa05f4d9cf
+    taskid: 029df56c-f3ed-4996-869e-dbfb55d41a26
     type: regular
     task:
-      id: ac383ae1-46b5-4eee-8c33-ddfa05f4d9cf
+      id: 029df56c-f3ed-4996-869e-dbfb55d41a26
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -1743,7 +1838,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=domain-name
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=50000&match[type]=domain-name
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1807,10 +1915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: e7bbe68e-9e91-44df-8e02-cd72518bb6ef
+    taskid: 5885567d-48a4-421c-8052-53c0bd9c845a
     type: regular
     task:
-      id: e7bbe68e-9e91-44df-8e02-cd72518bb6ef
+      id: 5885567d-48a4-421c-8052-53c0bd9c845a
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1835,7 +1943,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=url
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=100000&match[type]=url
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1937,10 +2058,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 3f13ce5b-b0bb-4c6c-87d7-5b48b9d798bd
+    taskid: 2d344e33-4e0a-4554-8f60-71314311144d
     type: regular
     task:
-      id: 3f13ce5b-b0bb-4c6c-87d7-5b48b9d798bd
+      id: 2d344e33-4e0a-4554-8f60-71314311144d
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1965,7 +2086,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=ip
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=100000&match[type]=ip
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2067,10 +2201,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 3e22b16e-173d-4d88-8464-60edf925ebbf
+    taskid: 3ae9690c-2a6d-4607-80dc-e9bf58490de6
     type: regular
     task:
-      id: 3e22b16e-173d-4d88-8464-60edf925ebbf
+      id: 3ae9690c-2a6d-4607-80dc-e9bf58490de6
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -2095,7 +2229,20 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=domain-name
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=100000&match[type]=domain-name
     separatecontext: false
     continueonerrortype: ""
     view: |-
