@@ -5442,6 +5442,8 @@
         "GCS Bucket Policy (ACL) - Test": "No instance",
         "playbook-AzureDataExplorer-Test": "No Instance",
         "OTRS Test": "No Instance",
+        "GoogleCalendar-Test": "No working Instance",
+        "G Suite Security Alert Center-Test": "No working instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
