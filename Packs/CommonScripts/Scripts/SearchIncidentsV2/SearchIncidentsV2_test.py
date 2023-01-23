@@ -2,9 +2,9 @@ from SearchIncidentsV2 import *
 import pytest
 
 data_test_check_if_found_incident = [
-    ([], 'failed to get incidents from demisto.\nGot: []'),
-    (None, 'failed to get incidents from demisto.\nGot: None'),
-    ('', 'failed to get incidents from demisto.\nGot: '),
+    ([], 'failed to get incidents from xsoar.\nGot: []'),
+    (None, 'failed to get incidents from xsoar.\nGot: None'),
+    ('', 'failed to get incidents from xsoar.\nGot: '),
     ([{'Contents': {'data': None}}], False),
     ([{'Contents': {'data': 'test'}}], True),
     ([{'Contents': {'test': 'test'}}], "{'test': 'test'}"),
@@ -103,7 +103,7 @@ FILTER_TO_MATCHED_INCIDENTS = [
     ({'type': ['Type-A', 'SomeType-A']}, ['2', '3']),
     ({'type': 'Another'}, []),
     ({'name': 'Phishing'}, ['1']),
-    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2']),
+    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2'])
 ]
 
 INCIDENT = [
