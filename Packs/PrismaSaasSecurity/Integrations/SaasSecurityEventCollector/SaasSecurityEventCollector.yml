@@ -147,7 +147,7 @@ script:
     - contextPath: SaasSecurity.Event.resource_value_new
       description: New resource value. (optional).
       type: String
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.44472
   isfetchevents: true
   script: '-'
   subtype: python3
