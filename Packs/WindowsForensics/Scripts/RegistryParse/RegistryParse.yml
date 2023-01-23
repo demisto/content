@@ -28,7 +28,7 @@ args:
   name: customRegistryPaths
 - description: defines the maximum number of records to return as table to the war-room.
   name: hrMaxResults
-  defaultValue: 50
+  defaultValue: "50"
 comment: "This command uses the Registry Parse automation to extract critical forensics data from\
   \ a registry file. The essential values are specified by the argument. \n"
 commonfields:
