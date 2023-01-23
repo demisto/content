@@ -532,7 +532,6 @@ sync-buckets-between-projects:
     - |
       if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]] || [[ -z "$GCS_XSOAR_CONTENT_PROD_KEY" ]]; then
         echo "GCS_XSOAR_CONTENT_DEV_KEY or GCS_XSOAR_CONTENT_PROD_KEY not set, cannot perform sync"
-        job-done
         exit 1
       else
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
@@ -554,4 +553,5 @@ sync-buckets-between-projects:
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-prod-us
 
         echo "Bucket sync completed"
+        job-done
       fi
