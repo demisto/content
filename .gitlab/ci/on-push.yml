@@ -26,6 +26,7 @@ trigger-private-build:
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --private-branch-name $PRIVATE_BRANCH_NAME
     - sleep 60
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+    - job-done
   timeout: 2 hours
 
 .create-release-notes-and-common-docs:
@@ -80,6 +81,7 @@ validate-content-conf:
             echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
       fi
     - section_end "Validate content-tesgt-conf Branch Merged"
+    - job-done
 
 .generic-prepare-testing-bucket:
   tags:
@@ -164,6 +166,7 @@ validate-content-conf:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+    - job-done
 
 
 
@@ -247,6 +250,7 @@ mpv2-prepare-testing-bucket:
         TIME_TO_LIVE=300
       fi
       python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - job-done
     - exit $EXIT_CODE
 
 xsoar_server_6_5:
@@ -295,6 +299,24 @@ fan-in-nightly:
   script:
     - echo "fan in"
 
+jobs-done-check-nightly:
+  extends:
+    - .jobs-done-check
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  tags:
+    - gke
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+
+jobs-done-check-on-push:
+  extends:
+    - .jobs-done-check
+    - .push-rule
+  needs: ['run-unittests-and-lint', 'trigger-private-build', 'validate-content-conf', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_6_5', 'xsoar_server_6_6', 'xsoar_server_6_8', 'xsoar_server_master']
+  tags:
+    - gke
+
 
 slack-notify-nightly-build:
   extends:
@@ -330,7 +352,7 @@ slack-notify-nightly-build:
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
         # The files are empty.
-        echo "Not running XSIAM instance flow, no tests to run were found."
+        echo "Not running the instance flow, no tests to run were found."
         exit $EXIT_CODE
       fi
     - section_end "Are there tests to run?"
@@ -389,6 +411,7 @@ slack-notify-nightly-build:
         echo "Finished removing lock file"
       fi
     - section_end "After script"
+    - job-done
     - exit $EXIT_CODE
 
 #xsiam_server_dev:
