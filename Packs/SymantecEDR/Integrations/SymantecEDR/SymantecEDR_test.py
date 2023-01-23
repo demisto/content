@@ -25,6 +25,7 @@ client = Client(
     client_secret="test@12345"
 )
 
+
 FILE_INSTANCE_RESPONSE = util_load_json('test_data/file_instance_data.json')
 DOMAIN_INSTANCE_RESPONSE = util_load_json('test_data/domain_instance_data.json')
 ENDPOINT_INSTANCE_RESPONSE = util_load_json('test_data/endpoint_instance.json')

@@ -118,7 +118,7 @@ class Client(BaseClient):
     For this implementation, no special attributes defined
     """
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
-                 first_fetch: str, fetch_limit: Optional[int], is_incident_event: bool = False,
+                 first_fetch: str = '3 days', fetch_limit: Optional[int] = 50, is_incident_event: bool = False,
                  is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None,
                  token: Optional[str] = None):
 
@@ -136,11 +136,15 @@ class Client(BaseClient):
         self.is_fetch_comment = is_fetch_comment
         self.fetch_status = fetch_status
         self.fetch_priority = fetch_priority
-        self.access_token = token or self._get_access_token_or_login
-        self.headers = {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
+        self.access_token = token
 
     @property
-    def _get_access_token_or_login(self):
+    def headers(self):
+        if self.access_token is None:  # for logging in, before self.access_token is set
+            raise DemistoException('Failed to get last saved access Token')
+        return {'Authorization': f'Bearer {self.access_token}', 'Content-Type': 'application/json'}
+
+    def get_access_token_or_login(self) -> None:
         """
         Generate Access token
         Returns:
@@ -151,8 +155,8 @@ class Client(BaseClient):
         }
 
         if last_access_token := get_last_access_token_from_context():
-            demisto.debug(f"Last login access token still active. Return token {self.access_token}")
-            return last_access_token
+            self.access_token = last_access_token
+            demisto.debug(f"Last login access token still active. Return token {last_access_token}")
         else:
             try:
                 response = self._http_request(
@@ -175,8 +179,6 @@ class Client(BaseClient):
                     demisto.setIntegrationContext(global_integration_context)
                 else:
                     demisto.setIntegrationContext({'access_token': None, 'created_timestamp_access_token': None})
-
-                return new_access_token
 
             except requests.exceptions.HTTPError as err:
                 status = response.status_code
@@ -2257,7 +2259,6 @@ def main() -> None:
         client_secret = params.get('credentials', {}).get('password', '')
         verify_certificate = params.get('insecure', False)
         proxy = params.get('proxy', False)
-        last_token = get_last_access_token_from_context()
 
         # Fetches Incident Parameters
         first_fetch_time = params.get('first_fetch', '3 days').strip()
@@ -2270,7 +2271,9 @@ def main() -> None:
         client = Client(base_url=server_url, verify=verify_certificate, proxy=proxy, client_id=client_id,
                         client_secret=client_secret, first_fetch=first_fetch_time, fetch_limit=fetch_limit,
                         is_incident_event=fetch_incident_event, is_fetch_comment=fetch_comments,
-                        fetch_status=fetch_status, fetch_priority=fetch_priority, token=last_token)
+                        fetch_status=fetch_status, fetch_priority=fetch_priority)
+
+        client.get_access_token_or_login()
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
