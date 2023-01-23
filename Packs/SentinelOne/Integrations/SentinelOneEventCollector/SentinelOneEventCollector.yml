@@ -16,12 +16,12 @@ configuration:
   displaypassword: API Token
   section: Connect
 - defaultvalue: ACTIVITIES, THREATS, ALERTS
-  display: Fetch events of type (ACTIVITIES, THREATS, ALERTS)
+  display: Event types
   name: event_type
   options:
-  - ACTIVITIES
-  - THREATS
-  - ALERTS
+  - Activities
+  - Threats
+  - Alerts
   required: false
   type: 16
   section: Connect
@@ -53,7 +53,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-description: This is the SentinelOne event collector integration for XSIAM.
+description: This integration fetches the Activities Threats and Alerts from SentinelOne.
 display: SentinelOne Event Collector
 name: SentinelOneEventCollector
 script:
