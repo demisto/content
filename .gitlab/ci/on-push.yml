@@ -353,6 +353,7 @@ slack-notify-nightly-build:
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
         # The files are empty.
         echo "Not running the instance flow, no tests to run were found."
+        job-done
         exit $EXIT_CODE
       fi
     - section_end "Are there tests to run?"
