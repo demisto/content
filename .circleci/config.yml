@@ -81,7 +81,14 @@ references:
         sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
         sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
         neo4j-admin set-initial-password test
+
+  start_neo4j: &start_neo4j
+    run:
+      name: Start Neo4j
+      command: |
         neo4j start
+        # poll for neo4j status until available
+        while ! neo4j status; do sleep 1; done
 
   container_config: &container_config
     docker:
@@ -341,6 +348,7 @@ jobs:
       - *remote_docker
       - *restore_cache
       - *prepare_environment
+      - *start_neo4j
       - *infrastructure_testing
       - *run_unit_testing_and_lint
       - *generate_coverage_reports
@@ -356,6 +364,7 @@ jobs:
       - *attach_workspace
       - *restore_cache
       - *prepare_environment
+      - *start_neo4j
       - *secrets
       - *create_id_set
       - *merge_public_and_private_id_sets
