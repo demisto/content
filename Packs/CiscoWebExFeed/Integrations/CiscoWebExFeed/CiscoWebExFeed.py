@@ -1,20 +1,22 @@
 import re
-from typing import Any, Callable, Dict, List, Optional, Tuple
-
+# from typing import Any, Callable, Dict, List, Optional, Tuple
 import demistomock as demisto  # noqa: F401
-import requests
 import urllib3
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, element
 from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+IP = 'ip'
+DOMAIN = 'domain'
 INTEGRATION_NAME = 'WebEx'
+BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
 
 
 # From WebExDomain Table get only domain names with wildcards
-def grab_domains(data):
+def grab_domains(data: list) -> List:
     domainList: List = []
     for lines in data:
         if len(lines) < 2:
@@ -22,34 +24,32 @@ def grab_domains(data):
         domains = lines[1].split(' ')
         cleanDomain = " ".join(re.findall(r"([\^]*[\*\.]*[a-z0-9]+\.+.*)*", domains[0]))
 
-        # Strip Whitespace lines to remove blank values
+    # Strip Whitespace lines to remove blank values
         cleanDomain = cleanDomain.strip()
-
+        if '\t\t\t' in cleanDomain:  # multiple domains in one line
+            multiple_domains = cleanDomain.split('\t\t\t')
+            for domain in multiple_domains:
+                domainList.append(domain)
+        elif len(cleanDomain) > 0:
+            domainList.append(cleanDomain)
         # Dedup List
-        if cleanDomain not in domainList:
-            if len(cleanDomain) > 0:
-                domainList.append(cleanDomain)
+        list(dict.fromkeys(domainList))
     return domainList
 
 
-def grab_ips(data):
+def grab_ips(data: list) -> List:
+    # From WebExIP Table get only IP addresses
     ipList: List = []
-    for lines in data:
-        for line in lines:
-            values = line.split(' (CIDR)')
-            cleanCidr = " ".join(re.findall(r"([0-9]+\.+[0-9]+\.+[0-9]+\.+[0-9]+\/[0-9]+)", values[0]))
-
-            # Strip Whitespace lines to remove blank values
-            cleanCidr = cleanCidr.strip()
-            # Dedup List
-            if cleanCidr not in ipList:
-                if len(cleanCidr) > 0:
-                    ipList.append(cleanCidr)
+    for line in data[0]:
+        values = line.split(' (CIDR)')
+        ipList.append(values[0])
+    # Dedup List
+    list(dict.fromkeys(ipList))
     return ipList
 
 
-def grab_domain_table(html_section):
-    # Get Clean List of Domains
+def grab_domain_table(html_section: element.Tag) -> List:
+    # Get the domain table from the html section
     table = html_section.find('table', attrs={'class': 'li'})
     table_body = table.find('tbody')
     rows = table_body.find_all('tr')
@@ -57,11 +57,12 @@ def grab_domain_table(html_section):
     for row in rows:
         cols = row.find_all('td')
         cols = [ele.text.strip() for ele in cols]
-        data.append([ele for ele in cols if ele])  # Get rid of empty values
+        data.append([ele for ele in cols if ele])
     return data
 
 
-def grab_ip_table(html_section):
+def grab_ip_table(html_section: element.Tag) -> List:
+    # Get the IP table from the html section
     rows = html_section.find_all('ul')
     data = []
     for row in rows:
@@ -71,41 +72,30 @@ def grab_ip_table(html_section):
     return data
 
 
-def parser(response):
+def parse_indicators_from_response(response: requests.Response) -> Dict:
+    # Parse the indicators from the raw html response from WebEx website
     soup = BeautifulSoup(response.text, "html.parser")
-    # Get the IP and Domain Sections from WebEx website
+
+    # Get the IP and Domain Sections from the html
     ipsSection = soup.find("div", {"id": "id_135011"})
     domainsSection = soup.find("div", {"id": "id_135010"})
 
-    # Get Domains from domain table
+    # Get Domains
     domainTable = grab_domain_table(domainsSection)
-    all_Domains_lst = grab_domains(domainTable)
+    all_domains_lst = grab_domains(domainTable)
 
-    # Get IPS from IP Table
+    # Get IPS
     ipTable = grab_ip_table(ipsSection)
     all_IPs_lst = grab_ips(ipTable)
 
-    all_info_dict = {"ips": all_IPs_lst, "urls": all_Domains_lst}
+    all_info_dict = {"ips": all_IPs_lst, "urls": all_domains_lst}
     return all_info_dict
 
 
-def build_indicators(indicator_lst: List[Dict[str, str]], indicator_type_lower: str, limit: int):
-    for i in indicator_lsd.get("ips"):
-        i = IP(ip=i, asn=indicator_lst.get("asn"), dbot_score=indicator_lst.get("dbot_score"))
-
-
 class Client(BaseClient):
-    """ A client class that implements logic to authenticate with Zoom application. """
+    """ A client class that implements connectivity with the product."""
 
-    def __init__(
-        self,
-        base_url: str,
-        verify=True,
-        proxy=False,
-    ):
-        super().__init__(base_url, verify, proxy)
-
-    def all_raw_data(self):
+    def all_raw_data(self) -> requests.Response:
         try:
             return self._http_request(
                 method='GET',
@@ -115,79 +105,8 @@ class Client(BaseClient):
             raise DemistoException(e.message)
 
 
-# class Client:
-#     """
-#     Client to use in the WebEx Feed integration. Overrides BaseClient.
-#     WebEx IP address and Domain web service announcement:
-#     """
-
-#     def __init__(self, insecure: bool = False, tags: Optional[list] = None,
-#                  tlp_color: Optional[str] = None):
-#         """
-#         Implements class for WebEx feeds.
-#         :param urls_list: List of url, regions and service of each service.
-#         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-#         :param tlp_color: Traffic Light Protocol color.
-#         """
-#         self._url = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
-#         self._verify: bool = insecure
-#         self.tags = [] if tags is None else tags
-#         self.tlp_color = tlp_color
-#         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-
-#     def build_iterator(self) -> List:
-#         """Retrieves all entries from the feed.
-
-#         Returns:
-#             A list of objects, containing the indicators.
-#         """
-#         result = []
-#         try:
-#             response = requests.get(
-#                 url=self._url,
-#                 verify=self._verify,
-#                 proxies=self._proxies,
-#             )
-#             # TODO  remove
-#             response.raise_for_status()
-#             # TODO remove all tha parsing outside
-#             soup = BeautifulSoup(response.text, "html.parser")
-
-#             # Get the IP and Domain Sections from WebEx website
-#             ipsSection = soup.find("div", {"id": "id_135011"})
-#             domainsSection = soup.find("div", {"id": "id_135010"})
-
-#             # Get Domains from domain table
-#             domainTable = grab_domain_table(domainsSection)
-#             retDomains = grab_domains(domainTable)
-
-#             # Get IPS from IP Table
-#             ipTable = grab_ip_table(ipsSection)
-#             retIPs = grab_ips(ipTable)
-#             # TODO use a list of dicts
-#             jsonStr = '[{"urls": ' + json.dumps(retDomains) + ',' + '"ips": ' + json.dumps(retIPs) + '}]'
-#             data = json.loads(jsonStr)
-#             indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
-#             result.extend(indicators)
-#             # TODO remove
-#         except requests.exceptions.SSLError as err:
-#             demisto.debug(str(err))
-#             raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-#                             f'Check your not secure parameter.\n\n{err}')
-#         except requests.ConnectionError as err:
-#             demisto.debug(str(err))
-#             raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-#                             f'Check your Server URL parameter.\n\n{err}')
-#         except requests.exceptions.HTTPError as err:
-#             demisto.debug(str(err))
-#             raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
-#         except ValueError as err:
-#             demisto.debug(str(err))
-#             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
-#         return result
-
 # @staticmethod
-def check_indicator_type(indicator):
+def check_indicator_type(indicator: str) -> str:
     """Checks the indicator type.
         The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
 
@@ -207,7 +126,7 @@ def check_indicator_type(indicator):
         return FeedIndicatorType.Domain
 
 
-def test_module(client: Client):
+def test_module(client: Client) -> str:
     """Tests connectivity with the client.
     Args:
         client: Client object.
@@ -221,125 +140,40 @@ def test_module(client: Client):
         return e.message
     return 'ok'
 
-# TODO limit = None, and inside if limit...
 
-
-# def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
-#     """Retrieves indicators from the feed
-
-#     Args:
-#         client: Client object with request
-#         indicator_type_lower: indicator type
-#         limit: limit the results
-
-#     Returns:
-#         Indicators.
-#     """
-#     # TODO explain how dose it look and what i want to get
-#     iterator = client.build_iterator()
-#     # filter indicator_type specific entries
-#     # TODO cleanup and make it nice and clean
-#     if not indicator_type_lower == 'both':
-#         iterator = [i for i in iterator if indicator_type_lower in i]
-#     indicators = []
-#     if limit > 0:
-#         iterator = iterator[:limit]
-
-#     for item in iterator:
-#         if indicator_type_lower == 'both':
-#             values = item.get('ips', []) + item.get('urls', [])
-#         else:
-#             values = item.get(indicator_type_lower)
-#         if values:
-#             for value in values:
-#                 # TODO use class ip from common, shuld make the futer lines unnecessary
-#                 type_ = Client.check_indicator_type(value)
-#                 raw_data = {
-#                     'value': value,
-#                     'type': type_,
-#                 }
-#                 for key, val in item.items():
-#                     if key not in ['ips', 'urls']:
-#                         raw_data.update({key: val})
-
-#                 indicator_mapping_fields = {}
-
-#                 indicator_mapping_fields['tags'] = client.tags
-#                 if client.tlp_color:
-#                     indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color  # type: ignore
-
-#                 indicators.append({
-#                     'value': value,
-#                     'type': type_,
-#                     'rawJSON': raw_data,
-#                     'fields': indicator_mapping_fields
-#                 })
-
-#     return indicators
-
-
-def get_indicators_command(client, **args) -> CommandResults:
+def get_indicators_command(client: Client, **args) -> CommandResults:
+    # Get indicators from the WebEx website and send them the war-room.
     client = client
     limit = arg_to_number(args.get('limit', 10))
     indicator_type = args.get('indicator_type', 'both')
     indicator_type_lower = indicator_type.lower()
 
     res = client.all_raw_data()
-    # parse the data
-    clean_res = parser(res)
-    # TODO explain how dose it look and what i want to get
+    # parse the data from an html page to a list of dicts with ips and urls
+    clean_res = parse_indicators_from_response(res)
 
-    # filter indicator_type specific entries
-    # clean_res = [i for i in clean_res if indicator_type_lower in i]
-    # indicators = []
-    if limit:
-        if not indicator_type_lower == 'both':
-            indicators = clean_res.get(indicator_type_lower)[:limit]
-        else:
-            indicators = (clean_res.get('ips')[:limit] + clean_res.get('urls')[:limit])
-    finel_lst = []
+    if not indicator_type_lower == 'both':
+        indicators = clean_res.get(indicator_type_lower)[:limit]
+    else:
+        indicators = clean_res.get('ips')[:limit] + clean_res.get('urls')[:limit]
+    final_indicators = []
     for value in indicators:
-        # TODO use class ip from common, shuld make the futer lines unnecessary
         type_ = check_indicator_type(value)
         raw_data = {
             'value': value,
             'type': type_
         }
-        finel_lst.append(raw_data)
+        final_indicators.append(raw_data)
 
-    md = tableToMarkdown('Indicators from WebEx Feed:', finel_lst,
+    md = tableToMarkdown('Indicators from WebEx Feed:', final_indicators,
                          headers=['value', 'type'], removeNull=True)
 
     return CommandResults(
         readable_output=md,
-        # TODO do i need this???
-        raw_response=clean_res
     )
 
-# def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-#     """Wrapper for retrieving indicators from the feed to the war-room.
 
-#     Args:
-#         client: Client object with request
-#         args: demisto.args()
-
-#     Returns:
-#         Outputs.
-#     """
-#     indicator_type = str(args.get('indicator_type'))
-#     indicator_type_lower = indicator_type.lower()
-#     # TODO do i need it?? if yes, it shuld be an input, not "demisto.args"
-#     limit = int(demisto.args().get('limit')) | 10
-#     indicators = fetch_indicators(client, indicator_type_lower, limit)
-#     human_readable = tableToMarkdown('Indicators from WebEx Feed:', indicators,
-#                                      headers=['value', 'type'], removeNull=True)
-
-#     return human_readable, {}, {'raw_response': indicators}
-
-# TODO remove? yes
-
-
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client, tags: tuple, tlp_color: tuple, **args):
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -348,38 +182,45 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicators = fetch_indicators(client, 'both')
-    return indicators
+
+    res = client.all_raw_data()
+
+    # parse the data from an html page to a list of dicts with ips and urls
+    clean_res = parse_indicators_from_response(res)
+    results = []
+    indicator_mapping_fields = {'tags': tags, 'trafficlightprotocol': tlp_color}
+    for indicator in clean_res.get('ips') + clean_res.get('urls'):   # type: ignore
+        results.append({
+            'value': indicator,
+            'type': check_indicator_type(indicator),
+            'fields': indicator_mapping_fields
+        })
+    return results
 
 
 def main():
-    # """
-    # PARSE AND VALIDATE INTEGRATION PARAMS
-    # """
-    # params = demisto.params()
-    # use_ssl = not params.get('insecure', False)
-    # tags = argToList(params.get('feedTags'))
-    # tlp_color = params.get('tlp_color')
-
-    # command = demisto.command()
     params = demisto.params()
     args = demisto.args()
-    base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    tags = params.get('feedTags'),
+    tlp_color = params.get('tlp_color')
     command = demisto.command()
-    #TODO why try?
+
     try:
         client = Client(
-            base_url=base_url,
+            base_url=BASE_URL,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy,
+        )
 
         if command == 'test-module':
-            #TODO why in zoom i used "return_results" and here it will not work?
-            results = test_module(client=client)
+            results: CommandResults | str = test_module(client=client)
         elif command == 'fetch-indicators':
-            results = fetch_indicators_command(client=client, **args)
+            res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color, ** args)
+            for iter_ in batch(res, batch_size=2000):
+                demisto.createIndicators(iter_)
+                return
         elif command == 'webex-get-indicators':
             results = get_indicators_command(client=client, **args)
         else:
@@ -390,27 +231,6 @@ def main():
         # For any other integration command exception, return an error
         demisto.error(format_exc())
         return_error(f'Failed to execute {command} command. Error: {str(e)}.')
-        # client = Client(use_ssl, tags, tlp_color)
-        # # TODO change to "if else"?
-        # commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
-        #     'test-module': test_module,
-        #     'webex-get-indicators': get_indicators_command
-        # }
-        # if command in commands:
-        #     # TODO change to command results? indicators
-        #     return_outputs(*commands[command](client, demisto.args()))
-
-    #     elif command == 'fetch-indicators':
-    #         indicators = fetch_indicators_command(client)
-    #         for iter_ in batch(indicators, batch_size=2000):
-    #             demisto.createIndicators(iter_)
-
-    #     else:
-    #         raise NotImplementedError(f'Command {command} is not implemented.')
-
-    # except Exception as err:
-    #     err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
-    #     return_error(err_msg)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

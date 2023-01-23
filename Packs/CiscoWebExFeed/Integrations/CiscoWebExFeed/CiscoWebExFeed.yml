@@ -3,11 +3,6 @@ commonfields:
   id: Cisco WebEx Feed Dev
   version: -1
 configuration:
-- display: Server URL (e.g. "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network")
-  name: url
-  required: false
-  type: 0
-  defaultvalue: "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
 - defaultvalue: "true"
   display: Fetch indicators
   name: feed
