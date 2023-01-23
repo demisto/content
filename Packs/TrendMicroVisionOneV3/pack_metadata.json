@@ -21,5 +21,34 @@
     ],
     "githubUser": [
         "shaqnawe"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "TrendMicroVisionOne": {
+            "mandatory": true,
+            "display_name": "Trend Micro Vision One"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "FiltersAndTransformers",
+        "TrendMicroVisionOne",
+        "CoreAlertFields",
+        "CommonTypes"
     ]
 }
