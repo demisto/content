@@ -130,10 +130,10 @@ def main():
     try:
         args = demisto.args()
 
-        internal_tags: List[Dict[str, Any]] = args.get("asm_tags", [{}])
+        internal_tags: List[Dict[str, Any]] = argToList(args.get("asm_tags", [{}]))
         is_dev_internal = is_dev_according_to_key_value_pairs(internal_tags)
 
-        external_active_classifications: List[str] = args.get("active_classifications", [])
+        external_active_classifications: List[str] = argToList(args.get("active_classifications", []))
         is_dev_external = is_dev_according_to_classifications(external_active_classifications)
 
         demisto.executeCommand("setAlert", {"asmdevcheck": is_dev_internal or is_dev_external})
