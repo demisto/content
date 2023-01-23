@@ -126,7 +126,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=10000
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000
       z:
         simple: ${inputs.z}
     separatecontext: false
@@ -175,7 +175,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=50000
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -282,7 +282,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=100000
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1069,7 +1069,7 @@ tasks:
       version: -1
       name: Get Server URL
       description: Get the Server URL.
-      script: GetServerURL
+      scriptName: GetServerURL
       type: regular
       iscommand: false
       brand: ""
@@ -1094,10 +1094,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 550d54e8-5487-4f0b-8a2a-cb8bd736256f
+    taskid: a106afed-8886-41aa-8aa1-497c67403caf
     type: regular
     task:
-      id: 550d54e8-5487-4f0b-8a2a-cb8bd736256f
+      id: a106afed-8886-41aa-8aa1-497c67403caf
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1120,10 +1120,18 @@ tasks:
           - operator: concat
             args:
               prefix:
-                iscontext: true
+                value:
+                  simple: threatintel/collections/
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=10000&match[type]=url
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: /objects/?limit=10000&match[type]=url
+              suffix: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1215,7 +1223,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=10000&match[type]=ip
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=ip
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1383,7 +1391,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=10000&match[type]=domain-name
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=domain-name
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1475,7 +1483,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=50000&match[type]=url
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=url
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1605,7 +1613,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=50000&match[type]=ip
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=ip
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1735,7 +1743,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=50000&match[type]=domain-name
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=domain-name
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1827,7 +1835,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=100000&match[type]=url
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=url
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1957,7 +1965,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=100000&match[type]=ip
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=ip
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2087,7 +2095,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/${TAXIIServer.Collection.id}/objects/?limit=100000&match[type]=domain-name
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=domain-name
     separatecontext: false
     continueonerrortype: ""
     view: |-
