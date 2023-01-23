@@ -9,8 +9,8 @@ from syslog_rfc5424_parser import SyslogMessage, ParseError
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 MAX_SAMPLES = 10

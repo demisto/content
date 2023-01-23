@@ -107,7 +107,8 @@ knownerrors = [
         "error Failed on ensure function for": [
             "Error Found: `error Failed on ensure function for`",
             "Reindex the Entire Database: "
-            "https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Reindex-the-Entire-Database"
+            "https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
+            "Cortex-XSOAR-Administrator-Guide/Reindex-the-Entire-Database"
         ]
     },
     {
