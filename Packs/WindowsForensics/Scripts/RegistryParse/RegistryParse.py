@@ -7,20 +7,20 @@ from CommonServerPython import *  # noqa: F401
 CUSTOM_REG_TYPE = 'Custom'
 
 REGISTRY_TYPE_TO_KEY = {
-    'Users': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'],
+    # 'Users': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'],
     'MachineStartup': [r'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run'],
-    'UserStartup': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'],
-    'MachineRunOnce': [r'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce'],
-    'UserRunOnce': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce'],
-    'Services': ["HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services"],
-    'DelayedServices': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellServiceObjectDelayLoad'],
-    'UserRecentApps': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search\RecentApps'],
-    'Timezone': [r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation'],
-    'Networks': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged',
-                 r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Managed',
-                 r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Nla\Cache'],
-    'USB': [r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR', r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB'],
-    'LastLoggedOnUser': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI']
+    # 'UserStartup': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'],
+    # 'MachineRunOnce': [r'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce'],
+    # 'UserRunOnce': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce'],
+    # 'Services': ["HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services"],
+    # 'DelayedServices': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellServiceObjectDelayLoad'],
+    # 'UserRecentApps': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search\RecentApps'],
+    # 'Timezone': [r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation'],
+    # 'Networks': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged',
+    #              r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Managed',
+    #              r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Nla\Cache'],
+    # 'USB': [r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR', r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB'],
+    # 'LastLoggedOnUser': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI']
 }
 
 REGISTRY_SUB_FOLDER = {
