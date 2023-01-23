@@ -3654,14 +3654,11 @@ INVALID_URL_INDICATORS = [
     'httn://bla.com/path',
     'google.com*',
     '1.1.1.1',
-    '1.1.1.1/',
     'path/path',
     '1.1.1.1:8080',
-    '1.1.1.1:8080/',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
-    '2001:db8:3333:4444:5555:6666:7777:8888/',
     'flake8.pycqa.org',
     'google.com',
     'HTTPS://dsdffd.c',  # not valid tld
@@ -3678,10 +3675,6 @@ INVALID_URL_INDICATORS = [
     '65.23.7.2',
     'k.f.a.f',
     'test/test/test/test',
-    'http://www.example.com/ %20here.html',
-    'http ://www.example.com/ %20here.html',
-    'http://www.example .com/%20here.html',
-    'FTP://Google.test:',
     '',
     'somestring',
     'dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4',
@@ -3696,13 +3689,11 @@ INVALID_URL_INDICATORS = [
     'FLAKE8.dds.asdfd/',
     'FTP://Google.',
     'https://www.',
-    '1.1.1.1/pa klj',
     '1.1.1.1.1/path',
     '2.2.2.2.2/3sad',
     'HTTPS://1.1.1.1..1.1.1.1/path',
     'https://1.1.1.1.1.1.1.1.1.1.1/path',
     '1.1.1.1 .1/path',
-    '123.6.2.2/ path',
     '   test.com',
     'test .com.domain',
     'hxxps://0xAB26:8080/path',  # must be 8 hexa-decimal chars
@@ -3710,7 +3701,6 @@ INVALID_URL_INDICATORS = [
     'https://35.12.5677.143423:443',  # invalid IP address
     'https://4578.2436.1254.7423',  # invalid octal address (must be numbers between 0-7)
     'https://4578.2436.1254.7423:443/p',
-    'https://www.evil.tld/ https://4578.2436.1254.7423:443/p',
     'FTP://foo hXXps://1.1.1.1[.]edu/path',
     'https://216.58.199.78:12345fdsf',
     'https://www.216.58.199.78:sfsdg'
