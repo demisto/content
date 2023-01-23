@@ -15,7 +15,7 @@ configuration:
   hiddenusername: true
   displaypassword: API Token
   section: Connect
-- defaultvalue: ACTIVITIES, THREATS, ALERTS
+- defaultvalue: Activities, Threats, Alerts
   display: Event types
   name: event_type
   options:

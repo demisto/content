@@ -100,11 +100,11 @@ class Client(BaseClient):
 def get_events(client: Client, event_type: List,
                from_time: datetime = arg_to_datetime('3 days')) -> List:  # type: ignore
     events = []
-    if 'ACTIVITIES' in event_type:
+    if 'activities' in event_type:
         events.extend(client.get_activities(from_time))
-    if 'THREATS' in event_type:
+    if 'threats' in event_type:
         events.extend(client.get_threats(from_time))
-    if 'ALERTS' in event_type:
+    if 'alerts' in event_type:
         events.extend(client.get_alerts(from_time))
 
     return events
@@ -182,19 +182,19 @@ def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type
         list: List of events that will be created in XSIAM.
     """
     if not event_type:
-        event_type = ['ACTIVITIES', 'THREATS', 'ALERTS']
+        event_type = ['activities', 'threats', 'alerts']
 
     demisto.info(f'Fetched event of type: {event_type} from time {last_run}.')
     events = []
-    if 'ACTIVITIES' in event_type:
+    if 'activities' in event_type:
         if activities := client.get_activities(last_run['last_activity_created']):
             events.extend(activities)
             last_run['last_activity_created'] = activities[-1].get('createdAt')
-    if 'THREATS' in event_type:
+    if 'threats' in event_type:
         if threats := client.get_threats(last_run['last_threat_created']):
             events.extend(threats)
             last_run['last_threat_created'] = threats[-1].get('threatInfo', {}).get('createdAt')
-    if 'ALERTS' in event_type:
+    if 'alerts' in event_type:
         if alerts := client.get_alerts(last_run['last_alert_created']):
             events.extend(alerts)
             last_run['last_alert_created'] = alerts[-1].get('alertInfo', {}).get('createdAt')
@@ -226,7 +226,7 @@ def main() -> None:
     )
     fetch_limit = arg_to_number(args.get('limit') or params.get('fetch_limit', 1000))
     proxy = params.get('proxy', False)
-    event_type = [event_type.strip() for event_type in params.get('event_type', ['ACTIVITIES', 'THREATS', 'ALERTS'])]
+    event_type = [e_type.strip().lower() for e_type in params.get('event_type', ['activities', 'threats', 'alerts'])]
 
     demisto.debug(f'Command being called is {command}')
     try:
