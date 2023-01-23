@@ -148,6 +148,7 @@ def test_push_candidate_config_command(mocker, requests_mock, args):
           "overwrite": True
           }, {'action': 'deny', 'to': ['to']}),
         ({"rule_id": "####ec11-b599-4372-a0d7-####ecb8203",
+          "action": "deny",
           "to": "to",
           "overwrite": False
           }, {'action': 'deny', 'to': ['untrust', 'to']})
@@ -371,7 +372,7 @@ def test_delete_tag_command(mocker, args):
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
-    mocker.patch.object(client, 'delete_address_object', return_value=mock_response)
+    mocker.patch.object(client, 'delete_tag', return_value=mock_response)
 
     result = delete_tag_command(client, args)
 
