@@ -58,9 +58,6 @@ ignore=ST108
 [file:incidentfield-Symantec_EDR_Monitor_Source.json]
 ignore=ST108
 
-[file:incidentfield-Symantec_EDR_Monitor_Source.json]
-ignore=ST108
-
 [file:incidentfield-Symantec_EDR_Enriched_Rule_Description.json]
 ignore=ST108
 
