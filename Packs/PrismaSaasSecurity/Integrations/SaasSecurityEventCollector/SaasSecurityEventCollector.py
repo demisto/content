@@ -12,7 +12,6 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
-MAX_ITERATIONS = 150
 
 
 ''' CLIENT CLASS '''
