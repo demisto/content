@@ -17,7 +17,7 @@ import dateparser
 import hashlib
 import json
 import ipaddress
-from distutils.version import LooseVersion
+from packaging.version import Version
 
 
 # Disable insecure warnings
@@ -1088,10 +1088,10 @@ def main():
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
 
-    platform = demisto.demistoVersion.get("platform", 'xsoar')
+    platform = demisto.demistoVersion().get("platform", 'xsoar')
     if platform in ['xsoar', 'xsoar_hosted']:
-        demisto_version = demisto.demistoVersion.get('version')
-        if LooseVersion(demisto_version) < LooseVersion('8.0.0') and not params.get('longRunningPort'):
+        demisto_version = demisto.demistoVersion().get('version')
+        if Version(demisto_version) < Version('8.0.0') and not params.get('longRunningPort'):
             raise DemistoException('Please specify a Listen Port, in the integration configuration')
 
     command = demisto.command()
