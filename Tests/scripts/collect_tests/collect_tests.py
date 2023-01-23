@@ -1,3 +1,4 @@
+import contextlib
 import json
 import os
 import sys
@@ -709,7 +710,13 @@ class BranchTestCollector(TestCollector):
             except NothingToCollectException as e:
                 logger.info(e.message)
             except Exception as e:
-                logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
+                content_item_type = None
+                with contextlib.suppress(Exception):
+                    content_item_type = find_type(raw_path)
+                logger.exception(
+                    f'Error while collecting tests for '
+                    f'{content_item_type or "unknown file type"} {raw_path}', exc_info=True,
+                    stack_info=True)
                 raise e
         return CollectionResult.union(collected)
 
