@@ -73,7 +73,7 @@ def main():
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
 
         logger.info("Creating pack dependencies mapping")
-        create_dependencies(content_dto, Path(args.dependencies_output))
+        create_dependencies(content_dto, args.bucket_upload, Path(args.dependencies_output))
 
 
 if __name__ == "__main__":
