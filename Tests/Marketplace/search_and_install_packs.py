@@ -376,7 +376,6 @@ def install_packs(client: demisto_client,
         with open(os.path.join(os.getenv("ARTIFACTS_FOLDER"), 'install_file.json'), 'w') as f:
             f.write(json.dumps(packs_to_install))
         try:
-            sys.exit(1)
             call_install_packs_request(packs_to_install)
 
         except MalformedPackException as e:
