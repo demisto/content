@@ -579,7 +579,7 @@ Get Audit Events
 | SymantecEDR.AuditEvent.user_agent_ip | String | IP address of the endpoint that originated or caused the event. | 
 | SymantecEDR.AuditEvent.entity_result.data.incident_management.uuid | String | The GUID assigned for this incident | 
 | SymantecEDR.AuditEvent.entity_result.type | String | The type of the managed entity.Depending on this entity type, data would contain the corresponding entity content. Refer to this link  https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf section 3.74 Entity for all the Possible values for managed entity types | 
-| SymantecEDR.AuditEvent.entity_result.uid | String | Unique Identifer associated with the Managed Entity | 
+| SymantecEDR.AuditEvent.entity_result.uid | String | Unique identifier associated with the Managed Entity | 
 | SymantecEDR.AuditEvent.entity_result.name | String | The name of the managed entity. | 
 | SymantecEDR.AuditEvent.status_id | Number | The overall success or failure of the action reported by the event. Values are: 0 = Unknown 1 = Success 2 = Failure. | 
 | SymantecEDR.AuditEvent.feature_name | String | The name of the feature that originated the event. Example: Search. | 
@@ -806,7 +806,7 @@ Get events for incidents.
 | start_time | The earliest time from which to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks').<br/><br/>. | Optional | 
 | end_time | From current time to get events. Supports ISO (e.g., 2021-12-28T00:00:00.000Z) and free text (e.g., '10 seconds', '5 minutes', '2 days', '1 weeks', now).<br/>. | Optional | 
 | query | A search query as a Lucene query string.<br/><br/>Example:<br/>query="type_id:(4096 OR 4098 OR 4123)". | Optional | 
-| type_id | The unique identifer for an event. Refer to this link for Event Type IDs :<br/> https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html. | Optional | 
+| type_id | The unique identifier for an event. Refer to this link for Event Type IDs :<br/> https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html. | Optional | 
 | severity | The severity. Default: All severity types. Possible values are: info, warning, minor, major, critical, fatal. | Optional | 
 
 
@@ -815,7 +815,7 @@ Get events for incidents.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecEDR.IncidentEvent.type_id | Number | The unique identifier for an event type. | 
-| SymantecEDR.IncidentEvent.severity_id | Number | Event severity that specifes the importance of the event. Possible values are: 1 = info \(default\) 2 = warning 3 = minor 4 = major 5 = critical 6 = fatal | 
+| SymantecEDR.IncidentEvent.severity_id | Number | Event severity that specifies the importance of the event. Possible values are: 1 = info \(default\) 2 = warning 3 = minor 4 = major 5 = critical 6 = fatal | 
 | SymantecEDR.IncidentEvent.device_time | Date | The timestamp \(in ISO 8601 format\) that specifies the time at which the event occurred. | 
 | SymantecEDR.IncidentEvent.log_time | Date | The time the event was logged. | 
 | SymantecEDR.IncidentEvent.device_uid | String | Unique ID of the endpoint that has this file. | 
