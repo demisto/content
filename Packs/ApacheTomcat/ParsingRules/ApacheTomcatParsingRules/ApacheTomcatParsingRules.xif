@@ -6,7 +6,7 @@ alter
 | alter
     tmp_date_time = arraystring(arraycreate(tmp_get_date, tmp_get_time), " ")
 | alter
-    tmp_full_time = arraystring(arraycreate(date_time, tmp_get_zone), " ")
+    tmp_full_time = arraystring(arraycreate(tmp_date_time, tmp_get_zone), " ")
 | alter
-    _time = parse_timestamp("%d/%b/%Y %H:%M:%S %z", full_time)
+    _time = parse_timestamp("%d/%b/%Y %H:%M:%S %z", tmp_full_time)
 | fields -tmp_get_date, tmp_get_time, tmp_get_zone, tmp_date_time, tmp_full_time;
