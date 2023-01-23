@@ -209,6 +209,7 @@
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   services:
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
@@ -271,6 +272,7 @@
         fi
       fi
     - section_end "Run Unit Testing and Lint"
+    - job-done
 
 .run-validations:
   stage: unittests-and-validations
@@ -283,6 +285,7 @@
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   script:
     - section_start "Look For Secrets"
@@ -357,3 +360,9 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - job-done
+
+.jobs-done-check:
+  stage: are-jobs-realy-done
+  script:
+    - python3 Tests/scripts/check_jobs_done.py --job-done-files $PIPELINE_JOBS_FOLDER
