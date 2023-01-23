@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def search_indicators(args):
+def search_indicators(args):  # noqa: E122
     # search for indicators
     indicators = demisto.executeCommand("findIndicators", {"query": args.get("query"), "size": args.get("size")})[0][
         "Contents"]
@@ -25,7 +25,7 @@ def search_indicators(args):
     return markdown, filtered_indicators
 
 
-def main():
+def main():  # noqa: E122
     args = demisto.args()
     try:
         readable_output, outputs = search_indicators(args)
