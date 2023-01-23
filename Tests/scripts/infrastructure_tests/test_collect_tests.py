@@ -484,6 +484,12 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
     FileType.XDRC_TEMPLATE,
+    FileType.PIPFILE,
+    FileType.PIPFILE_LOCK,
+    FileType.TXT,
+    FileType.PYLINTRC,
+    FileType.INI,
+    FileType.PEM,
 }
 
 
