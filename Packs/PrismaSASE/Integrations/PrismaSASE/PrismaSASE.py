@@ -99,9 +99,9 @@ class Client(BaseClient):
                     if key == 'source_user':
                         val = argToList(field_value, ';')
                         rule[key] = val
-                    elif isinstance(SECURITYRULE_FIELDS.get(key), str):
+                    if isinstance(SECURITYRULE_FIELDS.get(key), str):
                         rule[key] = field_value  # type: ignore
-                    elif isinstance(SECURITYRULE_FIELDS.get(key), list):
+                    if isinstance(SECURITYRULE_FIELDS.get(key), list):
                         val = argToList(field_value)
                         rule[key] = val  # type: ignore
 
@@ -848,6 +848,8 @@ def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dic
                 original_rule[key] = argToList(new_rule.get(key))
             else:
                 original_rule.setdefault(key, []).extend(argToList(new_rule.get(key, [])))
+        if isinstance(SECURITYRULE_FIELDS.get(key), str):
+            original_rule[key] = new_rule.get(key)
     return original_rule
 
 
@@ -1185,7 +1187,8 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
     tsg_id = args.get('tsg_id')
     overwrite = argToBoolean(args.get('overwrite'))
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')),
+        'position': encode_string_results(args.get('position'))
     }
     original_rule = client.get_security_rule_by_id(query_params=query_params, rule_id=rule_id, tsg_id=tsg_id)
     updated_rule = update_new_rule(rule, original_rule, overwrite=overwrite)
@@ -1243,7 +1246,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
     }
     tsg_id = args.get('tsg_id')
 
-    if rule_id := args.get('rule_id') or '':
+    if rule_id := args.get('rule_id'):
         raw_response = client.get_security_rule_by_id(query_params=query_params, rule_id=rule_id, tsg_id=tsg_id)
         outputs = raw_response
     else:

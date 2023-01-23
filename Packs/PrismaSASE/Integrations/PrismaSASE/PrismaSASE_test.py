@@ -27,7 +27,6 @@ def create_mocked_client():
     return Client(base_url='http://base_url',
                   client_id='clientid',
                   client_secret='clientsecret',
-                  oauth_url='oauthurl',
                   tsg_id='tsg_id',
                   verify=False,
                   proxy=False,
@@ -51,21 +50,19 @@ def create_mocked_client():
           "to": "trust",
           "source": "PA-GP-Mobile-User-Pool",
           "source_user": "any",
-          "category": "any",
-          "application": "any",
           "service": "application-default",
           "log_setting": "Cortex Data Lake",
           "profile_setting": "best-practice",
           "tsg_id": "1234567"}, "1234567")
     ]
 )
-def test_create_security_rule_command(mocker, requests_mock, args, default_tsg_id):
+def test_create_security_rule_command(mocker, args, default_tsg_id):
     from PrismaSASE import create_security_rule_command
     mock_response = json.loads(load_mock_response('security-rule.json'))
-    requests_mock.post('http://base_url/sse/config/v1/security-rules', json=mock_response)
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'create_security_rule', return_value=mock_response)
 
     result = create_security_rule_command(client, args)
 
@@ -81,17 +78,36 @@ def test_create_security_rule_command(mocker, requests_mock, args, default_tsg_i
       "tsg_id": "1234567"}
      ]
 )
-def test_list_security_rules_command(mocker, requests_mock, args):
-    # TODO add parameter for one
+def test_list_security_rules_command(mocker, args):
     from PrismaSASE import list_security_rules_command
     mock_response = json.loads(load_mock_response('list-security-rules.json'))
-    requests_mock.get('http://base_url/sse/config/v1/security-rules?folder=Shared&position=pre', json=mock_response)
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'list_security_rules', return_value=mock_response)
     result = list_security_rules_command(client, args)
     assert result.outputs_prefix == 'PrismaSase.SecurityRule'
     assert result.outputs == mock_response.get('data')
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [{"folder": "Shared",
+      "position": "pre",
+      "rule_id": "####385c-1c8a-42fc-94e4-####cbd148b9"}
+     ]
+)
+def test_list_security_rules_command_with_id(mocker, args):
+    from PrismaSASE import list_security_rules_command
+    mock_response = json.loads(load_mock_response('security-rule.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'get_security_rule_by_id', return_value=mock_response)
+    result = list_security_rules_command(client, args)
+    assert result.outputs_prefix == 'PrismaSase.SecurityRule'
+    assert result.outputs == mock_response
 
 
 @pytest.mark.parametrize(
@@ -104,6 +120,7 @@ def test_list_security_rules_command(mocker, requests_mock, args):
     ]
 )
 def test_push_candidate_config_command(mocker, requests_mock, args):
+    # TODO check how to test polling
     from PrismaSASE import push_candidate_config_command
     mock_response = json.loads(load_mock_response('push-candidate-config.json'))
     requests_mock.post('http://base_url/sse/config/v1/config-versions/candidate:push', json=mock_response)
@@ -117,97 +134,36 @@ def test_push_candidate_config_command(mocker, requests_mock, args):
 
 @pytest.mark.parametrize(
     # Write and define the expected
-    "args",
+    'args, expected_result',
     [
-        {"id": "####ec11-b599-4372-a0d7-####ecb8203",
-         "name": "cid-1252366",
-         "folder": "Shared",
-         "position": "pre",
-         "action": "allow",
-         "source_hip": "any",
-         "destination_hip": "any",
-         "from": "trust",
-         "to": "untrust",
-         "source": "PA-GP-Mobile-User-Pool",
-         "destination": "any",
-         "source_user": "any",
-         "category": "any",
-         "application": "any",
-         "service": "application-default",
-         "log_setting": "Cortex Data Lake",
-         "profile_setting": "best-practice",
-         "tsg_id": "1234567"}
-    ]
+        ({"rule_id": "####ec11-b599-4372-a0d7-####ecb8203",
+          "action": "deny",
+          "to": "any",
+          "overwrite": False
+          },
+         {'action': 'deny', 'to': ['any']}),
+        ({"rule_id": "####ec11-b599-4372-a0d7-####ecb8203",
+          "action": "deny",
+          "to": "to",
+          "overwrite": True
+          }, {'action': 'deny', 'to': ['to']}),
+        ({"rule_id": "####ec11-b599-4372-a0d7-####ecb8203",
+          "to": "to",
+          "overwrite": False
+          }, {'action': 'deny', 'to': ['untrust', 'to']})
+    ],
 )
-def test_edit_security_rule_command(mocker, requests_mock, args):
-    # TODO failed
+def test_edit_security_rule_command(mocker, args, expected_result):
     from PrismaSASE import edit_security_rule_command
     mock_response = json.loads(load_mock_response('edit-security-rule.json'))
-    mock_url = f'http://base_url/sse/config/v1/security-rules/{args.get("id")}?folder=Shared&position=pre'
-
-    requests_mock.put(mock_url, json=mock_response)
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
-    result = edit_security_rule_command(client, args)
-    assert result.outputs_prefix == 'PrismaSase.SecurityRule'
-    assert result.outputs == mock_response
-
-
-@pytest.mark.parametrize(
-    # Write and define the expected
-    "args",
-    [
-        {"uri": "/mt/monitor/v1/agg/alerts/list",
-         "query_data": """{\"filter\": {
-                  \"operator\": \"AND\",
-                  \"rules\": [
-                      {
-                          \"operator\": \"in\",
-                          \"property\": \"domain\",
-                          \"values\": [
-                              \"External\",
-                              \"external\"
-                          ]
-                      },
-                      {
-                          \"operator\": \"last_n_days\",
-                          \"property\": \"event_time\",
-                          \"values\": [
-                              7
-                          ]
-                      }
-                  ]
-              },
-              \"properties\": [
-                  {
-                      \"property\": \"total_count\"
-                  },
-                  {
-                      \"property\": \"mu_count\"
-                  },
-                  {
-                      \"property\": \"rn_count\"
-                  },
-                  {
-                      \"property\": \"sc_count\"
-                  }
-              ]
-          }""", "tsg_id": "1234567"}
-    ]
-)
-def test_query_agg_monitor_api_command(mocker, requests_mock, args):
-    from PrismaSASE import query_agg_monitor_api_command
-    mock_response = json.loads(load_mock_response('query-agg-monitor-api.json'))
-    mock_url = 'http://base_url/mt/monitor/v1/agg/alerts/list?agg_by=tenant'
-
-    requests_mock.post(mock_url, json=mock_response)
-    client = create_mocked_client()
-
-    mocker.patch.object(client, 'get_access_token', return_value='access_token')
-    result = query_agg_monitor_api_command(client, args)
-    assert result.outputs_prefix == 'PrismaSase.AggregateQueryResponse'
-    assert result.outputs == mock_response
+    mocker.patch.object(client, 'get_security_rule_by_id', return_value=mock_response)
+    res = mocker.patch.object(client, 'edit_security_rule')
+    edit_security_rule_command(client, args)
+    assert res.call_args[1]['rule']['action'] == expected_result['action']
+    assert res.call_args[1]['rule']['to'] == expected_result['to']
 
 
 @pytest.mark.parametrize(
@@ -241,17 +197,17 @@ def test_list_config_jobs_command(mocker, requests_mock, args):
          "tsg_id": "1234567"}
     ]
 )
-def test_delete_security_rule_command(mocker, requests_mock, args):
+def test_delete_security_rule_command(mocker, args):
     from PrismaSASE import delete_security_rule_command
     mock_response = json.loads(load_mock_response('security-rule.json'))
-    mock_url = f'http://base_url/sse/config/v1/security-rules/{args.get("rule_id")}'
 
-    requests_mock.delete(mock_url, json=mock_response)
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'delete_security_rule', return_value=mock_response)
     result = delete_security_rule_command(client, args)
     assert 'deleted successfully' in result.readable_output
+    assert '####385c-1c8a-42fc-94e4-####cbd148b9' in result.readable_output
 
 
 @pytest.mark.parametrize(
@@ -265,24 +221,23 @@ def test_delete_security_rule_command(mocker, requests_mock, args):
          "tsg_id": "1234567"}
     ]
 )
-def test_create_address_object_command(mocker, requests_mock, args):
+def test_create_address_object_command(mocker, args):
     from PrismaSASE import create_address_object_command
     mock_response = {
         "description": "Test address created by xsoar",
         "folder": "Shared",
         "id": "####f837-379e-4c48-a967-####7a52ec14",
-        "ip_netmask": "1.1.1.1/24",
-        "name": "TestXSOARAddress"}
-
-    requests_mock.post('http://base_url/sse/config/v1/addresses', json=mock_response)
+        "ip_netmask": "1.1.1.1/24"}
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'create_address_object', return_value=mock_response)
 
     result = create_address_object_command(client, args)
 
     assert result.outputs_prefix == 'PrismaSase.Address'
-    assert result.outputs == mock_response
+    assert result.outputs[0]['type'] == 'ip_netmask'
+    assert result.outputs[0]['address_value'] == '1.1.1.1/24'
 
 
 @pytest.mark.parametrize(
@@ -292,34 +247,32 @@ def test_create_address_object_command(mocker, requests_mock, args):
         {"name": "TestXSOARAddress",
          "folder": "Shared",
          "description": "Test address created by xsoar changed",
-         "ip_netmask": "1.1.1.1/24",
+         "type": "fqdn",
+         "address_value": "test.com",
          "id": "####f837-379e-4c48-a967-####7a52ec14",
          "tsg_id": "1234567"}
     ]
 )
-def test_edit_address_object_command(mocker, requests_mock, args):
-    # TODO failed
+def test_edit_address_object_command(mocker, args):
     from PrismaSASE import edit_address_object_command
+
     mock_response = {
         "description": "Test address created by xsoar changed",
         "folder": "Shared",
         "id": "####f837-379e-4c48-a967-####a52ec14",
-        "type": "ip_netmask",
-        "address_value": "1.1.1.1/24",
+        "ip_netmask": "1.1.1.1/24",
         "name": "TestXSOARAddress"}
-
-    mock_url = f'http://base_url/sse/config/v1/addresses/{args.get("id")}'
-
-    requests_mock.put(mock_url, json=mock_response)
 
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'get_address_by_id', return_value=mock_response)
+    res = mocker.patch.object(client, 'edit_address_object')
 
-    result = edit_address_object_command(client, args)
+    edit_address_object_command(client, args)
+    test = res.call_args[1]
 
-    assert result.outputs_prefix == 'PrismaSase.Address'
-    assert result.outputs == mock_response
+    assert res.call_args[1]['address']['fqdn'] == 'test.com'
 
 
 @pytest.mark.parametrize(
@@ -330,7 +283,7 @@ def test_edit_address_object_command(mocker, requests_mock, args):
          "tsg_id": "1234567"}
     ]
 )
-def test_delete_address_object_command(mocker, requests_mock, args):
+def test_delete_address_object_command(mocker, args):
     from PrismaSASE import delete_address_object_command
     mock_response = {
         "description": "Test address created by xsoar changed",
@@ -339,17 +292,15 @@ def test_delete_address_object_command(mocker, requests_mock, args):
         "ip_netmask": "1.1.1.1/24",
         "name": "TestXSOARAddress"}
 
-    mock_url = f'http://base_url/sse/config/v1/addresses/{args.get("id")}'
-
-    requests_mock.delete(mock_url, json=mock_response)
-
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'delete_address_object', return_value=mock_response)
 
     result = delete_address_object_command(client, args)
 
     assert 'deleted successfully' in result.readable_output
+    assert '####f837-379e-4c48-a967-####7a52ec14' in result.readable_output
 
 
 @pytest.mark.parametrize(

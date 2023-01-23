@@ -72,9 +72,9 @@ script:
       - deny
       - allow
       - drop
-      - reset client
-      - reset server
-      - reset both client and server
+      - reset-client
+      - reset-server
+      - reset-both
       required: true
     - default: false
       description: The security rule's description.
@@ -402,6 +402,16 @@ script:
       required: false
     - auto: PREDEFINED
       default: false
+      defaultValue: pre
+      description: Security rule position.
+      isArray: false
+      name: position
+      predefined:
+      - pre
+      - post
+      required: true
+    - auto: PREDEFINED
+      default: false
       description: Rule action.
       isArray: false
       name: action
@@ -409,10 +419,9 @@ script:
       - deny
       - allow
       - drop
-      - reset client
-      - reset server
-      - reset both client and server
-      required: true
+      - reset-client
+      - reset-server
+      - reset-both
     - default: false
       description: The security rule's description.
       isArray: false
