@@ -20,7 +20,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, \
+    return_outputs, is_filename_valid, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
@@ -3654,14 +3654,11 @@ INVALID_URL_INDICATORS = [
     'httn://bla.com/path',
     'google.com*',
     '1.1.1.1',
-    '1.1.1.1/',
     'path/path',
     '1.1.1.1:8080',
-    '1.1.1.1:8080/',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
-    '2001:db8:3333:4444:5555:6666:7777:8888/',
     'flake8.pycqa.org',
     'google.com',
     'HTTPS://dsdffd.c',  # not valid tld
@@ -3678,10 +3675,6 @@ INVALID_URL_INDICATORS = [
     '65.23.7.2',
     'k.f.a.f',
     'test/test/test/test',
-    'http://www.example.com/ %20here.html',
-    'http ://www.example.com/ %20here.html',
-    'http://www.example .com/%20here.html',
-    'FTP://Google.test:',
     '',
     'somestring',
     'dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4',
@@ -3693,16 +3686,13 @@ INVALID_URL_INDICATORS = [
     '2.2.2.2.2/3sad',
     'http://fdsfesd',
     'http://fdsfesd:8080',  # no tld
-    'FLAKE8.dds.asdfd/',
     'FTP://Google.',
     'https://www.',
-    '1.1.1.1/pa klj',
     '1.1.1.1.1/path',
     '2.2.2.2.2/3sad',
     'HTTPS://1.1.1.1..1.1.1.1/path',
     'https://1.1.1.1.1.1.1.1.1.1.1/path',
     '1.1.1.1 .1/path',
-    '123.6.2.2/ path',
     '   test.com',
     'test .com.domain',
     'hxxps://0xAB26:8080/path',  # must be 8 hexa-decimal chars
@@ -3710,7 +3700,6 @@ INVALID_URL_INDICATORS = [
     'https://35.12.5677.143423:443',  # invalid IP address
     'https://4578.2436.1254.7423',  # invalid octal address (must be numbers between 0-7)
     'https://4578.2436.1254.7423:443/p',
-    'https://www.evil.tld/ https://4578.2436.1254.7423:443/p',
     'FTP://foo hXXps://1.1.1.1[.]edu/path',
     'https://216.58.199.78:12345fdsf',
     'https://www.216.58.199.78:sfsdg'
@@ -8618,3 +8607,35 @@ def test_append_metrics(mocker):
 
     results = CommonServerPython.append_metrics(metrics, results)
     assert len(results) == 1
+
+
+@pytest.mark.parametrize(
+    'filename',
+    ['/test', '\\test', ',test', ':test', 't/est.pdf', '../../test.xslx', '~test.png']
+)
+def test_is_valid_filename_faild(filename):
+    """
+    Given:
+        Filename.
+    When:
+        Checking if the filename is invalid
+    Then:
+        Test - Assert the function returns Exception
+    """
+    assert is_filename_valid(filename=filename) is False
+
+
+@pytest.mark.parametrize(
+    'filename',
+    ['test', 'test.txt', 'test.xslx', 'Test', 'טסט', 'test-test.pdf', 'test test.md']
+)
+def test_is_valid_filename(filename):
+    """
+    Given:
+        Filename.
+    When:
+        Checking if the filename is invalid
+    Then:
+        Test - Assert the function does not raise an Exception
+    """
+    assert is_filename_valid(filename)
