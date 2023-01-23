@@ -90,6 +90,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
     FileType.XDRC_TEMPLATE,
+    FileType.LICENSE,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
@@ -107,6 +108,12 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.XDRC_TEMPLATE_YML,
     FileType.XSIAM_DASHBOARD_IMAGE,
     FileType.XSIAM_REPORT_IMAGE,
+    FileType.PIPFILE,
+    FileType.PIPFILE_LOCK,
+    FileType.TXT,
+    FileType.PYLINTRC,
+    FileType.INI,
+    FileType.PEM,
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
