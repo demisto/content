@@ -324,3 +324,180 @@ def test_list_address_objects_command_with_id(mocker, args):
     assert result.outputs_prefix == 'PrismaSase.Address'
     assert result.outputs[0]['type'] == 'ip_netmask'
     assert result.outputs[0]['address_value'] == '1.1.1.1/24'
+
+
+def test_list_tags_command(mocker):
+    from PrismaSASE import list_tags_command
+    mock_response = json.loads(load_mock_response('list-tags.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'list_tags', return_value=mock_response)
+    result = list_tags_command(client, args={})
+    assert result.outputs_prefix == 'PrismaSase.Tag'
+    assert result.outputs == mock_response.get('data')
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"tag_id": "id1", "color": "Blue"}
+    ]
+)
+def test_update_tag_command(mocker, args):
+    from PrismaSASE import update_tag_command
+    mock_response = json.loads(load_mock_response('tag.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'get_tag_by_id', return_value=mock_response)
+    res = mocker.patch.object(client, 'update_tag')
+    update_tag_command(client, args)
+    assert res.call_args[1]['tag']['color'] == 'Blue'
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"tag_id": "id1"}
+    ]
+)
+def test_delete_tag_command(mocker, args):
+    from PrismaSASE import delete_tag_command
+
+    mock_response = json.loads(load_mock_response('tag.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'delete_address_object', return_value=mock_response)
+
+    result = delete_tag_command(client, args)
+
+    assert 'deleted successfully' in result.readable_output
+    assert 'id1' in result.readable_output
+
+
+def test_list_address_group_command(mocker):
+    from PrismaSASE import list_address_group_command
+    mock_response = json.loads(load_mock_response('list-address-group.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'list_address_group', return_value=mock_response)
+    result = list_address_group_command(client, args={})
+    assert result.outputs_prefix == 'PrismaSase.AddressGroup'
+    assert result.outputs == mock_response.get('data')
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "test_data_file, args, address_type, expected_results",
+    [
+        ('dynamic-address-group.json',
+         {"group_id": "id1", "overwrite": True, 'dynamic_filter': 'test'},
+         'dynamic',
+         {'dynamic': {'filter': 'test'}}),
+        ('static-address-group.json',
+         {"group_id": "id1", "overwrite": False, 'static_addresses': 'test'},
+         'static',
+         {'static': ['test2', 'test']}),
+        ('dynamic-address-group.json',
+         {"group_id": "id1", "overwrite": False, 'dynamic_filter': 'and test'},
+         'dynamic',
+         {'dynamic': {'filter': 'Microsoft 365 and Hamuzim and test'}}),
+        ('static-address-group.json',
+         {"group_id": "id1", "overwrite": True, 'static_addresses': 'test'},
+         'static',
+         {'static': ['test']})
+    ]
+)
+def test_update_address_group_command(mocker, test_data_file, args, address_type, expected_results):
+    from PrismaSASE import update_address_group_command
+    mock_response = json.loads(load_mock_response(test_data_file))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'get_address_group_by_id', return_value=mock_response)
+    res = mocker.patch.object(client, 'update_address_group')
+    update_address_group_command(client, args)
+    assert res.call_args[1]['address_group'][address_type] == expected_results[address_type]
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"group_id": "id3"}
+    ]
+)
+def test_delete_address_group_command(mocker, args):
+    from PrismaSASE import delete_address_group_command
+
+    mock_response = json.loads(load_mock_response('dynamic-address-group.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'delete_address_group', return_value=mock_response)
+
+    result = delete_address_group_command(client, args)
+
+    assert 'deleted successfully' in result.readable_output
+    assert 'id3' in result.readable_output
+
+
+def test_list_custom_url_category_command(mocker):
+    from PrismaSASE import list_custom_url_category_command
+    mock_response = json.loads(load_mock_response('list-address-group.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'list_custom_url_category', return_value=mock_response)
+    result = list_custom_url_category_command(client, args={})
+    assert result.outputs_prefix == 'PrismaSase.CustomURLCategory'
+    assert result.outputs == mock_response.get('data')
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, expected_results",
+    [
+        ({'id': 'id1', 'overwrite': True, 'value': 'www.test.com'},
+         ['www.test.com']),
+        ({'id': 'id1', 'overwrite': False, 'value': 'www.test.com'},
+         ['www.google.com', 'www.test.com']),
+    ]
+)
+def test_update_custom_url_category_command(mocker, args, expected_results):
+    from PrismaSASE import update_custom_url_category_command
+    mock_response = json.loads(load_mock_response('custom-url-category.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'get_custom_url_category_by_id', return_value=mock_response)
+    res = mocker.patch.object(client, 'update_custom_url_category')
+    update_custom_url_category_command(client, args)
+    assert res.call_args[1]['custom_url_category']['list'] == expected_results
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"id": "id1"}
+    ]
+)
+def test_delete_custom_url_category_command(mocker, args):
+    from PrismaSASE import delete_custom_url_category_command
+
+    mock_response = json.loads(load_mock_response('custom-url-category.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'delete_custom_url_category', return_value=mock_response)
+
+    result = delete_custom_url_category_command(client, args)
+
+    assert 'deleted successfully' in result.readable_output
+    assert 'id1' in result.readable_output

@@ -1379,8 +1379,8 @@ script:
     - contextPath: PrismaSase.CustomURLCategory.type
       description: The URL category type.
       type: String
-    - contextPath: PrismaSase.CustomURLCategory.match
-      description: The URL category macth list.
+    - contextPath: PrismaSase.CustomURLCategory.list
+      description: The URL category match list.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1440,7 +1440,7 @@ script:
     - contextPath: PrismaSase.CustomURLCategory.type
       description: The URL category type.
       type: String
-    - contextPath: PrismaSase.CustomURLCategory.match
+    - contextPath: PrismaSase.CustomURLCategory.list
       description: The URL category match list.
       type: String
   - arguments:
@@ -1508,7 +1508,7 @@ script:
     - contextPath: PrismaSase.CustomURLCategory.type
       description: The URL category type.
       type: String
-    - contextPath: PrismaSase.CustomURLCategory.match
+    - contextPath: PrismaSase.CustomURLCategory.list
       description: The URL category match list.
       type: String
   - arguments:
