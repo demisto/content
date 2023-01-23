@@ -1039,7 +1039,7 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
     return old_pack
 
 
-class UploadCollector(BranchTestCollector):
+class UploadBranchCollector(BranchTestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         # same as BranchTestCollector, but without tests.
         if result := super()._collect():
@@ -1048,7 +1048,11 @@ class UploadCollector(BranchTestCollector):
         return result
 
 
-class NightlyTestCollector(TestCollector, ABC):
+class BroadCollactor(TestCollector, ABC):
+    def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
+
+
+class NightlyTestCollector(BroadCollactor, ABC):
     def collect(self) -> Optional[CollectionResult]:
         result: Optional[CollectionResult] = super().collect()
 
@@ -1082,7 +1086,6 @@ class NightlyTestCollector(TestCollector, ABC):
 
         return CollectionResult.union(result)
 
-    def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
         result = []
         for pack_metadata in PACK_MANAGER.iter_pack_metadata():
             try:
@@ -1096,6 +1099,11 @@ class NightlyTestCollector(TestCollector, ABC):
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.debug(str(e))
         return CollectionResult.union(result)
+
+
+class UploadAllCollector(BroadCollactor):
+    def collect(self) -> Optional[CollectionResult]:
+        return self._collect_all_marketplace_compatible_packs()
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
@@ -1245,7 +1253,7 @@ class XPANSENightlyTestCollector(NightlyTestCollector):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20221108')
+    logger.info('TestCollector v20230123')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
@@ -1255,8 +1263,10 @@ if __name__ == '__main__':
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
+    parser.add_argument('--upload_all', '-a', type=str2bool, help='Should use graph', default=False, required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
+    
     logger.debug(f'parsed args:\n{args_string}')
     logger.debug('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', '<undefined>'))
     branch_name = PATHS.content_repo.active_branch.name
@@ -1271,7 +1281,10 @@ if __name__ == '__main__':
         collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-        collector = UploadCollector(branch_name, marketplace, service_account, graph=graph)
+        if args.upload_all:
+            collector = UploadAllCollector(marketplace, graph)
+        else:
+            collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
     else:
         match (nightly, marketplace):
