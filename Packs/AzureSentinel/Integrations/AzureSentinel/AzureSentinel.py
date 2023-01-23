@@ -209,7 +209,12 @@ def incident_data_to_xsoar_format(inc_data):
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
         'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated')),
         'Etag': inc_data.get('etag'),
-        'Deleted': False
+        'Deleted': False,
+        'owner': properties.get('owner'),
+        'relatedAnalyticRuleIds': [rule_id.split('/')[-1] for rule_id in properties.get('relatedAnalyticRuleIds')],
+        "classification": properties.get('classification'),
+        "classificationComment": properties.get('classificationComment'),
+        "classificationReason": properties.get('classificationReason')
     }
     return formatted_data
 

@@ -1,0 +1,224 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Microsoft Sentinel - Incoming Mapper",
+    "mapping": {
+        "Microsoft Sentinel Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Closing Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "classification",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "Undetermined"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Other"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "TruePositive"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Resolved"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "BenignPositive"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Resolved"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "FalsePositive"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "False Positive"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Description": {
+                    "simple": "Description"
+                },
+                "Incident Link": {
+                    "simple": "IncidentUrl"
+                },
+                "Last Seen": {
+                    "simple": "LastActivityTimeUTC"
+                },
+                "Last Update Time": {
+                    "simple": "LastModifiedTimeUTC"
+                },
+                "Resource ID": {
+                    "simple": "Etag"
+                },
+                "Sentinel Alert Count": {
+                    "simple": "AlertsCount"
+                },
+                "Sentinel Classification Comment": {
+                    "simple": "classificationComment"
+                },
+                "Sentinel Incident Number": {
+                    "simple": "IncidentNumber"
+                },
+                "Sentinel Label": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Label",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Sentinel Owner": {
+                    "complex": {
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Sentinel Rule Id": {
+                    "simple": "relatedAnalyticRuleIds"
+                },
+                "Source Create time": {
+                    "simple": "CreatedTimeUTC"
+                },
+                "Source Status": {
+                    "simple": "Status"
+                },
+                "Start Time": {
+                    "simple": "FirstActivityTimeUTC"
+                },
+                "Tactic": {
+                    "simple": "Tactics"
+                },
+                "Vendor Product": {
+                    "simple": "AlertProductNames"
+                },
+                "name": {
+                    "simple": "Title"
+                },
+                "severity": {
+                    "simple": "Severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "simple": "Description"
+                },
+                "Incident Link": {
+                    "simple": "IncidentUrl"
+                },
+                "Sentinel Alert Count": {
+                    "simple": "AlertsCount"
+                },
+                "Sentinel Incident Number": {
+                    "simple": "IncidentNumber"
+                },
+                "Sentinel Label": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Label",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Sentinel Rule Id": {
+                    "complex": {
+                        "filters": [],
+                        "root": "relatedAnalyticRuleIds",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": "/"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "operator": "LastArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Source Create time": {
+                    "simple": "CreatedTimeUTC"
+                },
+                "Source Id": {
+                    "simple": "ID"
+                },
+                "Source Status": {
+                    "simple": "Status"
+                },
+                "Tactic": {
+                    "simple": "Tactics"
+                },
+                "name": {
+                    "simple": "Title"
+                },
+                "severity": {
+                    "simple": "Severity"
+                },
+                "test123": {
+                    "simple": "owner.objectId"
+                }
+            }
+        }
+    },
+    "name": "Microsoft Sentinel - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

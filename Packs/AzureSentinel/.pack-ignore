@@ -1,6 +1,23 @@
 [file:AzureSentinel.yml]
 ignore=IN126
 
-
 [file:AzureSentinel_image.png]
 ignore=IM111
+
+[file:incidentfield-Sentinel_Label.json]
+ignore=IF113
+
+[file:incidentfield-Sentinel_Rule_Id.json]
+ignore=IF113
+
+[file:incidentfield-Sentinel_Incident_Number.json]
+ignore=IF113
+
+[file:incidentfield-Sentinel_Owner.json]
+ignore=IF113
+
+[file:incidentfield-Sentinel_Alert_Count.json]
+ignore=IF113
+
+[file:incidentfield-Sentinel_Classification_Comment.json]
+ignore=IF113
