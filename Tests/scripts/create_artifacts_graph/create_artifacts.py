@@ -13,10 +13,12 @@ import json
 logging_setup(3)
 install_logging("create_artifacts.log", logger=logger)
 
+
 def str2boolean(v: str):
     if not v:
         return False
-    return str2bool(v)
+    return v or False
+
 
 def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bool):
     content_dto.dump(output, marketplace, zip)
@@ -58,7 +60,9 @@ def main():
     parser.add_argument("-mp", "--marketplace", type=MarketplaceVersions, help="marketplace version", default="xsoar")
     parser.add_argument("-ao", "--artifacts-output", help="Artifacts output directory", required=True)
     parser.add_argument("-do", "--dependencies-output", help="Dependencies output directory", required=True)
-    parser.add_argument("-bu", "--bucket-upload", help="Upload to bucket", type=str2boolean, default=False)
+    parser.add_argument(
+        "-bu", "--bucket-upload", help="Upload to bucket", type=lambda x: str2bool(x or False), default=False
+    )
     parser.add_argument("--zip", default=True, action="store_true")
     parser.add_argument("--no-zip", dest="zip", action="store_false")
     args = parser.parse_args()
