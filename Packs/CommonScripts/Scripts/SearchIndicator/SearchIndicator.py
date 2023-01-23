@@ -1,3 +1,4 @@
+# flake8: noqa
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -25,7 +26,7 @@ def search_indicators(args):  # noqa: E122
     return markdown, filtered_indicators
 
 
-def main():  # noqa: E122
+def main():  # noqa:
     args = demisto.args()
     try:
         readable_output, outputs = search_indicators(args)
