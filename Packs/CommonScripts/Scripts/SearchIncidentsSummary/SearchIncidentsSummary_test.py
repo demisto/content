@@ -1,5 +1,4 @@
-from SearchIncidentsSummary import check_if_found_incident, is_valid_args, apply_filters, add_incidents_link, \
-    search_incidents
+from SearchIncidentsSummary import check_if_found_incident, is_valid_args, apply_filters
 
 
 def test_check_if_found_incident():
