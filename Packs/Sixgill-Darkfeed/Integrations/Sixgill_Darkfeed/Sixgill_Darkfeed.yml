@@ -123,7 +123,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.40823
+  dockerimage: demisto/sixgill:1.0.0.44895
   feed: true
   isfetch: false
   longRunning: false
