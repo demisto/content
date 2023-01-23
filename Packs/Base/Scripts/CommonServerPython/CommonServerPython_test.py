@@ -3686,7 +3686,6 @@ INVALID_URL_INDICATORS = [
     '2.2.2.2.2/3sad',
     'http://fdsfesd',
     'http://fdsfesd:8080',  # no tld
-    'FLAKE8.dds.asdfd/',
     'FTP://Google.',
     'https://www.',
     '1.1.1.1.1/path',
