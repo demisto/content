@@ -13,7 +13,7 @@ def test_fetch_incidents(requests_mock, mocker):
     mock_response = util_load_json('test_data/search_alerts.json')
 
     client = Client(
-        base_url=test_url',
+        base_url='test_url',
         verify=False,
     )
     mocker.patch.object(Client, 'request_decyfir_api', return_value=mock_response['alerts'])
