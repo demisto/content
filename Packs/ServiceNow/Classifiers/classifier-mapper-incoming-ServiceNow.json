@@ -13,7 +13,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 6,
+	"logicalVersion": 7,
 	"mapping": {
 		"ServiceNow SIR Incident": {
 			"dontMapEventToLabels": false,
