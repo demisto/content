@@ -856,6 +856,9 @@ class BranchTestCollector(TestCollector):
                 path,
                 f'file of unknown type, and not directly under a content directory ({path.parent.name})')
 
+        pack_id = find_pack_folder(path).name
+        reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
+
         content_item = None
         try:
             content_item = ContentItem(path)
@@ -865,9 +868,16 @@ class BranchTestCollector(TestCollector):
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
-
-        pack_id = find_pack_folder(path).name
-        reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
+        except KeyError:
+            # usually happens when trying to read `['id']` from non-content items, e.g. RELEASE_NOTES_CONFIG
+            # NOTE: If removing this part, make sure to change the test_release_note_config_in_only_install_pack unit test.
+            if file_type == FileType.RELEASE_NOTES_CONFIG:  # has no id in its json body
+                return self._collect_pack(
+                    pack_id=pack_id,
+                    reason=CollectionReason.NON_CODE_FILE_CHANGED,
+                    reason_description=reason_description,
+                    content_item_range=None,  # release note json has no range
+                )
 
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             content_item_range = content_item.version_range if content_item else None
