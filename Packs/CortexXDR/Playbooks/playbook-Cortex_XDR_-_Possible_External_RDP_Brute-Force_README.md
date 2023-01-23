@@ -18,20 +18,20 @@ Set verdict method:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* User Investigation - Generic
-* Cortex XDR - Isolate Endpoint
-* Block IP - Generic v3
+* Account Enrichment - Generic v2.1
 * Cortex XDR - Get entity alerts by MITRE tactics
 * Threat Hunting - Generic
 * Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-* Block Account - Generic v2
+* User Investigation - Generic
+* Cortex XDR - Isolate Endpoint
 * TIM - Indicator Relationships Analysis
-* Account Enrichment - Generic v2.1
+* Block Account - Generic v2
+* Block IP - Generic v3
 
 ### Integrations
+* XQLQueryingEngine
 * XDR_iocs
 * CortexXDRIR
-* XQLQueryingEngine
 
 ### Scripts
 * IsIntegrationAvailable
@@ -59,6 +59,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AlertDescription | Alert description. |  | Optional |
 | Country | Source external IP country. |  | Optional |
 | IsolateEndpoint | Set this value to "true" to enable endpoint isolation in case of a true positive. | false | Optional |
+| SOCEmailAddress | The SOC email address to use for the user engagement section. |  | Optional |
 
 ## Playbook Outputs
 ---

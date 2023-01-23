@@ -170,7 +170,7 @@ tasks:
       "no":
       - "20"
       "yes":
-      - "106"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -261,8 +261,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 2710
+          "x": 1155,
+          "y": 2350
         }
       }
     note: false
@@ -273,6 +273,19 @@ tasks:
         complex:
           root: ActiveDirectory.Users
           accessor: mail
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: UserManagerEmail
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SOCEmailAddress
+                iscontext: true
       subject:
         simple: Was the following action performed by you?
       body:
@@ -284,9 +297,7 @@ tasks:
       - email
       format: ""
       bcc:
-      cc:
-        complex:
-          root: UserManagerEmail
+      cc: {}
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -359,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3060
+          "y": 2700
         }
       }
     note: false
@@ -390,7 +401,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 3270
+          "y": 2910
         }
       }
     note: false
@@ -421,7 +432,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 3270
+          "y": 2910
         }
       }
     note: false
@@ -457,7 +468,7 @@ tasks:
       {
         "position": {
           "x": -180,
-          "y": 5700
+          "y": 5340
         }
       }
     note: false
@@ -485,7 +496,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 6020
+          "y": 5660
         }
       }
     note: false
@@ -619,7 +630,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 3060
+          "y": 2700
         }
       }
     note: false
@@ -986,7 +997,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 3570
+          "y": 3210
         }
       }
     note: false
@@ -1050,7 +1061,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4760
+          "y": 4400
         }
       }
     note: false
@@ -1096,7 +1107,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4890
+          "y": 4530
         }
       }
     note: false
@@ -1367,7 +1378,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 3410
+          "y": 3050
         }
       }
     note: false
@@ -1402,7 +1413,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 3410
+          "y": 3050
         }
       }
     note: false
@@ -1446,7 +1457,7 @@ tasks:
       {
         "position": {
           "x": -60,
-          "y": 5060
+          "y": 4700
         }
       }
     note: false
@@ -1611,58 +1622,13 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5875
+          "y": 5515
         }
       }
     note: false
     timertriggers:
     - fieldname: containmentsla
       action: stop
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "106":
-    id: "106"
-    taskid: b9977847-c2d4-409b-8e45-102933340417
-    type: condition
-    task:
-      id: b9977847-c2d4-409b-8e45-102933340417
-      version: -1
-      name: User email address found?
-      description: Check if a user email is found.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "20"
-      "yes":
-      - "114"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: ActiveDirectory.Users
-                accessor: mail
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1155,
-          "y": 2370
-        }
-      }
-    note: false
-    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1936,127 +1902,6 @@ tasks:
       output:
         complex:
           root: HasHuntResults
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "114":
-    id: "114"
-    taskid: fb050756-c0eb-448e-8d54-c7845bf6e665
-    type: condition
-    task:
-      id: fb050756-c0eb-448e-8d54-c7845bf6e665
-      version: -1
-      name: Manager email address found?
-      description: Check if a user manager email was found.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "115"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: UserManagerEmail
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1155,
-          "y": 2540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "115":
-    id: "115"
-    taskid: 008691f5-818b-4308-83fe-be4ffe8d4c15
-    type: collection
-    task:
-      id: 008691f5-818b-4308-83fe-be4ffe8d4c15
-      version: -1
-      name: User Communication - No manager
-      description: Ask the user and his manager via email if the RDP connection is authorized activity.
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "139"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1355,
-          "y": 2710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-        complex:
-          root: ActiveDirectory.Users
-          accessor: mail
-      subject:
-        simple: Was the following action performed by you?
-      body:
-        simple: |-
-          Hello,
-          Cortex XDR has detected a possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.External IP}.
-          Was this action performed by you and can be considered as authorized?
-      methods:
-      - email
-      format: ""
-      bcc:
-      cc: {}
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Was the following action performed by you?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: Authorized
-        - simple: Unauthorized
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: Was the following action performed by you?
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -2380,7 +2225,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 3750
+          "y": 3390
         }
       }
     note: false
@@ -2419,7 +2264,7 @@ tasks:
       {
         "position": {
           "x": -1230,
-          "y": 4570
+          "y": 4210
         }
       }
     note: false
@@ -2464,7 +2309,7 @@ tasks:
       {
         "position": {
           "x": -820,
-          "y": 4560
+          "y": 4200
         }
       }
     note: false
@@ -2516,7 +2361,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 3880
+          "y": 3520
         }
       }
     note: false
@@ -2548,7 +2393,7 @@ tasks:
       {
         "position": {
           "x": -350,
-          "y": 4055
+          "y": 3695
         }
       }
     note: false
@@ -2651,7 +2496,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 4230
+          "y": 3870
         }
       }
     note: false
@@ -2704,7 +2549,7 @@ tasks:
       {
         "position": {
           "x": -1230,
-          "y": 4400
+          "y": 4040
         }
       }
     note: false
@@ -2736,7 +2581,7 @@ tasks:
       {
         "position": {
           "x": -1020,
-          "y": 4250
+          "y": 3890
         }
       }
     note: false
@@ -2793,7 +2638,7 @@ tasks:
       {
         "position": {
           "x": -820,
-          "y": 4400
+          "y": 4040
         }
       }
     note: false
@@ -2840,7 +2685,7 @@ tasks:
       {
         "position": {
           "x": -560,
-          "y": 4230
+          "y": 3870
         }
       }
     note: false
@@ -2871,7 +2716,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5400
+          "y": 5040
         }
       }
     note: false
@@ -2910,7 +2755,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5530
+          "y": 5170
         }
       }
     note: false
@@ -2945,7 +2790,7 @@ tasks:
       {
         "position": {
           "x": -60,
-          "y": 5220
+          "y": 4860
         }
       }
     note: false
@@ -2982,7 +2827,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2880
+          "y": 2520
         }
       }
     note: false
@@ -2996,7 +2841,6 @@ view: |-
   {
     "linkLabelsPosition": {
       "103_104_#default#": 0.3,
-      "106_20_#default#": 0.28,
       "112_113_yes": 0.31,
       "112_6_#default#": 0.37,
       "118_120_Yes": 0.1,
@@ -3017,8 +2861,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7385,
-        "width": 2965,
+        "height": 7025,
+        "width": 2940,
         "x": -1230,
         "y": -1300
       }
@@ -3099,6 +2943,11 @@ inputs:
     simple: "false"
   required: false
   description: Set this value to "true" to enable endpoint isolation in case of a true positive.
+  playbookInputQuery:
+- key: SOCEmailAddress
+  value: {}
+  required: false
+  description: The SOC email address to use for the user engagement section.
   playbookInputQuery:
 outputs: []
 tests:
