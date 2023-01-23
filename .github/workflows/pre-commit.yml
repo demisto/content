@@ -45,6 +45,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        job_name: Unit Test Report
         report_paths: |
             **/Packs/**/Integrations/**/.report_pytest.xml
         github_token: ${{ secrets.GITHUB_TOKEN }}
