@@ -97,6 +97,330 @@ def test_account_risk_score_history(requests_mock):
     assert result.outputs == mock_response_data
 
 
+def test_account_groups_risk_score_history(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/groups_risk_score_history_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_groups_risk_score_history_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/groups/1/risk_score_history",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {"group_id": 1}
+    result = kmsat_groups_risk_score_history_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.GroupsRiskScoreHistory"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response_data
+
+
+def test_groups_members_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/groups_risk_score_history_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_groups_members_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/groups/1/members",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {"group_id": 1}
+    result = kmsat_groups_members_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.GroupsMembers"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response_data
+
+
+def test_users_risk_score_history_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/user_risk_score_history_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_users_risk_score_history_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/users/1/risk_score_history",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {"user_id": 1}
+    result = kmsat_users_risk_score_history_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.UsersRiskScoreHistory"
+    assert result.outputs_key_field == ""
+    assert result.outputs == mock_response_data
+
+
+def test_phishing_security_tests_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/groups_risk_score_history_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_phishing_security_tests_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/phishing/security_tests",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {}
+    result = kmsat_phishing_security_tests_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.PhishingSecurity"
+    assert result.outputs_key_field == "campaign_id"
+    assert result.outputs == mock_response_data
+
+
+def test_phishing_security_tests_recipients_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/phishing_security_tests_recipients_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_phishing_security_tests_recipients_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/phishing/security_tests/1/recipients",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {"pst_id": 1}
+    result = kmsat_phishing_security_tests_recipients_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.PhishingSecurityPST"
+    assert result.outputs_key_field == "recipient_id"
+    assert result.outputs == mock_response_data
+
+
+def test_phishing_security_tests_failed_recipients_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/phishing_security_tests_failed_recipients_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_phishing_security_tests_failed_recipients_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/phishing/security_tests/1/recipients",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {"pst_id": 1}
+    result = kmsat_phishing_security_tests_failed_recipients_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.PhishingSecurityPST"
+    assert result.outputs_key_field == "recipient_id"
+    assert result.outputs == mock_response_data
+
+
+def test_phishing_campaign_security_tests_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/phishing_security_tests_failed_recipients_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_phishing_campaign_security_tests_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/phishing/campaigns/1/security_tests",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {"campaign_id": 1}
+    result = kmsat_phishing_campaign_security_tests_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.CampaignPST"
+    assert result.outputs_key_field == ""
+    assert result.outputs == mock_response_data
+
+
+def test_training_campaigns_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/training_campaigns_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_training_campaigns_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/training/campaigns",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {}
+    result = kmsat_training_campaigns_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.TrainingCampaigns"
+    assert result.outputs_key_field == "campaign_id"
+    assert result.outputs == mock_response_data
+
+
+def test_training_enrollments_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/account
+    Then
+            Make sure the data array contains event_types with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/training_enrollments_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_training_enrollments_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/training/enrollments",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    args: Dict = {}
+    result = kmsat_training_enrollments_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.TrainingEnrollments"
+    assert result.outputs_key_field == "enrollment_id"
+    assert result.outputs == mock_response_data
+
+
 def test_get_user_event_types(requests_mock):
     """
     Given
@@ -160,7 +484,7 @@ def test_get_user_events(requests_mock):
 
     args: Dict = {}
     result = kmsat_user_events_list_command(userEventClient, args)
-    
+
     assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.UserEvents"
     assert result.outputs_key_field == "id"

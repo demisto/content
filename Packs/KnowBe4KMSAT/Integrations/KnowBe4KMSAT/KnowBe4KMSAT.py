@@ -308,7 +308,7 @@ def kmsat_groups_members_list_command(
     markdown = tableToMarkdown(
         "Groups Members",
         response,
-        headers=[
+        [
             "id",
             "employee_number",
             "first_name",
@@ -390,7 +390,7 @@ def kmsat_phishing_security_tests_list_command(
     markdown = tableToMarkdown(
         "Phishing Security Tests",
         response,
-        headers=[
+        [
             "campaign_id",
             "pst_id",
             "status",
@@ -438,7 +438,7 @@ def kmsat_phishing_security_tests_recipients_list_command(
     markdown = tableToMarkdown(
         "Phishing Security Tests Recipients",
         response,
-        headers=[
+        [
             "recipient_id",
             "pst_id",
             "user",
@@ -620,6 +620,7 @@ def kmsat_training_enrollments_list_command(
 ) -> CommandResults:
     status = remove_empty_elements(args.get("status"))
 
+    # Filters by status and does not set paging
     if status is not None:
         args = {}
         data = []
@@ -744,6 +745,7 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
     """
 
     message: str = ""
+    params: Dict = {}
     try:
         client.kmsat_account_info()
         message = "ok"
@@ -757,7 +759,7 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
             raise e
 
     try:
-        client.kmsat_groups_risk_score_history(123, {})
+        client.kmsat_account_risk_score_history(params)
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
@@ -769,7 +771,107 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
             raise e
 
     try:
-        params: Dict = {}
+        group_id = 1
+        client.kmsat_groups_risk_score_history(group_id, params)
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
+        group_id = 1
+        client.kmsat_groups_members(group_id, params)
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
+        user_id = 1
+        client.kmsat_users_risk_score_history(user_id, params)
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
+        client.kmsat_phishing_security_tests(params)
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
+        recipient_id = 1
+        client.kmsat_phishing_security_tests_recipients(recipient_id, params)
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
+        campaign_id = 1
+        client.kmsat_phishing_campaign_security_tests(campaign_id, params)
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
+        client.kmsat_training_campaigns(params)
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
+        client.kmsat_training_enrollments(params)
+        message = "ok"
+    except DemistoException as e:
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = (
+                "Authorization Error: make sure Reporting API Key is correctly set"
+                + str(client._headers)
+            )
+        else:
+            raise e
+
+    try:
         userEventClient.user_event_types(params)
         message = "ok"
     except DemistoException as e:
