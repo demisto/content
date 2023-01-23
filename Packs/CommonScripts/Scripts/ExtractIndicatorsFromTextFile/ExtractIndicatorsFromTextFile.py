@@ -3,13 +3,13 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def read_file_with_encoding_detection(filePath):
+def read_file_with_encoding_detection(filePath, maxFileSize):
     encoding_types = ['utf-8', 'ISO-8859-9', None]  # use None to simulate open file with no encoding sepcified
     data = None
     for encoding in encoding_types:
         try:
             with open(filePath, encoding=encoding) as file:
-                data = file.read()
+                data = file.read(maxFileSize)
                 break
         except Exception:
             continue
@@ -33,9 +33,9 @@ def extract_indicators_from_file(args):
         filePath = res[0]['Contents']['path']
     except Exception:
         raise FileNotFoundError
-    
+
     data = read_file_with_encoding_detection(filePath, maxFileSize)
-    
+
     # Extract indicators (omitting context output, letting auto-extract work)
     indicators_hr = demisto.executeCommand("extractIndicators", {
         'text': data})[0][u'Contents']
