@@ -66,9 +66,7 @@ def test_account_risk_score_history(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
+            Calling https://us.api.knowbe4.com/v1/accounts
     """
     mock_response_data = util_load_json(
         "test_data/account_risk_score_history_response.json"
@@ -103,8 +101,6 @@ def test_account_groups_risk_score_history(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/groups_risk_score_history_response.json"
@@ -139,8 +135,6 @@ def test_groups_members_list(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/groups_risk_score_history_response.json"
@@ -175,8 +169,6 @@ def test_users_risk_score_history_list(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/user_risk_score_history_response.json"
@@ -211,8 +203,6 @@ def test_phishing_security_tests_list(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/groups_risk_score_history_response.json"
@@ -247,8 +237,6 @@ def test_phishing_security_tests_recipients_list(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/phishing_security_tests_recipients_response.json"
@@ -283,8 +271,6 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/phishing_security_tests_failed_recipients_response.json"
@@ -319,8 +305,6 @@ def test_phishing_campaigns_security_tests_list(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/phishing_security_tests_failed_recipients_response.json"
@@ -355,8 +339,6 @@ def test_training_campaigns_list(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/training_campaigns_response.json"
@@ -391,8 +373,6 @@ def test_training_enrollments_list(requests_mock):
             no params
     When
             Calling https://us.api.knowbe4.com/v1/account
-    Then
-            Make sure the data array contains event_types with expected values
     """
     mock_response_data = util_load_json(
         "test_data/training_enrollments_response.json"
