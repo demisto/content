@@ -1981,7 +1981,7 @@ def fetch_incidents(client: Client) -> list:
                 )
             })
 
-    # # remove duplicate incidents which were already fetched
+    # remove duplicate incidents which were already fetched
     incidents_insert = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents, last_run=last_run, fetch_limit=client.fetch_limit, id_field='name'
     )
@@ -2058,6 +2058,7 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> CommandResults
          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
              result.
     """
+    title = "File Sandbox Status"
     command_id = args.get('command_id')
     try:
         endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
@@ -2069,21 +2070,18 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> CommandResults
                                         params={},
                                         json_data={})
     # Query Sandbox Command Status
-    summary_data = []
-    datasets = response.get("status", [])
-    if datasets:
-        for data in datasets:
-            sandbox_status = {
-                'command_id': command_id,
-                'status': SANDBOX_STATE.get(str(data.get('state'))),
-                'message': data.get('message'),
-                'target': data.get('target'),
-                'error_code': data.get('error_code')
-            }
-            summary_data.append(sandbox_status)
+    summary_data = {}
+    sandbox_status = response.get("status", [])[0]
+    if sandbox_status:
+        summary_data = {
+            'command_id': command_id,
+            'status': SANDBOX_STATE.get(str(sandbox_status.get('state'))),
+            'message': sandbox_status.get('message'),
+            'target': sandbox_status.get('target'),
+            'error_code': sandbox_status.get('error_code')
+        }
 
-    title = "File Sandbox Status"
-    if datasets:
+    if summary_data:
         readable_output = generic_readable_output(argToList(summary_data), title)
     else:
         readable_output = f'{title} does not have data to present. \n'
