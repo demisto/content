@@ -599,3 +599,23 @@ def test_read_utf16le_to_json_with_meta(mocker):
     for k, v in expected.items():
         assert k in results
         assert v == results[k]
+
+
+def test_read_file_with_chinese_characters(mocker):
+    """
+        Given:
+            File with chinese characters.
+            'input_encoding': 'gbk'.
+        When:
+            Running script on file
+
+        Then:
+            Validate the right output returns.
+        """
+    args = {'input_encoding': 'gbk'}
+    mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/file_with_chinese_characters.txt'})
+
+    mocker.patch.object(demisto, 'results')
+    read_file(args)
+    results = demisto.results.call_args[0][0]
+    assert '锟斤拷锟斤拷' in results.get('Contents').get('FileData')
