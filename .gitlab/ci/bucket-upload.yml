@@ -59,6 +59,15 @@ run-unittests-and-lint-upload-flow:
     - .run-unittests-and-lint
     - .bucket-upload-rule
 
+jobs-done-check-upload-flow:
+  extends:
+    - .jobs-done-check
+    - .bucket-upload-rule
+  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_5', 'install-packs-in-server6_6', 'install-packs-in-server6_8', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace']
+  tags:
+    - gke
+
+
 
 xsoar-prepare-testing-bucket-upload-flow:
   extends:
@@ -108,6 +117,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -140,6 +150,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - section_end "Destroy instances"
+    - job-done
     - exit "$EXIT_CODE"
 
 
@@ -174,6 +185,7 @@ install-packs-in-server-master:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -214,6 +226,7 @@ install-packs-in-server-master:
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Install Packs"
 
+    - job-done
     - exit "$EXIT_CODE"
   after_script:
     - echo "Job finished, removing lock file"
@@ -250,6 +263,7 @@ upload-packs-to-marketplace:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xsoar"
@@ -317,6 +331,7 @@ upload-packs-to-marketplace:
         echo "Skipping Premium Packs Validation"
       fi
     - section_end "Validate Premium Packs"
+    - job-done
 
 upload-packs-to-marketplace-v2:
   tags:
@@ -327,6 +342,7 @@ upload-packs-to-marketplace-v2:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "marketplacev2"
@@ -375,6 +391,7 @@ upload-packs-to-marketplace-v2:
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
+    - job-done
 
 upload-packs-to-xpanse-marketplace:
   tags:
@@ -385,6 +402,7 @@ upload-packs-to-xpanse-marketplace:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   variables:
     MARKETPLACE_VERSION: "xpanse"
@@ -434,6 +452,7 @@ upload-packs-to-xpanse-marketplace:
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
+    - job-done
 
 force-pack-upload:
   tags:
@@ -499,6 +518,7 @@ upload-id-set-bucket:
     - !reference [.create-id-set-xsoar]
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
     - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/content/id_set.json"
+    - job-done
 
 
 sync-buckets-between-projects:
