@@ -10,6 +10,7 @@ from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
 from typing import Union, Tuple, Dict, Any, Generator
 import ssl
+import logging.config
 
 
 ''' CONSTANTS '''
