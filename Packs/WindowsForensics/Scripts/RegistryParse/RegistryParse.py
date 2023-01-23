@@ -7,20 +7,20 @@ from CommonServerPython import *  # noqa: F401
 CUSTOM_REG_TYPE = 'Custom'
 
 REGISTRY_TYPE_TO_KEY = {
-    # 'Users': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'],
+    'Users': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList'],
     'MachineStartup': [r'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run'],
-    # 'UserStartup': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'],
-    # 'MachineRunOnce': [r'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce'],
-    # 'UserRunOnce': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce'],
-    # 'Services': ["HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services"],
-    # 'DelayedServices': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellServiceObjectDelayLoad'],
-    # 'UserRecentApps': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search\RecentApps'],
-    # 'Timezone': [r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation'],
-    # 'Networks': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged',
-    #              r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Managed',
-    #              r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Nla\Cache'],
-    # 'USB': [r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR', r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB'],
-    # 'LastLoggedOnUser': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI']
+    'UserStartup': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run'],
+    'MachineRunOnce': [r'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce'],
+    'UserRunOnce': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce'],
+    'Services': ["HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services"],
+    'DelayedServices': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellServiceObjectDelayLoad'],
+    'UserRecentApps': [r'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search\RecentApps'],
+    'Timezone': [r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation'],
+    'Networks': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged',
+                 r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Managed',
+                 r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Nla\Cache'],
+    'USB': [r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR', r'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USB'],
+    'LastLoggedOnUser': [r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI']
 }
 
 REGISTRY_SUB_FOLDER = {
@@ -65,7 +65,7 @@ def get_registry(entry_id):
 
 
 def get_sub_keys(reg, key, folder_output_key):
-    all_folders = {k for k in reg if k.startswith(key)}
+    all_folders = {k for k in reg if k.lower().startswith(key.lower())}
     users = []
     records = []
     for folder in all_folders:
@@ -107,13 +107,13 @@ def get_reg_results(reg, type_to_keys):
             records += users_records
             type_records.update(users_type_records)
         elif _type == 'Services':
-
             services_records, services_type_records = get_reg_services(reg)
             records += services_records
             type_records.update(services_type_records)
         elif _type == 'LastLoggedOnUser':
             key = REGISTRY_TYPE_TO_KEY['LastLoggedOnUser'][0]
-            values = reg.get(key, {})
+            values = [v for (k, v) in reg.items() if k.lower() == key.lower()]
+            values = {} if len(values) == 0 else values[0]
             registry_value = values.get('"LastLoggedOnUser"')
             if registry_value:
                 registry_value = parse_reg_value(registry_value)
@@ -127,7 +127,7 @@ def get_reg_results(reg, type_to_keys):
         else:
             all_keys = []  # type: ignore[var-annotated]
             for key in keys:
-                all_keys += [k for k in reg if k.startswith(key)]
+                all_keys += [k for k in reg if k.lower().startswith(key.lower())]
             for key in all_keys:
                 registry_keys_values = reg.get(key)
                 dict_key = _type if _type != CUSTOM_REG_TYPE else key
@@ -171,7 +171,9 @@ def main():
 
     records, type_records = get_reg_results(reg, registry_types_to_keys)
 
-    hr = tableToMarkdown("Registry Results", records[:50])
+    hr_max_results = arg_to_number(args.get('hrMaxResults')) or 50
+
+    hr = tableToMarkdown("Registry Results", records[:hr_max_results])
     return_outputs(hr, {"RegistryForensicDataRaw": records, 'RegistryForensicData': type_records}, records)
 
 

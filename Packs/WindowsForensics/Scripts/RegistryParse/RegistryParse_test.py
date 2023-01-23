@@ -49,8 +49,8 @@ def test_get_reg_results():
     }
 
     records, type_records = get_reg_results(
-        reg=reg, type_to_keys={
-        'MachineStartup': ['HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run']}
+        reg=reg,
+        type_to_keys={'MachineStartup': ['HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run']}
     )
 
     assert records == [
