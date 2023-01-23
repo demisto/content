@@ -5,6 +5,15 @@ from typing import Any, Dict, List
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+DEV_ENV_CLASSIFICATION = "DevelopmentEnvironment"
+EXACT_DEV_MATCH = ["dv", "noprod", "np", "ppe"]
+PARTIAL_DEV_MATCH = ["stg", "stag", "qa", "quality", "test", "tst", "exp", "non_prod",
+                     "non-prod", "nonprod", "nprd", "n-prd", "npe", "npd", "pre_prod",
+                     "pre-prod", "preprod", "pprd", "pov", "proof of value", "poc",
+                     "sbx", "sandbox", "internal", "validation", "lab"]
+EXACT_PROD_MATCH = ["pr"]
+PARTIAL_PROD_MATCH = ["prod", "prd", "release", "live"]
+
 
 def _canonicalize_string(in_str: str) -> str:
     """
@@ -39,13 +48,6 @@ def is_dev_according_to_key_value_pairs(observed_key_value_pairs: List[Dict[str,
             used solely for development (has development indicators and lacks any
             production indicators)
     """
-    EXACT_DEV_MATCH = ["dv", "noprod", "np", "ppe"]
-    PARTIAL_DEV_MATCH = ["stg", "stag", "qa", "quality", "test", "tst", "exp", "non_prod",
-                         "non-prod", "nonprod", "nprd", "n-prd", "npe", "npd", "pre_prod",
-                         "pre-prod", "preprod", "pprd", "pov", "proof of value", "poc",
-                         "sbx", "sandbox", "internal", "validation", "lab"]
-    EXACT_PROD_MATCH = ["pr"]
-    PARTIAL_PROD_MATCH = ["prod", "prd", "release", "live"]
 
     has_dev_indicator = False
     has_prod_indicator = False
@@ -92,7 +94,6 @@ def is_dev_according_to_classifications(classifications: List[str]) -> bool:
         bool: whether there is an indication within `classifications` that
             the described system is used for development
     """
-    DEV_ENV_CLASSIFICATION = "DevelopmentEnvironment"
     is_dev = (DEV_ENV_CLASSIFICATION in classifications)
     return is_dev
 
