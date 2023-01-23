@@ -280,7 +280,7 @@ def main() -> None:  # pragma: no cover
                 demisto.setLastRun({'events': events})
                 raise e
         elif command == 'saas-security-get-events':
-            return_results(get_events_command(client, args, max_fetch=max_fetch))
+            return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
         else:
             raise NotImplementedError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
