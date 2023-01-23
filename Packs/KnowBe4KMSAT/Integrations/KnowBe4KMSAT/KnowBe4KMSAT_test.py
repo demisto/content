@@ -313,7 +313,7 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
     assert result.outputs == mock_response_data
 
 
-def test_phishing_campaign_security_tests_list(requests_mock):
+def test_phishing_campaigns_security_tests_list(requests_mock):
     """
     Given
             no params
