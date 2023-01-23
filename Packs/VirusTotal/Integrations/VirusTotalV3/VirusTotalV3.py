@@ -1161,7 +1161,7 @@ def build_domain_output(
         extended_data: bool):
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
-    last_analysis_stats = attributes.get('last_analysis_stats')
+    last_analysis_stats = attributes.get('last_analysis_stats', {})
     positive_engines = last_analysis_stats.get('malicious', 0)
     detection_engines = sum(last_analysis_stats.values())
     relationships_response = data.get('relationships', {})
