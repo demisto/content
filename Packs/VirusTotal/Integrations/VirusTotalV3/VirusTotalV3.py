@@ -2219,7 +2219,7 @@ def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
                 headerTransform=underscoreToCamelCase
             ),
             outputs=data,
-            raw_response=raw_response,
+            raw_response=data['attributes']['sigma_analysis_stats'],
         )
     else:
         return CommandResults(
@@ -2236,7 +2236,7 @@ def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
                 headerTransform=underscoreToCamelCase
             ),
             outputs=data,
-            raw_response=raw_response,
+            raw_response=data['attributes']['sigma_analysis_results'],
         )
 
 
