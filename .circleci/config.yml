@@ -341,7 +341,7 @@ jobs:
       - *remote_docker
       - *restore_cache
       - *prepare_environment
-      - *insall_neo4j
+      - *install_neo4j
       - *infrastructure_testing
       - *run_unit_testing_and_lint
       - *generate_coverage_reports
