@@ -622,7 +622,7 @@ script:
       description: The device name (i.e., the name of the endpoint or appliance associated with an event).
       type: String
     - contextPath: SymantecEDR.SystemActivity.feature_name
-      description: 'The name of the feature that originated the event. Applicable events : 1, 20, 21, 1000 Example : Search.'
+      description: 'The name of the feature that originated the event. Applicable events: 1, 20, 21, 1000 Example: Search.'
       type: String
     - contextPath: SymantecEDR.SystemActivity.id
       description: 'The event identifier for applicable events: 8080, 8081, 8082, 8083, 8084, 8085, 8086, 8089, 8090 1 = Exists 2 = Partial. The outcome of the Session Audit event for applicable events: 20 0 = Unknown, 1 = Logon, 2 = Logoff. The outcome of the Entity Audit event for applicable events: 21  0 = Unknown, 1 = Create, 2 = Update, 3 = Delete'
@@ -643,7 +643,7 @@ script:
       description: 'Low level exception message if available. Applicable events: 1000.'
       type: String
     - contextPath: SymantecEDR.SystemActivity.status_id
-      description: 'The overall success or failure of the action reported by the event. Possible values are: 0 = Unknown 1 = Success 2 = Failure Applicable events : 1, 20, 21, 1000 Example: 1.'
+      description: 'The overall success or failure of the action reported by the event. Possible values are: 0 = Unknown 1 = Success 2 = Failure Applicable events: 1, 20, 21, 1000 Example: 1.'
       type: Number
     - contextPath: SymantecEDR.SystemActivity.uuid
       description: The unique ID for this event. UUID uniquely identifies an event with a single event type (type_id).
@@ -737,10 +737,10 @@ script:
       description: 'The type of the managed entity.Depending on this entity type, data would contain the corresponding entity content. Refer to this link  https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf section 3.74 Entity for all the Possible values for managed entity types'
       type: String
     - contextPath: SymantecEDR.AuditEvent.entity_result.uid
-      description: 'Unique Identifer associated with the Managed Entity'
+      description: Unique identifier associated with the managed entity.
       type: String
     - contextPath: SymantecEDR.AuditEvent.entity_result.name
-      description: 'The name of the managed entity.'
+      description: The name of the managed entity.
       type: String
     - contextPath: SymantecEDR.AuditEvent.status_id
       description: 'The overall success or failure of the action reported by the event. Values are: 0 = Unknown 1 = Success 2 = Failure.'
@@ -755,7 +755,7 @@ script:
       description: The username or ID that originated or caused the event.
       type: String
     - contextPath: SymantecEDR.AuditEvent.atp_node_role
-      description: 'The role of the ATP appliance that generated the event. Possible values are: 0 = Pre-Bootstrap, 1 = Network Scanner, 2 = Management, 3 = Standalone Network, 4 = Standalone Endpoint 5 = All in One Applicable events : 1, 20, 21, 1000'
+      description: 'The role of the ATP appliance that generated the event. Possible values are: 0 = Pre-Bootstrap, 1 = Network Scanner, 2 = Management, 3 = Standalone Network, 4 = Standalone Endpoint 5 = All in One Applicable events: 1, 20, 21, 1000.'
       type: Number
     - contextPath: SymantecEDR.AuditEvent.category_id
       description: The event type category. 4 = Audit.
@@ -767,7 +767,7 @@ script:
       description: 'The index of the event. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. Example: epmp_events-2015-11-05.'
       type: String
     - contextPath: SymantecEDR.AuditEvent.count
-      description: 'The count of system changes in the event.'
+      description: The count of system changes in the event.
       type: Number
     - contextPath: SymantecEDR.AuditEvent.device_name
       description: The device name (i.e., the name of the endpoint or appliance associated with an event).
@@ -794,7 +794,7 @@ script:
       description: 'The version of the product that originated the event. Example: 4.6.8-8.'
       type: String
     - contextPath: SymantecEDR.AuditEvent.device_end_time
-      description: 'The end time of an event (in format yyyy-MM-dd’T’HH:mm:ss.SSSZ). This is used with the aggregation count field.'
+      description: The end time of an event (in format yyyy-MM-dd'T'HH:mm:ss.SSSZ). This is used with the aggregation count field.
       type: Date
     - contextPath: SymantecEDR.AuditEvent.type_id
       description: 'The unique identifier for an event. The following events are supported: For type_id details refer to “https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html”.'
@@ -883,7 +883,7 @@ script:
     name: symantec-edr-event-list
     outputs:
     - contextPath: SymantecEDR.Event.type_id
-      description: 'The unique identifier for an event. Refer to “https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf”'
+      description: 'The unique identifier for an event. Refer to “https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf”.'
       type: Number
     - contextPath: SymantecEDR.Event.severity_id
       description: 'Event severity that specifies the importance of the event. Values are: 1 = info (default), 2 = warning, 3 = minor, 4 = major, 5 = critical, 6 = fatal.'
@@ -910,76 +910,76 @@ script:
       description: The username or ID that originated or caused the event.
       type: String
     - contextPath: SymantecEDR.Event.user_domain
-      description: 'Event User associated with Domain'
+      description: Event user associated with the domain.
       type: String
     - contextPath: SymantecEDR.Event.user_sid
-      description: 'Unique ID of the user that originated the event or the user on whose behalf the event occurred.'
+      description: Unique ID of the user who originated the event or the user on whose behalf the event occurred.
       type: String
     - contextPath: SymantecEDR.Event.device_domain
       description: 'The domain where device resides. Example: "internal.somecompany.com”.'
       type: String
     - contextPath: SymantecEDR.Event.operation
-      description: 'The OS operation that initiated the event; Refer to “https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf”.'
+      description: 'The OS operation that initiated the event. Refer to “https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf”.'
       type: Number
     - contextPath: SymantecEDR.Event.event_actor.pid
       description: The process identifier as reported by the operating system.
       type: Number
     - contextPath: SymantecEDR.Event.event_actor.uid
-      description: 'The unique identifier of the process. Example : "2ef07353-c1d2-409d-addd-2eed37a87e56". Applicable events : 8007.'
+      description: 'The unique identifier of the process. Example: "2ef07353-c1d2-409d-addd-2eed37a87e56". Applicable events: 8007.'
       type: String
     - contextPath: SymantecEDR.Event.event_actor.cmd_line
       description: 'The command line that was used to launch the process. Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, 8081.'
       type: String
     - contextPath: SymantecEDR.Event.event_actor.start_time
-      description: 'Start_time for the originating event.'
+      description: Start time for the originating event.
       type: Date
     - contextPath: SymantecEDR.Event.event_actor.signature_level_id
-      description: 'A numeric representation of the signature level. Possible values are: 0 = UNKNOWN, 10 = UNSIGNED, 20 = SIGNED_BUT_UNTRUSTED, 30 = SIGNED, 40 = CLASS3_SIGNED, 50 = SYMC_SIGNED, 60 = MICROSOFT_SIGNED, 70 = MICROSOFT_OS_COMPONENT Applicable events : 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009.'
+      description: 'A numeric representation of the signature level. Possible values are: 0 = UNKNOWN, 10 = UNSIGNED, 20 = SIGNED_BUT_UNTRUSTED, 30 = SIGNED, 40 = CLASS3_SIGNED, 50 = SYMC_SIGNED, 60 = MICROSOFT_SIGNED, 70 = MICROSOFT_OS_COMPONENT Applicable events: 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009.'
       type: Number
     - contextPath: SymantecEDR.Event.event_actor.integrity_id
-      description: 'The process integrity level (Windows only). Possible values are: 0 = Unknown, 1 = Untrusted, 2 = Low, 3 = Medium, 4 = Medium Plus, 5 = High, 6 = System, 7 = Protected Applicable events : 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009.'
+      description: 'The process integrity level (Windows only). Possible values are: 0 = Unknown, 1 = Untrusted, 2 = Low, 3 = Medium, 4 = Medium Plus, 5 = High, 6 = System, 7 = Protected Applicable events: 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009.'
       type: Number
     - contextPath: SymantecEDR.Event.event_actor.user.name
-      description: 'The username or ID that originated or caused the event.'
+      description: The username or ID that originated or caused the event.
       type: String
     - contextPath: SymantecEDR.Event.event_actor.user.sid
-      description: 'Event Actor user security identifier.'
+      description: Event actor user security identifier.
       type: String
     - contextPath: SymantecEDR.Event.event_actor.file.name
-      description: 'The name of the file.'
+      description: The name of the file.
       type: String
     - contextPath: SymantecEDR.Event.event_actor.file.md5
-      description: 'The MD5 checksum of the file.'
+      description: The MD5 checksum of the file.
       type: String
     - contextPath: SymantecEDR.Event.event_actor.file.modified
-      description: 'Threat file modified date in ISO 8601 format.'
+      description: Threat file modified date in ISO 8601 format.
       type: Date
     - contextPath: SymantecEDR.Event.event_actor.file.path
-      description: 'The full path to the object.'
+      description: The full path to the object.
       type: String
     - contextPath: SymantecEDR.Event.event_actor.file.normalized_path
-      description: 'The CSIDL normalized path name;Windows Only.'
+      description: The CSIDL normalized path name (for Windows only).
       type: String
     - contextPath: SymantecEDR.Event.event_actor.file.signature_company_name
-      description: 'The name of the company on the certificate.'
+      description: The name of the company on the certificate.
       type: String
     - contextPath: SymantecEDR.Event.event_actor.file.signature_value_ids
       description: 'An integer array that contains one or more of the following signature values as derived from the Signature Bits. Possible values are: 0 = Unsigned, 1 = Signed, 2 = Code Signed, 3 = Class 3 Signed, 4 = Symantec Signed, 5 = Microsoft Signed, 6 = OS Component, 7 = Windows Hardware Wuality Labs (WHQL), 8 = Signer Explicitly Trusted, 9 = Signature Has Extra Date, 10 = Signature Uses MD5, 11 = Signature Uses SHA-1,12 = Signature Chain Not Valid, 13 = Signature From Catalog, 14 = Hash Does Not Match, 15 = Local Trusted Certificate, 16 = Trustworthy, 17 = Well Known Trusted Root Certificate, 18 = Heuristically Trustworthy, 19 = Symantec Internal, 20 = Signature Uses SHA-256, 21 = Signature Uses SHA-384, 22 = Signature Uses SHA-512, 23 = Signer Explicitly Revoked.'
       type: Number
     - contextPath: SymantecEDR.Event.event_actor.file.sha2
-      description: 'The SHA256 checksum of the file (hex string).'
+      description: The SHA256 checksum of the file (hex string).
       type: String
     - contextPath: SymantecEDR.Event.event_actor.file.original_name
-      description: 'The original name of the file.'
+      description: The original name of the file.
       type: String
     - contextPath: SymantecEDR.Event.process.pid
-      description: 'The process identifier as reported by the operating system.'
+      description: The process identifier as reported by the operating system.
       type: Number
     - contextPath: SymantecEDR.Event.process.uid
-      description: 'The unique identifier of the process.'
+      description: The unique identifier of the process.
       type: String
     - contextPath: SymantecEDR.Event.process.cmd_line
-      description: 'The command line that was used to launch the process.'
+      description: The command line that was used to launch the process.
       type: String
     - contextPath: SymantecEDR.Event.process.signature_level_id
       description: 'A numeric representation of the signature level. Possible values are: 0 = Unknown, 10 = Unsigned, 20 = Signed But Untrusted, 30 = Signed, 40 = Class 3 Signed, 50 = SYMC Signed, 60 = Microsoft Signed, 70 = Microsoft OS Component.'
@@ -988,49 +988,49 @@ script:
       description: 'The process integrity level (Windows only). Possible values are:  0 = Unknown, 1 = Untrusted,  2 = Low,  3 = Medium,  4 = Medium Plus,  5 = High, 6 = System,  7 = Protected.'
       type: Number
     - contextPath: SymantecEDR.Event.process.user.name
-      description: 'The username or ID that originated or caused the event.'
+      description: The username or ID that originated or caused the event.
       type: String
     - contextPath: SymantecEDR.Event.process.user.sid
-      description: 'Event Actor user security identifier.'
+      description: Event actor user security identifier.
       type: String
     - contextPath: SymantecEDR.Event.process.file.normalized_path
-      description: 'The CSIDL normalized path name;Windows Only.'
+      description: The CSIDL normalized path name (for Windows only).
       type: String
     - contextPath: SymantecEDR.Event.process.file.name
-      description: 'The name of the file.'
+      description: The name of the file.
       type: String
     - contextPath: SymantecEDR.Event.process.file.md5
-      description: 'The MD5 checksum of the file.'
+      description: The MD5 checksum of the file.
       type: String
     - contextPath: SymantecEDR.Event.process.file.modified
-      description: 'Threat file modified date in ISO 8601 format.'
+      description: Threat file modified date in ISO 8601 format.
       type: Date
     - contextPath: SymantecEDR.Event.process.file.path
-      description: 'The full path to the object.'
+      description: The full path to the object.
       type: String
     - contextPath: SymantecEDR.Event.process.file.signature_company_name
-      description: 'The name of the company on the certificate.'
+      description: The name of the company on the certificate.
       type: String
     - contextPath: SymantecEDR.Event.process.file.signature_value_ids
       description: 'An integer array that contains one or more of the following signature values as derived from the Signature Bits. Possible values are: 0 = Unsigned, 1 = Signed, 2 = Code Signed, 3 = Class 3 Signed, 4 = Symantec Signed, 5 = Microsoft Signed, 6 = OS Component, 7 = Windows Hardware Wuality Labs (WHQL), 8 = Signer Explicitly Trusted, 9 = Signature Has Extra Date, 10 = Signature Uses MD5, 11 = Signature Uses SHA-1,12 = Signature Chain Not Valid, 13 = Signature From Catalog, 14 = Hash Does Not Match, 15 = Local Trusted Certificate, 16 = Trustworthy, 17 = Well Known Trusted Root Certificate, 18 = Heuristically Trustworthy, 19 = Symantec Internal, 20 = Signature Uses SHA-256, 21 = Signature Uses SHA-384, 22 = Signature Uses SHA-512, 23 = Signer Explicitly Revoked.'
       type: Number
     - contextPath: SymantecEDR.Event.process.file.sha2
-      description: 'The SHA256 checksum of the file (hex string).'
+      description: The SHA256 checksum of the file (hex string).
       type: String
     - contextPath: SymantecEDR.Event.process.file.original_name
-      description: 'The original name of the file.'
+      description: The original name of the file.
       type: String
     - contextPath: SymantecEDR.Event.enriched_data.rule_name
-      description: 'The name of the IntelliFilter rule that observes all of the endpoint data recorded events on the client.'
+      description: The name of the IntelliFilter rule that observes all of the endpoint data recorded events on the client.
       type: String
     - contextPath: SymantecEDR.Event.enriched_data.category_name
-      description: 'The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension (.jpg.exe) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events : 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009'
+      description: 'The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension (.jpg.exe) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009'
       type: String
     - contextPath: SymantecEDR.Event.enriched_data.category_id
-      description: 'The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands'
+      description: The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands.
       type: Number
     - contextPath: SymantecEDR.Event.ref_uid
-      description: 'The Event Reference UID'
+      description: The event reference UID.
       type: String
     - contextPath: SymantecEDR.Event.uuid
       description: The unique ID for this event. UUID uniquely identifies an event with a single event type (type_id).
@@ -1088,7 +1088,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The unique identifer for an event. Refer to this link for Event Type IDs :
+        The unique identifier for an event. Refer to this link for Event Type IDs :
          https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html
       isArray: false
       name: type_id
@@ -1117,7 +1117,7 @@ script:
       description: The unique identifier for an event type.
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.severity_id
-      description: 'Event severity that specifes the importance of the event. Possible values are: 1 = info (default) 2 = warning 3 = minor 4 = major 5 = critical 6 = fatal'
+      description: 'Event severity that specifies the importance of the event. Possible values are: 1 = info (default) 2 = warning 3 = minor 4 = major 5 = critical 6 = fatal'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.device_time
       description: The timestamp (in ISO 8601 format) that specifies the time at which the event occurred.
@@ -1147,7 +1147,7 @@ script:
       description: Unique ID of the user that originated the event or the user on whose behalf the event occurred.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.incident
-      description: 'The unique ID of the incident that is related to this event. Applicable events : All events associated with an incident.'
+      description: 'The unique ID of the incident that is related to this event. Applicable events: All events associated with an incident.'
       type: String
     - contextPath: SymantecEDR.IncidentEvent.device_domain
       description: The domain where device resides.
@@ -1246,16 +1246,16 @@ script:
       description: The name of the company on the certificate.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.file.signature_value_ids
-      description: 'The issuer of the signature. Applicable events : 4096, 4099 '
+      description: 'The issuer of the signature. Applicable events: 4096, 4099 '
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.rule_name
       description: 'The name of the IntelliFilter rule that observes all of the endpoint data recorded events on the client.'
       type: String
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.suspicion_score
-      description: 'Score that determines the suspiciousness of the action captured in the event. 1. Very Low : 1-25 (Informational) , 2. Low : 26-50 (Suspicious) , 3. Moderate : 51-75 (Suspicious) , 4. Severe : 76-87 (Malicious), 5. Very Severe : 88-100 (Malicious).'
+      description: 'Score that determines the suspiciousness of the action captured in the event. 1. Very Low: 1-25 (Informational) , 2. Low: 26-50 (Suspicious) , 3. Moderate: 51-75 (Suspicious) , 4. Severe: 76-87 (Malicious), 5. Very Severe: 88-100 (Malicious).'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.category_name
-      description: 'The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension (.jpg.exe) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events : 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009'
+      description: 'The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension (.jpg.exe) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009'
       type: String
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.category_id
       description: The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands
@@ -1336,13 +1336,13 @@ script:
         A search query as a Lucene query string.
 
         Example:
-        query="type_id:(4096 OR 4098 OR 4123)",
+        query="type_id:(4096 OR 4098 OR 4123)".
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: An incident ID
+      description: An incident ID.
       isArray: false
       name: incident_id
       required: false
@@ -1415,7 +1415,7 @@ script:
       description: The time (in ISO 8601 format) of last modification.
       type: Date
     - contextPath: SymantecEDR.Incident.uuid
-      description: 'The GUID assigned for this incident. Example : "483e3fde-4556-4800-81b1-e8da5ee394b6".'
+      description: 'The GUID assigned for this incident. Example: "483e3fde-4556-4800-81b1-e8da5ee394b6".'
       type: String
     - contextPath: SymantecEDR.Incident.atp_rule_id
       description: The rule that triggered this incident.
@@ -1634,7 +1634,7 @@ script:
       secret: false
     - default: false
       description: |
-        For add comments : The value should contain a user defined comment. The maximum length of the comment is 512 characters.
+        For add comments: The value should contain a user defined comment. The maximum length of the comment is 512 characters.
 
         For update resolution of a closed incident: Any one of supported resolution values:
         0 = INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination.
