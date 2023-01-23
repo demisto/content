@@ -143,9 +143,9 @@ def get_template_list_command(client: Client) -> CommandResults:
     limit = demisto.args().get('limit')
 
     if offset is not None and limit is None:
-        return "limit should be set."
+        return_error("limit should be set.")
     elif offset is None and limit is not None:
-        return "offset sohuld be set."
+        return_error("offset sohuld be set.")
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
@@ -193,9 +193,9 @@ def get_simulation_list_command(client: Client) -> CommandResults:
     limit = demisto.args().get('limit')
 
     if offset is not None and limit is None:
-        return "limit should be set."
+        return_error("limit should be set.")
     elif offset is None and limit is not None:
-        return "offset sohuld be set."
+        return_error("offset sohuld be set.")
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
@@ -302,9 +302,9 @@ def get_simulation_threats_command(client: Client) -> CommandResults:
     limit = demisto.args().get('limit')
 
     if offset is not None and limit is None:
-        return "limit should be set."
+        return_error("limit should be set.")
     elif offset is None and limit is not None:
-        return "offset sohuld be set."
+        return_error("offset sohuld be set.")
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
@@ -340,9 +340,9 @@ def get_simulation_actions_command(client: Client) -> CommandResults:
     limit = demisto.args().get('limit')
 
     if offset is not None and limit is None:
-        return "limit should be set."
+        return_error("limit should be set.")
     elif offset is None and limit is not None:
-        return "offset sohuld be set."
+        return_error("offset sohuld be set.")
 
     for threat_id in threat_ids:
         picus_endpoint = "/v1/simulations/"
