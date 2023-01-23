@@ -14,13 +14,20 @@ configuration:
   required: true
   type: 0
 - display: Access Key ID
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Access Key
+- display: Access Key ID
   name: access_key_id
-  required: true
+  required: false
   type: 0
+  hidden: true
 - display: Secret Access Key
   name: secret_access_key
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -29,38 +36,35 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 7 days
+- defaultvalue: '7 days'
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
-  additionalinfo: "The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds\
-    \ etc."
-- defaultvalue: '10'
-  display: Maximum number of incidents per fetch
+  additionalinfo: "The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds etc."
+- display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
+  defaultvalue: '10'
   type: 0
+  required: false
   additionalinfo: Maximal number of events is 100
 - display: Fetch IoT Alerts
   name: fetch_alerts
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: When selected, the integration fetches IoT alerts from the IoT Security
-    Portal.
+  additionalinfo: When selected, the integration fetches IoT alerts from the IoT Security Portal.
 - display: Fetch IoT Vulnerabilities
   name: fetch_vulns
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: When selected, the integration fetches IoT vulnerabilities from
-    the IoT Security Portal.
+  additionalinfo: When selected, the integration fetches IoT vulnerabilities from the IoT Security Portal.
 - display: The timeout for querying APIs
   name: api_timeout
-  defaultvalue: "60"
-  type: 0
   required: false
+  type: 0
+  defaultvalue: "60"
 - display: Incident type
   name: incidentType
   required: false
@@ -150,8 +154,7 @@ script:
       description: The device description.
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.asset_tag
-      description: 'The device asset tag (e.g. a sticky label at the bottom of the
-        device).'
+      description: 'The device asset tag (e.g. a sticky label at the bottom of the device).'
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.os_group
       description: 'The device OS group.'
@@ -265,8 +268,7 @@ script:
       description: The device description.
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.asset_tag
-      description: The device asset tag (e.g. a sticky label at the bottom of the
-        device).
+      description: The device asset tag (e.g. a sticky label at the bottom of the device).
       type: String
     - contextPath: PaloAltoNetworksIoT.Device.os_group
       description: The device OS group.
@@ -440,7 +442,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.42476
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

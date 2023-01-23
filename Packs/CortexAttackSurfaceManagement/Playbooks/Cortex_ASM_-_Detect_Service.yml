@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3aab2a25-bca5-4d74-87fa-2784a6fe0543
+    taskid: c85a547b-cf4d-484f-8056-bd18b78202f7
     type: condition
     task:
-      id: 3aab2a25-bca5-4d74-87fa-2784a6fe0543
+      id: c85a547b-cf4d-484f-8056-bd18b78202f7
       version: -1
       name: What is the sub-alert type?
       description: Determines ASM sub-alert type for different scans.
@@ -49,31 +49,43 @@ tasks:
     nexttasks:
       '#default#':
       - "10"
-      Insecure OpenSSH:
+      Banner Check:
       - "8"
-      RDP Server:
+      Single Port Check:
       - "9"
     separatecontext: false
     conditions:
-    - label: RDP Server
+    - label: Single Port Check
       condition:
-      - - operator: containsGeneral
+      - - operator: inList
           left:
             value:
               complex:
                 root: inputs.ASMRuleID
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '["]'
             iscontext: true
           right:
             value:
-              simple: RdpServer
+              simple: RdpServer,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer
           ignorecase: true
-    - label: Insecure OpenSSH
+    - label: Banner Check
       condition:
-      - - operator: containsGeneral
+      - - operator: inList
           left:
             value:
               complex:
                 root: inputs.ASMRuleID
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '["]'
             iscontext: true
           right:
             value:
@@ -461,3 +473,5 @@ outputs: []
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
