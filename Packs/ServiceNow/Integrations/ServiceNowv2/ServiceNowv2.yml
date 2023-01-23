@@ -134,13 +134,6 @@ configuration:
   name: custom_fields
   required: false
   type: 12
-- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
-  defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
-  name: close_incident
-  required: false
-  hidden: true
-  type: 8
 - additionalinfo: Define how to close the mirrored tickets in XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
   display: Mirrored XSOAR Ticket closure method
