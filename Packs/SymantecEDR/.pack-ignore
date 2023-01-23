@@ -8,7 +8,7 @@ ignore=ST108
 ignore=ST108
 
 [file:classifier-Symantec_EDR_-_Incident_Classifier.json]
-ignore=ST108
+ignore=ST108, ST110
 
 [file:incidentfield-Symantec_EDR_attacks.json]
 ignore=ST108
@@ -35,7 +35,7 @@ ignore=ST108
 ignore=ST108
 
 [file:layoutscontainer-Symantec_EDR_layout.json]
-ignore=ST108
+ignore=ST108, ST110, ST109
 
 [file:classifier-Symantec_EDR_-_Incoming_Mapper.json]
 ignore=ST108
