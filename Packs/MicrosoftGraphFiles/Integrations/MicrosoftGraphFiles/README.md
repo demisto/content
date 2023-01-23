@@ -20,7 +20,8 @@ For more details about the authentication used in this integration, see <a href=
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | host | Server URL | True |
-| auth_id | ID \(received from the admin consent - see Detailed Instructions\) | True |
+| Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+| auth_id | ID \(received from the admin consent - see Detailed Instructions\) | False |
 | tenant_id | Token \(received from the admin consent - see Detailed Instructions\) | False |
 | enc_key | Key \(received from the admin consent - see Detailed Instructions\) | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |

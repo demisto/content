@@ -47,7 +47,8 @@ At end of the process you'll see a message that you've logged in successfully.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | app_id | Application ID | True |
+    | app_id | Application ID | False |
+    | Azure Managed Identities client id | False |
     | subscription_id | Subscription ID | True |
     | resource_group_name | Resource Group Name | True |
     | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |

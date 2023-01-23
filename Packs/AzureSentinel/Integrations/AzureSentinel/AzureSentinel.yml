@@ -1811,7 +1811,7 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Types
       description: The threat types of the indicator.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.44762
   feed: false
   isfetch: true
   longRunning: false

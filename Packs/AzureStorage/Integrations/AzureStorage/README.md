@@ -51,7 +51,8 @@ The application must have *user_impersonation* permission and must allow public 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID |  | True |
+    | Application ID |  | False |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
     | Subscription ID |  | True |
     | Resource Group Name |  | True |
     | Trust any certificate (not secure) |  | False |

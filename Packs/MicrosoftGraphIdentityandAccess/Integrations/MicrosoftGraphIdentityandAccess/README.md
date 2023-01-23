@@ -7,7 +7,8 @@ Use the Azure Active Directory Identity And Access integration to manage roles a
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Application ID | True |
+    | Azure Managed Identities client id | False |
+    | Application ID | False |
     | Azure AD endpoint | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |

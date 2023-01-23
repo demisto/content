@@ -9,9 +9,10 @@ This integration was integrated and tested with version 2019-09-01 of AzureKeyVa
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Client ID | True |
+    | Client ID | False |
     | Client Secret | False |
     | Tenant ID | True |
+    | Azure Managed Identities client id | False |
     | Certificate Thumbprint | False |
     | Private Key | False |
     | Subscription ID | True |

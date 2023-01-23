@@ -231,7 +231,7 @@ def main():
         elif command == 'msgraph-apps-auth-test':
             return_results(test_connection(client))
         elif command == 'msgraph-apps-auth-reset':
-            return_results(test_connection(client))
+            return_results(reset_auth())
         elif command == 'msgraph-apps-service-principal-list':
             return_results(list_service_principals_command(client, args))
         elif command == 'msgraph-apps-service-principal-remove':

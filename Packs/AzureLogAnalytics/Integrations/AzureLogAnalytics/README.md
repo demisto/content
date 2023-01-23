@@ -76,6 +76,7 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 | credentials - password | Key\Client secret \(received from the authorization step - see Detailed Instructions \(?\) section\) | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
 | self_deployed | Use a self-deployed Azure application. | False |
 | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
 | redirect_uri | Application redirect URI \(for self-deployed mode\) | False |
