@@ -7,6 +7,7 @@ def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
+
 def test_fetch_incidents(requests_mock, mocker):
     from decyfir import Client, fetch_incidents
     date_format = '%Y-%m-%dT%H:%M:%SZ'
