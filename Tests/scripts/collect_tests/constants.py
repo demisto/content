@@ -90,7 +90,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
     FileType.XDRC_TEMPLATE,
-    FileType.LICENSE,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
@@ -114,6 +113,7 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.PYLINTRC,
     FileType.INI,
     FileType.PEM,
+    FileType.LICENSE,
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
