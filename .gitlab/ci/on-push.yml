@@ -428,7 +428,7 @@ slack-notify-nightly-build:
 #    TEST_MACHINES_LIST: "test-machines-master"
 
 
-xsiam_master_1:
+xsiam_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
