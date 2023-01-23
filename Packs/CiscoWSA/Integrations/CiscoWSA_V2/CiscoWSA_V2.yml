@@ -441,6 +441,15 @@ script:
       predefined:
       - monitor
       - block
+    - name: anti_malware_scanning_status
+      description: |-
+        Anti-Malware scanning status.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
     - name: suspect_user_agent_scanning
       description: |-
         Suspect user agent scanning action.
@@ -451,30 +460,37 @@ script:
       - block
       - scan
       - none
-    - name: malware_categories_action
-      description: Malware categories action.
-      required: false
-      isArray: false
-      auto: PREDEFINED
-      predefined:
-      - monitor
-      - block
-    - name: malware_categories_values
-      description: Malware categories values to perform action on.
+    - name: block_malware_categories
+      description: Malware categories to block.
       required: false
       isArray: true
-    - name: other_categories_action
-      description: Other categories action.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
-      - monitor
-      - block
-    - name: other_categories_values
-      description: Other categories values to perform action on.
+      - Adware
+      - Browser Helper Object
+      - Commercial System Monitor
+      - Dialer
+      - Generic Spyware
+      - Hijacker
+      - Other Malware
+      - Phishing URL
+      - PUA
+      - System Monitor
+      - Trojan Downloader
+      - Trojan Horse
+      - Trojan Phisher
+      - Virus
+      - Worm
+    - name: block_other_categories
+      description: Other categories to block.
       required: false
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - Encrypted File
+      - Outbreak Heuristics
+      - Unscannable
+
   - name: cisco-wsa-access-policy-delete
     description: Delete access policy.
     arguments:

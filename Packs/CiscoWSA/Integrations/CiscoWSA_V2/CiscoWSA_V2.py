@@ -53,7 +53,7 @@ class Client(BaseClient):
 
         except DemistoException as e:
             if e.res.status_code == 401:
-                raise Exception(
+                raise DemistoException(
                     "Authorization Error: make sure username and password are set correctly."
                 )
             raise e
@@ -85,7 +85,20 @@ class Client(BaseClient):
         policy_description: Optional[str] = None,
         policy_expiry: Optional[str] = None,
     ):
+        """
+        Create an access policy.
 
+        Args:
+            policy_name (str): Policy name to create.
+            policy_status (str): Policy status.
+            identification_profile_name (str): Identification profile name.
+            policy_order (int): Policy order.
+            policy_description (Optional[str], optional): Policy description. Defaults to None.
+            policy_expiry (Optional[str], optional): Policy expiration date. Defaults to None.
+
+        Returns:
+            Response: API response from Cisco WSA.
+        """
         data = remove_empty_elements(
             {
                 "access_policies": [
@@ -125,7 +138,7 @@ class Client(BaseClient):
         policy_expiry: Optional[str] = None,
     ):
         """
-        Update access policies.
+        Update an access policy.
 
         Args:
             policy_name (str): Policy name to update.
@@ -160,6 +173,48 @@ class Client(BaseClient):
             resp_type="response",
         )
 
+    def access_policy_protocols_user_agents_update_request(
+        self,
+        policy_name: str,
+        block_custom_user_agents: Optional[List[str]] = None,
+        allow_connect_ports: Optional[List[str]] = None,
+        block_protocols: Optional[List[str]] = None,
+    ):
+        """
+        Update access policy's objects settings.
+
+        Args:
+            policy_name (str): Policy name to update.
+            block_custom_user_agents (Optional[List[str]], optional): Block custom user agents. Defaults to None.
+            allow_connect_ports (Optional[List[str]], optional): Allow connect ports. Defaults to None.
+            block_protocols (Optional[List[str]], optional): Block protocols. Defaults to None.
+
+        Returns:
+            Response: API response from Cisco WSA.
+        """
+        data = remove_empty_elements(
+            {
+                "access_policies": [
+                    {
+                        "policy_name": policy_name,
+                        "protocols_user_agents": {
+                            "block_custom_user_agents": block_custom_user_agents,
+                            "allow_connect_ports": allow_connect_ports,
+                            "block_protocols": block_protocols,
+                            "state": "custom",
+                        },
+                    }
+                ]
+            }
+        )
+
+        return self._http_request(
+            "PUT",
+            f"{V3_PREFIX}/web_security/access_policies",
+            json_data=data,
+            resp_type="response",
+        )
+
     def access_policy_url_filtering_update_request(
         self,
         policy_name: str,
@@ -176,6 +231,27 @@ class Client(BaseClient):
         safe_search_status: Optional[str] = None,
         unsupported_safe_search_engine: Optional[str] = None,
     ):
+        """
+        Update access policy's URL filtering settings.
+
+        Args:
+            policy_name (str): Policy name to update.
+            predefined_categories_action (Optional[str], optional): Predefined categories action. Defaults to None.
+            predefined_categories (Optional[List[str]], optional): Predefined categories. Defaults to None.
+            youtube_categories_action (Optional[str], optional): YouTube categories action. Defaults to None.
+            youtube_categories (Optional[List[str]], optional): YouTube categories. Defaults to None.
+            custom_categories_action (Optional[str], optional): Custom categories action. Defaults to None.
+            custom_categories (Optional[List[str]], optional): Custom categories. Defaults to None.
+            uncategorized_url (Optional[str], optional): Uncategorized URL action. Defaults to None.
+            update_categories_action (Optional[str], optional): Update categories action. Defaults to None.
+            content_rating_action (Optional[str], optional): Content rating action. Defaults to None.
+            content_rating_status (Optional[str], optional): Content rating status. Defaults to None.
+            safe_search_status (Optional[str], optional): Safe search status. Defaults to None.
+            unsupported_safe_search_engine (Optional[str], optional): Unsupported safe search engine. Defaults to None.
+
+        Returns:
+            Response: API response from Cisco WSA.
+        """
         data = remove_empty_elements(
             {
                 "access_policies": [
@@ -213,28 +289,38 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def access_policy_protocols_user_agents_update_request(
+    def access_policy_applications_update_request(
         self,
         policy_name: str,
-        block_custom_user_agents: Optional[List[str]] = None,
-        allow_connect_ports: Optional[List[str]] = None,
-        block_protocols: Optional[List[str]] = None,
+        application: str,
+        action: str,
+        values: List[str],
     ):
-        data = remove_empty_elements(
-            {
-                "access_policies": [
-                    {
-                        "policy_name": policy_name,
-                        "protocols_user_agents": {
-                            "block_custom_user_agents": block_custom_user_agents,
-                            "allow_connect_ports": allow_connect_ports,
-                            "block_protocols": block_protocols,
-                            "state": "custom",
+        """
+        Update access policy's applications settings.
+
+        Args:
+            policy_name (str): Policy name to update.
+            application (str): Application to update.
+            action (str): Action to perform on values.
+            values (List[str]): Values to perform action on.
+
+        Returns:
+            Response: API response from Cisco WSA.
+        """
+        data = {
+            "access_policies": [
+                {
+                    "policy_name": policy_name,
+                    "avc": {
+                        "applications": {
+                            application: {action: {value: {} for value in values}},
                         },
-                    }
-                ]
-            }
-        )
+                        "state": "custom",
+                    },
+                }
+            ]
+        }
 
         return self._http_request(
             "PUT",
@@ -253,26 +339,60 @@ class Client(BaseClient):
         http_or_https_max_object_size_mb: Optional[int] = None,
         ftp_max_object_size_mb: Optional[int] = None,
     ):
-        data = remove_empty_elements(
-            {
-                "access_policies": [
-                    {
-                        "policy_name": policy_name,
-                        "objects": {
-                            "object_type": {
-                                object_type: {object_action: object_values},
-                            },
-                            "block_custom_mime_types": block_custom_mime_types,
-                            "max_object_size_mb": {
-                                "http_or_https": http_or_https_max_object_size_mb,
-                                "ftp": ftp_max_object_size_mb,
-                            },
-                            "state": "custom",
-                        },
-                    }
-                ]
-            }
+        """
+        Update access policy's objects settings.
+
+        Args:
+            policy_name (str): Policy name to update.
+            object_type (Optional[str], optional): Object type. Defaults to None.
+            object_action (Optional[str], optional): Object action. Defaults to None.
+            object_values (Optional[List[str]], optional): Object values. Defaults to None.
+            block_custom_mime_types (Optional[List[str]], optional): Block custom MIME types. Defaults to None.
+            http_or_https_max_object_size_mb (Optional[int], optional): HTTP(S) max object size MB. Defaults to None.
+            ftp_max_object_size_mb (Optional[int], optional): FTP max object size MB. Defaults to None.
+
+        Returns:
+            Response: API response from Cisco WSA.
+        """
+        access_policies = self.access_policy_list_request(policy_name).get(
+            "access_policies"
         )
+
+        if access_policies:
+            objects = access_policies[0].get("objects")
+            if objects:
+                if all([object_type, object_action, object_values]):
+                    object_values.extend(
+                        objects["object_type"][object_type].get(object_action, [])
+                    )
+                    objects["object_type"][object_type].update(
+                        {object_action: object_values}
+                    )
+
+                elif any([object_type, object_action, object_values]):
+                    raise DemistoException(
+                        "object_type, object_action, object_values should be used in conjunction."
+                    )
+
+                if block_custom_mime_types:
+                    objects["block_custom_mime_types"] = block_custom_mime_types
+
+                objects["max_object_size_mb"] = remove_empty_elements(
+                    {
+                        "http_or_https": http_or_https_max_object_size_mb,
+                        "ftp": ftp_max_object_size_mb,
+                    }
+                )
+
+                data = {
+                    "access_policies": [
+                        {"policy_name": policy_name, "objects": objects}
+                    ]
+                }
+            else:
+                raise DemistoException("Update failed, objects were not found.")
+        else:
+            raise DemistoException("Policy was not found.")
 
         return self._http_request(
             "PUT",
@@ -289,11 +409,25 @@ class Client(BaseClient):
         file_reputation_action: Optional[str] = None,
         anti_malware_scanning_status: Optional[str] = None,
         suspect_user_agent_scanning: Optional[str] = None,
-        malware_categories_action: Optional[str] = None,
-        malware_categories_values: Optional[List[str]] = None,
-        other_categories_action: Optional[str] = None,
-        other_categories_values: Optional[List[str]] = None,
+        block_malware_categories: Optional[List[str]] = None,
+        block_other_categories: Optional[List[str]] = None,
     ):
+        """
+        Update access policy's applications settings.
+
+        Args:
+            policy_name (str): Policy name to update.
+            web_reputation_status (Optional[str], optional): Web reputation status. Defaults to None.
+            file_reputation_filtering_status (Optional[str], optional): File reputation filtering status. Defaults to None.
+            file_reputation_action (Optional[str], optional): Filr reputation action. Defaults to None.
+            anti_malware_scanning_status (Optional[str], optional): Anti-malware scanning status. Defaults to None.
+            suspect_user_agent_scanning (Optional[str], optional): Suspect uset agent scanning. Defaults to None.
+            block_malware_categories (Optional[List[str]], optional): Malware categories to block. Defaults to None.
+            block_other_categories (Optional[List[str]], optional): Other categories to block. Defaults to None.
+
+        Returns:
+            Response: API response from Cisco WSA.
+        """
         data = remove_empty_elements(
             {
                 "access_policies": [
@@ -304,7 +438,9 @@ class Client(BaseClient):
                             "adv_malware_protection": {
                                 "file_reputation_filtering": file_reputation_filtering_status,
                                 "file_reputation": {
-                                    file_reputation_action: "Known Malicious and High-Risk Files"
+                                    file_reputation_action: [
+                                        "Known Malicious and High-Risk Files"
+                                    ]
                                     if file_reputation_action
                                     else None
                                 },
@@ -314,44 +450,14 @@ class Client(BaseClient):
                                     "amw_scan_status": anti_malware_scanning_status
                                 },
                                 "suspect_user_agent_scanning": suspect_user_agent_scanning,
-                                "malware_categories": {malware_categories_action: malware_categories_values},
-                                "other_categories": {
-                                    other_categories_action: other_categories_values,
-                                },
+                                "block_malware_categories": block_malware_categories,
+                                "block_other_categories": block_other_categories,
                             },
                         },
                     }
                 ]
             }
         )
-
-        return self._http_request(
-            "PUT",
-            f"{V3_PREFIX}/web_security/access_policies",
-            json_data=data,
-            resp_type="response",
-        )
-
-    def access_policy_applications_update_request(
-        self,
-        policy_name: str,
-        application: str,
-        action: str,
-        values: List[str],
-    ):
-        data = {
-            "access_policies": [
-                {
-                    "policy_name": policy_name,
-                    "avc": {
-                        "applications": {
-                            application: {action: {value: {} for value in values}},
-                        },
-                        "state": "custom",
-                    },
-                }
-            ]
-        }
 
         return self._http_request(
             "PUT",
@@ -721,7 +827,7 @@ def access_policy_update_command(
     if response.status_code == 204:
         readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
-        raise Exception(response.json())
+        raise DemistoException(response.json())
 
     return CommandResults(
         readable_output=readable_output,
@@ -756,7 +862,7 @@ def access_policy_protocols_user_agents_update_command(
     if response.status_code == 204:
         readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
-        raise Exception(response.json())
+        raise DemistoException(response.json())
 
     return CommandResults(
         readable_output=readable_output,
@@ -809,7 +915,7 @@ def access_policy_url_filtering_update_command(
     if response.status_code == 204:
         readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
-        raise Exception(response.json())
+        raise DemistoException(response.json())
 
     return CommandResults(
         readable_output=readable_output,
@@ -844,7 +950,7 @@ def access_policy_applications_update_command(
     if response.status_code == 204:
         readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
-        raise Exception(response.json())
+        raise DemistoException(response.json())
 
     return CommandResults(
         readable_output=readable_output,
@@ -855,7 +961,7 @@ def access_policy_objects_update_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     """
-    Update an access policy.
+    Update access policy's objects settings.
 
     Args:
         client (Client): Cisco WSA API client.
@@ -887,7 +993,7 @@ def access_policy_objects_update_command(
     if response.status_code == 204:
         readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
-        raise Exception(response.json())
+        raise DemistoException(response.json())
 
     return CommandResults(
         readable_output=readable_output,
@@ -898,7 +1004,7 @@ def access_policy_anti_malware_update_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     """
-    Update an access policy.
+    Update access policy's anti-malware and reputation settings.
 
     Args:
         client (Client): Cisco WSA API client.
@@ -908,15 +1014,13 @@ def access_policy_anti_malware_update_command(
         CommandResults: readable outputs for XSOAR.
     """
     policy_name = args["policy_name"]
-    web_reputation_status = args.get('web_reputation_status')
-    file_reputation_filtering_status = args.get('file_reputation_filtering_status')
-    file_reputation_action = args.get('file_reputation_action')
-    anti_malware_scanning_status = args.get('anti_malware_scanning_status')
-    suspect_user_agent_scanning = args.get('suspect_user_agent_scanning')
-    malware_categories_action = args.get('malware_categories_action')
-    malware_categories_values = args.get('malware_categories_values')
-    other_categories_action = args.get('other_categories_action')
-    other_categories_values = args.get('other_categories_values')
+    web_reputation_status = args.get("web_reputation_status")
+    file_reputation_filtering_status = args.get("file_reputation_filtering_status")
+    file_reputation_action = args.get("file_reputation_action")
+    anti_malware_scanning_status = args.get("anti_malware_scanning_status")
+    suspect_user_agent_scanning = args.get("suspect_user_agent_scanning")
+    block_malware_categories = argToList(args.get("block_malware_categories"))
+    block_other_categories = argToList(args.get("block_other_categories"))
 
     response = client.access_policy_anti_malware_update_request(
         policy_name=policy_name,
@@ -925,16 +1029,14 @@ def access_policy_anti_malware_update_command(
         file_reputation_action=file_reputation_action,
         anti_malware_scanning_status=anti_malware_scanning_status,
         suspect_user_agent_scanning=suspect_user_agent_scanning,
-        malware_categories_action=malware_categories_action,
-        malware_categories_values=malware_categories_values,
-        other_categories_action=other_categories_action,
-        other_categories_values=other_categories_values,
+        block_malware_categories=block_malware_categories,
+        block_other_categories=block_other_categories,
     )
 
     if response.status_code == 204:
         readable_output = f'"{policy_name}" access policy updated successfully.'
     else:
-        raise Exception(response.json())
+        raise DemistoException(response.json())
 
     return CommandResults(
         readable_output=readable_output,
@@ -961,7 +1063,7 @@ def access_policy_delete_command(
     if response.status_code == 204:
         readable_output = f"{policy_names} access policy deleted successfully."
     else:
-        raise Exception(response.json())
+        raise DemistoException(response.json())
 
     return CommandResults(
         readable_output=readable_output,
