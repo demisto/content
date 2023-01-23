@@ -1,7 +1,7 @@
-id: Test XDR execute script Playbook
+id: Test XDR Playbook execute script commands
 version: 5
 vcShouldKeepItemLegacyProdMachine: false
-name: Test XDR execute script Playbook
+name: Test XDR Playbook execute script commands
 starttaskid: "0"
 tasks:
   "0":

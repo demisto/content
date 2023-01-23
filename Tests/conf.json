@@ -760,15 +760,20 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR execute script Playbook",
+            "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
             "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR Playbook general and quarantine file commands",
+            "playbookID": "Test XDR Playbook quarantine file command",
             "fromversion": "4.1.0",
             "timeout": 2500
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook general commands",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Cortex XDR - IR",

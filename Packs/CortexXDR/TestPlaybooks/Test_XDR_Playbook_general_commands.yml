@@ -1,7 +1,7 @@
-id: Test XDR Playbook general and quarantine file commands
+id: Test XDR Playbook general commands
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Test XDR Playbook general and quarantine file commands
+name: Test XDR Playbook general commands
 starttaskid: "0"
 tasks:
   "0":
@@ -982,7 +982,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 8230
+          "y": 8060
         }
       }
     note: false
@@ -1021,7 +1021,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 8040
+          "y": 7870
         }
       }
     note: false
@@ -1060,7 +1060,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7865
+          "y": 7695
         }
       }
     note: false
@@ -1099,7 +1099,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7690
+          "y": 7520
         }
       }
     note: false
@@ -1138,7 +1138,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7515
+          "y": 7345
         }
       }
     note: false
@@ -1181,7 +1181,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7340
+          "y": 7170
         }
       }
     note: false
@@ -1213,7 +1213,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7165
+          "y": 6995
         }
       }
     note: false
@@ -1252,7 +1252,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 6990
+          "y": 6820
         }
       }
     note: false
@@ -1285,7 +1285,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 6810
+          "y": 6640
         }
       }
     note: false
@@ -1324,7 +1324,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 6640
+          "y": 6470
         }
       }
     note: false
@@ -1363,50 +1363,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 6465
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: ee58a0c2-58cc-4475-88fc-a248e9d61764
-    type: playbook
-    task:
-      id: ee58a0c2-58cc-4475-88fc-a248e9d61764
-      version: -1
-      name: Cortex XDR - quarantine file
-      playbookName: Cortex XDR - quarantine file
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
-    scriptarguments:
-      endpoint_id:
-        simple: f8a2f58846b542579c12090652e79f3d
-      file_hash:
-        simple: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
-      file_path:
-        simple: /home/ec2-user/test_file.txt
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 550,
-          "y": 6290
+          "y": 6295
         }
       }
     note: false
@@ -1430,7 +1387,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "40"
+      - "39"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2238,7 +2195,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9095,
+        "height": 8925,
         "width": 922.5,
         "x": 120,
         "y": -800
