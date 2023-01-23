@@ -247,7 +247,6 @@ def test_edit_address_object_command(mocker, args):
     res = mocker.patch.object(client, 'edit_address_object')
 
     edit_address_object_command(client, args)
-    test = res.call_args[1]
 
     assert res.call_args[1]['address']['fqdn'] == 'test.com'
 
@@ -325,6 +324,3 @@ def test_list_address_objects_command_with_id(mocker, args):
     assert result.outputs_prefix == 'PrismaSase.Address'
     assert result.outputs[0]['type'] == 'ip_netmask'
     assert result.outputs[0]['address_value'] == '1.1.1.1/24'
-
-
-

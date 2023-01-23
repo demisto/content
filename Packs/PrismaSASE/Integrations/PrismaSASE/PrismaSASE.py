@@ -1,5 +1,3 @@
-from typing import Callable
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -57,7 +55,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, client_id: str,
-                 client_secret: str, tsg_id: str, verify: bool, proxy: bool, headers: dict, **kwargs):
+                 client_secret: str, tsg_id: str | None, verify: bool, proxy: bool, headers: dict, **kwargs):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
 
@@ -70,7 +68,7 @@ class Client(BaseClient):
                      url_suffix: str = '',
                      params: dict = None,
                      json_data: dict = None,
-                     tsg_id: str = None) -> dict:
+                     tsg_id: str | None = None) -> dict:
 
         headers = self.access_token_to_headers(tsg_id)
         return self._http_request(method=method,
@@ -107,7 +105,7 @@ class Client(BaseClient):
 
         return rule
 
-    def create_security_rule(self, rule: dict, query_params: dict, tsg_id: str) -> dict:
+    def create_security_rule(self, rule: dict, query_params: dict, tsg_id: str | None) -> dict:
         """Command to create new Prisma SASE security rule within the given Folder, Position, and Tenant/TSG
         Args:
             rule: Security rule dictionary
@@ -126,7 +124,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str) -> dict:
+    def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str | None) -> dict:
         """Edit existing Prisma SASE security rule
         Args:
             rule: Security rule dictionary
@@ -144,7 +142,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def delete_security_rule(self, rule_id: str, tsg_id: str) -> dict:
+    def delete_security_rule(self, rule_id: str, tsg_id: str | None) -> dict:
         """Delete Prisma SASE security rule
         Args:
             rule_id: Identifier of the existing rule to be deleted
@@ -160,7 +158,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def create_address_object(self, address: dict, folder: str, tsg_id: str) -> dict:
+    def create_address_object(self, address: dict, folder: str, tsg_id: str | None) -> dict:
         """Create new Prisma SASE security rule within the given Folder, Position, and Tenant/TSG
         Args:
             address: address object dictionary
@@ -182,7 +180,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def edit_address_object(self, address: dict, address_id: str, tsg_id: str) -> dict:
+    def edit_address_object(self, address: dict, address_id: str, tsg_id: str | None) -> dict:
         """Edit existing address object
         Args:
             address: Address object dictionary
@@ -200,7 +198,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def delete_address_object(self, address_id: str, tsg_id: str) -> dict:
+    def delete_address_object(self, address_id: str, tsg_id: str | None) -> dict:
         """Delete existing address object
         Args:
             address_id: Identifier of existing address to be deleted
@@ -216,7 +214,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_address_objects(self, query_params: dict, tsg_id: str) -> dict:
+    def list_address_objects(self, query_params: dict, tsg_id: str | None) -> dict:
         """Return list of address objects from Prisma SASE
         Args:
             query_params: query parameters for the request
@@ -233,7 +231,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_security_rules(self, query_params: dict, tsg_id: str) -> dict:
+    def list_security_rules(self, query_params: dict, tsg_id: str | None) -> dict:
         """Command to list security rules
         Args:
             query_params: query parameters for the request
@@ -250,7 +248,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def push_candidate_config(self, folders: list, tsg_id: str, description: str = None) -> dict:
+    def push_candidate_config(self, folders: list, tsg_id: str | None, description: str = None) -> dict:
         """Push candidate configuration
         Args:
             folders: Target Prisma SASE Folders for the configuration commit
@@ -271,7 +269,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def get_config_job_by_id(self, job_id: str, tsg_id: str) -> dict:
+    def get_config_job_by_id(self, job_id: str, tsg_id: str | None) -> dict:
         """List config jobs filtered by ID
         Args:
             job_id: ID of the config job
@@ -287,7 +285,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_config_jobs(self, tsg_id: str) -> dict:
+    def list_config_jobs(self, tsg_id: str | None) -> dict:
         """List config jobs
         Args:
              tsg_id: Target Prisma SASE tenant ID
@@ -302,7 +300,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def get_address_by_id(self, query_params: dict, address_id: str, tsg_id: str) -> dict:
+    def get_address_by_id(self, query_params: dict, address_id: str, tsg_id: str | None) -> dict:
         """Get an existing address object
         Args:
             query_params: Address object dictionary
@@ -320,7 +318,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def get_security_rule_by_id(self, query_params: dict, rule_id: str, tsg_id: str) -> dict:
+    def get_security_rule_by_id(self, query_params: dict, rule_id: str, tsg_id: str | None) -> dict:
         """Get existing security rule
         Args:
             query_params: Address object dictionary
@@ -338,7 +336,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def get_tag_by_id(self, query_params: dict, tag_id: str, tsg_id: str) -> dict:
+    def get_tag_by_id(self, query_params: dict, tag_id: str, tsg_id: str | None) -> dict:
         """Get a tag
         Args:
             query_params: Address object dictionary
@@ -356,7 +354,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_tags(self, query_params: dict, tsg_id: str) -> dict:
+    def list_tags(self, query_params: dict, tsg_id: str | None) -> dict:
         """Command to list tags
         Args:
             query_params: query parameters for the request
@@ -373,7 +371,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def update_tag(self, tag_id: str, tag: dict, tsg_id: str) -> dict:
+    def update_tag(self, tag_id: str, tag: dict, tsg_id: str | None) -> dict:
         """Update existing Tag
         Args:
             tag: Tag dictionary
@@ -391,7 +389,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def delete_tag(self, tag_id: str, tsg_id: str) -> dict:
+    def delete_tag(self, tag_id: str, tsg_id: str | None) -> dict:
         """Delete a tag
         Args:
             tag_id: Identifier of the existing tag to be deleted
@@ -407,7 +405,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def create_tag(self, query_params: dict, tag: dict, tsg_id: str) -> dict:
+    def create_tag(self, query_params: dict, tag: dict, tsg_id: str | None) -> dict:
         """Create new Prisma SASE tag within the given Folder
         Args:
             tag: tag dictionary
@@ -426,7 +424,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def get_address_group_by_id(self, query_params: dict, group_id: str, tsg_id: str) -> dict:
+    def get_address_group_by_id(self, query_params: dict, group_id: str, tsg_id: str | None) -> dict:
         """Get a tag
         Args:
             query_params: Address object dictionary
@@ -444,7 +442,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_address_group(self, query_params: dict, tsg_id: str) -> dict:
+    def list_address_group(self, query_params: dict, tsg_id: str | None) -> dict:
         """Get all address groups
         Args:
             query_params: Address object dictionary
@@ -461,7 +459,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def update_address_group(self, address_group: dict, group_id: str, tsg_id: str) -> dict:
+    def update_address_group(self, address_group: dict, group_id: str, tsg_id: str | None) -> dict:
         """Edit existing address group
         Args:
             address_group: Address object dictionary
@@ -479,7 +477,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def create_address_group(self, query_params: dict, address_group: dict, tsg_id: str) -> dict:
+    def create_address_group(self, query_params: dict, address_group: dict, tsg_id: str | None) -> dict:
         """Create new Prisma SASE addres group
         Args:
             address_group: address group dictionary
@@ -498,7 +496,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def delete_address_group(self, group_id: str, tsg_id: str) -> dict:
+    def delete_address_group(self, group_id: str, tsg_id: str | None) -> dict:
         """Delete Prisma SASE address group
         Args:
             group_id: Identifier of the existing address group to be deleted
@@ -514,7 +512,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def get_custom_url_category_by_id(self, query_params: dict, url_category_id: str, tsg_id: str) -> dict:
+    def get_custom_url_category_by_id(self, query_params: dict, url_category_id: str, tsg_id: str | None) -> dict:
         """Get a specific custom URL category
         Args:
             query_params: Address object dictionary
@@ -532,7 +530,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_custom_url_category(self, query_params: dict, tsg_id: str) -> dict:
+    def list_custom_url_category(self, query_params: dict, tsg_id: str | None) -> dict:
         """Get all custom url category
         Args:
             query_params: Address object dictionary
@@ -549,7 +547,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def update_custom_url_category(self, custom_url_category: dict, url_category_id: str, tsg_id: str) -> dict:
+    def update_custom_url_category(self, custom_url_category: dict, url_category_id: str, tsg_id: str | None) -> dict:
         """Update existing custom url category
         Args:
             custom_url_category: custom url category
@@ -567,7 +565,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def create_custom_url_category(self, query_params: dict, custom_url_category: dict, tsg_id: str) -> dict:
+    def create_custom_url_category(self, query_params: dict, custom_url_category: dict, tsg_id: str | None) -> dict:
         """Create new custom url category
         Args:
             custom_url_category: address group dictionary
@@ -586,7 +584,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def delete_custom_url_category(self, url_category_id: str, tsg_id: str) -> dict:
+    def delete_custom_url_category(self, url_category_id: str, tsg_id: str | None) -> dict:
         """Delete custom url category
         Args:
             url_category_id: Identifier of the existing custom url category to be deleted
@@ -602,7 +600,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def get_external_dynamic_list_by_id(self, query_params: dict, external_dynamic_list_id: str, tsg_id: str) -> dict:
+    def get_external_dynamic_list_by_id(self, query_params: dict, external_dynamic_list_id: str, tsg_id: str | None) -> dict:
         """Get all external dynamic list
         Args:
             query_params: Address object dictionary
@@ -620,7 +618,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_external_dynamic_list(self, query_params: dict, tsg_id: str) -> dict:
+    def list_external_dynamic_list(self, query_params: dict, tsg_id: str | None) -> dict:
         """Get all external dynamic list
         Args:
             query_params: Address object dictionary
@@ -637,7 +635,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def update_external_dynamic_list(self, external_dynamic_list: dict, dynamic_list_id: str, tsg_id: str) -> dict:
+    def update_external_dynamic_list(self, external_dynamic_list: dict, dynamic_list_id: str, tsg_id: str | None) -> dict:
         """Update existing external dynamic list
         Args:
             external_dynamic_list: external dynamic list
@@ -655,7 +653,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def create_external_dynamic_list(self, query_params: dict, external_dynamic_list: dict, tsg_id: str) -> dict:
+    def create_external_dynamic_list(self, query_params: dict, external_dynamic_list: dict, tsg_id: str | None) -> dict:
         """Create new external dynamic list
         Args:
             external_dynamic_list: external dynamic list
@@ -674,7 +672,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def delete_external_dynamic_list(self, dynamic_list_id: str, tsg_id: str) -> dict:
+    def delete_external_dynamic_list(self, dynamic_list_id: str, tsg_id: str | None) -> dict:
         """Delete external dynamic list
         Args:
             dynamic_list_id: Identifier of the existing external dynamic list to be deleted
@@ -690,7 +688,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def list_url_access_profile(self, query_params: dict, tsg_id: str) -> dict:
+    def list_url_access_profile(self, query_params: dict, tsg_id: str | None) -> dict:
         """Get all external dynamic list
         Args:
             query_params: Address object dictionary
@@ -707,7 +705,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def get_access_token(self, tsg_id: str) -> str:
+    def get_access_token(self, tsg_id: str | None) -> str:
         """Get access token to use for API call.
 
         The SASE API is multi-tenant capable and the tenant structure is hierarchical.
@@ -773,7 +771,7 @@ class Client(BaseClient):
                 raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
                                        f' configuration.\n\n{e}')
 
-    def access_token_to_headers(self, tsg_id: str = None) -> dict:
+    def access_token_to_headers(self, tsg_id: str | None = None) -> dict:
         tsg_id = tsg_id if tsg_id else self.tsg_id
         access_token = self.get_access_token(tsg_id)
 
