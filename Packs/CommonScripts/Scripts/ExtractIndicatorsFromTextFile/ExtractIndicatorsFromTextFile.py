@@ -3,6 +3,22 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
+def read_file_with_encoding_detection(filePath):
+    encoding_types = ['utf-8', 'ISO-8859-9', None]  # use None to simulate open file with no encoding sepcified
+    data = None
+    for encoding in encoding_types:
+        try:
+            with open(filePath, encoding=encoding) as file:
+                data = file.read()
+                break
+        except Exception:
+            continue
+
+    if not data:
+        raise ValueError(f'Can\'t read file with {filePath}')
+    return data
+
+
 def extract_indicators_from_file(args):
     try:
         maxFileSize = int(args.get('maxFileSize'))
@@ -17,19 +33,18 @@ def extract_indicators_from_file(args):
         filePath = res[0]['Contents']['path']
     except Exception:
         raise FileNotFoundError
-
-    with open(filePath, mode='r') as f:
-        data = f.read(maxFileSize)
-
-        # Extract indicators (omitting context output, letting auto-extract work)
-        indicators_hr = demisto.executeCommand("extractIndicators", {
-            'text': data})[0][u'Contents']
-        return {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': indicators_hr,
-            'HumanReadable': indicators_hr
-        }
+    
+    data = read_file_with_encoding_detection(filePath, maxFileSize)
+    
+    # Extract indicators (omitting context output, letting auto-extract work)
+    indicators_hr = demisto.executeCommand("extractIndicators", {
+        'text': data})[0][u'Contents']
+    return {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': indicators_hr,
+        'HumanReadable': indicators_hr
+    }
 
 
 def main():
