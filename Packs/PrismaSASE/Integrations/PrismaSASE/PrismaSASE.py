@@ -814,12 +814,18 @@ def modify_external_dynamic_list(outputs) -> List[dict]:
     if isinstance(outputs, dict):
         outputs = [outputs]
     for output in outputs:
+        # For pre-defined list, also predefined values are returned, and their structure is different
+        if output.get('folder') == 'predefined':
+            output['type'] = 'predefined'
+            output['source'] = 'predefined'
+            continue
         dynamic_list_type_object = output.get('type', {})
         # The object should contain exactly one key, and the key indicates the type of the dynamic list.
         dynamic_list_type = list(dynamic_list_type_object.keys())[0]
         output['description'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('description')
         output['source'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('url')
         output['frequency'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring')
+        output['exception_list'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('exception_list')
         output['type'] = dynamic_list_type
 
     return outputs
@@ -841,7 +847,7 @@ def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dic
             if 'any' in value or 'any' in original_rule.get(key, []):
                 original_rule[key] = argToList(new_rule.get(key))
             else:
-                original_rule.get(key, []).extend(argToList(new_rule.get(key, [])))
+                original_rule.setdefault(key, []).extend(argToList(new_rule.get(key, [])))
     return original_rule
 
 
@@ -863,8 +869,30 @@ def get_url_according_to_type(args):
     return url
 
 
+def validate_url_is_type_compatible(args, type_changed: bool, original_dynamic_list_type, original_dynamic_list_url):
+    dynamic_list_type = args.get('type') or original_dynamic_list_type
+    if dynamic_list_type in ('ip', 'domain', 'url'):
+        url = args.get('source_url')
+        if not url:
+            if type_changed:
+                raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
+
+    elif dynamic_list_type == 'predefined_url':
+        url = args.get('predefined_url_list')
+        if not url:
+            if type_changed:
+                raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
+    else:  # dynamic_list_type == 'predefined_ip':
+        url = args.get('predefined_ip_list')
+        if not url:
+            if type_changed:
+                raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
+    url = url if url else original_dynamic_list_url
+    return url
+
+
 def build_recurring_according_to_params(args):
-    frequency = args.get('frequency') or 'hourly'
+    frequency = args.get('frequency') or 'five_minute'
     # if not frequency:
     #     raise DemistoException('Please provide the frequency argument when using IP, URL or Domain types')
     frequency_object = {frequency: {}}
@@ -887,6 +915,35 @@ def build_recurring_according_to_params(args):
             frequency_object[frequency]['day_of_month'] = day_of_month
 
     return frequency_object
+
+
+def validate_recurring_is_type_compatible(args, original_frequency_obj):
+    frequency = args.get('frequency')
+
+    if len(list(original_frequency_obj.keys())) == 0 and not frequency:
+        raise DemistoException('Could not find frequency for dynamic list type. Please check your configuration')
+    original_frequency = list(original_frequency_obj.keys())[0]
+    frequency = frequency if frequency else original_frequency
+    frequency_object = {frequency: {}}
+    if frequency in ('daily', 'weekly', 'monthly'):
+        frequency_hour = args.get('frequency_hour') or original_frequency_obj[original_frequency].get('frequency_hour')
+        if not frequency_hour:
+            raise DemistoException('Please provide the frequency_hour argument when using daily, '
+                                   'weekly or monthly frequency')
+        frequency_object[frequency]['at'] = frequency_hour or original_frequency_obj[original_frequency].get('at')
+        if frequency == 'weekly':
+            day_of_week = args.get('day_of_week') or original_frequency_obj[original_frequency].get('day_of_week')
+            if not day_of_week:
+                raise DemistoException('Please provide the day_of_week argument when using weekly frequency')
+            frequency_object[frequency]['day_of_week'] = day_of_week
+
+        elif frequency == 'monthly':
+            day_of_month = args.get('day_of_month') or original_frequency_obj[original_frequency].get('day_of_month')
+            if not day_of_month:
+                raise DemistoException('Please provide the day_of_month argument when using monthly frequency')
+            frequency_object[frequency]['day_of_month'] = day_of_month
+
+    return frequency_object if frequency_object else original_frequency_obj
 
 
 def get_pagination_params(args) -> dict:
@@ -1081,7 +1138,6 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
         outputs = raw_response.get('data')
 
     outputs = modify_address(outputs)
-
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
@@ -1491,7 +1547,7 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
         if overwrite:
             original_address_group['static'] = static_addresses
         else:
-            original_address_group.get('static', []).extend(static_addresses)
+            original_address_group.setdefault('static', []).extend(static_addresses)
         original_address_group.pop('dynamic') if 'dynamic' in original_address_group else None
 
     else:  # type == 'dynamic'
@@ -1655,7 +1711,7 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
         if overwrite:
             original_custom_url_category['list'] = value
         else:
-            original_custom_url_category.get('list', []).extend(value)
+            original_custom_url_category.setdefault('list', []).extend(value)
 
     raw_response = client.update_custom_url_category(custom_url_category=original_custom_url_category,
                                                      url_category_id=url_category_id,
@@ -1717,17 +1773,13 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
 
         outputs = raw_response.get('data')
 
-    #print(outputs)
-
-    #outputs = modify_external_dynamic_list(outputs)
+    outputs = modify_external_dynamic_list(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('External Dynamic Lists', outputs,
-                                        headers=['id', 'name', 'folder', 'type', 'description', 'source', 'frequency'],
-                                        headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown('External Dynamic Lists', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -1754,14 +1806,13 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     tsg_id = args.get('tsg_id')
 
     url = get_url_according_to_type(args)
+    external_dynamic_list['type'][dynamic_list_type]['url'] = url
 
     if exception_list := argToList(args.get('exception_list')):
         external_dynamic_list['type'][dynamic_list_type]['exception_list'] = exception_list
 
     if description := args.get('description'):
         external_dynamic_list['type'][dynamic_list_type]['description'] = description
-
-    external_dynamic_list['type'][dynamic_list_type]['url'] = url
 
     if dynamic_list_type in ('ip', 'domain', 'url'):
         external_dynamic_list['type'][dynamic_list_type]['recurring'] = build_recurring_according_to_params(args)
@@ -1802,24 +1853,51 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     original_dynamic_list = client.get_external_dynamic_list_by_id(query_params=query_params,
                                                                    external_dynamic_list_id=dynamic_list_id,
                                                                    tsg_id=tsg_id)
-    # TODO change
+
+    overwrite = argToBoolean(args.get('overwrite'))
+    original_dynamic_list_type_object = original_dynamic_list['type']
+    original_dynamic_list_type = list(original_dynamic_list_type_object.keys())[0]
+    original_dynamic_list_url = original_dynamic_list_type_object[original_dynamic_list_type]['url']
+    original_frequency_object = original_dynamic_list_type_object[original_dynamic_list_type].get('recurring', {'recurring': {}})
+    type_changed = False
+    if dynamic_list_type := args.get('type'):
+        if original_dynamic_list_type != dynamic_list_type:
+            # changing the key that indicates the type
+            original_dynamic_list['type'][dynamic_list_type] = original_dynamic_list_type_object[
+                original_dynamic_list_type]
+            demisto.info(f"setting overwrite parameter to True as the type of the dynamic list has changed."
+                         f"overwrite original value: {overwrite}")
+            type_changed = True
+            overwrite = True
+
+    dynamic_list_type = dynamic_list_type if dynamic_list_type else original_dynamic_list_type
+    if exception_list := argToList(args.get('exception_list')):
+        if overwrite:
+            original_dynamic_list['type'][dynamic_list_type]['exception_list'] = exception_list
+        else:
+            original_dynamic_list['type'][dynamic_list_type].setdefault('exception_list', []).extend(exception_list)
 
     if description := args.get('description'):
-        original_dynamic_list['description'] = description
-    overwrite = args.get('overwrite')
-    if category_type := args.get('type'):
-        original_dynamic_list['type'] = category_type
+        original_dynamic_list['type'][dynamic_list_type]['description'] = description
 
-    if value := argToList(args.get('value')):
-        if overwrite:
-            original_dynamic_list['list'] = value
-        else:
-            original_dynamic_list.get('list', []).extend(value)
+    url = validate_url_is_type_compatible(args, type_changed, original_dynamic_list_type, original_dynamic_list_url)
+    original_dynamic_list['type'][dynamic_list_type]['url'] = url
+
+    if dynamic_list_type in ('ip', 'domain', 'url'):
+        original_dynamic_list['type'][dynamic_list_type]['recurring'] = \
+            validate_recurring_is_type_compatible(args, original_frequency_object)
+
+    if type_changed:
+        original_dynamic_list['type'].pop(original_dynamic_list_type)
+        if not original_dynamic_list['type'][dynamic_list_type].get('recurring'):
+            original_dynamic_list['type'][dynamic_list_type].pop('recurring')
 
     raw_response = client.update_external_dynamic_list(external_dynamic_list=original_dynamic_list,
                                                        dynamic_list_id=dynamic_list_id,
                                                        tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
+
+    outputs = modify_external_dynamic_list(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
@@ -1903,7 +1981,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
     tsg_id = args.get('tsg_id')
     if folders := argToList(args.get('folders')):
-        #  first call, folder in args
+        # first call, folder in args
         res = client.push_candidate_config(folders=folders, tsg_id=tsg_id)
         # remove folders, not needed for the rest
         args['folders'] = []
