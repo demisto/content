@@ -38,7 +38,7 @@ configuration:
   - Unique timestamp
   - Unique ascending ID
   - ID and timestamp
-- display: 'Fetch events query'
+- display: Fetch events query
   name: query
   required: false
   type: 0
@@ -47,7 +47,7 @@ configuration:
   name: column_name
   required: false
   type: 0
-  additionalinfo: Fill here the exact column's name to fetch (id column or timestamp column).
+  additionalinfo: Enter the exact column's name to fetch (ID column or timestamp column).
 - display: ID Column name - in case of fetching by 'ID and timestamp'
   name: id_column
   required: false
@@ -57,7 +57,7 @@ configuration:
   required: false
   type: 8
 - display: Incident Name
-  additionalinfo: Fill here the exact column's incident name (if empty - that's the Fetch Column).
+  additionalinfo: Enter the exact column's incident name (if empty - it's the Fetch Column).
   hidden: false
   name: incident_name
   required: false
