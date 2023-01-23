@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships.<br> EclecticIQ Platform is used through Cortex XSOAR to get reputation of IOCs and their related entities.<br> This integration was integrated and tested with version 2.3.0-1 of EclecticIQ Platform</p>
+<p>Deprecated. No available replacement.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="use-cases">Use Cases</h2>
