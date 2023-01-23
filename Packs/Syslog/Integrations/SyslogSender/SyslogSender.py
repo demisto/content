@@ -56,7 +56,8 @@ SEVERITY_DICT = {
 
 TCP = 'tcp'
 UDP = 'udp'
-PROTOCOLS = {TCP, UDP}
+TLS = 'tls'
+PROTOCOLS = {TCP, UDP, TLS}
 
 ''' Syslog Manager '''
 
