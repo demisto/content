@@ -5,13 +5,13 @@ commonfields:
 configuration:
 - name: url
   defaultvalue: https://console.runzero.com/
-  display: Server URL  
+  display: Server URL
   required: true
   type: 0
   section: Connect  
 - name: client_id
   defaultvalue: client_id
-  display: Client id  
+  display: Client id
   required: true
   type: 0
   additionalinfo: "The client ID as defined in RunZero."
