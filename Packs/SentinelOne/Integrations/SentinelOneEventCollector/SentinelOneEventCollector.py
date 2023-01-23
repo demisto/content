@@ -125,14 +125,14 @@ def add_time_key_to_events(events: Optional[List[Dict[str, Any]]]):
         events: list, the events to add the time key to.
     """
     for event in events or []:
-        if alert_info := event.get('alertInfo'):
-            event["_time"] = alert_info.get("createdAt")
+        if event.get('alertInfo'):
+            event["_time"] = arg_to_datetime('now')
             event["eventType"] = 'Alert'
-        if threat_info := event.get('threatInfo'):
-            event["_time"] = threat_info.get("createdAt")
+        if event.get('threatInfo'):
+            event["_time"] = arg_to_datetime('now')
             event["eventType"] = 'Threat'
         else:  # Otherwise, it's an activity.
-            event["_time"] = event.get("createdAt")
+            event["_time"] = arg_to_datetime('now')
             event["eventType"] = 'Activity'
 
 
