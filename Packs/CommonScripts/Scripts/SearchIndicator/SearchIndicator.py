@@ -4,7 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 def search_indicators(args):
     # search for indicators
-    indicators = demisto.executeCommand("findIndicators", {"query": args.get("query"), "size": args.get("size")})[0]["Contents"]
+    indicators = demisto.executeCommand("findIndicators", {"query": args.get("query"), "size": args.get("size")})[0][
+        "Contents"]
 
     # return specific information for found indicators
     filtered_indicators = []
