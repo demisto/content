@@ -1980,6 +1980,7 @@ def main():
             return return_results(mapping_fields)
 
         else:
+            demisto.info("testtttttt")
             raise NotImplementedError(f'Command {command} is not implemented')
 
     except Exception as e:
