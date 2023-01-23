@@ -31,7 +31,7 @@ configuration:
   type: 0
 - display: The maximum number of iterations to retrieve events
   additionalinfo: In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events, Note - the default value is the recommended value to prevent timeouts.
-  defaultvalue: 150
+  defaultvalue: 100
   name: max_iterations
   required: false
   type: 0

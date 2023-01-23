@@ -12,6 +12,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
+MAX_ITERATIONS = 100
 
 
 ''' CLIENT CLASS '''
@@ -162,7 +163,7 @@ def get_events_command(
     max_fetch: Optional[int],
     vendor: str = VENDOR,
     product: str = PRODUCT,
-    max_iterations: int = 150
+    max_iterations: int = MAX_ITERATIONS
 ) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
@@ -199,7 +200,7 @@ def get_events_command(
 
 
 def fetch_events_from_saas_security(
-    client: Client, max_fetch: Optional[int] = None, max_iterations: int = 150
+    client: Client, max_fetch: Optional[int] = None, max_iterations: int = MAX_ITERATIONS
 ) -> Tuple[List[Dict], Exception | None]:
     """
     Fetches events from the saas-security queue.
@@ -243,7 +244,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
     validate_limit(max_fetch)
-    max_iterations = arg_to_number(params.get('max_iterations')) or 150
+    max_iterations = arg_to_number(params.get('max_iterations')) or MAX_ITERATIONS
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
