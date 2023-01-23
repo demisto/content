@@ -629,7 +629,7 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.9.45313
   isfetch: true
   longRunning: false
   longRunningPort: false

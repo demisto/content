@@ -419,7 +419,7 @@ class Client(BaseClient):
             err_msg += f'\n{message}'
             raise DemistoException(err_msg, res=res)
         except ValueError:
-            err_msg += '\n{}'.format(res.text)
+            err_msg += f'\n{res.text}'
             raise DemistoException(err_msg, res=res)
 
     def offenses_list(self, range_: Optional[str] = None, offense_id: Optional[int] = None,
