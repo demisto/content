@@ -5,7 +5,7 @@ import urllib3
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
+from pydantic import parse_obj_as, HttpUrl
 from abc import ABC
 from typing import Any, Callable, Optional
 
@@ -277,8 +277,7 @@ class DefenderGetEvents(IntegrationGetEvents):
         # TYPES_TO_RETRIEVE dictionary contains the filters and the endpoint according to the event type.
         for event_type_name, endpoint_details in TYPES_TO_RETRIEVE.items():
             self.client.request.params.pop('filters', None)
-            self.client.request.url = f'{base_url}{endpoint_details["type"]}'
-
+            self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
             # get the filter for this type
             filters = endpoint_details['filters']
 
