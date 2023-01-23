@@ -1,5 +1,4 @@
 import pytest
-import os
 import json
 from collections import OrderedDict
 from PaloAltoNetworks_PrismaCloudCompute import (
@@ -1299,7 +1298,8 @@ def test_get_impacted_resources(mocker):
 
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
     assert get_impacted_resources(client, {'resourceType': 'image', 'cve': 'CVE-2018-1270'}).raw_response == \
-           {'CVE-2018-1270': d}
+        {'CVE-2018-1270': d}
+
 
 def test_get_waas_policies(mocker):
     """
@@ -1315,7 +1315,7 @@ def test_get_waas_policies(mocker):
 
     with open("mock_data/get_waas_policies.json", "r") as f:
         d = json.load(f)
-    
+
     mocker.patch.object(PrismaCloudComputeClient, 'get_waas_policies', return_value=d)
 
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
@@ -1325,6 +1325,7 @@ def test_get_waas_policies(mocker):
     assert outputs["WaasPolicy"]["CodeInjection"] == "alert"
     assert outputs["WaasPolicy"]["DetectInformationLeakage"] == "disable"
     assert outputs["WaasPolicy"]["SQLInjection"] == "alert"
+
 
 def test_update_waas_policies(mocker):
     """
@@ -1337,9 +1338,10 @@ def test_update_waas_policies(mocker):
         -  Validate the output for a successul policy update
     """
     from PaloAltoNetworks_PrismaCloudCompute import update_waas_policies, PrismaCloudComputeClient
-    
-    mocker.patch.object(PrismaCloudComputeClient, 'update_waas_policies', return_value=type('Response', (object,), {"status_code": 200}))
-    
+
+    mocker.patch.object(PrismaCloudComputeClient, 'update_waas_policies',
+                        return_value=type('Response', (object,), {"status_code": 200}))
+
     with open("mock_data/update_waas_policy.json", "r") as f:
         policy = json.load(f)
 
@@ -1351,7 +1353,7 @@ def test_update_waas_policies(mocker):
         "attack_type": "lfi",
         "rule_name": "WaaS rule for DVWA"
     }
-    
+
     assert update_waas_policies(client, args).readable_output == "Successfully updated the WaaS policy"
 
 
@@ -1379,5 +1381,3 @@ def test_get_audit_firewall_container_alerts(mocker):
     }
 
     assert get_audit_firewall_container_alerts(client, args).raw_response == d
-
- 

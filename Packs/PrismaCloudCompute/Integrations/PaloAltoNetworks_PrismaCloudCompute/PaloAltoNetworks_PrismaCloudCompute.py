@@ -298,7 +298,6 @@ class PrismaCloudComputeClient(BaseClient):
             params=params
         )
 
-
     def get_waas_policies(self) -> dict:
         """
         Get the current WAAS policy
@@ -309,7 +308,6 @@ class PrismaCloudComputeClient(BaseClient):
         return self._http_request(
             method="GET", url_suffix="policies/firewall/app/container"
         )
-
 
     def update_waas_policies(self, policy: dict) -> dict:
         """
@@ -322,11 +320,11 @@ class PrismaCloudComputeClient(BaseClient):
             dict: the updated policy.
         """
         return self._http_request(
-            method="PUT", url_suffix="policies/firewall/app/container", json_data=policy, resp_type="response"
+            method="PUT", url_suffix="policies/firewall/app/container", json_data=policy, resp_type="response", ok_codes=(200),
+            error_handler=lambda res: f"Error: {res.status_code} - {res.text}"
         )
-
-
-    def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str) -> dict:
+       
+    def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str):
         """
         Get the container audit alerts for a specific image.
 
@@ -350,7 +348,6 @@ class PrismaCloudComputeClient(BaseClient):
         return self._http_request(
             method="GET", url_suffix="audits/firewall/app/container", params=params
         )
-
 
 
 def str_to_bool(s):
@@ -1653,7 +1650,8 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
         raw_response=raw_response
     )
 
-def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+
+def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> List[CommandResults]:
     """
     Get the WAAS policies.
     Implement the command 'prisma-cloud-compute-get-waas-policies'
@@ -1709,22 +1707,19 @@ def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> Comman
     Returns:
         CommandResults: command-results object.
     """
-    waas_settings = ["sqli", "xss", "attackTools", "shellshock", "malformedReq", "cmdi", "lfi", "codeInjection"]
+    # waas_settings = ["sqli", "xss", "attackTools", "shellshock", "malformedReq", "cmdi", "lfi", "codeInjection"]
 
-    policy = args.get("policy")
+    policy = args.get("policy", {})
 
     for index, rule in enumerate(policy.get("rules")):
         if rule["name"] != args.get("rule_name"):
             continue
-        for spec in policy.get("rules")[index].get("applicationsSpec"): 
-            spec[args.get("attack_type")] = {"effect": args.get("action") }
+        for spec in policy.get("rules")[index].get("applicationsSpec"):
+            spec[args.get("attack_type")] = {"effect": args.get("action")}
 
-    res = client.update_waas_policies(policy)
-
+    client.update_waas_policies(policy)
     txt = "Successfully updated the WaaS policy"
-    if res.status_code != 200:
-        txt = f"Error: {res.status_code} - {res.text}"
-    
+
     return CommandResults(
         readable_output=txt
     )
@@ -1743,11 +1738,13 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
         CommandResults: command-results object.
     """
     now = datetime.now()
-    from_time = now - timedelta(days=arg_to_number(args.get("FromDays", 2)))
-    image_name = urllib.parse.quote(args.get("ImageName"), safe='')
+    from_day = arg_to_number(args.get("FromDays", 2))  
+    from_time = now - timedelta(days=from_day)      # type: ignore
+    image_name = urllib3.parse.quote(args.get("ImageName"), safe='')
     audit_type = args.get("audit_type")
     limit = arg_to_number(args.get("limit", 25))
-    data = client.get_firewall_audit_container_alerts(image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=limit, audit_type=audit_type)
+    data = client.get_firewall_audit_container_alerts(
+        image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=limit, audit_type=audit_type)
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.Audits",
