@@ -14,12 +14,6 @@ logging_setup(3)
 install_logging("create_artifacts.log", logger=logger)
 
 
-def str2boolean(v: str):
-    if not v:
-        return False
-    return v or False
-
-
 def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bool):
     content_dto.dump(output, marketplace, zip)
 
