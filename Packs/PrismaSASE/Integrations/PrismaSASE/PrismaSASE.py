@@ -895,7 +895,7 @@ def build_recurring_according_to_params(args):
     frequency = args.get('frequency') or 'five_minute'
     # if not frequency:
     #     raise DemistoException('Please provide the frequency argument when using IP, URL or Domain types')
-    frequency_object = {frequency: {}}
+    frequency_object: dict = {frequency: {}}
     if frequency in ('daily', 'weekly', 'monthly'):
         frequency_hour = args.get('frequency_hour')
         if not frequency_hour:
@@ -924,7 +924,7 @@ def validate_recurring_is_type_compatible(args, original_frequency_obj):
         raise DemistoException('Could not find frequency for dynamic list type. Please check your configuration')
     original_frequency = list(original_frequency_obj.keys())[0]
     frequency = frequency if frequency else original_frequency
-    frequency_object = {frequency: {}}
+    frequency_object: dict = {frequency: {}}
     if frequency in ('daily', 'weekly', 'monthly'):
         frequency_hour = args.get('frequency_hour') or original_frequency_obj[original_frequency].get('frequency_hour')
         if not frequency_hour:
@@ -1029,7 +1029,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
         address_object['tag'] = args.get('tag')
 
     raw_response = client.create_address_object(address=address_object,
-                                                folder=args.get('folder'),
+                                                folder=args.get('folder', ''),
                                                 tsg_id=args.get('tsg_id'))  # type: ignore
 
     raw_response = modify_address(raw_response)
@@ -1056,7 +1056,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     query_params = {
         'folder': encode_string_results(args.get('folder'))
     }
-    object_id = args.get('object_id')
+    object_id = args.get('object_id', '')
     tsg_id = args.get('tsg_id')
     # first get the original address, so user won't need to send all data
     original_address = client.get_address_by_id(query_params=query_params, address_id=object_id, tsg_id=tsg_id)
@@ -1135,7 +1135,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
 
         raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
-        outputs = raw_response.get('data')
+        outputs = raw_response.get('data', [])
 
     outputs = modify_address(outputs)
     return CommandResults(
@@ -1181,7 +1181,7 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
         Outputs.
     """
     rule = client.build_security_rule(args)
-    rule_id = args.get('rule_id')
+    rule_id = args.get('rule_id', '')
     tsg_id = args.get('tsg_id')
     overwrite = argToBoolean(args.get('overwrite'))
     query_params = {
@@ -1321,7 +1321,7 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_tags(query_params=query_params, tsg_id=tsg_id)  # type: ignore
-        outputs = raw_response.get('data')
+        outputs = raw_response.get('data', [])
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
@@ -1384,7 +1384,7 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     }
     # first get the original tag, so user won't need to send all data
     tag_id = args.get('tag_id')
-    tsg_id = args.get('tsg_id')
+    tsg_id = args.get('tsg_id', '')
     original_tag = client.get_tag_by_id(query_params=query_params, tag_id=tag_id, tsg_id=tsg_id)
 
     if color := args.get('color'):
@@ -1521,7 +1521,7 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
         'folder': encode_string_results(args.get('folder'))
     }
     tsg_id = args.get('tsg_id')
-    group_id = args.get('group_id')
+    group_id = args.get('group_id', '')
     # first get the original address, so user won't need to send all data
     original_address_group = client.get_address_group_by_id(query_params=query_params, group_id=group_id, tsg_id=tsg_id)
 
@@ -1692,7 +1692,7 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
         'folder': encode_string_results(args.get('folder'))
     }
     tsg_id = args.get('tsg_id')
-    url_category_id = args.get('id')
+    url_category_id = args.get('id', '')
     # first get the original, so user won't need to send all data
     original_custom_url_category = client.get_custom_url_category_by_id(query_params=query_params,
                                                                         url_category_id=url_category_id,
@@ -1772,7 +1772,7 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
 
         raw_response = client.list_external_dynamic_list(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
-        outputs = raw_response.get('data')
+        outputs = raw_response.get('data', [])
 
     outputs = modify_external_dynamic_list(outputs)
 
@@ -1849,7 +1849,7 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
         'folder': encode_string_results(args.get('folder'))
     }
     tsg_id = args.get('tsg_id')
-    dynamic_list_id = args.get('id')
+    dynamic_list_id = args.get('id', '')
     # first get the original, so user won't need to send all data
     original_dynamic_list = client.get_external_dynamic_list_by_id(query_params=query_params,
                                                                    external_dynamic_list_id=dynamic_list_id,
@@ -1948,7 +1948,7 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
     raw_response = client.list_url_access_profile(query_params=query_params, tsg_id=tsg_id)  # type: ignore
     profiles = raw_response.get('data', [])
 
-    categories = {'alert': [], 'allow': [], 'block': [], 'continue': [], 'override': []}
+    categories: dict = {'alert': [], 'allow': [], 'block': [], 'continue': [], 'override': []}
     for profile in profiles:
         # we only want predefined profiles
         if profile.get('folder', '') == 'predefined':
@@ -1994,7 +1994,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                                                next_run_in_seconds=polling_interval),
             readable_output=f'Waiting for all data to push for job id {job_id}')
 
-    job_id = args.get('job_id')
+    job_id = args.get('job_id', '')
     if not argToBoolean(args.get('parent_finished')):
         res = client.get_config_job_by_id(job_id=job_id, tsg_id=tsg_id).get('data', [{}])[0]
         if res.get('result_str') == 'PEND':
