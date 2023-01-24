@@ -10,7 +10,7 @@ What does this pack do?
 &nbsp;&nbsp;&nbsp;7. Displays a list of training campaign enrollments
 &nbsp;&nbsp;&nbsp;8. Allows adding an external event to a user's timeline inside of KMSAT
 
-##Commands
+## Commands
 
 | Commands                                        | Description                                                            |
 | ----------------------------------------------- | ---------------------------------------------------------------------- |
