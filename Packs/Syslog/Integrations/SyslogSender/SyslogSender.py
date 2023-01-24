@@ -11,6 +11,7 @@ from socket import SOCK_STREAM
 from typing import Union, Tuple, Dict, Any, Generator
 import ssl
 import http.server
+import socket
 
 
 ''' CONSTANTS '''
@@ -155,6 +156,16 @@ def sll_server(certificate_path):
     httpd.serve_forever()
 
 
+def try_this(host, port, certificate_path, keyfile_path):
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+    client = ssl.wrap_socket(client, keyfile=keyfile_path, certfile=certificate_path)
+    client.bind((host, port))
+    client.connect((host, port))
+    client.send("Hello World!".encode("utf-8"))
+
+
 def init_manager(params: dict) -> SyslogManager:
     """
     Create a syslog manager instance according to provided parameters.
@@ -176,6 +187,7 @@ def init_manager(params: dict) -> SyslogManager:
         raise DemistoException('A certificate must be provided in TLS protocol.')
     if certificate and protocol == 'tls':
         certificate_path = prepare_certificate_file(certificate)
+        return(try_this(address, port, certificate_path, ''))
     return SyslogManager(address, port, protocol, logging_level, facility, certificate_path)
 
 
