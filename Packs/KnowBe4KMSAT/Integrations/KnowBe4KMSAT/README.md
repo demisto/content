@@ -83,16 +83,150 @@
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                                 | **Type** | **Description**                        |
+| ---------------------------------------- | -------- | -------------------------------------- |
+| KMSAT.AccountRiskScoreHistory.risk_score | String   | Account Risk Score And Associated Date |
+| KMSAT.AccountRiskScoreHistory.date       | Date     | Account Risk Score History Date        |
+
+#### Command Example
+```!kmsat-account-risk-score-history page=1 per_page=25```
+
+#### Context Example
+```json
+
+{
+  "risk_score": 37.3,
+  "date": "2021-02-07"
+}
+
+```
 
 ### kmsat-groups-risk-score-history
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| group_id          | Group ID        | No           |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                               | **Type** | **Description**                       |
+| -------------------------------------- | -------- | ------------------------------------- |
+| KMSAT.GroupRiskScoreHistory.risk_score | String   | Groups Risk Score And Associated Date |
+| KMSAT.GroupRiskHistory.date            | Date     | Groups Risk Score History Date        |
+
+#### Command Example
+```!kmsat-groups-risk-score-history page=1 per_page=25```
+
+#### Context Example
+```json
+
+{
+  "risk_score": 37.3,
+  "date": "2021-02-07"
+}
+
+```
 
 ### kmsat-groups-members
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| group_id          | Group ID        | No           |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                                   | **Type** | **Description**                      |
+| ------------------------------------------ | -------- | ------------------------------------ |
+| KMSAT.GroupsMembers.id                     | Number   | Groups Member ID                     |
+| KMSAT.GroupsMembers.employee_number        | String   | Groups Member Employee Number        |
+| KMSAT.GroupsMembers.first_name             | String   | Groups Member First Name             |
+| KMSAT.GroupsMembers.last_name              | String   | Groups Member Last Name              |
+| KMSAT.GroupsMembers.job_title              | String   | Groups Member Job title              |
+| KMSAT.GroupsMembers.email                  | String   | Groups Member Email                  |
+| KMSAT.GroupsMembers.phish_prone_percentage | Number   | Groups Member Phish Prone Percentage |
+| KMSAT.GroupsMembers.phone_number           | String   | Groups Member Phone Number           |
+| KMSAT.GroupsMembers.extension              | String   | Groups Member Extension              |
+| KMSAT.GroupsMembers.mobile_phone_number    | String   | Groups Member Phone Number           |
+| KMSAT.GroupsMembers.location               | String   | Groups Member Location               |
+| KMSAT.GroupsMembers.division               | String   | Groups Member Division               |
+| KMSAT.GroupsMembers.manager_name           | String   | Groups Member Manager Name           |
+| KMSAT.GroupsMembers.provisioning_managed   | Boolean  | Groups Member Manager Email          |
+| KMSAT.GroupsMembers.provisioning_guid      | Unknown  | Groups Member Provisioning GUID      |
+| KMSAT.GroupsMembers.groups                 | Number   | Groups Member Groups                 |
+| KMSAT.GroupsMembers.current_risk_score     | Number   | Groups Member Current Risk Score     |
+| KMSAT.GroupsMembers.aliases                | String   | Groups Member Aliases                |
+| KMSAT.GroupsMembers.joined_on              | Date     | Groups Member Joined On              |
+| KMSAT.GroupsMembers.last_sign_in           | Date     | Groups Member Last Sign In           |
+| KMSAT.GroupsMembers.status                 | String   | Groups Member Status                 |
+| KMSAT.GroupsMembers.organization           | String   | Groups Member Organization           |
+| KMSAT.GroupsMembers.department             | String   | Groups Member Department             |
+| KMSAT.GroupsMembers.language               | String   | Groups Member Language               |
+| KMSAT.GroupsMembers.comment                | String   | Groups Member Comment                |
+| KMSAT.GroupsMembers.employee_start_date    | Date     | Groups Member Employee Start Date    |
+| KMSAT.GroupsMembers.archived_at            | Date     | Groups Member Archived At            |
+| KMSAT.GroupsMembers.custom_field_1         | String   | Groups Member Custom Field 1         |
+| KMSAT.GroupsMembers.custom_field_2         | String   | Groups Member Custom Field 2         |
+| KMSAT.GroupsMembers.custom_field_3         | String   | Groups Member Custom Field 3         |
+| KMSAT.GroupsMembers.custom_date_1          | Date     | Groups Member Custom Date 1          |
+| KMSAT.GroupsMembers.custom_date_2          | Date     | Groups Member Custom Date 2          |
+
+#### Command Example
+```!kmsat-groups-members group_id=1 page=1 per_page=25```
+
+#### Context Example
+```json
+
+{
+  "id": 667542,
+  "employee_number": "19425",
+  "first_name": "William",
+  "last_name": "Marcoux",
+  "job_title": "VP of Sales",
+  "email": "wmarcoux@kb4-demo.com",
+  "phish_prone_percentage": 14.235,
+  "phone_number": "555-554-2222",
+  "extension": "42",
+  "mobile_phone_number": "555-553-4422",
+  "location": "Office A",
+  "division": "Sales",
+  "manager_name": "Michael Scott",
+  "manager_email": "mscott@kb4-demo.com",
+  "provisioning_managed": false,
+  "provisioning_guid": null,
+  "groups": [
+    3264
+  ],
+  "current_risk_score": 45.742,
+  "aliases": [
+    "alias_email@kb4-demo.com"
+  ],
+  "joined_on": "2019-04-02T15:02:38.000Z",
+  "last_sign_in": "2019-04-02T15:02:38.000Z",
+  "status": "active",
+  "organization": "KB4-Demo",
+  "department": "Sales",
+  "language": "English - United States",
+  "comment": "Low PPP",
+  "employee_start_date": "2019-04-02T15:02:38.000Z",
+  "archived_at": null,
+  "custom_field_1": "Building C, 4th Floor",
+  "custom_field_2": null,
+  "custom_field_3": null,
+  "custom_field_4": null,
+  "custom_date_1": "1986-11-26",
+  "custom_date_2": null
+}
+
+```
 
 ### kmsat-users-risk-score-history
 
