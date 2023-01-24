@@ -425,38 +425,462 @@
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| pst_id            | PST ID          | Yes          |
+
+#### Context Output
+
+| **Path**                                       | **Type** | **Description**                        |
+| ---------------------------------------------- | -------- | -------------------------------------- |
+| KMSAT.PhishingSecurityPST.recipient_id         | Number   | Phishing Security Recipient ID         |
+| KMSAT.PhishingSecurityPST.pst_id               | Number   | Phishing Security PST ID               |
+| KMSAT.PhishingSecurityPST.user                 | String   | Phishing Security User                 |
+| KMSAT.PhishingSecurityPST.template             | String   | Phishing Security Template             |
+| KMSAT.PhishingSecurityPST.scheduled_at         | Date     | Phishing Security Scheduled At         |
+| KMSAT.PhishingSecurityPST.delivered_at         | Date     | Phishing Security Delivered At         |
+| KMSAT.PhishingSecurityPST.opened_at            | Date     | Phishing Security Opened At            |
+| KMSAT.PhishingSecurityPST.clicked_at           | Date     | Phishing Security Clicked At           |
+| KMSAT.PhishingSecurityPST.replied_at           | Date     | Phishing Security Replied At           |
+| KMSAT.PhishingSecurityPST.attachment_opened_at | Date     | Phishing Security Attachment Opened At |
+| KMSAT.PhishingSecurityPST.macro_enabled_at     | Date     | Phishing Security Macro Enabled At     |
+| KMSAT.PhishingSecurityPST.data_entered_at      | Date     | Phishing Security Data Entered At      |
+| KMSAT.PhishingSecurityPST.qr_code_scanned      | Date     | Phishing Security QR Code Scanned      |
+| KMSAT.PhishingSecurityPST.reported_at          | Date     | Phishing Security Reported At          |
+| KMSAT.PhishingSecurityPST.bounced_at           | Date     | Phishing Security Bounced At           |
+| KMSAT.PhishingSecurityPST.ip                   | String   | Phishing Security IP                   |
+| KMSAT.PhishingSecurityPST.up_location          | String   | Phishing Security IP Location          |
+| KMSAT.PhishingSecurityPST.browser              | String   | Phishing Security Browser              |
+| KMSAT.PhishingSecurityPST.browser_version      | String   | Phishing Security Browser Version      |
+| KMSAT.PhishingSecurityPST.os                   | String   | Phishing Security OS                   |
+
+#### Command Example
+```!kmsat-phishing-security-tests-failed-recipients pst_id=1```
+
+#### Context Example
+```json
+
+[
+  {
+    "recipient_id": 3077742,
+    "pst_id": 14240,
+    "user": {
+      "id": 264215,
+      "provisioning_guid": null,
+      "first_name": "Bob",
+      "last_name": "Ross",
+      "email": "bob.r@kb4-demo.com"
+    },
+    "template": {
+      "id": 2,
+      "name": "Your Amazon Order"
+    },
+    "scheduled_at": "2019-04-02T15:02:38.000Z",
+    "delivered_at": "2019-04-02T15:02:38.000Z",
+    "opened_at": "2019-04-02T15:02:38.000Z",
+    "clicked_at": "2019-04-02T15:02:38.000Z",
+    "replied_at": null,
+    "attachment_opened_at": null,
+    "macro_enabled_at": null,
+    "data_entered_at": "2019-04-02T15:02:38.000Z",
+    "qr_code_scanned": "2022-05-12T15:29:54.000Z",
+    "reported_at": null,
+    "bounced_at": null,
+    "ip": "XX.XX.XXX.XXX",
+    "ip_location": "St.Petersburg, FL",
+    "browser": "Chrome",
+    "browser_version": "48.0",
+    "os": "MacOSX"
+  }
+]
+
+```
 
 ### kmsat-phishing-campaign-security-tests
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| campaign_id       | Campaign ID     | Yes          |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                                 | **Type** | **Description**                                   |
+| ---------------------------------------- | -------- | ------------------------------------------------- |
+| KMSAT.CampaignPST.campaign_id            | Number   | Campaign Phishing Security Campaign ID            |
+| KMSAT.CampaignPST.pst_id                 | Number   | Campaign Phishing Security PST ID                 |
+| KMSAT.CampaignPST.status                 | String   | Campaign Phishing Security Status                 |
+| KMSAT.CampaignPST.name                   | String   | Campaign Phishing SecurityName                    |
+| KMSAT.CampaignPST.groups.group_id        | Number   | Campaign Phishing Security Group ID               |
+| KMSAT.CampaignPST.groups.name            | String   | Campaign Phishing Security Group Name             |
+| KMSAT.CampaignPST.phish_prone_percentage | Number   | Campaign Phishing Security Phish Prone Percentage |
+| KMSAT.CampaignPST.started_at             | Date     | Campaign Phishing Security Started At             |
+| KMSAT.CampaignPST.duration               | Number   | Campaign Phishing Security Duration               |
+| KMSAT.CampaignPST.categories.category_id | Number   | Campaign Phishing Security Category ID            |
+| KMSAT.CampaignPST.categories.name        | String   | Campaign Phishing Security Category Name          |
+| KMSAT.CampaignPST.template.id            | Number   | Campaign Phishing Security Template ID            |
+| KMSAT.CampaignPST.template.name          | String   | Campaign Phishing Security Template Name          |
+| KMSAT.CampaignPST.landing-page.id        | Number   | Campaign Phishing Security Landing Page ID        |
+| KMSAT.CampaignPST.landing-page-name      | String   | Campaign Phishing Security Landing Page Name      |
+| KMSAT.CampaignPST.scheduled_count        | Number   | Campaign Phishing Security Scheduled Count        |
+| KMSAT.CampaignPST.delivered_count        | Number   | Campaign Phishing Security Delivered Count        |
+| KMSAT.CampaignPST.opened_count           | Number   | Campaign Phishing Security Opened Count           |
+| KMSAT.CampaignPST.clicked_count          | Number   | Campaign Phishing Security Clicked Count          |
+| KMSAT.CampaignPST.replied_count          | Number   | Campaign Phishing Security Replied Count          |
+| KMSAT.CampaignPST.attachment_open_count  | Number   | Campaign Phishing Security Attachment Open Count  |
+| KMSAT.CampaignPST.macro_enabled_count    | Number   | Campaign Phishing Security Macro Enabled Count    |
+| KMSAT.CampaignPST.data_entered_count     | Number   | Campaign Phishing Security Data Entered Count     |
+| KMSAT.CampaignPST.qr_code_scanned_count  | Number   | Campaign Phishing Security QR Code Scanned Count  |
+| KMSAT.CampaignPST.reported_count         | Number   | Campaign Phishing Security Reported Count         |
+| KMSAT.CampaignPST.bounced_count          | Number   | Campaign Phishing Security Bounced Count          |
+
+
+
+#### Command Example
+```!kmsat-phishing-campaign-security-tests campaign_id=1 page=1 per_page=25```
+
+#### Context Example
+```json
+
+[
+  {
+    "campaign_id": 3423,
+    "pst_id": 16142,
+    "status": "Closed",
+    "name": "Corporate Test",
+    "groups": [
+      {
+        "group_id": 16342,
+        "name": "Corporate Employees"
+      }
+    ],
+    "phish_prone_percentage": 0.5,
+    "started_at": "2019-04-02T15:02:38.000Z",
+    "duration": 1,
+    "categories": [
+      {
+        "category_id": 4237,
+        "name": "Current Events"
+      }
+    ],
+    "template": {
+      "id": 11428,
+      "name": "CNN Breaking News"
+    },
+    "landing-page": {
+      "id": 1842,
+      "name": "SEI Landing Page"
+    },
+    "scheduled_count": 42,
+    "delivered_count": 4,
+    "opened_count": 24,
+    "clicked_count": 20,
+    "replied_count": 0,
+    "attachment_open_count": 3,
+    "macro_enabled_count": 0,
+    "data_entered_count": 0,
+    "qr_code_scanned_count": 0,
+    "reported_count": 0,
+    "bounced_count": 0
+  }
+]
+
+```
 
 ### kmsat-training-campaigns
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                                           | **Type** | **Description**                               |
+| -------------------------------------------------- | -------- | --------------------------------------------- |
+| KMSAT.TrainingCampaigns.campaign_id                | Number   | Training Campaigns Campaign ID                |
+| KMSAT.TrainingCampaigns.name                       | String   | Training Campaigns Name                       |
+| KMSAT.TrainingCampaigns.groups.group_id            | Number   | Training Campaigns Groups ID                  |
+| KMSAT.TrainingCampaigns.groups.name                | String   | Training Campaigns Groups Name                |
+| KMSAT.TrainingCampaigns.status                     | String   | Training Campaigns Status                     |
+| KMSAT.TrainingCampaigns.content.store_purchase_id  | Number   | Training Campaigns Content Store Purchased ID |
+| KMSAT.TrainingCampaigns.content.content_type       | String   | Training Campaigns Contents Content Type      |
+| KMSAT.TrainingCampaigns.content.name               | String   | Training Campaigns Content Name               |
+| KMSAT.TrainingCampaigns.content.description        | String   | Training Campaigns Content Description        |
+| KMSAT.TrainingCampaigns.content.type               | String   | Training Campaigns Content Type               |
+| KMSAT.TrainingCampaigns.content.duration           | Number   | Training Campaigns Content Duration           |
+| KMSAT.TrainingCampaigns.content.retired            | Boolean  | Training Campaigns Content Retired            |
+| KMSAT.TrainingCampaigns.content.retirement_date    | Date     | Training Campaigns Content Retirement Date    |
+| KMSAT.TrainingCampaigns.content.publish_date       | Date     | Training Campaigns Content Publish Date       |
+| KMSAT.TrainingCampaigns.content.publisher          | String   | Training Campaigns Content Publisher          |
+| KMSAT.TrainingCampaigns.content.purchase_date      | Date     | Training Campaigns Content Purchase Date      |
+| KMSAT.TrainingCampaigns.content.policy_url         | String   | Training Campaigns Content Policy URL         |
+| KMSAT.TrainingCampaigns.content.policy_id          | Number   | Training Campaigns Content Policy ID          |
+| KMSAT.TrainingCampaigns.content.minimum_time       | Number   | Training Campaigns Content Minimum Time       |
+| KMSAT.TrainingCampaigns.content.default_language   | String   | Training Campaigns Content Default Language   |
+| KMSAT.TrainingCampaigns.content.published          | Boolean  | Training Campaigns Content Published          |
+| KMSAT.TrainingCampaigns.duration_type              | String   | Training Campaigns Duration Type              |
+| KMSAT.TrainingCampaigns.start_date                 | Date     | Training Campaigns Start Date                 |
+| KMSAT.TrainingCampaigns.end_date                   | Date     | Training Campaigns End Date                   |
+| KMSAT.TrainingCampaigns.relative_duration          | String   | Training Campaigns Relative Duration          |
+| KMSAT.TrainingCampaigns.auto_enroll                | Boolean  | Training Campaigns Auto Enroll                |
+| KMSAT.TrainingCampaigns.allow_multiple_enrollments | Boolean  | Training Campaigns Allow Multiple Enrollments |
+| KMSAT.TrainingCampaigns.completion_percentage      | Number   | Training Campaigns Completion Percentage      |
+
+
+
+#### Command Example
+```!kmsat-training-campaigns campaign_id=1 page=1 per_page=25```
+
+#### Context Example
+```json
+
+{
+  "campaign_id": 4261,
+  "name": "Annual Training",
+  "groups": [
+    {
+      "group_id": 0,
+      "name": "All Users"
+    }
+  ],
+  "status": "Completed",
+  "content": [
+    [
+      {
+        "store_purchase_id": 7,
+        "content_type": "Store Purchase",
+        "name": "2019 Security Awareness Training",
+        "description": "A comprehensive overview of best practices...",
+        "type": "Training Module",
+        "duration": 42,
+        "retired": false,
+        "retirement_date": null,
+        "publish_date": "2019-04-02T15:02:38.000Z",
+        "publisher": "KnowBe4",
+        "purchase_date": "2019-04-02T15:02:38.000Z",
+        "policy_url": "https://www.yourcompany.com/employees/acceptableusepolicy.html"
+      },
+      {
+        "policy_id": 142,
+        "content_type": "Uploaded Policy",
+        "name": "Security Awareness Policy",
+        "minimum_time": 3,
+        "default_language": "en-us",
+        "published": true
+      }
+    ]
+  ],
+  "duration_type": "Specific End Date",
+  "start_date": "2019-04-02T15:02:38.000Z",
+  "end_date": "2019-04-02T15:02:38.000Z",
+  "relative_duration": "string",
+  "auto_enroll": true,
+  "allow_multiple_enrollments": false,
+  "completion_percentage": 0
+}
+
+```
 
 ### kmsat-training-enrollments
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| status            | Status          | No           |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                                      | **Type** | **Description**      |
+| --------------------------------------------- | -------- | -------------------- |
+| KMSAT.TrainingEnrollments.enrollment_id       | Number   | Training Enrollments |
+| KMSAT.TrainingEnrollments.content_type        | String   | Training Enrollments |
+| KMSAT.TrainingEnrollments.module_name         | String   | Training Enrollments |
+| KMSAT.TrainingEnrollments.user.id             | Number   | Training Enrollments |
+| KMSAT.TrainingEnrollments.user.first_name     | String   | Training Enrollments |
+| KMSAT.TrainingEnrollments.user.last_name      | String   | Training Enrollments |
+| KMSAT.TrainingEnrollments.user.email          | String   | Training Enrollments |
+| KMSAT.TrainingEnrollments.campaign_name       | String   | Training Enrollments |
+| KMSAT.TrainingEnrollments.enrollment_date     | Date     | Training Enrollments |
+| KMSAT.TrainingEnrollments.start_date          | Date     | Training Enrollments |
+| KMSAT.TrainingEnrollments.completion_date     | Date     | Training Enrollments |
+| KMSAT.TrainingEnrollments.status              | String   | Training Enrollments |
+| KMSAT.TrainingEnrollments.time_spent          | Number   | Training Enrollments |
+| KMSAT.TrainingEnrollments.policy_acknowledged | Boolean  | Training Enrollments |
+
+
+
+#### Command Example
+```!kmsat-training-enrollments status="Completed" page=1 per_page=25```
+
+#### Context Example
+```json
+
+{
+  "enrollment_id": 1425526,
+  "content_type": "Uploaded Policy",
+  "module_name": "Acceptable Use Policy",
+  "user": {
+    "id": 796742,
+    "first_name": "Sarah",
+    "last_name": "Thomas",
+    "email": "s_thomas@kb4-demo.com"
+  },
+  "campaign_name": "New Employee Policies",
+  "enrollment_date": "2019-04-02T15:02:38.000Z",
+  "start_date": "2019-04-02T15:02:38.000Z",
+  "completion_date": "2019-04-02T15:02:38.000Z",
+  "status": "Passed",
+  "time_spent": 2340,
+  "policy_acknowledged": false
+}
+
+```
 
 ### kmsat-user-events-list
 
+
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| event_type        | String          | No           |
+| target_user       | String          | No           |
+| external_id       | String          | No           |
+| source            | string          | No           |
+| occurred_date     | String          | No           |
+| risk_level        | Number          | No           |
+| risk_decay_mode   | Number          | No           |
+| risk_expired_date | String          | No           |
+| page              | Number          | No           |
+| per_page          | Number          | No           |
+| order_by          | String          | No           |
+| order_direction   | String          | No           |
+
+#### Context Output
+
+| **Path**                          | **Type** | **Description**           |
+| --------------------------------- | -------- | ------------------------- |
+| KMSAT.UserEvents.id               | Number   | Unique ID of the event    |
+| KMSAT.UserEvents.user.email       | String   | User email address        |
+| KMSAT.UserEvents.user.id          | Number   | User ID                   |
+| KMSAT.UserEvents.user.archived    | Boolean  | User Archived flag        |
+| KMSAT.UserEvents.external_id      | String   | External ID of the event  |
+| KMSAT.UserEvents.source           | String   | Source of the event       |
+| KMSAT.UserEvents.description      | String   | Description of the event  |
+| KMSAT.UserEvents.occurred_date    | Date     | When the event occurred   |
+| KMSAT.UserEvents.risk.level       | Number   | Risk Level of the event   |
+| KMSAT.UserEvents.risk.factor      | Number   | Risk Factor of the event  |
+| KMSAT.UserEvents.risk.decay_mode  | String   | The Risk Level Decay Mode |
+| KMSAT.UserEvents.risk.expire_date | String   | Risk Expire Date          |
+| KMSAT.UserEvents.event_type.id    | Number   | Event Type ID             |
+| KMSAT.UserEvents.event_type.name  | String   | Event Type Name           |
+
+#### Command Example
+```!kmsat-user-events-list target_user=1 risk_level=1 page=1 per_page=25```
+
+#### Context Example
+```json
+
+{
+  "data": [
+    {
+      "id": 0,
+      "user": {
+        "email": "string",
+        "id": 0,
+        "archived": true
+      },
+      "external_id": "string",
+      "source": "string",
+      "description": "string",
+      "occurred_date": "2019-08-24",
+      "risk": {
+        "level": 0,
+        "factor": 0,
+        "decay_mode": "string",
+        "expire_date": "string"
+      },
+      "event_type": {
+        "id": 0,
+        "name": "string"
+      }
+    }
+  ]
+}
+
+```
 
 ### kmsat-user-event-types-list
 
-| **Argument Name** | **Description** | **Required** |
-| ----------------- | --------------- | ------------ |
+| **Argument Name** | **Description**                  | **Required** |
+| ----------------- | -------------------------------- | ------------ |
+| name              | Filter by name of the event type | No           |
+
+#### Context Output
+
+| **Path**                         | **Type** | **Description**           |
+| -------------------------------- | -------- | ------------------------- |
+| KMSAT.UserEventTypes.id          | Number   | ID of the Event Type      |
+| KMSAT.UserEventTypes.account_id  | Number   | Account ID                |
+| KMSAT.UserEventTypes.name        | String   | Name of the Event Type    |
+| KMSAT.UserEventTypes.description | String   | Description of Event Type |
+
+#### Command Example
+```!kmsat-user-event-types-list name="John"```
+
+#### Context Example
+```json
+
+{
+  "data": [
+    {
+      "id": 0,
+      "name": "string",
+      "description": "string"
+    }
+  ]
+}
+
+```
 
 ### kmsat-user-event-create
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| target_user       | String          | Yes          |
+| event_type        | String          | Yes          |
+| external_id       | String          | No           |
+| source            | string          | No           |
+| description       | String          | No           |
+| occurred_date     | String          | No           |
+| risk_level        | Number          | No           |
+| risk_decay_mode   | Number          | No           |
+| risk_expired_date | String          | No           |
+
+#### Context Output
+
+| **Path**                 | **Type** | **Description**        |
+| ------------------------ | -------- | ---------------------- |
+| KMSAT.UserEventCreate.id | Number   | Unique ID of the event |
+
+#### Command Example
+```!kmsat-user-event-create target_user="John" event_type="New Event"```
+
+#### Context Example
+```json
+
+{
+  "data": {
+    "id": "string"
+  }
+}
+
+```
 
 ### kmsat-user-event-delete
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| id                | Event ID        | Yes          |
+
+#### Command Example
+```!kmsat-user-event-delete id=1```
