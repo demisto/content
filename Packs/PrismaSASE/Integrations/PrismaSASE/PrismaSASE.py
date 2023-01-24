@@ -1950,7 +1950,7 @@ def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
 
 def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command get allbuilt-in url categories
+    """Command get all built-in url categories
     Args:
         client: Client object with request
         args: demisto.args()
@@ -2039,7 +2039,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     return CommandResults(readable_output=f'Finished pushing job {job_id}')
 
 
-def main():
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """

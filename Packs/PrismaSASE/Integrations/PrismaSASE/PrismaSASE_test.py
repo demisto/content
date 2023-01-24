@@ -547,7 +547,7 @@ def test_modify_external_dynamic_list():
          'test.com'),
         ({'type': 'predefined_url', 'predefined_url_list': 'panw–auth-portal-exclude-list'},
          'panw–auth-portal-exclude-list'),
-        ({'type': 'ip', 'source_url': 'panw-torexit-ip-list'},
+        ({'type': 'predefined_ip', 'predefined_ip_list': 'panw-torexit-ip-list'},
          'panw-torexit-ip-list')
     ]
 )
@@ -555,5 +555,89 @@ def test_get_url_according_to_type(args, expected_result):
     from PrismaSASE import get_url_according_to_type
     url = get_url_according_to_type(args)
     assert url == expected_result
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, expected_result",
+    [
+        ({'type': 'ip', 'predefined_url_list': 'test.com'},
+         'Please provide the source_url'),
+        ({'type': 'predefined_url', 'source_url': 'panw–auth-portal-exclude-list'},
+         'Please provide the predefined_url_list'),
+        ({'type': 'predefined_ip', 'source_url': 'panw-torexit-ip-list'},
+         'Please provide the predefined_ip_list')
+    ]
+)
+def test_get_url_according_to_type_raise_exception(args, expected_result):
+    from PrismaSASE import get_url_according_to_type
+
+    with pytest.raises(Exception) as e:
+        get_url_according_to_type(args)
+
+    assert expected_result in str(e.value)
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, expected_result",
+    [
+        ({'frequency': 'hourly'},
+         {'hourly': {}}),
+        ({'frequency': 'daily', 'frequency_hour': '00'},
+         {'daily': {'at': '00'}}),
+        ({'frequency': 'weekly', 'day_of_week': 'sunday', 'frequency_hour': '00'},
+         {'weekly': {'day_of_week': 'sunday', 'at': '00'}}),
+        ({'frequency': 'monthly', 'day_of_month': '1', 'frequency_hour': '00'},
+         {'monthly': {'day_of_month': '1', 'at': '00'}})
+    ]
+)
+def test_build_recurring_according_to_params(args, expected_result):
+    from PrismaSASE import build_recurring_according_to_params
+
+    frequency = build_recurring_according_to_params(args)
+    assert frequency == expected_result
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, expected_result",
+    [
+        ({'frequency': 'daily'},
+         'Please provide the frequency_hour'),
+        ({'frequency': 'weekly', 'frequency_hour': '00'},
+         'Please provide the day_of_week'),
+        ({'frequency': 'weekly', 'day_of_week': '1'},
+         'Please provide the frequency_hour'),
+        ({'frequency': 'monthly', 'frequency_hour': '00'},
+         'Please provide the day_of_month')
+    ]
+)
+def test_build_recurring_according_to_params_raise_exception(args, expected_result):
+    from PrismaSASE import build_recurring_according_to_params
+
+    with pytest.raises(Exception) as e:
+        build_recurring_according_to_params(args)
+
+    assert expected_result in str(e.value)
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, expected_result",
+    [
+        ({'page': '2', 'page_size': '2'},
+         {'limit': 2, 'offset': 2}),
+        ({'limit': '2'},
+         {'limit': 2}),
+        ({},
+         {'limit': 50})
+    ]
+)
+def test_get_pagination_params(args, expected_result):
+    from PrismaSASE import get_pagination_params
+
+    pagination_params = get_pagination_params(args)
+    assert pagination_params == expected_result
 
 
