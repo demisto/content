@@ -112,7 +112,7 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: When selected, closing a Splunk notable event will also close the corresponding fetched incident on Cortex XSOAR.
+- additionalinfo: When selected, closing a Splunk notable event will also close the corresponding fetched incident on XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
@@ -120,14 +120,20 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: When selected, closing a fetched incident of a Splunk notable on Corted XSOAR will also close the corresponding notable on Splunk.
-  defaultvalue: 'false'
-  display: Close Mirrored Splunk Notable Event
+- additionalinfo: "Splunk status labels to mirror on XSOAR if closed on Splunk. Can be a comma-separated list. (Example: Closed,Resolved,False-Positive)."
+  display: Splunk Status Labels to Mirror
+  name: close_labels
+  required: false
+  type: 0
+  section: Collect
+- display: Close Mirrored Splunk Notable Event
   name: close_notable
   required: false
   type: 8
   section: Collect
   advanced: true
+  additionalinfo: When selected, closing a fetched incident of a Splunk notable on XSOAR will also close the corresponding notable on Splunk.
+  defaultvalue: 'false'
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -140,12 +146,12 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: The app context of the namespace
-  name: app
+- name: app
   required: false
   type: 0
   section: Collect
   advanced: true
+  display: The app context of the namespace
 - name: cred_hec_token
   required: false
   type: 9
@@ -177,14 +183,14 @@ configuration:
   - Drilldown
   - Asset
   - Identity
-- additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
-  defaultvalue: '5'
-  display: Enrichment Timeout (Minutes)
+- display: 'Enrichment Timeout (Minutes)'
   name: enrichment_timeout
   required: false
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
+  defaultvalue: '5'
 - display: 'Number of Events Per Enrichment Type'
   name: num_enrichment_events
   required: false
@@ -199,13 +205,13 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
-  display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
+- display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
   required: false
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
   defaultvalue: '15'
 - display: 'Advanced: Unique ID fields'
   name: unique_id_fields
@@ -229,14 +235,14 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: The name of the lookup column containing the Cortex XSOAR username.
-  defaultvalue: xsoar_username
+- defaultvalue: 'xsoar_username'
   display: XSOAR user key
   name: xsoar_user_field
   required: false
   type: 0
   section: Connect
   advanced: true
+  additionalinfo: The name of the lookup column containing the Cortex XSOAR username.
 - defaultvalue: 'splunk_username'
   display: SPLUNK user key
   name: splunk_user_field
@@ -596,7 +602,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.44906
+  dockerimage: demisto/splunksdk-py3:1.0.0.45726
   isfetch: true
   ismappable: true
   isremotesyncin: true

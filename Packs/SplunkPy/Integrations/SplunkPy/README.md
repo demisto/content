@@ -42,6 +42,7 @@ This integration was integrated and tested with Splunk v7.2.
 | use_cim | Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. | False | 
 | mirror_direction | Choose the direction to mirror the incident: Incoming (from Splunk to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to SOAR and Splunk). | False |
 | close_incident | When selected, closing the Splunk notable event is mirrored in Cortex XSOAR. | False |
+| close_labels | Splunk Status Labels to Mirror | False |
 | close_notable | When selected, closing the XSOAR incident is mirrored in Splunk. | False |
 | enabled_enrichments | The possible types of enrichment are: Drilldown, Asset, and Identity | False |
 | num_enrichment_events | The maximal number of event to retrieve per enrichment type. Default to 20. | False | 
@@ -157,6 +158,7 @@ To setup the mirroring follow these instructions:
     - Incoming And Outgoing - Changes in XSOAR incidents and Splunk notables will be reflected in both directions.
     - None - Turns off incident mirroring.
 5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on Splunk side.
+   If used, you can also specify which Splunk status labels should result in closure on XSOAR using the *Splunk Status Labels to Mirror* field. (Set to "Closed" by default. Can be a comma-separated list.). To mirror all status labels that are marked as "End Status" on Splunk, enter "End-Status".
 6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
 7. Fill in the **timezone** integration parameter with the timezone the Splunk Server is using.
 Newly fetched incidents will be mirrored in the chosen direction.

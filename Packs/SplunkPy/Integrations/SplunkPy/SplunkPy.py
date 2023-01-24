@@ -24,6 +24,13 @@ VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 MIRROR_LIMIT = 1000
+
+# A unique label that's used to signal XSOAR to mirror closure of incidents
+# with "status_end" marked status labels on Splunk. For more information, see:
+# https://dev.splunk.com/enterprise/docs/devtools/enterprisesecurity/notableeventsplunkes/usingnotableeventsinsearch/
+# If changed, update the documentation on the YAML and README files.
+MIRROR_CLOSE_ALL_STATUS_END_LABEL = "End-Status"
+
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
@@ -1214,14 +1221,17 @@ def get_last_update_in_splunk_time(last_update):
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
-def get_remote_data_command(service: client.Service, args: dict, close_incident, mapper):
+def get_remote_data_command(service: client.Service, args: dict,
+                            close_incident: bool, close_status_labels: list[str], mapper):
     """ get-remote-data command: Returns an updated notable and error entry (if needed)
 
     Args:
         service (splunklib.client.Service): Splunk service object
         args (dict): The command arguments
-        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable has been
-        closed on Splunk end
+        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable
+            has been closed on Splunk's end
+        close_status_labels (list[str]): A list of Splunk status labels to mirror closure of on XSOAR
+            if closed on Splunk.
 
     Returns:
         GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
@@ -1248,16 +1258,21 @@ def get_remote_data_command(service: client.Service, args: dict, close_incident,
             updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
 
     demisto.debug('notable {} data: {}'.format(notable_id, updated_notable))
-    if updated_notable.get('status') == '5' and close_incident:
-        demisto.info('Closing incident related to notable {}'.format(notable_id))
-        entries = [{
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': 'Notable event was closed on Splunk.'
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }]
+    if close_incident and updated_notable.get('status_label') is not None:
+        status_label = updated_notable.get('status_label')
+        # If `status_label` in the list of status labels to close, or if 'status_end' is True,
+        # and the special label is used, close the incident on XSOAR.
+        if (status_label in close_status_labels) or (argToBoolean(updated_notable.get('status_end', 'true'))
+                                                     and MIRROR_CLOSE_ALL_STATUS_END_LABEL in close_status_labels):
+            demisto.info('Closing incident related to notable {}'.format(notable_id))
+            entries = [{
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            }]
 
     demisto.debug('Updated notable {}'.format(notable_id))
 
@@ -2669,7 +2684,10 @@ def main():  # pragma: no cover
             get_mapping_fields_command(service, mapper)
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
-        get_remote_data_command(service, demisto.args(), demisto.params().get('close_incident'), mapper)
+        get_remote_data_command(service=service, args=demisto.args(),
+                                close_incident=demisto.params().get('close_incident'),
+                                close_status_labels=argToList(demisto.params().get('close_labels', ["Closed"])),
+                                mapper=mapper)
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())
     elif command == 'update-remote-system':

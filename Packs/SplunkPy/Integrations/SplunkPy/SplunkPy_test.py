@@ -911,7 +911,7 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
 
 
 def test_get_remote_data_command(mocker):
-    updated_notable = {'status': '1', 'event_id': 'id'}
+    updated_notable = {'status_label': 'New', 'event_id': 'id'}
 
     class Jobs:
         def __init__(self):
@@ -928,14 +928,15 @@ def test_get_remote_data_command(mocker):
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, close_incident=False, mapper=splunk.UserMappingObject(service, False))
+    splunk.get_remote_data_command(service, args, close_incident=False, close_status_labels=['Closed'],
+                                   mapper=splunk.UserMappingObject(service, False))
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
-    assert results == [{'event_id': 'id', 'status': '1'}]
+    assert results == [{'event_id': 'id', 'status_label': 'New'}]
 
 
 def test_get_remote_data_command_close_incident(mocker):
-    updated_notable = {'status': '5', 'event_id': 'id'}
+    updated_notable = {'status_label': 'Closed', 'event_id': 'id'}
 
     class Jobs:
         def __init__(self):
@@ -952,16 +953,17 @@ def test_get_remote_data_command_close_incident(mocker):
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, close_incident=True, mapper=splunk.UserMappingObject(service, False))
+    splunk.get_remote_data_command(service, args, close_incident=True, close_status_labels=['Closed'],
+                                   mapper=splunk.UserMappingObject(service, False))
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
     assert results == [
-        {'event_id': 'id', 'status': '5'},
+        {'event_id': 'id', 'status_label': 'Closed'},
         {
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': 'Notable event was closed on Splunk.'
+                'closeReason': 'Notable event was closed on Splunk with status "Closed".',
             },
             'ContentsFormat': EntryFormat.JSON
         }]
