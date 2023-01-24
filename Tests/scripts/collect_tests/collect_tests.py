@@ -1050,6 +1050,19 @@ class UploadBranchCollector(BranchTestCollector):
 
 class BroadCollactor(TestCollector, ABC):
     def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
+        result = []
+        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
+            try:
+                result.append(self._collect_pack(
+                    pack_id=pack_metadata.pack_id,
+                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
+                    reason_description=self.marketplace.value,
+                    allow_incompatible_marketplace=False,
+                    is_nightly=True,
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
+        return CollectionResult.union(result)
 
 
 class NightlyTestCollector(BroadCollactor, ABC):
@@ -1084,20 +1097,6 @@ class NightlyTestCollector(BroadCollactor, ABC):
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.debug(str(e))
 
-        return CollectionResult.union(result)
-
-        result = []
-        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
-            try:
-                result.append(self._collect_pack(
-                    pack_id=pack_metadata.pack_id,
-                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                    reason_description=self.marketplace.value,
-                    allow_incompatible_marketplace=False,
-                    is_nightly=True,
-                ))
-            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
-                logger.debug(str(e))
         return CollectionResult.union(result)
 
 
@@ -1263,7 +1262,7 @@ if __name__ == '__main__':
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
-    parser.add_argument('--upload_all', '-a', type=str2bool, help='Should use graph', default=False, required=False)
+    parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Upload all packs', default=False, required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     
@@ -1281,7 +1280,7 @@ if __name__ == '__main__':
         collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-        if args.upload_all:
+        if args.override_all_packs:
             collector = UploadAllCollector(marketplace, graph)
         else:
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
