@@ -16,7 +16,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: XAPtuAafGxgO+H0Qs6Rgf4ORDTnIFhDls4wGJnF6fUitkk+KlR9RGLKwRc4tOmM+UiOWbDwLDjZA+AStXhzBEQ==
   display: Account key
   name: key
   required: false
