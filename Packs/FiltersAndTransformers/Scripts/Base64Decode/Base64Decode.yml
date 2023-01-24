@@ -28,6 +28,6 @@ subtype: python3
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.9.44472
+dockerimage: demisto/python3:3.10.9.45313
 tests:
 - Base64Decode - Test
