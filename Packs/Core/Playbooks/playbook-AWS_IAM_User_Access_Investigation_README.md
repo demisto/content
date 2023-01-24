@@ -10,9 +10,9 @@ The following alerts are supported for AWS environments.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Enrichment for Verdict
 * AWS IAM User Access Investigation - Remediation
 * Handle False Positive Alerts
+* Enrichment for Verdict
 
 ### Integrations
 * CortexCoreIR
@@ -21,8 +21,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* closeInvestigation
 * core-get-cloud-original-alerts
+* closeInvestigation
 
 ## Playbook Inputs
 ---
