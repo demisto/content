@@ -1,3 +1,4 @@
+import urllib.parse
 from collections import defaultdict
 
 
@@ -10,7 +11,7 @@ import ipaddress
 import dateparser
 import tempfile
 from typing import Tuple
-
+import urllib
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -323,7 +324,7 @@ class PrismaCloudComputeClient(BaseClient):
             method="PUT", url_suffix="policies/firewall/app/container", json_data=policy, resp_type="response", ok_codes=(200),
             error_handler=lambda res: f"Error: {res.status_code} - {res.text}"
         )
-       
+
     def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str):
         """
         Get the container audit alerts for a specific image.
@@ -1738,13 +1739,13 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
         CommandResults: command-results object.
     """
     now = datetime.now()
-    from_day = arg_to_number(args.get("FromDays", 2))  
+    from_day = arg_to_number(args.get("FromDays", 2))
     from_time = now - timedelta(days=from_day)      # type: ignore
-    image_name = urllib3.parse.quote(args.get("ImageName"), safe='')
+    image_name = urllib.parse.quote(args.get("ImageName"), safe='')     # type: ignore
     audit_type = args.get("audit_type")
     limit = arg_to_number(args.get("limit", 25))
     data = client.get_firewall_audit_container_alerts(
-        image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=limit, audit_type=audit_type)
+        image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=limit, audit_type=audit_type)  # type: ignore
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.Audits",

@@ -80,7 +80,7 @@
         "type": "lfi",
         "url": "us-west-1.elb.amazonaws.com/vulnerabilities/exec/",
         "urlPath": "/vulnerabilities/exec/",
-        "userAgentHeader": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+        "userAgentHeader": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/0.0.0.0 Safari/537.36",
         "version": "22.06.229"
     }
 ]
