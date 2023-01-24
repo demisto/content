@@ -2447,9 +2447,6 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             })
 
     # Handle closing ticket/incident in XSOAR as chosen by close_incident_multiple_options parameter
-    # 1. check if the ticket is closed or resolved
-    # 2. check if close_incident_multiple_options is set to 'closed' or 'resolved'
-    # 3. if on of the above is true, handle debug call and append the entry accordingly to the entries list
     if ticket.get('closed_at') and params.get('close_incident_multiple_options') == 'closed':
         close_ticket_entry = create_closed_ticket_entry(ticket)
         entries.append(close_ticket_entry)
@@ -2478,7 +2475,7 @@ def create_closed_ticket_entry(ticket: Dict[str, Any]):
     demisto.debug(f'ticket is closed: {ticket}')
     ticket_close_notes = ticket.get("close_notes")
     ticket_state = ticket.get("state")
-    
+
     return {'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
