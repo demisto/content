@@ -8,19 +8,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Cortex XDR - Port Scan - Adjusted
-* GenericPolling
-* Cortex XDR - Malware Investigation
 * Cortex XDR - Possible External RDP Brute-Force
+* Cortex XDR - Malware Investigation
 * Cortex XDR - Cloud Cryptomining
+* GenericPolling
 
 ### Integrations
-Cortex XDR - IR
+* Cortex XDR - IR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-xdr-get-incident-extra-data
+* xdr-get-incident-extra-data
 
 ## Playbook Inputs
 ---
