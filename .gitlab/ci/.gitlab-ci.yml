@@ -5,6 +5,7 @@ default:
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
 
 stages:
@@ -12,6 +13,7 @@ stages:
   - prepare-testing-bucket
   - run-instances
   - upload-to-marketplace
+  - are-jobs-realy-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
 
@@ -25,6 +27,7 @@ variables:
   SLACK_CHANNEL: "dmst-build-test"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
+  PIPELINE_JOBS_FOLDER: "/builds/xsoar/content/pipeline_jobs_folder"
   ARTIFACTS_FOLDER_XSOAR: "/builds/xsoar/content/artifacts/xsoar"
   ARTIFACTS_FOLDER_MPV2: "/builds/xsoar/content/artifacts/marketplacev2"
   ARTIFACTS_FOLDER_XPANSE: "/builds/xsoar/content/artifacts/xpanse"
