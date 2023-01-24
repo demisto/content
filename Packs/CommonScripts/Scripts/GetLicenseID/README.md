@@ -1,0 +1,1 @@
+Returns the license ID.
