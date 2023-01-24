@@ -456,6 +456,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
         attributes: the attributes to specify for each entry found in the DIT
     """
     assert conn is not None
+    test = 0
     total_entries = 0
     cookie = base64.b64decode(page_cookie) if page_cookie else None
     start = datetime.now()
