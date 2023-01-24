@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from PyPDF2 import PdfReader, PdfFileWriter
+from PyPDF2 import PdfReader, PdfWriter
 
 
 def unlock_pdf(entry_id):
@@ -11,7 +11,7 @@ def unlock_pdf(entry_id):
     input1 = PdfReader(open(origin_path, "rb"))
     input1.decrypt(str(demisto.args()["password"]))
 
-    output = PdfFileWriter()
+    output = PdfWriter()
     for pageNum in range(0, input1.getNumPages()):
         output.addPage(input1.getPage(pageNum))
     with open(output_name, "wb") as pf:
