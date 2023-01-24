@@ -1262,10 +1262,11 @@ if __name__ == '__main__':
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
-    parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Upload all packs', default=False, required=False)
+    parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Upload all packs', default=False,
+                        required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
-    
+
     logger.debug(f'parsed args:\n{args_string}')
     logger.debug('CONTRIB_BRANCH=' + os.getenv('CONTRIB_BRANCH', '<undefined>'))
     branch_name = PATHS.content_repo.active_branch.name
