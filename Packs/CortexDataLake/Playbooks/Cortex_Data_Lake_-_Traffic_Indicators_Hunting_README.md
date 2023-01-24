@@ -16,10 +16,10 @@ This playbook does not use any sub-playbooks.
 * SetAndHandleEmpty
 
 ### Commands
-* cdl-query-url-logs
 * cdl-query-threat-logs
-* cdl-query-traffic-logs
 * cdl-query-file-data
+* cdl-query-url-logs
+* cdl-query-traffic-logs
 
 ## Playbook Inputs
 ---
@@ -35,7 +35,7 @@ This playbook does not use any sub-playbooks.
 | end_time | Specify the query end time at which to perform a search within Cortex Data Lake.<br/><br/>For example, end_time="2018-04-26 00:00:00" |  | Optional |
 | limit | The maximum number of logs to return. <br/>Default is 10. |  | Optional |
 | fields | Select the fields you wish to be included in the query results. <br/>Selection can be "all" \(same as \*\) or a comma-separated list of specific fields in the table.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| action | Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| FirewallAction | Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | rule_matched | Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 
 ## Playbook Outputs

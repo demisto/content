@@ -131,10 +131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "222":
     id: "222"
-    taskid: 4bda8846-4806-4766-823f-93d2c02ba30f
+    taskid: ca7291ce-ae1d-43a6-8149-6a243a25a219
     type: regular
     task:
-      id: 4bda8846-4806-4766-823f-93d2c02ba30f
+      id: ca7291ce-ae1d-43a6-8149-6a243a25a219
       version: -1
       name: Query Cortex Data Lake - Threat Logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
@@ -148,12 +148,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -361,10 +361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "273":
     id: "273"
-    taskid: a6847aa8-f05e-4099-8ddb-9c9b4e426cc7
+    taskid: 8aeee3d7-9661-4fc0-8616-f9a86b78ec18
     type: regular
     task:
-      id: a6847aa8-f05e-4099-8ddb-9c9b4e426cc7
+      id: 8aeee3d7-9661-4fc0-8616-f9a86b78ec18
       version: -1
       name: Query Cortex Data Lake - File Data Logs
       description: Searches the Cortex firewall.file_data table.
@@ -378,12 +378,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -670,10 +670,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "298":
     id: "298"
-    taskid: 839b0049-0fd6-4f15-8f00-9d6d4f92c85d
+    taskid: 3ed9a706-c9c4-47a9-8dcf-e18f48e446b8
     type: regular
     task:
-      id: 839b0049-0fd6-4f15-8f00-9d6d4f92c85d
+      id: 3ed9a706-c9c4-47a9-8dcf-e18f48e446b8
       version: -1
       name: Query Cortex Data Lake - File Data Logs
       description: Searches the Cortex firewall.file_data table.
@@ -687,12 +687,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -1038,10 +1038,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "312":
     id: "312"
-    taskid: f27ee0ff-92f2-4e82-822d-74b520495260
+    taskid: 8455a6a7-2f0b-41f0-8886-26bd2162f2e4
     type: regular
     task:
-      id: f27ee0ff-92f2-4e82-822d-74b520495260
+      id: 8455a6a7-2f0b-41f0-8886-26bd2162f2e4
       version: -1
       name: Query Cortex Data Lake - File Data Logs (Source Geolocation)
       description: Searches the Cortex firewall.file_data table.
@@ -1055,12 +1055,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -1161,10 +1161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "313":
     id: "313"
-    taskid: 6c6c47cf-6762-4c60-8a19-1202ccb80c95
+    taskid: 02458866-92a0-4e69-83d4-242c672f3ff5
     type: regular
     task:
-      id: 6c6c47cf-6762-4c60-8a19-1202ccb80c95
+      id: 02458866-92a0-4e69-83d4-242c672f3ff5
       version: -1
       name: Query Cortex Data Lake - Threat Logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
@@ -1178,12 +1178,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -1697,7 +1697,7 @@ inputs:
   required: false
   description: "Select the fields you wish to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
   playbookInputQuery:
-- key: action
+- key: FirewallAction
   value: {}
   required: false
   description: |-

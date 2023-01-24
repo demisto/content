@@ -21,8 +21,8 @@ Separate searches are conducted for each type of indicator in the playbook.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex Data Lake - Traffic Indicators Hunting
 * Cortex Data Lake - File Indicators Hunting
+* Cortex Data Lake - Traffic Indicators Hunting
 
 ### Integrations
 * Cortex Data Lake
@@ -56,7 +56,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | time_range | An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.<br/><br/>When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used. |  | Optional |
 | limit | The maximum number of logs to return. <br/>Default is 10. |  | Optional |
 | fields | Select the fields you wish to be included in the query results. <br/>Selection can be "all" \(same as \*\) or a comma-separated list of specific fields in the table.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| action | Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| FirewallAction | Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | rule_matched | Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 
 ## Playbook Outputs

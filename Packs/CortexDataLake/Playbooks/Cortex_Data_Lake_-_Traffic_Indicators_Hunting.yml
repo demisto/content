@@ -176,10 +176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "218":
     id: "218"
-    taskid: 1ba9ed57-4b70-463a-8362-8c88758c968c
+    taskid: cfb39812-c740-458c-8ce4-1add6c2f8452
     type: regular
     task:
-      id: 1ba9ed57-4b70-463a-8362-8c88758c968c
+      id: cfb39812-c740-458c-8ce4-1add6c2f8452
       version: -1
       name: Query Cortex Data Lake - URL Logs
       description: Searches the Cortex Data Lake URL log table.
@@ -193,12 +193,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -315,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "220":
     id: "220"
-    taskid: e888cc9b-529c-428f-82c0-0fac51604388
+    taskid: e9868ddc-0232-44c3-8d33-d28eb04caf56
     type: regular
     task:
-      id: e888cc9b-529c-428f-82c0-0fac51604388
+      id: e9868ddc-0232-44c3-8d33-d28eb04caf56
       version: -1
       name: 'Query Cortex Data Lake - Traffic Logs '
       description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session.
@@ -332,12 +332,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -455,10 +455,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "222":
     id: "222"
-    taskid: ced8ee58-5be9-461e-8db3-7158d99b10b4
+    taskid: c4b975e0-6813-4f41-8eb8-1356f90d3399
     type: regular
     task:
-      id: ced8ee58-5be9-461e-8db3-7158d99b10b4
+      id: c4b975e0-6813-4f41-8eb8-1356f90d3399
       version: -1
       name: Query Cortex Data Lake - Threat Logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
@@ -472,12 +472,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -778,10 +778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "272":
     id: "272"
-    taskid: 639a3c8d-c7b0-443e-8994-96c095081da7
+    taskid: c6f74ede-a9e9-464a-873f-e045e8501603
     type: regular
     task:
-      id: 639a3c8d-c7b0-443e-8994-96c095081da7
+      id: c6f74ede-a9e9-464a-873f-e045e8501603
       version: -1
       name: Query Cortex Data Lake - File Data Logs (Destination Port)
       description: Searches the Cortex firewall.file_data table.
@@ -795,12 +795,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -900,10 +900,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "273":
     id: "273"
-    taskid: c948717e-8966-4fe7-8556-fb9b994e76c2
+    taskid: bc907ace-2f9c-48d8-81cc-927ac566faff
     type: regular
     task:
-      id: c948717e-8966-4fe7-8556-fb9b994e76c2
+      id: bc907ace-2f9c-48d8-81cc-927ac566faff
       version: -1
       name: Query Cortex Data Lake - File Data Logs (Source Port)
       description: Searches the Cortex firewall.file_data table.
@@ -917,12 +917,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -1009,7 +1009,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
+          "x": 680,
           "y": 290
         }
       }
@@ -1341,10 +1341,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "287":
     id: "287"
-    taskid: 49bc61fb-215d-4b7f-8132-c1ef7849d610
+    taskid: fd1540fd-3f9f-40ac-829d-34f8a20e5fb4
     type: regular
     task:
-      id: 49bc61fb-215d-4b7f-8132-c1ef7849d610
+      id: fd1540fd-3f9f-40ac-829d-34f8a20e5fb4
       version: -1
       name: Query Cortex Data Lake - File Data Logs (Destination IP)
       description: Searches the Cortex firewall.file_data table.
@@ -1358,12 +1358,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -1463,10 +1463,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "288":
     id: "288"
-    taskid: 86ccdee3-ce6e-4cb7-864e-f03c1032740e
+    taskid: 4f1f374c-f02f-45e0-870a-936ca461f79b
     type: regular
     task:
-      id: 86ccdee3-ce6e-4cb7-864e-f03c1032740e
+      id: 4f1f374c-f02f-45e0-870a-936ca461f79b
       version: -1
       name: Query Cortex Data Lake - File Data Logs (Source IP)
       description: Searches the Cortex firewall.file_data table.
@@ -1480,12 +1480,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -1585,10 +1585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "289":
     id: "289"
-    taskid: 67db0fa7-634f-42fd-8821-c1ac48885632
+    taskid: 87c470f4-3139-42ac-8509-abbed8eaf680
     type: regular
     task:
-      id: 67db0fa7-634f-42fd-8821-c1ac48885632
+      id: 87c470f4-3139-42ac-8509-abbed8eaf680
       version: -1
       name: 'Query Cortex Data Lake - Traffic Logs '
       description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session.
@@ -1602,12 +1602,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -1725,10 +1725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "290":
     id: "290"
-    taskid: f4005855-adf9-40be-80e4-f2bde21e46e6
+    taskid: e2f21be8-01f9-41b0-8eb6-a992419d7fd6
     type: regular
     task:
-      id: f4005855-adf9-40be-80e4-f2bde21e46e6
+      id: e2f21be8-01f9-41b0-8eb6-a992419d7fd6
       version: -1
       name: Query Cortex Data Lake - Threat Logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
@@ -1742,12 +1742,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -1865,10 +1865,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "291":
     id: "291"
-    taskid: 4f93521b-788f-4ef2-8b78-d78dae9c28dc
+    taskid: 5f4f5430-c4b7-485f-859c-182e8837ab3f
     type: regular
     task:
-      id: 4f93521b-788f-4ef2-8b78-d78dae9c28dc
+      id: 5f4f5430-c4b7-485f-859c-182e8837ab3f
       version: -1
       name: Query Cortex Data Lake - URL Logs
       description: Searches the Cortex Data Lake URL log table.
@@ -1882,12 +1882,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -2297,10 +2297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "298":
     id: "298"
-    taskid: acf91b96-0334-46b5-8788-bd88d5b7fa7e
+    taskid: a892553b-92bc-49a3-8a6f-22956c814bc3
     type: regular
     task:
-      id: acf91b96-0334-46b5-8788-bd88d5b7fa7e
+      id: a892553b-92bc-49a3-8a6f-22956c814bc3
       version: -1
       name: Query Cortex Data Lake - File Data Logs
       description: Searches the Cortex firewall.file_data table.
@@ -2314,12 +2314,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -2419,10 +2419,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "299":
     id: "299"
-    taskid: ab18f093-8883-4e36-8524-a79c4510a7cf
+    taskid: 182bb192-55cc-4482-8f58-56c4f687ff6a
     type: regular
     task:
-      id: ab18f093-8883-4e36-8524-a79c4510a7cf
+      id: 182bb192-55cc-4482-8f58-56c4f687ff6a
       version: -1
       name: Query Cortex Data Lake - URL Logs
       description: Searches the Cortex Data Lake URL log table.
@@ -2436,12 +2436,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -2789,10 +2789,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "306":
     id: "306"
-    taskid: b9d51cbe-b5fd-4d80-8232-7d382e54e523
+    taskid: 6b92fd2f-9677-4d1e-8fa4-2444dc950a0b
     type: regular
     task:
-      id: b9d51cbe-b5fd-4d80-8232-7d382e54e523
+      id: 6b92fd2f-9677-4d1e-8fa4-2444dc950a0b
       version: -1
       name: Query Cortex Data Lake - File Data Logs (Destination Geolocation)
       description: Searches the Cortex firewall.file_data table.
@@ -2806,12 +2806,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -3040,10 +3040,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "312":
     id: "312"
-    taskid: 249157aa-1988-4dbd-871e-ca43717843bf
+    taskid: 9684574b-f90e-4fc3-84a0-72c127c68597
     type: regular
     task:
-      id: 249157aa-1988-4dbd-871e-ca43717843bf
+      id: 9684574b-f90e-4fc3-84a0-72c127c68597
       version: -1
       name: Query Cortex Data Lake - File Data Logs (Source Geolocation)
       description: Searches the Cortex firewall.file_data table.
@@ -3057,12 +3057,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -3300,7 +3300,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1745,
-        "width": 6760,
+        "width": 6840,
         "x": -5780,
         "y": -290
       }
@@ -3373,7 +3373,7 @@ inputs:
   required: false
   description: "Select the fields you wish to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
   playbookInputQuery:
-- key: action
+- key: FirewallAction
   value: {}
   required: false
   description: |-

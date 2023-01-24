@@ -186,10 +186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "218":
     id: "218"
-    taskid: 3d29fb6a-4c14-4f7a-8968-45d434425f24
+    taskid: 2a4e3170-fbb6-4b48-8697-cc833a768211
     type: regular
     task:
-      id: 3d29fb6a-4c14-4f7a-8968-45d434425f24
+      id: 2a4e3170-fbb6-4b48-8697-cc833a768211
       version: -1
       name: Query Cortex Data Lake - URL Logs
       description: Searches the Cortex Data Lake URL log table.
@@ -203,12 +203,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -415,10 +415,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "273":
     id: "273"
-    taskid: 5f6cc2af-2781-4f80-8c6d-8b99ce583beb
+    taskid: 01cc515d-43c1-4cd3-80fa-0cede7490986
     type: regular
     task:
-      id: 5f6cc2af-2781-4f80-8c6d-8b99ce583beb
+      id: 01cc515d-43c1-4cd3-80fa-0cede7490986
       version: -1
       name: Query Cortex Data Lake - File Data Logs
       description: Searches the Cortex firewall.file_data table.
@@ -432,12 +432,12 @@ tasks:
     scriptarguments:
       action:
         complex:
-          root: inputs.action
+          root: inputs.FirewallAction
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.action
+                  simple: inputs.FirewallAction
                 iscontext: true
           transformers:
           - operator: split
@@ -912,17 +912,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "320":
     id: "320"
-    taskid: 3847d6da-ae86-48b6-8f46-adb6ce6a530d
+    taskid: bbf6c0f7-faa2-438c-8e21-4c2c97d33953
     type: playbook
     task:
-      id: 3847d6da-ae86-48b6-8f46-adb6ce6a530d
+      id: bbf6c0f7-faa2-438c-8e21-4c2c97d33953
       version: -1
       name: Cortex Data Lake - File Indicators Hunting
+      description: |
+        This playbook queries Cortex Data Lake (CDL) for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, and file types.
+
+        Note that multiple search values should be separated by commas only (without spaces or any special characters).
       playbookName: Cortex Data Lake - File Indicators Hunting
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "257"
@@ -933,6 +936,9 @@ tasks:
       Filename:
         complex:
           root: inputs.Filename
+      FirewallAction:
+        complex:
+          root: inputs.FirewallAction
       MD5:
         complex:
           root: inputs.MD5
@@ -942,22 +948,6 @@ tasks:
       SHA256:
         complex:
           root: inputs.SHA256
-      action:
-        complex:
-          root: inputs.action
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.action
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
       end_time:
         complex:
           root: inputs
@@ -1076,21 +1066,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "321":
     id: "321"
-    taskid: 22829ced-e904-4dea-8fa7-54726113e3bf
+    taskid: c7d3a37b-0bb0-4a2a-82dc-9b9631347776
     type: playbook
     task:
-      id: 22829ced-e904-4dea-8fa7-54726113e3bf
+      id: c7d3a37b-0bb0-4a2a-82dc-9b9631347776
       version: -1
       name: Cortex Data Lake - Traffic Indicators Hunting
+      description: |
+        This playbook queries Cortex Data Lake (CDL) for traffic indicators, including IP addresses, geolocations, URLs, domains, and ports.
+
+        Note that multiple search values should be separated by commas only (without spaces or any special characters).
       playbookName: Cortex Data Lake - Traffic Indicators Hunting
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "257"
     scriptarguments:
+      FirewallAction:
+        complex:
+          root: inputs.FirewallAction
       Geolocation:
         complex:
           root: inputs.Geolocation
@@ -1103,22 +1099,6 @@ tasks:
       URLDomain:
         complex:
           root: inputs.URLDomain
-      action:
-        complex:
-          root: inputs.action
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.action
-                iscontext: true
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
       end_time:
         complex:
           root: inputs
@@ -1433,7 +1413,7 @@ inputs:
   required: false
   description: "Select the fields you wish to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
   playbookInputQuery:
-- key: action
+- key: FirewallAction
   value: {}
   required: false
   description: |-
