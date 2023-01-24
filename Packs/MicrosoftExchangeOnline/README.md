@@ -27,6 +27,10 @@ The [EWS Extension Online Powershell v2 integration](https://xsoar.pan.dev/docs/
 - Display existing recipient objects in your organization such as mailboxes, mail users, mail contacts, and distribution groups.
 - Add, remove, list, and count entries in Tenant Allow/Block Lists.
 
+The [Security And Compliance V2](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2) enables you to:
+- manage the security of all your organization's emails, SharePoint sites, OneDrives, etc.
+- can perform actions (preview and delete) on emails.
+
 ## EWS Permissions
 To perform actions on mailboxes of other users, and to execute searches on the Exchange server, you need specific permissions. 
 
