@@ -2112,4 +2112,5 @@ script:
 tests:
 - TestAzureSentinelPlaybookV2
 - No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
+defaultmapperin: Microsoft Sentinel - Incoming Mapper
 fromversion: 5.0.0

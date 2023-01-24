@@ -4,7 +4,7 @@
     "id": "Microsoft Sentinel - Incoming Mapper",
     "mapping": {
         "Microsoft Sentinel Incident": {
-            "dontMapEventToLabels": false,
+            "dontMapEventToLabels": true,
             "internalMapping": {
                 "Closing Reason": {
                     "complex": {
@@ -92,8 +92,17 @@
                 "Sentinel Alert Count": {
                     "simple": "AlertsCount"
                 },
+                "Sentinel Alerts": {
+                    "simple": "alerts"
+                },
                 "Sentinel Classification Comment": {
                     "simple": "classificationComment"
+                },
+                "Sentinel Comments": {
+                    "simple": "comments"
+                },
+                "Sentinel Entities": {
+                    "simple": "entities"
                 },
                 "Sentinel Incident Number": {
                     "simple": "IncidentNumber"
@@ -120,11 +129,17 @@
                         ]
                     }
                 },
+                "Sentinel Relations": {
+                    "simple": "relations"
+                },
                 "Sentinel Rule Id": {
                     "simple": "relatedAnalyticRuleIds"
                 },
                 "Source Create time": {
                     "simple": "CreatedTimeUTC"
+                },
+                "Source Id": {
+                    "simple": "ID"
                 },
                 "Source Status": {
                     "simple": "Status"
@@ -143,76 +158,6 @@
                 },
                 "severity": {
                     "simple": "Severity"
-                }
-            }
-        },
-        "dbot_classification_incident_type_all": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "Description": {
-                    "simple": "Description"
-                },
-                "Incident Link": {
-                    "simple": "IncidentUrl"
-                },
-                "Sentinel Alert Count": {
-                    "simple": "AlertsCount"
-                },
-                "Sentinel Incident Number": {
-                    "simple": "IncidentNumber"
-                },
-                "Sentinel Label": {
-                    "complex": {
-                        "filters": [],
-                        "root": "Label",
-                        "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    }
-                },
-                "Sentinel Rule Id": {
-                    "complex": {
-                        "filters": [],
-                        "root": "relatedAnalyticRuleIds",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "delimiter": {
-                                        "value": {
-                                            "simple": "/"
-                                        }
-                                    }
-                                },
-                                "operator": "split"
-                            },
-                            {
-                                "operator": "LastArrayElement"
-                            }
-                        ]
-                    }
-                },
-                "Source Create time": {
-                    "simple": "CreatedTimeUTC"
-                },
-                "Source Id": {
-                    "simple": "ID"
-                },
-                "Source Status": {
-                    "simple": "Status"
-                },
-                "Tactic": {
-                    "simple": "Tactics"
-                },
-                "name": {
-                    "simple": "Title"
-                },
-                "severity": {
-                    "simple": "Severity"
-                },
-                "test123": {
-                    "simple": "owner.objectId"
                 }
             }
         }
