@@ -89,6 +89,26 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'windows-registry-key': FeedIndicatorType.Registry,
 }
 
+HASH_TYPE_TO_STIX_HASH_TYPE = {
+    'md5': 'MD5',
+    'sha1': 'SHA-1',
+    'sha256': 'SHA-256',
+    'sha512': 'SHA-512',
+}
+
+def update_hash_type(hash_type):
+    """Updating the hash string to match STIX conventions"""
+    if hash_type == 'md5':
+        return 'MD5'
+    if hash_type == 'sha1':
+        return 'SHA-1'
+    if hash_type == 'sha256':
+        return 'SHA-256'
+    if hash_type == 'sha512':
+        return 'SHA-512'
+    else:
+        return 'Unknown'
+
 ''' TAXII2 Server '''
 
 
@@ -685,8 +705,8 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
 
     pattern = ''
     if object_type == 'file':
-        hash_type = get_hash_type(indicator_value)
-        pattern = f"[file:hash.'{hash_type}' = '{indicator_pattern_value}']"
+        hash_type = HASH_TYPE_TO_STIX_HASH_TYPE.get(get_hash_type(indicator_value), 'Unknown')
+        pattern = f"[file:hashes.'{hash_type}' = '{indicator_pattern_value}']"
     else:
         pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
 
