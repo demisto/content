@@ -47,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "54"
     scriptarguments:
       dateFormat:
         simple: utc
@@ -69,12 +69,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e7480200-7554-4c6e-8ff1-c273fb459b5e
+    taskid: 9d0c8b7a-cea9-4faa-8f2b-219f2b6d5d21
     type: regular
     task:
-      id: e7480200-7554-4c6e-8ff1-c273fb459b5e
+      id: 9d0c8b7a-cea9-4faa-8f2b-219f2b6d5d21
       version: -1
-      name: Check regex
+      name: Check regex new format
       scriptName: MatchRegex
       type: regular
       iscommand: false
@@ -91,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 575
+          "x": -240,
+          "y": 720
         }
       }
     note: false
@@ -166,8 +166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 750
+          "x": 20,
+          "y": 910
         }
       }
     note: false
@@ -1946,14 +1946,157 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: b37f53db-b8b3-4bca-8c7b-b65cba04151d
+    type: regular
+    task:
+      id: b37f53db-b8b3-4bca-8c7b-b65cba04151d
+      version: -1
+      name: Get Demisto version
+      description: Return the Demisto server version.
+      scriptName: DemistoVersion
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 210c141f-7d88-4b5b-80d4-67e2be1261c1
+    type: condition
+    task:
+      id: 210c141f-7d88-4b5b-80d4-67e2be1261c1
+      version: -1
+      name: Is Demisto Version 8.1.0+
+      description: Sleep for X seconds
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 4430157a-4ec1-4223-84bc-ced15b0c9b48
+    type: regular
+    task:
+      id: 4430157a-4ec1-4223-84bc-ced15b0c9b48
+      version: -1
+      name: Check regex old format
+      description: Deprecated. Use the **MatchRegexV2** script instead.
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 795,
-        "width": 6130,
-        "x": 50,
+        "height": 955,
+        "width": 6850,
+        "x": -670,
         "y": 50
       }
     }
