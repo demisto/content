@@ -19,10 +19,11 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
+    "layout": "AWS Security Hub Finding",
     "detached": false,
     "extractSettings": {
         "mode": "All",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.5.0"
 }

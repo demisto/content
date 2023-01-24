@@ -46,7 +46,7 @@
                     "simple": "Remediation"
                 },
                 "AWS Security Hub Resources": {
-                    "simple": "Resource"
+                    "simple": "Resources"
                 },
                 "AWS Security Hub Schema Version": {
                     "simple": "SchemaVersion"
@@ -67,12 +67,7 @@
                     "simple": "VerificationState"
                 },
                 "AWS Security Hub Workflow Status": {
-                    "complex": {
-                        "accessor": "Status",
-                        "filters": [],
-                        "root": "Workflow",
-                        "transformers": []
-                    }
+                    "simple": "Workflow.Status"
                 },
                 "Account ID": {
                     "simple": "AwsAccountId"
@@ -84,12 +79,7 @@
                     "simple": "SourceUrl"
                 },
                 "Comment": {
-                    "complex": {
-                        "accessor": "text",
-                        "filters": [],
-                        "root": "Note",
-                        "transformers": []
-                    }
+                    "simple": "Note.text"
                 },
                 "Description": {
                     "simple": "Description"
@@ -104,7 +94,7 @@
                     "simple": "FirstObservedAt"
                 },
                 "Last Update Time": {
-                    "simple": "updatedAt"
+                    "simple": "UpdatedAt"
                 },
                 "Region": {
                     "simple": "Region"
@@ -125,15 +115,10 @@
                     "simple": "mirror_instance"
                 },
                 "occurred": {
-                    "simple": "createdAt"
+                    "simple": "CreatedAt"
                 },
                 "severity": {
-                    "complex": {
-                        "accessor": "normalized",
-                        "filters": [],
-                        "root": "severity",
-                        "transformers": []
-                    }
+                    "simple": "Severity.Label"
                 }
             }
         },
@@ -144,18 +129,10 @@
                     "simple": "Id"
                 },
                 "Description": {
-                    "complex": {
-                        "filters": [],
-                        "root": "Description",
-                        "transformers": []
-                    }
+                    "simple": "Description"
                 },
                 "External Confidence": {
-                    "complex": {
-                        "filters": [],
-                        "root": "Confidence",
-                        "transformers": []
-                    }
+                    "simple": "Confidence"
                 },
                 "Last Update Time": {
                     "simple": "UpdatedAt"
@@ -177,5 +154,5 @@
     "name": "AWS Security Hub - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.5.0"
 }

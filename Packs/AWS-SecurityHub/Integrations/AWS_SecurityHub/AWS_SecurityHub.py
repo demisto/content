@@ -738,7 +738,8 @@ def batch_update_findings_command(client, args):
     return human_readable, outputs, response
 
 
-def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction):
+def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction, finding_types,
+                    workflow_status, product_name):
     last_run = demisto.getLastRun().get('lastRun', None)
     next_token = demisto.getLastRun().get('next_token', None)
     if last_run is None:
@@ -758,6 +759,13 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         filters['SeverityLabel'] = build_severity_label_obj(aws_sh_severity)
     if additional_filters is not None:
         filters.update(parse_filter_field(additional_filters))
+    if finding_types:
+        filters['Type'] = create_filters_list_dictionaries(finding_types, 'PREFIX')
+    if workflow_status:
+        statuses = [stat.upper() for stat in workflow_status]
+        filters['WorkflowStatus'] = create_filters_list_dictionaries(statuses, 'EQUALS')
+    if product_name:
+        filters['ProductName'] = create_filters_list_dictionaries(product_name, 'EQUALS')
     demisto.debug(f'The filters to the fetch are: {filters}')
     if next_token:
         try:
@@ -842,51 +850,8 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
         demisto.debug('Nothing new in the incident.')
         return GetRemoteDataResponse(mirrored_object={}, entries=[{}])
     else:
-        demisto.debug('The incident updated.')
-        updated_object = {
-            'Account ID': finding.get('AwsAccountId'),
-            'occurred': finding.get('CreatedAt'),
-            'External Start Time': finding.get('FirstObservedAt'),
-            'Description': finding.get('Description'),
-            'Region': finding.get('Region'),
-            'Alert Id': finding.get('Id'),
-            'Title': finding.get('Title'),
-            'Severity': finding.get('Severity', {}).get('Label'),
-            'Last Update Time': finding.get('UpdatedAt'),
-            'Detection Update Time': finding.get('LastObservedAt'),
-            'External Confidence': finding.get('Confidence'),
-            'Risk Score': finding.get('Criticality'),
-            'Alert URL': finding.get('SourceUrl'),
-            'Comment': finding.get('Note', {}).get('Text'),
-            'AWS Security Hub Generator Id': finding.get('GeneratorId'),
-            'AWS Security Hub Product Arn': finding.get('ProductArn'),
-            'AWS Security Hub Resources': finding.get('Resource'),
-            'AWS Security Hub Schema Version': finding.get('SchemaVersion'),
-            'AWS Security Hub Severity': finding.get('Severity'),
-            'AWS Security Hub Types': finding.get('Types'),
-            'AWS Security Hub Workflow Status': finding.get('Workflow', {}).get('Status'),
-            'AWS Security Hub Action': finding.get('Action'),
-            'AWS Security Hub Company Name': finding.get('CompanyName'),
-            'AWS Security Hub Compliance': finding.get('Compliance'),
-            'AWS Security Hub Provider Fields': finding.get('FindingProviderFields'),
-            'AWS Security Hub Malware': finding.get('Malware'),
-            'AWS Security Hub Network Path': finding.get('NetworkPath'),
-            'AWS Security Hub Product Fields': finding.get('ProductFields'),
-            'AWS Security Hub Product Name': finding.get('ProductName'),
-            'AWS Security Hub Record State': finding.get('RecordState'),
-            'AWS Security Hub Remediation': finding.get('Remediation'),
-            'AWS Security Hub Threats': finding.get('Threats'),
-            'AWS Security Hub User Defined Fields': finding.get('UserDefinedFields'),
-            'AWS Security Hub Verification State': finding.get('VerificationState'),
-            'AWS Security Hub Related Findings': finding.get('RelatedFindings')
-        }
-        updated_object = remove_empty_elements(updated_object)
-        if updated_object:
-            demisto.debug(f'Updated incident {remote_incident_id} with the fields: {updated_object}')
-        else:
-            demisto.debug(f'No delta was found for incident {remote_incident_id}')
-
-        return GetRemoteDataResponse(mirrored_object=updated_object, entries=[{}])
+        demisto.debug(f'Updated incident {remote_incident_id}')
+        return GetRemoteDataResponse(mirrored_object=finding, entries=[{}])
 
 
 def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str], aws_sh_severity: str,
@@ -910,21 +875,10 @@ def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str],
     if last_update:
         remote_args = GetModifiedRemoteDataArgs(args)
         now = datetime.now(timezone.utc)
-        filters['CreatedAt'] = [{
+        filters['UpdatedAt'] = [{
             'Start': remote_args.last_update,
             'End': now.isoformat()
         }]
-    if aws_sh_severity:
-        filters['SeverityLabel'] = build_severity_label_obj(aws_sh_severity)
-    if additional_filters:
-        filters.update(parse_filter_field(additional_filters))
-    if finding_types:
-        filters['Type'] = create_filters_list_dictionaries(finding_types, 'PREFIX')
-    if workflow_status:
-        statuses = [stat.upper() for stat in workflow_status]
-        filters['WorkflowStatus'] = create_filters_list_dictionaries(statuses, 'EQUALS')
-    if product_name:
-        filters['ProductName'] = create_filters_list_dictionaries(product_name, 'EQUALS')
 
     demisto.debug(f'The filters are: {filters} \nEND OF FILTERS')
 
@@ -936,21 +890,8 @@ def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str],
     modified_incident_ids = []
     while findings:
         for finding in findings:
-            confidence = finding.get('Confidence', None)
-            criticality = finding.get('Criticality', None)
-            comment = finding.get('Note', {}).get('Text')
-            related_findings = finding.get('RelatedFindings', None)
-            severity_label = finding.get('Severity', {}).get('Label', None)
-            finding_types = finding.get('Types', None)
-            user_defined_fields = finding.get('UserDefinedFields', None)
-            verification_state = finding.get('VerificationState', None)
-            workflow_status = finding.get('Workflow', {}).get('Status', None)
-            if confidence or criticality or comment or related_findings or severity_label or finding_types or \
-                    user_defined_fields or verification_state or workflow_status:
-                demisto.debug(f'A new incident id: {finding.get("Id")}\n')
-                modified_incident_ids.append(finding.get('Id'))
-            else:
-                demisto.debug('No important changes\n')
+            demisto.debug(f'A new incident id: {finding.get("Id")}\n')
+            modified_incident_ids.append(finding.get('Id'))
         if next_token:
             demisto.debug(f'In pagination part. The next token is {next_token}\nEND TOKEN')
             response = client.get_findings(Filters=filters, NextToken=next_token)
@@ -971,8 +912,8 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name='AWS Security Hub Finding')
     demisto.debug('Collecting incident mapping.')
 
-    out_fields = ['Confidence', 'Criticality', 'Note.Text', 'Note.UpdatedBy', 'Severity.Label', 'VerificationState',
-                  'Workflow.Status']
+    out_fields = ['FindingIdentifiers.Id', 'FindingIdentifiers.ProductArn', 'Confidence', 'Criticality', 'Note.Text',
+                  'Note.UpdatedBy', 'Severity.Label', 'VerificationState', 'Workflow.Status']
     for field in out_fields:
         incident_type_scheme.add_field(field)
 
@@ -980,6 +921,55 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     mapping_response.add_scheme_type(incident_type_scheme)
 
     return mapping_response
+
+
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> str:
+    """
+    Mirrors out local changes to the remote system.
+    Args:
+        client: boto3.client - AWS client
+        args: A dictionary containing the data regarding a modified incident, including: data, entries,
+            incident_changed, remote_incident_id, inc_status, delta.
+
+    Returns:
+        The remote incident id that was modified. This is important when the incident is newly created remotely.
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    remote_incident_id = parsed_args.remote_incident_id
+    data = parsed_args.data
+    demisto.debug(f'Got the following data {data}, delta {delta}, and remote ID: {remote_incident_id}.')
+    if delta:
+        demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
+    if parsed_args.incident_changed:
+        demisto.debug(f'Incident id {remote_incident_id} and incident change: {parsed_args.incident_changed}')
+        body = {
+            'Confidence': data.get('External Confidence'),
+            'Criticality': data.get('Risk Score'),
+            'FindingIdentifiers': {
+                'Id': data.get('Alert Id'),
+                'ProductArn': data.get('AWS Security Hub Product Arn')
+            },
+            'Note': {
+                'Text': data.get('Comment'),
+                'UpdatedBy': data.get('Current user')
+            },
+            'Severity': {
+                'Label': data.get('Severity', {}).get('Label')
+            },
+            'VerificationState': data.get('AWS Security Hub Verification State'),
+            'Workflow': {
+                'Status': data.get('AWS Security Hub Workflow Status')
+            }
+        }
+        body = remove_empty_elements(body)
+        demisto.debug(f'The request body is {body}')
+        response = client.batch_update_findings(**body)
+        if response:
+            demisto.debug(f'The response is: {response}')
+    else:
+        demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
+    return remote_incident_id
 
 
 def test_function(client):
@@ -1048,7 +1038,8 @@ def main():  # pragma: no cover
         elif command == 'aws-securityhub-batch-update-findings':
             human_readable, outputs, response = batch_update_findings_command(client, args)
         elif command == 'fetch-incidents':
-            fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction)
+            fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction,
+                            finding_type, workflow_status, product_name)
             return
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, args))
@@ -1056,6 +1047,9 @@ def main():  # pragma: no cover
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, aws_sh_severity, additional_filters,
                                                             finding_type, workflow_status, product_name))
+            return
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(client, args))
             return
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
