@@ -83,6 +83,8 @@ stop-running-pipelines:
               echo $pipeline
           done
       fi
+    - section_end "Stop running piplined on current branch"
+
               
 
 
