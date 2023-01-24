@@ -1,0 +1,56 @@
+{
+    "results": [
+        {
+            "seq": 1,
+            "_id": 1,
+            "q_type": 0,
+            "id": "2",
+            "host": "12345",
+            "action": "allow",
+            "action_val": "1",
+            "ignore-port": "disable",
+            "ignore-port_val": "0",
+            "include-subdomains": "disable",
+            "include-subdomains_val": "0"
+        },
+        {
+            "seq": 2,
+            "_id": 2,
+            "q_type": 0,
+            "id": "1",
+            "host": "1",
+            "action": "allow",
+            "action_val": "1",
+            "ignore-port": "disable",
+            "ignore-port_val": "0",
+            "include-subdomains": "disable",
+            "include-subdomains_val": "0"
+        },
+        {
+            "seq": 3,
+            "_id": 3,
+            "q_type": 0,
+            "id": "3",
+            "host": "2",
+            "action": "allow",
+            "action_val": "1",
+            "ignore-port": "disable",
+            "ignore-port_val": "0",
+            "include-subdomains": "disable",
+            "include-subdomains_val": "0"
+        },
+        {
+            "seq": 4,
+            "_id": 4,
+            "q_type": 0,
+            "id": "4",
+            "host": "3",
+            "action": "allow",
+            "action_val": "1",
+            "ignore-port": "disable",
+            "ignore-port_val": "0",
+            "include-subdomains": "disable",
+            "include-subdomains_val": "0"
+        }
+    ]
+}
