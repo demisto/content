@@ -504,6 +504,63 @@ def test_delete_custom_url_category_command(mocker, args):
     assert 'id1' in result.readable_output
 
 
+def test_list_external_dynamic_list_command(mocker):
+    from PrismaSASE import list_external_dynamic_list_command
+    mock_response = json.loads(load_mock_response('list-external-dynamic-list.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'list_external_dynamic_list', return_value=mock_response)
+    result = list_external_dynamic_list_command(client, args={})
+    assert result.outputs_prefix == 'PrismaSase.ExternalDynamicList'
+    assert result.outputs == mock_response.get('data')
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, expected_results",
+    [
+        ({'id': 'id1', 'overwrite': True, 'value': 'www.test.com'},
+         ['www.test.com']),
+        ({'id': 'id1', 'overwrite': False, 'value': 'www.test.com'},
+         ['www.google.com', 'www.test.com']),
+    ]
+)
+def test_update_external_dynamic_list_command(mocker, args, expected_results):
+    # TODO change
+    from PrismaSASE import update_external_dynamic_list_command
+    mock_response = json.loads(load_mock_response('custom-url-category.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'get_external_dynamic_list_by_id', return_value=mock_response)
+    res = mocker.patch.object(client, 'external_dynamic_list')
+    update_external_dynamic_list_command(client, args)
+    assert res.call_args[1]['external_dynamic_list']['list'] == expected_results
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"id": "1"}
+    ]
+)
+def test_delete_custom_url_category_command(mocker, args):
+    from PrismaSASE import delete_external_dynamic_list_command
+
+    mock_response = json.loads(load_mock_response('external-dynamic-list.json'))
+    client = create_mocked_client()
+
+    mocker.patch.object(client, 'get_access_token', return_value='access_token')
+    mocker.patch.object(client, 'delete_external_dynamic_list', return_value=mock_response)
+
+    result = delete_external_dynamic_list_command(client, args)
+
+    assert 'deleted successfully' in result.readable_output
+    assert '1' in result.readable_output
+
+
 def test_modify_address():
     from PrismaSASE import modify_address
     address_object = json.loads(load_mock_response('address-object.json'))
