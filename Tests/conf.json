@@ -2812,7 +2812,9 @@
         {
             "integrations": "AWS - S3",
             "playbookID": "AWS - S3 Test Playbook",
-            "memory_threshold": 80
+            "memory_threshold": 80,
+            "is_mockable": false
+
         },
         {
             "integrations": "AwsSecretsManager",
