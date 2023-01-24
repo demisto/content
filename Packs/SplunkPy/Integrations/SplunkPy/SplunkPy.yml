@@ -123,6 +123,7 @@ configuration:
 - additionalinfo: "Splunk status labels to mirror on XSOAR if closed on Splunk. Can be a comma-separated list. (Example: Closed,Resolved,False-Positive). \"End-Status\" is a special value that stands for all statuses that are marked as \"End Status\" on Splunk."
   display: Splunk Status Labels to Mirror
   name: close_labels
+  defaultvalue: Closed
   required: false
   type: 0
   section: Collect
