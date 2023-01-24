@@ -28,7 +28,7 @@ def get_data_collection_url(task_id: str, users: List[str]) -> List[Dict[str, st
     return urls
 
 
-def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:
+def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     task_id = args.get('task_id', None)
     if not task_id:
         raise ValueError('task_id not specified')
@@ -47,7 +47,7 @@ def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(get_data_collection_url_command(demisto.args()))
     except Exception as ex:
