@@ -21,7 +21,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| BucketName | Unclaimed S3 bucket name. |  | Required |
+| S3BucketName | Unclaimed S3 bucket name. |  | Required |
 
 ## Playbook Outputs
 ---

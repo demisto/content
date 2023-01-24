@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4f2dc246-1b92-4458-872a-f9de26289bb2
+    taskid: 9bb1b5e7-a934-4113-8962-20c1ce84fe8a
     type: condition
     task:
-      id: 4f2dc246-1b92-4458-872a-f9de26289bb2
+      id: 9bb1b5e7-a934-4113-8962-20c1ce84fe8a
       version: -1
       name: Is AWS S3 enabled and is Input value defined?
       description: Determines if theAWS integration instance is configured and Input values are defined.
@@ -84,7 +84,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.BucketName
+                root: inputs.S3BucketName
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -103,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: db3aa7fa-2f64-48a8-8d8b-788168bdbfd2
+    taskid: 63a38757-861c-4ac9-8e49-66cc0912c946
     type: regular
     task:
-      id: db3aa7fa-2f64-48a8-8d8b-788168bdbfd2
+      id: 63a38757-861c-4ac9-8e49-66cc0912c946
       version: -1
       name: Create S3 Bucket
       description: Create AWS S3 bucket.
@@ -120,7 +120,7 @@ tasks:
     scriptarguments:
       bucket:
         complex:
-          root: inputs.BucketName
+          root: inputs.S3BucketName
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -199,10 +199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 456756de-40f0-48b6-85e2-2b07c1b459f5
+    taskid: 6f694871-6cf4-4f94-8508-11edc54b322c
     type: condition
     task:
-      id: 456756de-40f0-48b6-85e2-2b07c1b459f5
+      id: 6f694871-6cf4-4f94-8508-11edc54b322c
       version: -1
       name: Does the unclaimed S3 bucket already exists?
       description: Checks if the unclaimed s3 bucket already exists.
@@ -228,7 +228,7 @@ tasks:
           right:
             value:
               complex:
-                root: inputs.BucketName
+                root: inputs.S3BucketName
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -258,7 +258,7 @@ view: |-
     }
   }
 inputs:
-- key: BucketName
+- key: S3BucketName
   value: {}
   required: true
   description: Unclaimed S3 bucket name.

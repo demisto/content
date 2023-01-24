@@ -1,7 +1,7 @@
-id: AWS - Unclaimed S3 Bucket Enrichment
+id: AWS - Unclaimed S3 Bucket Validation
 version: -1
-name: AWS - Unclaimed S3 Bucket Enrichment
-description: 'The playbook sends a HTTP get response to the domain and enriches the missing bucket information. '
+name: AWS - Unclaimed S3 Bucket Validation
+description: 'The playbook sends a HTTP get response to the domain and validates if there is missing bucket information. '
 starttaskid: "0"
 tasks:
   "0":
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 07a8a97b-dc52-43f1-8df7-3ba060517089
+    taskid: 0daabcab-5339-404f-8c6d-fefbefbf34bd
     type: condition
     task:
-      id: 07a8a97b-dc52-43f1-8df7-3ba060517089
+      id: 0daabcab-5339-404f-8c6d-fefbefbf34bd
       version: -1
       name: Was there a 404 and S3 bucket not found?
       description: Checks where the response was a 404 error and the html body of the response has S3 bucket not found.
@@ -140,7 +140,7 @@ tasks:
           right:
             value:
               simple: "404"
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -148,10 +148,11 @@ tasks:
                 accessor: Body
                 transformers:
                 - operator: uniq
+                - operator: toLowerCase
             iscontext: true
           right:
             value:
-              simple: '<li>Code: NoSuchBucket</li>'
+              simple: nosuchbucket
     continueonerrortype: ""
     view: |-
       {
@@ -223,10 +224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a1d2a386-9c50-4fc7-85c5-446c236a841d
+    taskid: 1f4cc674-da7b-4ce9-8a21-cbd1354e680e
     type: regular
     task:
-      id: a1d2a386-9c50-4fc7-85c5-446c236a841d
+      id: 1f4cc674-da7b-4ce9-8a21-cbd1354e680e
       version: -1
       name: Set bucket name from HTTP response
       description: Set a bucket name in context under BucketName
@@ -239,7 +240,7 @@ tasks:
       - "2"
     scriptarguments:
       key:
-        simple: BucketName
+        simple: S3BucketName
       value:
         complex:
           root: HttpRequest.Response
@@ -255,6 +256,7 @@ tasks:
                 value:
                   simple: \<li\>BucketName:\s+(.*?)\<\/li\>
               unpack_matches: {}
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -293,7 +295,7 @@ inputs:
   description: 'Remote IP address in an incident/alert. '
   playbookInputQuery:
 outputs:
-- contextPath: BucketName
+- contextPath: S3BucketName
   description: This is the bucket name extracted from HTTP response body.
   type: unknown
 tests:

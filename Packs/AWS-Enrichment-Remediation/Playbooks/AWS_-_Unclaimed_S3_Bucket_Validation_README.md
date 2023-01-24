@@ -1,4 +1,4 @@
-The playbook sends a HTTP get response to the domain and enriches the missing bucket information. 
+The playbook sends a HTTP get response to the domain and validates if there is missing bucket information. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -28,8 +28,8 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| BucketName | This is the bucket name extracted from HTTP response body. | unknown |
+| S3BucketName | This is the bucket name extracted from HTTP response body. | unknown |
 
 ## Playbook Image
 ---
-![AWS - Unclaimed S3 Bucket Enrichment](../doc_files/AWS_-_Unclaimed_S3_Bucket_Enrichment.png)
+![AWS - Unclaimed S3 Bucket Validation](../doc_files/AWS_-_Unclaimed_S3_Bucket_Validation.png)
