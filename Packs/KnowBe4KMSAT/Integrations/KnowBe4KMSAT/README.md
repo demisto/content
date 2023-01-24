@@ -1,7 +1,7 @@
 **KnowBe4's Security Awareness Training and Simulated Phishing Platform** helps you manage the ongoing problem of social engineering. Find out where your users are in both security knowledge and security culture to help establish baseline security metrics. Regular testing and training helps to mobilize your end users as a last line of defense against threat actors. Pull testing and training results as well as risky users identified by the innovative Virtual Risk Officer, using machine learning to help you predict and identify user, group, and organizational level risks.
 
 What does this pack do?
-&nbsp;&nbsp;&nbsp;1.Gets account-level risk score history
+&nbsp;&nbsp;&nbsp;1. Gets account-level risk score history
 &nbsp;&nbsp;&nbsp;2. Gets group-level risk score history
 &nbsp;&nbsp;&nbsp;3. Gets user-level risk score history
 &nbsp;&nbsp;&nbsp;4. Pulls all phishing test results
@@ -9,3 +9,23 @@ What does this pack do?
 &nbsp;&nbsp;&nbsp;6. Pulls training campaign statuses
 &nbsp;&nbsp;&nbsp;7. Displays a list of training campaign enrollments
 &nbsp;&nbsp;&nbsp;8. Allows adding an external event to a user's timeline inside of KMSAT
+
+##Commands
+
+| Commands                                        | Description                                                            |
+| ----------------------------------------------- | ---------------------------------------------------------------------- |
+| kmsat-account-info-list                         | Command displays the account information.                              |
+| kmsat-account-risk-score-history                | Command lists the accounts risk score history.                         |
+| kmsat-groups-risk-score-history                 | Command lists the groups risk score history.                           |
+| kmsat-groups-members                            | Command lists the groups members.                                      |
+| kmsat-users-risk-score-history                  | Command lists the risk score history for user.                         |
+| kmsat-phishing-security-tests                   | Command lists the phishing security tests.                             |
+| kmsat-phishing-security-tests-recipients        | Command lists the phishing security tests with recipients data.        |
+| kmsat-phishing-security-tests-failed-recipients | Command lists the phishing security tests with failed recipients data. |
+| kmsat-phishing-campaign-security-tests          | Command lists campaigns security tests.                                |
+| kmsat-training-campaigns                        | Command lists training campaigns.                                      |
+| kmsat-training-enrollments                      | Command lists training enrollments.                                    |
+| kmsat-user-events-list                          | Command lists the user events.                                         |
+| kmsat-user-event-types-list                     | Command lists the user event types.                                    |
+| kmsat-user-event-create                         | Command creates a user event.                                          |
+| kmsat-user-event-delete                         | Command deletes a user event.                                          |
