@@ -1745,7 +1745,8 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
     audit_type = args.get("audit_type")
     limit = arg_to_number(args.get("limit", 25))
     data = client.get_firewall_audit_container_alerts(
-        image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=limit, audit_type=audit_type)  # type: ignore
+        image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z",
+        limit=limit, audit_type=audit_type)  # type: ignore
 
     return CommandResults(
         outputs_prefix="PrismaCloudCompute.Audits",
