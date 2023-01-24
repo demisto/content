@@ -144,7 +144,7 @@ def test_module(client: Client) -> str:
 def get_indicators_command(client: Client, **args) -> CommandResults:
     """ Gets indicators from the WebEx website and sends them to the war-room."""
     client = client
-    limit = arg_to_number(args.get('limit', 10))
+    limit = arg_to_number(args.get('limit', 20))
     requested_indicator_type = args.get('indicator_type', 'both')
 
     res = client.all_raw_data()
@@ -155,16 +155,16 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
         indicators = clean_res.get(requested_indicator_type)[:limit]  # type: ignore
     else:
         indicators = clean_res.get(IP)[:limit] + clean_res.get(DOMAIN)[:limit]  # type: ignore
-    final_indicators = []
+    final_indicators_lst = []
     for value in indicators:
         type_ = check_indicator_type(value)
         indicators_and_type = {
             'value': value,
             'type': type_
         }
-        final_indicators.append(indicators_and_type)
+        final_indicators_lst.append(indicators_and_type)
 
-    md = tableToMarkdown('Indicators from WebEx:', final_indicators,
+    md = tableToMarkdown('Indicators from WebEx:', final_indicators_lst,
                          headers=['value', 'type'], removeNull=True)
 
     return CommandResults(

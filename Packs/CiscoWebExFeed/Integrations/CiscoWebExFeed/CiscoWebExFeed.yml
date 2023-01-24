@@ -95,7 +95,7 @@ name: Cisco WebEx Feed Dev
 script:
   commands:
   - arguments:
-    - defaultValue: "10"
+    - defaultValue: "20"
       description: The maximum number of results to return.
       name: limit
     - auto: PREDEFINED
