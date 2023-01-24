@@ -23,6 +23,7 @@ DBOT_SCORE_DICT: Dict[str, int] = {'malicious': Common.DBotScore.BAD,
 OUTPUTS_PREFIX = 'csfalconx.resource'
 ONE_MINUTE = 60
 
+
 def convert_environment_id_string_to_int(
         environment_id: str
 ) -> int:
