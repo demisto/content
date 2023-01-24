@@ -7,7 +7,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def main():
+def main():   # pragma: no cover
     # get the file type
     file_type = demisto.args().get("output")
 
