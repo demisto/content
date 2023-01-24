@@ -79,7 +79,7 @@ class Client(BaseClient):
 
     @staticmethod
     def build_security_rule(args: dict) -> dict:
-        """Build a dictionary of security rule parameters to be used to create or edit a rule
+        """Build a dictionary of security rule parameters to be used to create or update a rule
         Args:
             args: demisto.args()
         Returns:
@@ -106,10 +106,10 @@ class Client(BaseClient):
         return rule
 
     def create_security_rule(self, rule: dict, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Command to create new Prisma SASE security rule within the given Folder, Position, and Tenant/TSG
+        """Creates new security rule
         Args:
             rule: Security rule dictionary
-            query_params:
+            query_params: folder and position params
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -125,10 +125,10 @@ class Client(BaseClient):
         )
 
     def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Edit existing Prisma SASE security rule
+        """Update an existing security rule
         Args:
             rule: Security rule dictionary
-            rule_id: identifier of rule to be edited
+            rule_id: identifier of rule to be updated
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -143,9 +143,9 @@ class Client(BaseClient):
         )
 
     def delete_security_rule(self, rule_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Delete Prisma SASE security rule
+        """Delete en existing security rule
         Args:
-            rule_id: Identifier of the existing rule to be deleted
+            rule_id: Identifier of the rule to be deleted
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -158,19 +158,16 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def create_address_object(self, address: dict, folder: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Create new Prisma SASE security rule within the given Folder, Position, and Tenant/TSG
+    def create_address_object(self, address: dict, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+        """Create new address object
         Args:
             address: address object dictionary
-            folder: Prisma SASE Folder
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}addresses'
-        query_params = {
-            'folder': encode_string_results(folder)
-        }
 
         return self.http_request(
             method="POST",
@@ -181,10 +178,10 @@ class Client(BaseClient):
         )
 
     def edit_address_object(self, address: dict, address_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Edit existing address object
+        """Update an existing address object
         Args:
             address: Address object dictionary
-            address_id: Identifier of existing address to be edited
+            address_id: Identifier of existing address to be updated
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -199,7 +196,7 @@ class Client(BaseClient):
         )
 
     def delete_address_object(self, address_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Delete existing address object
+        """Delete an existing address object
         Args:
             address_id: Identifier of existing address to be deleted
             tsg_id: Target Prisma SASE tenant ID
@@ -215,9 +212,9 @@ class Client(BaseClient):
         )
 
     def list_address_objects(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Return list of address objects from Prisma SASE
+        """List of address objects
         Args:
-            query_params: query parameters for the request
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -232,9 +229,9 @@ class Client(BaseClient):
         )
 
     def list_security_rules(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Command to list security rules
+        """List of security rules
         Args:
-            query_params: query parameters for the request
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -271,7 +268,7 @@ class Client(BaseClient):
         )
 
     def get_config_job_by_id(self, job_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """List config jobs filtered by ID
+        """Get a specific config job
         Args:
             job_id: ID of the config job
             tsg_id: Target Prisma SASE tenant ID
@@ -304,8 +301,8 @@ class Client(BaseClient):
     def get_address_by_id(self, query_params: dict, address_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
         """Get an existing address object
         Args:
-            query_params: Address object dictionary
-            address_id: Identifier of existing address to be edited
+            query_params: folder param
+            address_id: Identifier of existing address
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -320,10 +317,10 @@ class Client(BaseClient):
         )
 
     def get_security_rule_by_id(self, query_params: dict, rule_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Get existing security rule
+        """Get a specific security rule
         Args:
-            query_params: Address object dictionary
-            rule_id: Identifier of existing address to be edited
+            query_params: folder and position params
+            rule_id: Identifier of existing security rule
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -338,10 +335,10 @@ class Client(BaseClient):
         )
 
     def get_tag_by_id(self, query_params: dict, tag_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Get a tag
+        """Get a specific tag
         Args:
-            query_params: Address object dictionary
-            tag_id: Identifier of existing tag to be edited
+            query_params: folder param
+            tag_id: Identifier of existing tag
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -356,9 +353,9 @@ class Client(BaseClient):
         )
 
     def list_tags(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Command to list tags
+        """List all tags
         Args:
-            query_params: query parameters for the request
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -373,10 +370,10 @@ class Client(BaseClient):
         )
 
     def update_tag(self, tag_id: str, tag: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Update existing Tag
+        """Update an existing Tag
         Args:
             tag: Tag dictionary
-            tag_id: Identifier of existing address to be edited
+            tag_id: Identifier of existing tag to be updated
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -407,10 +404,10 @@ class Client(BaseClient):
         )
 
     def create_tag(self, query_params: dict, tag: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Create new Prisma SASE tag within the given Folder
+        """Create new tagr
         Args:
             tag: tag dictionary
-            query_params: Prisma SASE Folder
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -427,10 +424,10 @@ class Client(BaseClient):
 
     def get_address_group_by_id(self, query_params: dict, group_id: str, tsg_id: str | None) \
             -> dict:  # pragma: no cover
-        """Get a tag
+        """Get a specific address group
         Args:
-            query_params: Address object dictionary
-            group_id: Identifier of existing tag to be edited
+            query_params: folder param
+            group_id: Identifier of existing address group
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -445,9 +442,9 @@ class Client(BaseClient):
         )
 
     def list_address_group(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Get all address groups
+        """List all address groups
         Args:
-            query_params: Address object dictionary
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -462,10 +459,10 @@ class Client(BaseClient):
         )
 
     def update_address_group(self, address_group: dict, group_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Edit existing address group
+        """Update an existing address group
         Args:
             address_group: Address object dictionary
-            group_id: Identifier of existing address group to update
+            group_id: Identifier of existing address group to be updated
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -481,10 +478,10 @@ class Client(BaseClient):
 
     def create_address_group(self, query_params: dict, address_group: dict, tsg_id: str | None) \
             -> dict:  # pragma: no cover
-        """Create new Prisma SASE addres group
+        """Create new address group
         Args:
             address_group: address group dictionary
-            query_params: Prisma SASE Folder
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -500,7 +497,7 @@ class Client(BaseClient):
         )
 
     def delete_address_group(self, group_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Delete Prisma SASE address group
+        """Delete an existing address group
         Args:
             group_id: Identifier of the existing address group to be deleted
             tsg_id: Target Prisma SASE tenant ID
@@ -519,8 +516,8 @@ class Client(BaseClient):
             -> dict:  # pragma: no cover
         """Get a specific custom URL category
         Args:
-            query_params: Address object dictionary
-            url_category_id: Identifier of existing tag to be edited
+            query_params: folder param
+            url_category_id: Identifier of existing url category
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -535,9 +532,9 @@ class Client(BaseClient):
         )
 
     def list_custom_url_category(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Get all custom url category
+        """List all custom url category
         Args:
-            query_params: Address object dictionary
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -553,10 +550,10 @@ class Client(BaseClient):
 
     def update_custom_url_category(self, custom_url_category: dict, url_category_id: str, tsg_id: str | None) \
             -> dict:  # pragma: no cover
-        """Update existing custom url category
+        """Update an existing custom url category
         Args:
-            custom_url_category: custom url category
-            url_category_id: Identifier of existing address group to update
+            custom_url_category: custom url category dictionary
+            url_category_id: Identifier of existing address group to be updated
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -574,7 +571,7 @@ class Client(BaseClient):
             -> dict:  # pragma: no cover
         """Create new custom url category
         Args:
-            custom_url_category: address group dictionary
+            custom_url_category: custom url category dictionary
             query_params: Prisma SASE Folder
             tsg_id: Target Prisma SASE tenant ID
         Returns:
@@ -591,7 +588,7 @@ class Client(BaseClient):
         )
 
     def delete_custom_url_category(self, url_category_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Delete custom url category
+        """Delete an existing custom url category
         Args:
             url_category_id: Identifier of the existing custom url category to be deleted
             tsg_id: Target Prisma SASE tenant ID
@@ -608,10 +605,10 @@ class Client(BaseClient):
 
     def get_external_dynamic_list_by_id(self, query_params: dict, external_dynamic_list_id: str, tsg_id: str | None) \
             -> dict:  # pragma: no cover
-        """Get all external dynamic list
+        """Get a specific external dynamic list
         Args:
-            query_params: Address object dictionary
-            external_dynamic_list_id: Identifier of existing tag to be edited
+            query_params: folder param
+            external_dynamic_list_id: Identifier of existing external dynamic list
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -626,9 +623,9 @@ class Client(BaseClient):
         )
 
     def list_external_dynamic_list(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Get all external dynamic list
+        """List all external dynamic list
         Args:
-            query_params: Address object dictionary
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -644,10 +641,10 @@ class Client(BaseClient):
 
     def update_external_dynamic_list(self, external_dynamic_list: dict, dynamic_list_id: str, tsg_id: str | None) \
             -> dict:  # pragma: no cover
-        """Update existing external dynamic list
+        """Update an existing external dynamic list
         Args:
-            external_dynamic_list: external dynamic list
-            dynamic_list_id: Identifier of existing address group to update
+            external_dynamic_list: external dynamic list dictionary
+            dynamic_list_id: Identifier of existing external dynamic list to be updated
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -665,8 +662,8 @@ class Client(BaseClient):
             -> dict:  # pragma: no cover
         """Create new external dynamic list
         Args:
-            external_dynamic_list: external dynamic list
-            query_params: Prisma SASE Folder
+            external_dynamic_list: external dynamic list dictionary
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -698,9 +695,9 @@ class Client(BaseClient):
         )
 
     def list_url_access_profile(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Get all external dynamic list
+        """Get all url access profiles
         Args:
-            query_params: Address object dictionary
+            query_params: folder param
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -725,7 +722,6 @@ class Client(BaseClient):
         If there is an existing access token, and it has not expired, set it as the access token for this request
         Else request a new access token for the provided TSG and store it in the integration context and add the TSG ID
         as a prefix.
-
         Returns:
             The access token
         """
@@ -781,6 +777,12 @@ class Client(BaseClient):
                                        f' configuration.\n\n{e}')
 
     def access_token_to_headers(self, tsg_id: str | None = None) -> dict:
+        """Updates the headers with the access token
+        Args:
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            Headers
+        """
         tsg_id = tsg_id if tsg_id else self.tsg_id
         access_token = self.get_access_token(tsg_id)
 
@@ -793,6 +795,12 @@ class Client(BaseClient):
 
 
 def modify_address(outputs) -> List[dict]:
+    """Modify an address object or list of address objects to XSOAR format
+    Args:
+        outputs: address objects
+    Returns:
+        Modified address objects
+    """
     if isinstance(outputs, dict):
         outputs = [outputs]
     for output in outputs:
@@ -805,6 +813,12 @@ def modify_address(outputs) -> List[dict]:
 
 
 def modify_group_address(outputs) -> List[dict]:
+    """Modify an address group or list of address groups to XSOAR format
+    Args:
+        outputs: address groups
+    Returns:
+        Modified address groups
+    """
     if isinstance(outputs, dict):
         outputs = [outputs]
     for output in outputs:
@@ -818,6 +832,12 @@ def modify_group_address(outputs) -> List[dict]:
 
 
 def modify_external_dynamic_list(outputs) -> List[dict]:
+    """Modify an external dynamic list or list of external dynamic lists to XSOAR format
+    Args:
+        outputs: external dynamic list
+    Returns:
+        Modified external dynamic list
+    """
     if isinstance(outputs, dict):
         outputs = [outputs]
     for output in outputs:
@@ -843,6 +863,14 @@ def get_address_group_type(original_address_group: dict) -> str:
 
 
 def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dict:
+    """Updates a security rule with the required data
+    Args:
+        new_rule: The new rule
+        original_rule: The original rule
+        overwrite: Rather to overwrite or append the updated values
+    Returns:
+
+    """
     if overwrite:
         # simply update the relevant keys with the new data
         original_rule.update(new_rule)
@@ -861,6 +889,12 @@ def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dic
 
 
 def get_url_according_to_type(args):
+    """Returns the url parameter according to the external dynamic list type.
+    Args:
+        args: Command args
+    Returns:
+        Url
+    """
     dynamic_list_type = args.get('type')
     if dynamic_list_type in ('ip', 'domain', 'url'):
         url = args.get('source_url')
@@ -879,6 +913,14 @@ def get_url_according_to_type(args):
 
 
 def validate_url_is_type_compatible(args, type_changed: bool, original_dynamic_list_type, original_dynamic_list_url):
+    """Validates that the update is valid and returns the correct URL
+    Args:
+        original_dynamic_list_url: The original dynamic list url
+        original_dynamic_list_type: The original dynamic list type
+        type_changed: Rather the type has changed
+    Returns:
+        Url
+    """
     dynamic_list_type = args.get('type') or original_dynamic_list_type
     if dynamic_list_type in ('ip', 'domain', 'url'):
         url = args.get('source_url')
@@ -901,6 +943,12 @@ def validate_url_is_type_compatible(args, type_changed: bool, original_dynamic_l
 
 
 def build_recurring_according_to_params(args):
+    """Returns a frequency object for the API according to the command arguments
+    Args:
+        args: Command arguments
+    Returns:
+        Frequency object
+    """
     frequency = args.get('frequency') or 'five_minute'
     # if not frequency:
     #     raise DemistoException('Please provide the frequency argument when using IP, URL or Domain types')
@@ -927,6 +975,13 @@ def build_recurring_according_to_params(args):
 
 
 def validate_recurring_is_type_compatible(args, original_frequency_obj):
+    """Validates that the update is valid and returns the correct frequency object
+    Args:
+        args: Command arguments
+        original_frequency_obj: The original frequency object
+    Returns:
+        Frequency object for the API
+    """
     frequency = args.get('frequency')
 
     if len(list(original_frequency_obj.keys())) == 0 and not frequency:
@@ -956,6 +1011,12 @@ def validate_recurring_is_type_compatible(args, original_frequency_obj):
 
 
 def get_pagination_params(args) -> dict:
+    """Returns the pagination parameters
+    Args:
+        args: Command arguments
+    Returns:
+        Pagination params
+    """
     pagination_params = {}
     page = arg_to_number(args.get('page')) or 1
     page_size = arg_to_number(args.get('page_size'))
@@ -990,11 +1051,10 @@ def test_module(client: Client) -> CommandResults:
 
 
 def create_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
+    """Command to create new security rule
     Args:
         client: Client object with request
         args: demisto.args()
-
     Returns:
         Outputs.
     """
@@ -1018,11 +1078,10 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def create_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new Prisma Access address object
+    """Command to create new address object
     Args:
         client: Client object with request
         args: demisto.args()
-
     Returns:
         Outputs.
     """
@@ -1031,6 +1090,10 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
         args.get('type'): args.get('address_value'),
         'name': args.get('name')}
 
+    query_params = {
+        'folder': encode_string_results(args.get('folder'))
+    }
+
     if args.get('description'):
         address_object["description"] = args.get('description')
 
@@ -1038,7 +1101,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
         address_object['tag'] = args.get('tag')
 
     raw_response = client.create_address_object(address=address_object,
-                                                folder=args.get('folder', ''),
+                                                query_params=query_params,
                                                 tsg_id=args.get('tsg_id'))  # type: ignore
 
     raw_response = modify_address(raw_response)
@@ -1053,7 +1116,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def edit_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new Prisma Access address object
+    """Command to update address object
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1103,7 +1166,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def delete_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete Prisma Access address object
+    """Command to delete address object
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1123,7 +1186,7 @@ def delete_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def list_address_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get address objects for a given Prisma Access Folder / Position
+    """Command to get all address objects
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1159,7 +1222,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete the specified security rule within the targeted Prisma Access tenant / TSG
+    """Command to delete the specified security rule
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1181,7 +1244,7 @@ def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to Update / Edit an existing Prisma Access security rule
+    """Command to update an existing security rule
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1238,7 +1301,7 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def list_security_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to Get all security rules for a given Prisma Access Folder / Position
+    """Command to Get all security rules
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1310,7 +1373,7 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to list config jobs from Prisma Sase
+    """Command to list all tags
         Args:
             client: Client object with request
             args: demisto.args()
@@ -1345,7 +1408,7 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new Prisma Sase tag
+    """Command to create new tag
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1379,7 +1442,7 @@ def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new tag
+    """Command to update an existing tag
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1415,7 +1478,7 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete the specified tag within the targeted Prisma Sase tenant / TSG
+    """Command to delete the specified tagG
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1437,7 +1500,7 @@ def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get address groups for a given Prisma Access Folder / Position
+    """Command to get address groups
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1474,7 +1537,7 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def create_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new Prisma Access address group
+    """Command to create new address group
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1517,7 +1580,7 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def update_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update new Prisma Access address group
+    """Command to update an existing address group
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1584,7 +1647,7 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def delete_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete Prisma Access address group
+    """Command to delete address group
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1605,7 +1668,7 @@ def delete_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get custom url categories
+    """Command to get all custom url categories
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1624,13 +1687,7 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
                                                             tsg_id=tsg_id)
         outputs = [raw_response]
     else:
-        page = arg_to_number(args.get('page')) or 1
-        page_size = arg_to_number(args.get('page_size'))
-        if page and page_size:
-            query_params['offset'] = (page - 1) * page_size
-            query_params['limit'] = page_size
-        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
-            query_params['limit'] = limit
+        query_params.update(get_pagination_params(args))
 
         raw_response = client.list_custom_url_category(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
@@ -1688,7 +1745,7 @@ def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update custom url category
+    """Command to update an existing custom url category
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1738,7 +1795,7 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete Prisma custom url category
+    """Command to delete custom url category
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1758,7 +1815,7 @@ def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get custom url categories
+    """Command to get all external dynamic lists
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1851,7 +1908,7 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
 
 def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update custom url category
+    """Command to update an existing external dynamic list
     Args:
         client: Client object with request
         args: demisto.args()
@@ -1929,7 +1986,7 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
 
 def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete Prisma custom url category
+    """Command to delete external dynamic list
     Args:
         client: Client object with request
         args: demisto.args()
