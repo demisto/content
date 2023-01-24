@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2 import PdfReader, PdfFileWriter
 
 
 def unlock_pdf(entry_id):
@@ -8,7 +8,7 @@ def unlock_pdf(entry_id):
     origin_path = res['path']
     output_name = "UNLOCKED_" + res['name']
 
-    input1 = PdfFileReader(open(origin_path, "rb"))
+    input1 = PdfReader(open(origin_path, "rb"))
     input1.decrypt(str(demisto.args()["password"]))
 
     output = PdfFileWriter()
