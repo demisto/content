@@ -138,7 +138,7 @@
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
-| group_id          | Group ID        | No           |
+| group_id          | Group ID        | Yes          |
 | page              | Page Number     | No           |
 | per_page          | Per Page Amount | No           |
 
@@ -232,16 +232,194 @@
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| user_id           | User ID         | Yes          |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                          | **Type** | **Description**                      |
+| --------------------------------- | -------- | ------------------------------------ |
+| KMSAT.UsersRiskHistory.risk_score | Number   | Users Risk Score and Associated Date |
+| KMSAT.UsersRiskHistory.date       | Date     | Users Risk Score History Date        |
+
+#### Command Example
+```!kmsat-users-risk-score-history user_id=1 page=1 per_page=25```
+
+#### Context Example
+```json
+
+{
+  "risk_score": 37.3,
+  "date": "2021-02-07"
+}
+
+```
 
 ### kmsat-phishing-security-tests
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                                      | **Type** | **Description**                             |
+| --------------------------------------------- | -------- | ------------------------------------------- |
+| KMSAT.PhishingSecurity.campaign_id            | Number   | Phishing Security Campaign ID               |
+| KMSAT.PhishingSecurity.pst_id                 | Number   | Phishing Security PST ID                    |
+| KMSAT.PhishingSecurity.status                 | String   | Phishing Security Status                    |
+| KMSAT.PhishingSecurity.name                   | String   | Phishing Security Name                      |
+| KMSAT.PhishingSecurity.groups.group_id        | Number   | Phishing Security Group ID                  |
+| KMSAT.PhishingSecurity.groups.name            | String   | Phishing Security Group Name                |
+| KMSAT.PhishingSecurity.phish_prone_percentage | Number   | Phishing Security Phishing Prone Percentage |
+| KMSAT.PhishingSecurity.started_at             | Date     | Phishing Security Started at Date           |
+| KMSAT.PhishingSecurity.duration               | Number   | Phishing Security Duration                  |
+| KMSAT.PhishingSecurity.categories.category_id | Number   | Phishing Security Category ID               |
+| KMSAT.PhishingSecurity.categories.name        | String   | Phishing Security Category Name             |
+| KMSAT.PhishingSecurity.template.id            | Number   | Phishing Security Template ID               |
+| KMSAT.PhishingSecurity.template.name          | String   | Phishing Security Template Name             |
+| KMSAT.PhishingSecurity.lading-page.id         | Number   | Phishing Security Landing Page ID           |
+| KMSAT.PhishingSecurity.landing-page.name      | String   | Phishing Security Landing Page Name         |
+| KMSAT.PhishingSecurity.scheduled_count        | Number   | Phishing Security Scheduled Count           |
+| KMSAT.PhishingSecurity.delivered_count        | Number   | Phishing Security Delivered Count           |
+| KMSAT.PhishingSecurity.opened_count           | Number   | Phishing Security Opened Count              |
+| KMSAT.PhishingSecurity.clicked_count          | Number   | Phishing Security Clicked Count             |
+| KMSAT.PhishingSecurity.replied_count          | Number   | Phishing Security Replied Count             |
+| KMSAT.PhishingSecurity.attachment_open_count  | Number   | Phishing Security Attachment Open Count     |
+| KMSAT.PhishingSecurity.macro_enabled_count    | Number   | Phishing Security Macro Enabled Count       |
+| KMSAT.PhishingSecurity.data_entered_count     | Number   | Phishing Security Data Entered Count        |
+| KMSAT.PhishingSecurity.qr_code_scanned_count  | Number   | Phishing Security QR Code Scanned Count     |
+| KMSAT.PhishingSecurity.reported_count         | Number   | Phishing Security Reported Count            |
+| KMSAT.PhishingSecurity.bounced_count          | Number   | Phishing Security Bounced Count             |
+
+
+#### Command Example
+```!kmsat-phishing-security-tests page=1 per_page=25```
+
+#### Context Example
+```json
+
+[
+  {
+    "campaign_id": 3423,
+    "pst_id": 16142,
+    "status": "Closed",
+    "name": "Corporate Test",
+    "groups": [
+      {
+        "group_id": 16342,
+        "name": "Corporate Employees"
+      }
+    ],
+    "phish_prone_percentage": 0.5,
+    "started_at": "2019-04-02T15:02:38.000Z",
+    "duration": 1,
+    "categories": [
+      {
+        "category_id": 4237,
+        "name": "Current Events"
+      }
+    ],
+    "template": {
+      "id": 11428,
+      "name": "CNN Breaking News"
+    },
+    "landing-page": {
+      "id": 1842,
+      "name": "SEI Landing Page"
+    },
+    "scheduled_count": 42,
+    "delivered_count": 4,
+    "opened_count": 24,
+    "clicked_count": 20,
+    "replied_count": 0,
+    "attachment_open_count": 3,
+    "macro_enabled_count": 0,
+    "data_entered_count": 0,
+    "qr_code_scanned_count": 0,
+    "reported_count": 0,
+    "bounced_count": 0
+  }
+]
+
+```
 
 ### kmsat-phishing-security-tests-recipients
 
 | **Argument Name** | **Description** | **Required** |
 | ----------------- | --------------- | ------------ |
+| pst_id            | PST ID          | Yes          |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+#### Context Output
+
+| **Path**                                       | **Type** | **Description**                        |
+| ---------------------------------------------- | -------- | -------------------------------------- |
+| KMSAT.PhishingSecurityPST.recipient_id         | Number   | Phishing Security Recipient ID         |
+| KMSAT.PhishingSecurityPST.pst_id               | Number   | Phishing Security PST ID               |
+| KMSAT.PhishingSecurityPST.user                 | String   | Phishing Security User                 |
+| KMSAT.PhishingSecurityPST.template             | String   | Phishing Security Template             |
+| KMSAT.PhishingSecurityPST.scheduled_at         | Date     | Phishing Security Scheduled At         |
+| KMSAT.PhishingSecurityPST.delivered_at         | Date     | Phishing Security Delivered At         |
+| KMSAT.PhishingSecurityPST.opened_at            | Date     | Phishing Security Opened At            |
+| KMSAT.PhishingSecurityPST.clicked_at           | Date     | Phishing Security Clicked At           |
+| KMSAT.PhishingSecurityPST.replied_at           | Date     | Phishing Security Replied At           |
+| KMSAT.PhishingSecurityPST.attachment_opened_at | Date     | Phishing Security Attachment Opened At |
+| KMSAT.PhishingSecurityPST.macro_enabled_at     | Date     | Phishing Security Macro Enabled At     |
+| KMSAT.PhishingSecurityPST.data_entered_at      | Date     | Phishing Security Data Entered At      |
+| KMSAT.PhishingSecurityPST.qr_code_scanned      | Date     | Phishing Security QR Code Scanned      |
+| KMSAT.PhishingSecurityPST.reported_at          | Date     | Phishing Security Reported At          |
+| KMSAT.PhishingSecurityPST.bounced_at           | Date     | Phishing Security Bounced At           |
+| KMSAT.PhishingSecurityPST.ip                   | String   | Phishing Security IP                   |
+| KMSAT.PhishingSecurityPST.up_location          | String   | Phishing Security IP Location          |
+| KMSAT.PhishingSecurityPST.browser              | String   | Phishing Security Browser              |
+| KMSAT.PhishingSecurityPST.browser_version      | String   | Phishing Security Browser Version      |
+| KMSAT.PhishingSecurityPST.os                   | String   | Phishing Security OS                   |
+
+#### Command Example
+```!kmsat-phishing-security-tests-recipients pst_id=1 page=1 per_page=25```
+
+#### Context Example
+```json
+
+[
+  {
+    "recipient_id": 3077742,
+    "pst_id": 14240,
+    "user": {
+      "id": 264215,
+      "provisioning_guid": null,
+      "first_name": "Bob",
+      "last_name": "Ross",
+      "email": "bob.r@kb4-demo.com"
+    },
+    "template": {
+      "id": 2,
+      "name": "Your Amazon Order"
+    },
+    "scheduled_at": "2019-04-02T15:02:38.000Z",
+    "delivered_at": "2019-04-02T15:02:38.000Z",
+    "opened_at": "2019-04-02T15:02:38.000Z",
+    "clicked_at": "2019-04-02T15:02:38.000Z",
+    "replied_at": null,
+    "attachment_opened_at": null,
+    "macro_enabled_at": null,
+    "data_entered_at": "2019-04-02T15:02:38.000Z",
+    "qr_code_scanned": "2022-05-12T15:29:54.000Z",
+    "reported_at": null,
+    "bounced_at": null,
+    "ip": "XX.XX.XXX.XXX",
+    "ip_location": "St.Petersburg, FL",
+    "browser": "Chrome",
+    "browser_version": "48.0",
+    "os": "MacOSX"
+  }
+]
+
+```
 
 ### kmsat-phishing-security-tests-failed-recipients
 
