@@ -1,5 +1,4 @@
 import re
-# from typing import Any, Callable, Dict, List, Optional, Tuple
 import demistomock as demisto  # noqa: F401
 import urllib3
 from bs4 import BeautifulSoup, element
@@ -15,8 +14,8 @@ INTEGRATION_NAME = 'WebEx'
 BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
 
 
-# From WebExDomain Table get only domain names with wildcards
 def grab_domains(data: list) -> List:
+    """ From WebExDomain Table get only domain names with wildcards"""
     domainList: List = []
     for lines in data:
         if len(lines) < 2:
@@ -24,11 +23,11 @@ def grab_domains(data: list) -> List:
         domains = lines[1].split(' ')
         cleanDomain = " ".join(re.findall(r"([\^]*[\*\.]*[a-z0-9]+\.+.*)*", domains[0]))
 
-    # Strip Whitespace lines to remove blank values
+        # Strip Whitespace lines to remove blank values
         cleanDomain = cleanDomain.strip()
         if '\t\t\t' in cleanDomain:  # multiple domains in one line
-            multiple_domains = cleanDomain.split('\t\t\t')
-            for domain in multiple_domains:
+            multiple_domains_lst = cleanDomain.split('\t\t\t')
+            for domain in multiple_domains_lst:
                 domainList.append(domain)
         elif len(cleanDomain) > 0:
             domainList.append(cleanDomain)
@@ -38,7 +37,7 @@ def grab_domains(data: list) -> List:
 
 
 def grab_ips(data: list) -> List:
-    # From WebExIP Table get only IP addresses
+    """ From WebExIP Table get only IP addresses"""
     ipList: List = []
     for line in data[0]:
         values = line.split(' (CIDR)')
@@ -49,7 +48,7 @@ def grab_ips(data: list) -> List:
 
 
 def grab_domain_table(html_section: element.Tag) -> List:
-    # Get the domain table from the html section
+    """ Gets the domain table from the html section"""
     table = html_section.find('table', attrs={'class': 'li'})
     table_body = table.find('tbody')
     rows = table_body.find_all('tr')
@@ -62,7 +61,7 @@ def grab_domain_table(html_section: element.Tag) -> List:
 
 
 def grab_ip_table(html_section: element.Tag) -> List:
-    # Get the IP table from the html section
+    """ Gets the IP table from the html section"""
     rows = html_section.find_all('ul')
     data = []
     for row in rows:
@@ -72,8 +71,8 @@ def grab_ip_table(html_section: element.Tag) -> List:
     return data
 
 
-def parse_indicators_from_response(response: requests.Response) -> Dict:
-    # Parse the indicators from the raw html response from WebEx website
+def parse_indicators_from_response(response: requests.Response) -> Dict[str, List[str]]:
+    """ Parses the indicators from the raw html response from WebEx website"""
     soup = BeautifulSoup(response.text, "html.parser")
 
     # Get the IP and Domain Sections from the html
@@ -93,9 +92,10 @@ def parse_indicators_from_response(response: requests.Response) -> Dict:
 
 
 class Client(BaseClient):
-    """ A client class that implements connectivity with the product."""
+    """ A client class that implements connectivity with the website."""
 
     def all_raw_data(self) -> requests.Response:
+        """ Gets the entire html page from the website."""
         try:
             return self._http_request(
                 method='GET',
@@ -132,7 +132,7 @@ def test_module(client: Client) -> str:
         client: Client object.
 
     Returns:
-        str: ok if test passed
+        str: ok if test passed else the exception message.
     """
     try:
         client.all_raw_data()
@@ -142,7 +142,7 @@ def test_module(client: Client) -> str:
 
 
 def get_indicators_command(client: Client, **args) -> CommandResults:
-    # Get indicators from the WebEx website and send them the war-room.
+    """ Gets indicators from the WebEx website and sends them to the war-room."""
     client = client
     limit = arg_to_number(args.get('limit', 10))
     indicator_type = args.get('indicator_type', 'both')
@@ -153,9 +153,9 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     clean_res = parse_indicators_from_response(res)
 
     if not indicator_type_lower == 'both':
-        indicators = clean_res.get(indicator_type_lower)[:limit]
+        indicators = clean_res.get(indicator_type_lower)[:limit]  # type: ignore
     else:
-        indicators = clean_res.get('ips')[:limit] + clean_res.get('urls')[:limit]
+        indicators = clean_res.get('ips')[:limit] + clean_res.get('urls')[:limit]  # type: ignore
     final_indicators = []
     for value in indicators:
         type_ = check_indicator_type(value)
@@ -182,9 +182,7 @@ def fetch_indicators_command(client: Client, tags: tuple, tlp_color: tuple, **ar
     Returns:
         Indicators.
     """
-
     res = client.all_raw_data()
-
     # parse the data from an html page to a list of dicts with ips and urls
     clean_res = parse_indicators_from_response(res)
     results = []
