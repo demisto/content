@@ -577,7 +577,7 @@ def test_invalid_content_item(mocker, monkeypatch):
 def test_number_of_file_types():
     """
     The test collection assumes the list of FileType values does not change.
-    If this unit test fails, it means that list has changed.
+    If this unit test fails, it means that list has changed (in the SDK).
     Please make sure the change does not break test collection:
         - New type:     1. Add it to IGNORED_FILE_TYPES or ONLY_INSTALL_PACK
                         2. Create a PR and see collection works
