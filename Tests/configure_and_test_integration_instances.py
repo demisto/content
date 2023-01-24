@@ -789,7 +789,10 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        self.install_packs()
+        success = self.install_packs()
+        if not success:
+            logging.error('Failed to install content packs, aborting.')
+            sys.exit(1)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
         # uploads test_pack.zip to all servers (we have only one cloud server)
@@ -1761,7 +1764,7 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
     Return a set of packs that is new to the marketplace.
     Args:
         build (Build): The build object.
-        modified_packs_names (Set[str]): The set of packs to install.
+        modified_pack_names (Set[str]): The set of packs to install.
     Returns:
         (Set[str]): The set of the pack names that should not be installed.
     """
@@ -1882,6 +1885,7 @@ def main():
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                       new_integrations_names, build)
         if not success or not installed_content_packs_successfully:
+            logging.exception('Failed to configure and test integration instances.')
             sys.exit(2)
 
 
