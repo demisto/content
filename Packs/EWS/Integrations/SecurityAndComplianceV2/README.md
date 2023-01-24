@@ -64,6 +64,12 @@ Please note: The use of Username and Password is not indicative of the use of ba
 
 *Please Note:* Microsoft requires that this connection be made from a secure connection. Disabling certificate verification is not supported at this time.
 
+### MFA Connection Workarounds
+In some cases while MFA is enabled, it is possible to be unable to confirm a sign in as safe. Generally, if there is a conditional access policy in place which will trigger a users account to require an MFA sign in, these policies should exempt the user which is used by the integration.
+
+The common settings available OOTB from Microsoft can be excluded in the following menu.
+![sec-comp-risky](../../doc_imgs/SecAndCompRiskyUser.png)
+
 
 ### Known ConnectionUri and AzureADAuthorizedEndpointURI Endpoints
 | Environment                        | ConnectionUri                                                         | AzureADAuthorizationEndpointUri   |
