@@ -1,0 +1,311 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: 'Demo playbook to take a list of addresses from a specified XSOAR list, process the status of the SSL certificate for each address, and generate war room and email outputs for the status of each certificate. '
+id: SSL Certificate Verification (XSOAR List)
+inputs: []
+name: SSL Certificate Verification (XSOAR List)
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f0b75a56-9b8e-4ea4-850a-c194e46d18d3
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: f0b75a56-9b8e-4ea4-850a-c194e46d18d3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      URL:
+        simple: ${CertsToCheck}
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Use this automation to check for validity of your SSL certificate and get the time until expiration.
+      id: a17fd769-de0b-47ba-826a-c8782343f156
+      iscommand: false
+      name: Check certificate status for each domain
+      scriptName: SSLVerifierV2
+      type: regular
+      version: -1
+    taskid: a17fd769-de0b-47ba-826a-c8782343f156
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      arrayData:
+        complex:
+          accessor: Domains
+          root: lists
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+      contextKey:
+        simple: CertsToCheck
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Will create an array object in context from given string input '
+      id: 856cba2f-5ef2-4386-86a5-f07beeeff87b
+      iscommand: false
+      name: Create array of domains from XSOAR list
+      scriptName: CreateArray
+      type: regular
+      version: -1
+    taskid: 856cba2f-5ef2-4386-86a5-f07beeeff87b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      OutputToWarRoom:
+        simple: "False"
+      StatusType:
+        simple: all
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Parses the output from the !SSLVerifier automation into a markdown table and separate context key \n\n"
+      id: 68307852-2807-44c0-8455-daa54fb0c67e
+      iscommand: false
+      name: Parse SSLVerifierV2 Output
+      scriptName: SSLVerifierV2_ParseOutput
+      type: regular
+      version: -1
+    taskid: 68307852-2807-44c0-8455-daa54fb0c67e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 017c1e67-3eae-4d39-8df2-ecf91db0829e
+      iscommand: false
+      name: Generate Report Email (HTML)
+      scriptName: SSLVerifierV2_GenerateEmailBody
+      type: regular
+      version: -1
+    taskid: 017c1e67-3eae-4d39-8df2-ecf91db0829e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: ${SSLReport.HTML}
+      subject:
+        simple: SSL Certificate Report
+      to:
+        simple: user@domain.tld
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends mail using Gmail.
+      id: 10a1cfd9-73b1-4ffb-85e3-067cae0ea985
+      iscommand: true
+      name: Send Report Email (HTML)
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 10a1cfd9-73b1-4ffb-85e3-067cae0ea985
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dba2d4a3-52c0-4df2-8b8e-857906bd6b55
+      iscommand: false
+      name: Playbook Concludes
+      type: title
+      version: -1
+      description: ''
+    taskid: dba2d4a3-52c0-4df2-8b8e-857906bd6b55
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      OutputToWarRoom:
+        simple: "True"
+      StatusType:
+        simple: all
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Parses the output from the !SSLVerifier automation into a markdown table and separate context key \n\n"
+      id: 8c914264-3348-4d7c-8828-e79ce8b5a614
+      iscommand: false
+      name: Send SSLVerifierV2 Output to War Room
+      scriptName: SSLVerifierV2_ParseOutput
+      type: regular
+      version: -1
+    taskid: 8c914264-3348-4d7c-8828-e79ce8b5a614
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
