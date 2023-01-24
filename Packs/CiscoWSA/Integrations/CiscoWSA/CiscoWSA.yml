@@ -15,7 +15,7 @@ configuration:
   name: apikey
   type: 4
   required: true
-- display: ""
+- display: Port
   name: port
   type: 0
   required: false
