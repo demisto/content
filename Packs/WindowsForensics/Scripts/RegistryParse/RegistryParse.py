@@ -27,6 +27,8 @@ REGISTRY_SUB_FOLDER = {
     'Users': 'SID'
 }
 
+MAX_HR_RESULTS = 50
+
 
 def parse_reg_value(value):
     value = value.strip('"')
@@ -112,8 +114,8 @@ def get_reg_results(reg, type_to_keys):
             type_records.update(services_type_records)
         elif _type == 'LastLoggedOnUser':
             key = REGISTRY_TYPE_TO_KEY['LastLoggedOnUser'][0]
-            values = [v for (k, v) in reg.items() if k.lower() == key.lower()]
-            values = {} if len(values) == 0 else values[0]
+            logged_on_user_values = [v for (k, v) in reg.items() if k.lower() == key.lower()]
+            values = {} if len(logged_on_user_values) == 0 else logged_on_user_values[0]
             registry_value = values.get('"LastLoggedOnUser"')
             if registry_value:
                 registry_value = parse_reg_value(registry_value)
@@ -171,7 +173,7 @@ def main():
 
     records, type_records = get_reg_results(reg, registry_types_to_keys)
 
-    hr_max_results = arg_to_number(args.get('hrMaxResults')) or 50
+    hr_max_results = arg_to_number(args.get('hrMaxResults')) or MAX_HR_RESULTS
 
     hr = tableToMarkdown("Registry Results", records[:hr_max_results])
     return_outputs(hr, {"RegistryForensicDataRaw": records, 'RegistryForensicData': type_records}, records)
