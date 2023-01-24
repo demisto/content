@@ -1,6 +1,5 @@
 id: GetTime-Test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: GetTime-Test
 starttaskid: "0"
 tasks:
@@ -14,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,6 +30,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -52,7 +52,6 @@ tasks:
       dateFormat:
         simple: utc
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -65,6 +64,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -86,10 +86,8 @@ tasks:
       data:
         simple: ${TimeNow}
       regex:
-        simple: ^([A-Z][a-z][a-z]), ([0-3]?[0-9] [A-Z][a-z][a-z] [\d]{4}) (\d\d:\d\d:\d\d
-          GMT)$
+        simple: ^([A-Z][a-z][a-z]), ([0-3]?[0-9] [A-Z][a-z][a-z] [\d]{4}) (\d\d:\d\d:\d\d GMT)$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -102,6 +100,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -123,7 +122,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -136,6 +134,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -164,7 +163,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -177,6 +175,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -198,7 +197,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -211,6 +209,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -232,7 +231,6 @@ tasks:
       dateFormat:
         simple: ISO
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -245,6 +243,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -268,7 +267,6 @@ tasks:
       regex:
         simple: ^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](:[0-5][0-9]){2}.[0-9]{3}Z$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -281,6 +279,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -309,7 +308,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -322,6 +320,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -343,7 +342,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -356,6 +354,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -377,7 +376,6 @@ tasks:
       dateFormat:
         simple: locale
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -390,6 +388,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -413,7 +412,6 @@ tasks:
       regex:
         simple: ^[0-1][0-9]/[0-3][0-9]/[0-9]{4}, [0-2][0-9](:[0-5][0-9]){2}$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -426,6 +424,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
@@ -454,7 +453,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -467,6 +465,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -488,7 +487,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -501,6 +499,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -522,7 +521,6 @@ tasks:
       dateFormat:
         simple: date
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -535,6 +533,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -558,7 +557,6 @@ tasks:
       regex:
         simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4}$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -571,6 +569,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -599,7 +598,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -612,6 +610,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -633,7 +632,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -646,6 +644,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -667,7 +666,6 @@ tasks:
       dateFormat:
         simple: day
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -680,6 +678,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
@@ -703,7 +702,6 @@ tasks:
       regex:
         simple: ^([1-9]|[12][0-9]|3[01])$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -716,6 +714,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -744,7 +743,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -757,6 +755,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -778,7 +777,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -791,6 +789,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "22":
@@ -812,7 +811,6 @@ tasks:
       dateFormat:
         simple: month
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -825,6 +823,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -848,7 +847,6 @@ tasks:
       regex:
         simple: ^[0-1]{0,1}[0-9]$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -861,6 +859,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "24":
@@ -889,7 +888,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -902,6 +900,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "25":
@@ -923,7 +922,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -936,6 +934,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
@@ -957,7 +956,6 @@ tasks:
       dateFormat:
         simple: year
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -970,6 +968,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "27":
@@ -993,7 +992,6 @@ tasks:
       regex:
         simple: ^[0-9]{4}$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1006,6 +1004,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "28":
@@ -1034,7 +1033,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1047,6 +1045,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "29":
@@ -1068,7 +1067,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1081,6 +1079,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "30":
@@ -1102,7 +1101,6 @@ tasks:
       dateFormat:
         simple: dayinweek
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1115,6 +1113,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "31":
@@ -1138,7 +1137,6 @@ tasks:
       regex:
         simple: ^[0-6]$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1151,6 +1149,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "32":
@@ -1179,7 +1178,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1192,6 +1190,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
@@ -1213,7 +1212,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1226,6 +1224,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "34":
@@ -1247,7 +1246,6 @@ tasks:
       monthsAgo:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1260,6 +1258,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "35":
@@ -1281,10 +1280,8 @@ tasks:
       data:
         simple: ${TimeNow}
       regex:
-        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
-          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1297,6 +1294,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "36":
@@ -1325,7 +1323,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1338,6 +1335,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "37":
@@ -1359,7 +1357,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1372,6 +1369,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "38":
@@ -1393,7 +1391,6 @@ tasks:
       minutesAgo:
         simple: "260"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1406,6 +1403,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "39":
@@ -1427,10 +1425,8 @@ tasks:
       data:
         simple: ${TimeNow}
       regex:
-        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
-          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1443,6 +1439,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "40":
@@ -1471,7 +1468,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1484,6 +1480,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "41":
@@ -1505,7 +1502,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1518,6 +1514,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "42":
@@ -1539,7 +1536,6 @@ tasks:
       hoursAgo:
         simple: "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1552,6 +1548,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "43":
@@ -1573,10 +1570,8 @@ tasks:
       data:
         simple: ${TimeNow}
       regex:
-        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
-          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1589,6 +1584,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "44":
@@ -1617,7 +1613,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1630,6 +1625,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "45":
@@ -1643,8 +1639,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1657,6 +1653,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "46":
@@ -1678,7 +1675,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1691,6 +1687,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "47":
@@ -1712,7 +1709,6 @@ tasks:
       daysAgo:
         simple: "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1725,6 +1721,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "48":
@@ -1746,10 +1743,8 @@ tasks:
       data:
         simple: ${TimeNow}
       regex:
-        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
-          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1762,6 +1757,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "49":
@@ -1790,7 +1786,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1803,6 +1798,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "50":
@@ -1824,7 +1820,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1837,6 +1832,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "51":
@@ -1858,7 +1854,6 @@ tasks:
       yearsAgo:
         simple: "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1871,6 +1866,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "52":
@@ -1892,10 +1888,8 @@ tasks:
       data:
         simple: ${TimeNow}
       regex:
-        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2}
-          [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1908,6 +1902,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "53":
@@ -1936,7 +1931,6 @@ tasks:
           right:
             value:
               simple: Regex does not match
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1949,6 +1943,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
@@ -1965,3 +1960,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
