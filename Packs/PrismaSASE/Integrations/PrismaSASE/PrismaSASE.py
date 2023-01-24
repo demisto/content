@@ -1392,8 +1392,8 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         'folder': encode_string_results(args.get('folder'))
     }
     # first get the original tag, so user won't need to send all data
-    tag_id = args.get('tag_id')
-    tsg_id = args.get('tsg_id', '')
+    tag_id = args.get('tag_id', '')
+    tsg_id = args.get('tsg_id')
     original_tag = client.get_tag_by_id(query_params=query_params, tag_id=tag_id, tsg_id=tsg_id)
 
     if color := args.get('color'):
@@ -1458,7 +1458,7 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
 
         raw_response = client.list_address_group(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
-        outputs = raw_response.get('data')
+        outputs = raw_response.get('data', [])
 
     outputs = modify_group_address(outputs)
 
@@ -1634,7 +1634,7 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
 
         raw_response = client.list_custom_url_category(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
-        outputs = raw_response.get('data')
+        outputs = raw_response.get('data', [])
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
@@ -1805,7 +1805,7 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     """
 
     dynamic_list_type = args.get('type', '')
-    external_dynamic_list = {
+    external_dynamic_list: dict = {
         'name': args.get('name'),
         'type': {dynamic_list_type: {}}
     }
