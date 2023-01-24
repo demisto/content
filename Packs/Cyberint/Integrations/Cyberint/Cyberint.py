@@ -540,8 +540,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
                         attachments.append(tmp_attachment)
 
         alert["attachments"] = attachments
-        alert_data = dict_safe_get(alert, ['alert_data', 'csv'])
-        incident_csv_records = dict_safe_get(alert, ['alert_data', 'csv', 'content']) or []
+        alert_data = dict_safe_get(alert, ['alert_data', 'csv'], {})
+        incident_csv_records = alert_data.get('content', [])
 
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
