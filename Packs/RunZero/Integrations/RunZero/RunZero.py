@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MAX_RTT = 1_000_000
+DEFAULT_LIMIT = 50
 
 ''' CLIENT CLASS '''
 
@@ -60,7 +61,16 @@ class Client(BaseClient):
     def get_api_key_info(self):
         url_suffix = '/org/key'
         return self._http_request(method='GET',
-                                  url_suffix=url_suffix)
+                                  url_suffix=url_suffix,
+                                  headers=self._headers)
+
+    def bulk_clear_tags(self, search_string: str):
+        url_suffix = '/org/assets/bulk/clearTags'
+        body = {'search': f'{search_string}'}
+        return self._http_request(method='POST',
+                                  url_suffix=url_suffix,
+                                  headers=self._headers,
+                                  json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -148,11 +158,18 @@ def parse_raw_service(raw: dict) -> list:
     return [message]
 
 
+def parse_raw_api_key_info(raw: dict) -> dict:
+    raw['created_at'] = timestamp_to_datestring(raw.get('created_at', '') * 1000)
+    raw['last_used_at'] = timestamp_to_datestring(raw.get('last_used_at', '') * 1000)
+    return raw
+
+
 ''' COMMAND FUNCTIONS '''
 
 
 def asset_search(client: Client, args: dict) -> CommandResults:
     search_string = ''
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('ips'):
         search_string = ','.join(argToList(args.get('ips')))
         search_string = f'?search=address:{search_string}'
@@ -165,10 +182,11 @@ def asset_search(client: Client, args: dict) -> CommandResults:
     elif args.get('search'):
         search_string = f'?search={args.get("search")}'
     raw = client.asset_search(search_string)
-    remove_attr = not args.get('display_attributes')
-    remove_svc = not args.get('display_services')
+    remove_attr = not argToBoolean(args.get('display_attributes', 'False'))
+    remove_svc = not argToBoolean(args.get('display_services', 'False'))
     message = []
     if type(raw) is list:
+        raw = raw[:limit]
         for item_raw in raw:
             if remove_attr:
                 del item_raw['attributes']
@@ -186,8 +204,8 @@ def asset_search(client: Client, args: dict) -> CommandResults:
                                      removeNull=True)
     return CommandResults(
         outputs_prefix='RunZero.Asset',
-        outputs_key_field='ID',
-        outputs=message,
+        outputs_key_field='id',
+        outputs=raw,
         raw_response=raw,
         readable_output=human_readable
     )
@@ -224,6 +242,7 @@ def tags_add(client: Client, args: dict) -> CommandResults:
 
 def service_search(client: Client, args: dict) -> CommandResults:
     service_string = ''
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('service_id'):
         service_string = f'/{args["service_id"]}'
     elif args.get('search'):
@@ -232,9 +251,10 @@ def service_search(client: Client, args: dict) -> CommandResults:
         service_string = ' OR service_address:'.join(argToList(args.get('service_addresses')))
         service_string = f'?search=service_addresses:{service_string}'
     raw = client.service_search(service_string)
-    remove_attr = not args.get('display_attributes')
+    remove_attr = not argToBoolean(args.get('display_attributes', 'False'))
     message = []
     if type(raw) is list:
+        raw = raw[:limit]
         for item_raw in raw:
             if remove_attr:
                 del item_raw['attributes']
@@ -248,8 +268,8 @@ def service_search(client: Client, args: dict) -> CommandResults:
                                      removeNull=True)
     return CommandResults(
         outputs_prefix='RunZero.Service',
-        outputs_key_field='ID',
-        outputs=message,
+        outputs_key_field='service_id',
+        outputs=raw,
         raw_response=raw,
         readable_output=human_readable
     )
@@ -257,12 +277,31 @@ def service_search(client: Client, args: dict) -> CommandResults:
 
 def get_api_key_info(client: Client) -> CommandResults:
     raw = client.get_api_key_info()
+    message = parse_raw_api_key_info(raw)
+    human_readable = tableToMarkdown('API_Key_Info',
+                                     message,
+                                     removeNull=False)
+    return CommandResults(
+        outputs_prefix=None,
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=message,
+        readable_output=human_readable
+    )
+
+
+def bulk_clear_tags(client: Client, args: dict) -> CommandResults:
+    search_string = args['search']
+    raw = client.bulk_clear_tags(search_string)
+    human_readable = tableToMarkdown('Bulk_Clear_Tags',
+                                     raw,
+                                     removeNull=False)
     return CommandResults(
         outputs_prefix=None,
         outputs_key_field=None,
         outputs=None,
         raw_response=raw,
-        readable_output=raw
+        readable_output=human_readable
     )
 
 
@@ -338,6 +377,10 @@ def main() -> None:
 
         elif demisto.command() == 'runzero-service-search':
             commandResult = service_search(client, args)
+            return_results(commandResult)
+
+        elif demisto.command() == 'runzero-bulk-clear-tags':
+            commandResult = bulk_clear_tags(client, args)
             return_results(commandResult)
 
     # Log exceptions and return errors

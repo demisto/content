@@ -22,13 +22,13 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "RunZero integration for XSOAR.\n runZero is a network discovery and asset inventory\n platform that uncovers every network in use and iden`tifies every device connected–without credentials.\n Scan your network and build your asset inventory in minutes."
+description: "RunZero is a network discovery and asset inventory\n platform that uncovers every network in use and identifies every device connected–without credentials.\n Scan your network and build your asset inventory in minutes."
 display: 'RunZero'
 name: RunZero
 script:
   commands:
   - name: runzero-asset-search
-    description: Search for assets.
+    description: Get assets.
     deprecated: false
     arguments:
     - name: asset_ids
@@ -58,8 +58,8 @@ script:
       isArray: false
       name: display_attributes
       predefined:
-      - true
-      - false
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -69,9 +69,15 @@ script:
       isArray: false
       name: display_services
       predefined:
-      - true
-      - false
+      - 'True'
+      - 'False'
       required: false
+      secret: false
+    - name: limit
+      description: Limit the number of assets returned. Default is 50.
+      default: false
+      defaultValue: 50
+      isArray: false
       secret: false
     execution: false
     outputs:
@@ -188,9 +194,15 @@ script:
       isArray: false
       name: display_attributes
       predefined:
-      - true
-      - false
+      - 'True'
+      - 'False'
       required: false
+      secret: false
+    - name: limit
+      description: Limit the number of assets returned. Default is 50.
+      default: false
+      defaultValue: 50
+      isArray: false
       secret: false
     execution: false
     outputs:
@@ -326,6 +338,16 @@ script:
   - name: runzero-api-key-info
     description: 'Get information about the key used. Type, Limit, usage etc.'
     deprecated: false
+    execution: false
+  - name: runzero-bulk-clear-tags
+    description: 'Bulk clear tags according to RunZero query search'
+    deprecated: false
+    arguments:
+    - name: search
+      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288"
+      isArray: false
+      required: true
+      secret: false
     execution: false
   isfetch: false
   runonce: false
