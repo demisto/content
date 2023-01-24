@@ -147,6 +147,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
         if 200 <= status_code < 300:
             dependencies_data: list = []
             dependants_ids = [pack_id]
+            logging.info(f'The response {status_code=}: {response_data=}')
             reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
             create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
             dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
