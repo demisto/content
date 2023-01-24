@@ -58,7 +58,7 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   headers=self._headers)
 
-    def get_api_key_info(self):
+    def quota_get(self):
         url_suffix = '/org/key'
         return self._http_request(method='GET',
                                   url_suffix=url_suffix,
@@ -158,10 +158,12 @@ def parse_raw_service(raw: dict) -> list:
     return [message]
 
 
-def parse_raw_api_key_info(raw: dict) -> dict:
-    raw['created_at'] = timestamp_to_datestring(raw.get('created_at', '') * 1000)
-    raw['last_used_at'] = timestamp_to_datestring(raw.get('last_used_at', '') * 1000)
-    return raw
+def parse_raw_quota_get(raw: dict) -> dict:
+    output = {}
+    output['usage_limit'] = raw.get('created_at', '')
+    output['usage_today'] = raw.get('usage_today', '')
+    output['counter'] = raw.get('counter', '')
+    return output
 
 
 ''' COMMAND FUNCTIONS '''
@@ -275,17 +277,17 @@ def service_search(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_api_key_info(client: Client) -> CommandResults:
-    raw = client.get_api_key_info()
-    message = parse_raw_api_key_info(raw)
-    human_readable = tableToMarkdown('API_Key_Info',
+def quota_get(client: Client) -> CommandResults:
+    raw = client.quota_get()
+    message = parse_raw_quota_get(raw)
+    human_readable = tableToMarkdown('Quota',
                                      message,
                                      removeNull=False)
     return CommandResults(
-        outputs_prefix=None,
-        outputs_key_field=None,
-        outputs=None,
-        raw_response=message,
+        outputs_prefix='RunZero.Quota',
+        outputs_key_field='id',
+        outputs=raw,
+        raw_response=raw,
         readable_output=human_readable
     )
 
@@ -359,8 +361,8 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'runzero-api-key-info':
-            result = get_api_key_info(client)
+        elif demisto.command() == 'runzero-quota-get':
+            result = quota_get(client)
             return_results(result)
 
         elif demisto.command() == 'runzero-asset-search':

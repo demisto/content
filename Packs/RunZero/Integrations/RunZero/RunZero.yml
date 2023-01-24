@@ -335,10 +335,53 @@ script:
       required: true
       secret: false
     execution: false
-  - name: runzero-api-key-info
-    description: 'Get information about the key used. Type, Limit, usage etc.'
+  - name: runzero-quota-get
+    description: 'Get information about the API key used. Type, Limit, usage etc.'
     deprecated: false
     execution: false
+    outputs:
+    - contextPath: RunZero.Quota.id
+      description:
+      type: UUID
+    - contextPath: RunZero.Quota.client_id
+      description:
+      type: UUID
+    - contextPath: RunZero.Quota.organization_id
+      description:
+      type: UUID
+    - contextPath: RunZero.Quota.created_at
+      description:
+      type: Integer
+    - contextPath: RunZero.Quota.comment
+      description:
+      type: String
+    - contextPath: RunZero.Quota.last_used_at
+      description:
+      type: Integer
+    - contextPath: RunZero.Quota.last_used_ip
+      description:
+      type: String
+    - contextPath: RunZero.Quota.last_used_ua
+      description:
+      type: String
+    - contextPath: RunZero.Quota.counter
+      description:
+      type: Integer
+    - contextPath: RunZero.Quota.usage_today
+      description:
+      type: Integer
+    - contextPath: RunZero.Quota.usage_limit
+      description:
+      type: Integer
+    - contextPath: RunZero.Quota.token
+      description:
+      type: String
+    - contextPath: RunZero.Quota.inactive
+      description:
+      type: String
+    - contextPath: RunZero.Quota.type
+      description:
+      type: String
   - name: runzero-bulk-clear-tags
     description: 'Bulk clear tags according to RunZero query search'
     deprecated: false

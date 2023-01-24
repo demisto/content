@@ -137,18 +137,18 @@ def test_assets_search(requests_mock):
     del mock_response[0]['services']  # display services is defaulted to false
 
     readable_output = '### Asset\n|ARP|Addresses|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|RTT/ms|SW|Site|Sources|Svcs|TCP|Tags|Type|UDP|Vulns|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1 | 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | My comment2 | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | bf707048-7ce9-4249-a58c-0aaa257d69f0 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0.84 | 2 | Primary | runZero | 11 | 3 | tag1: <br>tag2:  | Server | 4 | 0 |\n'
-    expectedCommandResult = CommandResults(outputs_prefix='RunZero.Asset',
-                                           outputs_key_field='id',
-                                           raw_response=mock_response,
-                                           outputs=mock_response,
-                                           readable_output=readable_output,
-                                           )
+    expected_commandResult = CommandResults(outputs_prefix='RunZero.Asset',
+                                            outputs_key_field='id',
+                                            raw_response=mock_response,
+                                            outputs=mock_response,
+                                            readable_output=readable_output,
+                                            )
 
-    assert actual_commandResult.readable_output == expectedCommandResult.readable_output
-    assert actual_commandResult.raw_response == expectedCommandResult.raw_response
-    assert actual_commandResult.outputs_key_field == expectedCommandResult.outputs_key_field
-    assert actual_commandResult.outputs_prefix == expectedCommandResult.outputs_prefix
-    assert actual_commandResult.outputs == expectedCommandResult.outputs
+    assert actual_commandResult.readable_output == expected_commandResult.readable_output
+    assert actual_commandResult.raw_response == expected_commandResult.raw_response
+    assert actual_commandResult.outputs_key_field == expected_commandResult.outputs_key_field
+    assert actual_commandResult.outputs_prefix == expected_commandResult.outputs_prefix
+    assert actual_commandResult.outputs == expected_commandResult.outputs
 
 
 def test_asset_search(requests_mock):
@@ -175,18 +175,18 @@ def test_asset_search(requests_mock):
         args={'ips': '192.168.1.91', 'display_attributes': 'True', 'display_services': 'True'}
     )
     readable_output = '### Asset\n|ARP|Addresses|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|RTT/ms|SW|Site|Sources|Svcs|TCP|Tags|Type|UDP|Vulns|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1 | 192.168.1.91,<br>fe80::250:56ff:fe89:b0e1 | true | My comment2 | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | bf707048-7ce9-4249-a58c-0aaa257d69f0 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0.84 | 2 | Primary | runZero | 11 | 3 | tag1: <br>tag2:  | Server | 4 | 0 |\n'
-    expectedCommandResult = CommandResults(outputs_prefix='RunZero.Asset',
-                                           outputs_key_field='id',
-                                           raw_response=mock_response,
-                                           outputs=mock_response,
-                                           readable_output=readable_output,
-                                           )
+    expected_commandResult = CommandResults(outputs_prefix='RunZero.Asset',
+                                            outputs_key_field='id',
+                                            raw_response=mock_response,
+                                            outputs=mock_response,
+                                            readable_output=readable_output,
+                                            )
 
-    assert actual_commandResult.readable_output == expectedCommandResult.readable_output
-    assert actual_commandResult.raw_response == expectedCommandResult.raw_response
-    assert actual_commandResult.outputs_key_field == expectedCommandResult.outputs_key_field
-    assert actual_commandResult.outputs_prefix == expectedCommandResult.outputs_prefix
-    assert actual_commandResult.outputs == expectedCommandResult.outputs
+    assert actual_commandResult.readable_output == expected_commandResult.readable_output
+    assert actual_commandResult.raw_response == expected_commandResult.raw_response
+    assert actual_commandResult.outputs_key_field == expected_commandResult.outputs_key_field
+    assert actual_commandResult.outputs_prefix == expected_commandResult.outputs_prefix
+    assert actual_commandResult.outputs == expected_commandResult.outputs
 
 
 def test_comment_add(requests_mock):
@@ -273,18 +273,18 @@ def test_service_search(requests_mock):
     )
 
     readable_output = '### Service\n|ARP|Address|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|Port|Protocol|RTT/ms|SW|Site|Summary|Svcs|TCP|Tags|Transport|Type|UDP|Vulns|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 04d60ddf-8d28-494c-8186-8cd514e5b9cb | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | rpcbind,<br>sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | ThisTag: <br>ThisTag22: <br>tag1: <br>tag2:  | udp | Server | 4 | 0 |\n| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 10f9e421-d80a-47d6-9643-d3e0c423a0f7 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0 |  | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | icmp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 4cdaab83-a513-42e1-8ff1-ba1d70c64cc3 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 22 | ssh | 0.84 | 2 | Primary | SSH-2.0-OpenSSH_8.0 | 11 | 3 | tag1: <br>tag2:  | tcp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 89308b21-7c53-4a06-8e65-616f2dea019e | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 5353 | mdns | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | udp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 9b65b530-1540-47fb-9638-1f49081b2a09 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | rpcbind,<br>sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | udp | Server | 4 | 0 |\n| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | a0dafbdd-e56d-4d01-be51-99dbbaaa8322 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0 |  | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | arp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | b3760c57-934f-4e45-ad9b-3aef27a9825a | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0 |  | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | icmp | Server | 4 | 0 |\n| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | c807c93b-3b63-4937-89f5-c3d89eb36003 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 5353 | mdns | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | udp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | d2972ca1-4bbc-45b5-a5fb-a4019d9c3f0b | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0 |  | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | arp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | e9e37c0a-a952-40b2-880d-077df0434794 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 9090 | http,<br>tls | 0.84 | 2 | Primary | HTTP/1.1 301 Moved Permanently<br>Content-Type: text/html<br>Location: https://192.168.1.91:9090/<br>Content-Length: 73<br>X-DNS-Prefetch-Control: off<br>Referrer-Policy: no-referrer<br>X-Content-Type-Options: nosniff<br>Cross-Origin-Resource-Policy: same-origin<br><br><html><head><title>Moved</title></head><body>Please use TLS</body></html> | 11 | 3 | tag1: <br>tag2:  | tcp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | f9917aca-cc6b-4c49-96fa-4cd00e748719 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | tcp | Server | 4 | 0 |\n'
-    expectedCommandResult = CommandResults(outputs_prefix='RunZero.Service',
-                                           outputs_key_field='service_id',
-                                           raw_response=mock_response,
-                                           outputs=mock_response,
-                                           readable_output=readable_output,
-                                           )
+    expected_commandResult = CommandResults(outputs_prefix='RunZero.Service',
+                                            outputs_key_field='service_id',
+                                            raw_response=mock_response,
+                                            outputs=mock_response,
+                                            readable_output=readable_output,
+                                            )
 
-    assert actual_commandResult.readable_output == expectedCommandResult.readable_output
-    assert actual_commandResult.raw_response == expectedCommandResult.raw_response
-    assert actual_commandResult.outputs_key_field == expectedCommandResult.outputs_key_field
-    assert actual_commandResult.outputs_prefix == expectedCommandResult.outputs_prefix
-    assert actual_commandResult.outputs == expectedCommandResult.outputs
+    assert actual_commandResult.readable_output == expected_commandResult.readable_output
+    assert actual_commandResult.raw_response == expected_commandResult.raw_response
+    assert actual_commandResult.outputs_key_field == expected_commandResult.outputs_key_field
+    assert actual_commandResult.outputs_prefix == expected_commandResult.outputs_prefix
+    assert actual_commandResult.outputs == expected_commandResult.outputs
 
 
 def test_service_search_using_search_string(requests_mock):
@@ -316,16 +316,50 @@ def test_service_search_using_search_string(requests_mock):
         del mock_res_item['attributes']
 
     readable_output = '### Service\n|ARP|Address|Asset_Status|Comments|Detected|Explorer|First_Seen|Hardware|Hops|Hostname|ICMP|ID|Last_Seen|MAC|MAC_Vendor|OS|OS_EOL|Outlier|Port|Protocol|RTT/ms|SW|Site|Summary|Svcs|TCP|Tags|Transport|Type|UDP|Vulns|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 04d60ddf-8d28-494c-8186-8cd514e5b9cb | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | rpcbind,<br>sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | ThisTag: <br>ThisTag22: <br>tag1: <br>tag2:  | udp | Server | 4 | 0 |\n| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 10f9e421-d80a-47d6-9643-d3e0c423a0f7 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0 |  | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | icmp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 4cdaab83-a513-42e1-8ff1-ba1d70c64cc3 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 22 | ssh | 0.84 | 2 | Primary | SSH-2.0-OpenSSH_8.0 | 11 | 3 | tag1: <br>tag2:  | tcp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 89308b21-7c53-4a06-8e65-616f2dea019e | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 5353 | mdns | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | udp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | 9b65b530-1540-47fb-9638-1f49081b2a09 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | rpcbind,<br>sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | udp | Server | 4 | 0 |\n| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | a0dafbdd-e56d-4d01-be51-99dbbaaa8322 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0 |  | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | arp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | b3760c57-934f-4e45-ad9b-3aef27a9825a | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0 |  | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | icmp | Server | 4 | 0 |\n| 1 | fe80::250:56ff:fe89:b0e1 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | c807c93b-3b63-4937-89f5-c3d89eb36003 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 5353 | mdns | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | udp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | d2972ca1-4bbc-45b5-a5fb-a4019d9c3f0b | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 0 |  | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | arp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | e9e37c0a-a952-40b2-880d-077df0434794 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 9090 | http,<br>tls | 0.84 | 2 | Primary | HTTP/1.1 301 Moved Permanently<br>Content-Type: text/html<br>Location: https://192.168.1.91:9090/<br>Content-Length: 73<br>X-DNS-Prefetch-Control: off<br>Referrer-Policy: no-referrer<br>X-Content-Type-Options: nosniff<br>Cross-Origin-Resource-Policy: same-origin<br><br><html><head><title>Moved</title></head><body>Please use TLS</body></html> | 11 | 3 | tag1: <br>tag2:  | tcp | Server | 4 | 0 |\n| 1 | 192.168.1.91 | true | integration comment | arp | RHEL85.LOCALDOMAIN | 2022-12-25T22:28:29.000Z | VMware VM | 0 | RHEL85,<br>RHEL85.LOCALDOMAIN | 1 | f9917aca-cc6b-4c49-96fa-4cd00e748719 | 2022-12-25T22:41:58.000Z | 00:50:56:89:b0:e1 | VMware, Inc. | Red Hat Enterprise Linux 8.5 | 0 | 0 | 111 | sunrpc | 0.84 | 2 | Primary |  | 11 | 3 | tag1: <br>tag2:  | tcp | Server | 4 | 0 |\n'
-    expectedCommandResult = CommandResults(outputs_prefix='RunZero.Service',
-                                           outputs_key_field='service_id',
-                                           raw_response=mock_response,
-                                           outputs=mock_response,
-                                           readable_output=readable_output,
-                                           )
+    expected_CommandResult = CommandResults(outputs_prefix='RunZero.Service',
+                                            outputs_key_field='service_id',
+                                            raw_response=mock_response,
+                                            outputs=mock_response,
+                                            readable_output=readable_output,
+                                            )
 
-    assert actual_commandResult.readable_output == expectedCommandResult.readable_output
-    assert actual_commandResult.raw_response == expectedCommandResult.raw_response
-    assert actual_commandResult.outputs_key_field == expectedCommandResult.outputs_key_field
-    assert actual_commandResult.outputs_prefix == expectedCommandResult.outputs_prefix
-    assert actual_commandResult.outputs == expectedCommandResult.outputs
-    
+    assert actual_commandResult.readable_output == expected_CommandResult.readable_output
+    assert actual_commandResult.raw_response == expected_CommandResult.raw_response
+    assert actual_commandResult.outputs_key_field == expected_CommandResult.outputs_key_field
+    assert actual_commandResult.outputs_prefix == expected_CommandResult.outputs_prefix
+    assert actual_commandResult.outputs == expected_CommandResult.outputs
+
+
+def test_quota_get(requests_mock):
+    """
+    Tests the quota-get command function.
+        Given: An API key in RunZero
+        When: Calling quota-get command
+        Then: Returns information about api key (limit, usage, type ..)
+    """
+    from RunZero import Client, quota_get
+    mock_response = util_load_json('test_data/quota.json')
+    requests_mock.get(
+        'https://console.runzero.com/api/v1.0/org/key',
+        json=mock_response)
+
+    client = Client(
+        base_url='https://console.runzero.com/api/v1.0',
+        verify=False,
+        proxy=False
+    )
+
+    actual_commandResult = quota_get(client=client)
+
+    expected_commandResult = CommandResults(outputs_prefix='RunZero.Quota',
+                                            outputs_key_field='id',
+                                            raw_response=mock_response,
+                                            outputs=mock_response,
+                                            readable_output='### Quota\n|counter|usage_limit|usage_today|\n|---|---|---|\n| 1 | 1576300370 | 100 |\n',
+                                            )
+
+    assert actual_commandResult.readable_output == expected_commandResult.readable_output
+    assert actual_commandResult.raw_response == expected_commandResult.raw_response
+    assert actual_commandResult.outputs_key_field == expected_commandResult.outputs_key_field
+    assert actual_commandResult.outputs_prefix == expected_commandResult.outputs_prefix
+    assert actual_commandResult.outputs == expected_commandResult.outputs
