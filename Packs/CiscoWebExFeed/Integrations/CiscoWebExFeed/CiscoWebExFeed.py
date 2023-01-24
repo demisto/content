@@ -8,8 +8,8 @@ from traceback import format_exc
 # disable insecure warnings
 urllib3.disable_warnings()
 
-IP = 'ip'
-DOMAIN = 'domain'
+IP = 'IP'
+DOMAIN = 'DOMAIN'
 INTEGRATION_NAME = 'WebEx'
 BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
 
@@ -87,7 +87,7 @@ def parse_indicators_from_response(response: requests.Response) -> Dict[str, Lis
     ipTable = grab_ip_table(ipsSection)
     all_IPs_lst = grab_ips(ipTable)
 
-    all_info_dict = {"ips": all_IPs_lst, "urls": all_domains_lst}
+    all_info_dict = {IP: all_IPs_lst, DOMAIN: all_domains_lst}
     return all_info_dict
 
 
@@ -145,27 +145,26 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     """ Gets indicators from the WebEx website and sends them to the war-room."""
     client = client
     limit = arg_to_number(args.get('limit', 10))
-    indicator_type = args.get('indicator_type', 'both')
-    indicator_type_lower = indicator_type.lower()
+    requested_indicator_type = args.get('indicator_type', 'both')
 
     res = client.all_raw_data()
-    # parse the data from an html page to a list of dicts with ips and urls
+    # parse the data from an html page to a list of dicts with ips and domains
     clean_res = parse_indicators_from_response(res)
 
-    if not indicator_type_lower == 'both':
-        indicators = clean_res.get(indicator_type_lower)[:limit]  # type: ignore
+    if not requested_indicator_type == 'Both':
+        indicators = clean_res.get(requested_indicator_type)[:limit]  # type: ignore
     else:
-        indicators = clean_res.get('ips')[:limit] + clean_res.get('urls')[:limit]  # type: ignore
+        indicators = clean_res.get(IP)[:limit] + clean_res.get(DOMAIN)[:limit]  # type: ignore
     final_indicators = []
     for value in indicators:
         type_ = check_indicator_type(value)
-        raw_data = {
+        indicators_and_type = {
             'value': value,
             'type': type_
         }
-        final_indicators.append(raw_data)
+        final_indicators.append(indicators_and_type)
 
-    md = tableToMarkdown('Indicators from WebEx Feed:', final_indicators,
+    md = tableToMarkdown('Indicators from WebEx:', final_indicators,
                          headers=['value', 'type'], removeNull=True)
 
     return CommandResults(
@@ -173,7 +172,7 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     )
 
 
-def fetch_indicators_command(client: Client, tags: tuple, tlp_color: tuple, **args):
+def fetch_indicators_command(client: Client, tags: tuple, tlp_color: tuple):
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -183,11 +182,11 @@ def fetch_indicators_command(client: Client, tags: tuple, tlp_color: tuple, **ar
         Indicators.
     """
     res = client.all_raw_data()
-    # parse the data from an html page to a list of dicts with ips and urls
+    # parse the data from an html page to a list of dicts with ips and domains
     clean_res = parse_indicators_from_response(res)
     results = []
     indicator_mapping_fields = {'tags': tags, 'trafficlightprotocol': tlp_color}
-    for indicator in clean_res.get('ips') + clean_res.get('urls'):   # type: ignore
+    for indicator in clean_res.get(IP) + clean_res.get(DOMAIN):   # type: ignore
         results.append({
             'value': indicator,
             'type': check_indicator_type(indicator),
@@ -215,7 +214,7 @@ def main():
         if command == 'test-module':
             results: CommandResults | str = test_module(client=client)
         elif command == 'fetch-indicators':
-            res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color, ** args)
+            res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color)
             for iter_ in batch(res, batch_size=2000):
                 demisto.createIndicators(iter_)
                 return

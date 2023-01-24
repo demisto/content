@@ -100,12 +100,11 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: Both
-      description: The indicator type. Can be "IPs", "URLs", or "Both". The default
-        value is "Both".
+      description: The indicator type. Can be "IP", "DOMAIN", or "Both".
       name: indicator_type
       predefined:
-      - IPs
-      - URLs
+      - IP
+      - DOMAIN
       - Both
     description: Gets indicators from the feed.
     name: webex-get-indicators
