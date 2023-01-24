@@ -10,7 +10,7 @@ from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
 from typing import Union, Tuple, Dict, Any, Generator
 import ssl
-import logging.config
+import http.server
 
 
 ''' CONSTANTS '''
@@ -102,10 +102,10 @@ class SyslogManager:
         kwargs: Dict[str, Any] = {
             'facility': self.facility
         }
-        if self.syslog_cert_path:
-            kwargs['ssl_kwargs'] = {'cert_reqs': ssl.CERT_REQUIRED,
-                                    'ssl_version': ssl.PROTOCOL_TLS,
-                                    'ca_certs': self.syslog_cert_path}
+        # if self.syslog_cert_path:
+        #     kwargs['ssl_kwargs'] = {'cert_reqs': ssl.CERT_REQUIRED,
+        #                             'ssl_version': ssl.PROTOCOL_TLS,
+        #                             'ca_certs': self.syslog_cert_path}
         if self.protocol == TCP:
             kwargs['socktype'] = SOCK_STREAM
         elif self.protocol == 'unix':
@@ -144,7 +144,15 @@ def prepare_certificate_file(certificate: str):
     certificate_file.write(bytes(certificate, 'utf-8'))
     certificate_file.close()
     demisto.debug('Starting HTTPS Server')
+    demisto.info(certificate_file)
     return certificate_path
+
+
+def sll_server(certificate_path):
+    httpd = http.server.HTTPServer(('localhost', 443), http.server.SimpleHTTPRequestHandler)
+    httpd.socket = ssl.wrap_socket(httpd.socket, certfile=certificate_path,
+                                   server_side=True, ssl_version=ssl.PROTOCOL_TLS)
+    httpd.serve_forever()
 
 
 def init_manager(params: dict) -> SyslogManager:
