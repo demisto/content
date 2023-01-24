@@ -76,6 +76,7 @@ validate-content-conf:
         if [ "$RESP" != "[]" ]; then
             echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
             echo "Merge it in order to merge the current branch into content repo."
+            job-done
             exit 1
         fi
             echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
@@ -116,10 +117,10 @@ validate-content-conf:
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
       fi
 
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
@@ -209,7 +210,6 @@ mpv2-prepare-testing-bucket:
   stage: run-instances
   needs: ["xsoar-prepare-testing-bucket"]
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
@@ -217,6 +217,7 @@ mpv2-prepare-testing-bucket:
     - |
       if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]]; then
         echo "Instance with role $INSTANCE_ROLE was not created"
+        job-done
         exit 0
       fi
     - !reference [.open-ssh-tunnel]
@@ -345,7 +346,6 @@ slack-notify-nightly-build:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: run-instances
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - section_start "Are there tests to run?" --collapsed
@@ -353,6 +353,7 @@ slack-notify-nightly-build:
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
         # The files are empty.
         echo "Not running the instance flow, no tests to run were found."
+        job-done
         exit $EXIT_CODE
       fi
     - section_end "Are there tests to run?"
