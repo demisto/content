@@ -21,7 +21,7 @@ DBOT_SCORE_DICT: Dict[str, int] = {'malicious': Common.DBotScore.BAD,
                                    'suspicious': Common.DBotScore.SUSPICIOUS,
                                    'no specific threat': Common.DBotScore.GOOD}
 OUTPUTS_PREFIX = 'csfalconx.resource'
-
+ONE_MINUTE = 60
 
 def convert_environment_id_string_to_int(
         environment_id: str
@@ -226,7 +226,7 @@ class Client:
             token_initiate_time=float(token_initiate_time),
             token_expiration_seconds=float(token_expiration_seconds)
         ):
-            demisto.debug('access token from integration context is still valid')
+            demisto.info('access token from integration context is still valid')
             return access_token
 
         # there's no token or it is expired
@@ -236,7 +236,7 @@ class Client:
             'token_expiration_seconds': token_expiration_seconds,
             'token_initiate_time': time.time()
         }
-        demisto.debug('Updating new access token to the integration context...')
+        demisto.info('Updating new access token to the integration context...')
         set_integration_context(context=integration_context)
 
         return access_token
@@ -493,7 +493,7 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
     Returns:
         bool: True if token has expired, False if not.
     """
-    return time.time() - token_initiate_time >= token_expiration_seconds - 60
+    return time.time() - token_initiate_time >= token_expiration_seconds - ONE_MINUTE
 
 
 def filter_dictionary(dictionary: dict, fields_to_keep: Optional[tuple], sort_by_field_list: bool = False) -> dict:
