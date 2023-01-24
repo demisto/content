@@ -2340,6 +2340,10 @@ script:
       isArray: true
       name: multiple_indicators_json
       required: true
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+      defaultValue: "180"
+      type: unknown
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
     outputs:
@@ -2892,7 +2896,7 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.44472
   isfetch: true
   ismappable: true
   isremotesyncin: true
