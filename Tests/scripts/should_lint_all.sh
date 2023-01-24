@@ -69,6 +69,12 @@ if [[ -n "$DIFF_RES" ]]; then
     exit 0
 fi
 
+# test if docker_native_image_config.json has been modified
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Tests/docker_native_image_config.json)
+if [[ -n "$DIFF_RES" ]]; then
+    echo -e "docker_native_image_config.json has been modified"
+    exit 0
+fi
 
 # all tests passed return 0
 exit 0
