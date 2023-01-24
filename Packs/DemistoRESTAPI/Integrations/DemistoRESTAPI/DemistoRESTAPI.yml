@@ -2,9 +2,9 @@ commonfields:
   id: Demisto REST API
   version: -1
 name: Demisto REST API
-display: Demisto REST API
+display: Demisto REST API (Deprecated)
 category: Utilities
-description: Use Demisto REST APIs
+description: Deprecated. Use Core REST API instead.
 configuration:
 - display: Demisto Server URL
   name: url
@@ -152,3 +152,5 @@ tests:
 marketplaces:
   - xsoar
 fromversion: 5.0.0
+toversion: 7.9.9
+deprecated: true

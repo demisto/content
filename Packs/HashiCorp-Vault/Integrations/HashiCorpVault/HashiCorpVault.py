@@ -357,7 +357,7 @@ def disable_engine_command():  # pragma: no cover
     demisto.results('Engine disabled successfully')
 
 
-def disable_engine(engine_path):  # pragma: no cover
+def disable_engine(engine_path):
     path = 'sys/mounts/' + engine_path
 
     return send_request(path, 'delete')
@@ -434,7 +434,7 @@ def seal_vault_command():  # pragma: no cover
     demisto.results('Vault sealed successfully')
 
 
-def seal_vault():  # pragma: no cover
+def seal_vault():
     path = 'sys/seal'
 
     return send_request(path, 'put')
@@ -468,7 +468,7 @@ def unseal_vault_command():  # pragma: no cover
     })
 
 
-def unseal_vault(key, reset):  # pragma: no cover
+def unseal_vault(key, reset):
     path = 'sys/unseal'
     body = {}
     if reset:
@@ -644,7 +644,7 @@ def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):  # pragma:
     return secrets
 
 
-def get_kv1_secret(engine_path, secret):  # pragma: no cover
+def get_kv1_secret(engine_path, secret):
     path = engine_path + secret
 
     return send_request(path, 'get')
@@ -677,7 +677,7 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
     return secrets
 
 
-def get_kv2_secret(engine_path, secret, folder=None):  # pragma: no cover
+def get_kv2_secret(engine_path, secret, folder=None):
     path = urljoin(engine_path, 'data/')
     if folder:
         path += os.path.join(folder)
@@ -718,7 +718,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: 
 
 def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     secrets = []
-    roles_list_url = engine_path
+    roles_list_url = engine_path + '/roles'
     demisto.debug('roles_list_url: {}'.format(roles_list_url))
     params = {'list': 'true'}
     res = send_request(roles_list_url, 'get', params=params)
@@ -733,7 +733,7 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
             if diff <= int(ttl) - AWS_TOKEN_OVERLAP_TIME:
                 continue
         integration_context[f'{role}_ttl'] = now.timestamp()
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
         role_url = urljoin(engine_path, urljoin('/roles/', role))
         demisto.debug('role_url: {}'.format(role_url))
         role_data = send_request(role_url, 'get')
@@ -771,7 +771,7 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     return secrets
 
 
-def get_ch_secret(engine_path, secret):  # pragma: no cover
+def get_ch_secret(engine_path, secret):
     path = engine_path + secret
 
     return send_request(path, 'get')
@@ -779,7 +779,7 @@ def get_ch_secret(engine_path, secret):  # pragma: no cover
 
 ''' EXECUTION CODE '''
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
 
     handle_proxy()
 
