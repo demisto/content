@@ -1101,7 +1101,7 @@ class NightlyTestCollector(BroadCollactor, ABC):
 
 
 class UploadAllCollector(BroadCollactor):
-    def collect(self) -> Optional[CollectionResult]:
+    def _collect(self) -> Optional[CollectionResult]:
         return self._collect_all_marketplace_compatible_packs()
 
 
