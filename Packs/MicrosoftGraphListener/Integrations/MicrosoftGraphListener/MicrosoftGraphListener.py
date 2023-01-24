@@ -703,8 +703,17 @@ class MsGraphClient:
                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
         for attachment in attachments:
+
             attachment_type = attachment.get('@odata.type', '')
             attachment_name = attachment.get('name', 'untitled_attachment')
+
+            try:
+                demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
+                attachment_name = base64.b64decode(attachment_name)
+            except Exception as e:
+                demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
+                pass
+
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
                     attachment_content = base64.b64decode(attachment.get('contentBytes', ''))
@@ -719,8 +728,10 @@ class MsGraphClient:
                 # skip attachments that are not of the previous types (type referenceAttachment)
                 continue
             # upload the item/file attachment to War Room
+            demisto.debug(f"Uploading attachment file: {attachment_name=}, {attachment_content=}")
             upload_file(attachment_name, attachment_content, attachment_results)
 
+        demisto.debug(f"Final attachment results = {attachment_results}")
         return attachment_results
 
     def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
