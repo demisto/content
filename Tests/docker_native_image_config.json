@@ -125,13 +125,6 @@
             "native:8.1",
             "native:dev"
          ]
-      },
-      {
-         "id":"RegexExtractAll",
-         "reason":"Issue: CIAC-5259 - pylint error.",
-         "ignored_native_images":[
-            "native:8.1"
-         ]
       }
    ],
    "flags_versions_mapping": {
