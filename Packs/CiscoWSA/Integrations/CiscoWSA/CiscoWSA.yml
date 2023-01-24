@@ -6,7 +6,7 @@ display: CiscoWSA
 category: Utilities
 description: Cisco WSA
 configuration:
-- display: ""
+- display: Your server URL
   name: url
   defaultvalue: http://192.168.1.1
   type: 12
@@ -115,7 +115,7 @@ script:
     - contextPath: wsa.response
       description: whether the result indicates if request is success or failure
     description: Deleting an Access Policy
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.9.45313
   runonce: false
   subtype: python3
 fromversion: 6.0.0

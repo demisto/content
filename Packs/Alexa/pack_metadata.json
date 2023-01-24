@@ -3,7 +3,7 @@
     "description": "Deprecated. Vendor has declared end of life for this product. No available replacement.",
     "support": "xsoar",
     "hidden": true,
-    "currentVersion": "2.0.23",
+    "currentVersion": "2.0.24",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
