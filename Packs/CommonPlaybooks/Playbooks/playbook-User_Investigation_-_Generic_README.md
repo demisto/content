@@ -12,8 +12,8 @@ Supported Integrations:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Get entity alerts by MITRE tactics
 * SIEM - Search for Failed logins
+* Cortex XDR - Get entity alerts by MITRE tactics
 * Okta - User Investigation
 
 ### Integrations
@@ -22,11 +22,10 @@ This playbook does not use any integrations.
 ### Scripts
 * MathUtil
 * CountArraySize
-* Set
 
 ### Commands
-* pan-os-get-logs
 * pan-os-query-logs
+* pan-os-get-logs
 
 ## Playbook Inputs
 ---
