@@ -36,7 +36,7 @@ if ((args.dateFormat) && (args.dateFormat.length > 0)){
             break;
         case 'gmt':
         case 'utc':
-            timeStr = d.toUTCString();
+            timeStr = d.toString();
             break;
         case 'locale':
             timeStr = d.toLocaleString();
