@@ -11,8 +11,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Enrichment for Verdict
-* Handle False Positive Alerts
 * AWS IAM User Access Investigation - Remediation
+* Handle False Positive Alerts
 
 ### Integrations
 * CortexCoreIR
