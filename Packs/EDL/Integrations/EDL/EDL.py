@@ -1088,12 +1088,6 @@ def main():
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
 
-    platform = demisto.demistoVersion().get("platform", 'xsoar')
-    if platform in ['xsoar', 'xsoar_hosted']:
-        demisto_version = demisto.demistoVersion().get('version')
-        if Version(demisto_version) < Version('8.0.0') and not params.get('longRunningPort'):
-            raise DemistoException('Please specify a Listen Port, in the integration configuration')
-
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
@@ -1103,6 +1097,12 @@ def main():
     }
 
     try:
+        platform = demisto.demistoVersion().get("platform", 'xsoar')
+        if platform in ['xsoar', 'xsoar_hosted']:
+            demisto_version = demisto.demistoVersion().get('version')
+            if Version(demisto_version) < Version('8.0.0') and not params.get('longRunningPort'):
+                raise DemistoException('Please specify a Listen Port, in the integration configuration')
+
         initialize_edl_context(params)
         if command == 'long-running-execution':
             run_long_running(params)
