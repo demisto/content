@@ -13,7 +13,7 @@ def unlock_pdf(entry_id):
 
     output = PdfWriter()
     for pageNum in range(0, len(input1.pages)):
-        output.addPage(input1.pages[pageNum])
+        output.add_page(input1.pages[pageNum])
     with open(output_name, "wb") as pf:
         output.write(pf)
 
