@@ -1,0 +1,16 @@
+{
+    "results": {
+        "q_type": 0,
+        "id": "1",
+        "content-routing-policy-name": "1234",
+        "content-routing-policy-name_val": "1364",
+        "profile-inherit": "disable",
+        "profile-inherit_val": "0",
+        "web-protection-profile": "",
+        "web-protection-profile_val": "0",
+        "is-default": "no",
+        "is-default_val": "0",
+        "status": "enable",
+        "status_val": "1"
+    }
+}
