@@ -29,7 +29,7 @@
             "chromium",
             "tesseract"
          ],
-         "docker_ref": "demisto/py3-native:8.1.0.40949"
+         "docker_ref": "demisto/py3-native:8.1.0.45852"
       },
       "native:dev":{
          "supported_docker_images":[
@@ -106,14 +106,16 @@
          "id":"Intezer v2",
          "reason":"Issue: CIAC-5241.",
          "ignored_native_images":[
-            "native:dev"
+            "native:dev",
+            "native:8.1"
          ]
       },
       {
          "id":"PDFUnlocker",
          "reason":"Issue: CIAC-5247.",
          "ignored_native_images":[
-            "native:dev"
+            "native:dev",
+            "native:8.1"
          ]
       },
       {

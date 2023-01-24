@@ -22,4 +22,4 @@ scripttarget: 0
 dockerimage: demisto/readpdf:1.0.0.33704
 fromversion: 5.0.0
 tests:
-  - PDFUnlocker-Test
+  - PDFUnlocker-Testna
