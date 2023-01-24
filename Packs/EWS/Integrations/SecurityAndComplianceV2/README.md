@@ -64,8 +64,11 @@ Please note: The use of Username and Password is not indicative of the use of ba
 
 *Please Note:* Microsoft requires that this connection be made from a secure connection. Disabling certificate verification is not supported at this time.
 
-### MFA Connection Workarounds
-In some cases while MFA is enabled, it is possible to be unable to confirm a sign in as safe. Generally, if there is a conditional access policy in place which will trigger a users account to require an MFA sign in, these policies should exempt the user which is used by the integration.
+### MFA Enabled Service Accounts
+When MFA is enabled, it is possible to be unable to confirm a sign in as safe. In this case, there are two separate options to enable the service account to work with the integration.
+
+1. If there is a conditional access policy in place which will trigger a users account to require an MFA sign in, these policies should exempt the user which is used by the integration. This does _not_ require MFA to be disabled.
+2. Disable MFA for the specific user.
 
 The common settings available OOTB from Microsoft can be excluded in the following menu.
 ![sec-comp-risky](../../doc_imgs/SecAndCompRiskyUser.png)
