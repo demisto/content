@@ -149,3 +149,10 @@ BetweenHours
 CommonScripts
 UTC
 mailto
+ExifRead
+DBotPredictURLPhishing
+DBotUpdateLogoURLPhishing
+ssh
+ParseYAML
+Parses
+YAML
