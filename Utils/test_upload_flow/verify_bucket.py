@@ -278,14 +278,14 @@ class BucketVerifier:
         """
         Runs the only XSIAM bucket verifications.
         """
-        self.verify_modified_item_path('AlibabaActionTrail', 'AlibabaActionTrail/ModelingRules/modelingrule-Alibaba.yml',
+        self.verify_modified_item_path('AlibabaActionTrail', 'ModelingRules/modelingrule-Alibaba.yml',
                                        self.items_dict.get('AlibabaActionTrail'))
 
     def run_xsoar_bucket_validations(self):
         """
         Runs the only XSOAR bucket verifications.
         """
-        self.verify_modified_item_path('CortexXDR', 'CortexXDR/Scripts/script-XDRSyncScript_new_name.yml',
+        self.verify_modified_item_path('CortexXDR', 'Scripts/script-XDRSyncScript_new_name.yml',
                                        self.items_dict.get('CortexXDR'))
 
     def run_validations(self):

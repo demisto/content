@@ -188,7 +188,7 @@ def update_existing_release_notes(pack: Path):
     if not path.exists():
         raise Exception("path is not valid release note")
 
-    with path.open('a') as f:
+    with path.open('w') as f:
         f.write('testing modifying existing RN')
     return pack, latest_pack_version, None
 
