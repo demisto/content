@@ -14,6 +14,21 @@ configuration:
 - display: Auth ID
   name: creds_apikey
   type: 9
+  additionalinfo: Please provide Auth ID when using Cortex XSIAM or Cortex XSOAR 8.0.0 and above.
+  required: false
+- display: Authentication method
+  name: auth_method
+  type: 15
+  required: false
+  defaultvalue: Advanced
+  additionalinfo: Whether authentication should be using "Standard" API key or "Advanced" API key. For XSOAR version < 8.0.0, choose "Standard".
+  options:
+  - Standard
+  - Advanced
+- display: Base marketplace url
+  name: marketplace_url
+  defaultvalue: https://storage.googleapis.com/marketplace-dist/content/packs/
+  type: 0
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
@@ -21,6 +36,11 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
+  type: 8
+  required: false
+- display: Use tenant
+  additionalinfo: Whether API calls should be made to the current tenant instead of the main tenant.
+  name: use_tenant
   type: 8
   required: false
 script:
@@ -89,8 +109,47 @@ script:
       required: true
       description: IDs of the incidents to delete
       isArray: true
+    - name: fields
+      description: 'Comma separated list of fields to return, case sensitive. Set
+        "all" for all fields. WARNING: Setting all fields may result in big results.'
+      required: false
+      isArray: true
+      defaultValue: id,name,type,severity,status
     description: Delete Demisto incidents
     execution: true
+  - name: demisto-api-install-packs
+    arguments:
+    - name: packs_to_install
+      required: false
+      description: 'The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ).'
+      isArray: true
+    - name: file_url
+      description: 'The pack zip file url.'
+      required: false
+      isArray: false
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
+      required: false
+      isArray: false
+    - name: skip_verify
+      description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: skip_validation
+      description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    description: Upload packs to Demisto server from url or the marketplace.
   - name: core-api-post
     arguments:
       - name: uri
@@ -155,9 +214,40 @@ script:
       isArray: true
     description: Delete Demisto incidents
     execution: true
+  - name: core-api-install-packs
+    arguments:
+    - name: packs_to_install
+      required: false
+      description: 'The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ).'
+      isArray: true
+    - name: file_url
+      description: 'The pack zip file url.'
+      required: false
+      isArray: false
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
+      required: false
+      isArray: false
+    - name: skip_verify
+      description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: skip_validation
+      description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    description: Upload packs to Demisto server from url or the marketplace.
   runonce: false
 tests:
 - No tests
-marketplaces:
-  - marketplacev2
 fromversion: 5.0.0

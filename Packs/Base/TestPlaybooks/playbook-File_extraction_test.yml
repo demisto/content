@@ -1,0 +1,428 @@
+id: File extraction test
+version: -1
+name: File extraction test
+description: Test extraction flow of file indicator in XSOAR
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: def7640e-da15-498b-8e70-6498f009d81c
+    type: start
+    task:
+      id: def7640e-da15-498b-8e70-6498f009d81c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4970fc18-f5ca-4fec-874f-8ad0718c7764
+    type: title
+    task:
+      id: 4970fc18-f5ca-4fec-874f-8ad0718c7764
+      version: -1
+      name: FIle
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fb706760-78dc-492f-8275-13c5f2a76ed7
+    type: regular
+    task:
+      id: fb706760-78dc-492f-8275-13c5f2a76ed7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 677684f9-6d52-4271-8be8-136c97ade7f1
+    type: regular
+    task:
+      id: 677684f9-6d52-4271-8be8-136c97ade7f1
+      version: -1
+      name: Set hashes
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      key:
+        simple: valid_file
+      value:
+        simple: '"2AA7B11DA27EB0B8F9B9716CB0E0DA167328FDA58598FDC39040822EAA32484E09E5AF656B991B9EACCA6F3FB10481076527D2FFC2167932034688F3CF7EE7D4", "FC9E8936926E587F97C1E8AA191C60443DB78930AF9C91CCB0F5ED6584A0D09D","5B02904C698856A333BBEDDFE7AC091AD792F134","fa9c00b7992b357d24c31058e5f70fdc","384:ILlcFY0kXphtLAyKYYIqvtdwb3qLLKPVc+vclRgEKsNLOcK0a1KyKJYyKiKEK6Kj:kl8Y0k5hRAyKvDtd03WLKNPvW/K4XKv9"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 653e40c8-9aac-4fe9-802e-d311ae892f98
+    type: regular
+    task:
+      id: 653e40c8-9aac-4fe9-802e-d311ae892f98
+      version: -1
+      name: Print valid File
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+      - "73"
+      - "74"
+      - "75"
+    scriptarguments:
+      value:
+        simple: ${valid_file}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: ca89aa79-fb5b-4e25-8be7-b4529125e3a3
+    type: condition
+    task:
+      id: ca89aa79-fb5b-4e25-8be7-b4529125e3a3
+      version: -1
+      name: Check auto-extract SHA512
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: File.SHA512
+            iscontext: true
+          right:
+            value:
+              simple: 2AA7B11DA27EB0B8F9B9716CB0E0DA167328FDA58598FDC39040822EAA32484E09E5AF656B991B9EACCA6F3FB10481076527D2FFC2167932034688F3CF7EE7D4
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: d448905e-31df-4eac-8d9d-c6d3b9bdc050
+    type: regular
+    task:
+      id: d448905e-31df-4eac-8d9d-c6d3b9bdc050
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 4d912f67-f5a9-4634-8b23-7356d98b7403
+    type: condition
+    task:
+      id: 4d912f67-f5a9-4634-8b23-7356d98b7403
+      version: -1
+      name: Check auto-extract SHA256
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: FC9E8936926E587F97C1E8AA191C60443DB78930AF9C91CCB0F5ED6584A0D09D
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 91562dc1-9117-46e2-833a-5c28bcc34569
+    type: condition
+    task:
+      id: 91562dc1-9117-46e2-833a-5c28bcc34569
+      version: -1
+      name: Check auto-extract SHA1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+          right:
+            value:
+              simple: 5B02904C698856A333BBEDDFE7AC091AD792F134
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 443faf9d-e7f8-4d7c-84e8-183ea8ac4932
+    type: condition
+    task:
+      id: 443faf9d-e7f8-4d7c-84e8-183ea8ac4932
+      version: -1
+      name: Check auto-extract MD5
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "71"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+          right:
+            value:
+              simple: 5B02904C698856A333BBEDDFE7AC091AD792F134
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 22c7dcd9-bdf7-40de-8405-c428a123b3d3
+    type: condition
+    task:
+      id: 22c7dcd9-bdf7-40de-8405-c428a123b3d3
+      version: -1
+      name: Check auto-extract SSDEEP
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+          right:
+            value:
+              simple: 384:ILlcFY0kXphtLAyKYYIqvtdwb3qLLKPVc+vclRgEKsNLOcK0a1KyKJYyKiKEK6Kj:kl8Y0k5hRAyKvDtd03WLKNPvW/K4XKv9
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0
