@@ -445,8 +445,10 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     global SUCCESS_FLAG
                     SUCCESS_FLAG = False
                 else:
+                    logging.info(f'Pack {pack_id} found dependency: {dependency.get("id")}')
                     current_packs_to_install.extend(dependencies)
 
+        logging.info(f'Pack {pack_id} and its dependencies: {current_packs_to_install}')
         lock.acquire()
         for pack in current_packs_to_install:
             if pack['id'] not in packs_to_install:
