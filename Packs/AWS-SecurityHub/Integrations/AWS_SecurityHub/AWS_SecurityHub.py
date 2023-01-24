@@ -943,28 +943,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> 
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
     if parsed_args.incident_changed:
         demisto.debug(f'Incident id {remote_incident_id} and incident change: {parsed_args.incident_changed}')
-        body = {
-            'Confidence': data.get('External Confidence'),
-            'Criticality': data.get('Risk Score'),
-            'FindingIdentifiers': {
-                'Id': data.get('Alert Id'),
-                'ProductArn': data.get('AWS Security Hub Product Arn')
-            },
-            'Note': {
-                'Text': data.get('Comment'),
-                'UpdatedBy': data.get('Current user')
-            },
-            'Severity': {
-                'Label': data.get('Severity', {}).get('Label')
-            },
-            'VerificationState': data.get('AWS Security Hub Verification State'),
-            'Workflow': {
-                'Status': data.get('AWS Security Hub Workflow Status')
-            }
-        }
-        body = remove_empty_elements(body)
-        demisto.debug(f'The request body is {body}')
-        response = client.batch_update_findings(**body)
+        response = client.batch_update_findings(**delta)
         if response:
             demisto.debug(f'The response is: {response}')
     else:
@@ -1001,7 +980,6 @@ def main():  # pragma: no cover
     finding_type = params.get('finding_type', '')
     workflow_status = params.get('workflow_status', '')
     product_name = argToList(params.get('product_name', ''))
-    mapper_out = params.get('mapper_out', '')
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,

@@ -3430,6 +3430,7 @@ script:
   subtype: python3
   type: python
 defaultmapperin: AWS Security Hub - Incoming Mapper
+defaultmapperout: AWS Security Hub - Outgoing Mapper
 fromversion: 5.0.0
 tests:
 - AWS-securityhub Test
