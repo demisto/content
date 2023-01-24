@@ -34,42 +34,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 376a50eb-bda0-4646-889e-167870343d9c
-    type: regular
-    task:
-      id: 376a50eb-bda0-4646-889e-167870343d9c
-      version: -1
-      name: SNMP check
-      description: SNMP check pulls in the versions running on the remote IP and check if its enabled or not.
-      scriptName: SnmpDetection
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      IP:
-        complex:
-          root: inputs.RemoteIP
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: e2604c0a-f845-4280-8496-0812e9374195
@@ -85,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "9"
     scriptarguments:
       key:
         simple: ScanDone
@@ -297,6 +261,42 @@ tasks:
         "position": {
           "x": 450,
           "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 541ef037-7e6b-43ad-8e78-b88b46401735
+    type: regular
+    task:
+      id: 541ef037-7e6b-43ad-8e78-b88b46401735
+      version: -1
+      name: SNMP check
+      description: Checks to see if SNMP is enabled on the IP address provided.
+      scriptName: SnmpDetection
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip_address:
+        complex:
+          root: inputs.RemoteIP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
         }
       }
     note: false
