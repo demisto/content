@@ -9,7 +9,6 @@ import tempfile
 import contextlib
 import OpenSSL.crypto
 from xml.sax.saxutils import escape
-import xml.etree.ElementTree as ET
 import defusedxml.ElementTree as defused_ET
 import re
 

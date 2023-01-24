@@ -5,7 +5,6 @@ import dateparser
 import json
 import demistomock as demisto  # noqa: F401
 import urllib3
-import xml.etree.ElementTree as ET
 from CommonServerPython import *  # noqa: F401
 
 

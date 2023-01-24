@@ -5,8 +5,9 @@ from CommonServerPython import *  # noqa: F401
 
 import base64
 import copy
-from requests import Response
 import defusedxml.ElementTree as defused_ET
+import urllib3
+from requests import Response
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 account_sas_token = ""
@@ -840,7 +841,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
                                 api_version)
 

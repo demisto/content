@@ -9,7 +9,6 @@ from typing import Callable, List, Generator
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
 from werkzeug.datastructures import Headers
-import xml.etree.ElementTree as ET
 
 from libtaxii.messages_11 import (
     TAXIIMessage,

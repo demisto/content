@@ -1,4 +1,5 @@
 import demistomock as demisto
+import defusedxml.ElementTree as defused_ET
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -83,7 +84,7 @@ class MicrosoftStorageClient(BaseClient):
             if resp_type == 'content':
                 return response.content
             if resp_type == 'xml':
-                ET.parse(response.text)
+                defused_ET.parse(response.text)
             return response
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
