@@ -502,3 +502,58 @@ def test_delete_custom_url_category_command(mocker, args):
 
     assert 'deleted successfully' in result.readable_output
     assert 'id1' in result.readable_output
+
+
+def test_modify_address():
+    from PrismaSASE import modify_address
+    address_object = json.loads(load_mock_response('address-object.json'))
+    address_object = modify_address(address_object)
+    assert address_object[0]['type'] == 'ip_netmask'
+    assert address_object[0]['address_value'] == '1.1.1.1/24'
+    assert 'ip_netmask' not in address_object[0]
+
+
+def test_modify_group_address_static_address():
+    from PrismaSASE import modify_group_address
+    address_group = json.loads(load_mock_response('static-address-group.json'))
+    address_group = modify_group_address(address_group)
+    assert address_group[0]['addresses'] == ['test2']
+    assert 'static' not in address_group[0]
+
+
+def test_modify_group_address():
+    from PrismaSASE import modify_group_address
+    address_group = json.loads(load_mock_response('dynamic-address-group.json'))
+    address_group = modify_group_address(address_group)
+    assert address_group[0]['dynamic_filter'] == "Microsoft 365 and Hamuzim"
+    assert 'dynamic' not in address_group[0]
+
+
+def test_modify_external_dynamic_list():
+    from PrismaSASE import modify_external_dynamic_list
+    dynamic_list = json.loads(load_mock_response('external-dynamic-list.json'))
+    dynamic_list = modify_external_dynamic_list(dynamic_list)
+    assert dynamic_list[0]['type'] == 'ip'
+    assert dynamic_list[0]['source'] == 'https://www.test.com'
+    assert dynamic_list[0]['frequency'] == {'five_minute': {}}
+    assert dynamic_list[0]['exception_list'] == ['www.test.com']
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args, expected_result",
+    [
+        ({'type': 'ip', 'source_url': 'test.com'},
+         'test.com'),
+        ({'type': 'predefined_url', 'predefined_url_list': 'panw–auth-portal-exclude-list'},
+         'panw–auth-portal-exclude-list'),
+        ({'type': 'ip', 'source_url': 'panw-torexit-ip-list'},
+         'panw-torexit-ip-list')
+    ]
+)
+def test_get_url_according_to_type(args, expected_result):
+    from PrismaSASE import get_url_according_to_type
+    url = get_url_according_to_type(args)
+    assert url == expected_result
+
+

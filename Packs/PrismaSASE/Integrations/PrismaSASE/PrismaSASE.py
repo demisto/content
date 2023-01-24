@@ -1223,7 +1223,7 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any]) -> Comma
     folders = argToList(args.get('folders'))  # type: ignore
     tsg_id = args.get('tsg_id')
 
-    raw_response = client.push_candidate_config(folders, args.get('description'), tsg_id=tsg_id)  # type: ignore
+    raw_response = client.push_candidate_config(folders, args.get('description', ''), tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response
 
@@ -1789,7 +1789,11 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('External Dynamic Lists', outputs, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown('External Dynamic Lists',
+                                        outputs,
+                                        headers=['id', 'name', 'type', 'folder', 'description', 'source', 'frequency'],
+                                        headerTransform=string_to_table_header,
+                                        is_auto_json_transform=True),
         raw_response=raw_response
     )
 
@@ -1839,7 +1843,9 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
         outputs=raw_response,
         readable_output=tableToMarkdown('External Dynamic List Created',
                                         raw_response,
-                                        headerTransform=string_to_table_header),
+                                        headers=['id', 'name', 'type', 'folder', 'description', 'source', 'frequency'],
+                                        headerTransform=string_to_table_header,
+                                        is_auto_json_transform=True),
         raw_response=raw_response
     )
 
@@ -1915,7 +1921,9 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
         outputs=outputs,
         readable_output=tableToMarkdown('External Dynamic List updated',
                                         outputs,
-                                        headerTransform=string_to_table_header),
+                                        headers=['id', 'name', 'type', 'folder', 'description', 'source', 'frequency'],
+                                        headerTransform=string_to_table_header,
+                                        is_auto_json_transform=True),
         raw_response=raw_response
     )
 
