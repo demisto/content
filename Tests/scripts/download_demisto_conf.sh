@@ -38,7 +38,7 @@ cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
 cp -r ./content-test-conf/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
 
-if [[ "$IS_NIGHTLY" == "true" ]] || [[ "$EXTRACT_PRIVATE_TESTDATA" == "true" && "$TEST_CONF_BRANCH" != "master" ]]; then
+if [[ "$NIGHTLY" == "true" ]] || [[ "$EXTRACT_PRIVATE_TESTDATA" == "true" && "$TEST_CONF_BRANCH" != "master" ]]; then
     cp -Rvn ./content-test-conf/content/Packs/ ./
 fi
 
