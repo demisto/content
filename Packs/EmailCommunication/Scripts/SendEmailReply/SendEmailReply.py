@@ -521,7 +521,7 @@ def get_incident_by_query(query):
     query_time = get_query_window()
 
     query_from_date = str(parse_date_range(query_time)[0])
-    
+
     query += f' modified:>="{query_from_date}"'
 
     res = demisto.executeCommand("getIncidents", {"query": query, "populateFields": "id,status"})[0]

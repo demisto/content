@@ -161,7 +161,7 @@ def get_incident_by_query(query):
     if incidents_details is None:
         demisto.debug(f'incident was not found. query: {query}')
         return []
-        
+
     for inc in incidents_details:
         if inc.get('CustomFields'):
             inc['emailsubject'] = inc.get('CustomFields', {}).get('emailsubject')
