@@ -34,7 +34,6 @@ UPLOAD_JOBS = [
     'install-packs-in-server6_8',
     'install-packs-in-server-master',
     'install-packs-in-xsiam-ga',
-    'sync-buckets-between-projects',
     'upload-packs-to-marketplace',
     'upload-packs-to-marketplace-v2',
     'upload-packs-to-xpanse-marketplace',
