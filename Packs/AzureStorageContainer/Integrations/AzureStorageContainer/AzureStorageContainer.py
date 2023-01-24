@@ -1,11 +1,17 @@
+import base64
+import hashlib
+import hmac
 import shutil
-import urllib3
+import urllib
+from datetime import date, datetime, timedelta, timezone
+from hashlib import sha256
+from time import time
 from typing import Callable
-
-from requests import Response
+from urllib import parse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from requests import Response
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
 account_sas_token = ""
@@ -57,6 +63,9 @@ class Client:
                                                return_empty_response=True)
 
         return response
+
+    def get_base_url(self):
+        return self.ms_client._base_url
 
     def get_container_properties_request(self, container_name: str) -> Response:
         """
@@ -135,6 +144,8 @@ class Client:
         xsoar_system_file_path = xsoar_file_data['path']
         blob_name = file_name if file_name else xsoar_file_data['name']
 
+        headers = {'x-ms-blob-type': 'BlockBlob'}
+
         try:
             shutil.copy(xsoar_system_file_path, blob_name)
         except FileNotFoundError:
@@ -143,7 +154,6 @@ class Client:
 
         try:
             with open(blob_name, 'rb') as file:
-                headers = {'x-ms-blob-type': 'BlockBlob', 'Content-Length': f'{os.path.getsize(file.name)}'}
                 response = self.ms_client.http_request(method='PUT',
                                                        url_suffix=f'{container_name}/{blob_name}',
                                                        headers=headers,
@@ -850,6 +860,158 @@ def set_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
+# generate signature helper function
+def generate_sig(account_key, cr, sp, signedstart, expiry, sr, sip):
+    """
+    Generate sas token for Container
+
+    Args:
+        account_key: account key of conatiner.
+        cr: canonicalizedResource.
+        sp:SignedPermissions.
+        signedstart: start time for sas token.
+        expiry : Expiry time for sas token.
+
+    Returns:
+        sas token
+
+    """
+    if sip:
+        StringToSign = (sp + "\n" +
+                        signedstart + "\n"
+                        + expiry + "\n"
+                        + cr + "\n"
+                        + "" + "\n"
+                        + sip + "\n"
+                        + "https" + "\n"
+                        + "2021-06-08" + "\n"
+                        + sr + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "").encode('UTF-8')
+        signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), StringToSign, hashlib.sha256)
+        sig = base64.b64encode(signed_hmac_sha256.digest())
+
+        token = {
+            'sp': sp,
+            'st': signedstart,
+            'se': expiry,
+            'sip': sip,
+            'spr': "https",
+            'sv': "2021-06-08",
+            'sr': sr,
+            'sig': sig
+        }
+    else:
+        StringToSign = (sp + "\n" +
+                        signedstart + "\n"
+                        + expiry + "\n"
+                        + cr + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "https" + "\n"
+                        + "2021-06-08" + "\n"
+                        + sr + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "" + "\n"
+                        + "").encode('UTF-8')
+        signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), StringToSign, hashlib.sha256)
+        sig = base64.b64encode(signed_hmac_sha256.digest())
+        token = {
+            'sp': sp,
+            'st': signedstart,
+            'se': expiry,
+            'spr': "https",
+            'sv': "2021-06-08",
+            'sr': sr,
+            'sig': sig
+        }
+
+    sas_token = urllib.parse.urlencode(token)
+    return sas_token
+
+
+def check_valid_permission(string, per):
+    """
+    Check the permissions follows valid permission order.
+
+    Args:
+        string : valid permissions order
+        per : permissions given
+
+    Returns:
+        bool
+
+    """
+    l = len(per)
+    if len(string) < l:
+        return False
+    for i in range(l - 1):
+        x = per[i]
+        y = per[i + 1]
+        last = string.rindex(x)
+        first = string.index(y)
+        if last == -1 or first == -1 or last > first:
+            return False
+    return True
+
+
+def generate_sas_token(client: Client, args: dict) -> CommandResults:
+    """
+    Generate sas url for Container.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs and raw response for XSOAR.
+
+    """
+    container_name = args.get("container_name")
+    signedResource = args.get("signed_resources")
+    signedPermissions = args.get("signed_permissions")
+    valid_permissions = "racwdxltmeop"
+    signedIp = args.get("signed_ip")
+    # Check Permissions
+    if check_valid_permission(valid_permissions, signedPermissions):
+        # Set start time
+        signedstart = str((datetime.utcnow() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        account_key = demisto.params().get("key")
+        time_taken = int(args.get('expiry_time'))
+        signedExpiry = str((datetime.utcnow() + timedelta(hours=time_taken)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        url_suffix = f"{container_name}"
+        canonicalizedResource = f"/blob/{storage_account_name}/{container_name}"
+        url = client.get_base_url() + url_suffix
+        uri = urllib.parse.quote_plus(f"{url}")
+        sas_token = generate_sig(account_key, canonicalizedResource, signedPermissions,
+                                 signedstart, signedExpiry, signedResource, signedIp)
+        sas_url = f"{url}?{sas_token}"
+        if sas_url:
+            res_data = sas_url
+            markdown = tableToMarkdown('Azure storage container SAS url', res_data, headers=[container_name])
+
+            result = CommandResults(
+                readable_output=markdown,
+                outputs_prefix='AzureStorageContainer.Container',
+                outputs_key_field=container_name,
+                outputs=res_data
+            )
+            return result
+        else:
+            return_error(f"Error")
+    else:
+        return_error(f"Permission are invalid or in wrong order.")
+
+
 def test_module(client: Client) -> None:
     """
     Tests API connectivity and authentication.
@@ -881,13 +1043,10 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
     global account_sas_token
     global storage_account_name
     account_sas_token = params['credentials']['password']
     storage_account_name = params['credentials']['identifier']
-    # supported api versions can be found here:
-    # https://learn.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.blob.core.windows.net/'
 
@@ -895,7 +1054,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
                                 api_version)
 
@@ -913,6 +1072,7 @@ def main() -> None:
             'azure-storage-container-blob-delete': delete_blob_command,
             'azure-storage-container-blob-property-get': get_blob_properties_command,
             'azure-storage-container-blob-property-set': set_blob_properties_command,
+            'azure-storage-container-sas-create': generate_sas_token,
         }
 
         if command == 'test-module':
