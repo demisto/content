@@ -312,7 +312,7 @@ def install_packs_private(client: demisto_client,
 def install_packs(client: demisto_client,
                   host: str,
                   packs_to_install: list,
-                  request_timeout: int = 999999,
+                  request_timeout: int = 10800,
                   ):
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
@@ -361,14 +361,17 @@ def install_packs(client: demisto_client,
                 logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
         except ApiException as ex:
-            if 'timeout awaiting response' in ex.body:
-                raise GCPTimeOutException(ex.body)
-            if malformed_ids := find_malformed_pack_id(ex.body):
-                raise MalformedPackException(malformed_ids)
-            if 'Item not found' in ex.body:
-                raise GeneralItemNotFoundError(ex.body)
-            raise ex
-
+            try:
+                if 'timeout awaiting response' in ex.body:
+                    raise GCPTimeOutException(ex.body)
+                if malformed_ids := find_malformed_pack_id(ex.body):
+                    raise MalformedPackException(malformed_ids)
+                if 'Item not found' in ex.body:
+                    raise GeneralItemNotFoundError(ex.body)
+                raise ex
+            except Exception:
+                logging.debug(f'The error occurred during parsing the install error: {str(ex)}')
+                raise ex
     try:
         logging.info(f'Installing packs on server {host}')
         try:
@@ -660,8 +663,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             pool.submit(search_pack_and_its_dependencies,
                         client, pack_id, packs_to_install, installation_request_body, lock)
 
-    request_timeout = 1800 if host and host.startswith('qa2-test') else 999999   # hot-fix for xsiam packs install issue
-
-    install_packs(client, host, installation_request_body, request_timeout)
+    install_packs(client, host, installation_request_body)
 
     return packs_to_install, SUCCESS_FLAG
