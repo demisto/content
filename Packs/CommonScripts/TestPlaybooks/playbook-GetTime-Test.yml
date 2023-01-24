@@ -1980,10 +1980,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 210c141f-7d88-4b5b-80d4-67e2be1261c1
+    taskid: b9a9cd3d-67e2-4a31-81e3-ab9bf15f2562
     type: condition
     task:
-      id: 210c141f-7d88-4b5b-80d4-67e2be1261c1
+      id: b9a9cd3d-67e2-4a31-81e3-ab9bf15f2562
       version: -1
       name: Is Demisto Version 8.1.0+
       description: Sleep for X seconds
@@ -2011,7 +2011,11 @@ tasks:
                     delimiter:
                       value:
                         simple: .
-                - operator: FirstArrayElement
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
             iscontext: true
           right:
             value:
