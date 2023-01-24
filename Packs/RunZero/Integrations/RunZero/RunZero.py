@@ -80,6 +80,8 @@ def normalize_rtt(raw_rtt: float) -> float:
     # normalizing a number:
     # normalized = (x-min(x))/(max(x)-min(x))
     # min RTT = 0, MAX_RTT = 1_000_000
+    if raw_rtt is None:
+        return 0
     normalized_rtt = raw_rtt / MAX_RTT
     return round(normalized_rtt, 2)
 
