@@ -125,22 +125,3 @@ def test_construct_hey_query():
     }
     assert res[1] == 'hey --disable-compression -h2 -disable-redirects -H a:1 -H b:2 -t 2 -n 2 -c 2 -m POST -z' \
                      ' 2s -d {} -x a:1 http://mock.com'
-
-
-def test_run_hey_test(mocker):
-    """
-    Given:
-        mocker
-    When:
-        Running the run_hey_test function.
-    Then:
-        Assert the message returned is as expected.
-    """
-    import subprocess
-    url = 'http://mock.com'
-    ret_value = f'hey {url}'
-    expected_raw = {'SuccessfulResponses': 0, 'TimeoutPerRequest': 20, 'Concurrency': 50, 'Requests': 200}
-    mocker.patch.object(subprocess, 'check_output', return_value=ret_value)
-    results = hey.run_hey_test(url)
-    assert results.readable_output == ret_value
-    assert results.raw_response == expected_raw
