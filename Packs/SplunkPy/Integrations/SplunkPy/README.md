@@ -158,7 +158,7 @@ To setup the mirroring follow these instructions:
     - Incoming And Outgoing - Changes in XSOAR incidents and Splunk notables will be reflected in both directions.
     - None - Turns off incident mirroring.
 5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on Splunk side.
-   If used, you can also specify which Splunk status labels should result in closure on XSOAR using the *Splunk Status Labels to Mirror* field. (Set to "Closed" by default. Can be a comma-separated list.). To mirror all status labels that are marked as "End Status" on Splunk, enter "End-Status".
+   If used, you can also specify which Splunk status labels should result in closure on XSOAR using the *Splunk Status Labels to Mirror* field. (Set to "Closed" by default. Can be a comma-separated list.). To mirror all status labels that are marked as "End Status" on Splunk, enter "End-Status" (a shortcut to avoid specifying them all).
 6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
 7. Fill in the **timezone** integration parameter with the timezone the Splunk Server is using.
 Newly fetched incidents will be mirrored in the chosen direction.
