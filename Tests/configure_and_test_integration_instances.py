@@ -792,6 +792,7 @@ class CloudBuild(Build):
         success = self.install_packs()
         if not success:
             logging.error('Failed to install content packs, aborting.')
+            sys.exit(1)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
         # uploads test_pack.zip to all servers (we have only one cloud server)
