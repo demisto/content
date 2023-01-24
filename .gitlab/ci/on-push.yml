@@ -37,6 +37,39 @@ trigger-private-build:
   - ./Documentation/commonServerDocs.sh
   - section_end "Create Release Notes and Common Server Documentation"
 
+stop-running-pipelines:
+  tags:
+    - gke
+  stage: unittests-and-validations
+  needs: []
+  variables:
+    master_branch_name: master
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+  script:
+    - section_start "Stop running piplined on current branch"
+    - |
+      echo $CI_PIPELINE_SOURCE
+      echo $CI_COMMIT_BRANCH
+      echo "curling to gitlab"
+      RESP=$(curl -v -H "Content-Type: application/json" -H "PRIVATE-TOKEN: $GITLAB_CANCEL_TOKEN" https://code.pan.run/api/v4/projects/2596/pipelines\?ref\=$CI_COMMIT_BRANCH)
+      echo $RESP
+      if [ "$RESP" != "[]" ]; then
+          PIPELINES=$(echo "${RESP}" | jq -c '.[]')
+          for pipeline in ${PIPELINES}
+          do
+              status=$(echo $pipeline | jq -r ".status")
+              id=$(echo $pipeline | jq -r ".id")
+              if [ "$status" = "running" ]; then
+                  echo "Found running pipeline with id $id, and status $status. Stoping it."
+                  curl --request POST --header "PRIVATE-TOKEN: $GITLAB_CANCEL_TOKEN" "https://code.pan.run/api/v4/projects/2596/pipelines/$id/cancel"
+              fi
+              echo $pipeline
+          done
+      fi
+    - section_end "Stop running piplined on current branch"
+
+
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
   extends:
