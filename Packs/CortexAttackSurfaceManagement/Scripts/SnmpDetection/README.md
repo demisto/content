@@ -18,7 +18,8 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| IP | IP address. |
+| ip_address | IP address. |
+| time_out | Time out. |
 
 ## Outputs
 ---
