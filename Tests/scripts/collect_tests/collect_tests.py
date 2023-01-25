@@ -423,6 +423,21 @@ class TestCollector(ABC):
             only_to_install=True,
         )
 
+    def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
+        result = []
+        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
+            try:
+                result.append(self._collect_pack(
+                    pack_id=pack_metadata.pack_id,
+                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
+                    reason_description=self.marketplace.value,
+                    allow_incompatible_marketplace=False,
+                    is_nightly=True,
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
+        return CollectionResult.union(result)
+
     def __validate_compatibility(
             self,
             id_: str,
@@ -1048,24 +1063,7 @@ class UploadBranchCollector(BranchTestCollector):
         return result
 
 
-class BroadCollactor(TestCollector, ABC):
-    def _collect_all_marketplace_compatible_packs(self) -> Optional[CollectionResult]:
-        result = []
-        for pack_metadata in PACK_MANAGER.iter_pack_metadata():
-            try:
-                result.append(self._collect_pack(
-                    pack_id=pack_metadata.pack_id,
-                    reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
-                    reason_description=self.marketplace.value,
-                    allow_incompatible_marketplace=False,
-                    is_nightly=True,
-                ))
-            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
-                logger.debug(str(e))
-        return CollectionResult.union(result)
-
-
-class NightlyTestCollector(BroadCollactor, ABC):
+class NightlyTestCollector(TestCollector, ABC):
     def collect(self) -> Optional[CollectionResult]:
         result: Optional[CollectionResult] = super().collect()
 
@@ -1100,7 +1098,7 @@ class NightlyTestCollector(BroadCollactor, ABC):
         return CollectionResult.union(result)
 
 
-class UploadAllCollector(BroadCollactor):
+class UploadAllCollector(TestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         return self._collect_all_marketplace_compatible_packs()
 
