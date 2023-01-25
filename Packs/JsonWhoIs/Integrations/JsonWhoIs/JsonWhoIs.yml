@@ -93,7 +93,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Phone
       description: Admin phone number.
       type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.45313
   isfetch: false
   longRunning: false
   longRunningPort: false

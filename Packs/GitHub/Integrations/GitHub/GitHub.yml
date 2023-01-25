@@ -4035,7 +4035,7 @@ script:
     - contextPath: GitHub.Assignees.assignees.html_url
       description: HTML URL for user
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.43045
+  dockerimage: demisto/pyjwt3:1.0.0.45830
   feed: false
   isfetch: true
   longRunning: false
