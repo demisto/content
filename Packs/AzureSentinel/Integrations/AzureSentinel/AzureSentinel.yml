@@ -36,13 +36,6 @@ configuration:
   type: 9
   displaypassword: Private Key
   section: Connect
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint
-  name: creds_certificate
-  required: false
-  type: 9
-  displaypassword: Private Key
-  section: Connect
   advanced: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint

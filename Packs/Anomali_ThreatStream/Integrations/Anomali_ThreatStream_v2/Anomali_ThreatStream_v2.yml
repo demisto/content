@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Anomali ThreatStream v2
   version: -1
@@ -12,25 +9,21 @@ configuration:
   name: url
   required: true
   type: 0
-  section: Connect
 - display: Username
   name: credentials
   required: false
   type: 9
   displaypassword: API Key
-  section: Connect
 - display: Username
   name: username
   required: false
   type: 0
-  section: Connect
   hidden: true
 - display: API Key
   name: apikey
   required: false
   type: 4
   hidden: true
-  section: Connect
 - defaultvalue: high
   display: Threshold of the indicator.
   name: default_threshold
@@ -41,14 +34,12 @@ configuration:
   - very-high
   required: true
   type: 15
-  section: Collect
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
+- defaultvalue: 'B - Usually reliable'
   display: Source Reliability
   name: integrationReliability
   required: true
   type: 15
-  section: Collect
+  additionalinfo: Reliability of the source providing the intelligence data.
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -61,14 +52,11 @@ configuration:
   name: insecure
   required: false
   type: 8
-  section: Connect
-  advanced: true
+  defaultvalue: 'false'
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-  section: Connect
-  advanced: true
 defaultclassifier: 'null'
 description: Deprecated. Use Anomali ThreatStream v3 integration instead.
 display: Anomali ThreatStream v2 (Deprecated)
