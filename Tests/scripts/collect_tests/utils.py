@@ -172,12 +172,14 @@ class ContentItem(DictFileBased):
     def _has_no_id(self):
         # some content files may not have an id
         file_path_splitted = self.path.parts
-        return self.path.name == 'pack_metadata.json' \
+        ret_value = self.path.name == 'pack_metadata.json' \
             or self.path.name.endswith('_schema.json') \
             or self.path.name.endswith('testdata.json') \
             or len(file_path_splitted) > 1 \
                 and file_path_splitted[-2] == 'ReleaseNotes' \
                 and self.path.suffix == '.json'
+        print(f'_has_no_id, {file_path_splitted=}, {ret_value=}')
+        return ret_value
 
     @property
     def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
