@@ -41,6 +41,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
