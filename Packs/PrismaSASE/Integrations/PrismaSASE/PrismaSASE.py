@@ -880,7 +880,7 @@ def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dic
     return original_rule
 
 
-def get_url_according_to_type(args):
+def get_url_according_to_type(args: dict) -> str:
     """Returns the url parameter according to the external dynamic list type.
     Args:
         args: Command args
@@ -904,9 +904,13 @@ def get_url_according_to_type(args):
     return url
 
 
-def validate_url_is_type_compatible(args, type_changed: bool, original_dynamic_list_type, original_dynamic_list_url):
+def validate_url_is_type_compatible(args: dict,
+                                    type_changed: bool,
+                                    original_dynamic_list_type: dict,
+                                    original_dynamic_list_url: dict) -> str:
     """Validates that the update is valid and returns the correct URL
     Args:
+        args: Command arguments
         original_dynamic_list_url: The original dynamic list url
         original_dynamic_list_type: The original dynamic list type
         type_changed: Rather the type has changed
@@ -934,7 +938,7 @@ def validate_url_is_type_compatible(args, type_changed: bool, original_dynamic_l
     return url
 
 
-def build_recurring_according_to_params(args):
+def build_recurring_according_to_params(args: dict) -> dict:
     """Returns a frequency object for the API according to the command arguments
     Args:
         args: Command arguments
@@ -966,7 +970,7 @@ def build_recurring_according_to_params(args):
     return frequency_object
 
 
-def validate_recurring_is_type_compatible(args, original_frequency_obj):
+def validate_recurring_is_type_compatible(args: dict, original_frequency_obj: dict) -> dict:
     """Validates that the update is valid and returns the correct frequency object
     Args:
         args: Command arguments
@@ -1002,7 +1006,7 @@ def validate_recurring_is_type_compatible(args, original_frequency_obj):
     return frequency_object if frequency_object else original_frequency_obj
 
 
-def get_pagination_params(args) -> dict:
+def get_pagination_params(args: dict) -> dict:
     """Returns the pagination parameters
     Args:
         args: Command arguments
@@ -1057,6 +1061,7 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
         'position': encode_string_results(args.get('position'))
     }
     tsg_id = args.get('tsg_id')
+    demisto.debug(f'sending security rule to the API. Rule: {rule}')
     raw_response = client.create_security_rule(rule=rule, query_params=query_params, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
@@ -1092,6 +1097,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     if args.get('tag'):
         address_object['tag'] = args.get('tag')
 
+    demisto.debug(f'sending address_object to the API. address_object: {address_object}')
     raw_response = client.create_address_object(address=address_object,
                                                 query_params=query_params,
                                                 tsg_id=args.get('tsg_id'))  # type: ignore
@@ -1146,6 +1152,8 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     if tag := args.get('tag'):
         original_address['tag'] = tag
 
+    demisto.debug(f'sending address_object to the API. address_object: {original_address}')
+
     raw_response = client.edit_address_object(address=original_address,
                                               address_id=object_id,
                                               tsg_id=tsg_id)  # type: ignore
@@ -1173,6 +1181,7 @@ def delete_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     """
     tsg_id = args.get('tsg_id')
     address_id = args.get('object_id')
+    demisto.debug(f'deleting address_object with id {address_id}')
     raw_response = client.delete_address_object(address_id=address_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
@@ -1232,6 +1241,7 @@ def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     rule_id = args.get('rule_id')
     tsg_id = args.get('tsg_id')
 
+    demisto.debug(f'deleting security_rule with id {rule_id}')
     raw_response = client.delete_security_rule(rule_id=rule_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
@@ -1260,6 +1270,7 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
     }
     original_rule = client.get_security_rule_by_id(query_params=query_params, rule_id=rule_id, tsg_id=tsg_id)
     updated_rule = update_new_rule(rule, original_rule, overwrite=overwrite)
+    demisto.debug(f'Sending security_rule to the API. Rule {updated_rule}')
     raw_response = client.edit_security_rule(rule=updated_rule, rule_id=rule_id, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
@@ -1428,6 +1439,8 @@ def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query_params = {'folder': args.get('folder')}
     tsg_id = args.get('tsg_id')
 
+    demisto.debug(f'Sending tag to the API. Tag: {tag}')
+
     raw_response = client.create_tag(query_params=query_params, tag=tag, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
@@ -1463,6 +1476,7 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if comments := args.get('comments'):
         original_tag['comments'] = comments
 
+    demisto.debug(f'Sending tag to the API. Tag: {original_tag}')
     raw_response = client.update_tag(tag_id=tag_id, tag=original_tag, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
 
@@ -1488,6 +1502,7 @@ def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     tag_id = args.get('tag_id')
     tsg_id = args.get('tsg_id')
 
+    demisto.debug(f'Deleting tag twith id {tag_id}')
     raw_response = client.delete_tag(tag_id=tag_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
@@ -1562,6 +1577,7 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
         else:  # type == 'dynamic'
             if dynamic_filter := args.get('dynamic_filter'):
                 address_group['dynamic'] = {'filter': dynamic_filter}
+    demisto.debug(f'Sending address_group to the API. address_group: {address_group}')
     raw_response = client.create_address_group(query_params=query_params,
                                                address_group=address_group,
                                                tsg_id=tsg_id)  # type: ignore
@@ -1630,6 +1646,7 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
         original_address_group.pop('static') if 'static' in original_address_group else None
 
+    demisto.debug(f'Sending address_group to the API. address_group: {original_address_group}')
     raw_response = client.update_address_group(address_group=original_address_group,
                                                group_id=group_id,
                                                tsg_id=tsg_id)  # type: ignore
@@ -1658,6 +1675,7 @@ def delete_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     group_id = args.get('group_id')
     tsg_id = args.get('tsg_id')
 
+    demisto.debug(f'Deleting address group with id {group_id}')
     raw_response = client.delete_address_group(group_id=group_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
@@ -1730,6 +1748,7 @@ def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     if value := argToList(args.get('value')):
         custom_url_category['list'] = value
 
+    demisto.debug(f'Sending custom_url_category to the API. custom_url_category: {custom_url_category}')
     raw_response = client.create_custom_url_category(query_params=query_params,
                                                      custom_url_category=custom_url_category,
                                                      tsg_id=tsg_id)  # type: ignore
@@ -1780,6 +1799,7 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
         else:
             original_custom_url_category.setdefault('list', []).extend(value)
 
+    demisto.debug(f'Sending custom_url_category to the API. custom_url_category: {original_custom_url_category}')
     raw_response = client.update_custom_url_category(custom_url_category=original_custom_url_category,
                                                      url_category_id=url_category_id,
                                                      tsg_id=tsg_id)  # type: ignore
@@ -1805,6 +1825,8 @@ def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     """
     url_category_id = args.get('id')
     tsg_id = args.get('tsg_id')
+
+    demisto.debug(f'Deleting custom_url_category with id {url_category_id}')
     raw_response = client.delete_custom_url_category(url_category_id=url_category_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
@@ -1889,6 +1911,7 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     if dynamic_list_type in ('ip', 'domain', 'url'):
         external_dynamic_list['type'][dynamic_list_type]['recurring'] = build_recurring_according_to_params(args)
 
+    demisto.debug(f'Sending external_dynamic_list to the API. external_dynamic_list: {external_dynamic_list}')
     raw_response = client.create_external_dynamic_list(query_params=query_params,
                                                        external_dynamic_list=external_dynamic_list,
                                                        tsg_id=tsg_id)  # type: ignore
@@ -1967,6 +1990,7 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
         if not original_dynamic_list['type'][dynamic_list_type].get('recurring'):
             original_dynamic_list['type'][dynamic_list_type].pop('recurring')
 
+    demisto.debug(f'Sending external_dynamic_list to the API. external_dynamic_list: {original_dynamic_list}')
     raw_response = client.update_external_dynamic_list(external_dynamic_list=original_dynamic_list,
                                                        dynamic_list_id=dynamic_list_id,
                                                        tsg_id=tsg_id)  # type: ignore
@@ -1998,6 +2022,7 @@ def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     dynamic_list_id = args.get('id')
     tsg_id = args.get('tsg_id')
 
+    demisto.debug(f'Deleting external_dynamic_list with id {dynamic_list_id}')
     raw_response = client.delete_external_dynamic_list(dynamic_list_id=dynamic_list_id, tsg_id=tsg_id)  # type: ignore
 
     return CommandResults(
@@ -2075,6 +2100,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     if not argToBoolean(args.get('parent_finished')):
         res = client.get_config_job_by_id(job_id=job_id, tsg_id=tsg_id).get('data', [{}])[0]
         if res.get('result_str') == 'PEND':
+            demisto.debug(f'waiting for parent processes to finish, parent job_id {job_id}')
             return CommandResults(
                 scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                    args=args,
@@ -2091,6 +2117,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     for job in res:
         # looking for all sub processes with parent id as the job id
         if job.get('parent_id') == job_id:
+            demisto.debug(f'looking for child processes with parent_id {job}')
             if job.get('result_str') == 'PEND':
                 return CommandResults(
                     scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
