@@ -52,6 +52,7 @@ stop-running-pipelines:
   script:
     - section_start "Stop running piplines on current branch"
     - |
+      echo "here"
       if [[ $CI_COMMIT_BRANCH = "master" ]]; then
         echo "Skipping, Should not run on master branch."
       else
@@ -74,6 +75,7 @@ stop-running-pipelines:
                 fi
                 echo $pipeline
             done
+        fi
       fi
     - section_end "Stop running piplines on current branch"
 
