@@ -1,4 +1,4 @@
-[INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw"]
+[INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw", no_hit=keep]
 alter 
     tmp_date_part = arraystring(regextract(created, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
     tmp_time_part = arraystring(regextract(created, "T(\d{2}\:\d{2}\:\d{2})\."), ""),
