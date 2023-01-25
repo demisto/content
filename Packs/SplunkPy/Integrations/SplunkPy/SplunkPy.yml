@@ -112,28 +112,35 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: When selected, closing a Splunk notable event will also close the corresponding fetched incident on XSOAR.
+- additionalinfo: If selected, closing a Notable Event on Splunk with a status of "Closed" will close the corresponding fetched incident on XSOAR.
   defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+  display: Mirror closed XSOAR Incidents (Incoming Mirroring)
   name: close_incident
   required: false
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: "Splunk status labels to mirror on XSOAR if closed on Splunk. Can be a comma-separated list. (Example: Closed,Resolved,False-Positive). \"End-Status\" is a special value that stands for all statuses that are marked as \"End Status\" on Splunk."
-  display: Splunk Status Labels to Mirror
-  name: close_labels
-  defaultvalue: Closed
+- additionalinfo: If selected, Notables with a status label that is marked as "End Status" on Splunk will also be mirrored on closure.
+  defaultvalue: 'false'
+  display: Add Splunk "End Status" statuses to mirroring (Incoming Mirroring)
+  name: close_end_status_labels
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
+- additionalinfo: "A comma-separated list of status labels to add to mirroring (Example: Resolved,False-Positive)."
+  display: Additional Splunk status labels to mirror (Incoming Mirroring)
+  name: close_extra_labels
   required: false
   type: 0
   section: Collect
-- display: Close Mirrored Splunk Notable Event
+- display: Mirror Closed Splunk Notable Events (Outgoing Mirroring)
   name: close_notable
   required: false
   type: 8
   section: Collect
   advanced: true
-  additionalinfo: When selected, closing a fetched incident of a Splunk notable on XSOAR will also close the corresponding notable on Splunk.
+  additionalinfo: If selected, closing a fetched incident of a Splunk Notable on XSOAR will close the corresponding Notable Event on Splunk.
   defaultvalue: 'false'
 - display: Trust any certificate (not secure)
   name: unsecure

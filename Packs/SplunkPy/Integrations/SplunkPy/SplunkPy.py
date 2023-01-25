@@ -29,7 +29,6 @@ MIRROR_LIMIT = 1000
 # with "status_end" marked status labels on Splunk. For more information, see:
 # https://dev.splunk.com/enterprise/docs/devtools/enterprisesecurity/notableeventsplunkes/usingnotableeventsinsearch/
 # If changed, update the documentation on the YAML and README files.
-MIRROR_CLOSE_ALL_STATUS_END_LABEL = "End-Status"
 
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
@@ -1222,16 +1221,16 @@ def get_last_update_in_splunk_time(last_update):
 
 
 def get_remote_data_command(service: client.Service, args: dict,
-                            close_incident: bool, close_status_labels: list[str], mapper):
+                            close_incident: bool, close_end_statuses: bool, close_extra_labels: list[str], mapper):
     """ get-remote-data command: Returns an updated notable and error entry (if needed)
 
     Args:
         service (splunklib.client.Service): Splunk service object
         args (dict): The command arguments
         close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable
-            has been closed on Splunk's end
-        close_status_labels (list[str]): A list of Splunk status labels to mirror closure of on XSOAR
-            if closed on Splunk.
+            has been closed on Splunk's end.
+        close_end_statuses (bool): Indicates to add statuses that are marked as "End Status" on Splunk to mirror.
+        close_extra_labels (list[str]): A list of additional Splunk status labels to add to mirroring.
 
     Returns:
         GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
@@ -1262,8 +1261,8 @@ def get_remote_data_command(service: client.Service, args: dict,
         status_label = updated_notable.get('status_label')
         # If `status_label` in the list of status labels to close, or if 'status_end' is True,
         # and the special label is used, close the incident on XSOAR.
-        if (status_label in close_status_labels) or (argToBoolean(updated_notable.get('status_end', 'true'))
-                                                     and MIRROR_CLOSE_ALL_STATUS_END_LABEL in close_status_labels):
+        if status_label == "Closed" or (status_label in close_extra_labels) \
+                or (close_end_statuses and updated_notable.get('status_label') in close_extra_labels):
             demisto.info('Closing incident related to notable {}'.format(notable_id))
             entries = [{
                 'Type': EntryType.NOTE,
@@ -1275,7 +1274,6 @@ def get_remote_data_command(service: client.Service, args: dict,
             }]
 
     demisto.debug('Updated notable {}'.format(notable_id))
-
     return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
@@ -2686,7 +2684,8 @@ def main():  # pragma: no cover
         demisto.info('########### MIRROR IN #############')
         get_remote_data_command(service=service, args=demisto.args(),
                                 close_incident=demisto.params().get('close_incident'),
-                                close_status_labels=argToList(demisto.params().get('close_labels', [])),
+                                close_end_statuses=demisto.params().get('close_end_status_labels'),
+                                close_extra_labels=argToList(demisto.params().get('close_extra_labels', '')),
                                 mapper=mapper)
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())

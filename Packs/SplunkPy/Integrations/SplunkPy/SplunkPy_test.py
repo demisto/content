@@ -928,7 +928,7 @@ def test_get_remote_data_command(mocker):
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, close_incident=False, close_status_labels=['Closed'],
+    splunk.get_remote_data_command(service, args, close_incident=False, close_end_statuses=False, close_extra_labels=[],
                                    mapper=splunk.UserMappingObject(service, False))
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
@@ -953,7 +953,7 @@ def test_get_remote_data_command_close_incident(mocker):
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, close_incident=True, close_status_labels=['Closed'],
+    splunk.get_remote_data_command(service, args, close_incident=True, close_end_statuses=True, close_extra_labels=[],
                                    mapper=splunk.UserMappingObject(service, False))
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
