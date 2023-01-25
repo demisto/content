@@ -8,7 +8,7 @@ Finding the latest threat is like looking for a needle in a haystack. Stealwatch
 ​
 - Lists security events and returns the results to the context.
 - Runs queries on Cisco Stealthwatch flows and returns its results to the context.
-- Mapping logs to "One Data Model".
+- Maps logs to "One Data Model".
 
 
 
