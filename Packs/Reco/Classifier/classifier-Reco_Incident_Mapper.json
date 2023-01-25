@@ -1,0 +1,233 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "6c603f43-2564-47b2-8c80-0a9f1aeaf9a6",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": {
+		"Exfiltration": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "incident_description"
+				},
+				"Alert ID": {
+					"simple": "incident_id"
+				},
+				"Analysis Report": {
+					"simple": "data_categories"
+				},
+				"App": {
+					"simple": "data_source"
+				},
+				"Description": {
+					"simple": "incident_description"
+				},
+				"Detected User": {
+					"simple": "actors"
+				},
+				"External Severity": {
+					"complex": {
+						"filters": [],
+						"root": "risk_level",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"value": {
+											"simple": "10,20,30,40"
+										}
+									},
+									"mapped_values": {
+										"value": {
+											"simple": "Low,Medium,High,Critical"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				},
+				"External Status": {
+					"complex": {
+						"filters": [],
+						"root": "status",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"value": {
+											"simple": "INCIDENT_STATE_UNMARKED,INCIDENT_STATE_FALSE_POSITIVE,INCIDENT_STATE_TRUE_POSITIVE"
+										}
+									},
+									"mapped_values": {
+										"value": {
+											"simple": "Active,InActive,InActive"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				},
+				"File Names": {
+					"complex": {
+						"filters": [],
+						"root": "assets",
+						"transformers": [
+							{
+								"args": {
+									"headers": {},
+									"is_auto_json_transform": {},
+									"json_transform_properties": {},
+									"title": {
+										"value": {
+											"simple": "Assets Details"
+										}
+									}
+								},
+								"operator": "JsonToTable"
+							}
+						]
+					}
+				},
+				"Threat Name": {
+					"simple": "incident_description"
+				},
+				"details": {
+					"complex": {
+						"filters": [],
+						"root": "incident_description",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "event_time",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Additional Indicators": {
+					"complex": {
+						"filters": [],
+						"root": "assets",
+						"transformers": []
+					}
+				},
+				"Alert Category": {
+					"simple": "incident_description"
+				},
+				"Alert ID": {
+					"simple": "incident_id"
+				},
+				"Analysis Report": {
+					"simple": "data_categories"
+				},
+				"App": {
+					"simple": "data_source"
+				},
+				"Description": {
+					"simple": "incident_description"
+				},
+				"Detected User": {
+					"simple": "actors"
+				},
+				"External Severity": {
+					"complex": {
+						"filters": [],
+						"root": "risk_level",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"value": {
+											"simple": "10,20,30,40"
+										}
+									},
+									"mapped_values": {
+										"value": {
+											"simple": "Low,Medium,High,Critical"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				},
+				"External Status": {
+					"complex": {
+						"filters": [],
+						"root": "status",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"value": {
+											"simple": "INCIDENT_STATE_UNMARKED,INCIDENT_STATE_FALSE_POSITIVE,INCIDENT_STATE_TRUE_POSITIVE"
+										}
+									},
+									"mapped_values": {
+										"value": {
+											"simple": "Active,InActive,InActive"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				},
+				"Threat Name": {
+					"simple": "incident_description"
+				},
+				"details": {
+					"complex": {
+						"filters": [],
+						"root": "incident_description",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "event_time",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "Reco Incident Mapper",
+	"nameRaw": "Reco Incident Mapper",
+	"packID": "dc93e12e-02a8-4b01-8456-35241c48193d",
+	"packName": "Reco Incident Mapper Contribution Pack",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
