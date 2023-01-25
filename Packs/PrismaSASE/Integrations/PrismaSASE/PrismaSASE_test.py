@@ -495,27 +495,30 @@ def test_list_external_dynamic_list_command(mocker):
     assert result.outputs == mock_response.get('data')
 
 
+EXPECTED_DYNAMIC_LIST = {
+    "id": "1",
+    "name": "ip",
+    "folder": "Shared",
+    "type": {
+        "ip": {
+            "description": "api test",
+            "recurring": {
+                "hourly": {}
+            },
+            "certificate_profile": "GP_Log_Certificate",
+            "url": "www.test1.com",
+            "exception_list": ["www.test.com"]
+        }
+    }
+}
+
+
 @pytest.mark.parametrize(
     # Write and define the expected
     "args, expected_results",
     [
         ({'id': '1', 'overwrite': True, 'source_url': 'www.test1.com', 'frequency': 'hourly'},
-         {
-             "id": "1",
-             "name": "ip",
-             "folder": "Shared",
-             "type": {
-                 "ip": {
-                     "description": "api test",
-                     "recurring": {
-                         "hourly": {}
-                     },
-                     "certificate_profile": "GP_Log_Certificate",
-                     "url": "www.test1.com",
-                     "exception_list": ["www.test.com"]
-                 }
-             }
-         }
+         EXPECTED_DYNAMIC_LIST
          )
     ]
 )
