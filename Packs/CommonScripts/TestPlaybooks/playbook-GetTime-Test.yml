@@ -55,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 225
+          "x": -690,
+          "y": 220
         }
       }
     note: false
@@ -91,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
-          "y": 730
+          "x": -670,
+          "y": 750
         }
       }
     note: false
@@ -166,8 +166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 910
+          "x": 60,
+          "y": 920
         }
       }
     note: false
@@ -1967,8 +1967,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 400
+          "x": -690,
+          "y": 410
         }
       }
     note: false
@@ -2091,8 +2091,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 560
+          "x": -690,
+          "y": 575
         }
       }
     note: false
@@ -2128,8 +2128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -680,
-          "y": 730
+          "x": -1080,
+          "y": 750
         }
       }
     note: false
@@ -2164,8 +2164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 730
+          "x": -270,
+          "y": 750
         }
       }
     note: false
@@ -2180,9 +2180,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 955,
-        "width": 6860,
-        "x": -680,
+        "height": 965,
+        "width": 7260,
+        "x": -1080,
         "y": 50
       }
     }
