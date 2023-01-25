@@ -572,3 +572,17 @@ def test_invalid_content_item(mocker, monkeypatch):
           expected_tests=(), expected_packs=(), expected_packs_to_upload=(), expected_machines=None,
           expected_modeling_rules_to_test=None,
           collector_class_args=XSOAR_BRANCH_ARGS)
+
+
+def test_number_of_file_types():
+    """
+    The test collection assumes the list of FileType values does not change.
+    If this unit test fails, it means that list has changed (in the SDK).
+    Please make sure the change does not break test collection:
+        - New type:     1. Add it to IGNORED_FILE_TYPES or ONLY_INSTALL_PACK
+                        2. Create a PR and see collection works
+                        3. Increase the number in this test
+
+        - Removed type:    Decrease the number here.
+    """
+    assert len(FileType) == 74
