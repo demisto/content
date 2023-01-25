@@ -1,6 +1,6 @@
 id: ThreatGridTest
 version: -1
-name: playbook-ThreatGridTry_Test
+name: ThreatGridTest
 starttaskid: "0"
 tasks:
   "0":

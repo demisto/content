@@ -256,11 +256,11 @@ script:
       - analysis.urls.url
       - analysis.urls.url.whole.
       required: false
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"
       isArray: false
       name: before
       required: false
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"
       isArray: false
       name: after
       required: false
@@ -1187,16 +1187,16 @@ script:
       name: retries
     outputs:
     - contextPath: File.MD5
-      description: 'Bad MD5 hash.'
+      description: MD5 hash.
       type: String
     - contextPath: File.Name
-      description: 'File name.'
+      description: File name.
       type: String
     - contextPath: File.SHA1
-      description: Bad SHA1 hash.
+      description: SHA1 hash.
       type: String
     - contextPath: File.sha256
-      description: Bad SHA256 hash.
+      description: SHA256 hash.
       type: String
     - contextPath: File.EntryID
       description: The entry ID of the file.
@@ -1271,13 +1271,13 @@ script:
     execution: false
     outputs:
     - contextPath: IP.Address
-      description: Bad IP address.
+      description: IP address.
       type: String
     - contextPath: IP.ASN
-      description: Bad IP ASN.
+      description: IP ASN.
       type: String
     - contextPath: IP.Geo.Country
-      description: Bad IP country.
+      description: IP country.
       type: String
     - contextPath: ThreatGrid.IP.indicator
       description: IP address.
@@ -1330,7 +1330,7 @@ script:
       name: retries
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found.
+      description: URLs found.
       type: String
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision.
@@ -1402,7 +1402,7 @@ script:
       - 'False'
     outputs:
     - contextPath: Domain.Name
-      description: Bad domain found.
+      description: domain found.
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision.
@@ -1713,3 +1713,10 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+detaileddescription: |-
+  1. In your threat grid instance, click your user name at the right top corner.
+  2. Select my account.
+  3. Under the API Key section in the left you will see your API.
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/threat-grid)
