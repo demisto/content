@@ -109,9 +109,13 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
     for dependency in response_data:
         dependants = dependency.get('dependants', {})
         for dependant in dependants.keys():
+            if dependency.get("id") == 'rasterize':
+                logging.info(f'The pack {dependant=} cant be installed without: {dependency.get("id")}')
+            if dependency.get("id") == 'Whois':
+                logging.info(f'The pack {dependant=} cant be installed without: {dependency.get("id")}')
             is_required = dependants[dependant].get('level', '') == 'required'
             if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
-                logging.info(f'adding: {dependency.get("id")} that has {dependant=}')
+                logging.info(f'The pack {dependant=} cant be installed without: {dependency.get("id")}')
                 dependencies_data.append({
                     'id': dependency.get('id'),
                     'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion')
