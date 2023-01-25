@@ -515,7 +515,8 @@ def test_list_external_dynamic_list_command(mocker):
                      "exception_list": ["www.test.com"]
                  }
              }
-         })
+         }
+         )
     ]
 )
 def test_update_external_dynamic_list_command(mocker, args, expected_results):
@@ -592,7 +593,7 @@ def test_run_push_jobs_polling_command_second_poll(mocker, args):
         {"job_id": "1", "parent_finished": True}
     ]
 )
-def test_run_push_jobs_polling_command_second_poll(mocker, args):
+def test_run_push_jobs_polling_command_last_poll(mocker, args):
     from PrismaSASE import run_push_jobs_polling_command
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
     client = create_mocked_client()
