@@ -1,16 +1,16 @@
-Queries the PANW Threat Intelligence Autofocus System. The playbook accepts file and traffic indicators, such as SHA256, SHA1, MD5, IP addresses, URLs, and domain names, in order to run basic queries.
+The playbook queries the PANW Threat Intelligence Autofocus System for file and traffic indicators, such as SHA256, SHA1, MD5, IP addresses, URLs, and domains. 
+
+A simple search mode is used to query Autofocus based on the indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
+It is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs.
 
 Note that multiple search values should be separated by commas only (without spaces or any special characters).
-
-Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified.
-It is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Autofocus - Traffic Indicators Hunting
 * Autofocus - File Indicators Hunting
+* Autofocus - Traffic Indicators Hunting
 
 ### Integrations
 This playbook does not use any integrations.

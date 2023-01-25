@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Autofocus - Traffic Indicators Hunting
-description: "Queries the PANW Threat Intelligence Autofocus System. Traffic indicators such as URLs, IP addresses, and domains can be used to run basic queries in the playbook.\nNote that multiple search values should be separated by commas only (without spaces or any special characters).\n\nAdvanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. \nIt is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs."
+description: "The playbook querying the PANW Threat Intelligence Autofocus System for traffic indicators such as URLs, IP addresses, and domains.\n\nA simple search mode is used to query Autofocus based on the traffic indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. \nIt is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
 starttaskid: "0"
 tasks:
   "0":

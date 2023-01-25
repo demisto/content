@@ -1,8 +1,9 @@
-Queries the PANW Threat Intelligence Autofocus System. Traffic indicators such as URLs, IP addresses, and domains can be used to run basic queries in the playbook.
-Note that multiple search values should be separated by commas only (without spaces or any special characters).
+The playbook querying the PANW Threat Intelligence Autofocus System for traffic indicators such as URLs, IP addresses, and domains.
 
-Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
+A simple search mode is used to query Autofocus based on the traffic indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
 It is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs.
+
+Note that multiple search values should be separated by commas only (without spaces or any special characters).
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
