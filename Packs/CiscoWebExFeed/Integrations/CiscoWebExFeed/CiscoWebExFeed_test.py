@@ -1,5 +1,8 @@
 from bs4 import BeautifulSoup
 import pytest
+import CiscoWebExFeed
+
+
 DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
                 ['domain1', '*.d1.com'],
                 ['domain2', '*.d2.com'],
@@ -96,9 +99,9 @@ def test_grab_ip_table():
 
 @pytest.mark.parametrize('input, expected', [
     ('1.1.1.1/16', 'CIDR'), ('*.google.com', 'DomainGlob'), ('google.com', 'Domain')])
-def test_check_indicator_type(input, expected):
+def test_check_indicator_type__diffrent_inputs(input, expected):
     """
-    Given:  a string that is an ip, domain or domain glob
+    Given:  a indicator of type: ip, domain or domain glob
 
     When:
         - check_indicator_type is called
@@ -109,10 +112,24 @@ def test_check_indicator_type(input, expected):
     assert check_indicator_type(input) == expected
 
 
-def test_get_indicators_command(mocker):
-    from CiscoWebExFeed import get_indicators_command, Client, parse_indicators_from_response
+@pytest.mark.parametrize('input, expected', [
+                         ('Both', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n| domainmock | mocked_type |\n'),
+                         ('IP', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n'),
+                         ('DOMAIN', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| domainmock | mocked_type |\n')])
+def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input, expected):
+    """
+    Given:
+        - a limit and an indicator type
+    When:
+        - get_indicators_command is called
+    Then:
+        - the function should return the expectetd result
+    """
+    from CiscoWebExFeed import get_indicators_command, Client
     client = mocker.patch.object(Client, 'all_raw_data', return_value='gg')
-    mocker.patch.object(parse_indicators_from_response, return_value={'blabla': 'blabla'})
+    mocker.patch.object(CiscoWebExFeed, 'check_indicator_type', return_value='mocked_type')
+    mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
+                        return_value={'IP': ['ipmock'], 'DOMAIN': ['domainmock']})
 
-    res = get_indicators_command(client, limit=1, indicator_type="Both")
-    assert res == "gg"
+    res = get_indicators_command(client=client, limit=1, indicator_type=input)
+    assert res.readable_output == expected
