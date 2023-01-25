@@ -36,15 +36,15 @@ def grab_domains(data: list) -> List:
     return domainList
 
 
-def grab_ips(data: list) -> List:
-    """ From WebExIP Table get only IP addresses"""
-    ipList: List = []
+def grab_CIDR_ips(data: list) -> List:
+    """ From list of lists that contain all ips from webex table, get only CIDR ip addresses"""
+    CIDR_ip_list: List = []
     for line in data[0]:
         values = line.split(' (CIDR)')
-        ipList.append(values[0])
+        CIDR_ip_list.append(values[0])
     # Dedup List
-    list(dict.fromkeys(ipList))
-    return ipList
+    list(dict.fromkeys(CIDR_ip_list))
+    return CIDR_ip_list
 
 
 def grab_domain_table(html_section: element.Tag) -> List:
@@ -61,7 +61,7 @@ def grab_domain_table(html_section: element.Tag) -> List:
 
 
 def grab_ip_table(html_section: element.Tag) -> List:
-    """ Gets the IP table from the html section"""
+    """ Gets the IP table from the html section and returns a list of lists"""
     rows = html_section.find_all('ul')
     data = []
     for row in rows:
@@ -85,7 +85,7 @@ def parse_indicators_from_response(response: requests.Response) -> Dict[str, Lis
 
     # Get IPS
     ipTable = grab_ip_table(ipsSection)
-    all_IPs_lst = grab_ips(ipTable)
+    all_IPs_lst = grab_CIDR_ips(ipTable)
 
     all_info_dict = {IP: all_IPs_lst, DOMAIN: all_domains_lst}
     return all_info_dict
