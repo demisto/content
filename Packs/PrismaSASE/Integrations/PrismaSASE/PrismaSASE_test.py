@@ -4,6 +4,7 @@ Tests module for Prisma SASE integration.
 
 import json
 import pytest
+import CommonServerPython
 
 from PrismaSASE import Client
 
@@ -514,13 +515,10 @@ def test_list_external_dynamic_list_command(mocker):
                      "exception_list": ["www.test.com"]
                  }
              }
-         }),
-        #({'id': 'id1', 'overwrite': False, 'value': 'www.test.com'},
-         #['www.google.com', 'www.test.com']),
+         })
     ]
 )
 def test_update_external_dynamic_list_command(mocker, args, expected_results):
-    # TODO change
     from PrismaSASE import update_external_dynamic_list_command
     mock_response = json.loads(load_mock_response('external-dynamic-list.json'))
     client = create_mocked_client()
@@ -552,6 +550,56 @@ def test_delete_external_dynamic_list_command(mocker, args):
 
     assert 'deleted successfully' in result.readable_output
     assert '1' in result.readable_output
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"folders": "folder1, folder2"}
+    ]
+)
+def test_run_push_jobs_polling_command_first_poll(mocker, args):
+    from PrismaSASE import run_push_jobs_polling_command
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    client = create_mocked_client()
+    mocker.patch.object(client, 'push_candidate_config')
+    result = run_push_jobs_polling_command(client, args)
+    assert result.scheduled_command
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"job_id": "1", "parent_finished": False}
+    ]
+)
+def test_run_push_jobs_polling_command_second_poll(mocker, args):
+    from PrismaSASE import run_push_jobs_polling_command
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    client = create_mocked_client()
+    mock_response = json.loads(load_mock_response('get-config-jobs-by-id.json'))
+    mocker.patch.object(client, 'get_config_job_by_id', return_value=mock_response)
+    result = run_push_jobs_polling_command(client, args)
+    assert result.scheduled_command
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args",
+    [
+        {"job_id": "1", "parent_finished": True}
+    ]
+)
+def test_run_push_jobs_polling_command_second_poll(mocker, args):
+    from PrismaSASE import run_push_jobs_polling_command
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+    client = create_mocked_client()
+    mock_response = json.loads(load_mock_response('list-config-jobs.json'))
+    mocker.patch.object(client, 'list_config_jobs', return_value=mock_response)
+    result = run_push_jobs_polling_command(client, args)
+    assert not result.scheduled_command
 
 
 def test_modify_address():
@@ -689,5 +737,3 @@ def test_get_pagination_params(args, expected_result):
 
     pagination_params = get_pagination_params(args)
     assert pagination_params == expected_result
-
-

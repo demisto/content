@@ -3,7 +3,7 @@
         {
             "details": "{\"info\":[],\"errors\":[],\"warnings\":[]}",
             "end_ts": "2022-07-13 20:44:44",
-            "id": "294",
+            "id": "1",
             "insert_ts": "2022-07-13 20:43:08",
             "job_result": "0",
             "job_status": "1",
@@ -11,7 +11,7 @@
             "last_update": "2022-07-13 20:44:44",
             "opaque_int": "0",
             "opaque_str": "",
-            "owner": "cfgserv",
+            "owner": "owner",
             "parent_id": "0",
             "percent": "99",
             "result_i": "0",

@@ -2,11 +2,11 @@
     "data": [
         {
             "end_ts": "2022-07-21 17:40:57",
-            "id": "300",
+            "id": "2",
             "job_result": "2",
             "job_status": "2",
             "job_type": "22",
-            "parent_id": "299",
+            "parent_id": "1",
             "percent": "100",
             "result_str": "OK",
             "start_ts": "2022-07-21 17:14:38",
@@ -18,11 +18,11 @@
         },
         {
             "end_ts": "2022-07-21 17:14:35",
-            "id": "299",
+            "id": "3",
             "job_result": "2",
             "job_status": "2",
             "job_type": "53",
-            "parent_id": "0",
+            "parent_id": "1",
             "percent": "100",
             "result_str": "OK",
             "start_ts": "2022-07-21 17:13:48",
