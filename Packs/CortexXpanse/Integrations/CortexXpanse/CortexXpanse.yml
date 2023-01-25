@@ -3,12 +3,12 @@ commonfields:
   id: Cortex Xpanse
   version: -1
 configuration:
-- additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
   display: Server URL
   name: url
   required: true
   type: 0
-- additionalinfo: For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
   display: API Key ID
   displaypassword: API Key
   name: credentials
@@ -259,7 +259,7 @@ script:
       predefined:
       - "yes"
       - "no"
-    description: Get a list of all your internet exposure filtered by IP address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
+    description: Get a list of all your internet exposures filtered by IP address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
     name: asm-list-asset-internet-exposure
     outputs:
     - contextPath: ASM.AssetInternetExposure.asm_ids
@@ -299,7 +299,7 @@ script:
       description: The operating system reported by the source for this asset.
       type: Unknown
     - contextPath: ASM.AssetInternetExposure.agent_id
-      description: If there is an endpoint installed on this asset, this is the endpoint ID.
+      description: The endpoint ID if there is an endpoint installed on this asset.
       type: Unknown
     - contextPath: ASM.AssetInternetExposure.externally_detected_providers
       description: The provider of the asset as determined by an external assessment.
@@ -363,9 +363,9 @@ script:
       description: Asset vulnerability score.
       type: Unknown
   - arguments:
-    - description: Comma separated list of integers of the alert ID.
+    - description: Comma-separated list of integers of the alert ID.
       name: alert_id_list
-    - description: Comma separated list of strings of alert severity (valid values are low, medium, high, critical, informational).
+    - description: Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational).
       name: severity
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
@@ -393,10 +393,10 @@ script:
     name: asm-list-alerts
     outputs:
     - contextPath: ASM.Alert.alert_id
-      description: A unique identfier that Cortex XSIAM assigns to each alert.
+      description: A unique identifier that Cortex XSIAM assigns to each alert.
       type: String
     - contextPath: ASM.Alert.severity
-      description: The severity that was assigned to this alert when it was triggered (Options are Informatonal, Low, Medium, High, Critical, or Unknown).
+      description: The severity that was assigned to this alert when it was triggered (Options are Informational, Low, Medium, High, Critical, or Unknown).
       type: String
     - contextPath: ASM.Alert.external_id
       description: The alert ID as recorded in the detector from which this alert was sent.
@@ -411,7 +411,7 @@ script:
       description: The hostname of the endpoint or server on which this alert triggered.
       type: String
     - contextPath: ASM.Alert.dynamic_fields
-      description: Alert fields pulled from XSOAR context.
+      description: Alert fields pulled from Cortex XSOAR context.
       type: Unknown
     - contextPath: ASM.Alert.events
       description: Individual events the comprise the alert.
