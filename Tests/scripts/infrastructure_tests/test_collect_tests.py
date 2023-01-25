@@ -406,8 +406,8 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
          ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',), (), ('MyXSIAMPack',)),
 
         # (33) Release Notes Config
-        (MockerCases.RN_CONFIG, (), ('MyPackWithRnConfig',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/MyPackWithRnConfig/ReleaseNotes/2_1_3.json',), (), None),
+        (MockerCases.RN_CONFIG, (), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
+         ('Packs/myPack/ReleaseNotes/2_1_3.json',), (), None),
 
     )
 )
