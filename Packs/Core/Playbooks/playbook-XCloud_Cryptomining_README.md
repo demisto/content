@@ -27,21 +27,21 @@ The playbook supports AWS, Azure, and GCP and executes the following:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* XCloud Cryptomining - Set Verdict
-* XCloud Alert Enrichment
 * Cloud Response - Generic
+* XCloud Alert Enrichment
 * Handle False Positive Alerts
+* XCloud Cryptomining - Set Verdict
 
 ### Integrations
 * CortexCoreIR
 
 ### Scripts
-* IncreaseIncidentSeverity
 * LoadJSON
+* IncreaseIncidentSeverity
 
 ### Commands
-* core-get-cloud-original-alerts
 * send-mail
+* core-get-cloud-original-alerts
 * closeInvestigation
 
 ## Playbook Inputs
@@ -49,9 +49,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| incident_id | The incident ID. |  | Optional |
 | alert_id | The alert ID. |  | Optional |
-| SOCEmailAddress | The SOC email address to use for the alert status notification. |  | Optional |
+| SOCEmailAddress | The SOC email address to use for the alert status notification. | None | Optional |
 | requireAnalystReview | Whether to require an analyst review after the alert remediation. | True | Optional |
 | ShouldCloseAutomatically | Should we automatically close false positive alerts? Specify true/false. | False | Optional |
 | ShouldHandleFPautomatically | Should we automatically handle false positive alerts? Specify true/false. | False | Optional |

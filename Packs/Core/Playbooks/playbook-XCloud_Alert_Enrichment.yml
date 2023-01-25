@@ -232,6 +232,17 @@ tasks:
             value:
               simple: MICROSOFT
           ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert.event
+                accessor: caller_ip_asn_org
+            iscontext: true
+          right:
+            value:
+              simple: GOOGLE
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -521,5 +532,4 @@ outputs:
   type: unknown
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
 fromversion: 6.6.0

@@ -242,10 +242,99 @@ tasks:
       '#none#':
       - "40"
     scriptarguments:
+      AWS-accessKeyRemediationType:
+        simple: Disable
+      AWS-resourceRemediationType:
+        simple: Stop
+      AWS-userRemediationType:
+        simple: Revoke
+      Azure-resourceRemediationType:
+        simple: Poweroff
+      Azure-userRemediationType:
+        simple: Disable
+      GCP-accessKeyRemediationType:
+        simple: Disable
+      GCP-resourceRemediationType:
+        simple: Stop
+      GCP-userRemediationType:
+        simple: Disable
+      accessKeyId:
+        complex:
+          root: alertJson._all_events._aws_specific_fields
+          accessor: access_key_id
+      autoAccessKeyRemediation:
+        simple: "False"
+      autoBlockIndicators:
+        simple: "False"
+      autoResourceRemediation:
+        simple: "False"
+      autoUserRemediation:
+        simple: "False"
       cloudProvider:
         complex:
           root: alert
           accessor: cloudprovider
+      region:
+        complex:
+          root: alertJson._all_events
+          accessor: region
+      resourceGroup:
+        complex:
+          root: alertJson._all_events
+          accessor: referenced_resource
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "5"
+      resourceName:
+        complex:
+          root: alertJson._all_events
+          accessor: referenced_resource_name
+      resourceZone:
+        complex:
+          root: alertJson._all_events
+          accessor: zone
+      username:
+        complex:
+          root: alertJson._all_events
+          accessor: actor_effective_username
+          transformers:
+          - operator: 8dc9ab33-663b-4e3a-8505-fe0740aabf1e
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: alertJson._all_events.actor_effective_username
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: |2-
+
+                    alert.cloudprovider
+                iscontext: true
+              lhsB: {}
+              options:
+                value:
+                  simple: case_insensitive
+              optionsB: {}
+              rhs:
+                value:
+                  simple: GCP
+              rhsB: {}
+              then:
+                value:
+                  simple: alertJson._all_events.identity_name
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -365,7 +454,8 @@ tasks:
       - "46"
     scriptarguments:
       alert_ids:
-        simple: "14828"
+        complex:
+          root: inputs.alert_id
       extend-context:
         simple: alertData=
       ignore-outputs:
@@ -677,11 +767,13 @@ tasks:
       id: 35512734-45a5-4d02-8ee1-b9f0fc678ea4
       version: -1
       name: Handle False Positive Alerts
+      description: |
+        This playbook handles false positive alerts.
+        It creates an alert exclusion or alert exception, or adds a file to an allow list based on the alert fields and playbook inputs.
       playbookName: Handle False Positive Alerts
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -745,11 +837,6 @@ view: |-
     }
   }
 inputs:
-- key: incident_id
-  value: {}
-  required: false
-  description: The incident ID.
-  playbookInputQuery:
 - key: alert_id
   value: {}
   required: false
