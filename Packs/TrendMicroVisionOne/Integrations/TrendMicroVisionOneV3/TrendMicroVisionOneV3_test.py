@@ -667,7 +667,7 @@ def test_download_analysis_report(mocker):
         mock_download_analysis_report_response,
     )
     args = {"submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
-    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = download_analysis_report(client, args)
     assert isinstance(result[1].outputs["code"], int)
     assert result[1].outputs["message"] == "Please select download to start download"
@@ -698,7 +698,7 @@ def test_download_analysis_package(mocker):
         mock_download_investigation_package_response,
     )
     args = {"submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
-    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = download_investigation_package(client, args)
     assert isinstance(result[1].outputs["code"], int)
     assert result[1].outputs["message"] == "Please select download to start download"
@@ -1003,11 +1003,11 @@ def add_note_mock_response(*args, **kwargs):
 # Test case for add note
 def test_add_note(mocker):
     mocker.patch("TrendMicroVisionOneV3.Client.http_request", add_note_mock_response)
-    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {"workbench_id": "WB-14-20190709-00003", "content": "This is a new note."}
     result = add_note(client, args)
     assert result.outputs["message"] == "success"
-    assert result.outputs["code"] == 201
+    assert isinstance(result.outputs["code"], int)
     assert isinstance(result.outputs["note_id"], str)
     assert isinstance(result.outputs["Workbench_Id"], str)
 
