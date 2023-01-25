@@ -110,6 +110,14 @@ def test_create_relationships_unknown_key():
                       'entityBType': 'Account', 'fields': {}}]
     assert len(rs_ls) == 1
 
+    rs_ls = create_relationships('reports', {"type": "hash_md5", "value": "1234567890"},
+                                 {"reports": [{"type": "password"}, {"type": 'username', 'indicator': 'abc'}]})
+    assert rs_ls == [
+        {'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': '1234567890',
+         'entityAFamily': 'Indicator', 'entityAType': 'hash_md5', 'entityB': 'abc', 'entityBFamily': 'Indicator',
+         'entityBType': 'Account', 'fields': {}}]
+    assert len(rs_ls) == 1
+
 
 def test_reset_last_run(mocker):
     """
@@ -124,3 +132,27 @@ def test_reset_last_run(mocker):
     demisto_set_context_mocker = mocker.patch.object(demisto, 'setIntegrationContext')
     reset_last_run()
     assert demisto_set_context_mocker.call_args.args == ({},)
+
+
+def test_fetch_no_indicators(mocker, requests_mock):
+    """
+    Given
+        - no indicators api response
+    When
+        - fetching indicators
+    Then
+        - Ensure empty list is returned and no exception is raised.
+    """
+    from CrowdStrikeIndicatorFeed import Client
+
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
+
+    feed_tags = ['Tag1', 'Tag2']
+    client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                    type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
+
+    mocker.patch.object(client, 'get_indicators', return_value={'resources': []})
+
+    assert client.fetch_indicators(limit=10, offset=5, fetch_command=True) == []
