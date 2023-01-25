@@ -5105,7 +5105,8 @@
         },
         {
             "integrations": "McAfee ePO v2",
-            "playbookID": "McAfee ePO v2 Test"
+            "playbookID": "McAfee ePO v2 Test",
+            "memory_threshold": 100
         },
         {
             "playbookID": "Dedup - Generic v3",
