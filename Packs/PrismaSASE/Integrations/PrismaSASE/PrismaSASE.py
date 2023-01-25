@@ -2056,12 +2056,14 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
     tsg_id = args.get('tsg_id')
     if folders := argToList(args.get('folders')):
-        # first call, folder in args
+        # first call, folder in args. We make the first push
         res = client.push_candidate_config(folders=folders, tsg_id=tsg_id)
         # remove folders, not needed for the rest
         args['folders'] = []
+        # The result from the push returns a job id
         job_id = res.get('job_id')
         args['job_id'] = job_id
+        # The push job creates sub processes once done. at this point, the parent job hasn't finished.
         args['parent_finished'] = False
         return CommandResults(
             scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push', args=args,
@@ -2076,6 +2078,8 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                 scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                    args=args,
                                                    next_run_in_seconds=polling_interval))
+
+        # From testing (as this is not documented) the status returns only as OK if the job succeeded
         if res.get('result_str') != 'OK':
             raise DemistoException(f'Something went wrong while trying to push job id {job_id}. '
                                    f'Result: {res.get("result_str")}')
@@ -2084,6 +2088,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
         args['parent_finished'] = True
     res = client.list_config_jobs(tsg_id=tsg_id).get('data', {})
     for job in res:
+        # looking for all sub processes with parent id as the job id
         if job.get('parent_id') == job_id:
             if job.get('result_str') == 'PEND':
                 return CommandResults(

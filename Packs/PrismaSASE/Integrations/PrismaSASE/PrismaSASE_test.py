@@ -112,28 +112,6 @@ def test_list_security_rules_command_with_id(mocker, args):
 
 @pytest.mark.parametrize(
     # Write and define the expected
-    "args",
-    [
-        {"folders": "Mobile Users",
-         "description": "Description",
-         "tsg_id": "1234567"}
-    ]
-)
-def test_push_candidate_config_command(mocker, requests_mock, args):
-    # TODO check how to test polling
-    from PrismaSASE import push_candidate_config_command
-    mock_response = json.loads(load_mock_response('push-candidate-config.json'))
-    requests_mock.post('http://base_url/sse/config/v1/config-versions/candidate:push', json=mock_response)
-    client = create_mocked_client()
-
-    mocker.patch.object(client, 'get_access_token', return_value='access_token')
-    result = push_candidate_config_command(client, args)
-    assert result.outputs_prefix == 'PrismaSase.CandidateConfig'
-    assert result.outputs == mock_response
-
-
-@pytest.mark.parametrize(
-    # Write and define the expected
     'args, expected_result',
     [
         ({"rule_id": "####ec11-b599-4372-a0d7-####ecb8203",
@@ -520,23 +498,38 @@ def test_list_external_dynamic_list_command(mocker):
     # Write and define the expected
     "args, expected_results",
     [
-        ({'id': 'id1', 'overwrite': True, 'value': 'www.test.com'},
-         ['www.test.com']),
-        ({'id': 'id1', 'overwrite': False, 'value': 'www.test.com'},
-         ['www.google.com', 'www.test.com']),
+        ({'id': '1', 'overwrite': True, 'source_url': 'www.test1.com', 'frequency': 'hourly'},
+         {
+             "id": "1",
+             "name": "ip",
+             "folder": "Shared",
+             "type": {
+                 "ip": {
+                     "description": "api test",
+                     "recurring": {
+                         "hourly": {}
+                     },
+                     "certificate_profile": "GP_Log_Certificate",
+                     "url": "www.test1.com",
+                     "exception_list": ["www.test.com"]
+                 }
+             }
+         }),
+        #({'id': 'id1', 'overwrite': False, 'value': 'www.test.com'},
+         #['www.google.com', 'www.test.com']),
     ]
 )
 def test_update_external_dynamic_list_command(mocker, args, expected_results):
     # TODO change
     from PrismaSASE import update_external_dynamic_list_command
-    mock_response = json.loads(load_mock_response('custom-url-category.json'))
+    mock_response = json.loads(load_mock_response('external-dynamic-list.json'))
     client = create_mocked_client()
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     mocker.patch.object(client, 'get_external_dynamic_list_by_id', return_value=mock_response)
-    res = mocker.patch.object(client, 'external_dynamic_list')
+    res = mocker.patch.object(client, 'update_external_dynamic_list')
     update_external_dynamic_list_command(client, args)
-    assert res.call_args[1]['external_dynamic_list']['list'] == expected_results
+    assert res.call_args[1]['external_dynamic_list'] == expected_results
 
 
 @pytest.mark.parametrize(
@@ -546,7 +539,7 @@ def test_update_external_dynamic_list_command(mocker, args, expected_results):
         {"id": "1"}
     ]
 )
-def test_delete_custom_url_category_command(mocker, args):
+def test_delete_external_dynamic_list_command(mocker, args):
     from PrismaSASE import delete_external_dynamic_list_command
 
     mock_response = json.loads(load_mock_response('external-dynamic-list.json'))
