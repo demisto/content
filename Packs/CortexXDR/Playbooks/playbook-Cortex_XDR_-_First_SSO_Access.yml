@@ -549,7 +549,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Did the user ${username} work from ${inputs.Country}?
+          simple: Did the user ${Account.DisplayName} work from ${incident.countryname}?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -562,7 +562,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Did the user ${username} work from ${inputs.Country}?
+      title: Did the user ${Account.DisplayName} work from ${incident.countryname}?
       description: ""
       sender: ""
       expired: false
