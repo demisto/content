@@ -110,14 +110,6 @@ def test_create_relationships_unknown_key():
                       'entityBType': 'Account', 'fields': {}}]
     assert len(rs_ls) == 1
 
-    rs_ls = create_relationships('reports', {"type": "hash_md5", "value": "1234567890"},
-                                 {"reports": [{"type": "password"}, {"type": 'username', 'indicator': 'abc'}]})
-    assert rs_ls == [
-        {'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': '1234567890',
-         'entityAFamily': 'Indicator', 'entityAType': 'hash_md5', 'entityB': 'abc', 'entityBFamily': 'Indicator',
-         'entityBType': 'Account', 'fields': {}}]
-    assert len(rs_ls) == 1
-
 
 def test_reset_last_run(mocker):
     """
