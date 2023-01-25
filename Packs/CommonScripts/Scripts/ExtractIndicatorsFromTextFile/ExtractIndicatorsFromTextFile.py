@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 
 def read_file_with_encoding_detection(filePath, maxFileSize):
-    encoding_types = ['utf-8', 'ISO-8859-9', None]  # use None to simulate open file with no encoding sepcified
+    encoding_types = ['utf-8', 'ISO-8859-9']
     for encoding in encoding_types:
         try:
             with open(filePath, encoding=encoding) as file:
