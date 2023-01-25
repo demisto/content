@@ -416,7 +416,7 @@ GET_LEVEL_RES_2 = [
     }
 ]
 
-RES_DEPTH_1 = {'FieldId': 304, 'ValuesList':
+RES_DEPTH_0 = {'FieldId': 304, 'ValuesList':
     [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
      {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
       'Depth': 0},
@@ -424,7 +424,7 @@ RES_DEPTH_1 = {'FieldId': 304, 'ValuesList':
      {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
      {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
 
-RES_DEPTH_2 = {'FieldId': 304, 'ValuesList':
+RES_DEPTH_1 = {'FieldId': 304, 'ValuesList':
     [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
      {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
      {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
@@ -441,7 +441,7 @@ RES_DEPTH_2 = {'FieldId': 304, 'ValuesList':
       'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
      {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
 
-RES_DEPTH_3 = {'FieldId': 304, 'ValuesList':
+RES_DEPTH_2 = {'FieldId': 304, 'ValuesList':
     [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
      {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
      {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
@@ -617,8 +617,8 @@ class TestArcherV2:
         field_data = client.get_field_value_list(304, {"depth": 1})
         assert VALUE_LIST_FIELD_DATA == field_data
 
-    @pytest.mark.parametrize('args, expected_response', [({'depth': 1}, RES_DEPTH_1), ({'depth': 2}, RES_DEPTH_2),
-                                                         ({'depth': 3}, RES_DEPTH_3)])
+    @pytest.mark.parametrize('args, expected_response', [({'depth': 0}, RES_DEPTH_0), ({'depth': 1}, RES_DEPTH_1),
+                                                         ({'depth': 2}, RES_DEPTH_2)])
     def test_get_field_value_list_nested_response(self, requests_mock, args, expected_response):
         cache = demisto.getIntegrationContext()
         cache['fieldValueList'] = {}
