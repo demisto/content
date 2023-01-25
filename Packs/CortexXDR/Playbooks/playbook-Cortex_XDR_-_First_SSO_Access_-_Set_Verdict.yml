@@ -550,10 +550,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "105":
     id: "105"
-    taskid: 2a5966b9-0546-4b4f-833a-daa16c6b434b
+    taskid: 1384bd62-4969-4e62-8ecd-a47fd698053e
     type: regular
     task:
-      id: 2a5966b9-0546-4b4f-833a-daa16c6b434b
+      id: 1384bd62-4969-4e62-8ecd-a47fd698053e
       version: -1
       name: Check for XDR related alerts
       description: Set multiple keys/values to the context.
@@ -590,7 +590,8 @@ tasks:
               options: {}
               rhs:
                 value:
-                  simple: "2"
+                  simple: inputs.XDRRelatedAlertsThreshold
+                iscontext: true
               then:
                 value:
                   simple: "True"
