@@ -794,12 +794,10 @@ class Client(BaseClient):
 """HELPER FUNCTIONS"""
 
 
-def modify_address(outputs) -> List[dict]:
+def modify_address(outputs):
     """Modify an address object or list of address objects to XSOAR format
     Args:
         outputs: address objects
-    Returns:
-        Modified address objects
     """
     if isinstance(outputs, dict):
         outputs = [outputs]
@@ -809,15 +807,12 @@ def modify_address(outputs) -> List[dict]:
                 output['type'] = address_type
                 output['address_value'] = output[address_type]
                 output.pop(address_type)
-    return outputs
 
 
-def modify_group_address(outputs) -> List[dict]:
+def modify_group_address(outputs):
     """Modify an address group or list of address groups to XSOAR format
     Args:
         outputs: address groups
-    Returns:
-        Modified address groups
     """
     if isinstance(outputs, dict):
         outputs = [outputs]
@@ -828,10 +823,9 @@ def modify_group_address(outputs) -> List[dict]:
         elif 'dynamic' in output:
             output['dynamic_filter'] = output['dynamic'].get('filter', '')
             output.pop('dynamic')
-    return outputs
 
 
-def modify_external_dynamic_list(outputs) -> List[dict]:
+def modify_external_dynamic_list(outputs):
     """Modify an external dynamic list or list of external dynamic lists to XSOAR format
     Args:
         outputs: external dynamic list
@@ -854,8 +848,6 @@ def modify_external_dynamic_list(outputs) -> List[dict]:
         output['frequency'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring')
         output['exception_list'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('exception_list')
         output['type'] = dynamic_list_type
-
-    return outputs
 
 
 def get_address_group_type(original_address_group: dict) -> str:
@@ -1095,7 +1087,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     }
 
     if args.get('description'):
-        address_object["description"] = args.get('description')
+        address_object['description'] = args.get('description')
 
     if args.get('tag'):
         address_object['tag'] = args.get('tag')
@@ -1104,12 +1096,13 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
                                                 query_params=query_params,
                                                 tsg_id=args.get('tsg_id'))  # type: ignore
 
-    raw_response = modify_address(raw_response)
+    outputs = raw_response.copy()
+    modify_address(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
-        outputs=raw_response,
+        outputs=outputs,
         readable_output=tableToMarkdown('Address Object Created', raw_response, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
@@ -1153,8 +1146,12 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     if tag := args.get('tag'):
         original_address['tag'] = tag
 
-    raw_response = client.edit_address_object(address=original_address, address_id=object_id, tsg_id=tsg_id)  # type: ignore
-    outputs = modify_address(raw_response)
+    raw_response = client.edit_address_object(address=original_address,
+                                              address_id=object_id,
+                                              tsg_id=tsg_id)  # type: ignore
+
+    outputs = raw_response.copy()
+    modify_address(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
@@ -1201,15 +1198,16 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
     tsg_id = args.get('tsg_id')
     if object_id := args.get('object_id'):
         raw_response = client.get_address_by_id(query_params=query_params, address_id=object_id, tsg_id=tsg_id)
-        outputs = [raw_response]
+        outputs = raw_response.copy()
     else:
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
-        outputs = raw_response.get('data', [])
+        outputs = raw_response.copy()
+        outputs = outputs.get('data', [])
 
-    outputs = modify_address(outputs)
+    modify_address(outputs)
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
@@ -1515,15 +1513,15 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
     tsg_id = args.get('tsg_id')
     if group_id := args.get('group_id'):
         raw_response = client.get_address_group_by_id(query_params=query_params, group_id=group_id, tsg_id=tsg_id)
-        outputs = [raw_response]
+        outputs = raw_response.copy()
     else:
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_address_group(query_params=query_params, tsg_id=tsg_id)  # type: ignore
+        outputs = raw_response.copy()
+        outputs = outputs.get('data', [])
 
-        outputs = raw_response.get('data', [])
-
-    outputs = modify_group_address(outputs)
+    modify_group_address(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
@@ -1568,12 +1566,13 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
                                                address_group=address_group,
                                                tsg_id=tsg_id)  # type: ignore
 
-    raw_response = modify_group_address(raw_response)
+    outputs = raw_response.copy()
+    modify_group_address(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
         outputs_key_field='id',
-        outputs=raw_response,
+        outputs=outputs,
         readable_output=tableToMarkdown('Address Group Created', raw_response, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
@@ -1635,7 +1634,8 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
                                                group_id=group_id,
                                                tsg_id=tsg_id)  # type: ignore
 
-    outputs = modify_group_address(raw_response)
+    outputs = raw_response.copy()
+    modify_group_address(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
@@ -1832,15 +1832,16 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
         raw_response = client.get_external_dynamic_list_by_id(query_params=query_params,
                                                               external_dynamic_list_id=external_dynamic_list_id,
                                                               tsg_id=tsg_id)
-        outputs = raw_response
+        outputs = raw_response.copy()
     else:
         query_params.update(get_pagination_params(args))
 
         raw_response = client.list_external_dynamic_list(query_params=query_params, tsg_id=tsg_id)  # type: ignore
 
-        outputs = raw_response.get('data', [])
+        outputs = raw_response.copy()
+        outputs = outputs.get('data', [])
 
-    outputs = modify_external_dynamic_list(outputs)
+    modify_external_dynamic_list(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
@@ -1892,12 +1893,13 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
                                                        external_dynamic_list=external_dynamic_list,
                                                        tsg_id=tsg_id)  # type: ignore
 
-    raw_response = modify_external_dynamic_list(raw_response)
+    outputs = raw_response.copy()
+    modify_external_dynamic_list(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
         outputs_key_field='id',
-        outputs=raw_response,
+        outputs=outputs,
         readable_output=tableToMarkdown('External Dynamic List Created',
                                         raw_response,
                                         headers=['id', 'name', 'type', 'folder', 'description', 'source', 'frequency'],
@@ -1968,9 +1970,8 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     raw_response = client.update_external_dynamic_list(external_dynamic_list=original_dynamic_list,
                                                        dynamic_list_id=dynamic_list_id,
                                                        tsg_id=tsg_id)  # type: ignore
-    outputs = raw_response
-
-    outputs = modify_external_dynamic_list(outputs)
+    outputs = raw_response.copy()
+    modify_external_dynamic_list(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',

@@ -606,7 +606,7 @@ def test_run_push_jobs_polling_command_last_poll(mocker, args):
 def test_modify_address():
     from PrismaSASE import modify_address
     address_object = json.loads(load_mock_response('address-object.json'))
-    address_object = modify_address(address_object)
+    modify_address(address_object)
     assert address_object[0]['type'] == 'ip_netmask'
     assert address_object[0]['address_value'] == '1.1.1.1/24'
     assert 'ip_netmask' not in address_object[0]
@@ -615,7 +615,7 @@ def test_modify_address():
 def test_modify_group_address_static_address():
     from PrismaSASE import modify_group_address
     address_group = json.loads(load_mock_response('static-address-group.json'))
-    address_group = modify_group_address(address_group)
+    modify_group_address(address_group)
     assert address_group[0]['addresses'] == ['test2']
     assert 'static' not in address_group[0]
 
@@ -623,7 +623,7 @@ def test_modify_group_address_static_address():
 def test_modify_group_address():
     from PrismaSASE import modify_group_address
     address_group = json.loads(load_mock_response('dynamic-address-group.json'))
-    address_group = modify_group_address(address_group)
+    modify_group_address(address_group)
     assert address_group[0]['dynamic_filter'] == "Microsoft 365 and Hamuzim"
     assert 'dynamic' not in address_group[0]
 
@@ -631,7 +631,7 @@ def test_modify_group_address():
 def test_modify_external_dynamic_list():
     from PrismaSASE import modify_external_dynamic_list
     dynamic_list = json.loads(load_mock_response('external-dynamic-list.json'))
-    dynamic_list = modify_external_dynamic_list(dynamic_list)
+    modify_external_dynamic_list(dynamic_list)
     assert dynamic_list[0]['type'] == 'ip'
     assert dynamic_list[0]['source'] == 'https://www.test.com'
     assert dynamic_list[0]['frequency'] == {'five_minute': {}}
