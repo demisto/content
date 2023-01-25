@@ -34,6 +34,12 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   headers=self._headers)
 
+    def asset_delete(self, asset_ids: list):
+        url_suffix = f'/org/assets/bulk/delete?asset_ids={asset_ids}'
+        return self._http_request(method='DELETE',
+                                  url_suffix=url_suffix,
+                                  headers=self._headers)
+
     def comment_add(self, asset_id, comment):
         url_suffix = f'/org/assets/{asset_id}/comments'
         body = {}
@@ -58,6 +64,12 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   headers=self._headers)
 
+    def service_delete(self, service_id: str):
+        url_suffix = f'/org/services/{service_id}'
+        return self._http_request(method='DELETE',
+                                  url_suffix=url_suffix,
+                                  headers=self._headers)
+
     def quota_get(self):
         url_suffix = '/org/key'
         return self._http_request(method='GET',
@@ -71,6 +83,18 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   headers=self._headers,
                                   json_data=body)
+
+    def wireless_search(self, wireless_search_string: str):
+        url_suffix = f'/org/wireless/{wireless_search_string}' if wireless_search_string else '/org/wireless'
+        return self._http_request(method='GET',
+                                  url_suffix=url_suffix,
+                                  headers=self._headers)
+
+    def wireless_delete(self, wireless_id: str):
+        url_suffix = f'/org/wireless/{wireless_id}'
+        return self._http_request(method='DELETE',
+                                  url_suffix=url_suffix,
+                                  headers=self._headers)
 
 
 ''' HELPER FUNCTIONS '''
@@ -161,11 +185,30 @@ def parse_raw_service(raw: dict) -> list:
 
 
 def parse_raw_quota_get(raw: dict) -> dict:
-    output = {}
-    output['usage_limit'] = raw.get('created_at', '')
-    output['usage_today'] = raw.get('usage_today', '')
-    output['counter'] = raw.get('counter', '')
-    return output
+    message = {}
+    message['usage_limit'] = raw.get('created_at', '')
+    message['usage_today'] = raw.get('usage_today', '')
+    message['counter'] = raw.get('counter', '')
+    return message
+
+
+def parse_raw_wireless(raw: dict) -> list:
+    message = {}
+    message['ID'] = raw.get('id', '')
+    message['ESSID'] = raw.get('essid', '')
+    message['BSSID'] = raw.get('bssid', '')
+    message['Vendor'] = raw.get('vendor', '')
+    message['Family'] = raw.get('family', '')
+    message['Type'] = raw.get('type', '')
+    message['Auth'] = raw.get('authentication', '')
+    message['Enc'] = raw.get('encryption', '')
+    message['Sig'] = raw.get('signal', 0)
+    message['Int'] = raw.get('interface', '')
+    message['Additional'] = raw.get('data', {})
+    message['First_seen'] = timestamp_to_datestring(raw.get('created_at', ''))
+    message['Last_seen'] = timestamp_to_datestring(raw.get('last_seen', ''))
+    message['Site'] = raw.get('site_name', '')
+    return [message]
 
 
 ''' COMMAND FUNCTIONS '''
@@ -213,6 +256,20 @@ def asset_search(client: Client, args: dict) -> CommandResults:
         raw_response=raw,
         readable_output=human_readable
     )
+
+
+def asset_delete(client: Client, args: dict) -> CommandResults:
+    asset_list = argToList(args.get('asset_ids', []))
+    raw = client.asset_delete(asset_list)
+    message = f'Assets {asset_list} deleted successfully.'
+    return CommandResults(
+        outputs_prefix=None,
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=raw,
+        readable_output=message
+    )
+
 
 
 def comment_add(client: Client, args: dict) -> CommandResults:
@@ -279,6 +336,19 @@ def service_search(client: Client, args: dict) -> CommandResults:
     )
 
 
+def service_delete(client: Client, args: dict) -> CommandResults:
+    service_id = args.get('service_id', '')
+    raw = client.service_delete(service_id)
+    message = f'Service {service_id} deleted successfully.'
+    return CommandResults(
+        outputs_prefix=None,
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=raw,
+        readable_output=message
+    )
+
+
 def quota_get(client: Client) -> CommandResults:
     raw = client.quota_get()
     message = parse_raw_quota_get(raw)
@@ -325,7 +395,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        client.asset_search()
+        client.quota_get()
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -335,12 +405,52 @@ def test_module(client: Client) -> str:
     return message
 
 
+def wireless_lan_search(client: Client, args: dict) -> CommandResults:
+    wireless_string = ''
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    if args.get('wireless_id'):
+        wireless_string = f'/{args["wireless_id"]}'
+    elif args.get('search'):
+        wireless_string = f'?search={args["search"]}'
+    raw = client.wireless_search(wireless_string)
+    raw = raw[:limit]
+    message = []
+    if type(raw) is list:
+        raw = raw[:limit]
+        for item_raw in raw:
+            message.extend(parse_raw_wireless(item_raw))
+    if type(raw) is dict:
+        message.extend(parse_raw_wireless(raw))
+    human_readable = tableToMarkdown('Wireless',
+                                     message,
+                                     removeNull=True)
+    return CommandResults(
+        outputs_prefix='RunZero.WirelessLAN',
+        outputs_key_field='id',
+        outputs=raw,
+        raw_response=raw,
+        readable_output=human_readable
+    )
+
+
+def wireless_lan_delete(client: Client, args: dict) -> CommandResults:
+    wireless_id = args.get('wireless_id', '')
+    raw = client.wireless_delete(wireless_id)
+    message = f'Wireless LAN {wireless_id} deleted successfully.'
+    return CommandResults(
+        outputs_prefix=None,
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=raw,
+        readable_output=message
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
     """main function, parses params and runs command functions
-
     :return:
     :rtype:
     """
@@ -371,6 +481,10 @@ def main() -> None:
             commandResult = asset_search(client, args)
             return_results(commandResult)
 
+        elif demisto.command() == 'runzero-asset-delete':
+            commandResult = asset_delete(client, args)
+            return_results(commandResult)
+
         elif demisto.command() == 'runzero-comment-add':
             commandResult = comment_add(client, args)
             return_results(commandResult)
@@ -383,10 +497,22 @@ def main() -> None:
             commandResult = service_search(client, args)
             return_results(commandResult)
 
+        elif demisto.command() == 'runzero-service-delete':
+            commandResult = service_delete(client, args)
+            return_results(commandResult)
+
         elif demisto.command() == 'runzero-bulk-clear-tags':
             commandResult = bulk_clear_tags(client, args)
             return_results(commandResult)
-
+        
+        elif demisto.command() == 'runzero-wireless-lan-search':
+            commandResult = wireless_lan_search(client, args)
+            return_results(commandResult)
+        
+        elif demisto.command() == 'runzero-wireless-lan-delete':
+            commandResult = wireless_lan_delete(client, args)
+            return_results(commandResult)
+        
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

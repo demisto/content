@@ -37,7 +37,7 @@ script:
       required: false
       secret: false
     - name: search
-      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288"
+      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288."
       isArray: false
       required: false
       secret: false
@@ -168,6 +168,16 @@ script:
     - contextPath: RunZero.Asset.Site
       description: Asset site name.
       type: String
+  - name: runzero-asset-delete
+    description: Bulk delete assets.
+    deprecated: false
+    arguments: 
+    - name: asset_ids
+      description: UUID of the asset to delete.
+      isArray: true
+      required: true
+      secret: false
+    execution: false
   - name: runzero-service-search
     description: 'Get services.'
     deprecated: false
@@ -305,6 +315,16 @@ script:
     - contextPath: RunZero.Service.Site
       description: Service site name.
       type: String
+  - name: runzero-service-delete
+    description: Delete a service.
+    deprecated: false
+    arguments:
+    - name: service_id
+      description: UUID of the service to delete.
+      isArray: false
+      required: true
+      secret: false
+    execution: false
   - name: runzero-comment-add
     description: 'Add a comment or overrides existing asset comment'
     deprecated: false
@@ -383,15 +403,85 @@ script:
       description:
       type: String
   - name: runzero-bulk-clear-tags
-    description: 'Bulk clear tags according to RunZero query search'
+    description: 'Bulk clear tags according to RunZero query search.'
     deprecated: false
     arguments:
     - name: search
-      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288"
+      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288."
       isArray: false
       required: true
       secret: false
     execution: false
+  - name: runzero-wireless-lan-search
+    description: Get all wireless LANs.
+    deprecated: false
+    arguments:
+    - name: wireless_id
+      description: Get a specific wireless LAN.
+      isArray: false
+      required: true
+      secret: false
+    - name: search
+      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288."
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      description: Limit the number of wireless LAN returned. Default is 50.
+      defaultValue: 50
+    execution: false
+    outputs:
+    - contextPath: RunZero.WirelessLAN.ID
+      description: WirelessLAN ID.
+      type: UUID
+    - contextPath: RunZero.WirelessLAN.ESSID
+      description: WirelessLAN ESSID.
+      type: String
+    - contextPath: RunZero.WirelessLAN.BSSID
+      description: WirelessLAN BSSID.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Vendor
+      description: WirelessLAN vendor.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Family
+      description: WirelessLAN family.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Type
+      description: WirelessLAN type.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Auth
+      description: WirelessLAN auth.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Enc
+      description: WirelessLAN encryption.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Sig
+      description: WirelessLAN signal strengh.
+      type: Integer
+    - contextPath: RunZero.WirelessLAN.Int
+      description: WirelessLAN interface.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Additional
+      description: WirelessLAN additional information.
+      type: Array
+    - contextPath: RunZero.WirelessLAN.First_seen
+      description: WirelessLAN first seen timestamp.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Last_seen
+      description: WirelessLAN last seen timestamp.
+      type: String
+    - contextPath: RunZero.WirelessLAN.Site
+      description: WirelessLAN site name.
+      type: String
+  - name: runzero-wireless-lan-delete
+    description: Remove a wireless LAN.
+    deprecated: false
+    arguments:
+    - name: wireless_id
+      description: UUID of the wireless LAN to remove.
+      required: true
+      isArray: false
+      secret: false
   isfetch: false
   runonce: false
   script: '-'

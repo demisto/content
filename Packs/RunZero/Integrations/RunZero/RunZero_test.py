@@ -110,6 +110,32 @@ def test_parse_raw_service():
     }
 
 
+def test_parse_raw_wireless():
+    from RunZero import parse_raw_wireless
+    raw_service = util_load_json('test_data/wireless.json')[0]
+    actual_response = parse_raw_wireless(raw=raw_service)
+    assert actual_response[0] == {
+        'ID': 'e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8',
+        'ESSID': 'Free WiFi',
+        'BSSID': '11:22:33:44:55:66',
+        'Vendor': 'Ubiquiti Networks',
+        'Family': '223344',
+        'Type': 'infrastructure',
+        'Auth': 'wpa2-psk',
+        'Enc': 'aes',
+        'Sig': 99,
+        'Int': 'wlan0',
+        'Additional': {
+            "additionalProp1": "string",
+            "additionalProp2": "string",
+            "additionalProp3": "string",
+        },
+        'First_seen': '1970-01-19T05:51:40.000Z',
+        'Last_seen': '1970-01-19T05:51:40.000Z',
+        'Site': 'Primary'
+    }
+
+
 def test_assets_search(requests_mock):
     """
     Tests the assets-search command function.
@@ -363,3 +389,37 @@ def test_quota_get(requests_mock):
     assert actual_commandResult.outputs_key_field == expected_commandResult.outputs_key_field
     assert actual_commandResult.outputs_prefix == expected_commandResult.outputs_prefix
     assert actual_commandResult.outputs == expected_commandResult.outputs
+
+
+def test__wireless_lan_search(requests_mock):
+    """
+    Tests the quota-get command function.
+        Given: A wireless LAN asset in RunZero
+        When: Calling wireless_lan_search command
+        Then: Returns the wireless_lan asset
+    """
+    from RunZero import Client, wireless_lan_search
+    mock_response = util_load_json('test_data/wireless.json')
+    requests_mock.get(
+        'https://console.runzero.com/api/v1.0/org/wireless',
+        json=mock_response)
+
+    client = Client(
+        base_url='https://console.runzero.com/api/v1.0',
+        verify=False,
+        proxy=False
+    )
+
+    actual_commandResult = wireless_lan_search(client=client, args={})
+    expected_commandResult = CommandResults(outputs_prefix='RunZero.WirelessLAN',
+                                            outputs_key_field='id',
+                                            raw_response=mock_response,
+                                            outputs=mock_response,
+                                            readable_output='### Wireless\n|Additional|Auth|BSSID|ESSID|Enc|Family|First_seen|ID|Int|Last_seen|Sig|Site|Type|Vendor|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| additionalProp1: string<br>additionalProp2: string<br>additionalProp3: string | wpa2-psk | 11:22:33:44:55:66 | Free WiFi | aes | 223344 | 1970-01-19T05:51:40.000Z | e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8 | wlan0 | 1970-01-19T05:51:40.000Z | 99 | Primary | infrastructure | Ubiquiti Networks |\n'
+                                            )
+    assert actual_commandResult.readable_output == expected_commandResult.readable_output
+    assert actual_commandResult.raw_response == expected_commandResult.raw_response
+    assert actual_commandResult.outputs_key_field == expected_commandResult.outputs_key_field
+    assert actual_commandResult.outputs_prefix == expected_commandResult.outputs_prefix
+    assert actual_commandResult.outputs == expected_commandResult.outputs
+    
