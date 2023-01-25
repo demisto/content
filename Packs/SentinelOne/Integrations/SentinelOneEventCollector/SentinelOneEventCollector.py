@@ -33,7 +33,7 @@ class Client(BaseClient):
         )
         self.limit = fetch_limit
 
-    def get_activities(self, from_time: datetime | str) -> List:
+    def get_activities(self, from_time: str) -> List:
         """
         Returns SentinelOne activities using the '/activities' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -90,6 +90,7 @@ class Client(BaseClient):
             'sortBy': 'alertInfoCreatedAt',
             'sortOrder': 'asc',
         }
+        demisto.info(f'SentinelOne params is: {params}')
         result = self._http_request('GET', url_suffix='/cloud-detection/alerts', params=params)
         return result.get('data', [])
 
@@ -98,7 +99,7 @@ class Client(BaseClient):
 
 
 def get_events(client: Client, event_type: List,
-               from_time: datetime = arg_to_datetime('3 days')) -> List:  # type: ignore
+               from_time: str = str(arg_to_datetime('3 days'))) -> List:  # type: ignore
     events = []
     if 'activities' in event_type:
         events.extend(client.get_activities(from_time))
@@ -110,7 +111,7 @@ def get_events(client: Client, event_type: List,
     return events
 
 
-def first_run(from_time: datetime = arg_to_datetime('3 days')) -> Dict:  # type: ignore
+def first_run(from_time: str = arg_to_datetime('3 days')) -> Dict:  # type: ignore
     return {
         'last_activity_created': from_time,
         'last_threat_created': from_time,
@@ -125,14 +126,14 @@ def add_time_key_to_events(events: Optional[List[Dict[str, Any]]]):
         events: list, the events to add the time key to.
     """
     for event in events or []:
-        if event.get('alertInfo'):
-            event["_time"] = arg_to_datetime('now')
+        if alert_info := event.get('alertInfo'):
+            event["_time"] = alert_info.get("createdAt").split('.')[0]
             event["eventType"] = 'Alert'
-        if event.get('threatInfo'):
-            event["_time"] = arg_to_datetime('now')
+        elif threat_info := event.get('threatInfo'):
+            event["_time"] = threat_info.get("createdAt").split('.')[0]
             event["eventType"] = 'Threat'
         else:  # Otherwise, it's an activity.
-            event["_time"] = arg_to_datetime('now')
+            event["_time"] = event.get("createdAt").split('.')[0]
             event["eventType"] = 'Activity'
 
 
@@ -164,7 +165,7 @@ def test_module(client: Client, event_type: List) -> str:
     return 'ok'
 
 
-def get_events_command(client: Client, first_fetch_time: datetime, event_type: List) -> Tuple[List, CommandResults]:
+def get_events_command(client: Client, first_fetch_time: str, event_type: List) -> Tuple[List, CommandResults]:
     events = get_events(client, from_time=first_fetch_time, event_type=event_type)
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
@@ -219,10 +220,8 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
+    first_fetch_time = str(
+        arg_to_datetime(arg=params.get('first_fetch', '3 days'), arg_name='First fetch time', required=True)
     )
     fetch_limit = arg_to_number(args.get('limit') or params.get('fetch_limit', 1000))
     proxy = params.get('proxy', False)
@@ -253,14 +252,20 @@ def main() -> None:
                 return_results(results)
 
             if command == 'fetch-events':
+                demisto.info(f'The Sentinelone fetch-events been called: {len(events)}.')
                 should_push_events = True
                 last_run = demisto.getLastRun() or first_run(first_fetch_time)  # type: ignore
                 next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
                 demisto.setLastRun(next_run)
+                demisto.info(f'The Sentinelone events length is: {len(events)}.')
 
             if should_push_events:
+                demisto.info(f'yes pushed events {VENDOR} - {PRODUCT}.')
                 add_time_key_to_events(events)
+                if events:
+                    demisto.info(f'The Sentinelone last event is: {events[-1]}.')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.info(f'The Sentinelone done fetch-events.')
 
     # Log exceptions and return errors
     except Exception as e:
