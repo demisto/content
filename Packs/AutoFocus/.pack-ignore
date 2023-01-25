@@ -6,3 +6,6 @@ ignore=RM102,RM106
 
 [file:FeedAutofocusDaily.yml]
 ignore=IN145
+
+[file:playbook-Autofocus_Query_Samples_Sessions_and_Tags.yml]
+ignore=PB118

@@ -56,4 +56,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Autofocus Query Samples, Sessions and Tags](../doc_files/Autofocus_Query_Samples,_Sessions_and_Tags.png)
+![Autofocus Query Samples, Sessions and Tags](../doc_files/Autofocus_Query_Samples__Sessions_and_Tags.png)
