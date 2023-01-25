@@ -46,11 +46,24 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def kmsat_account_info(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET", url_suffix="/account", resp_type="json", ok_codes=(200,)
         )
 
     def kmsat_account_risk_score_history(self, params):
+        """_summary_
+
+        Args:
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix="/account/risk_score_history",
@@ -60,6 +73,15 @@ class Client(BaseClient):
         )
 
     def kmsat_groups_risk_score_history(self, group_id, params):
+        """_summary_
+
+        Args:
+            group_id (_type_): _description_
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix=f"/groups/{group_id}/risk_score_history",
@@ -69,6 +91,15 @@ class Client(BaseClient):
         )
 
     def kmsat_groups_members(self, group_id, params):
+        """_summary_
+
+        Args:
+            group_id (_type_): _description_
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix=f"/groups/{group_id}/members",
@@ -78,6 +109,15 @@ class Client(BaseClient):
         )
 
     def kmsat_users_risk_score_history(self, user_id, params):
+        """_summary_
+
+        Args:
+            user_id (_type_): _description_
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix=f"/users/{user_id}/risk_score_history",
@@ -87,6 +127,14 @@ class Client(BaseClient):
         )
 
     def kmsat_phishing_security_tests(self, params):
+        """_summary_
+
+        Args:
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix="/phishing/security_tests",
@@ -96,6 +144,15 @@ class Client(BaseClient):
         )
 
     def kmsat_phishing_security_tests_recipients(self, pst_id, params):
+        """_summary_
+
+        Args:
+            pst_id (_type_): _description_
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix=f"/phishing/security_tests/{pst_id}/recipients",
@@ -105,6 +162,15 @@ class Client(BaseClient):
         )
 
     def kmsat_phishing_campaign_security_tests(self, campaign_id, params):
+        """_summary_
+
+        Args:
+            campaign_id (_type_): _description_
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix=f"/phishing/campaigns/{campaign_id}/security_tests",
@@ -114,6 +180,14 @@ class Client(BaseClient):
         )
 
     def kmsat_training_campaigns(self, params):
+        """_summary_
+
+        Args:
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix="/training/campaigns",
@@ -123,6 +197,14 @@ class Client(BaseClient):
         )
 
     def kmsat_training_enrollments(self, params):
+        """_summary_
+
+        Args:
+            params (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self._http_request(
             method="GET",
             url_suffix="/training/enrollments",
@@ -140,7 +222,7 @@ class UserEventClient(BaseClient):
         headers["X-KB4-Integration"] = "Cortex XSOAR KMSAT"
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def user_events(self, args: dict, page: int = None, page_size: int = None):
+    def user_events(self, args: dict):
 
         params = remove_empty_elements(
             {
@@ -154,8 +236,8 @@ class UserEventClient(BaseClient):
                 "risk_expire_date": args.get("risk_expire_date"),
                 "order_by": args.get("order_by"),
                 "order_direction": args.get("order_direction"),
-                "page": page,
-                "per_page": page_size,
+                "page": args.get("page"),
+                "per_page": args.get("per_page"),
             }
         )
         return self._http_request(
@@ -226,6 +308,17 @@ def get_pagination(args: dict):
 
 
 def kmsat_account_info_list_command(client: Client) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     response = client.kmsat_account_info()
     markdown = tableToMarkdown(
         "Account Info",
@@ -257,6 +350,18 @@ def kmsat_account_info_list_command(client: Client) -> CommandResults:
 def kmsat_account_risk_score_history_list_command(
     client: Client, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     params = get_pagination(args)
     response = client.kmsat_account_risk_score_history(params)
     if response is None:
@@ -279,6 +384,18 @@ def kmsat_account_risk_score_history_list_command(
 def kmsat_groups_risk_score_history_list_command(
     client: Client, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     group_id = remove_empty_elements(args.get("group_id"))
     params = get_pagination(args)
     response = client.kmsat_groups_risk_score_history(group_id, params)
@@ -302,6 +419,18 @@ def kmsat_groups_risk_score_history_list_command(
 def kmsat_groups_members_list_command(
     client: Client, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     group_id = remove_empty_elements(args.get("group_id"))
     params = get_pagination(args)
     response = client.kmsat_groups_members(group_id, params)
@@ -362,6 +491,18 @@ def kmsat_groups_members_list_command(
 def kmsat_users_risk_score_history_list_command(
     client: Client, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     user_id = remove_empty_elements(args.get("user_id"))
     params = get_pagination(args)
     response = client.kmsat_users_risk_score_history(user_id, params)
@@ -385,6 +526,18 @@ def kmsat_users_risk_score_history_list_command(
 def kmsat_phishing_security_tests_list_command(
     client: Client, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     params = get_pagination(args)
     response = client.kmsat_phishing_security_tests(params)
     markdown = tableToMarkdown(
@@ -432,6 +585,18 @@ def kmsat_phishing_security_tests_list_command(
 def kmsat_phishing_security_tests_recipients_list_command(
     client: Client, args
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (_type_): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     pst_id = remove_empty_elements(args.get("pst_id"))
     params = get_pagination(args)
     response = client.kmsat_phishing_security_tests_recipients(pst_id, params)
@@ -534,6 +699,18 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
 
 
 def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (_type_): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     campaign_id = remove_empty_elements(args.get("campaign_id"))
     return_results(campaign_id)
     params = get_pagination(args)
@@ -581,6 +758,18 @@ def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) ->
 
 
 def kmsat_training_campaigns_list_command(client: Client, args: dict) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     params = get_pagination(args)
     response = client.kmsat_training_campaigns(params)
     markdown = tableToMarkdown(
@@ -618,6 +807,18 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
 def kmsat_training_enrollments_list_command(
     client: Client, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     status = remove_empty_elements(args.get("status"))
 
     # Filters by status and does not set paging
@@ -667,7 +868,19 @@ def kmsat_training_enrollments_list_command(
 def kmsat_user_events_list_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
-    response = client.user_events(args, 1, 100)  # TODO: paging
+    """Lit out the user events
+
+    Args:
+        client (UserEventClient): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: Returns context data for user events
+    """
+    response = client.user_events(args)
     if response is None:
         raise DemistoException(
             "Translation failed: the response from server did not include user event `data`.",
@@ -686,6 +899,18 @@ def kmsat_user_events_list_command(
 def kmsat_user_event_types_list_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (UserEventClient): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     response = client.user_event_types(args)
     if response is None:
         raise DemistoException(
@@ -705,6 +930,18 @@ def kmsat_user_event_types_list_command(
 def kmsat_user_event_create_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (UserEventClient): _description_
+        args (dict): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     response = client.create_user_event(args)
     if response is None:
         raise DemistoException(
@@ -724,6 +961,15 @@ def kmsat_user_event_create_command(
 def kmsat_user_event_delete_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (UserEventClient): _description_
+        args (dict): _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     event_id: str = str(args.get("id"))
     client.delete_user_event(event_id)
     return CommandResults(
@@ -889,10 +1135,12 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
+    """Main
 
-    :return:
-    :rtype:
+    Raises:
+        DemistoException: Raises Demisto Exception for Reporting API
+        DemistoException: Raises Demisto Exception for User Events API
+        NotImplementedError: Raises no command implementation
     """
 
     command = demisto.command()

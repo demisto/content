@@ -750,6 +750,10 @@ script:
           description:
             Order returned events in ascending (asc) or descending (desc) order
             ("asc", "desc")
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: KMSAT.UserEvents.id
           description: "Unique ID of the event"
