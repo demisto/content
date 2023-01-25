@@ -5,18 +5,14 @@ from CommonServerUserPython import *
 
 def read_file_with_encoding_detection(filePath, maxFileSize):
     encoding_types = ['utf-8', 'ISO-8859-9', None]  # use None to simulate open file with no encoding sepcified
-    data = None
     for encoding in encoding_types:
         try:
             with open(filePath, encoding=encoding) as file:
-                data = file.read(maxFileSize)
-                break
+                return file.read(maxFileSize)
         except Exception:
             continue
 
-    if not data:
-        raise ValueError(f'Can\'t read file with {filePath}')
-    return data
+    raise ValueError(f'Can\'t read file with {filePath}')
 
 
 def extract_indicators_from_file(args):
