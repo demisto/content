@@ -5,15 +5,15 @@ import re
 from datetime import datetime, timedelta
 
 import dateparser
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
 import pytz
 import requests
 import splunklib.client as client
 import splunklib.results as results
-from splunklib.data import Record
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from splunklib.binding import AuthenticationError, HTTPError, namespace
+from splunklib.data import Record
 
 urllib3.disable_warnings()
 
@@ -317,6 +317,9 @@ def build_fetch_query(dem_params):
         for field in extra_raw_arr:
             field_trimmed = field.strip()
             fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+    if demisto.get(dem_params, 'expand_token'):
+        fetch_query = fetch_query + ' | expandtoken'
 
     return fetch_query
 
@@ -903,11 +906,17 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     """
     job = None
     search = notable_data.get("drilldown_search", "")
+    demisto.debug("drilldown_enrichment - search: {}".format(search))
 
     if search:
-        raw_dict = rawToDict(notable_data.get("_raw", ""))
-        searchable_query = build_drilldown_search(notable_data, search, raw_dict)
+        if demisto.get(demisto.params(), 'expand_token'):
+            raw_dict = rawToDict(notable_data.get("_raw", ""))
+            searchable_query = search.replace('\\', '\\\\')
+        else:
+            raw_dict = rawToDict(notable_data.get("_raw", ""))
+            searchable_query = build_drilldown_search(notable_data, search, raw_dict)
         if searchable_query:
+            demisto.debug("drilldown_enrichment - searchable_query: {}".format(searchable_query))
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
@@ -1934,8 +1943,6 @@ def build_search_kwargs(args, polling=False):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
-    if argToBoolean(demisto.get(args, 'fast_mode')):
-        kwargs_normalsearch['adhoc_search_level'] = "fast"
     if polling:
         kwargs_normalsearch['exec_mode'] = "normal"
     else:
@@ -1952,22 +1959,15 @@ def build_search_query(args):
     return query
 
 
-def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res, job_id):
+def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res):
     ec = {}
-    number_of_results = len(parsed_search_results)
 
     if args.get('update_context', "true") == "true":
         ec['Splunk.Result'] = parsed_search_results
         if len(dbot_scores) > 0:
             ec['DBotScore'] = dbot_scores
         if status_res:
-            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = {
-                **status_res.outputs, 'TotalResults': number_of_results}
-    if job_id and not status_res:
-        status = 'DONE' if (number_of_results > 0) else 'NO RESULTS'
-        ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = [{'SID': job_id,
-                                                                   'TotalResults': number_of_results,
-                                                                   'Status': status}]
+            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = status_res.outputs
     return ec
 
 
@@ -1983,7 +1983,7 @@ def schedule_polling_command(command: str, args: dict, interval_in_secs: int):
     )
 
 
-def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
+def build_search_human_readable(args: dict, parsed_search_results) -> str:
     headers = ""
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
@@ -2011,10 +2011,7 @@ def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
             headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
-    hr_headline = 'Splunk Search results for query:\n'
-    if sid:
-        hr_headline += f'sid: {str(sid)}'
-    human_readable = tableToMarkdown(hr_headline,
+    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
                                      parsed_search_results, headers)
     return human_readable
 
@@ -2071,12 +2068,14 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
 
 def splunk_search_command(service: client.Service) -> CommandResults:
     args = demisto.args()
+
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
     search_kwargs = build_search_kwargs(args, polling)
     job_sid = args.get("sid")
     search_job = None
     interval_in_secs = int(args.get('interval_in_seconds', 30))
+
     if not job_sid or not polling:
         # create a new job to search the query.
         search_job = service.jobs.create(query, **search_kwargs)
@@ -2096,6 +2095,7 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         else:
             # Get the job by its SID.
             search_job = service.job(job_sid)
+
     num_of_results_from_query = search_job["resultCount"] if search_job else None
 
     results_limit = float(args.get("event_limit", 100))
@@ -2117,8 +2117,9 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
-    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result, str(job_sid))
-    human_readable = build_search_human_readable(args, total_parsed_results, str(job_sid))
+
+    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
+    human_readable = build_search_human_readable(args, total_parsed_results)
 
     return CommandResults(
         outputs=entry_context,
