@@ -1,0 +1,27 @@
+category: Utilities
+description: ''
+commonfields:
+  id: EDL
+  version: -1
+name: EDL
+display: EDL
+configuration: []
+script:
+  commands:
+  - deprecated: false
+    description: ''
+    name: funky_command
+    arguments: []
+    outputs: []
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:latest
+  feed: false
+  isfetch: false
+  runonce: false
+  longRunning: false
+  longRunningPort: false
+fromversion: 6.0.0
+tests:
+- No tests
