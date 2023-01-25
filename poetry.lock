@@ -171,14 +171,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.54"
+version = "1.26.56"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.54,<1.30.0"
+botocore = ">=1.29.56,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -187,7 +187,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.54"
+version = "1.29.56"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -518,8 +518,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "36a5275ecd0ff88320a7fbb1bd5e0b36d9c8de32"
-resolved_reference = "36a5275ecd0ff88320a7fbb1bd5e0b36d9c8de32"
+reference = "4015a3228b3b3a071d5a51f61d9cf693666e8185"
+resolved_reference = "4015a3228b3b3a071d5a51f61d9cf693666e8185"
 
 [[package]]
 name = "deprecated"
@@ -903,7 +903,7 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_ve
 
 [[package]]
 name = "identify"
-version = "2.5.13"
+version = "2.5.15"
 description = "File identification library for Python"
 category = "dev"
 optional = false
@@ -2084,7 +2084,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-decorator"
-version = "5.1.8.1"
+version = "5.1.8.2"
 description = "Typing stubs for decorator"
 category = "dev"
 optional = false
@@ -2443,7 +2443,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "9ad30ab26e3e8a1c426c76da0d5b7da923423ad33a360da75d390c0e3c664ac4"
+content-hash = "fda4f39fe9caed351a7128f67e24b04ea2f5403a90d18c248b2fcdd66b6d55d3"
 
 [metadata.files]
 aiohttp = [
@@ -2618,12 +2618,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.54-py3-none-any.whl", hash = "sha256:c729bb0af76e85a2776b6bd3da8d9fa0f4b91b425eab51612aa53956f644ee23"},
-    {file = "boto3-1.26.54.tar.gz", hash = "sha256:4e876ba5d64928cde0c416dd844f04f22d6b73d14002bbc3ca55591f80f49927"},
+    {file = "boto3-1.26.56-py3-none-any.whl", hash = "sha256:72214a08f337d29a1300d7861872f60ea41016b2a8ad8094fab20d783c8cf1ae"},
+    {file = "boto3-1.26.56.tar.gz", hash = "sha256:0ff8667fbfda8390cab2718a4d129374a6ddd6fd1913f79777fd4498f93c84f1"},
 ]
 botocore = [
-    {file = "botocore-1.29.54-py3-none-any.whl", hash = "sha256:ca3ef7588daa664fe196d3234718db5f6b5dab961507500b4bb921e31133eea1"},
-    {file = "botocore-1.29.54.tar.gz", hash = "sha256:f2fe17ed6b8e163769a715f81cb6ce3d4628d172918de535256bdf34d29b704f"},
+    {file = "botocore-1.29.56-py3-none-any.whl", hash = "sha256:669ed3a256c4352f8f8a77a24b4d623ab7acc966d843b460d7ce2261a9813a79"},
+    {file = "botocore-1.29.56.tar.gz", hash = "sha256:ca4d6403d745218270a20d9ca3ca9a33e3ad2fabb59a96ed8d6e1a824b274c86"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -3117,8 +3117,8 @@ humanfriendly = [
     {file = "humanfriendly-10.0.tar.gz", hash = "sha256:6b0b831ce8f15f7300721aa49829fc4e83921a9a301cc7f606be6686a2288ddc"},
 ]
 identify = [
-    {file = "identify-2.5.13-py2.py3-none-any.whl", hash = "sha256:8aa48ce56e38c28b6faa9f261075dea0a942dfbb42b341b4e711896cbb40f3f7"},
-    {file = "identify-2.5.13.tar.gz", hash = "sha256:abb546bca6f470228785338a01b539de8a85bbf46491250ae03363956d8ebb10"},
+    {file = "identify-2.5.15-py2.py3-none-any.whl", hash = "sha256:1f4b36c5f50f3f950864b2a047308743f064eaa6f6645da5e5c780d1c7125487"},
+    {file = "identify-2.5.15.tar.gz", hash = "sha256:c22aa206f47cc40486ecf585d27ad5f40adbfc494a3fa41dc3ed0499a23b123f"},
 ]
 idna = [
     {file = "idna-3.4-py3-none-any.whl", hash = "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"},
@@ -4084,8 +4084,8 @@ types-dateparser = [
     {file = "types_dateparser-1.1.4.5-py3-none-any.whl", hash = "sha256:5bc6b6c04d9b4ec64e15be8850dfbefd5c79ad0f4625e503ae80d625cd90e0a4"},
 ]
 types-decorator = [
-    {file = "types-decorator-5.1.8.1.tar.gz", hash = "sha256:f9290cbe23d2674bb18a2d95f593c27547463ed459e0e604800c42099c3c6a44"},
-    {file = "types_decorator-5.1.8.1-py3-none-any.whl", hash = "sha256:da7218420e3efc8435c59654160300db43f685ef68709c933eaed124326b2755"},
+    {file = "types-decorator-5.1.8.2.tar.gz", hash = "sha256:49d76be3b472fd4fa4dc33ba55aa4b91ee61ebf7379d1ad255fc5632fcbdc007"},
+    {file = "types_decorator-5.1.8.2-py3-none-any.whl", hash = "sha256:a79e5326a85fde0dbda58a211f7009970c244e2addb6df7ea7bb30f83fee2bb1"},
 ]
 types-docutils = [
     {file = "types-docutils-0.19.1.2.tar.gz", hash = "sha256:ca3d2135484adb52dd042bbddbd6eddcbbda8c608ba3f5e5f908bd548ffcb399"},
