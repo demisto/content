@@ -307,7 +307,7 @@ def get_pagination(args: dict):
 """ COMMAND FUNCTIONS """
 
 
-def kmsat_account_info_list_command(client: Client) -> CommandResults:
+def kmsat_account_info_list_command(client: Client, args: dict) -> CommandResults:
     """_summary_
 
     Args:
@@ -583,7 +583,7 @@ def kmsat_phishing_security_tests_list_command(
 
 
 def kmsat_phishing_security_tests_recipients_list_command(
-    client: Client, args
+    client: Client, args: dict
 ) -> CommandResults:
     """_summary_
 
@@ -641,7 +641,7 @@ def kmsat_phishing_security_tests_recipients_list_command(
 
 
 def kmsat_phishing_security_tests_failed_recipients_list_command(
-    client: Client, args
+    client: Client, args: dict
 ) -> CommandResults:
     pst_id = remove_empty_elements(args.get("pst_id"))
     response = client.kmsat_phishing_security_tests_recipients(pst_id, None)
@@ -698,7 +698,7 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     )
 
 
-def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) -> CommandResults:
+def kmsat_phishing_campaign_security_tests_list_command(client: Client, args: dict) -> CommandResults:
     """_summary_
 
     Args:
@@ -985,6 +985,9 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
 
     :type client: ``Client``
     :param Client: client to use
+    :type userEventClient: ``UserEventClient``
+    :param userEventClient: event client to use
+    
 
     :return: 'ok' if test passed, anything else will fail the test.
     :return type: ``str``
@@ -994,119 +997,6 @@ def test_module(client: Client, userEventClient: UserEventClient) -> str:
     params: Dict = {}
     try:
         client.kmsat_account_info()
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        client.kmsat_account_risk_score_history(params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        group_id = 1
-        client.kmsat_groups_risk_score_history(group_id, params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        group_id = 1
-        client.kmsat_groups_members(group_id, params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        user_id = 1
-        client.kmsat_users_risk_score_history(user_id, params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        client.kmsat_phishing_security_tests(params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        recipient_id = 1
-        client.kmsat_phishing_security_tests_recipients(recipient_id, params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        campaign_id = 1
-        client.kmsat_phishing_campaign_security_tests(campaign_id, params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        client.kmsat_training_campaigns(params)
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = (
-                "Authorization Error: make sure Reporting API Key is correctly set"
-                + str(client._headers)
-            )
-        else:
-            raise e
-
-    try:
-        client.kmsat_training_enrollments(params)
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
@@ -1199,40 +1089,34 @@ def main() -> None:
             proxy=proxy,
         )
 
+        reportingCommands = {
+            "kmsat-account-info-list": kmsat_account_info_list_command,
+            "kmsat-account-risk-score-history-list": kmsat_account_risk_score_history_list_command,
+            "kmsat-groups-risk-score-history-list": kmsat_groups_risk_score_history_list_command,
+            "kmsat-groups-members-list": kmsat_groups_members_list_command,
+            "kmsat-users-risk-score-history-list": kmsat_users_risk_score_history_list_command,
+            "kmsat-phishing-security-tests-list": kmsat_phishing_security_tests_list_command,
+            "kmsat-phishing-security-tests-recipients-list": kmsat_phishing_security_tests_recipients_list_command,
+            "kmsat-phishing-security-tests-failed-recipients-list": kmsat_phishing_security_tests_failed_recipients_list_command,
+            "kmsat-phishing-campaigns-security-tests-list": kmsat_phishing_campaign_security_tests_list_command,
+            "kmsat-training-campaigns-list": kmsat_training_campaigns_list_command,
+            "kmsat-training-enrollments-list": kmsat_training_enrollments_list_command,
+        }
+
+        userEventCommands = {
+            "kmsat-user-events-list": kmsat_user_events_list_command,
+            "kmsat-user-event-types-list": kmsat_user_event_types_list_command,
+            "kmsat-user-event-create": kmsat_user_event_create_command,
+            "kmsat-user-event-delete": kmsat_user_event_delete_command,
+        }
+
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, userEventClient)
-            return_results(result)
-        elif command == "kmsat-account-info-list":
-            return_results(kmsat_account_info_list_command(client))
-        elif command == "kmsat-account-risk-score-history-list":
-            return_results(kmsat_account_risk_score_history_list_command(client, args))
-        elif command == "kmsat-groups-risk-score-history-list":
-            return_results(kmsat_groups_risk_score_history_list_command(client, args))
-        elif command == "kmsat-groups-members-list":
-            return_results(kmsat_groups_members_list_command(client, args))
-        elif command == "kmsat-users-risk-score-history-list":
-            return_results(kmsat_users_risk_score_history_list_command(client, args))
-        elif command == "kmsat-phishing-security-tests-list":
-            return_results(kmsat_phishing_security_tests_list_command(client, args))
-        elif command == "kmsat-phishing-security-tests-recipients-list":
-            return_results(kmsat_phishing_security_tests_recipients_list_command(client, args))
-        elif command == "kmsat-phishing-security-tests-failed-recipients-list":
-            return_results(kmsat_phishing_security_tests_failed_recipients_list_command(client, args))
-        elif command == "kmsat-phishing-campaigns-security-tests-list":
-            return_results(kmsat_phishing_campaign_security_tests_list_command(client, args))
-        elif command == "kmsat-training-campaigns-list":
-            return_results(kmsat_training_campaigns_list_command(client, args))
-        elif command == "kmsat-training-enrollments-list":
-            return_results(kmsat_training_enrollments_list_command(client, args))
-        elif command == "kmsat-user-events-list":
-            return_results(kmsat_user_events_list_command(userEventClient, args))
-        elif command == "kmsat-user-event-types-list":
-            return_results(kmsat_user_event_types_list_command(userEventClient, args))
-        elif command == "kmsat-user-event-create":
-            return_results(kmsat_user_event_create_command(userEventClient, args))
-        elif command == "kmsat-user-event-delete":
-            return_results(kmsat_user_event_delete_command(userEventClient, args))
+            return_results(test_module(client, userEventClient))
+        elif command in list(reportingCommands.keys()):
+            return_results(reportingCommands[command](client, args))
+        elif command in list(userEventCommands.keys()):
+            return_results(userEventCommands[command](userEventClient, args))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 

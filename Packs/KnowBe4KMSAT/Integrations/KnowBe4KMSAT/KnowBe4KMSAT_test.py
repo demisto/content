@@ -52,8 +52,8 @@ def test_account_info(requests_mock):
             "Content-Type": "application/json",
         },
     )
-
-    result = kmsat_account_info_list_command(client)
+    args: dict = {}
+    result = kmsat_account_info_list_command(client, args)
 
     assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
     assert result.outputs_prefix == "KMSAT.AccountInfo"
@@ -90,7 +90,7 @@ def test_account_risk_score_history(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {}
+    args: dict = {}
     result = kmsat_account_risk_score_history_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.AccountRiskScoreHistory"
     assert result.outputs_key_field == ""
@@ -126,7 +126,7 @@ def test_account_groups_risk_score_history(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {"group_id": 1}
+    args: dict = {"group_id": 1}
     result = kmsat_groups_risk_score_history_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.GroupsRiskScoreHistory"
     assert result.outputs_key_field == "id"
@@ -162,7 +162,7 @@ def test_groups_members_list(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {"group_id": 1}
+    args: dict = {"group_id": 1}
     result = kmsat_groups_members_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.GroupsMembers"
     assert result.outputs_key_field == "id"
@@ -198,7 +198,7 @@ def test_users_risk_score_history_list(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {"user_id": 1}
+    args: dict = {"user_id": 1}
     result = kmsat_users_risk_score_history_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.UsersRiskScoreHistory"
     assert result.outputs_key_field == ""
@@ -270,7 +270,7 @@ def test_phishing_security_tests_recipients_list(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {"pst_id": 1}
+    args: dict = {"pst_id": 1}
     result = kmsat_phishing_security_tests_recipients_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.PhishingSecurityPST"
     assert result.outputs_key_field == "recipient_id"
@@ -306,7 +306,7 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {"pst_id": 1}
+    args: dict = {"pst_id": 1}
     result = kmsat_phishing_security_tests_failed_recipients_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.PhishingSecurityPST"
     assert result.outputs_key_field == "recipient_id"
@@ -342,7 +342,7 @@ def test_phishing_campaigns_security_tests_list(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {"campaign_id": 1}
+    args: dict = {"campaign_id": 1}
     result = kmsat_phishing_campaign_security_tests_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.CampaignPST"
     assert result.outputs_key_field == ""
@@ -378,7 +378,7 @@ def test_training_campaigns_list(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {}
+    args: dict = {}
     result = kmsat_training_campaigns_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.TrainingCampaigns"
     assert result.outputs_key_field == "campaign_id"
@@ -414,11 +414,51 @@ def test_training_enrollments_list(requests_mock):
             "Content-Type": "application/json",
         },
     )
-    args: Dict = {}
+    args: dict = {}
     result = kmsat_training_enrollments_list_command(client, args)
     assert result.outputs_prefix == "KMSAT.TrainingEnrollments"
     assert result.outputs_key_field == "enrollment_id"
     assert result.outputs == mock_response_data
+
+
+def test_status_training_enrollments_list(requests_mock):
+    """
+    Given
+            no params
+    When
+            Calling https://us.api.knowbe4.com/v1/training/enrollments
+    Then
+            Make sure the data contains enrollment_id with expected values
+    """
+    mock_response_data = util_load_json(
+        "test_data/training_enrollments_response.json"
+    )
+    from KnowBe4KMSAT import kmsat_training_enrollments_list_command
+
+    requests_mock.get(
+        f"{REPORTING_BASE_URL}/training/enrollments",
+        json=mock_response_data,
+        status_code=200,
+    )
+
+    client = Client(
+        REPORTING_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={
+            "Authorization": "Bearer abc123xyz",
+            "Content-Type": "application/json",
+        },
+    )
+    expectedStatus: str = "Passed"
+    args: dict = {"status": expectedStatus}
+    result = kmsat_training_enrollments_list_command(client, args)
+    assert result.outputs_prefix == "KMSAT.TrainingEnrollments"
+    assert result.outputs_key_field == "enrollment_id"    
+    assert len(result.outputs) == 2
+    assert len(mock_response_data) > 2
+    for enrollment in result.outputs:
+        assert enrollment["status"] == expectedStatus
 
 
 def test_get_user_event_types(requests_mock):
@@ -448,7 +488,7 @@ def test_get_user_event_types(requests_mock):
         },
     )
 
-    args: Dict = {}
+    args: dict = {}
     result = kmsat_user_event_types_list_command(userEventClient, args)
     assert result.outputs_prefix == "KMSAT.UserEventTypes"
     assert result.outputs_key_field == "id"
@@ -482,7 +522,7 @@ def test_get_user_events(requests_mock):
         },
     )
 
-    args: Dict = {}
+    args: dict = {}
     result = kmsat_user_events_list_command(userEventClient, args)
 
     assert requests_mock.last_request.headers['X-KB4-Integration'] == "Cortex XSOAR KMSAT"
@@ -515,7 +555,7 @@ def test_delete_user_event(requests_mock):
         },
     )
 
-    args: Dict = {"id": id}
+    args: dict = {"id": id}
     result = kmsat_user_event_delete_command(userEventClient, args)
 
     assert result.readable_output == f"Successfully deleted event: {id}"
