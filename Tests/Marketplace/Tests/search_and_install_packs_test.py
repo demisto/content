@@ -392,9 +392,9 @@ def test_get_pack_id_from_error_with_gcp_path():
 
 
 def test_create_dependencies_data_structure():
-    with open('dep.json') as f:
+    with open('xsiam_dep.json') as f:
         response_data = json.loads(f.read())
-    # response_data = response_data.get('dependencies', [])
+    response_data = response_data.get('dependencies', [])
     dependants_ids = ['DeveloperTools']
     dependencies_data: list = []
     script.create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, dependants_ids)
