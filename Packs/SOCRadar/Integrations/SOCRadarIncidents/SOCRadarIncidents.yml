@@ -94,7 +94,7 @@ defaultclassifier: SOCRadar Incident Classifier
 defaultmapperin: SOCRadar Incident Mapper
 defaultmapperout: 'null'
 description: Fetches SOCRadar incidents with desired parameters so that relevant actions
-  over the incidents can be taken by using Cortex XSOAR.
+  over the incidents can be taken by using Cortex XSOAR. TEST
 display: SOCRadar Incidents
 name: SOCRadarIncidents
 script:

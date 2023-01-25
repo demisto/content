@@ -17,10 +17,6 @@ from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 urllib3.disable_warnings()
 
-
-# TEST
-
-
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
