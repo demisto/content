@@ -46,7 +46,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: 'The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alerts whose status was changed to a filtered status after its creation time will not be fetched.'
+- additionalinfo: 'The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Alert Severities to Fetch
   name: severity
   options:
