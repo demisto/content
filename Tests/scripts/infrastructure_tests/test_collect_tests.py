@@ -105,6 +105,7 @@ class MockerCases:
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
     skipped_nightly_test = CollectTestsMocker(TEST_DATA / 'skipped_nightly_test')
     MR1 = CollectTestsMocker(TEST_DATA / 'MR1')
+    RN_CONFIG = CollectTestsMocker(TEST_DATA / 'release_notes_config')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -403,6 +404,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None,
          (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
          ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',), (), ('MyXSIAMPack',)),
+
+        # (33) Release Notes Config
+        (MockerCases.RN_CONFIG, (), ('MyPackWithRnConfig',), None, None, XSOAR_BRANCH_ARGS,
+         ('Packs/MyPackWithRnConfig/ReleaseNotes/2_1_3.json',), (), None),
+
     )
 )
 def test_branch(
