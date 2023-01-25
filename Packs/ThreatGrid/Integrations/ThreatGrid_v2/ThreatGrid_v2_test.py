@@ -3,7 +3,7 @@ import json
 import os
 from unittest import mock
 import pytest
-from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import Client
+from ThreatGrid_v2 import Client
 from datetime import datetime
 from CommonServerPython import *  # noqa: F401
 '''MOCK PARAMETERS '''
@@ -78,7 +78,7 @@ def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import get_sample_command
+    from ThreatGrid_v2 import get_sample_command
 
     mock_response = load_mock_response('sample_get.json')
 
@@ -142,7 +142,7 @@ def test_list_associated_samples_command(requests_mock, mock_client, url, args, 
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import list_associated_samples_command
+    from ThreatGrid_v2 import list_associated_samples_command
 
     mock_response = load_mock_response('associated_samples_list.json')
 
@@ -206,7 +206,7 @@ def test_analysis_sample_command(requests_mock, mock_client, url, args, outputs_
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import analysis_sample_command
+    from ThreatGrid_v2 import analysis_sample_command
 
     mock_response = load_mock_response('sample_analysis.json')
 
@@ -233,7 +233,7 @@ def test_get_rate_limit_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import get_rate_limit_command
+    from ThreatGrid_v2 import get_rate_limit_command
 
     mock_response = load_mock_response('rate_limit.json')
     login = 'login'
@@ -266,7 +266,7 @@ def test_who_am_i_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import who_am_i_command
+    from ThreatGrid_v2 import who_am_i_command
 
     mock_response = load_mock_response('whoami.json')
     url = f'/{API_VERSION3_URL}/session/whoami'
@@ -293,7 +293,7 @@ def test_get_specific_feed_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import get_specific_feed_command
+    from ThreatGrid_v2 import get_specific_feed_command
 
     mock_response = load_mock_response('specific_feed.json')
     feed_name = 'feed_name'
@@ -351,7 +351,7 @@ def test_associated_command(requests_mock, mock_client, url, args, outputs_prefi
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import associated_command
+    from ThreatGrid_v2 import associated_command
 
     json_data = args['command_name'][12:].replace("-", "_")
     arg_name = args['command_name'].split('-')[2]
@@ -416,7 +416,7 @@ def test_feeds_command(requests_mock, mock_client, url, args, outputs_prefix):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import feeds_command
+    from ThreatGrid_v2 import feeds_command
 
     mock_response = load_mock_response('feeds.json')
 
@@ -445,7 +445,7 @@ def test_upload_sample_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import upload_sample_command
+    from ThreatGrid_v2 import upload_sample_command
 
     mock_response = load_mock_response('sample_upload.json')
 
@@ -486,7 +486,7 @@ def test_search_command(requests_mock, mock_client, url_prefix, args, outputs_pr
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import search_command
+    from ThreatGrid_v2 import search_command
 
     mock_response = load_mock_response('search.json')
     requests_mock.get(url=f'/{API_VERSION2_URL}/{url_prefix}', json=mock_response)
@@ -513,7 +513,7 @@ def test_search_submission_command(requests_mock, mock_client):
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import search_submission_command
+    from ThreatGrid_v2 import search_submission_command
 
     mock_response = load_mock_response('submission_search.json')
 
@@ -560,7 +560,7 @@ def test_reputation_command(
      - Ensure a sample value from the API matches what is generated in the context.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import reputation_command
+    from ThreatGrid_v2 import reputation_command
 
     if args['command_name'] == 'ip':
         mock_response = load_mock_response('sample_analysis.json')
@@ -585,7 +585,7 @@ def test_reputation_command(
 def test_is_day_diff_valid(date, output):
     """ Validate days diff.
     """
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import is_day_diff_valid
+    from ThreatGrid_v2 import is_day_diff_valid
     result = is_day_diff_valid(date)
     assert result is output
 
@@ -624,7 +624,7 @@ def test_pagination(args, outputs):
         outputs (_type_): pagination args required output.
     """
 
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import pagination
+    from ThreatGrid_v2 import pagination
     limit, offset, _ = pagination(args)
     assert limit == outputs['limit']
     assert offset == outputs['offset']
@@ -633,7 +633,7 @@ def test_pagination(args, outputs):
 def test_parse_url_indicator():
     """ Parse URL indicator.
     """
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import parse_url_indicator
+    from ThreatGrid_v2 import parse_url_indicator
     result = parse_url_indicator('url', DBOT_SCORE)
 
     assert result.outputs_key_field == 'url'
@@ -643,7 +643,7 @@ def test_parse_url_indicator():
 def test_parse_domain_indicator():
     """ Parse domain indicator.
     """
-    from Packs.ThreatGrid.Integrations.ThreatGridV2.ThreatGrid_v2 import parse_domain_indicator
+    from ThreatGrid_v2 import parse_domain_indicator
     result = parse_domain_indicator('domain', DBOT_SCORE)
 
     assert result.outputs_key_field == 'domain'
