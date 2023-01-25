@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from tempfile import NamedTemporaryFile
 from typing import Callable
 
+import urllib3
+
 import syslogmp
 from gevent.server import StreamServer
 from syslog_rfc5424_parser import SyslogMessage, ParseError
@@ -9,8 +11,8 @@ from syslog_rfc5424_parser import SyslogMessage, ParseError
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import urllib3
-urllib3.disable_warnings()
+# Disable insecure warnings
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 MAX_SAMPLES = 10
