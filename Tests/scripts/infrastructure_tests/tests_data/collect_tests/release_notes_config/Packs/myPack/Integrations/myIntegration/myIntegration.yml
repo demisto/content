@@ -1,6 +1,6 @@
 name: myIntegration
 marketplaces:
-- marketplacev2
+- xsoar
 subtype: python3
 type: python
 
