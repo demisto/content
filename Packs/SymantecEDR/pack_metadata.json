@@ -11,7 +11,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["Symantec EDR", "Symantec Endpoint Detection and Response"],
+    "keywords": [
+        "Symantec EDR",
+        "Symantec Endpoint Detection and Response"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

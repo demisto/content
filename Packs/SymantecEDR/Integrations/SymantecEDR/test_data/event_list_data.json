@@ -1,8 +1,8 @@
 {
     "result": [
         {
-            "type_id": 800-1,
-            "severity_id": -1,
+            "type_id": 8001,
+            "severity_id": 1,
             "device_time": "2022-12-25T23:11:08.905Z",
             "log_time": "2022-12-25T10:46:01.302Z",
             "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
