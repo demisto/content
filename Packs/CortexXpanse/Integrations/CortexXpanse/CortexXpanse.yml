@@ -414,7 +414,7 @@ script:
       description: Alert fields pulled from Cortex XSOAR context.
       type: Unknown
     - contextPath: ASM.Alert.events
-      description: Individual events the comprise the alert.
+      description: Individual events that comprise the alert.
       type: Unknown
     - contextPath: ASM.Alert.detection_timestamp
       description: Date the alert was created.
