@@ -627,7 +627,6 @@
 | KMSAT.TrainingCampaigns.completion_percentage      | Number   | Training Campaigns Completion Percentage      |
 
 
-
 #### Command Example
 ```!kmsat-training-campaigns campaign_id=1 page=1 per_page=25```
 

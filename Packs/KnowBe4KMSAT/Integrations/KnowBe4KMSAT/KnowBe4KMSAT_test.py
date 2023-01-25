@@ -34,7 +34,7 @@ def test_account_info(requests_mock):
     When
             Calling https://us.api.knowbe4.com/v1/account
     Then
-            Make sure the data array contains event_types with expected values
+            Make sure the data contains account information
     """
     mock_response_data = util_load_json("test_data/account_response.json")
     from KnowBe4KMSAT import kmsat_account_info_list_command
@@ -66,7 +66,9 @@ def test_account_risk_score_history(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/accounts
+            Calling https://us.api.knowbe4.com/v1/account/risk_score_history
+    Then
+            Make sure the data contains account risk history information
     """
     mock_response_data = util_load_json(
         "test_data/account_risk_score_history_response.json"
@@ -100,7 +102,9 @@ def test_account_groups_risk_score_history(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/groups/1/risk_score_history
+    Then
+            Make sure the data contains id with expected values
     """
     mock_response_data = util_load_json(
         "test_data/groups_risk_score_history_response.json"
@@ -134,7 +138,9 @@ def test_groups_members_list(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/groups/1/members
+    Then
+            Make sure the data contains id with expected values
     """
     mock_response_data = util_load_json(
         "test_data/groups_risk_score_history_response.json"
@@ -168,7 +174,9 @@ def test_users_risk_score_history_list(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/users/1/risk_score_history
+    Then
+            Make sure the data returned for user
     """
     mock_response_data = util_load_json(
         "test_data/user_risk_score_history_response.json"
@@ -202,7 +210,9 @@ def test_phishing_security_tests_list(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/phishing/security_tests
+    Then
+            Make sure the data contains campaign_id with expected values
     """
     mock_response_data = util_load_json(
         "test_data/groups_risk_score_history_response.json"
@@ -236,7 +246,9 @@ def test_phishing_security_tests_recipients_list(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/phishing/security_tests/1/recipients
+    Then
+            Make sure the data contains recipient_id with expected values
     """
     mock_response_data = util_load_json(
         "test_data/phishing_security_tests_recipients_response.json"
@@ -270,7 +282,9 @@ def test_phishing_security_tests_failed_recipients_list(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/phishing/campaigns/1/security_tests
+    Then
+            Make sure the data contains recipient_id with expected values
     """
     mock_response_data = util_load_json(
         "test_data/phishing_security_tests_failed_recipients_response.json"
@@ -304,7 +318,9 @@ def test_phishing_campaigns_security_tests_list(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/phishing/campaigns/1/security_tests
+    Then
+            Make sure the data is returned for the campaign
     """
     mock_response_data = util_load_json(
         "test_data/phishing_security_tests_failed_recipients_response.json"
@@ -338,7 +354,9 @@ def test_training_campaigns_list(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/training/campaigns
+    Then
+            Make sure the data contains campaign_id with expected values
     """
     mock_response_data = util_load_json(
         "test_data/training_campaigns_response.json"
@@ -372,7 +390,9 @@ def test_training_enrollments_list(requests_mock):
     Given
             no params
     When
-            Calling https://us.api.knowbe4.com/v1/account
+            Calling https://us.api.knowbe4.com/v1/training/enrollments
+    Then
+            Make sure the data contains enrollment_id with expected values
     """
     mock_response_data = util_load_json(
         "test_data/training_enrollments_response.json"
@@ -497,4 +517,19 @@ def test_delete_user_event(requests_mock):
 
     args: Dict = {"id": id}
     result = kmsat_user_event_delete_command(userEventClient, args)
+
     assert result.readable_output == f"Successfully deleted event: {id}"
+
+
+def test_get_pagination():
+    """
+    Given
+            {"page": 1, "per_page": 10}
+    When
+            Calling get_pagination()
+    Then
+            Make sure the data returns with page and per_page
+    """
+    from KnowBe4KMSAT import get_pagination
+    args = {"page": 1, "per_page": 10}
+    assert get_pagination(args) == args
