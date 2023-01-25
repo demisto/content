@@ -176,8 +176,8 @@ class ContentItem(DictFileBased):
             or self.path.name.endswith('_schema.json') \
             or self.path.name.endswith('testdata.json') \
             or len(file_path_splitted) > 1 \
-                and file_path_splitted[-2].lower().startswith('releasenotes') \
-                and file_path_splitted[-1].lower().endswith('.json')
+                and file_path_splitted[-2] == 'ReleaseNotes' \
+                and self.path.suffix == '.json'
 
     @property
     def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
