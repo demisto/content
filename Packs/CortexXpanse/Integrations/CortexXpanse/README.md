@@ -1,5 +1,5 @@
 Integration to pull assets and other ASM related information.
-This integration was integrated and tested with version 2.0 of Cortex Expander
+This integration was integrated and tested with version 2.0 of Cortex Expander.
 
 ## Configure Cortex Xpanse on Cortex XSOAR
 
@@ -9,8 +9,8 @@ This integration was integrated and tested with version 2.0 of Cortex Expander
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-    | API Key ID | For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
+    | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
+    | API Key ID | For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
     | API Key |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -19,7 +19,7 @@ This integration was integrated and tested with version 2.0 of Cortex Expander
     | Incident type |  | False |
     | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alerts whose status was changed to a filtered status after its creation time will not be fetched. | False |
+    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched. | False |
    
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -578,7 +578,7 @@ Get service details according to the service ID.
 
 ### asm-list-external-ip-address-range
 ***
-Get a list of all your internet exposure filtered by business units and organization handles. Maximum result limit is 100 ranges.
+Get a list of all your internet exposures filtered by business units and organization handles. Maximum result limit is 100 ranges.
 
 
 #### Base Command
@@ -785,7 +785,7 @@ Get external IP address range details according to the range IDs.
 
 ### asm-list-asset-internet-exposure
 ***
-Get a list of all your internet exposure filtered by ip address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
+Get a list of all your internet exposures filtered by ip address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
 
 
 #### Base Command
@@ -817,7 +817,7 @@ Get a list of all your internet exposure filtered by ip address, domain, type, a
 | ASM.AssetInternetExposure.cloud_id | Unknown | Displays the resource ID as provided from the cloud provider. | 
 | ASM.AssetInternetExposure.domain_resolves | Boolean | Whether the asset domain is resolvable. | 
 | ASM.AssetInternetExposure.operation_system | Unknown | The operating system reported by the source for this asset. | 
-| ASM.AssetInternetExposure.agent_id | Unknown | If there is an endpoint installed on this asset, this is the endpoint ID. | 
+| ASM.AssetInternetExposure.agent_id | Unknown | The endpoint ID if there is an endpoint installed on this asset. | 
 | ASM.AssetInternetExposure.externally_detected_providers | String | The provider of the asset as determined by an external assessment. | 
 | ASM.AssetInternetExposure.service_type | String | Type of the asset. | 
 | ASM.AssetInternetExposure.externally_inferred_cves | String | If the internet exposure has associated CVEs. | 
@@ -1074,8 +1074,8 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id_list | Comma separated list of integers of the alert ID. | Optional | 
-| severity | Comma separated list of strings of alert severity (valid values are low, medium, high, critical, informational). | Optional | 
+| alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
+| severity | Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational). | Optional | 
 | lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
 | gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
@@ -1088,14 +1088,14 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.Alert.alert_id | String | A unique identfier that Cortex XSIAM assigns to each alert. | 
-| ASM.Alert.severity | String | The severity that was assigned to this alert when it was triggered \(Options are Informatonal, Low, Medium, High, Critical, or Unknown\). | 
+| ASM.Alert.alert_id | String | A unique identifier that Cortex XSIAM assigns to each alert. | 
+| ASM.Alert.severity | String | The severity that was assigned to this alert when it was triggered \(Options are Informational, Low, Medium, High, Critical, or Unknown\). | 
 | ASM.Alert.external_id | String | The alert ID as recorded in the detector from which this alert was sent. | 
 | ASM.Alert.name | String | Summary of the ASM internet exposure alert. | 
 | ASM.Alert.description | String | More detailed explanation of internet exposure alert. | 
 | ASM.Alert.host_name | String | The hostname of the endpoint or server on which this alert triggered. | 
-| ASM.Alert.dynamic_fields | Unknown | Alert fields pulled from XSOAR context. | 
-| ASM.Alert.events | Unknown | Individual events the comprise the alert. | 
+| ASM.Alert.dynamic_fields | Unknown | Alert fields pulled from Cortex XSOAR context. | 
+| ASM.Alert.events | Unknown | Individual events that comprise the alert. | 
 | ASM.Alert.detection_timestamp | Date | Date the alert was created. | 
 
 #### Command example
