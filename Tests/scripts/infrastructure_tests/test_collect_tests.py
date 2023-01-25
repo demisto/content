@@ -11,7 +11,7 @@ from Tests.scripts.collect_tests.collect_tests import (
     BranchTestCollector, FileType, Machine, XSIAMNightlyTestCollector,
     XSOARNightlyTestCollector)
 from Tests.scripts.collect_tests.constants import (
-    ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2, MODELING_RULE_COMPONENT_FILES, ONLY_INSTALL_PACK_FILE_TYPES,
+    ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2, MODELING_RULE_COMPONENT_FILES,
     XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import FilesToCollect, PackManager
@@ -448,6 +448,7 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.IMAGE,
     FileType.DESCRIPTION,
     FileType.METADATA,
+    FileType.RELEASE_NOTES_CONFIG,
     FileType.INCIDENT_TYPE,
     FileType.INCIDENT_FIELD,
     FileType.INDICATOR_FIELD,
@@ -470,6 +471,7 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.PRE_PROCESS_RULES,
     FileType.JOB,
     FileType.CONNECTION,
+    FileType.RELEASE_NOTES_CONFIG,
     FileType.XSOAR_CONFIG,
     FileType.AUTHOR_IMAGE,
     FileType.CHANGELOG,
@@ -572,10 +574,15 @@ def test_invalid_content_item(mocker, monkeypatch):
           collector_class_args=XSOAR_BRANCH_ARGS)
 
 
-def test_release_note_config_in_only_install_pack():
+def test_number_of_file_types():
     """
-    Makes sure the FileType.RELEASE_NOTES_CONFIG is in ONLY_INSTALL_PACK_FILE_TYPES,
-    as we have a special treatment for it under __collect_single.
-    If this test fails, and you deliberatly removed it from the list, make sure to remove the special case (`except KeyError`...)
+    The test collection assumes the list of FileType values does not change.
+    If this unit test fails, it means that list has changed (in the SDK).
+    Please make sure the change does not break test collection:
+        - New type:     1. Add it to IGNORED_FILE_TYPES or ONLY_INSTALL_PACK
+                        2. Create a PR and see collection works
+                        3. Increase the number in this test
+
+        - Removed type:    Decrease the number here.
     """
-    assert FileType.RELEASE_NOTES_CONFIG in ONLY_INSTALL_PACK_FILE_TYPES
+    assert len(FileType) == 74
