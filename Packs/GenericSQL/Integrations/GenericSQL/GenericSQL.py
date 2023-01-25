@@ -124,7 +124,7 @@ class Client:
             if self.dialect == 'PostgreSQL':
                 ssl_connection = {'sslmode': 'require'}
             else:
-                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
+                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
         engine: sqlalchemy.engine.Engine = None
         if self.use_pool:
             if 'expiringdict' not in sys.modules:
