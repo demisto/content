@@ -63,7 +63,7 @@ def mock_client():
         'command_name': 'threat-grid-sample-list'
     }, 'ThreatGrid.Sample'),
 ])
-@mock.patch('ThreatGridV2.fileResult', lambda filename, data: FILE_ENTRY)
+@mock.patch('ThreatGrid_v2.fileResult', lambda filename, data: FILE_ENTRY)
 def test_get_sample_command(requests_mock, mock_client, url, args, outputs):
     """
     Scenario: Retrieves the Sample Info record of a submission by sample ID.
