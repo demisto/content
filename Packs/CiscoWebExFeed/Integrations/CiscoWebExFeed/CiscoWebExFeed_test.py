@@ -1,6 +1,13 @@
 from bs4 import BeautifulSoup
 import pytest
 import CiscoWebExFeed
+import io
+import json
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def get_data_from_file(file_path):
@@ -70,9 +77,8 @@ def test_grab_domain_table():
     """
     from CiscoWebExFeed import grab_domain_table
     soup = BeautifulSoup(HTML_DOMAIN_SECTION, "html.parser")
-    #expected_result = get_data_from_file('tests_data_2.txt')
-    expected_result = "[['Client Type', 'Domain(s)'], ['Webex Meetings Desktop Application', '*.wbx2.com\\t\\t\\t*.ciscospark.com\\t\\t\\t*.webexcontent.com'], ['Webex Desktop Clients (Mac/PC, including WebApp the browser based thin client) connecting to Webex Meetings', '*.webex.com'], ['On-prem SIP/H323 devices calling into (or being called back from) a Webex Meeting', '*.webex.com (note IP dialing also available)'], ['Webex Mobile Clients (iOS, Android) connecting to Webex Meetings', '*.webex.com'], ['Certificate Validation', '*.identrust.com\\t\\t\\t*.quovadisglobal.com\\t\\t\\t*.digicert.com\\t\\t\\t*.godaddy.com\\t\\t\\t*.lencr.org\\t\\t\\t*.intel.com'], ['People Insights Integration', '*.accompany.com'], ['Webex Meetings site performance analytics and Webex App', '*.eum-appdynamics.com\\t\\t\\t*.appdynamics.com'], ['Webex Events Webcasts (Attendees only)', '*.vbrickrev.com'], ['Used for Slido PPT add-in and to allow Slido webpages to create polls/quizzes in pre-meeting', '*.slido.com\\t\\t\\t*.sli.do\\t\\t\\t*.data.logentries.com'], ['If you have Webex app Desktop Clients, Cloud Registered Devices (including Webex Boards) connecting to Webex Meetings, you also need to allow the list of domains outlined in https://help.webex.com/WBX000028782/Network-Requirements-for-Webex-Teams-Services']]"
-    assert str(grab_domain_table(soup)) == expected_result
+    expected_result = util_load_json('tests_data_2.json')
+    assert grab_domain_table(soup) == expected_result
 
 
 def test_grab_ip_table():
@@ -106,7 +112,7 @@ def test_check_indicator_type__diffrent_inputs(input, expected):
 
 
 @pytest.mark.parametrize('input, expected', [
-                         ('Both', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n| domainmock | mocked_type |\n'),
+                         ('Both', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n| domainmock | mocked_type |\n'),      # noqa: E501
                          ('IP', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n'),
                          ('DOMAIN', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| domainmock | mocked_type |\n')])
 def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input, expected):
