@@ -2161,9 +2161,9 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
-    api_key = params.get('api_token')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
+    api_key = params.get('api_token').get('password')
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)

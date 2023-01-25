@@ -12,10 +12,12 @@ configuration:
   required: false
   type: 9
 - additionalinfo: Cluster Authentication Token
-  display: API Token
+  display: Username
+  displaypassword: API Token
   name: api_token
   required: false
-  type: 4
+  type: 9
+  hiddenusername: true
 - defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials,
     cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage,
     malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
