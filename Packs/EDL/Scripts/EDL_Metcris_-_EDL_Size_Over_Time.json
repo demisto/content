@@ -1,0 +1,95 @@
+{
+	"id": "50a810c4-cb54-40f8-8907-0c7418b484bd",
+	"version": 3,
+	"cacheVersn": 0,
+	"modified": "2023-01-24T17:23:57.923622489Z",
+	"packID": "",
+	"packName": "",
+	"itemVersion": "",
+	"fromServerVersion": "",
+	"toServerVersion": "",
+	"definitionId": "",
+	"vcShouldIgnore": false,
+	"vcShouldKeepItemLegacyProdMachine": false,
+	"commitMessage": "",
+	"shouldCommit": false,
+	"fromDate": "0001-01-01T00:00:00Z",
+	"toDate": "0001-01-01T00:00:00Z",
+	"period": {
+		"by": "",
+		"byTo": "",
+		"byFrom": "days",
+		"toValue": null,
+		"fromValue": 30,
+		"field": ""
+	},
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"name": "EDL Metcris - EDL Size Over Time",
+	"prevName": "EDL Metcris - EDL Size Over Time",
+	"layout": [
+		{
+			"id": "e2413de0-9bf6-11ed-a2b0-b96d84c80b93",
+			"forceRange": false,
+			"x": 0,
+			"y": 0,
+			"i": "e2413de0-9bf6-11ed-a2b0-b96d84c80b93",
+			"w": 12,
+			"h": 3,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"cacheVersn": 0,
+				"modified": "0001-01-01T00:00:00Z",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "EDL Size Over Time",
+				"prevName": "",
+				"dataType": "scripts",
+				"widgetType": "line",
+				"query": "EDLMetricsWidget",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 30,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"server_url": "wordchapteryellowsent.com",
+					"valuesFormat": "abbreviated",
+					"verify_ssl": "False",
+					"xAxisLabel": "Time",
+					"yAxisLabel": "EDL Size"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		}
+	],
+	"system": false,
+	"isCommon": false,
+	"owner": "gabrielbouzard14",
+	"locked": false,
+	"hidePivot": false,
+	"hideSearch": false,
+	"modulePage": false
+}

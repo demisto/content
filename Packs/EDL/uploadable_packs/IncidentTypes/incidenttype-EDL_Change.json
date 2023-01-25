@@ -1,0 +1,30 @@
+{
+    "id": "Generic Export Indicators Service Change",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Generic Export Indicators Service Change",
+    "prevName": "Generic Export Indicators Service Change",
+    "color": "#9FA8DA",
+    "playbookId": "Modify EDL",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "EDL Change Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.6.0"
+}

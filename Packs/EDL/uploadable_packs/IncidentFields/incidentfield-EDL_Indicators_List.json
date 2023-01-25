@@ -1,0 +1,33 @@
+{
+    "id": "incident_genericexportindicatorsserviceindicatorslist",
+    "version": -1,
+    "modified": "2022-03-23T23:21:45.370936636-03:00",
+    "name": "Generic Export Indicators Service Indicators List",
+    "ownerOnly": false,
+    "placeholder": "List of IOCs to add to/remove from EDL (according to value of EDL Action). May be newline- or comma-delimited.",
+    "description": "List of IOCs to add to/remove from EDL (according to value of EDL Action). May be newline- or comma-delimited.",
+    "cliName": "genericexportindicatorsserviceindicatorslist",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "EDL Change"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.6.0"
+}

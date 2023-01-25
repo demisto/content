@@ -1,0 +1,1000 @@
+id: Tag massive and internal IOCs to avoid EDL listing
+version: -1
+name: Tag massive and internal IOCs to avoid EDL listing
+description: |-
+  This playbook tags internal assets and massive IOCs (TLD wildcards and CIDRs) to be avoided by the EDL. The playbook does the following according to indicator type:
+
+  CIDRs - If the CIDR prefix is larger than the set max prefix it tags it as a `Massive_CIDR` and also with `skip_edl`.
+
+  TLD Wildcards - If a domainglob is a TLD wildcard (for example, *.net) it will be tagged as `TLD_Wildcard` and also with `skip_edl`.
+
+  Internal IPs - If an IP is internal and also part of the CIDR configured by the user in the "Internal Assets" list it will be checked as `internal` and tagged with `skip_edl`.
+
+  Internal Domains - If a domain is a subdomain of the domains configured in the "Internal Assets" list it is checked as `internal` and tagged with `skip_edl`.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c8b481b1-2bdc-4167-8e22-98b2225c588e
+    type: start
+    task:
+      id: c8b481b1-2bdc-4167-8e22-98b2225c588e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "38"
+      - "39"
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 36927f6b-0edc-4026-869b-5463e3339f30
+    type: condition
+    task:
+      id: 36927f6b-0edc-4026-869b-5463e3339f30
+      version: -1
+      name: Check for DomainGlobs
+      description: Checks if domainglobs are returned in the query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DomainGlob
+                accessor: value
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8075e7cc-4924-445d-8a74-fbce3c561fa9
+    type: regular
+    task:
+      id: 8075e7cc-4924-445d-8a74-fbce3c561fa9
+      version: -1
+      name: Add Big CIDRs to context
+      description: Adds relevant CIRs under `NewIOCs.CIDRs` in the context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NewIOCs.CIDRs
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: CIDR
+            - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: IPv6CIDR
+          - - operator: b8cd921d-feda-4c58-8f09-662891755cfb
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Maximum CIDR Prefix
+                iscontext: true
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c93f8140-071d-46cc-8e2e-01aa08afdffb
+    type: condition
+    task:
+      id: c93f8140-071d-46cc-8e2e-01aa08afdffb
+      version: -1
+      name: Check for CIDRs
+      description: Checks if CIDRs are returned in the query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CIDR
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IPv6CIDR
+                accessor: value
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 61af1bf3-2dc7-4d3a-8ab4-68386511cb9d
+    type: regular
+    task:
+      id: 61af1bf3-2dc7-4d3a-8ab4-68386511cb9d
+      version: -1
+      name: Append Massive_CIDR tag
+      description: Appends Massive_CIDR tag to the CIDR
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: Massive_CIDR,skip_edl
+      indicatorsValues:
+        simple: ${NewIOCs.CIDRs}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d5a0c6d4-40be-43b5-8cc6-673a770f3ec0
+    type: regular
+    task:
+      id: d5a0c6d4-40be-43b5-8cc6-673a770f3ec0
+      version: -1
+      name: Add TLD wildcards to context
+      description: Adds tld wild cards to context under `NewIOCs.TLD_Wildcards`
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: NewIOCs.TLD_Wildcards
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: DomainGlob
+          - - operator: match
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: '[*][.]\w*$'
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 00962fb1-ba33-4cbd-80fb-b954cd3a5b13
+    type: regular
+    task:
+      id: 00962fb1-ba33-4cbd-80fb-b954cd3a5b13
+      version: -1
+      name: Append TLD_Wildcard tag
+      description: Appends TLD_Wildcard tag to the DomainGlob
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: TLD_Wildcard,skip_edl
+      indicatorsValues:
+        simple: ${NewIOCs.TLD_Wildcards}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 27a122c3-c453-4d27-8e6a-d776c6bc6d21
+    type: title
+    task:
+      id: 27a122c3-c453-4d27-8e6a-d776c6bc6d21
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: c2903f0f-6a94-4abc-87e5-7e3c2390b74b
+    type: condition
+    task:
+      id: c2903f0f-6a94-4abc-87e5-7e3c2390b74b
+      version: -1
+      name: Check for internal Assets
+      description: Checks whether the user added a list of internal assets.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "33"
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Internal Assets
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f4327833-9aa9-4ecf-888b-1b1d763f722e
+    type: title
+    task:
+      id: f4327833-9aa9-4ecf-888b-1b1d763f722e
+      version: -1
+      name: No Results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: cbd36ac7-1b29-41cf-8776-f7bb14c0c107
+    type: regular
+    task:
+      id: cbd36ac7-1b29-41cf-8776-f7bb14c0c107
+      version: -1
+      name: Mark IPs as Internal
+      description: Sets the `internal` field as True
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      internal:
+        simple: "True"
+      value:
+        complex:
+          root: ${Internal_IPs}
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1005,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 3a8c5659-aabe-4692-856e-ba4f4f9534c8
+    type: regular
+    task:
+      id: 3a8c5659-aabe-4692-856e-ba4f4f9534c8
+      version: -1
+      name: Add internal IPs to context
+      description: Add internal IPs to context under `Internal_IPs`
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Internal_IPs
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: IP
+          - - operator: IsInCidrRanges
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: ${Internal_Assets.CIDRs}
+                iscontext: true
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1005,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: bffc2799-ab07-4326-8aac-5092fa97d666
+    type: title
+    task:
+      id: bffc2799-ab07-4326-8aac-5092fa97d666
+      version: -1
+      name: No Internal Assets
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 41b58221-2e2c-404c-8a56-8fa31e9de755
+    type: regular
+    task:
+      id: 41b58221-2e2c-404c-8a56-8fa31e9de755
+      version: -1
+      name: Mark domains as internal
+      description: Set the `internal` field of the domain to True.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      internal:
+        simple: "True"
+      value:
+        complex:
+          root: ${Internal_Domains}
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1475,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 0906060e-0ccd-410f-8365-03670c6fcd34
+    type: regular
+    task:
+      id: 0906060e-0ccd-410f-8365-03670c6fcd34
+      version: -1
+      name: Add internal domains to context
+      description: Add internal domains to context under `Internal_Domains`
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Internal_Domains
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: 1bbda28b-cbd2-48f3-89c1-408e19b9a169
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: ${Internal_Assets.Domains}
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1475,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: d529ea63-25bf-447c-813c-5d3840655744
+    type: regular
+    task:
+      id: d529ea63-25bf-447c-813c-5d3840655744
+      version: -1
+      name: Add internal CIDRs to context
+      description: Add internal CIDRs to context under `Internal_Assets.CIDRs`
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: Internal_Assets.CIDRs
+      value:
+        complex:
+          root: inputs.Internal Assets
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.Internal Assets
+                iscontext: true
+              right:
+                value:
+                  simple: \b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1005,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9c847480-1372-4c1c-89af-de93a8d38020
+    type: regular
+    task:
+      id: 9c847480-1372-4c1c-89af-de93a8d38020
+      version: -1
+      name: Add internal domains to context
+      description: Add internal domains to context under `Internal_Assets.Domains`
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: Internal_Assets.Domains
+      value:
+        complex:
+          root: inputs.Internal Assets
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.Internal Assets
+                iscontext: true
+              right:
+                value:
+                  simple: (?:[._%+\p{L}\p{N}-]+|\[\.\])+(?:\[\.\]|\.)[\p{L}]{2,}|(?:https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/[^\s]*|https:\/\/urldefense\.(?:proofpoint\.)?com\/.*
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1475,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 23163823-04fb-442a-8bb7-68763c259ead
+    type: regular
+    task:
+      id: 23163823-04fb-442a-8bb7-68763c259ead
+      version: -1
+      name: Append skip_edl tag tp IPs
+      description: Append `skip_edl` tag tp IPs
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: skip_edl
+      indicatorsValues:
+        simple: ${Internal_Domains}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1005,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: a718d7fe-68f9-49a0-86fb-58d2253aea5a
+    type: regular
+    task:
+      id: a718d7fe-68f9-49a0-86fb-58d2253aea5a
+      version: -1
+      name: Append skip_edl tag to Domains
+      description: Append `skip_edl` tag to Domains
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: skip_edl
+      indicatorsValues:
+        simple: ${Internal_IPs}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1475,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 2fe16957-7d77-44ce-896f-333f51d1b1b0
+    type: title
+    task:
+      id: 2fe16957-7d77-44ce-896f-333f51d1b1b0
+      version: -1
+      name: Massive CIDRs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 335,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 60f2ede4-a63a-4f75-89d3-5ed92de323e4
+    type: title
+    task:
+      id: 60f2ede4-a63a-4f75-89d3-5ed92de323e4
+      version: -1
+      name: TLD Wildcards
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 09aad49d-6a57-4c6d-8828-0c661e306ff6
+    type: title
+    task:
+      id: 09aad49d-6a57-4c6d-8828-0c661e306ff6
+      version: -1
+      name: Internal Assets
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1575,
+        "width": 2125,
+        "x": -270,
+        "y": -260
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: This query retrieves the following indicator types - IP, IPv6,
+    CIDR, and IPv6CIDR.
+  playbookInputQuery:
+    query: type:CIDR or type:IP or type:DomainGlob or type:IPv6CIDR or type:Domain
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: Internal Assets
+  value:
+    complex:
+      root: lists
+      accessor: Internal assets
+      transformers:
+      - operator: split
+        args:
+          delimiter:
+            value:
+              simple: |2+
+
+  required: false
+  description: 'A list of internal assets consisting of CIDRs and domains that belong
+    to the user. '
+  playbookInputQuery:
+- key: Maximum CIDR Prefix
+  value:
+    simple: "8"
+  required: false
+  description: The maximum prefix to allow. Any prefix bigger than this is
+    tagged to be ignored by the EDL.
+  playbookInputQuery:
+fromversion: 5.5.0
+quiet: true
+tests:
+- No tests
