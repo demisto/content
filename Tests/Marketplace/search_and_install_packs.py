@@ -147,7 +147,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
         )
 
         if 200 <= status_code < 300:
-            with open(os.path.join(os.getenv("ARTIFACTS_FOLDER"), 'install_file.json'), 'w') as f:
+            with open(os.path.join(os.getenv("ARTIFACTS_FOLDER"), 'dep.json'), 'w') as f:
                 f.write(json.dumps(response_data))
             dependencies_data: list = []
             dependants_ids = [pack_id]
