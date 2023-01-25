@@ -147,11 +147,11 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
         )
 
         if 200 <= status_code < 300:
-            with open(os.path.join(os.getenv("ARTIFACTS_FOLDER"), 'dep.json'), 'w') as f:
-                f.write(json.dumps(response_data))
             dependencies_data: list = []
             dependants_ids = [pack_id]
             reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
+            with open(os.path.join(os.getenv("ARTIFACTS_FOLDER"), 'dep.json'), 'w') as f:
+                f.write(json.dumps(reseponse_data))
             create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
             dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
             if dependencies_data:
