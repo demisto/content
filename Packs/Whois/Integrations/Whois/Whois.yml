@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Whois
   version: -1
@@ -7,17 +10,23 @@ configuration:
   name: with_error
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Proxy URL
   additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
   name: proxy_url
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -32,6 +41,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -49,8 +59,8 @@ script:
       defaultValue: true
     - name: verbose
       description: Whether to add the raw response as a dictionary to the context. Default value is False.
-      required: False
-      defaultValue: false 
+      required: false
+      defaultValue: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -549,7 +559,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.42746
+  dockerimage: demisto/ippysocks-py3:1.0.0.45502
   feed: false
   isfetch: false
   longRunning: false

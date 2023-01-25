@@ -146,12 +146,20 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- display: HEC Token (HTTP Event Collector)
+- name: cred_hec_token
+  required: false
+  type: 9
+  section: Collect
+  advanced: true
+  displaypassword: HEC Token (HTTP Event Collector)
+  hiddenusername: true
+- display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   required: false
   type: 4
   section: Collect
   advanced: true
+  hidden: true
 - display: 'HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/).'
   name: hec_url
   required: false
@@ -161,14 +169,14 @@ configuration:
 - additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
   display: Enrichment Types
   name: enabled_enrichments
-  options:
-  - Drilldown
-  - Asset
-  - Identity
   required: false
   type: 16
   section: Collect
   advanced: true
+  options:
+  - Drilldown
+  - Asset
+  - Identity
 - additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
   defaultvalue: '5'
   display: Enrichment Timeout (Minutes)
@@ -177,14 +185,14 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
-  defaultvalue: '20'
-  display: Number of Events Per Enrichment Type
+- display: 'Number of Events Per Enrichment Type'
   name: num_enrichment_events
   required: false
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
+  defaultvalue: '20'
 - display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
   name: extensive_logs
   required: false
@@ -192,20 +200,20 @@ configuration:
   section: Collect
   advanced: true
 - additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
-  defaultvalue: '15'
   display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
   required: false
   type: 0
   section: Collect
   advanced: true
-- additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
-  display: 'Advanced: Unique ID fields'
+  defaultvalue: '15'
+- display: 'Advanced: Unique ID fields'
   name: unique_id_fields
   required: false
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
 - defaultvalue: 'false'
   display: Enable user mapping
   name: userMapping
@@ -229,14 +237,14 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: The name of the lookup table containing the Splunk username.
-  defaultvalue: splunk_username
+- defaultvalue: 'splunk_username'
   display: SPLUNK user key
   name: splunk_user_field
   required: false
   type: 0
   section: Connect
   advanced: true
+  additionalinfo: The name of the lookup table containing the Splunk username.
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -293,15 +301,28 @@ script:
       name: interval_in_seconds
     - description: The job sid.
       name: sid
-    description: Searches Splunk for events.
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: The Fast mode prioritizes the performance of the search and does not return nonessential field or event data. This means that the search returns what is essential and required if fast_mode equals 'true'.
+      name: fast_mode
+      predefined:
+      - 'true'
+      - 'false'
+    description: Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
     name: splunk-search
     polling: true
     outputs:
     - contextPath: Splunk.Result
       description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
       type: Unknown
-    - contextPath: Splunk.JobStatus
-      description: The search status.
+    - contextPath: Splunk.JobStatus.SID
+      description: ID of the job.
+      type: String
+    - contextPath: Splunk.JobStatus.Status
+      description: Status of the job.
+      type: String
+    - contextPath: Splunk.JobStatus.TotalResults
+      description: The number of events that were returned by the job.
       type: String
   - arguments:
     - description: Splunk index in which to push data. Run the splunk-get-indexes command to get all indexes.
@@ -575,7 +596,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.42294
+  dockerimage: demisto/splunksdk-py3:1.0.0.44906
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -1934,6 +1934,8 @@ def build_search_kwargs(args, polling=False):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
+    if argToBoolean(demisto.get(args, 'fast_mode')):
+        kwargs_normalsearch['adhoc_search_level'] = "fast"
     if polling:
         kwargs_normalsearch['exec_mode'] = "normal"
     else:
@@ -1950,15 +1952,22 @@ def build_search_query(args):
     return query
 
 
-def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res):
+def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res, job_id):
     ec = {}
+    number_of_results = len(parsed_search_results)
 
     if args.get('update_context', "true") == "true":
         ec['Splunk.Result'] = parsed_search_results
         if len(dbot_scores) > 0:
             ec['DBotScore'] = dbot_scores
         if status_res:
-            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = status_res.outputs
+            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = {
+                **status_res.outputs, 'TotalResults': number_of_results}
+    if job_id and not status_res:
+        status = 'DONE' if (number_of_results > 0) else 'NO RESULTS'
+        ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = [{'SID': job_id,
+                                                                   'TotalResults': number_of_results,
+                                                                   'Status': status}]
     return ec
 
 
@@ -1974,7 +1983,7 @@ def schedule_polling_command(command: str, args: dict, interval_in_secs: int):
     )
 
 
-def build_search_human_readable(args: dict, parsed_search_results) -> str:
+def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
     headers = ""
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
@@ -2002,7 +2011,10 @@ def build_search_human_readable(args: dict, parsed_search_results) -> str:
             headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
-    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
+    hr_headline = 'Splunk Search results for query:\n'
+    if sid:
+        hr_headline += f'sid: {str(sid)}'
+    human_readable = tableToMarkdown(hr_headline,
                                      parsed_search_results, headers)
     return human_readable
 
@@ -2059,14 +2071,12 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
 
 def splunk_search_command(service: client.Service) -> CommandResults:
     args = demisto.args()
-
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
     search_kwargs = build_search_kwargs(args, polling)
     job_sid = args.get("sid")
     search_job = None
     interval_in_secs = int(args.get('interval_in_seconds', 30))
-
     if not job_sid or not polling:
         # create a new job to search the query.
         search_job = service.jobs.create(query, **search_kwargs)
@@ -2086,7 +2096,6 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         else:
             # Get the job by its SID.
             search_job = service.job(job_sid)
-
     num_of_results_from_query = search_job["resultCount"] if search_job else None
 
     results_limit = float(args.get("event_limit", 100))
@@ -2108,9 +2117,8 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
-
-    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
-    human_readable = build_search_human_readable(args, total_parsed_results)
+    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result, str(job_sid))
+    human_readable = build_search_human_readable(args, total_parsed_results, str(job_sid))
 
     return CommandResults(
         outputs=entry_context,
@@ -2251,7 +2259,7 @@ def splunk_submit_event_hec(
 
 
 def splunk_submit_event_hec_command():
-    hec_token = demisto.params().get('hec_token')
+    hec_token = demisto.params().get('cred_hec_token', {}).get('password') or demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
         raise Exception('The HEC URL was not provided.')
