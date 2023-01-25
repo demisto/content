@@ -96,18 +96,6 @@ HASH_TYPE_TO_STIX_HASH_TYPE = {
     'sha512': 'SHA-512',
 }
 
-def update_hash_type(hash_type):
-    """Updating the hash string to match STIX conventions"""
-    if hash_type == 'md5':
-        return 'MD5'
-    if hash_type == 'sha1':
-        return 'SHA-1'
-    if hash_type == 'sha256':
-        return 'SHA-256'
-    if hash_type == 'sha512':
-        return 'SHA-512'
-    else:
-        return 'Unknown'
 
 ''' TAXII2 Server '''
 
