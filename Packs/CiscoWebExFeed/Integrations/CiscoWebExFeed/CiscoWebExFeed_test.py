@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import pytest
 DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
                 ['domain1', '*.d1.com'],
                 ['domain2', '*.d2.com'],
@@ -95,3 +96,18 @@ def test_grab_ip_table():
     from CiscoWebExFeed import grab_ip_table
     expected_result = [['150.253.128.0/17 (CIDR) or 150.253.128.0 - 150.253.255.255 (net range)']]
     assert grab_ip_table(soup) == expected_result
+
+
+@pytest.mark.parametrize('input, expected', [
+    ('1.1.1.1/16', 'CIDR'), ('*.google.com', 'DomainGlob'), ('google.com', 'Domain')])
+def test_check_indicator_type(input, expected):
+    """
+    Given:  a string that is an ip, domain or domain glob
+
+    When:
+        - check_indicator_type is called
+    Then:
+        - the function should return the correct indicator type
+    """
+    from CiscoWebExFeed import check_indicator_type
+    assert check_indicator_type(input) == expected
