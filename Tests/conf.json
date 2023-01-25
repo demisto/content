@@ -3358,7 +3358,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Prisma SASE",
+            "integrations": "Prisma Palo Alto Networks - Prisma SASE",
             "playbookID": "PrismaSASE Test",
             "fromversion": "6.5.0"
         },
