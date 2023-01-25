@@ -1,7 +1,6 @@
 commonfields:
   id: Zerohack XDR
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Zerohack XDR
 display: Zerohack XDR
 category: Network Security
