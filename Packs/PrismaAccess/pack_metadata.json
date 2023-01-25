@@ -1,5 +1,5 @@
 {
-    "name": "Prisma Access by Palo Alto Networks",
+    "name": "Prisma SASE by Palo Alto Networks",
     "description": "Integrate with Palo Alto Networks Prisma Access to query activity and take actions.",
     "support": "xsoar",
     "currentVersion": "1.0.12",
