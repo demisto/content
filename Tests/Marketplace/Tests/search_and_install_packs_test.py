@@ -392,7 +392,7 @@ def test_get_pack_id_from_error_with_gcp_path():
 
 
 def test_create_dependencies_data_structure():
-    with open('xsiam_dep.json') as f:
+    with open('618_dep_dev_after_delete.json') as f:
         response_data = json.loads(f.read())
     response_data = response_data.get('dependencies', [])
     dependants_ids = ['DeveloperTools']
