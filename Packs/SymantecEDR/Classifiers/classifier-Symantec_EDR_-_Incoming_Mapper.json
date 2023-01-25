@@ -1,11 +1,8 @@
 {
 	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
-	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "aa7af20b-62ed-4b7c-8642-83fd6d3185cf",
 	"incidentSamples": null,
 	"indicatorSamples": null,
@@ -266,8 +263,6 @@
 	},
 	"name": "Symantec EDR - Incoming Mapper",
 	"nameRaw": "Symantec EDR - Incoming Mapper",
-	"packID": "",
-	"packName": "",
 	"propagationLabels": [
 		"all"
 	],

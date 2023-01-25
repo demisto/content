@@ -1,11 +1,8 @@
 {
 	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
-	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "17fe26c1-8e8e-43c3-8d15-92db9dcd0c97",
 	"incidentSamples": null,
 	"indicatorSamples": null,
@@ -25,8 +22,6 @@
 	"mapping": null,
 	"name": "Symantec EDR - Incident Classifier",
 	"nameRaw": "Symantec EDR - Incident Classifier",
-	"packID": "",
-	"packName": "",
 	"propagationLabels": [
 		"all"
 	],

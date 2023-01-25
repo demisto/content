@@ -32,7 +32,6 @@
 			}
 		]
 	},
-	"definitionId": "",
 	"description": "",
 	"detached": false,
 	"details": null,
@@ -1648,7 +1647,6 @@
 			}
 		]
 	},
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "95f8fb53-e626-431c-861f-913b1c8c6107",
 	"indicatorsDetails": null,
@@ -1657,8 +1655,6 @@
 	"locked": false,
 	"mobile": null,
 	"name": "Symantec EDR Incident layout",
-	"packID": "",
-	"packName": "",
 	"propagationLabels": [
 		"all"
 	],
