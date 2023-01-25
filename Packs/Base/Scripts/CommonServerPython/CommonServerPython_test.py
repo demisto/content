@@ -8650,3 +8650,39 @@ def test_is_valid_filename(filename):
         Test - Assert the function does not raise an Exception
     """
     assert is_filename_valid(filename)
+
+
+TEST_REPLACE_SPACES_IN_CERTIFICATE = [
+    (
+        'TEST',
+        'TEST'
+    ),
+    (
+        '-----BEGIN SSH CERTIFICATE----- MIIF7z gdwZcx IENpdH -----END SSH CERTIFICATE-----',
+        '-----BEGIN SSH CERTIFICATE-----\nMIIF7z\ngdwZcx\nIENpdH\n-----END SSH CERTIFICATE-----'
+    ),
+    (
+        '-----BEGIN RSA PRIVATE KEY----- MIIF7z gdwZcx IENpdH -----END RSA PRIVATE KEY-----',
+        '-----BEGIN RSA PRIVATE KEY-----\nMIIF7z\ngdwZcx\nIENpdH\n-----END RSA PRIVATE KEY-----'
+    ),
+    (
+        '-----BEGIN RSA PRIVATE KEY----- MIIF7z gdwZcx IENpdH',
+        '-----BEGIN RSA PRIVATE KEY----- MIIF7z gdwZcx IENpdH'
+    )
+]
+
+
+@pytest.mark.parametrize('private_key, expected', TEST_REPLACE_SPACES_IN_CERTIFICATE)
+def test_replace_spaces_in_certificate(private_key, expected):
+    """
+    Given:
+        Private key with spaces.
+    When:
+        Running replace_spaces_in_certificate function.
+    Then:
+        Test - Assert the function not returning as expected.
+    """
+    from CommonServerPython import replace_spaces_in_certificate
+
+    result = replace_spaces_in_certificate(private_key)
+    assert result == expected

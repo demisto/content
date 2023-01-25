@@ -10889,6 +10889,26 @@ def is_scheduled_command_retry():
     return True if sm.get('is_polling', False) else False
 
 
+def replace_spaces_in_certificate(private_key):
+    """
+    This function is used in case the private key is in the wrong format of one line with spaces instead of multiple lines.
+
+    :type private_key: ``str``
+    :param private_key: the private key to replace spaces in.
+
+    :return: the private key with spaces replaced with new lines if the private key is in the correct format,
+             otherwise the private key will be returned as is.
+    :rtype: ``str``
+    """
+    match_begin = re.search("-----BEGIN(.*?)-----", private_key)
+    match_end = re.search("-----END(.*?)-----", private_key)
+
+    if match_begin and match_end:
+        return re.sub(fr'(?<={match_begin.group(0)})(.*?)(?={match_end.group(0)})',
+                      lambda match: match.group(0).replace(' ', '\n'), private_key)
+    return private_key
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
