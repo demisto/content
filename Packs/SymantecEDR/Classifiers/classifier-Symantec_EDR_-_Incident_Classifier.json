@@ -1,42 +1,29 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"id": "17fe26c1-8e8e-43c3-8d15-92db9dcd0c97",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"Advanced Attack Techniques": "Symantec EDR Incident",
-		"Analyst Reviewed": "Symantec EDR Incident",
-		"Cloud Analytics": "Symantec EDR Incident",
-		"Email": "Symantec EDR Incident",
-		"Indicators of Compromise": "Symantec EDR Incident",
-		"SEP Detection": "Symantec EDR Incident",
-		"Sandboxing": "Symantec EDR Incident"
-	},
-	"locked": false,
-	"logicalVersion": 4,
-	"mapping": null,
-	"name": "Symantec EDR - Incident Classifier",
-	"nameRaw": "Symantec EDR - Incident Classifier",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"accessor": "detection_type",
-			"filters": [],
-			"root": "incident",
-			"transformers": []
-		}
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Symantec EDR - Incident Classifier",
+    "keyTypeMap": {
+        "Advanced Attack Techniques": "Symantec EDR Incident",
+        "Analyst Reviewed": "Symantec EDR Incident",
+        "Cloud Analytics": "Symantec EDR Incident",
+        "Email": "Symantec EDR Incident",
+        "Indicators of Compromise": "Symantec EDR Incident",
+        "SEP Detection": "Symantec EDR Incident",
+        "Sandboxing": "Symantec EDR Incident"
+    },
+    "name": "Symantec EDR - Incident Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "detection_type",
+            "filters": [],
+            "root": "incident",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
 }

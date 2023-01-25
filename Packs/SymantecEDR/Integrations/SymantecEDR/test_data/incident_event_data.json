@@ -1,8 +1,8 @@
 {
     "result": [
         {
-            "type_id": 8001,
-            "severity_id": 1,
+            "type_id": 800-1,
+            "severity_id": -1,
             "device_time": "2022-12-01T21:43:44.218Z",
             "log_time": "2022-12-01T09:54:47.909Z",
             "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
@@ -14,7 +14,7 @@
             "user_sid": "S-1-5-21-3669279935-616031708-4259075843-500",
             "incident": "9d6f2100-7158-11ed-da26-000000000001",
             "device_domain": "WORKGROUP",
-            "operation": 1,
+            "operation": -1,
             "event_actor": {
                 "pid": 12936,
                 "uid": "787E05D5-71B8-F1ED-8217-98261F32744E",

@@ -1,276 +1,259 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"id": "aa7af20b-62ed-4b7c-8642-83fd6d3185cf",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 18,
-	"mapping": {
-		"Symantec EDR Incident": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"ATP  Rule Name": {
-					"simple": "incident.rule_name"
-				},
-				"ATP Incident ID": {
-					"simple": "incident.incident_id"
-				},
-				"ATP Rule ID": {
-					"simple": "incident.atp_rule_id"
-				},
-				"Description": {
-					"simple": "incident.description"
-				},
-				"Detection Type": {
-					"simple": "incident.detection_type"
-				},
-				"EDR Enriched Category ID": {
-					"complex": {
-						"accessor": "category_id",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"EDR Enriched Category Name": {
-					"complex": {
-						"accessor": "category_name",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"EDR Enriched Rule Description": {
-					"complex": {
-						"accessor": "rule_description",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"EDR Enriched Rule Name": {
-					"complex": {
-						"accessor": "rule_name",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"EDR Enriched Suspicion Score": {
-					"complex": {
-						"accessor": "suspicion_score",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"EDR Event Actor": {
-					"complex": {
-						"filters": [],
-						"root": "events.event_actor",
-						"transformers": []
-					}
-				},
-				"EDR Event Process": {
-					"complex": {
-						"accessor": "process",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"EDR Incident Comments": {
-					"complex": {
-						"filters": [],
-						"root": "comments",
-						"transformers": []
-					}
-				},
-				"EDR Incident Create Time": {
-					"simple": "incident.incident_created"
-				},
-				"EDR Incident Events": {
-					"complex": {
-						"filters": [],
-						"root": "events",
-						"transformers": []
-					}
-				},
-				"EDR Incident Resolution": {
-					"simple": "incident.resolution"
-				},
-				"EDR Incident State": {
-					"simple": "incident.incident_state"
-				},
-				"EDR Process FIle": {
-					"complex": {
-						"accessor": "file",
-						"filters": [],
-						"root": "events.process",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"EDR Process User": {
-					"complex": {
-						"accessor": "user",
-						"filters": [],
-						"root": "events.process",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"EDR attacks": {
-					"complex": {
-						"accessor": "attacks",
-						"filters": [],
-						"root": "events",
-						"transformers": []
-					}
-				},
-				"Enriched Data": {
-					"complex": {
-						"accessor": "enriched_data",
-						"filters": [],
-						"root": "events",
-						"transformers": []
-					}
-				},
-				"Event Actor File": {
-					"complex": {
-						"accessor": "file",
-						"filters": [],
-						"root": "events.event_actor",
-						"transformers": []
-					}
-				},
-				"Event Actor User": {
-					"complex": {
-						"accessor": "user",
-						"filters": [],
-						"root": "events.event_actor",
-						"transformers": []
-					}
-				},
-				"First Seen": {
-					"simple": "incident.first_seen"
-				},
-				"Last Seen": {
-					"simple": "incident.last_seen"
-				},
-				"Last Update Time": {
-					"simple": "incident.last_updated"
-				},
-				"Log Source Name": {
-					"simple": "incident.log_name"
-				},
-				"Parent Process SHA256": {
-					"complex": {
-						"accessor": "sha2",
-						"filters": [],
-						"root": "events.process.file",
-						"transformers": []
-					}
-				},
-				"Priority level": {
-					"simple": "incident.priority"
-				},
-				"Process SHA256": {
-					"complex": {
-						"accessor": "sha2",
-						"filters": [],
-						"root": "events.event_actor.file",
-						"transformers": []
-					}
-				},
-				"Recommended Action": {
-					"simple": "incident.recommended_action"
-				},
-				"Rule Name": {
-					"simple": "incident.rule_name"
-				},
-				"SEDR Incident Description": {
-					"simple": "description"
-				},
-				"SEDR Incident State": {
-					"simple": "incident_state"
-				},
-				"SEDR Resolution": {
-					"simple": "resolution"
-				},
-				"UUID": {
-					"simple": "incident.incident_uuid"
-				},
-				"severity": {
-					"complex": {
-						"filters": [],
-						"root": "priority",
-						"transformers": []
-					}
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Device Local IP": {
-					"simple": "device_ip"
-				},
-				"Device Name": {
-					"simple": "device_name"
-				},
-				"Event ID": {
-					"simple": "type_id"
-				}
-			}
-		}
-	},
-	"name": "Symantec EDR - Incoming Mapper",
-	"nameRaw": "Symantec EDR - Incoming Mapper",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Symantec EDR - Incoming Mapper",
+    "mapping": {
+        "Symantec EDR Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "ATP  Rule Name": {
+                    "simple": "incident.rule_name"
+                },
+                "ATP Incident ID": {
+                    "simple": "incident.incident_id"
+                },
+                "ATP Rule ID": {
+                    "simple": "incident.atp_rule_id"
+                },
+                "Description": {
+                    "simple": "incident.description"
+                },
+                "Detection Type": {
+                    "simple": "incident.detection_type"
+                },
+                "EDR Enriched Category ID": {
+                    "complex": {
+                        "accessor": "category_id",
+                        "filters": [],
+                        "root": "events.enriched_data",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "EDR Enriched Category Name": {
+                    "complex": {
+                        "accessor": "category_name",
+                        "filters": [],
+                        "root": "events.enriched_data",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "EDR Enriched Rule Description": {
+                    "complex": {
+                        "accessor": "rule_description",
+                        "filters": [],
+                        "root": "events.enriched_data",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "EDR Enriched Rule Name": {
+                    "complex": {
+                        "accessor": "rule_name",
+                        "filters": [],
+                        "root": "events.enriched_data",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "EDR Enriched Suspicion Score": {
+                    "complex": {
+                        "accessor": "suspicion_score",
+                        "filters": [],
+                        "root": "events.enriched_data",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "EDR Event Actor": {
+                    "complex": {
+                        "filters": [],
+                        "root": "events.event_actor",
+                        "transformers": []
+                    }
+                },
+                "EDR Event Process": {
+                    "complex": {
+                        "accessor": "process",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "EDR Incident Comments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "comments",
+                        "transformers": []
+                    }
+                },
+                "EDR Incident Create Time": {
+                    "simple": "incident.incident_created"
+                },
+                "EDR Incident Events": {
+                    "complex": {
+                        "filters": [],
+                        "root": "events",
+                        "transformers": []
+                    }
+                },
+                "EDR Incident Resolution": {
+                    "simple": "incident.resolution"
+                },
+                "EDR Incident State": {
+                    "simple": "incident.incident_state"
+                },
+                "EDR Process FIle": {
+                    "complex": {
+                        "accessor": "file",
+                        "filters": [],
+                        "root": "events.process",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "EDR Process User": {
+                    "complex": {
+                        "accessor": "user",
+                        "filters": [],
+                        "root": "events.process",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "EDR attacks": {
+                    "complex": {
+                        "accessor": "attacks",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": []
+                    }
+                },
+                "Enriched Data": {
+                    "complex": {
+                        "accessor": "enriched_data",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": []
+                    }
+                },
+                "Event Actor File": {
+                    "complex": {
+                        "accessor": "file",
+                        "filters": [],
+                        "root": "events.event_actor",
+                        "transformers": []
+                    }
+                },
+                "Event Actor User": {
+                    "complex": {
+                        "accessor": "user",
+                        "filters": [],
+                        "root": "events.event_actor",
+                        "transformers": []
+                    }
+                },
+                "First Seen": {
+                    "simple": "incident.first_seen"
+                },
+                "Last Seen": {
+                    "simple": "incident.last_seen"
+                },
+                "Last Update Time": {
+                    "simple": "incident.last_updated"
+                },
+                "Log Source Name": {
+                    "simple": "incident.log_name"
+                },
+                "Parent Process SHA256": {
+                    "complex": {
+                        "accessor": "sha2",
+                        "filters": [],
+                        "root": "events.process.file",
+                        "transformers": []
+                    }
+                },
+                "Priority level": {
+                    "simple": "incident.priority"
+                },
+                "Process SHA256": {
+                    "complex": {
+                        "accessor": "sha2",
+                        "filters": [],
+                        "root": "events.event_actor.file",
+                        "transformers": []
+                    }
+                },
+                "Recommended Action": {
+                    "simple": "incident.recommended_action"
+                },
+                "Rule Name": {
+                    "simple": "incident.rule_name"
+                },
+                "SEDR Incident Description": {
+                    "simple": "description"
+                },
+                "SEDR Incident State": {
+                    "simple": "incident_state"
+                },
+                "SEDR Resolution": {
+                    "simple": "resolution"
+                },
+                "UUID": {
+                    "simple": "incident.incident_uuid"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Device Local IP": {
+                    "simple": "device_ip"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Event ID": {
+                    "simple": "type_id"
+                }
+            }
+        }
+    },
+    "name": "Symantec EDR - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
 }
