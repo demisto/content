@@ -29,8 +29,8 @@ You need to configure Cisco Stealthwatch to forward Syslog messages in custom LE
 
 4. In the Message box, paste the following:
 
-`LEEF:2.0|Lancope|Stealthwatch|6.8|{alarm_type_id}|0x09|eventName={alarm_type_name}	src={source_ip}	dst={target_ip}	dstPort={port}	proto={protocol}	msg={alarm_type_description}	fullmessage={details}	start={start_active_time}	end={end_active_time}	cat={alarm_category_name}	alarmID={alarm_id}	sourceHG={source_host_group_names}	targetHG={target_host_group_names}	sourceHostSnapshot={source_url}	targetHostSnapshot={target_url}	flowCollectorName={device_name}	flowCollectorIP={device_ip}	domain={domain_name}	exporterName={exporter_hostname}	exporterIPAddress ={exporter_ip}	exporterInfo={exporter_label}	targetUser={target_username}	targetHostname={target_hostname}	sourceUser={source_username}	alarmStatus={alarm_status}	alarmSev={alarm_severity_name}`
-    
+`LEEF:2.0|Lancope|Stealthwatch|6.8|{alarm_type_id}|0x7C|eventName={alarm_type_name}|src={source_ip}|dst={target_ip}|dstPort={port}|proto={protocol}|msg={alarm_type_description}|fullmessage={details}|start={start_active_time}|end={end_active_time}|cat={alarm_category_name}|alarmID={alarm_id}|sourceHG={source_host_group_names}|targetHG={target_host_group_names}|sourceHostSnapshot={source_url}|targetHostSnapshot={target_url}|flowCollectorName={device_name}|flowCollectorIP={device_ip}|domain={domain_name}|exporterName={exporter_hostname}|exporterIPAddress ={exporter_ip}|exporterInfo={exporter_label}|targetUser={target_username}|targetHostname={target_hostname}|sourceUser={source_username}|alarmStatus={alarm_status}|alarmSev={alarm_severity_name}`
+
 ### Configure syslog message action
 1. Log in to the Stealthwatch Management Console (SMC).
 2. Go to **Configuration > Response Management**.
