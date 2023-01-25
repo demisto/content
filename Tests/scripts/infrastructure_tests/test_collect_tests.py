@@ -577,6 +577,7 @@ def test_invalid_content_item(mocker, monkeypatch):
           expected_modeling_rules_to_test=None,
           collector_class_args=XSOAR_BRANCH_ARGS)
 
+
 def test_release_note_config_in_only_install_pack():
     """
     Makes sure the FileType.RELEASE_NOTES_CONFIG is in ONLY_INSTALL_PACK_FILE_TYPES,
@@ -584,3 +585,17 @@ def test_release_note_config_in_only_install_pack():
     If this test fails, and you deliberatly removed it from the list, make sure to remove the special case (`except KeyError`...)
     """
     assert FileType.RELEASE_NOTES_CONFIG in ONLY_INSTALL_PACK_FILE_TYPES
+
+
+def test_number_of_file_types():
+    """
+    The test collection assumes the list of FileType values does not change.
+    If this unit test fails, it means that list has changed (in the SDK).
+    Please make sure the change does not break test collection:
+        - New type:     1. Add it to IGNORED_FILE_TYPES or ONLY_INSTALL_PACK
+                        2. Create a PR and see collection works
+                        3. Increase the number in this test
+
+        - Removed type:    Decrease the number here.
+    """
+    assert len(FileType) == 74
