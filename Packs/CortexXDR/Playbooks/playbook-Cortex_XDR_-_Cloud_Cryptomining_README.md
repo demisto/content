@@ -16,24 +16,24 @@ The playbook supports AWS, Azure, and GCP and executes the following:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Cortex XDR - Cryptomining - Set Verdict
 * Cloud Response - Generic
 * Cortex XDR - Cloud Enrichment
-* Cortex XDR - Cryptomining - Set Verdict
 
 ### Integrations
 * CortexXDRIR
 
 ### Scripts
-* IncreaseIncidentSeverity
 * LoadJSON
+* IncreaseIncidentSeverity
 
 ### Commands
-* setIncident
-* xdr-update-incident
-* xdr-get-cloud-original-alerts
-* xdr-get-incident-extra-data
 * closeInvestigation
 * send-mail
+* xdr-get-cloud-original-alerts
+* setIncident
+* xdr-update-incident
+* xdr-get-incident-extra-data
 
 ## Playbook Inputs
 ---
@@ -44,7 +44,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | alert_id | The alert ID. |  | Optional |
 | SOCEmailAddress | The SOC email address to use for the alert status notification. | None | Optional |
 | requireAnalystReview | Whether to require an analyst review after the alert remediation. | True | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. | None | Optional |
+| cloudProvider | The cloud service provider involved. | PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider | Optional |
+| autoResourceRemediation | Whether to execute the resource remediation flow automatically. | False | Optional |
+| AWS-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>AWS available types:<br/>Stop - for stopping the instances.<br/>Terminate - for terminating the instances. | Stop | Optional |
+| Azure-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>Azure available types:<br/>Poweroff - for shutting down the instances.<br/>Delete - for deleting the instances. | Poweroff | Optional |
+| GCP-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>GCP available types:<br/>Stop - For stopping the instances.<br/>Delete - For deleting the instances. | Stop | Optional |
+| autoAccessKeyRemediation | Whether to execute the user remediation flow automatically. | False | Optional |
+| AWS-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>AWS available types:<br/>Disable - for disabling the user's access key.<br/>Delete - for the user's access key deletion. | Disable | Optional |
+| GCP-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>GCP available types:<br/>Disable - For disabling the user's access key.<br/>Delete - For the deleting user's access key. | Disable | Optional |
+| autoUserRemediation | Whether to execute the user remediation flow automatically. | False | Optional |
+| AWS-userRemediationType | Choose the remediation type for the user involved.<br/><br/>AWS available types:<br/>Delete - for the user deletion.<br/>Revoke - for revoking the user's credentials. | Revoke | Optional |
+| Azure-userRemediationType | Choose the remediation type for the user involved.<br/><br/>Azure available types:<br/>Disable - for disabling the user.<br/>Delete - for deleting the user. | Disable | Optional |
+| GCP-userRemediationType | Choose the remediation type for the user involved.<br/><br/>GCP available types:<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |
+| autoBlockIndicators | Whether to block the indicators automatically. | False | Optional |
 
 ## Playbook Outputs
 ---

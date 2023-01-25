@@ -243,33 +243,45 @@ tasks:
       - "40"
     scriptarguments:
       AWS-accessKeyRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.AWS-accessKeyRemediationType
       AWS-resourceRemediationType:
-        simple: Stop
+        complex:
+          root: inputs.AWS-resourceRemediationType
       AWS-userRemediationType:
-        simple: Revoke
+        complex:
+          root: inputs.AWS-userRemediationType
       Azure-resourceRemediationType:
-        simple: Poweroff
+        complex:
+          root: inputs.Azure-resourceRemediationType
       Azure-userRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.Azure-userRemediationType
       GCP-accessKeyRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
       GCP-resourceRemediationType:
-        simple: Stop
+        complex:
+          root: inputs.GCP-resourceRemediationType
       GCP-userRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.GCP-userRemediationType
       accessKeyId:
         complex:
           root: alertJson._all_events._aws_specific_fields
           accessor: access_key_id
       autoAccessKeyRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoAccessKeyRemediation
       autoBlockIndicators:
-        simple: "False"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       cloudProvider:
         complex:
           root: alert
@@ -865,6 +877,126 @@ inputs:
     simple: "False"
   required: false
   description: Should we automatically handle false positive alerts? Specify true/false.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: autoResourceRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the resource remediation flow automatically.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    AWS available types:
+    Disable - for disabling the user's access key.
+    Delete - for the user's access key deletion.
+  playbookInputQuery:
+- key: AWS-resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    AWS available types:
+    Stop - for stopping the instances.
+    Terminate - for terminating the instances.
+  playbookInputQuery:
+- key: AWS-userRemediationType
+  value:
+    simple: Revoke
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    AWS available types:
+    Delete - for the user deletion.
+    Revoke - for revoking the user's credentials.
+  playbookInputQuery:
+- key: Azure-resourceRemediationType
+  value:
+    simple: Poweroff
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    Azure available types:
+    Poweroff - for shutting down the instances.
+    Delete - for deleting the instances.
+  playbookInputQuery:
+- key: Azure-userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    Azure available types:
+    Disable - for disabling the user.
+    Delete - for deleting the user.
+  playbookInputQuery:
+- key: cloudProvider
+  value:
+    complex:
+      root: alert
+      accessor: cloudprovider
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
+- key: GCP-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    GCP available types:
+    Disable - For disabling the user's access key.
+    Delete - For the deleting user's access key.
+  playbookInputQuery:
+- key: GCP-resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    GCP available types:
+    Stop - For stopping the instances.
+    Delete - For deleting the instances.
+  playbookInputQuery:
+- key: GCP-userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    GCP available types:
+    Delete - For deleting the user.
+    Disable - For disabling the user.
   playbookInputQuery:
 outputs: []
 tests:
