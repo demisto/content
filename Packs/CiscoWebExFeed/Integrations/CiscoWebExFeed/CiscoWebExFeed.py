@@ -144,7 +144,7 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     """ Gets indicators from the WebEx website and sends them to the war-room."""
     client = client
     limit = arg_to_number(args.get('limit', 20))
-    requested_indicator_type = args.get('indicator_type', 'both')
+    requested_indicator_type = args.get('indicator_type', 'Both')
 
     res = client.all_raw_data()
     # parse the data from an html page to a list of dicts with ips and domains
