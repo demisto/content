@@ -184,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+      - "57"
     scriptarguments:
       body:
         simple: |-
@@ -212,58 +212,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: acbd4be2-6dbf-41f0-80ff-79f3946c76e5
-    type: playbook
-    task:
-      id: acbd4be2-6dbf-41f0-80ff-79f3946c76e5
-      version: -1
-      name: Cloud Response - Generic
-      description: |-
-        This playbook provides response playbooks for:
-            * AWS - Fully supported
-            * Azure - Fully supported
-            * GCP - Requires input adjustment (Beta)
-
-        The response actions available are:
-            * Terminate/Shut down/Power off an instance
-            * Delete/Disable a user
-            * Delete/Revoke/Disable credentials
-            * Block indicators
-      playbookName: Cloud Response - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      cloudProvider:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: cloud_provider
-    separatecontext: false
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": 1540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -276,11 +224,21 @@ tasks:
       id: 7750a275-1ce8-4d59-8cff-bb6ff0b3855b
       version: -1
       name: Cortex XDR - Cloud Enrichment
+      description: |-
+        This playbook is responsible for collecting data from Cortex XDR detector and enriching data for further usage and building the layout.
+
+        The playbook collects or enriches the following data:
+        - Resource enrichment
+           - Previous activity seen in the specified region or project
+        - Account enrichment
+        - Network enrichment
+           - Attacker IP
+           - Geolocation
+           - ASN
       playbookName: Cortex XDR - Cloud Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -883,6 +841,140 @@ tasks:
         "position": {
           "x": 730,
           "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 3e703855-68ed-4cc4-8b7a-3eb8a90e18dc
+    type: playbook
+    task:
+      id: 3e703855-68ed-4cc4-8b7a-3eb8a90e18dc
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        simple: Disable
+      AWS-resourceRemediationType:
+        simple: Stop
+      AWS-userRemediationType:
+        simple: Revoke
+      Azure-resourceRemediationType:
+        simple: Poweroff
+      Azure-userRemediationType:
+        simple: Disable
+      GCP-accessKeyRemediationType:
+        simple: Disable
+      GCP-resourceRemediationType:
+        simple: Stop
+      GCP-userRemediationType:
+        simple: Disable
+      accessKeyId:
+        complex:
+          root: alertJson._all_events._aws_specific_fields
+          accessor: access_key_id
+      autoAccessKeyRemediation:
+        simple: "False"
+      autoBlockIndicators:
+        simple: "False"
+      autoResourceRemediation:
+        simple: "False"
+      autoUserRemediation:
+        simple: "False"
+      cloudProvider:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: cloud_provider
+      region:
+        complex:
+          root: alertJson._all_events
+          accessor: region
+      resourceGroup:
+        complex:
+          root: |2-
+
+            alertJson._all_events
+          accessor: referenced_resource
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "5"
+      resourceName:
+        complex:
+          root: alertJson._all_events
+          accessor: referenced_resource_name
+      resourceZone:
+        complex:
+          root: alertJson._all_events
+          accessor: zone
+      username:
+        complex:
+          root: alertJson._all_events
+          accessor: actor_effective_username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: alertJson._all_events.actor_effective_username
+              equals: {}
+              lhs:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider
+                iscontext: true
+              options:
+                value:
+                  simple: case_insensitive
+              rhs:
+                value:
+                  simple: GCP
+              then:
+                value:
+                  simple: alertJson._all_events.identity_name
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1540
         }
       }
     note: false

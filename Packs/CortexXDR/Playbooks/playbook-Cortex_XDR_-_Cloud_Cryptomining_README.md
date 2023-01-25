@@ -16,24 +16,24 @@ The playbook supports AWS, Azure, and GCP and executes the following:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Cryptomining - Set Verdict
 * Cloud Response - Generic
 * Cortex XDR - Cloud Enrichment
+* Cortex XDR - Cryptomining - Set Verdict
 
 ### Integrations
 * CortexXDRIR
 
 ### Scripts
-* LoadJSON
 * IncreaseIncidentSeverity
+* LoadJSON
 
 ### Commands
-* send-mail
-* xdr-get-incident-extra-data
-* closeInvestigation
+* setIncident
 * xdr-update-incident
 * xdr-get-cloud-original-alerts
-* setIncident
+* xdr-get-incident-extra-data
+* closeInvestigation
+* send-mail
 
 ## Playbook Inputs
 ---
@@ -42,9 +42,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | incident_id | The incident ID. |  | Optional |
 | alert_id | The alert ID. |  | Optional |
-| SOCEmailAddress | The SOC email address to use for the alert status notification. | | Optional |
+| SOCEmailAddress | The SOC email address to use for the alert status notification. | None | Optional |
 | requireAnalystReview | Whether to require an analyst review after the alert remediation. | True | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. | | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. | None | Optional |
 
 ## Playbook Outputs
 ---
