@@ -420,7 +420,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.8.3"
+version = "1.9.0"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -518,8 +518,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "c63858f9c31bb52c776433a621313fcd2f1bccf0"
-resolved_reference = "c63858f9c31bb52c776433a621313fcd2f1bccf0"
+reference = "xsiam_layout_unified"
+resolved_reference = "0773d9637bb0ff66fea9493af93721f633581c39"
 
 [[package]]
 name = "Deprecated"
@@ -2442,7 +2442,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "4615a5c9d25a829c62f5c9d6a099912f81b9a7f519fb8c3fe9f189e8f1e1797c"
+content-hash = "9f6343623e9f9769f5db09b3bcf155017e7b709f43fb9605a9837dfe2a528767"
 
 [metadata.files]
 aiohttp = [
