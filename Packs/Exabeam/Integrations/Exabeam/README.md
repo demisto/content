@@ -3,7 +3,7 @@ This integration was integrated and tested with version 53.5 of Exabeam.
 
 ### Authentication Methods
 There are 2 authentication methods:
- - **API Token** - API token should be entered in the “API Token” parameter. IN order to use the “Fetch Incident” functionality in this integration, the username must be provided also in the “Username” parameter.
+ - **API Token** - API token should be entered in the “API Token” parameter. In order to use the “Fetch Incident” functionality in this integration, the username must be provided also in the “Username” parameter.
  - **Basic Authentication** - Providing Username and password in the corrsponding parameters in the configuration. This method also allows fetching incidents.
  - ***Deprecated***:
  API Key entered in the “password” parameter and `__token` in the username parameter. This method won’t allow fetching incidents.
