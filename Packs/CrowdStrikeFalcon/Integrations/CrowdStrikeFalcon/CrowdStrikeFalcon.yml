@@ -148,6 +148,14 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -291,7 +299,8 @@ script:
     - description: The IDs of the detections to search. If provided, will override other arguments.
       isArray: true
       name: ids
-    - description: The CID of the tenant member to execute the command against.
+    - description: |-
+        The CID of the tenant member to execute the command against.
       name: member_cid
     - description: |-
         Filter detections using a query in Falcon Query Language (FQL).
@@ -362,11 +371,11 @@ script:
     - description: A comma-separated list of one or more IDs to resolve.
       name: ids
       required: true
-    - description: The CID of the tenant member to execute the command against.
+    - description: 'The CID of the tenant member to execute the command against.'
       name: member_cid
-    - auto: PREDEFINED
-      description: 'The status to transition a detection to. Possible values: "new", "in_progress", "true_positive", "false_positive", "closed", "reopened" and "ignored".'
+    - description: 'The status to transition a detection to. Possible values: "new", "in_progress", "true_positive", "false_positive", "closed", "reopened" and "ignored".'
       name: status
+      auto: PREDEFINED
       predefined:
       - new
       - in_progress
@@ -379,9 +388,9 @@ script:
       name: assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
       name: comment
-    - auto: PREDEFINED
-      description: If true, displays the detection in the UI.
+    - description: If true, displays the detection in the UI.
       name: show_in_ui
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -417,7 +426,7 @@ script:
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
-    - description: The type of command to run.
+    - description: 'The type of command to run.'
       name: command_type
       required: true
     - description: 'The full command to run.'
@@ -472,12 +481,12 @@ script:
     - description: The script name to upload.
       name: name
       required: true
-    - description: The CID of the tenant member to execute the command against.
+    - description: 'The CID of the tenant member to execute the command against.'
       name: member_cid
-    - auto: PREDEFINED
-      defaultValue: private
-      description: 'The permission type for the custom script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
+    - description: 'The permission type for the custom script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
       name: permission_type
+      auto: PREDEFINED
+      defaultValue: private
       predefined:
       - private
       - group
@@ -743,7 +752,7 @@ script:
     - description: Full path to the file that will be retrieved from each host in the batch.
       name: file_path
       required: true
-    - description: List of a subset of hosts on which to run the command.
+    - description: 'List of a subset of hosts on which to run the command.'
       name: optional_hosts
     - description: 'The number of seconds to wait for the request before it times out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       name: timeout
@@ -781,7 +790,7 @@ script:
       isArray: true
       name: request_ids
       required: true
-    - description: The CID of the tenant member to execute the command against.
+    - description: 'The CID of the tenant member to execute the command against.'
       name: member_cid
     - description: 'The number of seconds to wait for the request before it times out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       name: timeout
@@ -829,7 +838,7 @@ script:
       required: true
     - description: The sequence ID in chunk requests.
       name: sequence_id
-    - description: The CID of the tenant member to execute the command against.
+    - description: 'The CID of the tenant member to execute the command against.'
       name: member_cid
     - auto: PREDEFINED
       defaultValue: read
@@ -1248,16 +1257,16 @@ script:
     - description: The CID of the tenant member to execute the command against.
       name: member_cid
     - description: A comma-separated list of IOC sources.
-      isArray: true
       name: sources
+      isArray: true
     - description: The date the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       name: expiration
-    - defaultValue: '50'
-      description: The maximum number of records to return. The minimum is 1 and the maximum is 500.
+    - description: 'The maximum number of records to return. The minimum is 1 and the maximum is 500.'
       name: limit
-    - auto: PREDEFINED
-      description: 'The order the results are returned in. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc".'
+      defaultValue: '50'
+    - description: 'The order the results are returned in. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc".'
       name: sort
+      auto: PREDEFINED
       predefined:
       - type.asc
       - type.desc
@@ -1423,9 +1432,9 @@ script:
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
-    - auto: PREDEFINED
-      description: Whether the indicator is applied globally. Either applied_globally or host_groups must be provided.
+    - description: Whether the indicator is applied globally. Either applied_globally or host_groups must be provided.
       name: applied_globally
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -1481,7 +1490,7 @@ script:
     - description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
       required: true
-    - description: The CID of the tenant member to execute the command against.
+    - description: 'The CID of the tenant member to execute the command against.'
       name: member_cid
     - auto: PREDEFINED
       description: 'Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity.'
@@ -1499,9 +1508,9 @@ script:
       - mac
       - windows
       - linux
-    - auto: PREDEFINED
-      description: 'The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action. Possible values are: informational, low, medium, high and critical.'
+    - description: 'The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action. Possible values are: informational, low, medium, high and critical.'
       name: severity
+      auto: PREDEFINED
       predefined:
       - informational
       - low
@@ -2119,6 +2128,12 @@ script:
       secret: false
     - description: The CID of the tenant member to execute the command against.
       name: member_cid
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2155,9 +2170,9 @@ script:
       required: true
     - description: The CID of the tenant member to execute the command against.
       name: member_cid
-    - auto: PREDEFINED
-      description: The group type of the group. Can be 'static' or 'dynamic'.
+    - description: The group type of the group. Can be 'static' or 'dynamic'.
       name: group_type
+      auto: PREDEFINED
       predefined:
       - static
       - dynamic
@@ -2420,8 +2435,8 @@ script:
       isArray: true
       name: multiple_indicators_json
       required: true
-    - description: The CID of the tenant member to execute the command against.
-      name: member_cid
+    - name: member_cid
+      description: The CID of the tenant member to execute the command against.
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
       defaultValue: "180"
@@ -2682,7 +2697,7 @@ script:
       name: aid
       isArray: true
       required: false
-    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+    - description: "Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation."
       name: cve_id
       isArray: true
       required: false
@@ -2690,14 +2705,14 @@ script:
       name: cve_severity
       isArray: true
       required: false
-    - description: Name of a tag assigned to a host. Retrieve tags from Host Tags APIs.
+    - description: "Name of a tag assigned to a host. Retrieve tags from Host Tags APIs."
       name: tags
       isArray: true
       required: false
     - description: "Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired."
       name: status
-      isArray: true
       required: false
+      isArray: true
     - description: "Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux."
       name: platform_name
       required: false
@@ -2707,19 +2722,19 @@ script:
       required: false
     - description: Type of host a sensor is running on.
       name: host_type
-      isArray: true
       required: false
+      isArray: true
     - description: Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10
       name: last_seen_within
       required: false
     - auto: PREDEFINED
       description: Indicates if the vulnerability is suppressed by a suppression rule.
       name: is_suppressed
-      isArray: true
       required: false
       predefined:
       - 'true'
       - 'false'
+      isArray: true
     - auto: PREDEFINED
       description: Display remediation information type of data to be returned for each vulnerability entity.
       defaultValue: 'True'
@@ -2730,17 +2745,17 @@ script:
       - 'False'
     - auto: PREDEFINED
       description: Whether to return logic information type of data for each vulnerability entity.
-      defaultValue: 'True'
       name: display_evaluation_logic_info
+      defaultValue: 'True'
       required: false
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      description: Whether to return host information type of data for each vulnerability entity.
-      name: display_host_info
+    - description: Whether to return host information type of data for each vulnerability entity.
       defaultValue: 'False'
+      name: display_host_info
       required: false
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
@@ -2900,6 +2915,12 @@ script:
       required: true
     - description: The CID of the tenant member to execute the command against.
       name: member_cid
+    - default: true
+      description: ''
+      isArray: true
+      name: cve
+      required: true
+      secret: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -3004,7 +3025,7 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.9.45313
   isfetch: true
   ismappable: true
   isremotesyncin: true
