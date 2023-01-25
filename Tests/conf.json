@@ -2813,7 +2813,9 @@
         {
             "integrations": "AWS - S3",
             "playbookID": "AWS - S3 Test Playbook",
-            "memory_threshold": 80
+            "memory_threshold": 80,
+            "is_mockable": false
+
         },
         {
             "integrations": "AwsSecretsManager",
@@ -4432,7 +4434,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 130,
+            "memory_threshold": 150,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -5103,7 +5105,8 @@
         },
         {
             "integrations": "McAfee ePO v2",
-            "playbookID": "McAfee ePO v2 Test"
+            "playbookID": "McAfee ePO v2 Test",
+            "memory_threshold": 100
         },
         {
             "playbookID": "Dedup - Generic v3",
