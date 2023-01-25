@@ -12,6 +12,7 @@ configuration:
   name: credentials
   required: true
   type: 9
+  displaypassword: API Key
 - display: URL threshold
   name: url_threshold
   required: false
@@ -2807,6 +2808,16 @@ script:
       name: detail
       required: false
       secret: false
+    - default: true
+      auto: PREDEFINED
+      description: If you want to initiate an import job for observables discovered during detonation, set this value to true. Default value is true.
+      isArray: false
+      name: import_indicators
+      required: false
+      secret: false
+      predefined:
+        - 'false'
+        - 'true'
     deprecated: false
     description: Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
     execution: false
@@ -4335,7 +4346,7 @@ script:
     - contextPath: ThreatStream.Intelligence.severity
       description: The severity of the intelligence.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.41748
+  dockerimage: demisto/py3-tools:1.0.0.45904
   feed: false
   isfetch: false
   longRunning: false
