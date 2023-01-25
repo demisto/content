@@ -173,21 +173,24 @@ def init_manager(params: dict) -> SyslogManager:
     :return: syslog manager
     """
     address = params.get('address', '')
-    port = int(params.get('port', 514))
     protocol = params.get('protocol', UDP).lower()
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
     certificate: Optional[str] = params.get('certificate')
     certificate_path: Optional[str] = None
-    if not address:
-        raise ValueError('A Syslog server address must be provided.')
-    if not port and protocol in PROTOCOLS:
-        raise ValueError('A port must be provided in TCP or UDP protocols.')
+    max_port = 65535
+    default_port = 6514 if protocol == 'tls' else 514
+    try:
+        port = int(params.get('port', default_port))
+    except (ValueError, TypeError):
+        raise DemistoException(f'Invalid listen port - {port}. Make sure your port is a number')
+    if port < 0 or max_port < port:
+        raise DemistoException(f'Given port: {port} is not valid and must be between 0-{max_port}')
     if protocol == 'tls' and not certificate:
         raise DemistoException('A certificate must be provided in TLS protocol.')
     if certificate and protocol == 'tls':
         certificate_path = prepare_certificate_file(certificate)
-        return(try_this(address, port, certificate_path, ''))
+        return(try_this(address, port, certificate_path, ''))  # need to check
     return SyslogManager(address, port, protocol, logging_level, facility, certificate_path)
 
 
@@ -304,15 +307,16 @@ def syslog_send(manager):
 
 def main():
     LOG(f'Command being called is {demisto.command()}')
+    command = demisto.command()
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             syslog_manager = init_manager(demisto.params())
             with syslog_manager.get_logger() as syslog_logger:  # type: Logger
                 syslog_logger.info('This is a test')
             demisto.results('ok')
-        elif demisto.command() == 'mirror-investigation':
+        elif command == 'mirror-investigation':
             mirror_investigation()
-        elif demisto.command() == 'syslog-send':
+        elif command == 'syslog-send':
             if 'address' in demisto.args():
                 # params provided in the command args
                 syslog_manager = init_manager(demisto.args())

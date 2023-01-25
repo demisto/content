@@ -5,13 +5,14 @@ commonfields:
 configuration:
 - display: IP Address (e.g., 127.0.0.1)
   name: address
-  required: false
+  required: true
   type: 0
-- defaultvalue: '514'
-  display: Port
+  additionalinfo: A Syslog server address must be provided.
+- display: Port
   name: port
   required: false
   type: 0
+  additionalinfo: When using UDP or TCP, port 514 is the default. Else,when using TLS, port 6514 is the default. 
 - defaultvalue: UDP
   display: Protocol
   name: protocol
