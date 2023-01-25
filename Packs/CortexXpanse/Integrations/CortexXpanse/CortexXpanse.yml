@@ -178,7 +178,7 @@ script:
       description: Additional details.
       type: String
   - arguments: []
-    description: Get a list of all your internet exposure filtered by business units and organization handles. Maximum result limit is 100 ranges.
+    description: Get a list of all your internet exposures filtered by business units and organization handles. Maximum result limit is 100 ranges.
     name: asm-list-external-ip-address-range
     outputs:
     - contextPath: ASM.ExternalIpAddressRange.range_id
