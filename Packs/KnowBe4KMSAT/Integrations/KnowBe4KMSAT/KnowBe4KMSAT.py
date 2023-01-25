@@ -56,7 +56,7 @@ class Client(BaseClient):
         )
 
     def kmsat_account_risk_score_history(self, params):
-        """_summary_
+        """ Returns account risk score history
 
         Args:
             params (_type_): _description_
@@ -223,7 +223,14 @@ class UserEventClient(BaseClient):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def user_events(self, args: dict):
+        """ Returns user events
 
+        Args:
+            args (dict): Params for API call
+
+        Returns:
+            _type_: HTTP Request
+        """
         params = remove_empty_elements(
             {
                 "event_type": args.get("event_type"),
@@ -249,6 +256,14 @@ class UserEventClient(BaseClient):
         )
 
     def user_event_types(self, args: dict):
+        """ Returns user event types
+
+        Args:
+            args (dict): Params for API call
+
+        Returns:
+            _type_: HTTP Request
+        """
         params = remove_empty_elements({"name": args.get("name")})
         return self._http_request(
             method="GET",
@@ -259,6 +274,15 @@ class UserEventClient(BaseClient):
         )
 
     def create_user_event(self, args: dict):
+        """ Creates a user event
+
+        Args:
+            args (dict): Params for API call
+
+        Returns:
+            _type_: HTTP Request
+        """
+
         params = remove_empty_elements(
             {
                 "target_user": args.get("target_user"),
@@ -285,6 +309,15 @@ class UserEventClient(BaseClient):
         )
 
     def delete_user_event(self, event_id: str):
+        """ Deletes a user event
+
+        Args:
+            args (dict): Params for API call
+
+        Returns:
+            _type_: HTTP Request
+        """
+
         return self._http_request(
             method="DELETE",
             url_suffix=f"/events/{event_id}",
@@ -298,6 +331,15 @@ class UserEventClient(BaseClient):
 
 
 def get_pagination(args: dict):
+    """ Returns pagination params
+
+        Args:
+            args (dict): Params for pagination
+
+        Returns:
+            _type_: List
+        """
+
     params = remove_empty_elements(
         {"page": args.get("page"), "per_page": args.get("per_page")}
     )
@@ -308,10 +350,10 @@ def get_pagination(args: dict):
 
 
 def kmsat_account_info_list_command(client: Client) -> CommandResults:
-    """_summary_
+    """ Returns account information
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
 
     Raises:
         DemistoException: _description_
@@ -350,10 +392,10 @@ def kmsat_account_info_list_command(client: Client) -> CommandResults:
 def kmsat_account_risk_score_history_list_command(
     client: Client, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Lists account risk score history
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
         args (dict): _description_
 
     Raises:
@@ -384,10 +426,10 @@ def kmsat_account_risk_score_history_list_command(
 def kmsat_groups_risk_score_history_list_command(
     client: Client, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Lists groups risk score history
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
         args (dict): _description_
 
     Raises:
@@ -419,10 +461,10 @@ def kmsat_groups_risk_score_history_list_command(
 def kmsat_groups_members_list_command(
     client: Client, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Lists groups members
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
         args (dict): _description_
 
     Raises:
@@ -491,10 +533,10 @@ def kmsat_groups_members_list_command(
 def kmsat_users_risk_score_history_list_command(
     client: Client, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Lists user risk score history
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
         args (dict): _description_
 
     Raises:
@@ -526,10 +568,10 @@ def kmsat_users_risk_score_history_list_command(
 def kmsat_phishing_security_tests_list_command(
     client: Client, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Lists phishing security tests
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
         args (dict): _description_
 
     Raises:
@@ -585,10 +627,10 @@ def kmsat_phishing_security_tests_list_command(
 def kmsat_phishing_security_tests_recipients_list_command(
     client: Client, args
 ) -> CommandResults:
-    """_summary_
+    """ Lists KMSAT recipients phishing security tests
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
         args (_type_): _description_
 
     Raises:
@@ -699,10 +741,10 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
 
 
 def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) -> CommandResults:
-    """_summary_
+    """ Lists KMSAT phishing campaign security tests
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
         args (_type_): _description_
 
     Raises:
@@ -758,10 +800,10 @@ def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) ->
 
 
 def kmsat_training_campaigns_list_command(client: Client, args: dict) -> CommandResults:
-    """_summary_
+    """ Lists KMSAT training campaigns
 
     Args:
-        client (Client): _description_
+        client (Client): Report Client
         args (dict): _description_
 
     Raises:
@@ -807,7 +849,7 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
 def kmsat_training_enrollments_list_command(
     client: Client, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Lists KMSAT training enrollments
 
     Args:
         client (Client): _description_
@@ -868,10 +910,10 @@ def kmsat_training_enrollments_list_command(
 def kmsat_user_events_list_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
-    """Lit out the user events
+    """ Lists the user events
 
     Args:
-        client (UserEventClient): _description_
+        client (UserEventClient): UserEventClient
         args (dict): _description_
 
     Raises:
@@ -899,10 +941,10 @@ def kmsat_user_events_list_command(
 def kmsat_user_event_types_list_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Lists user event types
 
     Args:
-        client (UserEventClient): _description_
+        client (UserEventClient): UserEventClient
         args (dict): _description_
 
     Raises:
@@ -930,10 +972,10 @@ def kmsat_user_event_types_list_command(
 def kmsat_user_event_create_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Creates a user event
 
     Args:
-        client (UserEventClient): _description_
+        client (UserEventClient): UserEventClient
         args (dict): _description_
 
     Raises:
@@ -961,10 +1003,10 @@ def kmsat_user_event_create_command(
 def kmsat_user_event_delete_command(
     client: UserEventClient, args: dict
 ) -> CommandResults:
-    """_summary_
+    """ Deletes a user event
 
     Args:
-        client (UserEventClient): _description_
+        client (UserEventClient): UserEventClient
         args (dict): _description_
 
     Returns:
