@@ -330,7 +330,6 @@ Configure a secrets engine to fetch secrets from.
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | path | The engine path, e.g., "secret/".                                                                                                                             | Required | 
 | folder | Specific folder to fetch secrets from, e.g., "secret-folder/". (Supported only for engine type KV2.)                                                          | Optional | 
-| ttl | The time in seconds until we delete the generated user in AWS. Max value=43200. (Supported only for engine type AWS in assume role or federation token).      | Optional | 
 | type | The engine type, e.g., "KV". Possible values are: KV, Cubbyhole, AWS.                                                                                         | Required | 
 | version | The engine version (for KV engines); "1" or "2". Possible values are: 1, 2.                                                                                   | Optional | 
 | aws_roles_list | A comma delimited list of roles names to generate credentials for. If not mentioned, we will generate credentials for all roles in the path.(used for only for AWS). | Optional | 

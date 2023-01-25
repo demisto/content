@@ -31,12 +31,12 @@ def test_send_request(mocker):
 @patch('HashiCorpVault.send_request', mock)
 def test_get_aws_secrets(mocker):
     mocker.patch('HashiCorpVault.SERVER_URL', return_value='test')
-    get_aws_secrets('test', '999', False, None, None)
+    get_aws_secrets('test', False, None, None)
     assert mock.call_args.args[0] == 'test/roles'
-    get_aws_secrets('test', '999', False, None, None)
+    get_aws_secrets('test', False, None, None)
     assert mock.call_args.args[0] == 'test/roles/1'
     # test aws_roles_list
-    assert get_aws_secrets('test', '999', False, ['2'], None) == []
+    assert get_aws_secrets('test', False, ['2'], None) == []
 
 
 def test_get_headers():
