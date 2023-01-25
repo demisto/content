@@ -1,3 +1,4 @@
+import ast
 import hashlib
 import json
 
@@ -258,6 +259,11 @@ def get_container_vulnerabilities():
     returns = demisto.args().get('returns', None)
     limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
 
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
+
     json_request = create_search_json(
         start_time=start_time,
         end_time=end_time,
@@ -303,6 +309,11 @@ def get_host_vulnerabilities():
     filters = demisto.args().get('filters', None)
     returns = demisto.args().get('returns', None)
     limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
 
     json_request = create_search_json(
         start_time=start_time,
