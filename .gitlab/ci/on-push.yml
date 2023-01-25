@@ -52,7 +52,6 @@ stop-running-pipelines:
   script:
     - section_start "Stop running piplines on current branch"
     - |
-      echo "here"
       if [[ $CI_COMMIT_BRANCH = "master" ]]; then
         echo "Skipping, Should not run on master branch."
       else
@@ -60,8 +59,8 @@ stop-running-pipelines:
         if [ "$RESP" != "[]" ]; then
             PIPELINES=$(echo "${RESP}" | jq -c '.[]')
             for pipeline in ${PIPELINES}
-            echo $pipeline
-            do
+            do 
+                echo $pipeline
                 source=$(echo $pipeline | jq -r ".source")
                 status=$(echo $pipeline | jq -r ".status")
                 id=$(echo $pipeline | jq -r ".id")
