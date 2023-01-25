@@ -30,11 +30,6 @@ configuration:
   type: 4
   hidden: true
   section: Connect
-- display: Member CID
-  name: member_cid
-  required: false
-  type: 0
-  section: Connect
 - defaultvalue: 'A+ - 3rd party enrichment'
   display: Source Reliability
   name: Reliability
@@ -185,6 +180,8 @@ script:
       - Linux
     - description: The site name of the device.
       name: site_name
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Searches for a device that matches the query.
     name: cs-falcon-search-device
     outputs:
@@ -249,6 +246,8 @@ script:
     - description: The ID of the behavior.
       name: behavior_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Searches for and fetches the behavior that matches the query.
     name: cs-falcon-get-behavior
     outputs:
@@ -292,6 +291,8 @@ script:
     - description: The IDs of the detections to search. If provided, will override other arguments.
       isArray: true
       name: ids
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: |-
         Filter detections using a query in Falcon Query Language (FQL).
         For example, filter="device.hostname:'CS-SE-TG-W7-01'"
@@ -361,6 +362,8 @@ script:
     - description: A comma-separated list of one or more IDs to resolve.
       name: ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - auto: PREDEFINED
       description: 'The status to transition a detection to. Possible values: "new", "in_progress", "true_positive", "false_positive", "closed", "reopened" and "ignored".'
       name: status
@@ -391,6 +394,8 @@ script:
       isArray: true
       name: ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
   - arguments:
@@ -398,6 +403,8 @@ script:
       isArray: true
       name: ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Lifts containment on the host, which returns its network communications to normal.
     name: cs-falcon-lift-host-containment
   - arguments:
@@ -405,6 +412,8 @@ script:
       name: queue_offline
       defaultValue: false
       required: false
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -463,6 +472,8 @@ script:
     - description: The script name to upload.
       name: name
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - auto: PREDEFINED
       defaultValue: private
       description: 'The permission type for the custom script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
@@ -480,18 +491,24 @@ script:
     - description: The file entry ID to upload.
       name: entry_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command.)
     name: cs-falcon-upload-file
   - arguments:
     - description: The ID of the file to delete. (The ID of the file can be retrieved by running the 'cs-falcon-list-files' command).
       name: file_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Deletes a file based on the provided ID. Can delete only one file at a time.
     name: cs-falcon-delete-file
   - arguments:
     - description: A comma-separated list of file IDs to get. (The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.)
       name: file_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Returns files based on the provided IDs. These files are used for the RTR 'put' command.
     name: cs-falcon-get-file
     outputs:
@@ -587,6 +604,8 @@ script:
     - description: A comma-separated list of script IDs to return. (The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
       name: script_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Returns custom scripts based on the provided ID. Used for the RTR 'runscript' command.
     name: cs-falcon-get-script
     outputs:
@@ -633,6 +652,8 @@ script:
     - description: The script ID to delete. (Script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
       name: script_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Deletes a custom-script based on the provided ID. Can delete only one script at a time.
     name: cs-falcon-delete-script
   - arguments: []
@@ -681,6 +702,8 @@ script:
   - arguments:
     - description: The name of the script to run.
       name: script_name
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -715,6 +738,8 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: Full path to the file that will be retrieved from each host in the batch.
       name: file_path
       required: true
@@ -756,6 +781,8 @@ script:
       isArray: true
       name: request_ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: 'The number of seconds to wait for the request before it times out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       name: timeout
     - description: 'The amount of time to wait for the request before it times out. In duration syntax. For example, 10s. Valid units are: ns, us, ms, s, m, h. Maximum value is 10 minutes.'
@@ -802,6 +829,8 @@ script:
       required: true
     - description: The sequence ID in chunk requests.
       name: sequence_id
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - auto: PREDEFINED
       defaultValue: read
       description: 'The scope to run the command for. Possible values are: "read", "write", or "admin".'
@@ -838,6 +867,8 @@ script:
     - description: The host agent ID.
       name: host_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The SHA256 hash of the file.
       name: sha256
       required: true
@@ -849,6 +880,8 @@ script:
     - description: The ID of the host agent that lists files in the session.
       name: host_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The ID of the existing session with the agent.
       name: session_id
     description: Gets a list of files for the specified RTR session on a host.
@@ -897,6 +930,8 @@ script:
     - description: The ID of the host to extend the session for.
       name: host_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Refresh a session timeout on a single host.
     name: cs-falcon-refresh-session
   - arguments:
@@ -1210,6 +1245,8 @@ script:
     - description: A comma-separated list of indicator values.
       isArray: true
       name: values
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: A comma-separated list of IOC sources.
       isArray: true
       name: sources
@@ -1290,6 +1327,8 @@ script:
       - ipv6
     - description: The string representation of the indicator. Either ioc_id or ioc_type and value must be provided.
       name: value
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The ID of the IOC to get. Can be retrieved by running the cs-falcon-search-custom-iocs command. Either ioc_id or ioc_type and value must be provided.
       name: ioc_id
     description: Gets the full definition of one or more indicators that you are watching.
@@ -1378,6 +1417,8 @@ script:
       - critical
     - description: The date the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       name: expiration
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters.
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
@@ -1440,6 +1481,8 @@ script:
     - description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - auto: PREDEFINED
       description: 'Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity.'
       name: action
@@ -1514,6 +1557,8 @@ script:
     - description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Deletes a monitored indicator.
     name: cs-falcon-delete-custom-ioc
   - arguments:
@@ -1528,6 +1573,8 @@ script:
       - ipv4
       - ipv6
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The string representation of the indicator.
       name: value
       required: true
@@ -1561,6 +1608,8 @@ script:
     - description: The string representation of the indicator.
       name: value
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The device ID to check against.
       name: device_id
       required: true
@@ -1588,6 +1637,8 @@ script:
       isArray: true
       name: ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Retrieves the details of a process, according to the process ID that is running or that previously ran.
     name: cs-falcon-process-details
     outputs:
@@ -1661,6 +1712,8 @@ script:
       - sha1
       - sha256
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The string representation of the indicator.
       name: value
       required: true
@@ -1676,6 +1729,8 @@ script:
     - description: A comma separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678, If you use this argument, fetch_query argument will be ignored.
       isArray: true
       name: ids
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Lists detection summaries.
     name: cs-falcon-list-detection-summaries
     outputs:
@@ -1931,6 +1986,8 @@ script:
   - arguments:
     - description: The query used to filter the results.
       name: fetch_query
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: A comma separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678, If you use this argument, fetch_query argument will be ignored.
       isArray: true
       name: ids
@@ -2060,6 +2117,8 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2094,6 +2153,8 @@ script:
     - description: The name of the host.
       name: name
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - auto: PREDEFINED
       description: The group type of the group. Can be 'static' or 'dynamic'.
       name: group_type
@@ -2135,6 +2196,8 @@ script:
   - arguments:
     - description: The query by which to filter the devices that belong to the host group.
       name: filter
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: Page offset.
       name: offset
     - default: true
@@ -2174,12 +2237,16 @@ script:
       isArray: true
       name: host_group_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Deletes the requested host groups.
     name: cs-falcon-delete-host-groups
   - arguments:
     - description: The ID of the host group.
       name: host_group_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The name of the host group.
       name: name
     - description: The description of the host group.
@@ -2216,6 +2283,8 @@ script:
   - arguments:
     - description: The ID of the host group.
       name: host_group_id
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The query to filter the devices that belong to the host group.
       name: filter
     - description: Page offset.
@@ -2258,6 +2327,8 @@ script:
     - description: The ID of the host group.
       name: host_group_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
       isArray: true
       name: host_ids
@@ -2293,6 +2364,8 @@ script:
     - description: The ID of the host group.
       name: host_group_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
       isArray: true
       name: host_ids
@@ -2329,6 +2402,8 @@ script:
       isArray: true
       name: ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - auto: PREDEFINED
       description: The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed".
       name: status
@@ -2345,6 +2420,8 @@ script:
       isArray: true
       name: multiple_indicators_json
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
     outputs:
@@ -2394,6 +2471,8 @@ script:
     - description: The host ID you would like to kill the given process for.
       name: host_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: A comma-separated list of process IDs to kill.
       isArray: true
       name: process_ids
@@ -2415,6 +2494,8 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The path to a file or a directory you want to remove.
       name: file_path
       required: true
@@ -2439,6 +2520,8 @@ script:
     - description: The host ID you want to get the processes list from.
       name: host_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2449,6 +2532,8 @@ script:
     - description: The host ID you want to get the network status and protocol statistics list from.
       name: host_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2460,6 +2545,8 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: A comma-separated list of the registry keys, sub keys or value to get.
       isArray: true
       name: registry_keys
@@ -2471,6 +2558,8 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2478,6 +2567,8 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: The file path of the required file to extract.
       name: file_path
       required: true
@@ -2539,6 +2630,8 @@ script:
       description: The incident ID to get detections for.
       name: incident_id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Gets the detections for a specific incident.
     name: cs-falcon-get-detections-for-incident
     outputs:
@@ -2558,6 +2651,8 @@ script:
     - description: The remote incident or detection ID.
       name: id
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident or detection is only updated if it was modified after the last update time.
       name: lastUpdate
@@ -2566,6 +2661,8 @@ script:
   - arguments:
     - description: Date string representing the local time. The incident or detection is only returned if it was modified after the last update time.
       name: lastUpdate
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     name: get-modified-remote-data
   - arguments: []
@@ -2575,6 +2672,8 @@ script:
     - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'
       name: filter
       required: false
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: Unique agent identifier (AID) of a sensor.
       name: aid
       isArray: true
@@ -2795,6 +2894,8 @@ script:
       name: cve_id
       isArray: true
       required: true
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -2815,6 +2916,8 @@ script:
       defaultValue: '50'
       name: limit
       required: false
+    - description: The CID of the tenant member to execute the command against.
+      name: member_cid
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve_ids
       isArray: true

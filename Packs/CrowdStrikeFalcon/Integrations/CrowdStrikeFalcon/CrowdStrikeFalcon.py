@@ -19,7 +19,6 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
 SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
-MEMBER_CID = demisto.params().get('member_cid', None)
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
     demisto.params()['url']
@@ -1067,6 +1066,9 @@ def get_token(new_token=False):
     """
     now = datetime.now()
     ctx = demisto.getIntegrationContext()
+    member_cid = demisto.args().get('member_cid', None)
+    if member_cid:
+        return handle_member_cid_token(ctx=ctx, now=now, member_cid=member_cid, new_token=new_token)
     if ctx and not new_token:
         passed_mins = get_passed_mins(now, ctx.get('time'))
         if passed_mins >= TOKEN_LIFE_TIME:
@@ -1083,7 +1085,33 @@ def get_token(new_token=False):
     return auth_token
 
 
-def get_token_request():
+def handle_member_cid_token(ctx, now, member_cid, new_token=False):
+    member_ctx = ctx.get(member_cid, {})
+    if member_ctx and not new_token:
+        passed_mins = get_passed_mins(now, member_ctx.get('time'))
+        if passed_mins >= TOKEN_LIFE_TIME:
+            # token expired
+            auth_token = get_token_request(member_cid=member_cid)
+            demisto.setIntegrationContext({
+                member_cid: {
+                    'auth_token': auth_token,
+                    'time': date_to_timestamp(now) / 1000}
+            })
+        else:
+            # token hasn't expired
+            auth_token = member_ctx.get('auth_token')
+    else:
+        # there is no token
+        auth_token = get_token_request(member_cid=member_cid)
+        demisto.setIntegrationContext({
+            member_cid: {
+                'auth_token': auth_token,
+                'time': date_to_timestamp(now) / 1000}
+        })
+    return auth_token
+
+
+def get_token_request(member_cid=None):
     """
         Sends token request
 
@@ -1094,8 +1122,8 @@ def get_token_request():
         'client_id': CLIENT_ID,
         'client_secret': SECRET
     }
-    if MEMBER_CID:
-        body.update({'member_cid': MEMBER_CID})
+    if member_cid:
+        body.update({'member_cid': member_cid})
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
