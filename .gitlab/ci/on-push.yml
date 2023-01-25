@@ -56,15 +56,11 @@ stop-running-pipelines:
       if [[ $CI_COMMIT_BRANCH = "master" ]]; then
         echo "Skipping, Should not run on master branch."
       else
-        echo $CI_PIPELINE_SOURCE
-        echo $CI_COMMIT_BRANCH
-        echo $CI_PIPELINE_ID
-        echo "curling to gitlab"
         RESP=$(curl -v -H "Content-Type: application/json" -H "PRIVATE-TOKEN: $GITLAB_CANCEL_TOKEN" $CONTENT_PIPELINES_API_URL\?ref\=$CI_COMMIT_BRANCH)
-        echo $RESP
         if [ "$RESP" != "[]" ]; then
             PIPELINES=$(echo "${RESP}" | jq -c '.[]')
             for pipeline in ${PIPELINES}
+            echo $pipeline
             do
                 source=$(echo $pipeline | jq -r ".source")
                 status=$(echo $pipeline | jq -r ".status")
@@ -73,7 +69,6 @@ stop-running-pipelines:
                     echo "Found running pipeline with id $id, and status $status. Stoping it."
                     curl --request POST --header "PRIVATE-TOKEN: $GITLAB_CANCEL_TOKEN" "$CONTENT_PIPELINES_API_URL/$id/cancel"
                 fi
-                echo $pipeline
             done
         fi
       fi
