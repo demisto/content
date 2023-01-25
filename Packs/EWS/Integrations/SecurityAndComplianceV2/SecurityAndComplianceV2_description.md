@@ -5,4 +5,4 @@ This integration enables you to manage the features that are available in the Se
 Supported authentication methods:
 - Delegated Authentication
 
-***Important***: It is recommended to disable MFA for the service account being used by the integration
+***Important***: It is mandatory to disable MFA for the service account being used by the integration
