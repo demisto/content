@@ -137,7 +137,7 @@ def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input,
 
 def test_test_module__when_success(mocker):
     """
-     Given:
+    Given:
         - a client with a positive response
     When:
         - the connectivity test module is called
@@ -165,4 +165,23 @@ def test_test_module__when_fail(mocker):
     assert test_module(client=client) == '404'
 
 
-# def test_fetch_indicators_command
+def test_fetch_indicators_command(mocker):
+    """
+    Given:
+        -  tags and tlp_color
+    When:
+        - the fetch_indicators_command is called
+    Then:
+        - the function should return the expectetd result with the correct tags and tlp_color
+    """
+    from CiscoWebExFeed import fetch_indicators_command, Client
+    client = MockedClient(Client)
+    mocker.patch.object(Client, 'all_raw_data', return_value='gg')
+    mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
+                        return_value={'IP': ['ipmock'], 'DOMAIN': ['domainmock']})
+
+    expected_result = [{'value': 'ipmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                        'trafficlightprotocol': 'very_yellow'}},
+                       {'value': 'domainmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                            'trafficlightprotocol': 'very_yellow'}}]
+    assert fetch_indicators_command(client=client, tags=("very_good", "very_bad"), tlp_color="very_yellow") == expected_result
