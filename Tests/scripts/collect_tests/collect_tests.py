@@ -1,4 +1,3 @@
-import contextlib
 import json
 import os
 import sys
@@ -710,13 +709,7 @@ class BranchTestCollector(TestCollector):
             except NothingToCollectException as e:
                 logger.info(e.message)
             except Exception as e:
-                content_item_type = None
-                with contextlib.suppress(Exception):
-                    content_item_type = find_type(raw_path)
-                logger.exception(
-                    f'Error while collecting tests for '
-                    f'{content_item_type or "unknown file type"} {raw_path}', exc_info=True,
-                    stack_info=True)
+                logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
                 raise e
         return CollectionResult.union(collected)
 
@@ -728,7 +721,8 @@ class BranchTestCollector(TestCollector):
             try:
                 if pack_to_collect := self._collect_pack(pack_id=pack_id,
                                                          reason=CollectionReason.FILES_REMOVED_FROM_PACK,
-                                                         reason_description=''):
+                                                         reason_description='',
+                                                         allow_incompatible_marketplace=True):
                     collected.append(pack_to_collect)
             except NothingToCollectException as e:
                 logger.info(e.message)
@@ -855,9 +849,6 @@ class BranchTestCollector(TestCollector):
                 path,
                 f'file of unknown type, and not directly under a content directory ({path.parent.name})')
 
-        pack_id = find_pack_folder(path).name
-        reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
-
         content_item = None
         try:
             content_item = ContentItem(path)
@@ -867,16 +858,9 @@ class BranchTestCollector(TestCollector):
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
-        except KeyError:
-            # usually happens when trying to read `['id']` from non-content items, e.g. RELEASE_NOTES_CONFIG
-            # NOTE: If removing this part, make sure to change the test_release_note_config_in_only_install_pack unit test.
-            if file_type == FileType.RELEASE_NOTES_CONFIG:  # has no id in its json body
-                return self._collect_pack(
-                    pack_id=pack_id,
-                    reason=CollectionReason.NON_CODE_FILE_CHANGED,
-                    reason_description=reason_description,
-                    content_item_range=None,  # release note json has no range
-                )
+
+        pack_id = find_pack_folder(path).name
+        reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
 
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             content_item_range = content_item.version_range if content_item else None

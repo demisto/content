@@ -109,13 +109,8 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
     for dependency in response_data:
         dependants = dependency.get('dependants', {})
         for dependant in dependants.keys():
-            if dependency.get("id") == 'rasterize':
-                logging.info(f'The pack {dependant=} cant be installed without: {dependency.get("id")}')
-            if dependency.get("id") == 'Whois':
-                logging.info(f'The pack {dependant=} cant be installed without: {dependency.get("id")}')
             is_required = dependants[dependant].get('level', '') == 'required'
             if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
-                logging.info(f'The pack {dependant=} cant be installed without: {dependency.get("id")}')
                 dependencies_data.append({
                     'id': dependency.get('id'),
                     'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion')
@@ -124,7 +119,6 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
                 checked_packs.append(dependency.get('id'))
 
     if next_call_dependants_ids:
-        logging.info(f'{next_call_dependants_ids=}')
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
 
@@ -154,8 +148,6 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             dependencies_data: list = []
             dependants_ids = [pack_id]
             reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
-            with open(os.path.join(os.getenv("ARTIFACTS_FOLDER"), 'dep.json'), 'w') as f:
-                f.write(json.dumps(reseponse_data))
             create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
             dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
             if dependencies_data:
@@ -453,10 +445,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     global SUCCESS_FLAG
                     SUCCESS_FLAG = False
                 else:
-                    logging.info(f'Pack {pack_id} found dependency: {dependency.get("id")}')
                     current_packs_to_install.extend(dependencies)
 
-        logging.info(f'Pack {pack_id} and its dependencies: {current_packs_to_install}')
         lock.acquire()
         for pack in current_packs_to_install:
             if pack['id'] not in packs_to_install:

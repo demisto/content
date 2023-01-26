@@ -337,13 +337,7 @@ class Build(ABC):
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
-                installed_packs_before_update = get_all_installed_packs(server.client)
-                logging.info(f'{installed_packs_before_update=}')
-
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
-
-                installed_packs_after_update = get_all_installed_packs(server.client)
-                logging.info(f'{installed_packs_after_update=}')
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -870,15 +864,12 @@ class CloudBuild(Build):
             try:
                 # We are syncing marketplace since we are copying custom bucket to existing bucket and if new packs
                 # were added, they will not appear on the cloud marketplace without sync.
-                logging.debug('Starting to sync marketplace')
                 _ = demisto_client.generic_request_func(
                     self=server.client, method='POST',
                     path='/contentpacks/marketplace/sync')
             except Exception as e:
                 logging.error(f'Filed to sync marketplace. Error: {e}')
         logging.info('Finished copying successfully.')
-        logging.info('Sleeping for 1200 seconds to sync the change.')
-        sleep(1200)
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         # no need to run this concurrently since we have only one server
@@ -1836,33 +1827,6 @@ def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, 
                          f"higher than server version {server_numeric_version}")
 
     return packs_with_higher_version
-
-
-def get_all_installed_packs(client: demisto_client):
-    """
-    Args:
-        client (demisto_client): The client to connect to.
-    Returns:
-        list of installed packs
-    """
-    try:
-        logging.info("Attempting to fetch all installed packs.")
-        response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path='/contentpacks/metadata/installed',
-                                                                            method='GET',
-                                                                            accept='application/json',
-                                                                            _request_timeout=None)
-        if 200 <= status_code < 300:
-            installed_packs = ast.literal_eval(response_data)
-            logging.success('Successfully fetched all installed packs.')
-            return installed_packs
-        else:
-            result_object = ast.literal_eval(response_data)
-            message = result_object.get('message', '')
-            raise Exception(f'Failed to fetch installed packs - with status code {status_code}\n{message}')
-    except Exception as e:
-        logging.exception(f'The request to fetch installed packs has failed. Additional info: {str(e)}')
-        return None
 
 
 def main():

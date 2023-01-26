@@ -389,13 +389,3 @@ def test_malformed_pack_id():
 
 def test_get_pack_id_from_error_with_gcp_path():
     assert script.get_pack_id_from_error_with_gcp_path(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY) == 'pack2'
-
-
-def test_create_dependencies_data_structure():
-    with open('618_dep_dev_after_delete.json') as f:
-        response_data = json.loads(f.read())
-    response_data = response_data.get('dependencies', [])
-    dependants_ids = ['DeveloperTools']
-    dependencies_data: list = []
-    script.create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, dependants_ids)
-    hi = ""
