@@ -24,7 +24,7 @@ DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
 IP_LIST = [['1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)',
             '1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)', '1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)']]
 
-HTML_DOMAIN_SECTION = get_data_from_file('tests_data.txt')
+HTML_DOMAIN_SECTION = util_load_json('tests_data_1.json')
 
 
 HTML_IP_SECTION = '''<div class="panel-collapse collapse" id="id_135011">
