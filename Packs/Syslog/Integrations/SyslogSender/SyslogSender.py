@@ -11,7 +11,8 @@ from socket import SOCK_STREAM
 from typing import Union, Tuple, Dict, Any, Generator
 from tempfile import NamedTemporaryFile
 import logging.config
-from rfc5424logging import Rfc5424SysLogHandler as SyslogHandlerTLS
+import logging
+#  from rfc5424logging import Rfc5424SysLogHandler as SyslogHandlerTLS
 
 ''' CONSTANTS '''
 
@@ -130,7 +131,7 @@ class SyslogManager:
         return handler
 
     def _init_logger_tls(self, handler):
-        #SyslogHandlerTLS
+        # SyslogHandlerTLS
         logging.config.dictConfig({'version': 1,
                                    'handlers': handler,
                                    'root': {
@@ -322,22 +323,51 @@ def main():
             certificate = params.get('certificate')
             if protocol == 'tls':
                 certificate_path = prepare_certificate_file(certificate)
-                syslog_manager = logging.getLogger('syslogtest')
-                syslog_manager.setLevel(logging.INFO)
-                sh = SyslogHandlerTLS(
-                    address=(address, port),
-                    tls_enable=True,
-                    tls_verify=True,
-                    tls_ca_bundle=certificate_path
-                )
-                syslog_manager.addHandler(sh)
+                log_settings = {
+                    'version': 1,
+                    'formatters': {
+                        'console': {
+                            'format': '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s',
+                        },
+                    },
+                    'handlers': {
+                        'console': {
+                            'level': 'DEBUG',
+                            'class': 'logging.StreamHandler',
+                            'formatter': 'console'
+                        },
+                        'syslog': {
+                            'level': 'INFO',
+                            'class': 'tlssyslog.handlers.TLSSysLogHandler',
+                            'address': (address, port),
+                            'enterprise_id': 32473,
+                            'structured_data': {'sd_id_1': {'key1': 'value1'}},
+                            'ssl_kwargs': {
+                                'cert_reqs': ssl.CERT_REQUIRED,
+                                'ssl_version': ssl.PROTOCOL_TLS,
+                                'ca_certs': certificate_path,
+                            },
+                        },
+                    },
+                    'loggers': {
+                        'syslogtest': {
+                            'handlers': ['console', 'syslog'],
+                            'level': 'DEBUG',
+                        },
+                    }
+                }
+                logging.config.dictConfig(log_settings)
+
+                logger = logging.getLogger('syslogtest')
+                logger.info('This message appears on console and is sent to syslog')
+                logger.debug('This debug message appears on console only')
+                logger.info('This is a test')
+                demisto.debug(logger)
             else:
                 syslog_manager = init_manager(demisto.params())
-    
-            with syslog_manager.get_logger() as syslog_logger:  # type: Logger
-                syslog_logger.info('This is a test')
-                print('hello')
-                demisto.debug(syslog_manager)
+                with syslog_manager.get_logger() as syslog_logger:  # type: Logger
+                    syslog_logger.info('This is a test')
+                    demisto.debug(syslog_manager)
             demisto.results('ok')
         elif demisto.command() == 'mirror-investigation':
             mirror_investigation()
