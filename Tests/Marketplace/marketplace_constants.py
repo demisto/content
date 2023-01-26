@@ -20,7 +20,6 @@ BASE_PACK_DEPENDENCY_DICT = {
         }
 }
 
-
 SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'XDRCTemplate']
 XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
@@ -89,18 +88,22 @@ class GCPConfig(object):
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
-        CORE_PACKS_LIST = json.load(core_packs_list_file)
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_list_file:
-        CORE_PACKS_MPV2_LIST = json.load(core_packs_list_file)
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json'), 'r') as core_packs_list_file:
-        CORE_PACKS_XPANSE_LIST = json.load(core_packs_list_file)
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_xsoar_list_file:
+        packs_list = json.load(core_packs_xsoar_list_file)
+        CORE_PACKS_LIST = packs_list.get('core_packs_list')
+        CORE_PACKS_LIST_TO_UPDATE = packs_list.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), 'upgrade_core_packs_list.json'), 'r') as upgrade_core_packs_list:
-        packs_list = json.load(upgrade_core_packs_list)
-        CORE_PACKS_LIST_TO_UPDATE = packs_list.get("update_core_packs_list")
-    CORE_PACKS_MPV2_LIST_TO_UPDATE: List[str] = []
-    CORE_PACKS_XPANSE_LIST_TO_UPDATE: List[str] = []
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_xsiam_list_file:
+        packs_list_xsiam = json.load(core_packs_xsiam_list_file)
+        CORE_PACKS_MPV2_LIST = packs_list.get('core_packs_list')
+        CORE_PACKS_MPV2_LIST_TO_UPDATE = packs_list.get('update_core_packs_list')
+
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json'),
+              'r') as core_packs_xpanse_list_file:
+        packs_list_xpanse = json.load(core_packs_xpanse_list_file)
+        CORE_PACKS_XPANSE_LIST = packs_list.get('core_packs_list')
+        CORE_PACKS_XPANSE_LIST_TO_UPDATE = packs_list.get('update_core_packs_list')
+        packs_list = json.load(core_packs_xsoar_list_file)
 
     @classmethod
     def get_core_packs(cls, marketplace):
@@ -391,7 +394,6 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
 }
-
 
 # the format is defined in issue #19786, may change in the future
 CONTENT_ITEM_NAME_MAPPING = {
