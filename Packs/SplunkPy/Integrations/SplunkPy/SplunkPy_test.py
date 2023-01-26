@@ -911,9 +911,9 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
 
 @pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
                          [
-                             # A notable with a "Closed" status label
+                             # A Notable with a "Closed" status label
                              ({'status_label': 'Closed', 'event_id': 'id', 'status_end': 'true'},
-                              {"close_incident": True, "close_end_statuses": True, "close_extra_labels": []},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
                               {'Type': EntryType.NOTE,
                                'Contents': {
                                    'dbotIncidentClose': True,
@@ -923,10 +923,59 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
                                },
                               ),
 
-                             # A notable with a "New" status label (shouldn't close)
+                             # A Notable with a "New" status label (shouldn't close)
                              ({'status_label': 'New', 'event_id': 'id', 'status_end': 'false'},
-                              {"close_incident": True, "close_end_statuses": True, "close_extra_labels": []},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
                               None,
+                              ),
+
+                             # A Notable with a custom status label that is on close_extra_labels (should close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'false'},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': ['Custom']},
+                              {'Type': EntryType.NOTE,
+                               'Contents': {
+                                   'dbotIncidentClose': True,
+                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
+                               },
+                               'ContentsFormat': EntryFormat.JSON,
+                               },
+                              ),
+
+                             # A Notable with close_extra_labels that don't include status_label (shouldn't close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'false'},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': ['A', 'B']},
+                              None,
+                              ),
+
+                             # A Notable that has status_end as true with close_end_statuses as true (should close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
+                              {'close_incident': True, 'close_end_statuses': True, 'close_extra_labels': []},
+                              {'Type': EntryType.NOTE,
+                               'Contents': {
+                                   'dbotIncidentClose': True,
+                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
+                               },
+                               'ContentsFormat': EntryFormat.JSON,
+                               },
+                              ),
+
+                             # A Notable that has status_end as true with close_end_statuses as false (shouldn't close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
+                              None,
+                              ),
+
+                             # A Notable that is both on close_extra_labels,
+                             # and has status_end as true with close_end_statuses as true (should close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
+                              {'close_incident': True, 'close_end_statuses': True, 'close_extra_labels': ['Custom']},
+                              {'Type': EntryType.NOTE,
+                               'Contents': {
+                                   'dbotIncidentClose': True,
+                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
+                               },
+                               'ContentsFormat': EntryFormat.JSON,
+                               },
                               ),
                          ])
 def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
