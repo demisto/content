@@ -7,13 +7,13 @@ Note that multiple search values should be separated by commas only (without spa
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Convert file hash to corresponding hashes
+Convert file hash to corresponding hashes
 
 ### Integrations
-* Cortex Data Lake
+Cortex Data Lake
 
 ### Scripts
-* SetAndHandleEmpty
+SetAndHandleEmpty
 
 ### Commands
 * cdl-query-file-data
@@ -29,12 +29,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SHA1 | A single or multiple SHA1 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | Filename | A single or multiple file names to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | FileType | A single or multiple file types to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| time_range | An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.<br/><br/>When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used. |  | Optional |
-| start_time | Specify the query start time at which to perform a search within Cortex Data Lake.<br/><br/>For example, start_time="2018-04-26 00:00:00" |  | Optional |
-| end_time | Specify the query end time at which to perform a search within Cortex Data Lake.<br/><br/>For example, end_time="2018-04-26 00:00:00" |  | Optional |
+| time_range | An alternative to the 'start_time' and 'end_time' inputs that indicates the time frame for the search, e.g., 1 week, 1 day, 30 minutes.<br/><br/>When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used. |  | Optional |
+| start_time | Specify the query start time at which to perform a search within Cortex Data Lake.<br/><br/>For example, start_time="2018-04-26 00:00:00". |  | Optional |
+| end_time | Specify the query end time at which to perform a search within Cortex Data Lake.<br/><br/>For example, end_time="2018-04-26 00:00:00". |  | Optional |
 | limit | The maximum number of logs to return. <br/>Default is 10. |  | Optional |
 | fields | Select the fields you wish to be included in the query results. <br/>Selection can be "all" \(same as \*\) or a comma-separated list of specific fields in the table.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| FirewallAction | Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| FirewallAction | Filter network traffic logs that should be retrieved from Cortex Data Lake based on the firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | rule_matched | Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 
 ## Playbook Outputs
