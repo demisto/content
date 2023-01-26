@@ -10898,7 +10898,7 @@ def replace_spaces_in_certificate(private_key):
 
     :return: the private key with spaces replaced with new lines if the private key is in the correct format,
              otherwise the private key will be returned as is.
-    :rtype: ``str``
+    :rtype: ``str`` or ``None``
     """
     if not private_key:
         return private_key
