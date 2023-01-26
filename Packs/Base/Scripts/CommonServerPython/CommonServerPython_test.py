@@ -8677,17 +8677,17 @@ TEST_REPLACE_SPACES_IN_CERTIFICATE = [
 ]
 
 
-@pytest.mark.parametrize('private_key, expected', TEST_REPLACE_SPACES_IN_CERTIFICATE)
-def test_replace_spaces_in_certificate(private_key, expected):
+@pytest.mark.parametrize('credential, expected', TEST_REPLACE_SPACES_IN_CERTIFICATE)
+def test_replace_spaces_in_credential(credential, expected):
     """
     Given:
-        Private key with spaces.
+        Credential with spaces.
     When:
-        Running replace_spaces_in_certificate function.
+        Running replace_spaces_in_credential function.
     Then:
         Test - Assert the function not returning as expected.
     """
-    from CommonServerPython import replace_spaces_in_certificate
+    from CommonServerPython import replace_spaces_in_credential
 
-    result = replace_spaces_in_certificate(private_key)
+    result = replace_spaces_in_credential(credential)
     assert result == expected

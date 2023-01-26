@@ -10889,27 +10889,28 @@ def is_scheduled_command_retry():
     return True if sm.get('is_polling', False) else False
 
 
-def replace_spaces_in_certificate(private_key):
+def replace_spaces_in_credential(credential):
     """
-    This function is used in case credential from type: 9 is in the wrong format of one line with spaces instead of multiple lines.
+    This function is used in case of credential from type: 9 is in the wrong format
+    of one line with spaces instead of multiple lines.
 
-    :type private_key: ``str`` or ``None``
-    :param private_key: the private key to replace spaces in.
+    :type credential: ``str`` or ``None``
+    :param credential: the credential to replace spaces in.
 
-    :return: the private key with spaces replaced with new lines if the private key is in the correct format,
-             otherwise the private key will be returned as is.
+    :return: the credential with spaces replaced with new lines if the credential is in the correct format,
+             otherwise the credential will be returned as is.
     :rtype: ``str`` or ``None``
     """
-    if not private_key:
-        return private_key
+    if not credential:
+        return credential
 
-    match_begin = re.search("-----BEGIN(.*?)-----", private_key)
-    match_end = re.search("-----END(.*?)-----", private_key)
+    match_begin = re.search("-----BEGIN(.*?)-----", credential)
+    match_end = re.search("-----END(.*?)-----", credential)
 
     if match_begin and match_end:
         return re.sub("(?<={0})(.*?)(?={1})".format(match_begin.group(0), match_end.group(0)),
-                      lambda match: match.group(0).replace(' ', '\n'), private_key)
-    return private_key
+                      lambda match: match.group(0).replace(' ', '\n'), credential)
+    return credential
 
 
 ###########################################
