@@ -6,6 +6,16 @@ import json
 from CommonServerPython import DemistoException
 
 
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def MockedClient(Client):
+    client = Client(base_url='test')
+    return client
+
+
 DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
                 ['domain1', '*.d1.com\t\t\t*.d5.com'],
                 ['domain2', '*.d2.com'],
@@ -24,16 +34,6 @@ HTML_IP_SECTION = '''<div class="panel-collapse collapse" id="id_135011">
 </div>
 </div>
 </div>'''
-
-
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
-def MockedClient(Client):
-    client = Client(base_url='test')
-    return client
 
 
 def test_grab_domains():
