@@ -102,7 +102,7 @@ class Client(BaseClient):
                 url_suffix='',
                 resp_type='response')
         except DemistoException as e:
-            raise DemistoException(e.message)
+            raise e
 
 
 def check_indicator_type(indicator: str) -> str:

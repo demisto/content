@@ -3,11 +3,17 @@ import pytest
 import CiscoWebExFeed
 import io
 import json
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def MockedClient(Client):
+    client = Client(base_url='test')
+    return client
 
 
 DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
@@ -119,7 +125,8 @@ def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input,
         - the function should return the expectetd result with the correct limit and indicator type
     """
     from CiscoWebExFeed import get_indicators_command, Client
-    client = mocker.patch.object(Client, 'all_raw_data', return_value='gg')
+    client = MockedClient(Client)
+    mocker.patch.object(Client, 'all_raw_data', return_value='gg')
     mocker.patch.object(CiscoWebExFeed, 'check_indicator_type', return_value='mocked_type')
     mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
                         return_value={'IP': ['ipmock'], 'DOMAIN': ['domainmock']})
@@ -128,7 +135,34 @@ def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input,
     assert res.readable_output == expected
 
 
-def test_test_module(mocker):
+def test_test_module__when_success(mocker):
+    """
+     Given:
+        - a client with a positive response
+    When:
+        - the connectivity test module is called
+    Then:
+        - assert that the test_module function returns 'ok'
+    """
     from CiscoWebExFeed import test_module, Client
-    client = mocker.patch.object(Client, 'all_raw_data', return_value='gg')
+    client = MockedClient(Client)
+    mocker.patch.object(Client, 'all_raw_data', return_value='gg')
     assert test_module(client=client) == 'ok'
+
+
+def test_test_module__when_fail(mocker):
+    """
+     Given:
+        - a client with a negative response
+    When:
+        - the connectivity test module is called
+    Then:
+        - assert that the test_module function returns the error message
+    """
+    from CiscoWebExFeed import test_module, Client
+    client = MockedClient(Client)
+    mocker.patch.object(Client, 'all_raw_data', side_effect=DemistoException('404'))
+    assert test_module(client=client) == '404'
+
+
+# def test_fetch_indicators_command
