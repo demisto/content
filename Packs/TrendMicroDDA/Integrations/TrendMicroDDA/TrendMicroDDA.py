@@ -72,12 +72,12 @@ def calculate_checksum(api_key, headers, body=''):
         for key in x_dtas_checksum_calculating_order_list:
             temp += headers[key]
     else:
-        for key, value in headers.iteritems():
+        for key, value in headers.items():
             if ('X-DTAS-' in key and 'X-DTAS-Checksum' not in key and 'X-DTAS-ChecksumCalculatingOrder' not in key):
                 temp += value
 
     temp += body
-    return hashlib.sha1(temp)  # nosec
+    return hashlib.sha1(temp.encode('utf-8'))  # nosec
 
 
 def http_request(uri, method, headers, body={}, params={}, files={}):
