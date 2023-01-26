@@ -32,7 +32,6 @@ This playbook does not use any sub-playbooks.
 | AzureSecurityGroup | The Azure Network Security Group that will have new rules created or updated. |  | Required |
 | RemotePort | The remote port that is publicly exposed. |  | Required |
 | RemoteProtocol | The remote protocol that is publicly exposed. |  | Required |
-| RemoteIP | The remote IP that is publicly exposed. |  | Required |
 | AzureVMPrivateIP | The private IP of the Azure Virtual Machine. |  | Required |
 
 ## Playbook Outputs

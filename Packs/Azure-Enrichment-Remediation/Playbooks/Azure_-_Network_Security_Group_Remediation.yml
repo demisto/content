@@ -394,13 +394,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: af560a6b-f0b9-42c5-8447-a041bbfc9ae1
+    taskid: 353ca115-d23d-4e9c-893b-576dcf8e4a49
     type: regular
     task:
-      id: af560a6b-f0b9-42c5-8447-a041bbfc9ae1
+      id: 353ca115-d23d-4e9c-893b-576dcf8e4a49
       version: -1
       name: Update existing remediation allow rule
-      description: Update existing security allow rule that denies all internet traffic to exposed public IPs with the additional remoteIP. If one does not exist, it will be created.
+      description: |-
+        Update existing security allow rule that denies all internet traffic to exposed public IPs (using the private IP) with an additional public IP (using the private IP). If one does not exist, it will be created.
+
+        Private IPs are used in NSG rules in place of Public IPs, as explained in [Microsoft Azure's documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview).
       script: Azure Network Security Groups|||azure-nsg-security-rule-update
       type: regular
       iscommand: true
@@ -719,13 +722,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: f9ed14a4-f402-4438-8bcf-628a18ed65a8
+    taskid: c70fae07-19b8-465e-85ab-6b394431c684
     type: regular
     task:
-      id: f9ed14a4-f402-4438-8bcf-628a18ed65a8
+      id: c70fae07-19b8-465e-85ab-6b394431c684
       version: -1
       name: Update existing remediation deny rule
-      description: Update existing security rule that denies all internet traffic to exposed public IPs with the additional remoteIP.  If one does not exist, it will be created.
+      description: |-
+        Update existing security rule that denies all internet traffic to exposed public IPs (using the private IP) with an additional public IP (using the private IP). If one does not exist, it will be created.
+
+        Private IPs are used in NSG rules in place of Public IPs, as explained in [Microsoft Azure's documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview).
       script: Azure Network Security Groups|||azure-nsg-security-rule-update
       type: regular
       iscommand: true
@@ -1047,13 +1053,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 23e710c6-c214-4e8b-8acb-9d0226c5ad6a
+    taskid: ee2869a7-705a-43fd-8ffd-19acc22a891e
     type: regular
     task:
-      id: 23e710c6-c214-4e8b-8acb-9d0226c5ad6a
+      id: ee2869a7-705a-43fd-8ffd-19acc22a891e
       version: -1
       name: Add allow rule for port ${inputs.RemotePort} and ${inputs.RemoteProtocol}
-      description: Create a security rule.
+      description: |-
+        Create a security allow rule that denies all internet traffic to exposed public IPs (using the private IP) with an additional public IP (using the private IP). If one does not exist, it will be created.
+
+        Private IPs are used in NSG rules in place of Public IPs, as explained in [Microsoft Azure's documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview).
       script: Azure Network Security Groups|||azure-nsg-security-rule-create
       type: regular
       iscommand: true
@@ -1214,13 +1223,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: f282724b-7154-4855-8686-862a88566253
+    taskid: 3fa069d5-be06-4a84-8d9b-5dbba1fdb415
     type: regular
     task:
-      id: f282724b-7154-4855-8686-862a88566253
+      id: 3fa069d5-be06-4a84-8d9b-5dbba1fdb415
       version: -1
       name: Add block rule for port ${inputs.RemotePort}
-      description: Create a security rule.
+      description: |-
+        Create a security rule that denies all internet traffic to exposed public IPs (using the private IP) with an additional public IP (using the private IP). If one does not exist, it will be created.
+
+        Private IPs are used in NSG rules in place of Public IPs, as explained in [Microsoft Azure's documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview).
       script: Azure Network Security Groups|||azure-nsg-security-rule-create
       type: regular
       iscommand: true
@@ -1349,25 +1361,20 @@ inputs:
   required: true
   description: The Azure Network Security Group that will have new rules created or updated.
   playbookInputQuery:
-- key: RemotePort
+- key: AzureVMPrivateIP
   value: {}
   required: true
-  description: The remote port that is publicly exposed.
+  description: The private IP of the Azure Virtual Machine.
   playbookInputQuery:
 - key: RemoteProtocol
   value: {}
   required: true
   description: The remote protocol that is publicly exposed.
   playbookInputQuery:
-- key: RemoteIP
+- key: RemotePort
   value: {}
   required: true
-  description: The remote IP that is publicly exposed.
-  playbookInputQuery:
-- key: AzureVMPrivateIP
-  value: {}
-  required: true
-  description: The private IP of the Azure Virtual Machine.
+  description: The remote port that is publicly exposed.
   playbookInputQuery:
 outputs: []
 fromversion: 6.5.0
