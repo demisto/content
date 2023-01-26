@@ -8654,8 +8654,7 @@ def test_is_valid_filename(filename):
 
 TEST_REPLACE_SPACES_IN_CERTIFICATE = [
     (
-        'TEST',
-        'TEST'
+        'TEST test TEST', 'TEST test TEST'
     ),
     (
         '-----BEGIN SSH CERTIFICATE----- MIIF7z gdwZcx IENpdH -----END SSH CERTIFICATE-----',
@@ -8668,6 +8667,12 @@ TEST_REPLACE_SPACES_IN_CERTIFICATE = [
     (
         '-----BEGIN RSA PRIVATE KEY----- MIIF7z gdwZcx IENpdH',
         '-----BEGIN RSA PRIVATE KEY----- MIIF7z gdwZcx IENpdH'
+    ),
+    (
+        None, None
+    ),
+    (
+        '', ''
     )
 ]
 
