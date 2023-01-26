@@ -430,8 +430,7 @@ tasks:
           root: inputs.GCP-accessKeyRemediationType
       resourceName:
         complex:
-          root: alertJson._all_events
-          accessor: referenced_resource_name
+          root: inputs.resourceName
       resourceRemediationType:
         complex:
           root: inputs.GCP-userRemediationType
