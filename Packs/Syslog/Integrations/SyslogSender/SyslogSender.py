@@ -12,6 +12,7 @@ from typing import Union, Tuple, Dict, Any, Generator
 import ssl
 import http.server
 import socket
+import logging.config
 
 
 ''' CONSTANTS '''
@@ -70,7 +71,7 @@ class SyslogManager:
         Class for managing instances of a syslog logger.
         :param address: The IP address of the syslog server.
         :param port: The port of the syslog server.
-        :param protocol: The messaging protocol (TCP / UDP).
+        :param protocol: The messaging protocol (TCP / UDP / TLS).
         :param logging_level: The logging level.
         """
         self.address = address
@@ -86,6 +87,7 @@ class SyslogManager:
         Get a new instance of a syslog logger.
         :return: syslog logger
         """
+        # handler = self._get_handler_tls if self.protocol == 'tls' else self._get_handler()
         handler = self._get_handler()
         syslog_logger = self._init_logger(handler)
         try:
@@ -93,6 +95,19 @@ class SyslogManager:
         finally:
             syslog_logger.removeHandler(handler)
             handler.close()
+
+    def _get_handler_tls(self):
+        handler = {'syslog': {
+                   'level': 'INFO',
+                   'class': 'tlssyslog.handlers.TLSSysLogHandler',
+                   'formatter': 'simple',
+                   'address': (self.address, self.port),
+                   'ssl_kwargs': {
+                       'cert_reqs': ssl.CERT_REQUIRED,
+                       'ssl_version': ssl.PROTOCOL_TLS,
+                       'ca_certs': self.syslog_cert_path,
+                   }, }}
+        return handler
 
     def _get_handler(self) -> SysLogHandler:
         """
@@ -103,17 +118,15 @@ class SyslogManager:
         kwargs: Dict[str, Any] = {
             'facility': self.facility
         }
-        # if self.syslog_cert_path:
-        #     kwargs['ssl_kwargs'] = {'cert_reqs': ssl.CERT_REQUIRED,
-        #                             'ssl_version': ssl.PROTOCOL_TLS,
-        #                             'ca_certs': self.syslog_cert_path}
         if self.protocol == TCP:
             kwargs['socktype'] = SOCK_STREAM
         elif self.protocol == 'unix':
             address = self.address
 
         kwargs['address'] = address
-
+        handler_ = SysLogHandler(**kwargs)
+        demisto.debug("_get_handler")
+        demisto.debug(handler_)
         return SysLogHandler(**kwargs)
 
     def _init_logger(self, handler: SysLogHandler) -> Logger:
@@ -125,7 +138,8 @@ class SyslogManager:
         syslog_logger = getLogger('SysLogLogger')
         syslog_logger.setLevel(self.logging_level)
         syslog_logger.addHandler(handler)
-
+        demisto.debug('_init_logger')
+        demisto.debug(syslog_logger)
         return syslog_logger
 
 
@@ -190,8 +204,39 @@ def init_manager(params: dict) -> SyslogManager:
         raise DemistoException('A certificate must be provided in TLS protocol.')
     if certificate and protocol == 'tls':
         certificate_path = prepare_certificate_file(certificate)
-        return(try_this(address, port, certificate_path, ''))  # need to check
+        demisto.debug('Starting HTTP Server')
     return SyslogManager(address, port, protocol, logging_level, facility, certificate_path)
+
+
+def init_syslog_tls(syslog_cert_path: str, syslog_host: str, syslog_port: int):
+    certificate_path = prepare_certificate_file(syslog_cert_path)
+    # Server to send to Syslog messages over TLS
+    logging.config.dictConfig({'version': 1,
+                               'formatters': {
+                                   'simple': {
+                                       'format': '%(asctime)s django %(name)s: %(levelname)s %(message)s',
+                                       'datefmt': '%Y-%m-%dT%H:%M:%S',
+                                   },
+                               },
+                               'handlers': {
+                                   'syslog': {
+                                       'level': 'INFO',
+                                       'class': 'tlssyslog.handlers.TLSSysLogHandler',
+                                       'formatter': 'simple',
+                                       'address': (syslog_host, syslog_port),
+                                       'ssl_kwargs': {
+                                           'cert_reqs': ssl.CERT_REQUIRED,
+                                           'ssl_version': ssl.PROTOCOL_TLS,
+                                           'ca_certs': certificate_path,
+                                       },
+                                   },
+                               },
+                               'root': {
+                                   'handlers': ['syslog'],
+                                   'level': 'INFO',
+                               }})
+
+    demisto.debug('Starting HTTP Server')
 
 
 def send_log(manager: SyslogManager, message: str, log_level: str):
