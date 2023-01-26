@@ -1251,7 +1251,7 @@ def get_remote_data_command(service: client.Service, args: dict,
             updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
 
     demisto.debug(f'notable {notable_id} data: {updated_notable}')
-    if close_incident and updated_notable.get('status_label') is not None:
+    if close_incident and updated_notable.get('status_label'):
         status_label = updated_notable['status_label']
 
         if status_label == "Closed" or (status_label in close_extra_labels) \
