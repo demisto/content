@@ -1685,7 +1685,7 @@ inputs:
   description: |-
     Specify the query end time at which to perform a search within Cortex Data Lake.
 
-    For example, end_time="2018-04-26 00:00:00"
+    For example, end_time="2018-04-26 00:00:00".
   playbookInputQuery:
 - key: limit
   value: {}
