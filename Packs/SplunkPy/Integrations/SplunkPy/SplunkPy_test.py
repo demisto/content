@@ -910,12 +910,31 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
             splunk.get_last_update_in_splunk_time(last_update)
 
 
-def test_get_remote_data_command(mocker):
-    updated_notable = {'status_label': 'New', 'event_id': 'id'}
+@pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
+                         [
+                             # A notable with a "Closed" status label
+                             ({'status_label': 'Closed', 'event_id': 'id', 'status_end': 'true'},
+                              {"close_incident": True, "close_end_statuses": True, "close_extra_labels": []},
+                              {'Type': EntryType.NOTE,
+                               'Contents': {
+                                   'dbotIncidentClose': True,
+                                   'closeReason': 'Notable event was closed on Splunk with status "Closed".',
+                               },
+                               'ContentsFormat': EntryFormat.JSON,
+                               },
+                              ),
 
+                             # A notable with a "New" status label (shouldn't close)
+                             ({'status_label': 'New', 'event_id': 'id', 'status_end': 'false'},
+                              {"close_incident": True, "close_end_statuses": True, "close_extra_labels": []},
+                              None,
+                              ),
+                         ])
+def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
+                                                func_call_kwargs: dict, expected_closure_data: dict):
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x: updated_notable
+            self.oneshot = lambda x: notable_data
 
     class Service:
         def __init__(self):
@@ -925,48 +944,19 @@ def test_get_remote_data_command(mocker):
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[notable_data])
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, close_incident=False, close_end_statuses=False, close_extra_labels=[],
-                                   mapper=splunk.UserMappingObject(service, False))
+    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False), **func_call_kwargs)
     results = demisto.results.call_args[0][0]
+
+    expected_results = [notable_data]
+
+    if expected_closure_data:
+        expected_results.append(expected_closure_data)
+
     assert demisto.results.call_count == 1
-    assert results == [{'event_id': 'id', 'status_label': 'New'}]
-
-
-def test_get_remote_data_command_close_incident(mocker):
-    updated_notable = {'status_label': 'Closed', 'event_id': 'id'}
-
-    class Jobs:
-        def __init__(self):
-            self.oneshot = lambda x: updated_notable
-
-    class Service:
-        def __init__(self):
-            self.jobs = Jobs()
-
-    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
-    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
-    mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
-    mocker.patch.object(demisto, 'results')
-    service = Service()
-    splunk.get_remote_data_command(service, args, close_incident=True, close_end_statuses=True, close_extra_labels=[],
-                                   mapper=splunk.UserMappingObject(service, False))
-    results = demisto.results.call_args[0][0]
-    assert demisto.results.call_count == 1
-    assert results == [
-        {'event_id': 'id', 'status_label': 'Closed'},
-        {
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': 'Notable event was closed on Splunk with status "Closed".',
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }]
+    assert results == expected_results
 
 
 def test_get_modified_remote_data_command(mocker):
