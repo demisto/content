@@ -548,7 +548,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -703,7 +703,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1302,7 +1302,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for  within Cortex Data Lake.
+    A single or multiple URLs and/or domains to search for within Cortex Data Lake.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1310,7 +1310,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple country names or codes to search for  within Cortex Data Lake. Used for both source and destination geolocations.
+    A single or multiple country names or codes to search for within Cortex Data Lake. Used for both source and destination geolocations.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1385,7 +1385,7 @@ inputs:
   description: |-
     Specify the query start time at which to perform a search within Cortex Data Lake.
 
-    For example, start_time="2018-04-26 00:00:00"
+    For example, start_time="2018-04-26 00:00:00".
   playbookInputQuery:
 - key: end_time
   value: {}
@@ -1393,13 +1393,13 @@ inputs:
   description: |-
     Specify the query end time at which to perform a search within Cortex Data Lake.
 
-    For example, end_time="2018-04-26 00:00:00"
+    For example, end_time="2018-04-26 00:00:00".
   playbookInputQuery:
 - key: time_range
   value: {}
   required: false
   description: |-
-    An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.
+    An alternative to the 'start_time' and 'end_time' inputs that indicates the time frame for the search, e.g., 1 week, 1 day, 30 minutes.
 
     When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used.
   playbookInputQuery:
@@ -1411,13 +1411,13 @@ inputs:
 - key: fields
   value: {}
   required: false
-  description: "Select the fields you wish to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
+  description: "Select the fields to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
   playbookInputQuery:
 - key: FirewallAction
   value: {}
   required: false
   description: |-
-    Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.
+    Filter network traffic logs that should be retrieved from Cortex Data Lake based on the firewall action.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1569,7 +1569,7 @@ outputs:
 - contextPath: CDL.HuntingResults.HTTPMethod
   description: |-
     The HTTP Method used
-    in the web request
+    in the web request.
   type: string
 tests:
 - No tests (auto formatted)

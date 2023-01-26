@@ -8,6 +8,6 @@ The Cortex Data Lake integration facilitates network security visualization and 
 - Reset the authentication limit cache if a call-limit error occurs.
 
 This pack includes the following playbooks:
-- **'Cortex Data Lake - Traffic Indicators Hunting'** - queries Cortex Data Lake (CDL) for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, and file types.
-- **'Cortex Data Lake - File Indicators Hunting'** - queries Cortex Data Lake (CDL) for traffic indicators, including IP addresses, geolocations, URLs, domains, and ports.
-- **'Cortex Data Lake - Indicators Hunting'** - The playbook facilitates threat hunting and detection of IOCs within Cortex Data Lake logs. The playbook and sub-playbooks query Cortex Data Lake for files, traffic, HTTP requests, and execution flows indicators. Supported IOCs for this playbook are SHA256, MD5, SHA1, IP addresses, geolocations, URLs, domains, port Numbers, file Names, file Types, URIs, Applications.
+- **Cortex Data Lake - Traffic Indicators Hunting** - queries Cortex Data Lake (CDL) for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, and file types.
+- **Cortex Data Lake - File Indicators Hunting** - queries Cortex Data Lake (CDL) for traffic indicators, including IP addresses, geolocations, URLs, domains, and ports.
+- **Cortex Data Lake - Indicators Hunting** - facilitates threat hunting and detection of IOCs within Cortex Data Lake logs. The playbook and sub-playbooks query Cortex Data Lake for files, traffic, HTTP requests, and execution flows indicators. Supported IOCs for this playbook are SHA256, MD5, SHA1, IP addresses, geolocations, URLs, domains, port Numbers, file Names, file Types, URIs, Applications.
