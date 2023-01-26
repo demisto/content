@@ -25,7 +25,7 @@ As part of this pack, you will also get out-of-the-box phishing incident views, 
 
 ##### Additional Information
 
-_In order for the playbook to identify and create phishing campaign incidents, please configure the Demisto Lock integration and, in addition to this pack, also install the **Phishing Campaign** content pack._
+_In order for the playbook to identify and create phishing campaign incidents, configure the Demisto Lock integration and, in addition to this pack, also install the **Phishing Campaign** content pack._
 
 _If you need to respond to phishing alerts ingested from email gateway integrations, see our documentation for the [Phishing Alerts](https://xsoar.pan.dev/docs/reference/packs/Phishing-Alerts) content pack. (This content pack requires the Phishing content pack)._
 
