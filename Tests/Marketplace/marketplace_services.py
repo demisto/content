@@ -2663,6 +2663,7 @@ class Pack(object):
         if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
+                                      and not v.get("is_test", False)
                                       and k not in core_packs
                                       and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()
                                       and k not in self._user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, [])]

@@ -26,12 +26,15 @@ args:
     Try to keep your searches as exact as possible, for example registry_path=`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
     NT\CurrentVersion\AeDebug\AutoExclusionList`. 
   name: customRegistryPaths
+- description: defines the maximum number of records to return as table to the war-room.
+  name: hrMaxResults
+  defaultValue: "50"
 comment: "This command uses the Registry Parse automation to extract critical forensics data from\
   \ a registry file. The essential values are specified by the argument. \n"
 commonfields:
   id: RegistryParse
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.9.45313
 enabled: true
 name: RegistryParse
 outputs:
