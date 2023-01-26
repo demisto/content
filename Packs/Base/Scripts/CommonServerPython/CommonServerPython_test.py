@@ -8652,7 +8652,7 @@ def test_is_valid_filename(filename):
     assert is_filename_valid(filename)
 
 
-TEST_REPLACE_SPACES_IN_CERTIFICATE = [
+TEST_REPLACE_SPACES_IN_CREDENTIAL = [
     (
         'TEST test TEST', 'TEST test TEST'
     ),
@@ -8677,7 +8677,7 @@ TEST_REPLACE_SPACES_IN_CERTIFICATE = [
 ]
 
 
-@pytest.mark.parametrize('credential, expected', TEST_REPLACE_SPACES_IN_CERTIFICATE)
+@pytest.mark.parametrize('credential, expected', TEST_REPLACE_SPACES_IN_CREDENTIAL)
 def test_replace_spaces_in_credential(credential, expected):
     """
     Given:
