@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: JsonWhoIs
   version: -1
@@ -8,19 +11,26 @@ configuration:
   type: 9
   displaypassword: API Token
   hiddenusername: true
+  section: Connect
 - display: API Token
   name: token
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Provides data enrichment for domains and IP addresses.
 display: JsonWhoIs
 name: JsonWhoIs
@@ -83,7 +93,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Phone
       description: Admin phone number.
       type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.9.45313
   isfetch: false
   longRunning: false
   longRunningPort: false
