@@ -416,55 +416,55 @@ GET_LEVEL_RES_2 = [
     }
 ]
 
-RES_DEPTH_0 = {'FieldId': 304, 'ValuesList':
-    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
-      'Depth': 0},
-     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+RES_DEPTH_0 = {'FieldId': 304, 'ValuesList': [
+    {'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+     'Depth': 0},
+    {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
 
-RES_DEPTH_1 = {'FieldId': 304, 'ValuesList':
-    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
-     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
-      'Depth': 0},
-     {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False,
-      'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
-     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False,
-      'Parent': 'Health Services (Reportable)', 'Depth': 1},
-     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False,
-      'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
-     {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False,
-      'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
-     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+RES_DEPTH_1 = {'FieldId': 304, 'ValuesList': [
+    {'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
+    {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+     'Depth': 0},
+    {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False,
+     'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
+    {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False,
+     'Parent': 'Health Services (Reportable)', 'Depth': 1},
+    {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False,
+     'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+    {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False,
+     'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+    {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
 
-RES_DEPTH_2 = {'FieldId': 304, 'ValuesList':
-    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
-     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
-      'Depth': 0},
-     {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False,
-      'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
-     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False,
-      'Parent': 'Health Services (Reportable)', 'Depth': 1},
-     {'Id': 84003, 'Name': 'Cigna Home Delivery (Sub Segments)', 'IsSelectable': False,
-      'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
-     {'Id': 84004, 'Name': 'ESI PBM (including Evicore) (Sub Segments)', 'IsSelectable': False,
-      'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
-     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False,
-      'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
-     {'Id': 84007, 'Name': 'Behavioral (Sub Segments)', 'IsSelectable': False, 'Parent': 'Commercial (Operating)',
-      'Depth': 2},
-     {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False,
-      'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
-     {'Id': 84013, 'Name': 'CareAllies (Sub Segments)', 'IsSelectable': False, 'Parent': 'Government (Operating)',
-      'Depth': 2},
-     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+RES_DEPTH_2 = {'FieldId': 304, 'ValuesList': [
+    {'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
+    {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+     'Depth': 0},
+    {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False,
+     'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
+    {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False,
+     'Parent': 'Health Services (Reportable)', 'Depth': 1},
+    {'Id': 84003, 'Name': 'Cigna Home Delivery (Sub Segments)', 'IsSelectable': False,
+     'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
+    {'Id': 84004, 'Name': 'ESI PBM (including Evicore) (Sub Segments)', 'IsSelectable': False,
+     'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
+    {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+    {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False,
+     'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+    {'Id': 84007, 'Name': 'Behavioral (Sub Segments)', 'IsSelectable': False, 'Parent': 'Commercial (Operating)',
+     'Depth': 2},
+    {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False,
+     'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+    {'Id': 84013, 'Name': 'CareAllies (Sub Segments)', 'IsSelectable': False, 'Parent': 'Government (Operating)',
+     'Depth': 2},
+    {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
 
 
 class TestArcherV2:
