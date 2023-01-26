@@ -49,7 +49,7 @@ class Client(BaseClient):
         """ Returns account info
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET", url_suffix="/account", resp_type="json", ok_codes=(200,)
@@ -62,7 +62,7 @@ class Client(BaseClient):
             params (dict): Params for account risk score history
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -80,7 +80,7 @@ class Client(BaseClient):
             params (dict): Params for groups risk score history
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -98,7 +98,7 @@ class Client(BaseClient):
             params (dict): Params for groups members
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -116,7 +116,7 @@ class Client(BaseClient):
             params (dict): Params for user risk score history
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -133,7 +133,7 @@ class Client(BaseClient):
             params (dict): Params for phishing security tests
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -151,7 +151,7 @@ class Client(BaseClient):
             params (dict): Params for recipients phishing security tests
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -169,7 +169,7 @@ class Client(BaseClient):
             params (dict): Params for campaign phishing security tests
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -186,7 +186,7 @@ class Client(BaseClient):
             params (dict): Params for training campaigns
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -203,7 +203,7 @@ class Client(BaseClient):
             params (dict): Params for training enrollment
 
         Returns:
-            _type_: dict
+            dict: HTTP Response
         """
         return self._http_request(
             method="GET",
@@ -229,7 +229,7 @@ class UserEventClient(BaseClient):
             args (dict): Params for API call
 
         Returns:
-            _type_: HTTP Request
+            dict: HTTP Response
         """
         params = remove_empty_elements(
             {
@@ -262,7 +262,7 @@ class UserEventClient(BaseClient):
             args (dict): Params for API call
 
         Returns:
-            _type_: HTTP Request
+            dict: HTTP Response
         """
         params = remove_empty_elements({"name": args.get("name")})
         return self._http_request(
@@ -280,7 +280,7 @@ class UserEventClient(BaseClient):
             args (dict): Params for API call
 
         Returns:
-            _type_: HTTP Request
+            dict: HTTP Response
         """
 
         params = remove_empty_elements(
@@ -316,7 +316,7 @@ class UserEventClient(BaseClient):
             args (dict): Params for API call
 
         Returns:
-            _type_: HTTP Request
+            dict: HTTP Response
         """
 
         return self._http_request(
@@ -338,7 +338,7 @@ def get_pagination(args: dict):
             args (dict): Params for pagination
 
         Returns:
-            _type_: List
+            list: Returns cleaned params for paging
         """
 
     params = remove_empty_elements(
