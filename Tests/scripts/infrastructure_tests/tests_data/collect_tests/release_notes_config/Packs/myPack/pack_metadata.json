@@ -1,20 +1,21 @@
 {
-    "name": "GitLab",
-    "description": "Pack for handling gitlab operations",
+    "name": "release_notes_config",
+    "description": "a demo pack",
     "support": "xsoar",
-    "currentVersion": "2.1.6",
+    "currentVersion": "2.1.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
+    "created": "2020-03-11T09:36:20Z",
     "categories": [
-        "Cloud Services"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Relationship"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "marketplacev2",
         "xsoar"
     ]
 }
