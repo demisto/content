@@ -20,7 +20,7 @@ args:
     (the 10th month) the result will be 9.
     Note:
     In XSOAR versions 6.11.0 or later, or 8.1.0 or later, the time format returned when UTC or GMT is given has changed.
-    Instead of 'Wed Jan 18 2023 12:59:12 GMT+0000 (UTC)', we now get 'Wed, 18 Jan 2023 15:04:41 GMT'.
+    Instead of 'Wed Jan 18 2023 12:59:12 GMT+0000 (UTC)', The output will be 'Wed, 18 Jan 2023 15:04:41 GMT'.
 - name: contextKey
   description: prefix the keys in the context for the results
 - name: minutesAgo
