@@ -10,12 +10,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def get_data_from_file(file_path):
-    with open(file_path, 'r') as f:
-        data = f.read()
-    return data
-
-
 DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
                 ['domain1', '*.d1.com\t\t\t*.d5.com'],
                 ['domain2', '*.d2.com'],
@@ -30,7 +24,7 @@ HTML_DOMAIN_SECTION = util_load_json('tests_data_1.json')
 HTML_IP_SECTION = '''<div class="panel-collapse collapse" id="id_135011">
 <div class="panel-body">
 <div class="body refbody">
-<ul><li></li><li></li><li>150.253.128.0/17 (CIDR) or 150.253.128.0 - 150.253.255.255 (net range)</li><li></li><li></li></ul>
+<ul><li></li><li></li><li>1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)</li><li></li><li></li></ul>
 </div>
 </div>
 </div>'''
@@ -92,7 +86,7 @@ def test_grab_ip_table():
     """
     from CiscoWebExFeed import grab_ip_table
     soup = BeautifulSoup(HTML_IP_SECTION, "html.parser")
-    expected_result = [['150.253.128.0/17 (CIDR) or 150.253.128.0 - 150.253.255.255 (net range)']]
+    expected_result = [['1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)']]
     assert grab_ip_table(soup) == expected_result
 
 
