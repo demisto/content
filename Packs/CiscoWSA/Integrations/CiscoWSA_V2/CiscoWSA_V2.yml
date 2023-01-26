@@ -375,8 +375,6 @@ script:
       description: |-
         Object action.
         Note: "inspect" and "allow" actions only valid when object type is "Inspectable Archives".
-        Note: adding values with block/inspect action will overwrite the existing values
-        and will set previous values on monitor action.
       required: false
       isArray: false
       auto: PREDEFINED

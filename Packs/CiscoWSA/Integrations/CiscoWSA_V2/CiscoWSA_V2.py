@@ -52,7 +52,7 @@ class Client(BaseClient):
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
-            if e.res.status_code == 401:
+            if e.res is not None and e.res.status_code == 401:
                 raise DemistoException(
                     "Authorization Error: make sure username and password are set correctly."
                 )
@@ -355,33 +355,20 @@ class Client(BaseClient):
             Response: API response from Cisco WSA.
         """
         access_policies = self.access_policy_list_request(policy_name).get(
-            "access_policies"
+            "access_policies", []
         )
 
         if access_policies:
             objects = access_policies[0].get("objects")
             if objects:
-                if all([object_type, object_action, object_values]):
-                    object_values.extend(
-                        objects["object_type"][object_type].get(object_action, [])
-                    )
-                    objects["object_type"][object_type].update(
-                        {object_action: object_values}
-                    )
-
-                elif any([object_type, object_action, object_values]):
-                    raise DemistoException(
-                        "object_type, object_action, object_values should be used in conjunction."
-                    )
-
-                if block_custom_mime_types:
-                    objects["block_custom_mime_types"] = block_custom_mime_types
-
-                objects["max_object_size_mb"] = remove_empty_elements(
-                    {
-                        "http_or_https": http_or_https_max_object_size_mb,
-                        "ftp": ftp_max_object_size_mb,
-                    }
+                organize_policy_object_data(
+                    objects=objects,
+                    object_type=object_type,
+                    object_action=object_action,
+                    object_values=object_values,
+                    block_custom_mime_types=block_custom_mime_types,
+                    http_or_https_max_object_size_mb=http_or_https_max_object_size_mb,
+                    ftp_max_object_size_mb=ftp_max_object_size_mb,
                 )
 
                 data = {
@@ -725,6 +712,59 @@ def pagination(response: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]
         return response[offset : offset + page_size]
     elif limit:
         return response[:limit]
+
+
+def organize_policy_object_data(
+    objects: Dict[str, Any],
+    object_type: Optional[str] = None,
+    object_action: Optional[str] = None,
+    object_values: Optional[List[str]] = None,
+    block_custom_mime_types: Optional[List[str]] = None,
+    http_or_https_max_object_size_mb: Optional[int] = None,
+    ftp_max_object_size_mb: Optional[int] = None,
+):
+    """
+    Organize policy object update data.
+
+    Args:
+        objects (Dict[str, Any]): Original objects.
+        object_type (Optional[str], optional): Object type to update. Defaults to None.
+        object_action (Optional[str], optional): Object action to update. Defaults to None.
+        object_values (Optional[List[str]], optional): Object values to update. Defaults to None.
+        block_custom_mime_types (Optional[List[str]], optional): Block custom MIME types. Defaults to None.
+        http_or_https_max_object_size_mb (Optional[int], optional): HTTP(S) max object size MB. Defaults to None.
+        ftp_max_object_size_mb (Optional[int], optional): FTP max object size MB. Defaults to None.
+    """
+    if all([object_type, object_action, object_values]):
+        original_obj_actions = objects["object_type"][object_type]
+        for original_obj_action in original_obj_actions:
+            if original_obj_action == object_action:
+                object_values.extend(
+                    objects["object_type"][object_type].get(object_action, [])
+                )
+            else:
+                original_obj_actions[original_obj_action] = [
+                    value
+                    for value in original_obj_actions[original_obj_action]
+                    if value not in object_values
+                ]
+
+        objects["object_type"][object_type].update({object_action: object_values})
+
+    elif any([object_type, object_action, object_values]):
+        raise DemistoException(
+            "object_type, object_action, object_values should be used in conjunction."
+        )
+
+    if block_custom_mime_types:
+        objects["block_custom_mime_types"] = block_custom_mime_types
+
+    objects["max_object_size_mb"] = remove_empty_elements(
+        {
+            "http_or_https": http_or_https_max_object_size_mb,
+            "ftp": ftp_max_object_size_mb,
+        }
+    )
 
 
 def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1131,7 +1171,7 @@ def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
     if response.get("res_code") == 201:
-        readable_output = response.get("res_message")
+        readable_output = f'Domain "{domain_name}" mapping created successfully.'
     else:
         raise DemistoException(response)
 
@@ -1152,7 +1192,7 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     domain_name = args["domain_name"]
     new_domain_name = args.get("new_domain_name")
     ip_addresses = argToList(args.get("ip_addresses"))
-    order = args.get("order")
+    order = arg_to_number(args.get("order"))
 
     response = client.domain_map_update_request(
         domain_name=domain_name,
@@ -1162,7 +1202,7 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
     if response.get("res_code") == 200:
-        readable_output = response.get("res_message")
+        readable_output = f'Domain "{domain_name}" mapping updated successfully.'
     else:
         raise DemistoException(response)
 
@@ -1185,17 +1225,22 @@ def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.domain_map_delete_request(domain_name=domain_name)
 
     if response.get("res_code") == 200:
-        return CommandResults(readable_output=response.get("res_message"))
+        readable_output = (
+            f'Domain{"s" if len(domain_name) else ""} {", ".join(domain_name)} '
+            "successfully deleted."
+        )
+        return CommandResults(readable_output=readable_output)
     elif response.get("res_code") == 206:
         command_results_list = []
         for domain_map in dict_safe_get(response, ["res_data", "delete_success"]):
-            readable_output = f"Domain {domain_map} mapping was successfully deleted."
+            readable_output = f'Domain "{domain_map}" mapping successfully deleted.'
             command_results_list.append(CommandResults(readable_output=readable_output))
 
         readable_output = dict_safe_get(
             response, ["res_data", "delete_failure", "error_msg"]
         )
-        command_results_list.append(CommandResults(readable_output=readable_output))
+        if readable_output:
+            command_results_list.append(CommandResults(readable_output=readable_output))
         return command_results_list
     else:
         raise DemistoException(response)
