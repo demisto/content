@@ -1,0 +1,1002 @@
+description: Sets the SLAs for Incidents, the Time to Assignment Timer, and the Remediation SLA Timer based on the Incident Severity.
+id: Case Management - Generic - Set SLAs based on Severity
+inputs:
+- description: Set to "True" to set the SLA on the Incident.
+  key: SetIncidentSLAs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'True'
+- description: Set to "True" to set the SLAs on the Time to Assignment Timer.
+  key: SetTimeToAssignmentSLAs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'True'
+- description: Set to "True" to set the SLAs on the Remediation SLA Timer.
+  key: SetRemediationTimerSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'True'
+- description: The Severity of the Incident.
+  key: Severity
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: severity
+      root: incident
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Critical.
+  key: CriticalRemediationSLA
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is High.
+  key: HighRemediationSLA
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Medium.
+  key: MediumRemediationSLA
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Low or Informational.
+  key: LowRemediationSLA
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Critical. '
+  key: CriticalTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is High. '
+  key: HighTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Medium. '
+  key: MediumTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Low or Informational. '
+  key: LowTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Case Management - Generic - Set SLAs based on Severity
+outputs: []
+quiet: true
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c84da130-1a11-4bee-8211-1aad10d54b2b
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: c84da130-1a11-4bee-8211-1aad10d54b2b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+  '1':
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 543b7552-f560-43be-8eb2-8dfbb3b8fc28
+      iscommand: false
+      name: Incident SLA
+      type: title
+      version: -1
+      description: ''
+    taskid: 543b7552-f560-43be-8eb2-8dfbb3b8fc28
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+  '2':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SetIncidentSLAs
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: yes
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '3'
+      yes:
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the SetIncidentSLAs input is set to "True"
+      id: 8f0501e4-eca9-495e-8666-958e09c394bc
+      iscommand: false
+      name: Should we set the Incident SLAs?
+      type: condition
+      version: -1
+    taskid: 8f0501e4-eca9-495e-8666-958e09c394bc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 340
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0ac879a4-788e-4929-8a3f-7a633fa3a7c0
+      iscommand: false
+      name: Time to Assignment SLA
+      type: title
+      version: -1
+      description: ''
+    taskid: 0ac879a4-788e-4929-8a3f-7a633fa3a7c0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 865
+        }
+      }
+  '4':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '4'
+      label: Critical
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '3'
+      label: High
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '2'
+      label: Medium
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '8'
+      Critical:
+      - '5'
+      High:
+      - '6'
+      Medium:
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the Incident Severity and follows the appropriate path.
+      id: 5b4eff63-ca6e-4762-8a20-1e46f6460a07
+      iscommand: false
+      name: What is the Incident Severity?
+      type: condition
+      version: -1
+    taskid: 5b4eff63-ca6e-4762-8a20-1e46f6460a07
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.CriticalRemediationSLA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: a11307ed-74d3-41cd-8bc7-1b9d057b081c
+      iscommand: true
+      name: Set Incident SLA - Critical
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: a11307ed-74d3-41cd-8bc7-1b9d057b081c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.HighRemediationSLA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 17c01b3c-4008-480e-8a7d-b4e93531a021
+      iscommand: true
+      name: Set Incident SLA - High
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 17c01b3c-4008-480e-8a7d-b4e93531a021
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 690
+        }
+      }
+  '7':
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.MediumRemediationSLA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 38f1edd5-69ad-481e-854b-7d7c12f747a3
+      iscommand: true
+      name: Set Incident SLA - Medium
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 38f1edd5-69ad-481e-854b-7d7c12f747a3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 690
+        }
+      }
+  '8':
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.LowRemediationSLA
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 869350ac-7fa9-4ddb-87e0-c68dadc789f7
+      iscommand: true
+      name: Set Incident SLA - Low/Informational
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 869350ac-7fa9-4ddb-87e0-c68dadc789f7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 690
+        }
+      }
+  '9':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SetTimeToAssignmentSLAs
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: yes
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '11'
+      yes:
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the SetTimeToAssignmentSLA input is set to "True".
+      id: 52e3b4d5-cbe9-4459-8578-1bbfb22e9aee
+      iscommand: false
+      name: Should we set the Time to Assignment SLAs?
+      type: condition
+      version: -1
+    taskid: 52e3b4d5-cbe9-4459-8578-1bbfb22e9aee
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1010
+        }
+      }
+  '10':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '4'
+      label: Critical
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '3'
+      label: High
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '2'
+      label: Medium
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '15'
+      Critical:
+      - '12'
+      High:
+      - '13'
+      Medium:
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the Incident Severity and follows the appropriate path.
+      id: a7d3c433-93a4-452b-8596-8193c33a9f53
+      iscommand: false
+      name: What is the Incident Severity?
+      type: condition
+      version: -1
+    taskid: a7d3c433-93a4-452b-8596-8193c33a9f53
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1185
+        }
+      }
+  '11':
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 7925be15-b82c-4d0e-8627-1e2a8f841228
+      iscommand: false
+      name: Remediation Timer SLA
+      type: title
+      version: -1
+      description: ''
+    taskid: 7925be15-b82c-4d0e-8627-1e2a8f841228
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1535
+        }
+      }
+  '12':
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.CriticalTimeToAssignSLA
+      slaField:
+        simple: timetoassignment
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 702ca7ec-e330-4b3c-8d77-d9f24562229b
+      iscommand: true
+      name: Set Time to Assignment SLA - Critical
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 702ca7ec-e330-4b3c-8d77-d9f24562229b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+  '13':
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.HighTimeToAssignSLA
+      slaField:
+        simple: timetoassignment
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 9e573c73-586e-4296-8ff8-0bc68a728f13
+      iscommand: true
+      name: Set Time to Assignment SLA - High
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 9e573c73-586e-4296-8ff8-0bc68a728f13
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+  '14':
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.MediumTimeToAssignSLA
+      slaField:
+        simple: timetoassignment
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 6afa113e-c5a5-4dd8-8e4c-9e068480b41f
+      iscommand: true
+      name: Set Time to Assignment SLA - Medium
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6afa113e-c5a5-4dd8-8e4c-9e068480b41f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1360
+        }
+      }
+  '15':
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.LowTimeToAssignSLA
+      slaField:
+        simple: timetoassignment
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 070871a7-39c7-4e97-8c3f-1e01ceaf8d2d
+      iscommand: true
+      name: Set Time to Assignment SLA - Low/Informational
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 070871a7-39c7-4e97-8c3f-1e01ceaf8d2d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1360
+        }
+      }
+  '16':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SetRemediationTimerSLA
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: yes
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '17'
+      yes:
+      - '18'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the SetRemediationTimerSLA input is set to "True".
+      id: bf271438-2c63-4c0f-8c47-339810edfca7
+      iscommand: false
+      name: Should we set the Remediation Timer SLAs?
+      type: condition
+      version: -1
+    taskid: bf271438-2c63-4c0f-8c47-339810edfca7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1680
+        }
+      }
+  '17':
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 5c17e5f9-d72b-47ce-811a-d6bdb4243932
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 5c17e5f9-d72b-47ce-811a-d6bdb4243932
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2205
+        }
+      }
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '4'
+      label: Critical
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '3'
+      label: High
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Severity
+          operator: isEqualString
+          right:
+            value:
+              simple: '2'
+      label: Medium
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '22'
+      Critical:
+      - '19'
+      High:
+      - '20'
+      Medium:
+      - '21'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the Incident Severity and follows the appropriate path.
+      id: d190ccc0-6184-4d6f-83fd-2d08a319267d
+      iscommand: false
+      name: What is the Incident Severity?
+      type: condition
+      version: -1
+    taskid: d190ccc0-6184-4d6f-83fd-2d08a319267d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1855
+        }
+      }
+  '19':
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.CriticalRemediationSLA
+      slaField:
+        simple: remediationsla
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: db887395-2e25-4284-8a96-39cee78bc009
+      iscommand: true
+      name: Set Remediation Timer SLA - Critical
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: db887395-2e25-4284-8a96-39cee78bc009
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2030
+        }
+      }
+  '20':
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.HighRemediationSLA
+      slaField:
+        simple: remediationsla
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 307ad292-30dd-4491-87cc-3484a195cf37
+      iscommand: true
+      name: Set Remediation Timer SLA - High
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 307ad292-30dd-4491-87cc-3484a195cf37
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2030
+        }
+      }
+  '21':
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.MediumRemediationSLA
+      slaField:
+        simple: remediationsla
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 67abc6f9-cee3-4d23-8383-3d3bb9ba7108
+      iscommand: true
+      name: Set Remediation Timer SLA - Medium
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 67abc6f9-cee3-4d23-8383-3d3bb9ba7108
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2030
+        }
+      }
+  '22':
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          root: inputs.LowRemediationSLA
+      slaField:
+        simple: remediationsla
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: aa5e9d83-0cb6-43df-860a-9166df3fcd13
+      iscommand: true
+      name: Set Remediation Timer SLA - Low/Informational
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: aa5e9d83-0cb6-43df-860a-9166df3fcd13
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 2030
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2220,
+        "width": 1885,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

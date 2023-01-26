@@ -1,0 +1,29 @@
+{
+    "autorun": true,
+    "color": "#ff7500",
+    "days": 0,
+    "daysR": 4,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Case",
+    "layout": "Case Management Layout v2",
+    "locked": false,
+    "name": "Case",
+    "playbookId": "Case Management - Generic v2",
+    "readonly": false,
+    "reputationCalc": 1,
+    "slaReminder": 96,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.0.0",
+    "detached": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "onChangeRepAlg": 1
+}
