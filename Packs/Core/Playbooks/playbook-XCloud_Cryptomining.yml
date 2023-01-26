@@ -382,10 +382,15 @@ tasks:
         The playbook collects or enriches the following data:
 
         - Account enrichment
+
+
         - Network enrichment
-           - Attacker IP
-           - Geolocation
-           - ASN
+
+           -Attacker IP
+
+           -Geolocation
+
+           -ASN
       playbookName: XCloud Alert Enrichment
       type: playbook
       iscommand: false
@@ -394,8 +399,12 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
       ResolveIP:
-        simple: "True"
+        complex:
+          root: inputs.ResolveIP
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -997,6 +1006,17 @@ inputs:
     GCP available types:
     Delete - For deleting the user.
     Disable - For disabling the user.
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
   playbookInputQuery:
 outputs: []
 tests:

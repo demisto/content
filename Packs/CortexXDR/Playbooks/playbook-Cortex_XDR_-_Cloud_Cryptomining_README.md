@@ -24,16 +24,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * CortexXDRIR
 
 ### Scripts
-* IncreaseIncidentSeverity
 * LoadJSON
+* IncreaseIncidentSeverity
 
 ### Commands
 * closeInvestigation
 * setIncident
+* xdr-update-incident
 * xdr-get-incident-extra-data
 * xdr-get-cloud-original-alerts
 * send-mail
-* xdr-update-incident
 
 ## Playbook Inputs
 ---
@@ -57,6 +57,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Azure-userRemediationType | Choose the remediation type for the user involved.<br/><br/>Azure available types:<br/>Disable - for disabling the user.<br/>Delete - for deleting the user. | Disable | Optional |
 | GCP-userRemediationType | Choose the remediation type for the user involved.<br/><br/>GCP available types:<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |
 | autoBlockIndicators | Whether to block the indicators automatically. | False | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. |  | Optional |
+| ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
 
 ## Playbook Outputs
 ---

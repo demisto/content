@@ -40,9 +40,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * IncreaseIncidentSeverity
 
 ### Commands
-* send-mail
 * core-get-cloud-original-alerts
 * closeInvestigation
+* send-mail
 
 ## Playbook Inputs
 ---
@@ -67,6 +67,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | GCP-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>GCP available types:<br/>Disable - For disabling the user's access key.<br/>Delete - For the deleting user's access key. | Disable | Optional |
 | GCP-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>GCP available types:<br/>Stop - For stopping the instances.<br/>Delete - For deleting the instances. | Stop | Optional |
 | GCP-userRemediationType | Choose the remediation type for the user involved.<br/><br/>GCP available types:<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |
+| ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. |  | Optional |
 
 ## Playbook Outputs
 ---

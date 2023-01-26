@@ -243,10 +243,12 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      ResolveIP:
-        simple: "True"
       InternalRange:
-        simple: inputs.InternalRange
+        complex:
+          root: inputs.InternalRange
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -318,18 +320,7 @@ tasks:
     scriptarguments:
       alert_ids:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.name
-                iscontext: true
-              right:
-                value:
-                  simple: Unusual allocation of multiple cloud compute resources
-              ignorecase: true
-          accessor: alert_id
+          root: inputs.alert_id
       extend-context:
         simple: alertData=
       ignore-outputs:
@@ -375,7 +366,7 @@ tasks:
           left:
             value:
               complex:
-                root: requireAnalystReview
+                root: inputs.requireAnalystReview
             iscontext: true
           right:
             value:
@@ -919,8 +910,7 @@ tasks:
           root: inputs.autoUserRemediation
       cloudProvider:
         complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: cloud_provider
+          root: inputs.cloudProvider
       region:
         complex:
           root: alertJson._all_events
@@ -1159,6 +1149,17 @@ inputs:
     simple: "False"
   required: false
   description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
 outputs: []
 tests:

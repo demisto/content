@@ -209,7 +209,7 @@ tasks:
     scriptarguments:
       accessKeyId:
         complex:
-          root: inputs.accessKeyName
+          root: inputs.accessKeyId
       accessKeyRemediationType:
         complex:
           root: inputs.AWS-accessKeyRemediationType
@@ -433,7 +433,7 @@ tasks:
           root: inputs.resourceName
       resourceRemediationType:
         complex:
-          root: inputs.GCP-userRemediationType
+          root: inputs.GCP-resourceRemediationType
       resourceZone:
         complex:
           root: inputs.resourceZone

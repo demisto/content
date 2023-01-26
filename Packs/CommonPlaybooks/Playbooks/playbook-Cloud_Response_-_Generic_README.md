@@ -13,8 +13,8 @@ The response actions available are:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cloud Response - AWS
 * Cloud Response - GCP
+* Cloud Response - AWS
 * Cloud Response - Azure
 
 ### Integrations
