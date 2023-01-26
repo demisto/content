@@ -18,7 +18,7 @@ mypy = "^0.982"
 flake8 = "^4.0.1"
 
 [tool.poetry.group.testing.dependencies]
-pytest = "^7.1.2"
+pytest = "^7.2.1"
 requests-mock = "^1.9.3"
 pytest-mock = "^3.7.0"
 freezegun = "^1.1.0"
