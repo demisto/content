@@ -9,16 +9,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * AutoFocusPolling
 
 ### Integrations
-* AutofocusV2
 * Autofocus
+* AutofocusV2
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* autofocus-search-samples
-* autofocus-top-tags-search
 * autofocus-search-sessions
+* autofocus-top-tags-search
+* autofocus-search-samples
 
 ## Playbook Inputs
 ---
