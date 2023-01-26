@@ -340,7 +340,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": 3450
+          "y": 3210
         }
       }
     note: false
@@ -354,26 +354,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 09a4179a-1200-4274-822b-83a4b1a695c0
+    taskid: 966c70ad-4d4f-4c65-8623-44b00208ff4b
     type: regular
     task:
-      id: 09a4179a-1200-4274-822b-83a4b1a695c0
+      id: 966c70ad-4d4f-4c65-8623-44b00208ff4b
       version: -1
       name: Manually reset account password
-      description: Please take manual steps to disable the user account, or expire his or her password.
+      description: Please take manual steps to disable the user account.
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "143"
+      - "116"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 2660
+          "x": 1330,
+          "y": 2470
         }
       }
     note: false
@@ -762,7 +762,7 @@ tasks:
       {
         "position": {
           "x": 677.5,
-          "y": 3020
+          "y": 2780
         }
       }
     note: false
@@ -793,7 +793,7 @@ tasks:
       {
         "position": {
           "x": 1087.5,
-          "y": 3240
+          "y": 3000
         }
       }
     note: false
@@ -830,7 +830,7 @@ tasks:
       {
         "position": {
           "x": 677.5,
-          "y": 3240
+          "y": 3000
         }
       }
     note: false
@@ -998,125 +998,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "136":
-    id: "136"
-    taskid: 90989c57-b594-4106-8dc1-4b4c442119d5
-    type: regular
-    task:
-      id: 90989c57-b594-4106-8dc1-4b4c442119d5
-      version: -1
-      name: Expire Password for the account
-      description: Expires the password of an Active Directory user.
-      script: '|||ad-expire-password'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "143"
-    scriptarguments:
-      username:
-        complex:
-          root: inputs.Username
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: \
-              fields:
-                value:
-                  simple: "2"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 917.5,
-          "y": 2660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: Containment SLA
-      output:
-        simple: ${incident.containmentsla.sla}
-    - incidentfield: Password Expiration Status
-      output:
-        simple: Contained
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "137":
-    id: "137"
-    taskid: 903d8123-8d2f-484c-879d-01717e2ed2fb
-    type: condition
-    task:
-      id: 903d8123-8d2f-484c-879d-01717e2ed2fb
-      version: -1
-      name: Is Active Directory enabled?
-      description: Checks whether the Active Directory Query v2 integration is enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "79"
-      "yes":
-      - "136"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active Directory Query v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 917.5,
-          "y": 2430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "143":
     id: "143"
-    taskid: 323367a3-103a-4993-8281-7140ff23d903
+    taskid: cda6d38e-5731-485a-8c0a-1f34f1a37b91
     type: playbook
     task:
-      id: 323367a3-103a-4993-8281-7140ff23d903
+      id: cda6d38e-5731-485a-8c0a-1f34f1a37b91
       version: -1
       name: Block Account - Generic v2
       description: |-
@@ -1167,13 +1054,13 @@ tasks:
       {
         "position": {
           "x": 917.5,
-          "y": 2850
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1320,10 +1207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "148":
     id: "148"
-    taskid: 2f9f5f1a-ce67-4070-8006-231abcbf60aa
+    taskid: 5da3b2a6-5d1a-447d-811f-b8d42c667d57
     type: playbook
     task:
-      id: 2f9f5f1a-ce67-4070-8006-231abcbf60aa
+      id: 5da3b2a6-5d1a-447d-811f-b8d42c667d57
       version: -1
       name: Block Account - Generic v2
       description: |-
@@ -1380,7 +1267,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1882,7 +1769,7 @@ tasks:
       '#default#':
       - "79"
       "yes":
-      - "137"
+      - "143"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1923,7 +1810,7 @@ view: |-
       "153_76_#default#": 0.1,
       "158_150_yes": 0.49,
       "159_147_yes": 0.44,
-      "160_137_yes": 0.53,
+      "160_143_yes": 0.56,
       "34_155_Suspicious": 0.4,
       "34_72_Malicious": 0.23,
       "34_76_Non-malicious": 0.18,
@@ -1933,8 +1820,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5365,
-        "width": 2240,
+        "height": 5125,
+        "width": 2230,
         "x": -520,
         "y": -1850
       }
