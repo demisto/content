@@ -16,24 +16,24 @@ The playbook supports AWS, Azure, and GCP and executes the following:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Cortex XDR - Cloud Enrichment
 * Cortex XDR - Cryptomining - Set Verdict
 * Cloud Response - Generic
-* Cortex XDR - Cloud Enrichment
 
 ### Integrations
 * CortexXDRIR
 
 ### Scripts
-* LoadJSON
 * IncreaseIncidentSeverity
+* LoadJSON
 
 ### Commands
 * closeInvestigation
-* send-mail
-* xdr-get-cloud-original-alerts
 * setIncident
-* xdr-update-incident
 * xdr-get-incident-extra-data
+* xdr-get-cloud-original-alerts
+* send-mail
+* xdr-update-incident
 
 ## Playbook Inputs
 ---

@@ -878,33 +878,45 @@ tasks:
       - "40"
     scriptarguments:
       AWS-accessKeyRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.AWS-accessKeyRemediationType
       AWS-resourceRemediationType:
-        simple: Stop
+        complex:
+          root: inputs.AWS-resourceRemediationType
       AWS-userRemediationType:
-        simple: Revoke
+        complex:
+          root: inputs.AWS-userRemediationType
       Azure-resourceRemediationType:
-        simple: Poweroff
+        complex:
+          root: inputs.Azure-resourceRemediationType
       Azure-userRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.Azure-userRemediationType
       GCP-accessKeyRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
       GCP-resourceRemediationType:
-        simple: Stop
+        complex:
+          root: inputs.GCP-resourceRemediationType
       GCP-userRemediationType:
-        simple: Disable
+        complex:
+          root: inputs.GCP-userRemediationType
       accessKeyId:
         complex:
           root: alertJson._all_events._aws_specific_fields
           accessor: access_key_id
       autoAccessKeyRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoAccessKeyRemediation
       autoBlockIndicators:
-        simple: "False"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoUserRemediation
       cloudProvider:
         complex:
           root: PaloAltoNetworksXDR.OriginalAlert.event
