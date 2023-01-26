@@ -24,12 +24,6 @@ VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 MIRROR_LIMIT = 1000
-
-# A unique label that's used to signal XSOAR to mirror closure of incidents
-# with "status_end" marked status labels on Splunk. For more information, see:
-# https://dev.splunk.com/enterprise/docs/devtools/enterprisesecurity/notableeventsplunkes/usingnotableeventsinsearch/
-# If changed, update the documentation on the YAML and README files.
-
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
@@ -1230,7 +1224,7 @@ def get_remote_data_command(service: client.Service, args: dict,
         close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable
             has been closed on Splunk's end.
         close_end_statuses (bool): Specifies whether "End Status" statuses on Splunk should be closed when mirroring.
-        close_extra_labels (list[str]): A list of additional Splunk status labels which need to be defined as closed during mirroring.
+        close_extra_labels (list[str]): A list of additional Splunk status labels to close during mirroring.
 
     Returns:
         GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
@@ -1246,7 +1240,7 @@ def get_remote_data_command(service: client.Service, args: dict,
              '| where last_modified_timestamp>{} ' \
              '| fields - time ' \
              '| map search=" search `notable_by_id($rule_id$)`"'.format(notable_id, last_update_splunk_timestamp)
-    demisto.debug('Performing get-remote-data command with query: {}'.format(search))
+    demisto.debug(f'Performing get-remote-data command with query: {search}')
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
@@ -1256,13 +1250,12 @@ def get_remote_data_command(service: client.Service, args: dict,
         updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
             updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
 
-    demisto.debug('notable {} data: {}'.format(notable_id, updated_notable))
+    demisto.debug(f'notable {notable_id} data: {updated_notable}')
     if close_incident and updated_notable.get('status_label') is not None:
-        status_label = updated_notable.get('status_label')
-        # If `status_label` in the list of status labels to close, or if 'status_end' is True,
-        # and the special label is used, close the incident on XSOAR.
+        status_label = updated_notable['status_label']
+
         if status_label == "Closed" or (status_label in close_extra_labels) \
-                or (close_end_statuses and updated_notable.get('status_label') in close_extra_labels):
+                or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
             demisto.info(f'Closing incident related to notable {notable_id} with status_label: {status_label}')
             entries = [{
                 'Type': EntryType.NOTE,
@@ -1273,7 +1266,11 @@ def get_remote_data_command(service: client.Service, args: dict,
                 'ContentsFormat': EntryFormat.JSON
             }]
 
-    demisto.debug('Updated notable {}'.format(notable_id))
+    else:
+        demisto.debug('"status_label" key could not be found on the returned data, '
+                      f'skipping closure mirror for notable {notable_id}.')
+
+    demisto.debug(f'Updated notable {notable_id}')
     return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
