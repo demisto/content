@@ -171,7 +171,7 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     )
 
 
-def fetch_indicators_command(client: Client, tags: tuple, tlp_color: str) -> list:
+def fetch_indicators_command(client: Client, tags: tuple = None, tlp_color: str = None) -> list:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
