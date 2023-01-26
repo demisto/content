@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The 'indicator_type' argument of the 'webex-get-indicators' command used to include the following options: Both, IPs,URLs. For accuracy reasons, these were replaced by:  Both, IP,  DOMAIN in the new version."
+}
