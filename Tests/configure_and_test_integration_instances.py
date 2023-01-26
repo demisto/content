@@ -337,7 +337,7 @@ class Build(ABC):
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
-                hostname = self.xsiam_machine if self.is_xsiam else ''
+                hostname = self.cloud_machine if self.is_cloud else ''
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
