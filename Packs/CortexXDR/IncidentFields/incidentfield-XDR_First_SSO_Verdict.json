@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "firstssoverdict",
+    "cliName": "xdrfirstssoverdict",
     "closeForm": false,
     "columns": [
         {
@@ -15,7 +15,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 469
         },
         {
             "displayName": "Result",
@@ -28,35 +28,37 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 490
         }
     ],
     "content": true,
     "defaultRows": [
-        {
-            "name": ""
-        },
         {},
         {},
         {
-            "name": ""
+            "check": ""
+        },
+        {
+            "check": ""
         },
         {},
         {
-            "name": ""
+            "check": ""
         },
         {},
-        {},
+        {
+            "check": ""
+        },
         {},
         {}
     ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_firstssoverdict",
+    "id": "incident_xdrfirstssoverdict",
     "isReadOnly": false,
     "locked": false,
-    "name": "First SSO Verdict",
+    "name": "XDR First SSO Verdict",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

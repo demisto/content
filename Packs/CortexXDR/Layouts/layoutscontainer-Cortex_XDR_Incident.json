@@ -1240,9 +1240,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "firstssoverdict",
-                                "height": 106,
-                                "id": "7bc30a80-9660-11ed-a2af-cd9affeb35c4",
+                                "fieldId": "xdrfirstssoverdict",
+                                "height": 22,
+                                "id": "57ab3820-9d40-11ed-ae40-7f264ef1f727",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0

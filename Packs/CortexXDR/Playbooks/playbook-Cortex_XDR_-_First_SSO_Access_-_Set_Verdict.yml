@@ -48,10 +48,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 546e3757-4b54-42d4-8be4-784f2ff310b1
+    taskid: d930684c-2209-4fcc-8da4-1b044d930b05
     type: regular
     task:
-      id: 546e3757-4b54-42d4-8be4-784f2ff310b1
+      id: d930684c-2209-4fcc-8da4-1b044d930b05
       version: -1
       name: SetIncident Grid field
       description: commands.local.cmd.set.incident
@@ -63,11 +63,11 @@ tasks:
       '#none#':
       - "111"
     scriptarguments:
-      firstssoverdict:
-        complex:
-          root: VerdictResult
       ignore-outputs:
         simple: "false"
+      xdrfirstssoverdict:
+        complex:
+          root: VerdictResult
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -860,12 +860,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: 6e45d529-87ec-4768-8f05-dcd2a5cac598
+    taskid: 59e2df11-90f3-4b93-8191-19d4fa6519b3
     type: regular
     task:
-      id: 6e45d529-87ec-4768-8f05-dcd2a5cac598
+      id: 59e2df11-90f3-4b93-8191-19d4fa6519b3
       version: -1
-      name: Count verdict results
+      name: Set positive verdict results
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -882,7 +882,7 @@ tasks:
       value:
         complex:
           root: incident
-          accessor: firstssoverdict
+          accessor: xdrfirstssoverdict
           transformers:
           - operator: WhereFieldEquals
             args:
@@ -913,10 +913,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: 98142e63-4800-4f43-8924-63bbc5cee95b
+    taskid: 3b62f061-e8f0-424b-8293-7c2bf0f7430d
     type: regular
     task:
-      id: 98142e63-4800-4f43-8924-63bbc5cee95b
+      id: 3b62f061-e8f0-424b-8293-7c2bf0f7430d
       version: -1
       name: Set Grid
       description: Creates a Grid table from items or key-value pairs.
@@ -933,7 +933,7 @@ tasks:
       context_path:
         simple: VerdictResult
       grid_id:
-        simple: firstssoverdict
+        simple: xdrfirstssoverdict
       ignore-outputs:
         simple: "false"
     reputationcalc: 1
