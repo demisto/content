@@ -10,14 +10,11 @@
         "Network Security"
     ],
     "tags": [
-        "Network",
-        "Security",
-        "Incident Response"
     ],
     "useCases": [
-        "Rapid Breach Response"
     ],
     "keywords": [
+        "Rapid Breach Response",
         "Zero Trust",
         "Security",
         "Network",

@@ -9,19 +9,8 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [
-        "Alerts",
-        "Forensics",
-        "Malware"
-    ],
+    "tags": [],
     "useCases": [
-        "Breach Notification",
-        "Compliance",
-        "Hunting",
-        "Impossible Traveler",
-        "Malware",
-        "Phishing",
-        "Ransomware"
     ],
     "keywords": [
         "Data governance",
