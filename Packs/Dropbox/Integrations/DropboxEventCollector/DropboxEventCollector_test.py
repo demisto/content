@@ -3,7 +3,7 @@ import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
-
+from pydantic import parse_obj_as
 
 DEMISTO_PARAMS = {
     'limit': 100,
