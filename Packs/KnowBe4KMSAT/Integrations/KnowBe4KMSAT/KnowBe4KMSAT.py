@@ -296,7 +296,8 @@ class UserEventClient(BaseClient):
             }
         )
 
-        if not args.get("risk_level"):
+        # Converts string to int if value is set
+        if args.get("risk_level") is not None:
             risk_level: int = int(args["risk_level"])
             params["risk_level"] = risk_level
 
@@ -356,10 +357,10 @@ def kmsat_account_info_list_command(client: Client, args: dict) -> CommandResult
         client (Client): Report Client
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for account information
     """
     response = client.kmsat_account_info()
     markdown = tableToMarkdown(
@@ -377,7 +378,7 @@ def kmsat_account_info_list_command(client: Client, args: dict) -> CommandResult
     )
     if response is None:
         raise DemistoException(
-            "Translation failed: the response from server did not include `account_info`.",
+            "Translation failed: the response from server did not include `kmsat_account_info_list_command`.",
             res=response,
         )
     return CommandResults(
@@ -396,19 +397,19 @@ def kmsat_account_risk_score_history_list_command(
 
     Args:
         client (Client): Report Client
-        args (dict): _description_
+        args (dict): Params for account risk score history
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for account risk score history
     """
     params = get_pagination(args)
     response = client.kmsat_account_risk_score_history(params)
     if response is None:
         raise DemistoException(
-            "Translation failed: the response from server did not include `account_risk_score_history`.",
+            "Translation failed: the response from server did not include `kmsat_account_risk_score_history_list_command`.",
             res=response,
         )
     markdown = tableToMarkdown(
@@ -430,13 +431,13 @@ def kmsat_groups_risk_score_history_list_command(
 
     Args:
         client (Client): Report Client
-        args (dict): _description_
+        args (dict): Params for group risk score history
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for training enrollments
     """
     group_id = remove_empty_elements(args.get("group_id"))
     params = get_pagination(args)
@@ -465,13 +466,13 @@ def kmsat_groups_members_list_command(
 
     Args:
         client (Client): Report Client
-        args (dict): _description_
+        args (dict): Params for groups members
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for groups members
     """
     group_id = remove_empty_elements(args.get("group_id"))
     params = get_pagination(args)
@@ -537,13 +538,13 @@ def kmsat_users_risk_score_history_list_command(
 
     Args:
         client (Client): Report Client
-        args (dict): _description_
+        args (dict): Params for user risk score history
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for user risk score history
     """
     user_id = remove_empty_elements(args.get("user_id"))
     params = get_pagination(args)
@@ -553,7 +554,7 @@ def kmsat_users_risk_score_history_list_command(
     )
     if response is None:
         raise DemistoException(
-            "Translation failed: the response from server did not include `users_risk_score_history`.",
+            "Translation failed: the response from server did not include `kmsat_users_risk_score_history_list_command`.",
             res=response,
         )
     return CommandResults(
@@ -572,13 +573,13 @@ def kmsat_phishing_security_tests_list_command(
 
     Args:
         client (Client): Report Client
-        args (dict): _description_
+        args (dict): Params for phishing security tests
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for phishing security
     """
     params = get_pagination(args)
     response = client.kmsat_phishing_security_tests(params)
@@ -612,7 +613,7 @@ def kmsat_phishing_security_tests_list_command(
     )
     if response is None:
         raise DemistoException(
-            "Translation failed: the response from server did not include `phishing_security_tests`.",
+            "Translation failed: the response from server did not include `kmsat_phishing_security_tests_list_command`.",
             res=response,
         )
     return CommandResults(
@@ -631,13 +632,13 @@ def kmsat_phishing_security_tests_recipients_list_command(
 
     Args:
         client (Client): Report Client
-        args (_type_): _description_
+        args (_type_): Params for recipients phishing security tests
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for recipients phishing security tests
     """
     pst_id = remove_empty_elements(args.get("pst_id"))
     params = get_pagination(args)
@@ -685,6 +686,19 @@ def kmsat_phishing_security_tests_recipients_list_command(
 def kmsat_phishing_security_tests_failed_recipients_list_command(
     client: Client, args: dict
 ) -> CommandResults:
+    """ Lists KMSAT recipients that have FAILED the phishing security tests
+
+    Args:
+        client (Client): Report Client
+        args (dict): Params for recipients that failed security tests
+
+    Raises:
+        DemistoException: Raises Demisto Exception
+
+    Returns:
+        CommandResults: Returns context data for recipients that failed phishing security tests
+    """
+
     pst_id = remove_empty_elements(args.get("pst_id"))
     response = client.kmsat_phishing_security_tests_recipients(pst_id, None)
 
@@ -728,7 +742,7 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     )
     if response is None:
         raise DemistoException(
-            "Translation failed: the response from server did not include `phishing_security_tests_failed_recipients_list`.",
+            "Translation failed: the response from server did not include `kmsat_phishing_security_tests_failed_recipients_list_command`.",
             res=response,
         )
     return CommandResults(
@@ -741,20 +755,19 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
 
 
 def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) -> CommandResults:
-    """_summary_
+    """ Lists KMSAT campaign phishing security tets
 
     Args:
         client (Client): Report Client
-        args (_type_): _description_
+        args (_type_): Params for campaign phishing security tests
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for phishing campaign security tests
     """
     campaign_id = remove_empty_elements(args.get("campaign_id"))
-    return_results(campaign_id)
     params = get_pagination(args)
     response = client.kmsat_phishing_campaign_security_tests(campaign_id, params)
     markdown = tableToMarkdown(
@@ -804,13 +817,13 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
 
     Args:
         client (Client): Report Client
-        args (dict): _description_
+        args (dict): Params for training campaigns
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for training campaigns
     """
     params = get_pagination(args)
     response = client.kmsat_training_campaigns(params)
@@ -834,7 +847,7 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
     )
     if response is None:
         raise DemistoException(
-            "Translation failed: the response from server did not include `training_campaigns`.",
+            "Translation failed: the response from server did not include `kmsat_training_campaigns_list_command`.",
             res=response,
         )
     return CommandResults(
@@ -852,14 +865,14 @@ def kmsat_training_enrollments_list_command(
     """ Lists KMSAT training enrollments
 
     Args:
-        client (Client): _description_
-        args (dict): _description_
+        client (Client): Report Client
+        args (dict): Params for training enrollments
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for training enrollments
     """
     status = remove_empty_elements(args.get("status"))
 
@@ -895,7 +908,7 @@ def kmsat_training_enrollments_list_command(
     )
     if data is None:
         raise DemistoException(
-            "Translation failed: the response from server did not include `training_enrollments`.",
+            "Translation failed: the response from server did not include `kmsat_training_enrollments_list_command`.",
             res=data,
         )
     return CommandResults(
@@ -914,10 +927,10 @@ def kmsat_user_events_list_command(
 
     Args:
         client (UserEventClient): UserEventClient
-        args (dict): _description_
+        args (dict): Params for user events
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
         CommandResults: Returns context data for user events
@@ -945,13 +958,13 @@ def kmsat_user_event_types_list_command(
 
     Args:
         client (UserEventClient): UserEventClient
-        args (dict): _description_
+        args (dict): Params for user event types
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data for user event types
     """
     response = client.user_event_types(args)
     if response is None:
@@ -976,13 +989,13 @@ def kmsat_user_event_create_command(
 
     Args:
         client (UserEventClient): UserEventClient
-        args (dict): _description_
+        args (dict): Params for user even create
 
     Raises:
-        DemistoException: _description_
+        DemistoException: Raises Demisto Exception
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns context data user create event
     """
     response = client.create_user_event(args)
     if response is None:
@@ -1007,10 +1020,10 @@ def kmsat_user_event_delete_command(
 
     Args:
         client (UserEventClient): UserEventClient
-        args (dict): _description_
+        args (dict): Params for user even delete
 
     Returns:
-        CommandResults: _description_
+        CommandResults: Returns message with deleted event ID
     """
     event_id: str = str(args.get("id"))
     client.delete_user_event(event_id)
