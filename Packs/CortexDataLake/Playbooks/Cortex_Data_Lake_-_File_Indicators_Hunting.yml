@@ -3,8 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex Data Lake - File Indicators Hunting
-description: |
-  This playbook queries Cortex Data Lake (CDL) for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, and file types.
+description: |-
+  This playbook queries Cortex Data Lake (CDL) for file indicators, including SHA256 hashes, file names, and file types.
 
   Note that multiple search values should be separated by commas only (without spaces or any special characters).
 starttaskid: "0"
@@ -259,7 +259,7 @@ tasks:
       {
         "position": {
           "x": -1440,
-          "y": 355
+          "y": 290
         }
       }
     note: false
@@ -287,7 +287,7 @@ tasks:
       {
         "position": {
           "x": -2270,
-          "y": 940
+          "y": 770
         }
       }
     note: false
@@ -471,7 +471,7 @@ tasks:
       {
         "position": {
           "x": -1030,
-          "y": 355
+          "y": 290
         }
       }
     note: false
@@ -522,7 +522,7 @@ tasks:
       {
         "position": {
           "x": -1440,
-          "y": 610
+          "y": 450
         }
       }
     note: false
@@ -573,7 +573,7 @@ tasks:
       {
         "position": {
           "x": -1030,
-          "y": 610
+          "y": 450
         }
       }
     note: false
@@ -604,7 +604,7 @@ tasks:
       {
         "position": {
           "x": -1670,
-          "y": 795
+          "y": 625
         }
       }
     note: false
@@ -726,7 +726,7 @@ tasks:
       {
         "position": {
           "x": -2040,
-          "y": 355
+          "y": 290
         }
       }
     note: false
@@ -777,7 +777,7 @@ tasks:
       {
         "position": {
           "x": -2040,
-          "y": 620
+          "y": 450
         }
       }
     note: false
@@ -808,7 +808,7 @@ tasks:
       {
         "position": {
           "x": -2270,
-          "y": 795
+          "y": 625
         }
       }
     note: false
@@ -859,7 +859,7 @@ tasks:
       {
         "position": {
           "x": -2960,
-          "y": 620
+          "y": 450
         }
       }
     note: false
@@ -890,7 +890,7 @@ tasks:
       {
         "position": {
           "x": -2730,
-          "y": 795
+          "y": 625
         }
       }
     note: false
@@ -902,10 +902,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "312":
     id: "312"
-    taskid: 8455a6a7-2f0b-41f0-8886-26bd2162f2e4
+    taskid: 0ff24a27-8674-4e3d-86df-412c636744ce
     type: regular
     task:
-      id: 8455a6a7-2f0b-41f0-8886-26bd2162f2e4
+      id: 0ff24a27-8674-4e3d-86df-412c636744ce
       version: -1
       name: Query Cortex Data Lake - File Data Logs (Source Geolocation)
       description: Searches the Cortex firewall.file_data table.
@@ -955,8 +955,7 @@ tasks:
           accessor: end_time
       file_sha_256:
         complex:
-          root: File
-          accessor: SHA256
+          root: inputs.SHA256
           transformers:
           - operator: split
             args:
@@ -1013,7 +1012,7 @@ tasks:
       {
         "position": {
           "x": -2960,
-          "y": 460
+          "y": 290
         }
       }
     note: false
@@ -1025,10 +1024,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "313":
     id: "313"
-    taskid: 02458866-92a0-4e69-83d4-242c672f3ff5
+    taskid: 46e5bd61-345e-4ae5-8a73-20a1cf158d4c
     type: regular
     task:
-      id: 02458866-92a0-4e69-83d4-242c672f3ff5
+      id: 46e5bd61-345e-4ae5-8a73-20a1cf158d4c
       version: -1
       name: Query Cortex Data Lake - Threat Logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
@@ -1080,8 +1079,7 @@ tasks:
         simple: all
       file_sha_256:
         complex:
-          root: File
-          accessor: SHA256
+          root: inputs.SHA256
           transformers:
           - operator: split
             args:
@@ -1154,7 +1152,7 @@ tasks:
       {
         "position": {
           "x": -3360,
-          "y": 460
+          "y": 290
         }
       }
     note: false
@@ -1205,7 +1203,7 @@ tasks:
       {
         "position": {
           "x": -3360,
-          "y": 620
+          "y": 450
         }
       }
     note: false
@@ -1217,12 +1215,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "315":
     id: "315"
-    taskid: 44b7e440-80e9-4a8c-87cf-6ce9aa866cf6
+    taskid: 25e2ddbc-2dc8-405f-8066-a4e6d129a2a6
     type: title
     task:
-      id: 44b7e440-80e9-4a8c-87cf-6ce9aa866cf6
+      id: 25e2ddbc-2dc8-405f-8066-a4e6d129a2a6
       version: -1
-      name: Hash Indicators (SHA1, SHA256, and MD5)
+      name: SHA256 Indicators
       type: title
       iscommand: false
       brand: ""
@@ -1248,13 +1246,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "316":
     id: "316"
-    taskid: be812b5e-d289-426d-8b57-5d8867687cbf
+    taskid: 36771b49-0bb3-4ef2-843c-2e54a7df3d87
     type: condition
     task:
-      id: be812b5e-d289-426d-8b57-5d8867687cbf
+      id: 36771b49-0bb3-4ef2-843c-2e54a7df3d87
       version: -1
-      name: Any hash to hunt for?
-      description: Checks whether any MD5, SHA256, or SHA1 hashes are available for threat hunting.
+      name: Any SHA256 hash to hunt for?
+      description: Checks whether any SHA256 hashes are available for threat hunting.
       type: condition
       iscommand: false
       brand: ""
@@ -1262,7 +1260,7 @@ tasks:
       '#default#':
       - "311"
       "yes":
-      - "333"
+      - "336"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1271,21 +1269,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.MD5
-            iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
                 root: inputs.SHA256
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.SHA1
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1293,74 +1277,6 @@ tasks:
         "position": {
           "x": -2730,
           "y": -20
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "333":
-    id: "333"
-    taskid: ff5e0aab-37dc-42b0-8d2e-2370443306ab
-    type: playbook
-    task:
-      id: ff5e0aab-37dc-42b0-8d2e-2370443306ab
-      version: -1
-      name: Convert file hash to corresponding hashes
-      playbookName: Convert file hash to corresponding hashes
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "336"
-    scriptarguments:
-      MD5:
-        complex:
-          root: inputs.MD5
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-      SHA1:
-        complex:
-          root: inputs.SHA1
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-      SHA256:
-        complex:
-          root: inputs.SHA256
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -3160,
-          "y": 150
         }
       }
     note: false
@@ -1392,7 +1308,7 @@ tasks:
       {
         "position": {
           "x": -1240,
-          "y": 165
+          "y": 150
         }
       }
     note: false
@@ -1423,7 +1339,7 @@ tasks:
       {
         "position": {
           "x": -2040,
-          "y": 165
+          "y": 150
         }
       }
     note: false
@@ -1455,7 +1371,7 @@ tasks:
       {
         "position": {
           "x": -3160,
-          "y": 320
+          "y": 150
         }
       }
     note: false
@@ -1470,7 +1386,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1295,
+        "height": 1125,
         "width": 2710,
         "x": -3360,
         "y": -290
@@ -1483,22 +1399,6 @@ inputs:
   required: false
   description: |-
     A single or multiple SHA256 file hashes to search for within Cortex Data Lake.
-
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: MD5
-  value: {}
-  required: false
-  description: |-
-    A single or multiple MD5 file hashes to search for within Cortex Data Lake.
-
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: SHA1
-  value: {}
-  required: false
-  description: |-
-    A single or multiple SHA1 file hashes to search for within Cortex Data Lake.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:

@@ -10,8 +10,6 @@ description: |-
 
   Supported IOCs for this playbook:
   - SHA256
-  - MD5
-  - SHA1
   - IP Addresses
   - Geolocation
   - URLDomain
@@ -830,14 +828,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "320":
     id: "320"
-    taskid: bbf6c0f7-faa2-438c-8e21-4c2c97d33953
+    taskid: fcecdf9b-842e-475a-8b9b-e0f5615b275d
     type: playbook
     task:
-      id: bbf6c0f7-faa2-438c-8e21-4c2c97d33953
+      id: fcecdf9b-842e-475a-8b9b-e0f5615b275d
       version: -1
       name: Cortex Data Lake - File Indicators Hunting
-      description: |
-        This playbook queries Cortex Data Lake (CDL) for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, and file types.
+      description: |-
+        This playbook queries Cortex Data Lake (CDL) for file indicators, including SHA256 hashes, file names, and file types.
 
         Note that multiple search values should be separated by commas only (without spaces or any special characters).
       playbookName: Cortex Data Lake - File Indicators Hunting
@@ -857,12 +855,6 @@ tasks:
       FirewallAction:
         complex:
           root: inputs.FirewallAction
-      MD5:
-        complex:
-          root: inputs.MD5
-      SHA1:
-        complex:
-          root: inputs.SHA1
       SHA256:
         complex:
           root: inputs.SHA256
@@ -1247,22 +1239,6 @@ inputs:
   required: false
   description: |-
     A single or multiple SHA256 file hashes to search for within Cortex Data Lake.
-
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: MD5
-  value: {}
-  required: false
-  description: |-
-    A single or multiple MD5 file hashes to search for within Cortex Data Lake.
-
-    Separate multiple search values by commas only (without spaces or any special characters).
-  playbookInputQuery:
-- key: SHA1
-  value: {}
-  required: false
-  description: |-
-    A single or multiple SHA1 file hashes to search for within Cortex Data Lake.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:

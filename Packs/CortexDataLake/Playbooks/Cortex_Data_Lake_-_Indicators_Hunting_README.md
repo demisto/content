@@ -4,8 +4,6 @@ Note that multiple search values should be separated by commas only (without spa
 
 Supported IOCs for this playbook:
 - SHA256
-- MD5
-- SHA1
 - IP Addresses
 - Geolocation
 - URLDomain
@@ -21,19 +19,19 @@ Separate searches are conducted for each type of indicator in the playbook.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex Data Lake - Traffic Indicators Hunting
 * Cortex Data Lake - File Indicators Hunting
+* Cortex Data Lake - Traffic Indicators Hunting
 
 ### Integrations
 * Cortex Data Lake
 
 ### Scripts
-* SetAndHandleEmpty
 * IsIntegrationAvailable
+* SetAndHandleEmpty
 
 ### Commands
-* cdl-query-file-data
 * cdl-query-url-logs
+* cdl-query-file-data
 
 ## Playbook Inputs
 ---
@@ -45,8 +43,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Geolocation | A single or multiple country names or codes to search for  within Cortex Data Lake. Used for both source and destination geolocations.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | PortNumber | A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination ports.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | SHA256 | A single or multiple SHA256 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| MD5 | A single or multiple MD5 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| SHA1 | A single or multiple SHA1 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | Filename | A single or multiple file names to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | FileType | A single or multiple file types to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | Application | Single or multiple application names or codes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |

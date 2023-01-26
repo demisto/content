@@ -1,13 +1,12 @@
-This playbook queries Cortex Data Lake (CDL) for file indicators, including MD5 hashes, SHA256 hashes, SHA1 hashes, file names, and file types.
+This playbook queries Cortex Data Lake (CDL) for file indicators, including SHA256 hashes, file names, and file types.
 
 Note that multiple search values should be separated by commas only (without spaces or any special characters).
-
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Convert file hash to corresponding hashes
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 * Cortex Data Lake
@@ -25,8 +24,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | SHA256 | A single or multiple SHA256 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| MD5 | A single or multiple MD5 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| SHA1 | A single or multiple SHA1 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | Filename | A single or multiple file names to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | FileType | A single or multiple file types to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | time_range | An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.<br/><br/>When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used. |  | Optional |
