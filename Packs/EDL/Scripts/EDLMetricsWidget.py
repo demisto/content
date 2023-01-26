@@ -29,7 +29,7 @@ def get_edl(instance_name):
     payload = {}
     headers = {}
     verify_ssl = demisto.args()['verify_ssl']
-    if eval(verify_ssl) is False:
+    if verify_ssl == "False":
         try:
             # ssl._create_default_https_context = ssl._create_unverified_context
             response = requests.get(endpoint, verify=False, auth=HTTPBasicAuth(username, password))
