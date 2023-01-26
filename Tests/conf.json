@@ -5448,6 +5448,8 @@
         "Microsoft Graph Groups - Test dev": "No Working Instance",
         "Microsoft Graph Groups - Test prod": "No Working Instance",
         "Microsoft Graph Groups - Test": "No Working Instance",
+        "Azure Kubernetes Services - Test": "No Working Instance",
+        "playbook-AzureDevOps-Test": "No Working Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
