@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: fed62f44-5266-44b0-828f-ce6a07ee38aa
+    taskid: 7f21a137-9c1a-4d38-8491-81bf80ba9f9b
     type: condition
     task:
-      id: fed62f44-5266-44b0-828f-ce6a07ee38aa
+      id: 7f21a137-9c1a-4d38-8491-81bf80ba9f9b
       version: -1
       name: Found results from Okta?
       description: Check if there are results from Okta
@@ -372,7 +372,7 @@ tasks:
           left:
             value:
               complex:
-                root: OktaFailedLogonLogs
+                root: OktaSuspiciousActivities
                 accessor: displayMessage
             iscontext: true
           right:
@@ -1312,10 +1312,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: c0251946-a36e-4c1f-842c-95fe5aecc6cd
+    taskid: 1ac922e4-2893-48be-8e9c-ee8965499f20
     type: condition
     task:
-      id: c0251946-a36e-4c1f-842c-95fe5aecc6cd
+      id: 1ac922e4-2893-48be-8e9c-ee8965499f20
       version: -1
       name: Check if the login country is defined
       description: Check if the login country is defined.
@@ -1337,6 +1337,18 @@ tasks:
               complex:
                 root: inputs.LoginCountry
             iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: inputs.LoginCountry
+            iscontext: true
+          right:
+            value:
+              simple: Unknown
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1353,6 +1365,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {

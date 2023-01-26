@@ -209,6 +209,7 @@
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   services:
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
@@ -251,10 +252,10 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
+          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image all
         else
           if [[ -n $BUCKET_UPLOAD ]]; then
-            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
+            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam
           else
             echo "Skipping, Should run on circleCi."
           fi
@@ -271,6 +272,7 @@
         fi
       fi
     - section_end "Run Unit Testing and Lint"
+    - job-done
 
 .run-validations:
   stage: unittests-and-validations
@@ -283,6 +285,7 @@
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
   script:
     - section_start "Look For Secrets"
@@ -336,6 +339,7 @@
             echo "No such branch in content-test-conf: $UNDERSCORE_CI_BRANCH"
           else
             echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo."
+            job-done
             exit 1
           fi
         }
@@ -357,3 +361,9 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - job-done
+
+.jobs-done-check:
+  stage: are-jobs-realy-done
+  script:
+    - python3 Tests/scripts/check_jobs_done.py --job-done-files $PIPELINE_JOBS_FOLDER
