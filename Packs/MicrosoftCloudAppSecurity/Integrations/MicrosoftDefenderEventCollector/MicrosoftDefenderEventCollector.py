@@ -15,7 +15,7 @@ import requests
 import dateparser
 
 from MicrosoftApiModule import *
-import urllib3.util
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
