@@ -14,25 +14,25 @@ The playbook is used as a sub-playbook in â€˜Cortex XDR Incident Handling - v3â€
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* User Investigation - Generic
 * Cortex XDR - First SSO Access - Set Verdict
-* Account Enrichment - Generic v2.1
-* TIM - Indicator Relationships Analysis
-* Block Account - Generic v2
 * Cortex XDR - First SSO Investigation
+* TIM - Indicator Relationships Analysis
+* User Investigation - Generic
+* Block Account - Generic v2
+* Account Enrichment - Generic v2.1
 
 ### Integrations
-* XQLQueryingEngine
 * CortexXDRIR
+* XQLQueryingEngine
 * XDR_iocs
 
 ### Scripts
 * Set
 
 ### Commands
+* setIncident
 * ip
 * xdr-endpoint-isolate
-* setIncident
 * ad-expire-password
 
 ## Playbook Inputs
