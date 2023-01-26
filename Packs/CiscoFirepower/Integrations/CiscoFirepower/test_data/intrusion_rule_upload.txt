@@ -1,0 +1,2 @@
+alert tcp $EXTERNAL_NET any -> $HOME_NET 7597 ( msg:"MALWARE-BACKDOOR QAZ Worm Client Login access"; flow:to_server,established; content:"qazwsx.hsq"; metadata:ruleset community; classtype:misc-activity; sid:2; rev:12; )
+alert tcp $HOME_NET any -> $EXTERNAL_NET any ( msg:"MALWARE-BACKDOOR Infector.1.x"; flow:to_client,established; content:"WHATISIT",depth 9; metadata:impact_flag red,ruleset community; reference:nessus,11157; classtype:misc-activity; sid:1; rev:17; )
