@@ -5453,7 +5453,6 @@
         "test playbook - Google Cloud Functions": "No Working Instance",
         "playbook-GCP-IAM_Test": "No Working Instance",
         "GoogleCalendar-Test": "No Working Instance",
-        "GoogleDocs-test": "No Working Instance",
         "G Suite Security Alert Center-Test": "No Working Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
