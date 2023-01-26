@@ -898,7 +898,6 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
     Then:
         - Conversion is correct
         - An Exception is raised in case that Splunk Server timezone is not specified in Demisto params
-
     """
     mocker.patch.object(demisto, 'params', return_value=demisto_params)
     if demisto_params:
@@ -1275,7 +1274,6 @@ def test_build_search_kwargs(polling, fast_mode):
 
     Then:
         Ensure the query kwargs as expected.
-
     """
     args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app',
             'fast_mode': fast_mode, 'polling': polling}
@@ -1306,9 +1304,7 @@ def test_splunk_search_command(mocker, polling, status):
 
     Then:
         Ensure the result as expected in polling and in regular search.
-
     """
-
     mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
                                                        'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
                                                        'fast_mode': 'false', 'polling': polling})
@@ -1339,7 +1335,6 @@ def test_module_test(mocker, credentials):
     Then:
         - Validate the info method was called
     """
-
     # prepare
     mocker.patch.object(client.Service, 'info')
     mocker.patch.object(client.Service, 'login')
@@ -1367,7 +1362,6 @@ def test_module__exception_raised(mocker, credentials):
     Then:
         - Validate the expected message was returned
     """
-
     # prepare
     def exception_raiser():
         raise AuthenticationError()
@@ -1378,8 +1372,8 @@ def test_module__exception_raised(mocker, credentials):
 
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     service = client.Service(**credentials)
-    # run
 
+    # run
     splunk.test_module(service)
 
     # validate
@@ -1397,17 +1391,15 @@ def test_module_hec_url(mocker):
     Then:
         - Validate taht the request.get was called with the expected args
     """
-
     # prepare
-
     mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
     mocker.patch.object(client.Service, 'info')
     mocker.patch.object(client.Service, 'login')
     mocker.patch.object(requests, 'get')
 
     service = client.Service(username='test', password='test')
-    # run
 
+    # run
     splunk.test_module(service)
 
     # validate
@@ -1425,7 +1417,6 @@ def test_labels_with_non_str_values(mocker):
     Then:
         - Validate the Labels created in the incident are well formatted to avoid server errors on json.Unmarshal
     """
-
     from SplunkPy import UserMappingObject
     # prepare
     raw = {
@@ -1482,7 +1473,6 @@ def test_empty_string_as_app_param_value(mocker):
     Then:
         - Validate that the value of the 'app' key in connection_args is '-'
     """
-
     # prepare
     mock_params = {'app': '', 'host': '111', 'port': '111'}
     mocker.patch('demistomock.params', return_value=mock_params)
@@ -1519,7 +1509,6 @@ def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_sp
     Then:
         - validates the splunk user is correct
     """
-
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
@@ -1559,7 +1548,6 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
     Then:
         - validates the splunk user is correct
     """
-
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
 
@@ -1605,7 +1593,6 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     When: trying to get splunk matching users
     Then: validates correctness of list
     """
-
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
