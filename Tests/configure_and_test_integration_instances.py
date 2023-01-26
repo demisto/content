@@ -339,7 +339,8 @@ class Build(ABC):
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                          install_packs_one_by_one)
+                                                                          install_packs_one_by_one,
+                                                                          )
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:

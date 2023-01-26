@@ -411,7 +411,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      installation_request_body: list,
                                      lock: Lock,
                                      one_pack_and_its_dependencies_in_batch: bool = False,
-                                     batch_packs_install_request_body: list = None
+                                     batch_packs_install_request_body: list = None,
                                      ):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
@@ -424,7 +424,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         lock (Lock): A lock object.
         one_pack_and_its_dependencies_in_batch(bool): Whether to install packs in small batches.
             If false - install all packs in one batch.
-        batch_packs_install_request_body (list): A list of  lists packs to be installed, in the request format.
+        batch_packs_install_request_body (list): A list of lists packs to be installed, in the request format.
             Each list contain one pack and its dependencies.
 
     """
