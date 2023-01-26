@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cisco WebEx Feed Dev
+  id: Cisco WebEx Feed
   version: -1
 configuration:
 - defaultvalue: "true"
@@ -90,8 +90,8 @@ description: The WebEx IP Address and Domain web site provided by Cisco to docum
   IPs and Domains used by WebEx. The WebEx Feed integration fetches indicators from
   the web page, with which you can create a list (allow list, block list, EDL, etc.)
   for your SIEM or firewall service to ingest and apply to its policy rules.
-display: Cisco WebEx Feed Dev
-name: Cisco WebEx Feed Dev
+display: Cisco WebEx Feed
+name: Cisco WebEx Feed
 script:
   commands:
   - arguments:
