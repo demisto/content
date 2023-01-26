@@ -9,7 +9,9 @@
 | 5. Pulls phishing test results for a specific campaign                  |
 | 6. Pulls training campaign statuses                                     |
 | 7. Displays a list of training campaign enrollments                     |
-| 8. Allows adding an external event to a user's timeline inside of KMSAT |
+| 8. Pulls user event data from KMSAT                                     |
+| 9. Allows adding an external event to a user's timeline inside of KMSAT |
+| 10. Allows deleting an event fom a user's timeline inside of KMSAT      |
 
 ## Commands
 
