@@ -116,7 +116,7 @@ def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input,
     When:
         - get_indicators_command is called
     Then:
-        - the function should return the expectetd result
+        - the function should return the expectetd result with the correct limit and indicator type
     """
     from CiscoWebExFeed import get_indicators_command, Client
     client = mocker.patch.object(Client, 'all_raw_data', return_value='gg')
@@ -126,3 +126,9 @@ def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input,
 
     res = get_indicators_command(client=client, limit=1, indicator_type=input)
     assert res.readable_output == expected
+
+
+def test_test_module(mocker):
+    from CiscoWebExFeed import test_module, Client
+    client = mocker.patch.object(Client, 'all_raw_data', return_value='gg')
+    assert test_module(client=client) == 'ok'
