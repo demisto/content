@@ -171,8 +171,13 @@ class ContentItem(DictFileBased):
     @property
     def _has_no_id(self):
         # some content files may not have an id
-        return self.path.name == 'pack_metadata.json' or self.path.name.endswith(
-            '_schema.json') or self.path.name.endswith('testdata.json')
+        file_path_splitted = self.path.parts
+        return self.path.name == 'pack_metadata.json' \
+            or self.path.name.endswith('_schema.json') \
+            or self.path.name.endswith('testdata.json') \
+            or len(file_path_splitted) > 1 \
+            and file_path_splitted[-2] == 'ReleaseNotes' \
+            and self.path.suffix == '.json'
 
     @property
     def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
