@@ -11,8 +11,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * GetTime
-* Set
 * CountArraySize
+* Set
 
 ### Commands
 * okta-get-logs

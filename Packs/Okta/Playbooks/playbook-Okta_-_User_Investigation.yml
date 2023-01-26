@@ -1101,7 +1101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -810,
           "y": 265
         }
       }
@@ -1114,10 +1114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 05c37780-62be-49d6-80e7-da51afbfa334
+    taskid: 60f59adf-a233-4d7f-87ee-43d559400184
     type: regular
     task:
-      id: 05c37780-62be-49d6-80e7-da51afbfa334
+      id: 60f59adf-a233-4d7f-87ee-43d559400184
       version: -1
       name: Search for failed logon attempts using OKTA
       description: Gets logs on failed logon events.
@@ -1151,7 +1151,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -810,
           "y": 420
         }
       }
@@ -1192,8 +1192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
-          "y": 810
+          "x": -610,
+          "y": 805
         }
       }
     note: false
@@ -1217,7 +1217,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+      - "40"
       "yes":
       - "35"
     separatecontext: false
@@ -1237,7 +1237,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -810,
           "y": 585
         }
       }
@@ -1365,6 +1365,43 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 25a5abbc-d30d-4012-8acf-75488d58aed8
+    type: regular
+    task:
+      id: 25a5abbc-d30d-4012-8acf-75488d58aed8
+      version: -1
+      name: Set Number Of Okta Failed Logon to Zero
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: NumOfOktaFailedLogon
+      value:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1373,16 +1410,16 @@ view: |-
       "16_18_#default#": 0.22,
       "29_18_#default#": 0.53,
       "2_18_#default#": 0.16,
-      "36_18_#default#": 0.1,
       "36_35_yes": 0.47,
+      "36_40_#default#": 0.47,
       "39_18_#default#": 0.16,
       "39_4_yes": 0.44
     },
     "paper": {
       "dimensions": {
         "height": 2525,
-        "width": 3360,
-        "x": -730,
+        "width": 3640,
+        "x": -1010,
         "y": -880
       }
     }
