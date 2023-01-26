@@ -5204,6 +5204,10 @@
             "playbookID": "CortexAttackSurfaceManagement_Test"
         },
         {
+            "integrations": "Cortex Xpanse",
+            "playbookID": "CortexXpanse_Test"
+        },
+        {
             "integrations": "checkpointdome9",
             "playbookID": "Dome9",
             "fromversion": "6.2.0"
@@ -5454,6 +5458,7 @@
         "playbook-GCP-IAM_Test": "No Working Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
+        "CortexXpanse_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
