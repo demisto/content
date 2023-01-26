@@ -8,17 +8,14 @@ description: The Active Directory Query integration enables you to access and ma
 configuration:
 - display: Server IP address (for example, 192.168.0.1)
   name: server_ip
-  defaultvalue: ""
   type: 0
   required: true
 - display: Port. If not specified, the default port is 389, or 636 for LDAPS.
   name: port
-  defaultvalue: ""
   type: 0
   required: false
 - display: Credentials
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
 - display: NTLM authentication
@@ -27,7 +24,6 @@ configuration:
   required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
-  defaultvalue: ""
   type: 0
   required: true
 - display: Page size
@@ -48,7 +44,6 @@ configuration:
 - additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
   defaultvalue: None
   display: SSL Version
-  hidden: false
   name: ssl_version
   options:
   - None
@@ -77,7 +72,6 @@ configuration:
   type: 0
 - display: Group CN for terminated employees
   name: group-cn
-  defaultvalue: ""
   type: 0
   required: false
 - additionalinfo: If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only.
@@ -249,7 +243,6 @@ script:
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     - name: restore_user
-      default: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -285,11 +278,11 @@ script:
     description: Modifies the computer organizational unit within a domain.
   - name: ad-modify-user-ou
     arguments:
-      - name: user-name
-        required: true
-        description: "The name of the user to modify."
-      - name: full-superior-dn
-        description: Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain).
+    - name: user-name
+      required: true
+      description: "The name of the user to modify."
+    - name: full-superior-dn
+      description: Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain).
     description: Modifies the user organizational unit within a domain.
   - name: ad-get-user
     arguments:
@@ -306,6 +299,8 @@ script:
       description: Queries users by custom field type.
     - name: custom-field-data
       description: Queries users by custom field data (relevant only if the `custom-field-type` argument is provided).
+    - name: sid
+      description: Queries by the user's sid
     - name: username
       description: Queries users by the samAccountName attribute.
     - name: sAMAccountName
@@ -313,19 +308,19 @@ script:
     - name: email
       description: Queries by the user's email address.
     - name: user-account-control-out
+      description: Whether to include verbose translation for UserAccountControl flags. Default is false.
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: Whether to include verbose translation for UserAccountControl flags. Default is false.
-      defaultValue: "false"
+      - 'true'
+      - 'false'
     - name: limit
       description: The maximum number of objects to return.
-      defaultValue: "20"
+      defaultValue: '20'
     - name: page-size
       description: The page size to query. The limit value will be ignored.
-    - name: page-cookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
+    - description: An opaque string received in a paged search, used for requesting subsequent entries.
+      name: page-cookie
     outputs:
     - contextPath: 'ActiveDirectory.Users.dn'
       description: The user distinguished name.
@@ -490,27 +485,18 @@ script:
       defaultValue: person
     - name: attributes
       description: CSV list of attributes to include in the results, in addition to the default attributes.
-    - default: false
-      defaultValue: '180'
+    - defaultValue: '180'
       description: Time limit (in seconds) for the search to run.
-      isArray: false
       name: time_limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to disable recursive retrieval of group memberships of a user.
-      isArray: false
       name: disable-nested-search
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
     - name: sAMAccountName
       description: Queries results by the samAccountName attribute.
-      required: false
       defaultValue: '*'
     - name: limit
       description: The maximum number of records to return.
@@ -560,26 +546,17 @@ script:
     description: Deletes an existing Active Directory security or distribution group.
     execution: true
   - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
+    - name: user-profile
       required: true
-      secret: false
       description: A User Profile indicator that contains user information, such as name, email address, etc.
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
-      isArray: false
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
-    execution: false
     name: iam-create-user
     outputs:
     - contextPath: IAM.UserProfile
@@ -619,14 +596,9 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
+    - name: user-profile
       required: true
-      secret: false
       description: A User Profile indicator that contains user information, such as name and email address.
-    deprecated: false
-    execution: false
     description: "Retrieves a single user resource."
     name: iam-get-user
     outputs:
@@ -667,25 +639,16 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
+    - name: user-profile
       required: true
-      secret: false
       description: A User Profile indicator that contains user information, such as name and email address.
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: When set to true, after the command executes the user status in the 3rd-party integration is active.
-      isArray: false
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    execution: false
     description: 'Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.'
     name: iam-update-user
     outputs:
@@ -726,13 +689,9 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
+    - name: user-profile
       required: true
-      secret: false
       description: "A User Profile indicator that contains user information, such as name and email address."
-    deprecated: false
     description: Disables a user.
     execution: true
     name: iam-disable-user
@@ -773,10 +732,9 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-  - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
-    execution: false
+  - description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
     name: get-mapping-fields
+    arguments: []
   - arguments:
     - description: The group name of the group to update (sAMAccountName).
       name: groupname
@@ -804,7 +762,7 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/py3-tools:1.0.0.44868
+  dockerimage: demisto/py3-tools:1.0.0.45904
   runonce: false
   ismappable: true
   isremotesyncout: true

@@ -1,17 +1,20 @@
-import demistomock as demisto
-from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError, LDAPStartTLSError, LDAPSocketReceiveError
-
-from CommonServerPython import *
-from typing import List, Dict, Optional
-from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef, \
-    AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
-from ldap3.extend import microsoft
+import os
 import ssl
 from datetime import datetime
-import os
-from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
-                             set_library_log_hide_sensitive_data, EXTENDED)
+from typing import Dict, List, Optional
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from ldap3 import (ALL_ATTRIBUTES, AUTO_BIND_NO_TLS, AUTO_BIND_TLS_BEFORE_BIND,
+                   NTLM, SUBTREE, Connection, Entry, ObjectDef, Reader, Server,
+                   Tls)
+from ldap3.core.exceptions import (LDAPBindError, LDAPSocketOpenError,
+                                   LDAPSocketReceiveError, LDAPStartTLSError)
+from ldap3.extend import microsoft
 from ldap3.utils.conv import escape_filter_chars
+from ldap3.utils.log import (EXTENDED, get_library_log_detail_level,
+                             set_library_log_detail_level,
+                             set_library_log_hide_sensitive_data)
 
 CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:' \
                  'DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
@@ -641,6 +644,11 @@ def search_users(default_base_dn, page_size):
     if args.get('email'):
         email = escape_filter_chars(args['email'])
         query = "(&(objectClass=User)(objectCategory=person)(mail={}))".format(email)
+
+    # query by sid
+    if args.get('sid'):
+        sid = escape_filter_chars(args['sid'])
+        query = "(&(objectClass=User)(objectCategory=person)(objectSid={}))".format(sid)
 
     # query by sAMAccountName
     if args.get('username') or args.get('sAMAccountName'):
