@@ -90,7 +90,6 @@ class Client(BaseClient):
             'sortBy': 'alertInfoCreatedAt',
             'sortOrder': 'asc',
         }
-        demisto.info(f'SentinelOne params is: {params}')
         result = self._http_request('GET', url_suffix='/cloud-detection/alerts', params=params)
         return result.get('data', [])
 
@@ -252,20 +251,14 @@ def main() -> None:
                 return_results(results)
 
             if command == 'fetch-events':
-                demisto.info(f'The Sentinelone fetch-events been called: {len(events)}.')
                 should_push_events = True
                 last_run = demisto.getLastRun() or first_run(first_fetch_time)  # type: ignore
                 next_run, events = fetch_events(client=client, last_run=last_run, event_type=event_type)
                 demisto.setLastRun(next_run)
-                demisto.info(f'The Sentinelone events length is: {len(events)}.')
 
             if should_push_events:
-                demisto.info(f'yes pushed events {VENDOR} - {PRODUCT}.')
                 add_time_key_to_events(events)
-                if events:
-                    demisto.info(f'The Sentinelone last event is: {events[-1]}.')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.info(f'The Sentinelone done fetch-events.')
 
     # Log exceptions and return errors
     except Exception as e:

@@ -38,7 +38,7 @@ def test_test_module():
         m.get(THREATS_MOCK_URL, json={})
         m.get(ALERTS_MOCK_URL, json={})
 
-        result = test_module(client, ['ACTIVITIES', 'THREATS', 'ALERTS'])
+        result = test_module(client, ['activities', 'threats', 'alerts'])
 
     assert result == 'ok'
 
@@ -67,7 +67,7 @@ def test_get_events_command():
         m.get(THREATS_MOCK_URL, json=util_load_json('test_data/threats.json'))
         m.get(ALERTS_MOCK_URL, json=util_load_json('test_data/alerts.json'))
 
-        events, _ = get_events_command(client, arg_to_datetime('3 days'), ['ACTIVITIES', 'THREATS', 'ALERTS'])
+        events, _ = get_events_command(client, str(arg_to_datetime('3 days')), ['activities', 'threats', 'alerts'])
 
     assert len(events) == 6
 
@@ -86,13 +86,13 @@ def test_fetch_events():
         m.get(THREATS_SECOND_MOCK_URL, json={})
         m.get(ALERTS_SECOND_MOCK_URL, json={})
 
-        next_run, events = fetch_events(client, last_run, ['ACTIVITIES', 'THREATS', 'ALERTS'])
+        next_run, events = fetch_events(client, last_run, ['activities', 'threats', 'alerts'])
 
         assert next_run.get('last_activity_created') == '2022-09-06T20:37:55.912951Z'
         assert next_run.get('last_alert_created') == '2022-12-20T13:54:43.027000Z'
         assert len(events) == 6
 
-        next_run, events = fetch_events(client, last_run, ['ACTIVITIES', 'THREATS', 'ALERTS'])
+        next_run, events = fetch_events(client, last_run, ['activities', 'threats', 'alerts'])
 
         assert next_run.get('last_activity_created') == '2022-09-06T20:39:15.445218Z'
         assert next_run.get('last_alert_created') == '2022-12-20T13:54:43.027000Z'
