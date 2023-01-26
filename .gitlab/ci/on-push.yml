@@ -372,8 +372,6 @@ slack-notify-nightly-build:
     - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
     - section_end "Clean Machine"
 
-    - sleep 180ע
-
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
