@@ -76,13 +76,13 @@ class Client(BaseClient):
                                   url_suffix=url_suffix,
                                   headers=self._headers)
 
-    def bulk_clear_tags(self, search_string: str):
-        url_suffix = '/org/assets/bulk/clearTags'
-        body = {'search': f'{search_string}'}
-        return self._http_request(method='POST',
+    def tag_delete(self, asset_id: str, tags: str):
+        url_suffix = f'/org/assets/{asset_id}/tags'
+        tags_body = {'tags': tags}
+        return self._http_request(method='PATCH',
                                   url_suffix=url_suffix,
                                   headers=self._headers,
-                                  json_data=body)
+                                  json_data=tags_body)
 
     def wireless_search(self, wireless_search_string: str):
         url_suffix = f'/org/wireless/{wireless_search_string}' if wireless_search_string else '/org/wireless'
@@ -218,14 +218,14 @@ def asset_search(client: Client, args: dict) -> CommandResults:
     search_string = ''
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('ips'):
-        search_string = ','.join(argToList(args.get('ips')))
+        search_string = ' or address:'.join(argToList(args.get('ips')))
         search_string = f'?search=address:{search_string}'
     elif args.get('hostnames'):
-        search_string = ','.join(argToList(args.get('hostnames')))
+        search_string = ' or name:'.join(argToList(args.get('hostnames')))
         search_string = f'?search=name:{search_string}'
-    elif args.get('asset_id'):
-        search_string = ','.join(argToList(args.get('asset_id')))
-        search_string = f'/{search_string}'
+    elif args.get('asset_ids'):
+        search_string = ' or id:'.join(argToList(args.get('asset_ids')))
+        search_string = f'?search=id:{search_string}'
     elif args.get('search'):
         search_string = f'?search={args.get("search")}'
     raw = client.asset_search(search_string)
@@ -263,13 +263,12 @@ def asset_delete(client: Client, args: dict) -> CommandResults:
     raw = client.asset_delete(asset_list)
     message = f'Assets {asset_list} deleted successfully.'
     return CommandResults(
-        outputs_prefix=None,
+        outputs_prefix='RunZero.Asset',
         outputs_key_field=None,
         outputs=None,
         raw_response=raw,
         readable_output=message
     )
-
 
 
 def comment_add(client: Client, args: dict) -> CommandResults:
@@ -293,7 +292,7 @@ def tags_add(client: Client, args: dict) -> CommandResults:
     raw = client.tags_add(asset_id, tags)
     message = f'Tags added to {asset_id} successfully.'
     return CommandResults(
-        outputs_prefix=None,
+        outputs_prefix='RunZero.Tag',
         outputs_key_field=None,
         outputs=None,
         raw_response=raw,
@@ -309,8 +308,8 @@ def service_search(client: Client, args: dict) -> CommandResults:
     elif args.get('search'):
         service_string = f'?search={args["search"]}'
     elif args.get('service_addresses'):
-        service_string = ' OR service_address:'.join(argToList(args.get('service_addresses')))
-        service_string = f'?search=service_addresses:{service_string}'
+        service_string = ' or service_address:'.join(argToList(args.get('service_addresses')))
+        service_string = f'?search=service_address:{service_string}'
     raw = client.service_search(service_string)
     remove_attr = not argToBoolean(args.get('display_attributes', 'False'))
     message = []
@@ -341,7 +340,7 @@ def service_delete(client: Client, args: dict) -> CommandResults:
     raw = client.service_delete(service_id)
     message = f'Service {service_id} deleted successfully.'
     return CommandResults(
-        outputs_prefix=None,
+        outputs_prefix='RunZero.Service',
         outputs_key_field=None,
         outputs=None,
         raw_response=raw,
@@ -364,18 +363,18 @@ def quota_get(client: Client) -> CommandResults:
     )
 
 
-def bulk_clear_tags(client: Client, args: dict) -> CommandResults:
-    search_string = args['search']
-    raw = client.bulk_clear_tags(search_string)
-    human_readable = tableToMarkdown('Bulk_Clear_Tags',
-                                     raw,
-                                     removeNull=False)
+def tag_delete(client: Client, args: dict) -> CommandResults:
+    asset_id = args.get('asset_id', '')
+    tagsList = argToList(args.get('tags', []))
+    tags = '-'.join(tagsList)
+    raw = client.tag_delete(asset_id, tags)
+    message = f'Tags {tagsList} from asset: {asset_id} deleted successfully.'
     return CommandResults(
-        outputs_prefix=None,
+        outputs_prefix='RunZero.Tag',
         outputs_key_field=None,
         outputs=None,
         raw_response=raw,
-        readable_output=human_readable
+        readable_output=message
     )
 
 
@@ -438,7 +437,7 @@ def wireless_lan_delete(client: Client, args: dict) -> CommandResults:
     raw = client.wireless_delete(wireless_id)
     message = f'Wireless LAN {wireless_id} deleted successfully.'
     return CommandResults(
-        outputs_prefix=None,
+        outputs_prefix='RunZero.WirelessLAN',
         outputs_key_field=None,
         outputs=None,
         raw_response=raw,
@@ -485,14 +484,6 @@ def main() -> None:
             commandResult = asset_delete(client, args)
             return_results(commandResult)
 
-        elif demisto.command() == 'runzero-comment-add':
-            commandResult = comment_add(client, args)
-            return_results(commandResult)
-
-        elif demisto.command() == 'runzero-tag-add':
-            commandResult = tags_add(client, args)
-            return_results(commandResult)
-
         elif demisto.command() == 'runzero-service-search':
             commandResult = service_search(client, args)
             return_results(commandResult)
@@ -501,18 +492,25 @@ def main() -> None:
             commandResult = service_delete(client, args)
             return_results(commandResult)
 
-        elif demisto.command() == 'runzero-bulk-clear-tags':
-            commandResult = bulk_clear_tags(client, args)
+        elif demisto.command() == 'runzero-comment-add':
+            commandResult = comment_add(client, args)
             return_results(commandResult)
-        
+
+        elif demisto.command() == 'runzero-tag-add':
+            commandResult = tags_add(client, args)
+            return_results(commandResult)
+        elif demisto.command() == 'runzero-tag-delete':
+            commandResult = tag_delete(client, args)
+            return_results(commandResult)
+
         elif demisto.command() == 'runzero-wireless-lan-search':
             commandResult = wireless_lan_search(client, args)
             return_results(commandResult)
-        
+
         elif demisto.command() == 'runzero-wireless-lan-delete':
             commandResult = wireless_lan_delete(client, args)
             return_results(commandResult)
-        
+
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
