@@ -74,9 +74,15 @@ ignore=BA119
 ignore=SC105
 
 [file:ExportContextToJSONFile.yml]
-ignore=SC105
+ignore=SC105,CJ105
 
 [file:MarkAsEvidenceByTag.yml]
+ignore=SC105,CJ105
+
+[file:LoadJSONFileToContext.yml]
+ignore=SC105,CJ105
+
+[file:LoadJSONFileToContext.yml]
 ignore=SC105
 
 [file:LoadJSONFileToContext.yml]
