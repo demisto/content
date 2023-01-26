@@ -321,13 +321,13 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         pass
 
-    def install_packs(self, pack_ids=None, install_pack_in_small_batches=False):
+    def install_packs(self, pack_ids=None, install_packs_one_by_one=False):
         """
         Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
         Args:
             pack_ids: Packs to install on the server. If no packs provided, installs packs that was provided
             by previous step of the build.
-            install_pack_in_small_batches: Whether to install packs in small batches or all together.
+            install_packs_one_by_one: Whether to install packs one by one or all together.
 
         Returns:
             installed_content_packs_successfully: Whether packs installed successfully
@@ -338,7 +338,8 @@ class Build(ABC):
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
-                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
+                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
+                                                                          install_packs_one_by_one)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -790,7 +791,10 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        self.install_packs(install_pack_in_small_batches=True)
+        success = self.install_packs(install_packs_one_by_one=True)
+        if not success:
+            logging.error('Failed to install content packs, aborting.')
+            sys.exit(1)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
         # uploads test_pack.zip to all servers (we have only one cloud server)

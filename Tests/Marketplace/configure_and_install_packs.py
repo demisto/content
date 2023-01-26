@@ -48,9 +48,7 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, hostname
     """
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        install_packs_one_by_one = True if (server.__class__ == CloudServer) else False
-        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                     install_packs_one_by_one)
+        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 
