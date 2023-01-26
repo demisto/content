@@ -43,3 +43,27 @@ def test_extract_indicators_no_file():
         extract_indicators_from_file(args)
         if not e:
             assert False
+
+
+@pytest.mark.parametrize('filePath, res', [
+    ('./test_data/test_file.txt', '1.1.1.1'),
+    ('./test_data/latin-file.txt', 'áÈË')
+])
+def test_read_encoded_file(filePath, res):
+    """
+    # DON'T EDIT THE TEST FILES
+    # this breaks encoding.
+    # instead use encoding script like this -
+        import binascii
+        open('./test_data/latin-file.txt', mode='w', encoding='latin-1').write('áÈË')
+
+        Given:
+            file path to an encoded file.
+
+        When:
+            Running read_file_with_encoding_detection function
+
+        Then:
+            Validate the right data is returned.
+    """
+    assert read_file_with_encoding_detection(filePath, 1024 ** 2) == res
