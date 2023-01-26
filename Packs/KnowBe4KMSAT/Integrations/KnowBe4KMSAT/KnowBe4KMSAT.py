@@ -46,23 +46,23 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def kmsat_account_info(self):
-        """_summary_
+        """ Returns account info
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET", url_suffix="/account", resp_type="json", ok_codes=(200,)
         )
 
-    def kmsat_account_risk_score_history(self, params):
+    def kmsat_account_risk_score_history(self, params: dict):
         """ Returns account risk score history
 
         Args:
-            params (_type_): _description_
+            params (dict): Params for account risk score history
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
@@ -72,15 +72,15 @@ class Client(BaseClient):
             params=params,
         )
 
-    def kmsat_groups_risk_score_history(self, group_id, params):
-        """_summary_
+    def kmsat_groups_risk_score_history(self, group_id: int, params: dict):
+        """ Returns groups risk score history
 
         Args:
-            group_id (_type_): _description_
-            params (_type_): _description_
+            group_id (int): Group ID
+            params (dict): Params for groups risk score history
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
@@ -90,15 +90,15 @@ class Client(BaseClient):
             params=params,
         )
 
-    def kmsat_groups_members(self, group_id, params):
-        """_summary_
+    def kmsat_groups_members(self, group_id: int, params: dict):
+        """ Returns groups members
 
         Args:
-            group_id (_type_): _description_
-            params (_type_): _description_
+            group_id (int): Group ID
+            params (dict): Params for groups members
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
@@ -108,15 +108,15 @@ class Client(BaseClient):
             params=params,
         )
 
-    def kmsat_users_risk_score_history(self, user_id, params):
-        """_summary_
+    def kmsat_users_risk_score_history(self, user_id: int, params: dict):
+        """ Returns user risk score history
 
         Args:
-            user_id (_type_): _description_
-            params (_type_): _description_
+            user_id (int): User ID
+            params (dict): Params for user risk score history
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
@@ -126,14 +126,14 @@ class Client(BaseClient):
             params=params,
         )
 
-    def kmsat_phishing_security_tests(self, params):
-        """_summary_
+    def kmsat_phishing_security_tests(self, params: dict):
+        """ Returns phishing security tests
 
         Args:
-            params (_type_): _description_
+            params (dict): Params for phishing security tests
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
@@ -144,14 +144,14 @@ class Client(BaseClient):
         )
 
     def kmsat_phishing_security_tests_recipients(self, pst_id, params):
-        """_summary_
+        """ Returns recipients phishing security tests
 
         Args:
-            pst_id (_type_): _description_
-            params (_type_): _description_
+            pst_id (int): PST ID
+            params (dict): Params for recipients phishing security tests
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
@@ -161,15 +161,15 @@ class Client(BaseClient):
             params=params,
         )
 
-    def kmsat_phishing_campaign_security_tests(self, campaign_id, params):
-        """_summary_
+    def kmsat_phishing_campaign_security_tests(self, campaign_id: int, params: dict):
+        """ Returns campaign phishing security tets
 
         Args:
-            campaign_id (_type_): _description_
-            params (_type_): _description_
+            campaign_id (int): Campaign ID
+            params (dict): Params for campaign phishing security tests
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
@@ -179,14 +179,14 @@ class Client(BaseClient):
             params=params,
         )
 
-    def kmsat_training_campaigns(self, params):
-        """_summary_
+    def kmsat_training_campaigns(self, params: dict):
+        """ Returns training campaigns
 
         Args:
-            params (_type_): _description_
+            params (dict): Params for training campaigns
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
@@ -197,13 +197,13 @@ class Client(BaseClient):
         )
 
     def kmsat_training_enrollments(self, params):
-        """_summary_
+        """ Returns training enrollments
 
         Args:
-            params (_type_): _description_
+            params (dict): Params for training enrollment
 
         Returns:
-            _type_: _description_
+            _type_: dict
         """
         return self._http_request(
             method="GET",
