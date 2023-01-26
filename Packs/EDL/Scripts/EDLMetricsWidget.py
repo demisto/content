@@ -12,7 +12,7 @@ def get_edl(instance_name):
         url = 'https://' + url
     port = demisto.args()['edl_port']
     if port == "None":
-        url = url + '/instance/execute/' +instance_name
+        url = url + '/instance/execute/' + instance_name
         endpoint = str(url)
     else:
         endpoint = str(url) + ':' + port
