@@ -2446,10 +2446,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'EntryContext': comments_context
             })
 
-    # Handle closing ticket/incident in XSOAR as chosen by close_incident_multiple_options parameter
-    close_incident_option = params.get('close_incident_multiple_options')
-    if ticket.get('closed_at') and close_incident_option == 'closed' \
-            or ticket.get('resolved_at') and close_incident_option == 'resolved':
+    # Handle closing ticket/incident in XSOAR
+    close_incident = params.get('close_incident')
+    if ticket.get('closed_at') and close_incident == 'closed' \
+            or ticket.get('resolved_at') and close_incident == 'resolved':
         demisto.debug(f'ticket is closed: {ticket}')
         entries.append({
             'Type': EntryType.NOTE,
