@@ -3,8 +3,8 @@
     "description": "Whitelist feed for Cisco WebEx using a screen scrape of the website.",
     "support": "xsoar",
     "currentVersion": "1.2.0",
-    "author": "scottbrumley",
-    "url": "",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-10-11T15:40:43Z",
     "categories": [
