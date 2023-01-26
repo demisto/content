@@ -10,16 +10,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-Cortex Data Lake
+* Cortex Data Lake
 
 ### Scripts
-SetAndHandleEmpty
+* SetAndHandleEmpty
 
 ### Commands
-* cdl-query-threat-logs
 * cdl-query-file-data
-* cdl-query-url-logs
+* cdl-query-threat-logs
 * cdl-query-traffic-logs
+* cdl-query-url-logs
 
 ## Playbook Inputs
 ---
@@ -27,14 +27,14 @@ SetAndHandleEmpty
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IPAddresses | A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination IP addresses.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| URLDomain | A single or multiple URLs and/or domains to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| Geolocation | A single or multiple country names or codes to search for within Cortex Data Lake. Used for both source and destination geolocations.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| URLDomain | Single or multiple URLs and/or domains to search for  within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| Geolocation | A single or multiple country names or codes to search for  within Cortex Data Lake. Used for both source and destination geolocations.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | PortNumber | A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination ports.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| time_range | An alternative to the 'start_time' and 'end_time' inputs that indicates the time frame for the search, e.g., 1 week, 1 day, 30 minutes.<br/><br/>When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used. |  | Optional |
-| start_time | Specify the query start time at which to perform a search within Cortex Data Lake.<br/><br/>For example, start_time="2018-04-26 00:00:00". |  | Optional |
-| end_time | Specify the query end time at which to perform a search within Cortex Data Lake.<br/><br/>For example, end_time="2018-04-26 00:00:00". |  | Optional |
+| time_range | An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.<br/><br/>When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used. |  | Optional |
+| start_time | Specify the query start time at which to perform a search within Cortex Data Lake.<br/><br/>For example, start_time="2018-04-26 00:00:00" |  | Optional |
+| end_time | Specify the query end time at which to perform a search within Cortex Data Lake.<br/><br/>For example, end_time="2018-04-26 00:00:00" |  | Optional |
 | limit | The maximum number of logs to return. <br/>Default is 10. |  | Optional |
-| fields | Select the fields to be included in the query results. <br/>Selection can be "all" \(same as \*\) or a comma-separated list of specific fields in the table.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| fields | Select the fields you wish to be included in the query results. <br/>Selection can be "all" \(same as \*\) or a comma-separated list of specific fields in the table.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | FirewallAction | Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | rule_matched | Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 
@@ -87,7 +87,7 @@ SetAndHandleEmpty
 | CDL.HuntingResults.SourceDeviceHost | Hostname of the device from which the session originated. | string |
 | CDL.HuntingResults.DestDeviceHost | Hostname of the device session destination. | string |
 | CDL.HuntingResults.ContentType | The content type of the HTTP response data. | string |
-| CDL.HuntingResults.HTTPMethod | The HTTP Method used<br/>in the web request. | string |
+| CDL.HuntingResults.HTTPMethod | The HTTP Method used<br/>in the web request | string |
 
 ## Playbook Image
 ---

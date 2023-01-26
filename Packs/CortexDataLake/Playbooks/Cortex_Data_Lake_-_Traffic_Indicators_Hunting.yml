@@ -189,7 +189,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "284"
+      - "281"
     scriptarguments:
       action:
         complex:
@@ -302,7 +302,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -950,
+          "x": -960,
           "y": 290
         }
       }
@@ -328,7 +328,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "284"
+      - "282"
     scriptarguments:
       action:
         complex:
@@ -442,7 +442,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
+          "x": -160,
           "y": 290
         }
       }
@@ -468,7 +468,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "284"
+      - "280"
     scriptarguments:
       action:
         complex:
@@ -582,7 +582,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -540,
+          "x": -560,
           "y": 290
         }
       }
@@ -610,8 +610,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2590,
-          "y": 1390
+          "x": -2550,
+          "y": 780
         }
       }
     note: false
@@ -642,7 +642,7 @@ tasks:
       {
         "position": {
           "x": -3950,
-          "y": 1250
+          "y": 635
         }
       }
     note: false
@@ -791,7 +791,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "284"
+      - "283"
     scriptarguments:
       action:
         complex:
@@ -887,7 +887,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 250,
           "y": 290
         }
       }
@@ -913,7 +913,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "284"
+      - "283"
     scriptarguments:
       action:
         complex:
@@ -1009,7 +1009,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
+          "x": 660,
           "y": 290
         }
       }
@@ -1022,10 +1022,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "280":
     id: "280"
-    taskid: bbafc99a-b023-4225-878d-7111f0e6018e
+    taskid: 5a5a9d08-64b8-48b4-8f55-07410733d228
     type: regular
     task:
-      id: bbafc99a-b023-4225-878d-7111f0e6018e
+      id: 5a5a9d08-64b8-48b4-8f55-07410733d228
       version: -1
       name: Save Matching Results - Threat Logs
       description: |-
@@ -1033,14 +1033,14 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "281"
+      - "285"
     scriptarguments:
       append:
         simple: "true"
@@ -1060,22 +1060,13 @@ tasks:
                 value:
                   simple: CDL.Logging.Threat.SourcePort
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.Threat.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 590
+          "x": -560,
+          "y": 460
         }
       }
     note: false
@@ -1087,10 +1078,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "281":
     id: "281"
-    taskid: be7358c8-215d-4a12-8663-3c2e21a34c30
+    taskid: 38fca3d5-0527-4b16-8cec-db7afbc591c3
     type: regular
     task:
-      id: be7358c8-215d-4a12-8663-3c2e21a34c30
+      id: 38fca3d5-0527-4b16-8cec-db7afbc591c3
       version: -1
       name: Save Matching Results - URL Logs
       description: |-
@@ -1098,14 +1089,14 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "282"
+      - "285"
     scriptarguments:
       append:
         simple: "true"
@@ -1125,22 +1116,13 @@ tasks:
                 value:
                   simple: CDL.Logging.URL.SourcePort
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.URL.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 750
+          "x": -960,
+          "y": 460
         }
       }
     note: false
@@ -1152,10 +1134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "282":
     id: "282"
-    taskid: 6982b16b-110f-43cb-882d-525b01e3c515
+    taskid: b0dae7d7-04a0-4945-8d3c-1ef9239dbd95
     type: regular
     task:
-      id: 6982b16b-110f-43cb-882d-525b01e3c515
+      id: b0dae7d7-04a0-4945-8d3c-1ef9239dbd95
       version: -1
       name: Save Matching Results - Traffic Logs
       description: |-
@@ -1163,14 +1145,14 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "283"
+      - "285"
     scriptarguments:
       append:
         simple: "true"
@@ -1190,22 +1172,13 @@ tasks:
                 value:
                   simple: CDL.Logging.Traffic.SourcePort
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.Traffic.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 910
+          "x": -160,
+          "y": 460
         }
       }
     note: false
@@ -1217,10 +1190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "283":
     id: "283"
-    taskid: 36757615-a1ed-4215-8a9d-d5518b213f63
+    taskid: 74cfe6f5-2594-433e-8e68-6fb431ac5c88
     type: regular
     task:
-      id: 36757615-a1ed-4215-8a9d-d5518b213f63
+      id: 74cfe6f5-2594-433e-8e68-6fb431ac5c88
       version: -1
       name: Save Matching Results - File Data Logs
       description: |-
@@ -1228,7 +1201,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1250,54 +1223,12 @@ tasks:
                 value:
                   simple: CDL.Logging.File.DestinationPort
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.File.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
-          transformers:
-          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 1075
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "284":
-    id: "284"
-    taskid: df3f9d3b-ac1a-4d92-820f-d4ec979cbe8f
-    type: title
-    task:
-      id: df3f9d3b-ac1a-4d92-820f-d4ec979cbe8f
-      version: -1
-      name: Save Matching Results - Port Number
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "280"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -140,
+          "x": 460,
           "y": 460
         }
       }
@@ -1329,7 +1260,7 @@ tasks:
       {
         "position": {
           "x": -1190,
-          "y": 1250
+          "y": 635
         }
       }
     note: false
@@ -1354,7 +1285,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "296"
+      - "295"
     scriptarguments:
       action:
         complex:
@@ -1476,7 +1407,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "296"
+      - "295"
     scriptarguments:
       action:
         complex:
@@ -1598,7 +1529,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "296"
+      - "294"
     scriptarguments:
       action:
         complex:
@@ -1738,7 +1669,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "296"
+      - "292"
     scriptarguments:
       action:
         complex:
@@ -1878,7 +1809,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "296"
+      - "293"
     scriptarguments:
       action:
         complex:
@@ -2004,10 +1935,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "292":
     id: "292"
-    taskid: e4e72b11-72d9-4a01-8938-94f75903a175
+    taskid: 6ed645fd-591b-4897-8e09-ae0f60ef787c
     type: regular
     task:
-      id: e4e72b11-72d9-4a01-8938-94f75903a175
+      id: 6ed645fd-591b-4897-8e09-ae0f60ef787c
       version: -1
       name: Save Matching Results - Threat Logs
       description: |-
@@ -2015,14 +1946,14 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "293"
+      - "258"
     scriptarguments:
       append:
         simple: "true"
@@ -2042,22 +1973,13 @@ tasks:
                 value:
                   simple: CDL.Logging.Threat.SourceIP
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.Threat.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4980,
-          "y": 590
+          "x": -5380,
+          "y": 460
         }
       }
     note: false
@@ -2069,10 +1991,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "293":
     id: "293"
-    taskid: 0241908e-68ba-4e0b-87b2-46e7738e7f6e
+    taskid: 716ed035-bc35-4805-8e65-193c4fedfe5e
     type: regular
     task:
-      id: 0241908e-68ba-4e0b-87b2-46e7738e7f6e
+      id: 716ed035-bc35-4805-8e65-193c4fedfe5e
       version: -1
       name: Save Matching Results - URL Logs
       description: |-
@@ -2080,14 +2002,14 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "294"
+      - "258"
     scriptarguments:
       append:
         simple: "true"
@@ -2107,22 +2029,13 @@ tasks:
                 value:
                   simple: CDL.Logging.URL.SourceIP
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.URL.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4980,
-          "y": 750
+          "x": -5780,
+          "y": 460
         }
       }
     note: false
@@ -2134,10 +2047,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "294":
     id: "294"
-    taskid: a2250ba8-a5c1-4aad-8730-baaacb23be36
+    taskid: 6a12e1f6-8682-4d81-8b87-84b1e9ecf039
     type: regular
     task:
-      id: a2250ba8-a5c1-4aad-8730-baaacb23be36
+      id: 6a12e1f6-8682-4d81-8b87-84b1e9ecf039
       version: -1
       name: Save Matching Results - Traffic Logs
       description: |-
@@ -2145,14 +2058,14 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "295"
+      - "258"
     scriptarguments:
       append:
         simple: "true"
@@ -2172,22 +2085,13 @@ tasks:
                 value:
                   simple: CDL.Logging.Traffic.DestinationIP
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.Traffic.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -4980,
-          "y": 910
+          "y": 460
         }
       }
     note: false
@@ -2199,10 +2103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "295":
     id: "295"
-    taskid: e9a3a8bc-ec59-4c09-8e96-1228d9483c81
+    taskid: d321bd66-8e79-4932-85a7-30be042f2f46
     type: regular
     task:
-      id: e9a3a8bc-ec59-4c09-8e96-1228d9483c81
+      id: d321bd66-8e79-4932-85a7-30be042f2f46
       version: -1
       name: Save Matching Results - File Data Logs
       description: |-
@@ -2210,7 +2114,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2237,54 +2141,12 @@ tasks:
                 value:
                   simple: CDL.Logging.File.DestinationIP
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.File.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
-          transformers:
-          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -4980,
-          "y": 1075
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "296":
-    id: "296"
-    taskid: 38adefb5-4e89-42b8-8669-2ee28a7aa8f2
-    type: title
-    task:
-      id: 38adefb5-4e89-42b8-8669-2ee28a7aa8f2
-      version: -1
-      name: Save Matching Results - IP Address
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "292"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -4980,
+          "x": -4380,
           "y": 460
         }
       }
@@ -2310,7 +2172,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "300"
+      - "301"
     scriptarguments:
       action:
         complex:
@@ -2406,7 +2268,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1580,
+          "x": -1600,
           "y": 290
         }
       }
@@ -2432,7 +2294,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "300"
+      - "302"
     scriptarguments:
       action:
         complex:
@@ -2556,43 +2418,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "300":
-    id: "300"
-    taskid: 725468a2-e574-4357-8a36-9bdceec8cf54
-    type: title
-    task:
-      id: 725468a2-e574-4357-8a36-9bdceec8cf54
-      version: -1
-      name: Save Matching Results - URLDomain
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "301"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1790,
-          "y": 460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "301":
     id: "301"
-    taskid: 6aa1288d-7290-4430-8bfb-a12ff643267c
+    taskid: a2d8018d-b664-4a0f-83d4-602769e3ac35
     type: regular
     task:
-      id: 6aa1288d-7290-4430-8bfb-a12ff643267c
+      id: a2d8018d-b664-4a0f-83d4-602769e3ac35
       version: -1
       name: Save Matching Results - File Data Logs
       description: |-
@@ -2600,14 +2431,14 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "302"
+      - "303"
     scriptarguments:
       append:
         simple: "true"
@@ -2622,22 +2453,13 @@ tasks:
                 value:
                   simple: CDL.Logging.File.SessionID
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.File.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1790,
-          "y": 600
+          "x": -1600,
+          "y": 460
         }
       }
     note: false
@@ -2649,10 +2471,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "302":
     id: "302"
-    taskid: e45fa5f1-60b8-4cfb-81ab-936e62d1b17e
+    taskid: 5379ea20-3f70-4924-8c15-59f11b818871
     type: regular
     task:
-      id: e45fa5f1-60b8-4cfb-81ab-936e62d1b17e
+      id: 5379ea20-3f70-4924-8c15-59f11b818871
       version: -1
       name: Save Matching Results - URL Logs
       description: |-
@@ -2660,7 +2482,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2687,22 +2509,13 @@ tasks:
                 value:
                   simple: CDL.Logging.URL.RefererFQDN
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.URL.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1790,
-          "y": 765
+          "x": -2010,
+          "y": 460
         }
       }
     note: false
@@ -2733,7 +2546,7 @@ tasks:
       {
         "position": {
           "x": -2240,
-          "y": 940
+          "y": 635
         }
       }
     note: false
@@ -2802,7 +2615,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "308"
+      - "309"
     scriptarguments:
       action:
         complex:
@@ -2898,39 +2711,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3570,
+          "x": -3550,
           "y": 290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "308":
-    id: "308"
-    taskid: ac9c08aa-a5c6-4df6-8eb0-f5906656c182
-    type: title
-    task:
-      id: ac9c08aa-a5c6-4df6-8eb0-f5906656c182
-      version: -1
-      name: Save Matching Results - Geolocation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "309"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -3350,
-          "y": 460
         }
       }
     note: false
@@ -2942,10 +2724,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "309":
     id: "309"
-    taskid: d717aff5-809d-428c-81b6-c8b806c3250f
+    taskid: 130c95b3-631e-49a1-8a75-5dcbee751575
     type: regular
     task:
-      id: d717aff5-809d-428c-81b6-c8b806c3250f
+      id: 130c95b3-631e-49a1-8a75-5dcbee751575
       version: -1
       name: Save Matching Results - File Data Logs
       description: |-
@@ -2953,7 +2735,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2980,24 +2762,13 @@ tasks:
                 value:
                   simple: CDL.Logging.File.SourceLocation
                 iscontext: true
-          - - operator: notInList
-              left:
-                value:
-                  simple: CDL.Logging.File.SessionID
-                iscontext: true
-              right:
-                value:
-                  simple: CDL.HuntingResults.SessionID
-                iscontext: true
-          transformers:
-          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -3350,
-          "y": 590
+          "x": -3340,
+          "y": 460
         }
       }
     note: false
@@ -3028,7 +2799,7 @@ tasks:
       {
         "position": {
           "x": -2910,
-          "y": 765
+          "y": 635
         }
       }
     note: false
@@ -3053,7 +2824,7 @@ tasks:
       brand: Cortex Data Lake
     nexttasks:
       '#none#':
-      - "308"
+      - "309"
     scriptarguments:
       action:
         complex:
@@ -3184,7 +2955,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4980,
+          "x": -5180,
           "y": 150
         }
       }
@@ -3216,7 +2987,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3350,
+          "x": -3340,
           "y": 150
         }
       }
@@ -3248,7 +3019,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1790,
+          "x": -1810,
           "y": 150
         }
       }
@@ -3283,7 +3054,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
+          "x": -160,
           "y": 150
         }
       }
@@ -3296,11 +3067,13 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "5_313_yes": 0.59
+    },
     "paper": {
       "dimensions": {
-        "height": 1745,
-        "width": 6840,
+        "height": 1135,
+        "width": 6820,
         "x": -5780,
         "y": -290
       }
@@ -3319,7 +3092,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for within Cortex Data Lake.
+    Single or multiple URLs and/or domains to search for  within Cortex Data Lake.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -3327,7 +3100,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple country names or codes to search for within Cortex Data Lake. Used for both source and destination geolocations.
+    A single or multiple country names or codes to search for  within Cortex Data Lake. Used for both source and destination geolocations.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -3343,7 +3116,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    An alternative to the 'start_time' and 'end_time' inputs that indicates the time frame for the search, e.g., 1 week, 1 day, 30 minutes.
+    An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.
 
     When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used.
   playbookInputQuery:
@@ -3353,7 +3126,7 @@ inputs:
   description: |-
     Specify the query start time at which to perform a search within Cortex Data Lake.
 
-    For example, start_time="2018-04-26 00:00:00".
+    For example, start_time="2018-04-26 00:00:00"
   playbookInputQuery:
 - key: end_time
   value: {}
@@ -3361,7 +3134,7 @@ inputs:
   description: |-
     Specify the query end time at which to perform a search within Cortex Data Lake.
 
-    For example, end_time="2018-04-26 00:00:00".
+    For example, end_time="2018-04-26 00:00:00"
   playbookInputQuery:
 - key: limit
   value: {}
@@ -3371,7 +3144,7 @@ inputs:
 - key: fields
   value: {}
   required: false
-  description: "Select the fields to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
+  description: "Select the fields you wish to be included in the query results. \nSelection can be \"all\" (same as *) or a comma-separated list of specific fields in the table.\n\nSeparate multiple search values by commas only (without spaces or any special characters)."
   playbookInputQuery:
 - key: FirewallAction
   value: {}
@@ -3529,7 +3302,7 @@ outputs:
 - contextPath: CDL.HuntingResults.HTTPMethod
   description: |-
     The HTTP Method used
-    in the web request.
+    in the web request
   type: string
 tests:
 - No tests (auto formatted)

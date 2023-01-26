@@ -21,19 +21,19 @@ Separate searches are conducted for each type of indicator in the playbook.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex Data Lake - File Indicators Hunting
 * Cortex Data Lake - Traffic Indicators Hunting
+* Cortex Data Lake - File Indicators Hunting
 
 ### Integrations
-Cortex Data Lake
+* Cortex Data Lake
 
 ### Scripts
-* IsIntegrationAvailable
 * SetAndHandleEmpty
+* IsIntegrationAvailable
 
 ### Commands
-* cdl-query-url-logs
 * cdl-query-file-data
+* cdl-query-url-logs
 
 ## Playbook Inputs
 ---
@@ -41,8 +41,8 @@ Cortex Data Lake
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IPAddresses | A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination IP addresses.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| URLDomain | A single or multiple URLs and/or domains to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| Geolocation | A single or multiple country names or codes to search for within Cortex Data Lake. Used for both source and destination geolocations.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| URLDomain | Single or multiple URLs and/or domains to search for  within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| Geolocation | A single or multiple country names or codes to search for  within Cortex Data Lake. Used for both source and destination geolocations.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | PortNumber | A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination ports.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | SHA256 | A single or multiple SHA256 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | MD5 | A single or multiple MD5 file hashes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
@@ -51,12 +51,12 @@ Cortex Data Lake
 | FileType | A single or multiple file types to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | Application | Single or multiple application names or codes to search for within Cortex Data Lake.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | URI | A single or multiple URIs to search for within Cortex Data Lake.<br/>By default, a 'LIKE' search is used.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| start_time | Specify the query start time at which to perform a search within Cortex Data Lake.<br/><br/>For example, start_time="2018-04-26 00:00:00". |  | Optional |
-| end_time | Specify the query end time at which to perform a search within Cortex Data Lake.<br/><br/>For example, end_time="2018-04-26 00:00:00". |  | Optional |
-| time_range | An alternative to the 'start_time' and 'end_time' inputs that indicates the time frame for the search, e.g., 1 week, 1 day, 30 minutes.<br/><br/>When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used. |  | Optional |
+| start_time | Specify the query start time at which to perform a search within Cortex Data Lake.<br/><br/>For example, start_time="2018-04-26 00:00:00" |  | Optional |
+| end_time | Specify the query end time at which to perform a search within Cortex Data Lake.<br/><br/>For example, end_time="2018-04-26 00:00:00" |  | Optional |
+| time_range | An alternative to the 'start_time' and 'end_time' inputs that indicates the timeframe for the search, e.g. 1 week, 1 day, 30 minutes.<br/><br/>When the time_range input is specified, the 'start_time' and 'end_time' inputs should not be used. |  | Optional |
 | limit | The maximum number of logs to return. <br/>Default is 10. |  | Optional |
-| fields | Select the fields to be included in the query results. <br/>Selection can be "all" \(same as \*\) or a comma-separated list of specific fields in the table.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| FirewallAction | Filter network traffic logs that should be retrieved from Cortex Data Lake based on the firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| fields | Select the fields you wish to be included in the query results. <br/>Selection can be "all" \(same as \*\) or a comma-separated list of specific fields in the table.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| FirewallAction | Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | rule_matched | Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 
 ## Playbook Outputs
