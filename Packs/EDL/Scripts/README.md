@@ -1,4 +1,4 @@
-Schedule a daily job to run this widget script in a playbook to track EDL size over time
+Schedule a daily job to run this widget script as a playbook step to track EDL size over time
 
 ## Script Data
 ---
@@ -14,9 +14,9 @@ Schedule a daily job to run this widget script in a playbook to track EDL size o
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| server_url | Demisto server URL |
-| edl_port | If using a port and not instance name |
-| edl_exclusions | Integration instances to not track or ignore in widget |
+| server_url | Demisto Server URL |
+| edl_port | See integration documentation. Required if using a port vs. instance name. |
+| edl_exclusions | Integration instances to not track/ignore in widget |
 | verify_ssl | Trust any certificate \(insecure\) |
 
 ## Outputs

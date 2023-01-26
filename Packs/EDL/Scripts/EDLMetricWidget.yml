@@ -1,0 +1,42 @@
+args:
+- default: false
+  description: 'Demisto server URL'
+  isArray: false
+  name: server_url
+  required: true
+  secret: false
+- default: true
+  description: 'If using a port and not instance name'
+  isArray: false
+  name: edl_port
+  required: false
+  secret: false
+  defaultValue: None
+- default: false
+  description: 'Integration instances to not track or ignore in widget'
+  isArray: false
+  name: edl_exclusions
+  required: false
+  secret: false
+- default: true
+  description: 'Trust any certificate (insecure)'
+  isArray: false
+  defaultValue: None
+  name: verify_ssl
+  required: false
+  secret: false
+comment: 'Schedule a daily job to run this widget script in a playbook to track EDL size over time'
+commonfields:
+  id: EDLMetricWidget
+  version: -1
+enabled: false
+name: EDLMetricWidget
+script: '-'
+system: false
+tags:
+- widget
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.5.31797
+fromversion: 5.5.0
