@@ -1229,8 +1229,8 @@ def get_remote_data_command(service: client.Service, args: dict,
         args (dict): The command arguments
         close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable
             has been closed on Splunk's end.
-        close_end_statuses (bool): Indicates to add statuses that are marked as "End Status" on Splunk to mirror.
-        close_extra_labels (list[str]): A list of additional Splunk status labels to add to mirroring.
+        close_end_statuses (bool): Specifies whether "End Status" statuses on Splunk should be closed when mirroring.
+        close_extra_labels (list[str]): A list of additional Splunk status labels which need to be defined as closed during mirroring.
 
     Returns:
         GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
@@ -1263,7 +1263,7 @@ def get_remote_data_command(service: client.Service, args: dict,
         # and the special label is used, close the incident on XSOAR.
         if status_label == "Closed" or (status_label in close_extra_labels) \
                 or (close_end_statuses and updated_notable.get('status_label') in close_extra_labels):
-            demisto.info('Closing incident related to notable {}'.format(notable_id))
+            demisto.info(f'Closing incident related to notable {notable_id} with status_label: {status_label}')
             entries = [{
                 'Type': EntryType.NOTE,
                 'Contents': {
