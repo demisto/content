@@ -603,7 +603,7 @@ def main() -> None:
     storage_account_name = params['credentials']['identifier']
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.table.core.windows.net/'
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')

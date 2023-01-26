@@ -1372,7 +1372,7 @@ def main():
         certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
             params.get('certificate_thumbprint')
         private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
-        managed_identities_client_id = params.get('managed_identities_client_id')
+        managed_identities_client_id = get_azure_managed_identities_client_id(params)
         if not managed_identities_client_id and not client_secret and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 

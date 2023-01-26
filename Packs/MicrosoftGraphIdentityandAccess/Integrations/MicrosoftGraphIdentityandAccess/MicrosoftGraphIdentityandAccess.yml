@@ -6,11 +6,6 @@ commonfields:
   id: MicrosoftGraphIdentityandAccess
   version: -1
 configuration:
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
 - defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
   display: Application ID (Client ID for Client credentials mode)
   hidden: false
@@ -29,6 +24,19 @@ configuration:
   type: 9
   additionalinfo: "Client Secret. Required for Client Credentials mode)"
   hiddenusername: true
+  section: Connect
+- additionalinfo: Authenticate based on configured Azure Managed Identities - relevant only if the integration is running on Azure VM.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+  section: Connect
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 - name: first_fetch
   display: First Fetch Time Interval

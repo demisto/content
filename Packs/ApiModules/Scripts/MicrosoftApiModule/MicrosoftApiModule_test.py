@@ -516,31 +516,32 @@ def test_general_error_metrics(requests_mock, mocker):
         assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
 
 
-def test_get_token_managed_identities(requests_mock, mocker):
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_get_token_managed_identities(requests_mock, mocker, client_id):
     """
     Given:
-        managed identity client id
+        managed identity client id or None
     When:
         get access token
     Then:
         Verify that the result are as expected
     """
-    test_client_id = 'test_client_id'
     test_token = 'test_token'
     import MicrosoftApiModule
 
-    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
-                                                                client_id=test_client_id)
-
     mock_token = {'access_token': test_token, 'expires_in': '86400'}
-    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
     mocker.patch.object(MicrosoftApiModule, 'get_integration_context', return_value={})
 
     client = self_deployed_client()
-    client.managed_identities_client_id = test_client_id
     client.managed_identities_resource_uri = Resources.graph
+    client.managed_identities_client_id = client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
 
     assert test_token == client.get_access_token()
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
 
 def test_get_token_managed_identities__error(requests_mock, mocker):
@@ -555,18 +556,13 @@ def test_get_token_managed_identities__error(requests_mock, mocker):
 
     import MicrosoftApiModule
 
-    test_client_id = 'test_client_id'
-
-    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
-                                                                client_id=test_client_id)
-
     mock_token = {'error_description': 'test_error_description'}
-    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
     mocker.patch.object(MicrosoftApiModule, 'return_error', side_effect=Exception())
     mocker.patch.object(MicrosoftApiModule, 'get_integration_context', return_value={})
 
     client = self_deployed_client()
-    client.managed_identities_client_id = test_client_id
+    client.managed_identities_client_id = 'test_client_id'
     client.managed_identities_resource_uri = Resources.graph
 
     with pytest.raises(Exception):

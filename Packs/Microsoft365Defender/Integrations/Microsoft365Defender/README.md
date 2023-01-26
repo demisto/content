@@ -54,7 +54,7 @@ Follow these steps for a self-deployed configuration:
     | --- | --- | --- |
     | Application ID | The API key to use to connect. | False |
     | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
     | Tenant ID (for Client Credentials mode) |  | False |
     | Password |  | False |

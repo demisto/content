@@ -22,7 +22,7 @@ For more info, see: https://github.com/microsoftgraph/security-api-solutions/iss
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Host URL | The host URL. | True |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Application ID or Client ID | The app registration ID. | True |
     | Token or Tenant ID | The tenant ID. | True |
     | Key or Client Secret | The app registration secret. | False |

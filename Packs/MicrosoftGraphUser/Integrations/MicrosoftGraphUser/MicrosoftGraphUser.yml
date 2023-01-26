@@ -20,11 +20,6 @@ configuration:
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   type: 4
@@ -71,6 +66,17 @@ configuration:
   required: false
   type: 4
   hidden: true
+- additionalinfo: Authenticate based on configured Azure Managed Identities - relevant only if the integration is running on Azure VM.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure

@@ -365,9 +365,6 @@ def test_module(client, params):
                         "Please enable the integration and run the !azure-waf-auth-test command in order to test it")
 
     elif params.get('auth_type') == 'Azure Managed Identities':
-        if not params.get('managed_identities_client_id'):
-            raise Exception("Please provide value for 'Azure Managed Identities client id' filed")
-
         test_connection(client, params)
         return 'ok'
 
@@ -404,7 +401,7 @@ def main() -> None:
         proxy=params.get('proxy', False),
         azure_ad_endpoint=params.get('azure_ad_endpoint',
                                      'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
-        managed_identities_client_id=params.get('managed_identities_client_id')
+        managed_identities_client_id=get_azure_managed_identities_client_id(params)
     )
 
     demisto.debug(f'Command being called in Azure WAF is {command}')

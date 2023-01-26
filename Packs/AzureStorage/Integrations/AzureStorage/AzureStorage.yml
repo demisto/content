@@ -6,11 +6,6 @@ commonfields:
   id: Azure Storage
   version: -1
 configuration:
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
 - defaultvalue: 55f9764e-300a-474a-a2bb-549cece85439
   display: Application ID
   hidden: false
@@ -85,6 +80,13 @@ configuration:
   additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions section.
   displaypassword: Authorization code
   hiddenusername: true
+  section: Connect
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 description: Deploy and manage storage accounts and blob services.
 display: Azure Storage Management

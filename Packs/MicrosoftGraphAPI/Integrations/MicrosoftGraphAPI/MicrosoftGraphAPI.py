@@ -78,7 +78,7 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
 def test_module(client: MsGraphClient,
                 app_secret: str,
                 tenant_id: str,
-                managed_identities_client_id: str) -> str:  # pragma: no cover
+                managed_identities_client_id: Optional[str]) -> str:  # pragma: no cover
     if (app_secret and tenant_id) or managed_identities_client_id:
         client.ms_client.get_access_token()
         return 'ok'
@@ -148,7 +148,7 @@ def main() -> None:  # pragma: no cover
     app_secret = app_secret if isinstance(app_secret, str) else ''
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
     private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     try:
         client = MsGraphClient(

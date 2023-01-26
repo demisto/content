@@ -12,7 +12,7 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | --- | --- | --- |
     | Storage account name |  | True |
     | Account SAS Token |  | False |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Maximum incidents for one fetch. | Default is 10. Maximum is 32 \(due to an API limit\). | False |

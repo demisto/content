@@ -35,7 +35,7 @@ Required Permissions
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Application ID |  | False |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |

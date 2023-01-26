@@ -19,12 +19,6 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
-  section: Connect
 - display: Resource Group Name
   hidden: false
   name: resource_group_name
@@ -62,7 +56,7 @@ configuration:
   required: true
   defaultvalue: Device Code
   type: 15
-  additionalinfo: Type of authentication - could be Authorization Code flow (recommended) or Device Code flow.
+  additionalinfo: Type of authentication - could be Authorization Code flow (recommended), Device Code flow or Azure Managed Identities.
   options:
   - Authorization Code
   - Device Code
@@ -102,6 +96,13 @@ configuration:
   hiddenusername: true
   section: Connect
   advanced: true
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 description: Azure network security groups are used to filter network traffic to and from Azure resources in an Azure virtual network.
 display: Azure Network Security Groups
 name: Azure Network Security Groups

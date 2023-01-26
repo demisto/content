@@ -12,12 +12,6 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
-  section: Connect
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
   hiddenusername: true
@@ -59,6 +53,18 @@ configuration:
   section: Connect
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
+- additionalinfo: Authenticate based on configured Azure Managed Identities - relevant only if the integration is running on Azure VM.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false

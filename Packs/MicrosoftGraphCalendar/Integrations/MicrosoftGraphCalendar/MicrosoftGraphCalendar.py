@@ -520,7 +520,7 @@ def main():
     default_user = params.get('default_user')
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
 
     if not managed_identities_client_id:

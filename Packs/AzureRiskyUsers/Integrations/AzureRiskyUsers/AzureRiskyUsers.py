@@ -396,9 +396,6 @@ def test_module(client: Client):
                                'the azure-risky-users-auth-start command. Follow the instructions that will be printed'
                                ' as the output of the command.')
 
-    elif client.authentication_type == 'Azure Managed Identities' and not client.ms_client.managed_identities_client_id:
-        raise DemistoException("Please provide value for 'Azure Managed Identities client id' filed")
-
     test_connection(client)
     return "ok"
 
@@ -437,7 +434,7 @@ def main():
     auth_type = params.get('authentication_type', 'Device Code')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     # Params for Client Credentials flow only:
     tenant_id = params.get('tenant_id')

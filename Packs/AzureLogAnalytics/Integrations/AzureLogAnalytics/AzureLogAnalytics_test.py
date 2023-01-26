@@ -1,3 +1,5 @@
+import pytest
+
 from AzureLogAnalytics import Client, execute_query_command, list_saved_searches_command, tags_arg_to_request_format
 
 MOCKED_SAVED_SEARCHES_OUTPUT = {
@@ -142,7 +144,8 @@ def test_tags_arg_to_request_format():
     assert parsed_tags[1].get('value') == 'value2'
 
 
-def test_test_module_command_with_managed_identities(mocker, requests_mock):
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
     """
     Scenario: run test module when managed identities client id provided.
     Given:
@@ -155,13 +158,12 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock):
     from AzureLogAnalytics import main, MANAGED_IDENTITIES_TOKEN_URL
     import AzureLogAnalytics
     import demistomock as demisto
-    import re
 
-    managed_id_uri_mancher = re.compile(f"{MANAGED_IDENTITIES_TOKEN_URL.split('?')[0]}.*")
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
-    requests_mock.get(managed_id_uri_mancher, json=mock_token)
+    requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
     params = {
-        'managed_identities_client_id': 'test_client_id',
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
         'auth_type': 'Azure Managed Identities',
         'subscription_id': {'password': 'test'},
         'resource_group': 'test_resource_group'

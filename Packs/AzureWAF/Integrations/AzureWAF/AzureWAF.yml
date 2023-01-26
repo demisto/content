@@ -3,11 +3,6 @@ commonfields:
   id: AzureWAF
   version: -1
 configuration:
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
 - defaultvalue: cf22fd73-29f1-4245-8e16-533704926d20
   display: App ID
   hidden: false
@@ -55,6 +50,12 @@ configuration:
   hiddenusername: true
   name: auth_code
   required: false
+  type: 9
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
   type: 9
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint

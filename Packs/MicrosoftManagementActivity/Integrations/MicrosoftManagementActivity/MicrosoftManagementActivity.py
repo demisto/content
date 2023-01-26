@@ -216,7 +216,7 @@ def test_module(client: Client):
     if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
         raise DemistoException('Error: first fetch time delta should not be over one week.')
 
-    if params.get('managed_identities_client_id'):
+    if client.ms_client.managed_identities_client_id:
         client.get_access_token_data()
         return 'ok'
 
@@ -544,7 +544,7 @@ def main():
     try:
 
         refresh_token = params.get('refresh_token', '')
-        managed_identities_client_id = params.get('managed_identities_client_id')
+        managed_identities_client_id = get_azure_managed_identities_client_id(params)
         self_deployed = params.get('self_deployed', False) or managed_identities_client_id is not None
         redirect_uri = params.get('redirect_uri', '')
         tenant_id = refresh_token if self_deployed else ''

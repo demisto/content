@@ -1358,7 +1358,8 @@ class TestHappyPath:
         assert output.get('patternType') == 'ipv4-addr'
         assert output.get('source') == DEFAULT_SOURCE
 
-    def test_test_module_command_with_managed_identities(self, mocker, requests_mock):
+    @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+    def test_test_module_command_with_managed_identities(self, mocker, requests_mock, client_id):
         """
             Given:
                 - Managed Identities client id for authentication.
@@ -1372,15 +1373,13 @@ class TestHappyPath:
         import AzureSentinel
         import re
 
-        managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.management_azure,
-                                                                    client_id='test_client_id')
-
         mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
-        requests_mock.get(managed_id_mocked_uri, json=mock_token)
+        get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
         requests_mock.get(re.compile(f'^{Resources.management_azure}.*'))
 
         params = {
-            'managed_identities_client_id': 'test_client_id',
+            'managed_identities_client_id': {'password': client_id},
+            'use_managed_identities': 'True',
             'subscription_id': {'password': 'test'},
             'resource_group': 'test_resource_group',
             'tenant_id': 'test_tenant_id'
@@ -1388,10 +1387,14 @@ class TestHappyPath:
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(AzureSentinel, 'return_results')
+        mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
 
         main()
 
         assert 'ok' in AzureSentinel.return_results.call_args[0][0]
+        qs = get_mock.last_request.qs
+        assert qs['resource'] == [Resources.management_azure]
+        assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
 
 class TestEdgeCases:

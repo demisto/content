@@ -47,7 +47,8 @@ def test_find_managed_devices_command(mocker):
     assert context_output is not None
 
 
-def test_test_module_command_with_managed_identities(mocker, requests_mock):
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
     """
         Given:
             - Managed Identities client id for authentication.
@@ -59,20 +60,21 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock):
     from MicrosoftGraphDeviceManagement import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
     import demistomock as demisto
 
-    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(resource=Resources.graph,
-                                                                client_id='test_client_id')
-
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
-    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
 
     params = {
-        'managed_identities_client_id': 'test_client_id',
-        'authentication_type': 'Azure Managed Identities'
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True'
     }
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results', return_value=params)
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
 
     main()
 
     assert 'ok' in demisto.results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

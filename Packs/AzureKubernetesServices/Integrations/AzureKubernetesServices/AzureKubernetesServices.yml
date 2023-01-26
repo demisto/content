@@ -19,11 +19,6 @@ configuration:
   - Device Code
   - Azure Managed Identities
   type: 15
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false
@@ -45,6 +40,12 @@ configuration:
   hiddenusername: true
   name: auth_code
   required: false
+  type: 9
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
   type: 9
 - display: Subscription ID
   hidden: false

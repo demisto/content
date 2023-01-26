@@ -725,9 +725,6 @@ def test_module(client: ASClient) -> str:
                                "For more details press the (?) button.")
 
     elif client.connection_type == 'Azure Managed Identities':
-        if not client.ms_client.managed_identities_client_id:
-            raise Exception("Please provide value for Azure Managed Identities client id filed")
-
         client.ms_client.get_access_token()
         return 'ok'
     else:
@@ -753,7 +750,7 @@ def main() -> None:
             enc_key=params.get('credentials', {}).get('password'),
             auth_code=(params.get('auth_code', {})).get('password'),
             redirect_uri=params.get('redirect_uri'),
-            managed_identities_client_id=params.get('managed_identities_client_id')
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             return_results(test_module(client))

@@ -29,7 +29,7 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Base URL | The host URL. | False |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Application ID or Client ID | The app registration ID. | False |
     | Key or Client Secret | The app registration secret. | False |
     | Token or Tenant ID | The tenant ID. | False |

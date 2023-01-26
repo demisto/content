@@ -887,7 +887,7 @@ def main() -> None:
     global storage_account_name
     account_sas_token = params.get('credentials', {}).get('password')
     storage_account_name = params['credentials']['identifier']
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
     # supported api versions can be found here:
     # https://learn.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
     api_version = "2020-10-02"

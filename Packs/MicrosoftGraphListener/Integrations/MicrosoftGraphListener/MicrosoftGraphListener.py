@@ -1624,7 +1624,7 @@ def main():
     private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
     auth_code = params.get('creds_auth_code', {}).get('password') or params.get('auth_code', '')
     app_name = 'ms-graph-mail-listener'
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed = params.get('self_deployed', False) or managed_identities_client_id is not None
 
     if not managed_identities_client_id:

@@ -1272,7 +1272,7 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     identifier = args.get('identifier')
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 

@@ -10,7 +10,7 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Application ID or Client ID | See the Help tab. | False |
     | Token or Tenant ID | See the Help tab. | False |
     | Key or Client Secret | See the Help tab. | False |

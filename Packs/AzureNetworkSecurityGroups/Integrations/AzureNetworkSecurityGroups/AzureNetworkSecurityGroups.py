@@ -369,10 +369,6 @@ def test_module(client: AzureNSGClient) -> str:
                                "You can validate the connection by running `!azure-nsg-auth-test`\n"
                                "For more details press the (?) button.")
     elif client.connection_type == 'Azure Managed Identities':
-        if not client.ms_client.managed_identities_client_id:
-            raise Exception("When using Azure Managed Identities, "
-                            "you should provide the 'Azure Managed Identities client id' value")
-
         client.ms_client.get_access_token()
         return 'ok'
 
@@ -404,7 +400,7 @@ def main() -> None:
             enc_key=params.get('credentials', {}).get('password', ''),
             auth_code=(params.get('auth_code', {})).get('password'),
             redirect_uri=params.get('redirect_uri'),
-            managed_identities_client_id=params.get('managed_identities_client_id')
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         commands = {
             'azure-nsg-security-groups-list': list_groups_command,

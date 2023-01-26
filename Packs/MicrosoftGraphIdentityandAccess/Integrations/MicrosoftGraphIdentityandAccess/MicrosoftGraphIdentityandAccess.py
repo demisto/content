@@ -876,7 +876,7 @@ def main():  # pragma: no cover
             tenant_id=params.get("tenant_id"),
             client_credentials=params.get("client_credentials", False),
             enc_key=(params.get('credentials') or {}).get('password'),
-            managed_identities_client_id=params.get('managed_identities_client_id')
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             if client.ms_client.managed_identities_client_id:

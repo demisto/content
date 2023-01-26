@@ -6,11 +6,6 @@ commonfields:
   id: Azure SQL Management
   version: -1
 configuration:
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
 - defaultvalue: 8f9010bb-4efe-4cfa-a197-98a2694b7e0c
   display: Application ID
   hidden: false
@@ -30,7 +25,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended), Managed Identities or Device Code Flow.
+- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended), Device Code Flow or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
   required: true
@@ -65,6 +60,13 @@ configuration:
   hiddenusername: true
   name: auth_code
   required: false
+  type: 9
+  section: Connect
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
   type: 9
   section: Connect
 - defaultvalue: https://login.microsoftonline.com

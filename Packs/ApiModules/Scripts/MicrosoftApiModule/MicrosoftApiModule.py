@@ -56,8 +56,10 @@ GRAPH_BASE_ENDPOINTS = {
     'https://graph.microsoft.de': 'de',
     'https://microsoftgraph.chinacloudapi.cn': 'cn'
 }
-MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?'\
-                               'api-version=2018-02-01&resource={resource}&client_id={client_id}'
+
+# Azure Managed Identities
+MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
+MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
 
 
 class MicrosoftClient(BaseClient):
@@ -522,11 +524,18 @@ class MicrosoftClient(BaseClient):
         in case user was configured the Azure VM and the other Azure resource correctly
         """
         try:
+            # system assigned are restricted to one per resource and is tied to the lifecycle of the Azure resource
+            # see https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+            use_system_assigned = (self.managed_identities_client_id == MANAGED_IDENTITIES_SYSTEM_ASSIGNED)
             resource = resource or self.managed_identities_resource_uri
-            url = MANAGED_IDENTITIES_TOKEN_URL.format(resource=resource,
-                                                      client_id=self.managed_identities_client_id)
-            demisto.debug('try to get token based on the Managed Identities')
-            response_json = requests.get(url, headers={'Metadata': 'True'}).json()
+
+            demisto.debug('try to get Managed Identities token')
+
+            params = {'resource': resource}
+            if not use_system_assigned:
+                params['client_id'] = self.managed_identities_client_id
+
+            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params, headers={'Metadata': 'True'}).json()
             access_token = response_json.get('access_token')
             expires_in = int(response_json.get('expires_in', 3595))
             if access_token:
@@ -752,3 +761,22 @@ class NotFoundError(Exception):
 
     def __init__(self, message):
         self.message = message
+
+
+def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
+    """"extract the Azure Managed Identities from the demisto params
+
+    Args:
+        params (dict): the demisto params
+
+    Returns:
+        Optional[str]: if the use_managed_identities are True
+        the managed_identities_client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+        will return, otherwise - None
+
+    """
+    auth_type = params.get('auth_type') or params.get('authentication_type')
+    if params and (argToBoolean(params.get('use_managed_identities') or auth_type == 'Azure Managed Identities')):
+        client_id = params.get('managed_identities_client_id', {}).get('password')
+        return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+    return None

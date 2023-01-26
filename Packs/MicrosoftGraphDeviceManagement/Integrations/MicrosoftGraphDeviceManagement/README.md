@@ -20,7 +20,7 @@ For more details about the authentication used in this integration, see [Microso
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL | True |
-| Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+| Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
 | auth_id | ID \(received from the admin consent \- see Detailed Instructions \(?\) | False |
 | tenant_id | Token \(received from the admin consent \- see Detailed Instructions \(?\) section\) | False |
 | enc_key | Key \(received from the admin consent \- see Detailed Instructions \(?\) | False |

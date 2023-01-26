@@ -23,12 +23,6 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
-  section: Connect
 - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
@@ -66,6 +60,21 @@ configuration:
   name: private_key
   required: false
   type: 14
+  section: Connect
+  advanced: true
+- additionalinfo: Authenticate based on configured Azure Managed Identities - relevant only if the integration is running on Azure VM.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
   advanced: true
 - defaultvalue: 12 hours

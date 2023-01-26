@@ -3,11 +3,6 @@ commonfields:
   id: MicrosoftGraphApplications
   version: -1
 configuration:
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
 - defaultvalue: 6b071e63-f701-454b-9e54-ede4c96483e6
   display: Application ID
   name: app_id
@@ -61,6 +56,12 @@ configuration:
   defaultvalue:
   type: 9
   additionalinfo: ""
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
 description: Use the Azure Active Directory Applications integration to manage authorized applications.
 display: Azure Active Directory Applications
 name: MicrosoftGraphApplications

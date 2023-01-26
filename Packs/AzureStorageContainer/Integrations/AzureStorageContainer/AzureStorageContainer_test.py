@@ -431,7 +431,8 @@ def test_create_set_tags_request_body():
     assert result == expected
 
 
-def test_test_module_command_with_managed_identities(mocker, requests_mock):
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
     """
         Given:
             - Managed Identities client id for authentication.
@@ -446,15 +447,13 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock):
     import AzureStorageContainer
     import re
 
-    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.format(client_id='test_client_id')
-
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
-    requests_mock.get(managed_id_mocked_uri, json=mock_token)
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
     requests_mock.get(re.compile('blob.core.windows.net/.*'))
 
     params = {
-        'managed_identities_client_id': 'test_client_id',
-        'auth_type': 'Azure Managed Identities',
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
         'credentials': {'identifier': 'test_storage_account_name'}
     }
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -464,3 +463,5 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock):
     main()
 
     assert 'ok' in AzureStorageContainer.return_results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

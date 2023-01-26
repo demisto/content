@@ -5,6 +5,7 @@ from AzureKeyVault import KeyVaultClient, create_or_update_key_vault_command, li
     delete_key_command, list_secrets_command, get_secret_command, delete_secret_command, list_certificates_command, \
     get_certificate_command, get_certificate_policy_command, convert_attributes_to_readable, \
     convert_key_info_to_readable, convert_time_attributes_to_iso
+import pytest
 
 '''MOCK PARAMETERS '''
 CLIENT_ID = "client_id"
@@ -636,7 +637,8 @@ def test_convert_time_attributes_to_iso():
     assert readable_time_attributes['updated'] == "2017-05-04T22:53:30"
 
 
-def test_test_module_command_with_managed_identities(mocker, requests_mock):
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
     """
     Scenario: run test module when managed identities client id provided.
     Given:
@@ -648,14 +650,15 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock):
     """
     from AzureKeyVault import main, MANAGED_IDENTITIES_TOKEN_URL
     import AzureKeyVault
-    import re
 
-    managed_id_mocked_uri = MANAGED_IDENTITIES_TOKEN_URL.split('?')[0]
-    matcher = re.compile(f'{managed_id_mocked_uri}.*')
+    def additional_matcher(request):
+        return request.qs['resource'] and (not client_id or request.qs['client_id'] == [client_id])
+
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
-    requests_mock.get(matcher, json=mock_token)
+    requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, additional_matcher=additional_matcher, json=mock_token)
     params = {
-        'managed_identities_client_id': 'test_client_id',
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
         'subscription_id': {'password': 'test'},
         'resource_group': 'test_resource_group'
     }

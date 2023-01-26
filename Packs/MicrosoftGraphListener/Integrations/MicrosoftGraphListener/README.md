@@ -40,7 +40,7 @@ The following permissions are required for all commands:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | ID or Client ID - see Detailed Instructions (?) |  | True |
     | Token or Tenant ID - see Detailed Instructions (?) |  | True |
     | Key or Client Secret - see Detailed Instructions (?) |  | False |

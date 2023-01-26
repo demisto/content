@@ -2080,7 +2080,7 @@ def main():
     certificate_thumbprint: str = params.get('creds_certificate', {}).get(
         'identifier', '') or params.get('certificate_thumbprint', '')
     private_key: str = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
-    managed_identities_client_id: Optional[str] = params.get('managed_identities_client_id')
+    managed_identities_client_id: Optional[str] = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
 
     if not managed_identities_client_id:

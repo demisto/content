@@ -151,7 +151,7 @@ def tags_arg_to_request_format(tags):
 
 
 def test_connection(client, params):
-    if not params.get('managed_identities_client_id'):
+    if not client.ms_client.managed_identities_client_id:
         if params.get('self_deployed', False) and not params.get('client_credentials') and not params.get('auth_code'):
             return_error('You must enter an authorization code in a self-deployed configuration.')
 
@@ -327,7 +327,7 @@ def main():
         enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')  # client_secret
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
-        managed_identities_client_id = params.get('managed_identities_client_id')
+        managed_identities_client_id = get_azure_managed_identities_client_id(params)
         self_deployed = self_deployed or client_credentials or managed_identities_client_id is not None
 
         if not managed_identities_client_id:

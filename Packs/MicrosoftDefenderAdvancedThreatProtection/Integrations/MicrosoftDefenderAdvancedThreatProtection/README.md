@@ -59,7 +59,7 @@ Please add the following permissions to the app registration. Choose application
     | Fetches Incidents | Whether to fetch the incidents. | N/A |
     | Incident Type | The type of incident to select. | Phishing |
     | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | UUID |
+    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | UUID |
     | ID | The ID used to gain access to the integration. Your Client/Application ID. | N/A |
     | Token | A piece of data that servers use to verify for authenticity. This is your Tenant ID. | eea810f5-a6f6 |
     | Key | Your client secret. | |

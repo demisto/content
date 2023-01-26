@@ -6,11 +6,6 @@ commonfields:
   id: Microsoft Teams Management
   version: -1
 configuration:
-- additionalinfo: The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM.
-  display: Azure Managed Identities client id
-  name: managed_identities_client_id
-  required: false
-  type: 4
 - defaultvalue: 3307a0ab-612c-47af-b3b5-8208247562db
   display: Application ID
   name: app_id
@@ -72,6 +67,13 @@ configuration:
   defaultvalue:
   type: 9
   additionalinfo: ""
+  section: Connect
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities client id
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 description: Manage teams and members in Microsoft Teams.
 display: Microsoft Teams Management

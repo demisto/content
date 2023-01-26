@@ -5425,7 +5425,7 @@ def main():  # pragma: no cover
     auth_type = params.get('auth_type', 'Client Credentials')
     auth_code = params.get('auth_code', {}).get('password', '')
     redirect_uri = params.get('redirect_uri', '')
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed = self_deployed or managed_identities_client_id is not None
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:

@@ -598,12 +598,10 @@ def test_module(client: Client) -> str:
     """
     # This should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
-    if 'Client' not in client.connection_type and client.connection_type != 'Azure Managed Identities':
+    if client.connection_type not in {'Client Credentials', 'Azure Managed Identities'}:
         raise DemistoException(
             "Test module is avilable for Client Credentials or Azure Managed Identities only."
             " For other authentication types use the msgraph-apps-auth-start command")
-    if client.connection_type == 'Azure Managed Identities' and not client.ms_client.managed_identities_client_id:
-        raise DemistoException("Please provide value for 'Azure Managed Identities client id' field")
 
     test_connection(client)
     return "ok"
@@ -625,7 +623,7 @@ def main() -> None:
             enc_key=(params.get('credentials', {})).get('password'),
             tenant_id=params.get('tenant_id'),
             connection_type=params.get('authentication_type', 'Device Code'),
-            managed_identities_client_id=params.get('managed_identities_client_id')
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             return_results(test_module(client))

@@ -471,9 +471,6 @@ def test_module(client):
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !msgraph-user-test command in order to test it")
     elif params.get('auth_type') == 'Azure Managed Identities':
-        if not params.get('managed_identities_client_id'):
-            raise Exception("Please provide value for Azure Managed Identities client id filed")
-
         client.ms_client.get_access_token()
         return 'ok'
 
@@ -503,7 +500,7 @@ def main() -> None:
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
-            managed_identities_client_id=params.get('managed_identities_client_id')
+            managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
         if command == 'test-module':
             return_results(test_module(client))

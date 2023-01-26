@@ -53,7 +53,7 @@ The integration supports only Application permission type, and does not support 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Azure Managed Identities client id | The Managed Identities client id for authentication - relevant if XSOAR installed on Azure VM. | False |
+| Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
 | app_id | Application ID | False |
 | scope | Scope (Required for using Cortex XSOAR Azure app) | False |
 | app_secret | Application Secret (Required for using self deployed Azure app) | False |

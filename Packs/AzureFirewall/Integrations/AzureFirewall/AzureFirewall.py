@@ -2870,7 +2870,7 @@ def main() -> None:
 
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
-    managed_identities_client_id = params.get('managed_identities_client_id')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     if tenant_id:
         if not client_secret and (
