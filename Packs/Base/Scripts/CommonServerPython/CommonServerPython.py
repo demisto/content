@@ -10891,7 +10891,7 @@ def is_scheduled_command_retry():
 
 def replace_spaces_in_certificate(private_key):
     """
-    This function is used in case the private key is in the wrong format of one line with spaces instead of multiple lines.
+    This function is used in case credential from type: 9 is in the wrong format of one line with spaces instead of multiple lines.
 
     :type private_key: ``str`` or ``None``
     :param private_key: the private key to replace spaces in.
