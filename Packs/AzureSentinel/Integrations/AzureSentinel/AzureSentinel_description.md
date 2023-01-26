@@ -3,12 +3,7 @@ Full documentation for this integration is available at our [reference docs](htt
 
 ## Authorize Cortex XSOAR for Azure Sentinel
 
-### Azure Managed Identities Authentication
-Follow these steps for authorization based on Azure Managed Identities:
-1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
-2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
-
-### Self deployed Authentication
+#### Self deployed Authentication
 Follow these steps for a self-deployed configuration:
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
@@ -24,6 +19,19 @@ Follow these steps for a self-deployed configuration:
 6. In the ***Password*** parameter, enter the secret value you created.
 7. Copy your tenant ID for the integration configuration usage.
 
+#### Azure Managed Identities Authentication
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the **Azure Managed Identities Client ID** field in the instance settings.
+   3. Select the **Use Azure Managed Identities** checkbox.
+
+For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
 ## Configure the server URL
 If you have a dedicated server URL, enter it in the *Server Url* parameter. 
 

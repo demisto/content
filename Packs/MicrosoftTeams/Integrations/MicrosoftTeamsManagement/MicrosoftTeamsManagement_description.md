@@ -49,12 +49,19 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 ### Azure Managed Identities Authentication
 ___
-###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
 
+- ##### To use System Assigned Managed Identity
+   - Select *Azure Managed Identities* in *Authentication Type* drop-down list and leave the **Azure Managed Identities Client ID** field empty.
 
-Follow these steps for authorization based on Azure Managed Identities:
-1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
-2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
+   3. Select *Azure Managed Identities* in **Authentication Type** drop-down list.
+
+For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+
 # Required Permissions
 * Group.ReadWrite.All - Application
 * Team.ReadBasic.All - Application

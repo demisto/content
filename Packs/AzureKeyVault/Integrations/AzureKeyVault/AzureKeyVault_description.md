@@ -30,12 +30,19 @@ Follow these steps for a self-deployed configuration:
 7. Copy this value and enter it in the Client Secret parameter.
 
 #### Azure Managed Identities Authentication
-###### please notes: this option are relevant only if XSOAR instaled on Azure VM
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
 
+- ##### To use System Assigned Managed Identity
+   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
 
-Follow these steps for authorization based on Azure Managed Identities:
-1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
-2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the **Azure Managed Identities Client ID** field in the instance settings.
+   3. Select the **Use Azure Managed Identities** checkbox.
+
+For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+
 
 ### Get Subscription ID and the Resource Group values
 
