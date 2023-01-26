@@ -27,7 +27,7 @@ configuration:
   required: true
   type: 0
 - display: Scope
-  additionalinfo: The scope of the application (only if self deployed).
+  additionalinfo: The scope of the application (only if self-deployed).
   name: scope
   required: true
   type: 0
