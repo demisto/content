@@ -347,6 +347,10 @@ def get_pagination(args: dict):
     return params
 
 
+def get_metadata(args: dict):
+    return []
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -875,19 +879,34 @@ def kmsat_training_enrollments_list_command(
         CommandResults: Returns context data for training enrollments
     """
     status = remove_empty_elements(args.get("status"))
+    params = get_pagination(args)
+    response = client.kmsat_training_enrollments(params)
 
-    # Filters by status and does not set paging
+    data = []
+    filtered_items_in_page = 0
+    paging_end = False
+    unfiltered_count = len(response)
+
+    # Sets paging_end False if the response count is less than the per_page
+    if(len(response) < int(params.get('per_page'))):
+        paging_end = True
+
+    # Adds only the filtered items to the response with counts
     if status is not None:
-        args = {}
-        data = []
-        params = get_pagination(args)
-        response = client.kmsat_training_enrollments(params)
         for i in range(len(response)):
             if response[i]['status'] == f"{status}":
                 data.append(response[i])
+                filtered_items_in_page += 1
+                unfiltered_count -= 1
     else:
-        params = get_pagination(args)
         data = client.kmsat_training_enrollments(params)
+
+    # Adds meta to the result set for paging
+    metadata = {
+        "paging_end": paging_end,
+        "filtered_items_in_page": filtered_items_in_page,
+        "unfiltered_count": unfiltered_count
+    }
 
     markdown = tableToMarkdown(
         "Training Enrollments",
@@ -905,6 +924,9 @@ def kmsat_training_enrollments_list_command(
             "time_spent",
             "policy_acknowledged",
         ],
+        headerTransform=None,
+        removeNull=False,
+        metadata=f"{metadata}",
     )
     if data is None:
         raise DemistoException(
