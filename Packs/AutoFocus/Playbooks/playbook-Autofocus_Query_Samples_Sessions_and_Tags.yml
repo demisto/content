@@ -948,6 +948,6 @@ outputs:
   description: Results of Autofocus tags search.
   type: string
 tests:
-- No tests (auto formatted)
+- Autofocus Query Samples, Sessions and Tags Test Playbook
 contentitemexportablefields:
   contentitemfields: {}
