@@ -2447,12 +2447,19 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             })
 
     # Handle closing ticket/incident in XSOAR as chosen by close_incident_multiple_options parameter
-    if ticket.get('closed_at') and params.get('close_incident_multiple_options') == 'closed':
-        close_ticket_entry = create_closed_ticket_entry(ticket)
-        entries.append(close_ticket_entry)
-    elif ticket.get('resolved_at') and params.get('close_incident_multiple_options') == 'resolved':
-        close_ticket_entry = create_closed_ticket_entry(ticket)
-        entries.append(close_ticket_entry)
+    close_incident_option = params.get('close_incident_multiple_options')
+    if ticket.get('closed_at') and close_incident_option == 'closed' \
+            or ticket.get('resolved_at') and close_incident_option == 'resolved':
+        demisto.debug(f'ticket is closed: {ticket}')
+        entries.append({
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                'closeReason': converts_state_close_reason(ticket.get("state"))
+            },
+            'ContentsFormat': EntryFormat.JSON
+        })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
@@ -2469,21 +2476,6 @@ def converts_state_close_reason(ticket_state: Optional[str]):
     if ticket_state in ['6', '7']:
         return 'Resolved'
     return 'Other'
-
-
-def create_closed_ticket_entry(ticket: Dict[str, Any]):
-    demisto.debug(f'ticket is closed: {ticket}')
-    ticket_close_notes = ticket.get("close_notes")
-    ticket_state = ticket.get("state")
-
-    return {'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeNotes': f'From ServiceNow: {ticket_close_notes}',
-                'closeReason': converts_state_close_reason(ticket_state)
-            },
-            'ContentsFormat': EntryFormat.JSON
-            }
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
