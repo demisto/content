@@ -12,16 +12,16 @@ def get_edl(instance_name):
         url = 'https://' + url
     port = demisto.args()['edl_port']
     if port == "None":
-        url = url + '/instance/execute/' + instance_name
+        url = url + '/instance/execute/' +instance_name
         endpoint = str(url)
     else:
         endpoint = str(url) + ':' + port
 
     params = demisto.params()
     credentials = params.get('credentials') if params.get('credentials') else {}
-    username: str = credentials.get('identifier', '')
+    usern: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
-    if (username and not password) or (password and not username):
+    if (usern and not password) or (password and not usern):
         err_msg: str = 'If using credentials, both username and password should be provided.'
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
