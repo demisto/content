@@ -8,20 +8,13 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_decyfir():
-    from decyfir import Client, test_module
-    client = Client(base_url='https://qadecyfir.cyfirma.com', verify=False)
-    response = test_module(client, "MWthAjKRzPMDkjWEw6LI6mHD7OB8AxUw")
-    assert response == 'ok'
-
-
 def test_fetch_incidents(requests_mock, mocker):
     from decyfir import Client, fetch_incidents
     date_format = '%Y-%m-%dT%H:%M:%SZ'
     mock_response = util_load_json('test_data/search_alerts.json')
 
     client = Client(
-        base_url='https://qadecyfir.cyfirma.com',
+        base_url='test_url',
         verify=False,
     )
     mocker.patch.object(Client, 'request_decyfir_api', return_value=mock_response['alerts'])
@@ -34,7 +27,7 @@ def test_fetch_incidents(requests_mock, mocker):
         client=client,
         last_run=last_run,
         first_fetch='90 days',
-        decyfir_api_key='16XYFcwNKfGCwPvgt7uQVVZWMJGmwk1Y',
+        decyfir_api_key='api_key',
         incident_type='Attack Surface',
         max_fetch='1'
     )

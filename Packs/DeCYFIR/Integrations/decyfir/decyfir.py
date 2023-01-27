@@ -367,7 +367,7 @@ class Client(BaseClient):
 
 # commands
 # This is the call made when pressing the integration Test button.
-def test_module(client, decyfir_api_key):
+def test_module(client, decyfir_api_key):  # pragma: no cover
     url = f"{API_PATH_SUFFIX}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" \
           + "&size=1" + "&key=" + f"{decyfir_api_key}"
 
