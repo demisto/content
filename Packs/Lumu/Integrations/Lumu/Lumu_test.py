@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from CommonServerPython import DemistoException
-from Lumu import add_prefix_to_comment, clear_cache_command, close_incident_command, comment_a_specific_incident_command, consult_incidents_updates_through_rest_command, fetch_incidents, get_cache_command, get_hmac_sha256, generate_hmac_sha256_msg, get_mapping_fields_command, get_modified_remote_data_command, get_remote_data_command, is_msg_from_third_party, mark_incident_as_read_command, mute_incident_command, retrieve_a_specific_incident_details_command, retrieve_a_specific_label_command, retrieve_closed_incidents_command, retrieve_endpoints_by_incident_command, retrieve_incidents_command, retrieve_labels_command, retrieve_muted_incidents_command, retrieve_open_incidents_command, unmute_incident_command, update_remote_system_command, validate_hmac_sha256  # noqa: E501
+from Lumu import add_prefix_to_comment, clear_cache_command, close_incident_command, comment_a_specific_incident_command, consult_incidents_updates_through_rest_command, fetch_incidents, get_cache_command, get_hmac_sha256, generate_hmac_sha256_msg, get_mapping_fields_command, get_modified_remote_data_command, get_remote_data_command, is_msg_from_third_party, mark_incident_as_read_command, mute_incident_command, retrieve_a_specific_incident_details_command, retrieve_a_specific_label_command, retrieve_closed_incidents_command, retrieve_endpoints_by_incident_command, retrieve_incidents_command, retrieve_labels_command, retrieve_muted_incidents_command, retrieve_open_incidents_command, test_module as t_module, unmute_incident_command, update_remote_system_command, validate_hmac_sha256  # noqa: E501
 from Lumu import Client
 
 official_response_retrieve_labels_request = {
@@ -829,3 +829,63 @@ def test_get_cache_command(mock_integration_context):
     assert response.outputs_prefix == 'Lumu.GetCache'
     assert response.outputs_key_field == 'cache'
     assert response.outputs == {'cache': [], 'lumu_incidentsId': []}
+
+
+@patch('Lumu.demisto.args')
+@patch.object(Client, 'retrieve_labels_request', return_value=official_response_retrieve_labels_request)
+def test_test_module(mock_retrieve_labels_request, mock_args):
+    client = Client('server_url', False, 'proxy', {}, {})
+    t_module(client, mock_args)
+    assert True
+
+
+@patch('Lumu.demisto.args')
+@patch.object(Client, 'retrieve_labels_request', side_effect=Exception())
+def test_test_module_error(mock_retrieve_labels_request, mock_args):
+    client = Client('server_url', False, 'proxy', {}, {})
+    t_module(client, mock_args)
+    assert True
+
+
+@patch.object(Client, '_http_request', return_value=official_response_retrieve_labels_request)
+def test_retrieve_labels_request(mock_http_request):
+    client = Client('server_url', False, 'proxy', {}, {})
+    response = client.retrieve_labels_request(None, None)
+    assert len(response['labels']) == 4
+    assert response['labels'][0] == {'id': 51, 'name': 'Mi Ofi', 'relevance': 1}
+    assert response['labels'][-1] == {'id': 134, 'name': 'cd test', 'relevance': 1}
+
+
+@patch.object(Client, '_http_request', return_value=official_response_retrieve_a_specific_label_request)
+def test_retrieve_a_specific_label_request(mock_http_request):
+    client = Client('server_url', False, 'proxy', {}, {})
+    response = client.retrieve_a_specific_label_request(51)
+    assert response == {'id': 51, 'name': 'Mi Ofi', 'relevance': 1}
+
+
+@patch.object(Client, '_http_request', return_value='')
+def test_mark_incident_as_read_request(mock_http_request):
+    client = Client('server_url', False, 'proxy', {}, {})
+    response = client.mark_incident_as_read_request('abc')
+    assert response == ''
+
+
+@patch.object(Client, '_http_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
+def test_mark_incident_as_read_request_json_error(mock_http_request):
+    client = Client('server_url', False, 'proxy', {}, {})
+    with pytest.raises(DemistoException):
+        client.mark_incident_as_read_request('abc')
+
+
+@patch.object(Client, '_http_request', return_value='')
+def test_comment_a_specific_incident_request(mock_http_request):
+    client = Client('server_url', False, 'proxy', {}, {})
+    response = client.comment_a_specific_incident_request('abc', 'comment')
+    assert response == ''
+
+
+@patch.object(Client, '_http_request', side_effect=DemistoException("Failed to parse json object from response: b''"))
+def test_comment_a_specific_incident_request_json_error(mock_http_request):
+    client = Client('server_url', False, 'proxy', {}, {})
+    with pytest.raises(DemistoException):
+        client.comment_a_specific_incident_request('abc', 'comment')
