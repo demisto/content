@@ -1,7 +1,8 @@
-"""Recorded Future Integration for Demisto."""
+"""Recorded Future Playbook alerts Integration for Demisto."""
 
-import copy
 import platform
+import json
+import base64
 
 # flake8: noqa: F402,F405 lgtm
 import demistomock as demisto
@@ -12,134 +13,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '0.4'
-
-
-# === === === === === === === === === === === === === === ===
-# === === === === === === HELPERS === === === === === === ===
-# === === === === === === === === === === === === === === ===
-
-
-def translate_score(score: int, threshold: int) -> int:
-    """Translate Recorded Future score to DBot score."""
-    RISK_SCORE_THRESHOLD = 25
-    # See https://support.recordedfuture.com/hc/en-us/articles/115000894468-Vulnerability-Risk-Rules.  # noqa
-    if score >= threshold:
-        return Common.DBotScore.BAD
-    elif score >= RISK_SCORE_THRESHOLD:
-        return Common.DBotScore.SUSPICIOUS
-    else:
-        return Common.DBotScore.NONE
-
-
-def determine_hash(hash_value: str) -> str:
-    """Determine hash type by length."""
-    hash_length = len(hash_value)
-    if hash_length == 128:
-        return 'SHA512'
-    elif hash_length == 64:
-        return 'SHA256'
-    elif hash_length == 40:
-        return 'SHA1'
-    elif hash_length == 32:
-        return 'MD5'
-    elif hash_length == 8:
-        return 'CRC32'
-    else:
-        return 'CTPH'
-
-
-def create_indicator(
-        entity: str,
-        entity_type: str,
-        score: int,
-        description: str = '',
-        location: Dict[str, Any] = None,
-) -> Common.Indicator:
-    """Create an Indicator object."""
-    demisto_params = demisto.params()
-
-    if location is None:
-        location = dict()
-
-    thresholds = {
-        'file': int(demisto_params.get('file_threshold', 65)),
-        'ip': int(demisto_params.get('ip_threshold', 65)),
-        'domain': int(demisto_params.get('domain_threshold', 65)),
-        'url': int(demisto_params.get('url_threshold', 65)),
-        'cve': int(demisto_params.get('cve_threshold', 65)),
-    }
-    dbot_score = translate_score(score, thresholds[entity_type])
-    dbot_description = (
-        f'Score above {thresholds[entity_type]}'
-        if dbot_score == Common.DBotScore.BAD
-        else ''
-    )
-    dbot_vendor = 'Recorded Future v2'
-    if entity_type == 'ip':
-        return Common.IP(
-            entity,
-            Common.DBotScore(
-                entity,
-                DBotScoreType.IP,
-                dbot_vendor,
-                dbot_score,
-                dbot_description,
-                reliability=demisto.params().get('integrationReliability')
-            ),
-            asn=location.get('asn', None),
-            geo_country=location.get('location', dict()).get('country', None),
-        )
-    elif entity_type == 'domain':
-        return Common.Domain(
-            entity,
-            Common.DBotScore(
-                entity,
-                DBotScoreType.DOMAIN,
-                dbot_vendor,
-                dbot_score,
-                dbot_description,
-                reliability=demisto.params().get('integrationReliability')
-            ),
-        )
-    elif entity_type == 'file':
-        dbot_obj = Common.DBotScore(
-            entity,
-            DBotScoreType.FILE,
-            dbot_vendor,
-            dbot_score,
-            dbot_description,
-            reliability=demisto.params().get('integrationReliability')
-        )
-        hash_type = determine_hash(entity)
-        if hash_type == 'MD5':
-            return Common.File(dbot_obj, md5=entity)
-        elif hash_type == 'SHA1':
-            return Common.File(dbot_obj, sha1=entity)
-        elif hash_type == 'SHA256':
-            return Common.File(dbot_obj, sha256=entity)
-        elif hash_type == 'SHA512':
-            return Common.File(dbot_obj, sha512=entity)
-        else:
-            return Common.File(dbot_obj)
-    elif entity_type == 'cve':
-        return Common.CVE(entity, '', '', '', description)
-    elif entity_type == 'url':
-        return Common.URL(
-            entity,
-            Common.DBotScore(
-                entity,
-                DBotScoreType.URL,
-                dbot_vendor,
-                dbot_score,
-                dbot_description,
-                reliability=demisto.params().get('integrationReliability')
-            ),
-        )
-    else:
-        raise Exception(
-            f'Could not create indicator for this type of entity: {entity_type}'
-        )
+__version__ = '1.0'
 
 
 # === === === === === === === === === === === === === === ===
@@ -155,25 +29,17 @@ class Client(BaseClient):
             timeout=60,
         )
 
-    def _get_writeback_data(self):
-
-        if demisto.params().get('writeback') != True:
-            # Writeback is OFF.
-            return
-
-        if demisto.callingContext:
-            calling_context = copy.deepcopy(demisto.callingContext)
-            calling_context.get('context', dict()).pop('ExecutionContext', None)
-            return calling_context
-
-        return None
-
     def _call(self, url_suffix, **kwargs):
-
+        
         json_data = {
             'demisto_command': demisto.command(),
-            'demisto_args': demisto.args(),
+            'demisto_args' : demisto.args()
         }
+        if 'demisto_args' in kwargs.keys():
+            if args := kwargs.get('demisto_args'):
+                json_data.update({'demisto_args': args}) 
+            kwargs.pop('demisto_args')
+        
         method = kwargs.get('method', 'post')
         
         request_kwargs = {
@@ -187,17 +53,12 @@ class Client(BaseClient):
 
         request_kwargs.update(kwargs)
 
-        # This need to be after 'request_kwargs.update(kwargs)'.
-        calling_context = self._get_writeback_data()
-        if calling_context:
-            request_kwargs['json_data']['callingContext'] = calling_context
-
         try:
             response = self._http_request(**request_kwargs)
 
             if isinstance(response, dict) and response.get('return_error'):
                 # This will raise the Exception or call "demisto.results()" for the error and sys.exit(0).
-                return_error(**response['return_error'])
+                return_error(**response)
 
         except DemistoException as err:
             if '404' in str(err):
@@ -230,15 +91,28 @@ class Client(BaseClient):
     ################## Playbook alerts ####################
     #######################################################
     
-    def get_playbook_alerts(self) -> Dict[str, Any]:
+    def details_playbook_alerts(self) -> Dict[str, Any]:
+        parsed_args = demisto.args()
+        if categories := parsed_args.get('alert_ids'):
+            parsed_args['alert_ids'] = categories.split(",")
+        if sections := parsed_args.get('detail_sections'):
+            parsed_args["detail_sections"] = sections.split(",")
         """Get details of a playbook alert"""
-        return self._call(url_suffix='/v2/playbook_alert/lookup')
+        return self._call(url_suffix='/v2/playbook_alert/lookup', demisto_args = parsed_args)
         
     def update_playbook_alerts(self) -> Dict[str, Any]:
-        return self._call(url_suffix='/v2/playbook_alert/update')
+        parsed_args = demisto.args()
+        if ids := parsed_args.get('alert_ids'):
+            parsed_args["alert_ids"] = ids.split(",")
+        return self._call(url_suffix='/v2/playbook_alert/update', demisto_args = parsed_args)
     
     def search_playbook_alerts(self) -> Dict[str, Any]:
-        return self._call(url_suffix='/v2/playbook_alert/search')
+        parsed_args = demisto.args()
+        if categories := parsed_args.get('category'):
+            parsed_args["category"] = categories.split(",")
+        if statuses := parsed_args.get('playbook_alert_status'):
+            parsed_args["playbook_alert_status"] = statuses.split(",")
+        return self._call(url_suffix='/v2/playbook_alert/search', demisto_args = parsed_args)
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === ACTIONS === === === === === === ===
@@ -265,30 +139,10 @@ class Actions:
 
         command_results: List[CommandResults] = list()
         for action in result_actions:
-            if 'create_indicator' in action:
-                indicator = create_indicator(**action['create_indicator'])
-                if 'CommandResults' in action:
-                    # Custom CommandResults.
-                    command_results_kwargs = action['CommandResults']
-                    command_results_kwargs['indicator'] = indicator
-                    command_results.append(
-                        CommandResults(**command_results_kwargs)
-                    )
-                else:
-                    # Default CommandResults after indicator creation.
-                    command_results.append(
-                        CommandResults(
-                            readable_output=tableToMarkdown(
-                                'New indicator was created.',
-                                indicator.to_context()
-                            ),
-                            indicator=indicator
-                        )
-                    )
-            elif 'CommandResults' in action:
+            if 'CommandResults' in action:
                 command_results.append(
                     CommandResults(**action['CommandResults'])
-                )
+            )
 
         return command_results
 
@@ -299,38 +153,38 @@ class Actions:
         if isinstance(response, CommandResults):
             # 404 case.
             return
-        """
-        if response.get('incidents') is not None:
-            incidents = response['incidents']
 
-            demisto.incidents(incidents)
+        for _key,_val in response.items():
+            if _key == 'demisto_last_run':
+                demisto.setLastRun(_val)
+            else:
+                for incident in _val:
+                    attachments = list()
+                    incident_json = json.loads(incident.get("rawJSON"))
+                    if incident_json.get("panel_evidence_summary",{}).get("screenshots"):
+                        for screenshot_data in incident_json["panel_evidence_summary"]["screenshots"]:
+                            file_name = f'{screenshot_data.get("image_id").replace("img:","")}.png'
+                            file_data = screenshot_data.get("base64")
+                            file = fileResult(
+                                file_name,
+                                base64.b64decode(file_data)
+                                )
+                            attachment = {
+                                "description" : screenshot_data.get('description'),
+                                "name": file.get("File"),
+                                "path": file.get("FileID"),
+                                "showMediaFile" : True
+                            }
+                            attachments.append(attachment)
+                        incident['attachment'] = attachments
+                demisto.incidents(_val)
             
-
-            update_alert_status = response.pop('alerts_update_data', None)
-            if update_alert_status:
-                self.client.alert_set_status(update_alert_status)
-        """
-        
-        """ This is added for playbook alerts"""                
-        if response.get('domain_abuse') is not None:
-            domain_abuse_alerts = response['domain_abuse']
-            demisto.incidents(domain_abuse_alerts)
-            
-            
-        if response.get('vulnerability') is not None:
-            vuln_alerts = response['vulnerability']
-            demisto.incidents(vuln_alerts)
-            
-        if response.get('demisto_last_run') is not None:
-            demisto_last_run = response['demisto_last_run']
-            demisto.setLastRun(demisto_last_run)
-
         #######################################################
         ################## Playbook alerts ####################
         #######################################################
         
-    def playbook_alert_get_command(self) -> Dict[str, Any]:
-        response = self.client.get_playbook_alerts()
+    def playbook_alert_details_command(self) -> Dict[str, Any]:
+        response = self.client.details_playbook_alerts()
         return self._process_result_actions(response=response)
     
     def playbook_alert_update_command(self) -> List[CommandResults]:
@@ -398,13 +252,13 @@ def main() -> None:
         ################## Playbook alerts ####################
         #######################################################
         
-        elif command == 'recorded-future-playbook-alerts-details':
-            return_results(actions.playbook_alert_get_command())
+        elif command == 'recordedfuture-playbook-alerts-details':
+            return_results(actions.playbook_alert_details_command())
         
-        elif command == 'recorded-future-playbook-alerts-update':
+        elif command == 'recordedfuture-playbook-alerts-update':
             return_results(actions.playbook_alert_update_command())
         
-        elif command == 'recorded-future-playbook-alerts-search':
+        elif command == 'recordedfuture-playbook-alerts-search':
             return_results(actions.playbook_alert_search_command())
         
     except Exception as e:
