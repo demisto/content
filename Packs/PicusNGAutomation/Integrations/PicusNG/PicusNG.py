@@ -56,6 +56,47 @@ class Client(BaseClient):
             ok_codes=(200,)
         )
 
+    def get_agent_list(self,url_suffix: str):
+        return self.http_request(method="GET",url_suffix=url_suffix)
+
+    def get_agent_detail(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def get_integration_agent_list(self,url_suffix: str):
+        return self.http_request(method="GET",url_suffix=url_suffix)
+
+    def get_template_list(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def create_simulation(self,url_suffix: str, picus_post_data_simulation: Dict):
+        return self.http_request(method="POST",url_suffix=url_suffix, json_data=picus_post_data_simulation)
+
+    def get_simulation_list(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def simulate_now(self,url_suffix: str):
+        return self.http_request(method="POST", url_suffix=url_suffix)
+
+    def get_simulation_detail(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def get_latest_simulation_result(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def get_simulation_result(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def get_simulation_threats(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def get_simulation_actions(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def get_mitigation_devices(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
+
+    def get_signature_list(self,url_suffix: str):
+        return self.http_request(method="GET", url_suffix=url_suffix)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -90,7 +131,7 @@ def test_module(client: Client) -> str:
 def get_agent_list_command(client: Client) -> CommandResults:
     picus_endpoint = f"/v1/agents"
 
-    picus_endpoint_response = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_endpoint_response = client.get_agent_list(picus_endpoint)
     picus_agents = picus_endpoint_response["agents"]
     for agent in picus_agents:
         agent["created_at"] = str(datetime.fromtimestamp(agent["created_at"] / 1000))
@@ -106,7 +147,7 @@ def get_agent_detail_command(client: Client) -> CommandResults:
     tmp_attack_modules: Dict = {}
     picus_endpoint = picus_endpoint + agent_id
 
-    picus_endpoint_response = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_endpoint_response = client.get_agent_detail(picus_endpoint)
     picus_agent_detail = picus_endpoint_response
     picus_agent_attack_modules = picus_endpoint_response["attack_modules"]
     picus_agent_detail.pop("attack_modules")
@@ -125,7 +166,7 @@ def get_agent_detail_command(client: Client) -> CommandResults:
 def get_integration_agent_list_command(client: Client) -> CommandResults:
     picus_endpoint = "/v1/integrations/agents"
 
-    picus_endpoint_response = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_endpoint_response = client.get_integration_agent_list(picus_endpoint)
     picus_integration_agents = picus_endpoint_response["integration_agents"]
     for agent in picus_integration_agents:
         agent["created_at"] = str(datetime.fromtimestamp(agent["created_at"] / 1000))
@@ -143,15 +184,15 @@ def get_template_list_command(client: Client) -> CommandResults:
     limit = demisto.args().get('limit')
 
     if offset is not None and limit is None:
-        return_error("limit should be set.")
+        raise DemistoException("limit should be set.")
     elif offset is None and limit is not None:
-        return_error("offset sohuld be set.")
+        raise DemistoException("offset sohuld be set.")
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
         picus_endpoint = picus_endpoint + query_parameters
 
-    picus_endpoint_response = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_endpoint_response = client.get_template_list(picus_endpoint)
     picus_templates = picus_endpoint_response["templates"]
 
     table_name = "Picus Template List"
@@ -170,7 +211,7 @@ def create_simulation_command(client: Client) -> CommandResults:
     template_id = int(demisto.args().get('template_id'))
 
     picus_post_data_simulation = {"agent_id":agent_id,"description":simulation_description,"name":simulation_name,"schedule_now":schedule_now,"template_id":template_id}
-    picus_endpoint_response = client.http_request(method='POST', url_suffix=picus_endpoint, json_data=picus_post_data_simulation)
+    picus_endpoint_response = client.create_simulation(picus_endpoint,picus_post_data_simulation)
 
     picus_endpoint_response_all = picus_endpoint_response
     picus_created_simulation = picus_endpoint_response["simulation"]
@@ -193,15 +234,15 @@ def get_simulation_list_command(client: Client) -> CommandResults:
     limit = demisto.args().get('limit')
 
     if offset is not None and limit is None:
-        return_error("limit should be set.")
+        raise DemistoException("limit should be set.")
     elif offset is None and limit is not None:
-        return_error("offset sohuld be set.")
+        raise DemistoException("offset sohuld be set.")
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
         picus_endpoint = picus_endpoint + query_parameters
 
-    picus_endpoint_response = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_endpoint_response = client.get_simulation_list(picus_endpoint)
     picus_simulations = picus_endpoint_response["simulations"]
 
     table_name = "Picus Simulation List"
@@ -214,7 +255,7 @@ def simulate_now_command(client: Client) -> CommandResults:
     simulation_id = demisto.args().get('id')
     picus_endpoint = picus_endpoint + simulation_id + "/simulate-now"
 
-    picus_endpoint_response = client.http_request(method='POST', url_suffix=picus_endpoint)
+    picus_endpoint_response = client.simulate_now(picus_endpoint)
     picus_simulateNow = picus_endpoint_response["run_info"]
 
     table_name = "Picus Simulate Now Status"
@@ -227,7 +268,7 @@ def get_simulation_detail_command(client: Client) -> CommandResults:
     simulation_id = demisto.args().get('id')
     picus_endpoint = picus_endpoint + simulation_id
 
-    picus_endpoint_response = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_endpoint_response = client.get_simulation_detail(picus_endpoint)
     picus_simulationDetail = picus_endpoint_response["simulation_run"]
     for sRun in picus_simulationDetail:
         sRun["started_at"] = str(datetime.fromtimestamp(sRun["started_at"]/1000))
@@ -243,7 +284,7 @@ def get_latest_simulation_result_command(client: Client) -> CommandResults:
     simulation_id = demisto.args().get('id')
     picus_endpoint = picus_endpoint + simulation_id + "/run/latest"
 
-    picus_latestSimulation = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_latestSimulation = client.get_latest_simulation_result(url_suffix=picus_endpoint)
 
     if picus_latestSimulation["status"] == "COMPLETED":
         picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"]/1000))
@@ -272,7 +313,7 @@ def get_simulation_result_command(client: Client) -> CommandResults:
     run_id = demisto.args().get('run_id')
     picus_endpoint = picus_endpoint + simulation_id + "/run/" + run_id
 
-    picus_latestSimulation = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_latestSimulation = client.get_simulation_result(picus_endpoint)
     picus_latestSimulation["started_at"] = str(datetime.fromtimestamp(picus_latestSimulation["started_at"]/1000))
     picus_latestSimulation["completed_at"] = str(datetime.fromtimestamp(picus_latestSimulation["completed_at"]/1000))
     picus_latestSimulation["prevention_security_score"] = picus_latestSimulation["results"]["prevention"]["security_score"]
@@ -302,15 +343,15 @@ def get_simulation_threats_command(client: Client) -> CommandResults:
     limit = demisto.args().get('limit')
 
     if offset is not None and limit is None:
-        return_error("limit should be set.")
+        raise DemistoException("limit should be set.")
     elif offset is None and limit is not None:
-        return_error("offset sohuld be set.")
+        raise DemistoException("offset sohuld be set.")
 
     if offset is not None and limit is not None:
         query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
         picus_endpoint = picus_endpoint + query_parameters
 
-    picus_endpoint_response = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_endpoint_response = client.get_simulation_threats(picus_endpoint)
     picus_simulationThreats = picus_endpoint_response["threats"]
     for threat in picus_simulationThreats:
         action_count = 0
@@ -340,9 +381,9 @@ def get_simulation_actions_command(client: Client) -> CommandResults:
     limit = demisto.args().get('limit')
 
     if offset is not None and limit is None:
-        return_error("limit should be set.")
+        raise DemistoException("limit should be set.")
     elif offset is None and limit is not None:
-        return_error("offset sohuld be set.")
+        raise DemistoException("offset sohuld be set.")
 
     for threat_id in threat_ids:
         picus_endpoint = "/v1/simulations/"
@@ -350,7 +391,7 @@ def get_simulation_actions_command(client: Client) -> CommandResults:
         if offset is not None and limit is not None:
             query_parameters = "?" + "limit=" + limit + "&" + "offset=" + offset
             picus_endpoint = picus_endpoint + query_parameters
-        picus_endpoint_response = client.http_request(method='GET', url_suffix=picus_endpoint)
+        picus_endpoint_response = client.get_simulation_actions(picus_endpoint)
         picus_simulationActions = picus_endpoint_response["actions"]
         for action in picus_simulationActions:
             picus_action_raw_results += str(action["action_id"]) + "=" + str(action["prevention"]) + ","
@@ -374,7 +415,7 @@ def get_mitigation_devices_command(client: Client) -> CommandResults:
         query_parameters = "?" + "simulation_ids=" + simulation_ids
         picus_endpoint = picus_endpoint + query_parameters
 
-    picus_mitigationDevices = client.http_request(method='GET', url_suffix=picus_endpoint)
+    picus_mitigationDevices = client.get_mitigation_devices(picus_endpoint)
 
     table_name = "Picus Mitigation Devices"
     table_headers = ['id','device_name','score','total_action_count','blocked_action_count','not_blocked_action_count']
@@ -394,7 +435,7 @@ def get_signature_list_command(client: Client) -> CommandResults:
         tmp_req_url = ""
         query_parameters = "?" + "action_ids=" + action
         tmp_req_url = picus_endpoint + query_parameters
-        picus_mitigationSignatures = client.http_request(method='GET', url_suffix=tmp_req_url)
+        picus_mitigationSignatures = client.get_signature_list(tmp_req_url)
         for mitigation in picus_mitigationSignatures:
             mitigation["action_id"] = action
         picus_signature_raw_results["results"].append(picus_mitigationSignatures)
