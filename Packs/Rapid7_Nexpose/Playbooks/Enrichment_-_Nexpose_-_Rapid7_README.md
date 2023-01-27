@@ -21,7 +21,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP | IP used to search for asset information and tags | 34.238.196.163 | Optional |
+| IP | IP used to search for asset information and tags | | Optional |
 
 ## Playbook Outputs
 ---
