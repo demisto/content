@@ -1,11 +1,31 @@
 args:
 - default: false
-  description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+  description: 'Demisto server URL'
   isArray: false
-  name: dummy
+  name: server_url
   required: true
   secret: false
-comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
+- default: true
+  description: 'If using a port and not instance name'
+  isArray: false
+  name: edl_port
+  required: false
+  secret: false
+  defaultValue: None
+- default: false
+  description: 'Integration instances to not track or ignore in widget'
+  isArray: false
+  name: edl_exclusions
+  required: false
+  secret: false
+- default: true
+  description: 'Trust any certificate (insecure)'
+  isArray: false
+  defaultValue: None
+  name: verify_ssl
+  required: false
+  secret: false
+comment: 'Schedule a daily job to run this widget script in a playbook to track EDL size over time'
 commonfields:
   id: EDLMetricWidget
   version: -1
