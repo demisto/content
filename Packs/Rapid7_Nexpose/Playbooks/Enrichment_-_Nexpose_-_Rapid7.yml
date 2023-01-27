@@ -213,8 +213,8 @@ view: |-
 inputs:
 - key: IP
   value:
-    simple: 34.238.196.163
-  required: false
+    simple: 
+  required: true
   description: IP used to search for asset information and tags
   playbookInputQuery:
 outputs:
