@@ -1,0 +1,26 @@
+[
+    {
+        "created_time": "2000-01-01T00:00:00.000Z",
+        "name": "Low",
+        "risk_modifier": "0.75",
+        "type": "criticality"
+    },
+    {
+        "created_time": "2000-01-01T00:00:00.000Z",
+        "name": "US-EAST",
+        "risk_modifier": null,
+        "type": "location"
+    },
+    {
+        "created_time": "2000-01-01T00:00:00.000Z",
+        "name": "VM_OWNER_NAME",
+        "risk_modifier": null,
+        "type": "owner"
+    },
+    {
+        "created_time": "2000-01-01T00:00:00.000Z",
+        "name": "AWS",
+        "risk_modifier": null,
+        "type": "custom"
+    }
+]
