@@ -75,6 +75,23 @@ Returns the specified asset.
 | Endpoint.OS | string | Endpoint operating system. | 
 | CVE.ID | string | Common Vulnerabilities and Exposures IDs. | 
 
+`nexpose-get-asset-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Asset ID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Nexpose.AssetTag.type | string | Type of asset tag |
+| Nexpose.AssetTag.created_time | string | Timestamp with the tag was created |
+| Nexpose.AssetTag.name | string | The value of the tag |
+| Nexpose.AssetTag.risk_modifier | string | The risk modifier value associated with criticality tag type |
+
 ### nexpose-get-assets
 ***
 Returns all assets for which you have access.
