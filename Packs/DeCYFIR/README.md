@@ -15,4 +15,4 @@ With DeCYFIR’s APIs, security teams obtain a complete view of their external t
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
 
 _Email: [contact@cyfirma.com](contact@cyfirma.com),_ \
-_Company: [Cyfirma](https://www.cyfirma.com)_
+_Company: [Cyfirma](www.cyfirma.com)_
