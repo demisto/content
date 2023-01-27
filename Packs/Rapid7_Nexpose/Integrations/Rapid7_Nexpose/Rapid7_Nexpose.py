@@ -3445,7 +3445,7 @@ def get_asset_tags_command(client: Client, asset_id: str) -> CommandResults | li
     except DemistoException as e:
         if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
             return CommandResults(readable_output="Asset not found.")
-    for tag in tag_raw_data['resources']:
+    for tag in tag_raw_data:
         tag_output = generate_new_dict(
             data=tag,
             name_mapping={
