@@ -108,7 +108,7 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    title = demisto.args().get('url_title')
+    title = args.get('url_title', 'Cortex XSOAR URL')
     webhook = args.get('team_webhook', params.get('webhookurl'))
     serverurls = demisto.demistoUrls()
 

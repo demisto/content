@@ -37,14 +37,3 @@ Send a message to Microsoft Teams via Incoming Webhook
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!ms-teams-message message="Hello from XSOAR"```
-#### Human Readable Output
-
->message sent successfully
-
-#### Command example
-```!ms-teams-message message="Data Collection Form" additional_url="Data collection form link" url_title="Data Collection Task for Incident 1234"```
-#### Human Readable Output
-
->message sent successfully
