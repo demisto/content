@@ -1,13 +1,15 @@
 import requests
 import traceback
+import ast
 from requests.auth import HTTPBasicAuth
 from datetime import date
+from typing import List
 from CommonServerPython import *
 
 
 def get_edl(instance_name):
 
-    url = str(DemistoException.args()['server_url'])
+    url = str(demisto.args()['server_url'])
     if 'https://' not in url:
         url = 'https://' + url
     port = demisto.args()['edl_port']
@@ -19,20 +21,20 @@ def get_edl(instance_name):
 
     params = demisto.params()
     credentials = params.get('credentials') if params.get('credentials') else {}
-    usern: str = credentials.get('identifier', '')
+    username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
-    if (usern and not password) or (password and not usern):
+    if (username and not password) or (password and not username):
         err_msg: str = 'If using credentials, both username and password should be provided.'
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
 
-    payload = {}
-    headers = {}
+    payload = {}  # type: ignore
+    headers = {}  # type: ignore
     verify_ssl = demisto.args()['verify_ssl']
-    if eval(verify_ssl) is False:
+    if ast.literal_eval(verify_ssl) is False:
         try:
             # ssl._create_default_https_context = ssl._create_unverified_context
-            response = requests.get(endpoint, verify=False, auth=HTTPBasicAuth(username, password))
+            response = requests.get(endpoint, verify=False, auth=HTTPBasicAuth(username, password))  # nosec
         except AttributeError:
             # Legacy Python that doesn't verify HTTPS certificates by default
             pass
@@ -62,7 +64,7 @@ def build_widget():
     str_entries = demisto.executeCommand("getList", {"listName": "EDLMetrics_Size"})[0]['Contents']
     entries = str_entries.split(';,')
     entries[-1] = entries[-1].rstrip(';')
-    builder = []
+    builder: List[dict] = []
     for entry in entries:
         entry = json.loads(entry)
         date = entry['name']
@@ -82,7 +84,8 @@ def build_widget():
                     b['groups'].append({"name": entry['groups']['name'], "data": [int(entry['groups']['data'])]})
                     found = True
             if found is False:
-                builder.append({"name": date, "data": [total], "groups": [{"name": str(entry['groups']['name']), "data": [int(entry['groups']['data'])]}]})
+                builder.append({"name": date, "data": [total], "groups": [{"name":
+                               str(entry['groups']['name']), "data": [int(entry['groups']['data'])]}]})
     return builder
 
 
