@@ -1,0 +1,1031 @@
+commonfields:
+  id: Lumu
+  version: -1
+name: Lumu
+display: Lumu
+category: Utilities
+description: SecOps operations - Reflect and manage the Lumu Incidents either from XSOAR Cortex or viceversa using the mirroring integration flow, https://lumu.io/
+configuration:
+- defaultvalue: '50'
+  display: Maximum number of incidents to fetch every time
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
+  defaultvalue: 3 days
+  display: First fetch time interval
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Server URL
+  name: url
+  defaultvalue: https://defender.lumu.io
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: API Key
+  name: api_key
+  type: 4
+  required: true
+- display: Incident Offset
+  name: fetch_offset
+  defaultvalue: "0"
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  defaultvalue: None
+  type: 15
+  required: false
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  additionalinfo: Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Lumu to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Lumu), or both **Incoming And Outgoing**.
+- display: Mirror tags
+  name: mirror_tags
+  defaultvalue: mirror
+  type: 0
+  required: false
+  additionalinfo: Comment and files that will be marked with this tag will be pushed into Lumu.
+script:
+  script: ''
+  type: python
+  commands:
+  - name: lumu-retrieve-labels
+    arguments:
+    - name: page
+      description: ""
+    - name: items
+      description: ""
+    outputs:
+    - contextPath: Lumu.RetrieveLabels.labels.id
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveLabels.labels.name
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveLabels.labels.relevance
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveLabels.paginationInfo.page
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveLabels.paginationInfo.items
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveLabels.paginationInfo.next
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveLabels.paginationInfo.prev
+      description: ""
+      type: Number
+    description: Get a paginated list of all the labels created for the company and its details such as id, name and business relevance. The items are sorted by the label id in ascending order.
+  - name: lumu-retrieve-a-specific-label
+    arguments:
+    - name: label_id
+      description: ""
+      required: true
+    outputs:
+    - contextPath: Lumu.RetrieveASpecificLabel.id
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificLabel.name
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificLabel.relevance
+      description: ""
+      type: Number
+    description: |-
+      Get details such as id, name and business relevance from a specific label.
+
+      | `{label-id}` | ID of the specific label |
+      |---|---|
+  - name: lumu-retrieve-incidents
+    arguments:
+    - name: page
+      description: ""
+    - name: items
+      description: ""
+    - name: fromdate
+      description: ""
+    - name: todate
+      description: ""
+    - name: status
+      description: ""
+    - name: adversary-types
+      description: ""
+    - name: labels
+      description: ""
+    outputs:
+    - contextPath: Lumu.RetrieveIncidents.items.id
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveIncidents.items.timestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveIncidents.items.statusTimestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveIncidents.items.status
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveIncidents.items.contacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveIncidents.items.adversaries
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveIncidents.items.adversaryTypes
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveIncidents.items.labelDistribution.17
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveIncidents.items.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveIncidents.items.lastContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveIncidents.items.unread
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveIncidents.paginationInfo.page
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveIncidents.paginationInfo.items
+      description: ""
+      type: Number
+    description: Get a paginated list of incidents for the company. The items are listed by the most recent.
+  - name: lumu-retrieve-a-specific-incident-details
+    arguments:
+    - name: lumu_incident_id
+      description: ""
+    outputs:
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.id
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.timestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.isUnread
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.contacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.adversaryId
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.adversaries
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.adversaryTypes
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.description
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.labelDistribution.144
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.actions.datetime
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.actions.userId
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.actions.action
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.actions.comment
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.status
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.statusTimestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.uuid
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.datetime
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.host
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.types
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.details
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.endpointIp
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.endpointName
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.label
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceType
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceId
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.type
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.name
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.question.class
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.responseCode
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.name
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.type
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.class
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.answers.data
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.sourceData.DNSPacketExtraInfo.opCode
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.firstContactDetails.isPlayback
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.uuid
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.datetime
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.host
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.types
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.details
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.endpointIp
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.endpointName
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.label
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceType
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceId
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.type
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.name
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.question.class
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.responseCode
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authoritative
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_available
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.truncated_response
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.checking_disabled
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.recursion_desired
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.flags.authentic_data
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.name
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.type
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.class
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.ttl
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.answers.data
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.sourceData.DNSPacketExtraInfo.opCode
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentDetails.lastContactDetails.isPlayback
+      description: ""
+      type: Boolean
+    description: |-
+      Get details of a specific Incident.
+
+      | `{incident-uuid}` | uuid of the specific incident |
+      |---|---|
+  - name: lumu-retrieve-a-specific-incident-context
+    arguments:
+    - name: lumu_incident_id
+      description: ""
+    - name: hash
+      description: ""
+    outputs:
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.adversary_id
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.currently_active
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.deactivated_on
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.mitre.details.tactic
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.mitre.details.techniques
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.mitre.matrix
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.mitre.version
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.related_files
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.threat_details
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.threat_triggers
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.playbooks
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.external_resources
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveASpecificIncidentContext.timestamp
+      description: ""
+      type: Date
+    description: |-
+      Get details of a specific Incident.
+
+      | `{incident-uuid}` | uuid of the specific incident |
+      |---|---|
+  - name: lumu-comment-a-specific-incident
+    arguments:
+    - name: lumu_incident_id
+      description: ""
+    - name: comment
+      description: ""
+    outputs:
+    - contextPath: Lumu.CommentASpecificIncident.statusCode
+      description: ""
+      type: number
+    description: Get a paginated list of open incidents for the company. The items are listed by the most recent.
+  - name: lumu-retrieve-open-incidents
+    arguments:
+    - name: page
+      description: ""
+    - name: items
+      description: ""
+    - name: adversary-types
+      description: ""
+    - name: labels
+      description: ""
+    outputs:
+    - contextPath: Lumu.RetrieveOpenIncidents.items.id
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveOpenIncidents.items.timestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveOpenIncidents.items.statusTimestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveOpenIncidents.items.status
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveOpenIncidents.items.contacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveOpenIncidents.items.adversaries
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveOpenIncidents.items.adversaryId
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveOpenIncidents.items.adversaryTypes
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveOpenIncidents.items.description
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveOpenIncidents.items.labelDistribution.37
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveOpenIncidents.items.labelDistribution.39
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveOpenIncidents.items.labelDistribution.179
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveOpenIncidents.items.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveOpenIncidents.items.lastContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveOpenIncidents.items.unread
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveOpenIncidents.paginationInfo.page
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveOpenIncidents.paginationInfo.items
+      description: ""
+      type: Number
+    description: Get a paginated list of open incidents for the company. The items are listed by the most recent.
+  - name: lumu-retrieve-muted-incidents
+    arguments:
+    - name: page
+      description: ""
+    - name: items
+      description: ""
+    - name: adversary-types
+      description: ""
+    - name: labels
+      description: ""
+    outputs:
+    - contextPath: Lumu.RetrieveMutedIncidents.items.id
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveMutedIncidents.items.timestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveMutedIncidents.items.statusTimestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveMutedIncidents.items.status
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveMutedIncidents.items.contacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveMutedIncidents.items.adversaries
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveMutedIncidents.items.adversaryId
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveMutedIncidents.items.adversaryTypes
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveMutedIncidents.items.description
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveMutedIncidents.items.labelDistribution.179
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveMutedIncidents.items.labelDistribution.39
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveMutedIncidents.items.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveMutedIncidents.items.lastContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveMutedIncidents.items.unread
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveMutedIncidents.paginationInfo.page
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveMutedIncidents.paginationInfo.items
+      description: ""
+      type: Number
+    description: Get a paginated list of muted incidents for the company. The items are listed by the most recent.
+  - name: lumu-retrieve-closed-incidents
+    arguments:
+    - name: page
+      description: ""
+    - name: items
+      description: ""
+    - name: adversary-types
+      description: ""
+    - name: labels
+      description: ""
+    outputs:
+    - contextPath: Lumu.RetrieveClosedIncidents.items.id
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveClosedIncidents.items.timestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveClosedIncidents.items.statusTimestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveClosedIncidents.items.status
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveClosedIncidents.items.contacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveClosedIncidents.items.adversaries
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveClosedIncidents.items.adversaryId
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveClosedIncidents.items.adversaryTypes
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveClosedIncidents.items.description
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveClosedIncidents.items.labelDistribution.37
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveClosedIncidents.items.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveClosedIncidents.items.lastContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveClosedIncidents.items.unread
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.RetrieveClosedIncidents.paginationInfo.page
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveClosedIncidents.paginationInfo.items
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveClosedIncidents.paginationInfo.next
+      description: ""
+      type: Number
+    description: Get a paginated list of closed incidents for the company. The items are listed by the most recent.
+  - name: lumu-retrieve-endpoints-by-incident
+    arguments:
+    - name: lumu_incident_id
+      description: ""
+    - name: page
+      description: ""
+    - name: items
+      description: ""
+    outputs:
+    - contextPath: Lumu.RetrieveEndpointsByIncident.items.label
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveEndpointsByIncident.items.endpoint
+      description: ""
+      type: String
+    - contextPath: Lumu.RetrieveEndpointsByIncident.items.total
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveEndpointsByIncident.items.first
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveEndpointsByIncident.items.last
+      description: ""
+      type: Date
+    - contextPath: Lumu.RetrieveEndpointsByIncident.paginationInfo.page
+      description: ""
+      type: Number
+    - contextPath: Lumu.RetrieveEndpointsByIncident.paginationInfo.items
+      description: ""
+      type: Number
+    description: |-
+      Get a paginated summary of the endpoints affected by a specified incident.
+
+      | `{incident-uuid}` | uuid of the specific incident |
+      |---|---|
+  - name: lumu-mark-incident-as-read
+    arguments:
+    - name: lumu_incident_id
+      description: ""
+    outputs:
+    - contextPath: Lumu.MarkIncidentAsRead.statusCode
+      description: ""
+    description: |-
+      This transaction does not require any additional body parameters.
+
+      | `{incident-uuid}` | uuid of the specific incident |
+      |---|---|
+
+      >To associate a specific user to this transaction, include the header `Lumu-User-Id` with the user id as a value. [Read more](#user-identification-considerations).
+  - name: lumu-mute-incident
+    arguments:
+    - name: lumu_incident_id
+      description: ""
+    - name: comment
+      description: ""
+    outputs:
+    - contextPath: Lumu.MuteIncident.statusCode
+      description: ""
+    description: |-
+      | `{incident-uuid}` | uuid of the specific incident |
+      |---|---|
+
+      >To associate a specific user to this transaction, include the header `Lumu-User-Id` with the user id as a value. [Read more](#user-identification-considerations).
+  - name: lumu-unmute-incident
+    arguments:
+    - name: lumu_incident_id
+      description: ""
+    - name: comment
+      description: ""
+    outputs:
+    - contextPath: Lumu.UnmuteIncident.statusCode
+      description: ""
+    description: |-
+      | `{incident-uuid}` | uuid of the specific incident |
+      |---|---|
+
+      >To associate a specific user to this transaction, include the header `Lumu-User-Id` with the user id as a value. [Read more](#user-identification-considerations).
+  - name: lumu-consult-incidents-updates-through-rest
+    arguments:
+    - name: offset
+      description: ""
+    - name: items
+      description: ""
+    - name: time
+      description: ""
+    outputs:
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.companyId
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.id
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.timestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.statusTimestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.status
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.contacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaries
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaryId
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.adversaryTypes
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.description
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.labelDistribution.0
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.lastContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.unread
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.hasPlaybackContacts
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.incident.firstContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentClosed.comment
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.companyId
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.openIncidents
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.totalContacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.DGA
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.C2C
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Network Scan
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Mining
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Phishing
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Spam
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.typeDistribution.Malware
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.OpenIncidentsStatusUpdated.openIncidentsStatus.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.companyId
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.id
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.timestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.statusTimestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.status
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.contacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaries
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaryId
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.adversaryTypes
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.description
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.labelDistribution.2148
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.lastContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.unread
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.hasPlaybackContacts
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.incident.firstContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.IncidentUnmuted.comment
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.companyId
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.id
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.timestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.statusTimestamp
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.status
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.contacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaries
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaryId
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.adversaryTypes
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.description
+      description: ""
+      type: String
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.labelDistribution.218
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.lastContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.unread
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.hasPlaybackContacts
+      description: ""
+      type: Boolean
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.incident.firstContact
+      description: ""
+      type: Date
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.openIncidents
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.totalContacts
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.DGA
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.C2C
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Network Scan
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Mining
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Phishing
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Spam
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.typeDistribution.Malware
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.updates.NewIncidentCreated.openIncidentsStats.totalEndpoints
+      description: ""
+      type: Number
+    - contextPath: Lumu.ConsultIncidentsUpdatesThroughRest.offset
+      description: ""
+      type: Number
+    description: |-
+      Lumu provides an endpoint to consult real-time updates on incident operations through REST when Websocket is not available.
+
+      Note: the date format in the updates received from the endpoint is in the UTC time zone and follows standards published in RFC 3339 and ISO 8601
+
+      | `{company-key}` | Your company's unique API key available at the [Lumu Portal](#access-and-authentication) |
+      | --- | --- |
+  - name: lumu-close-incident
+    arguments:
+    - name: lumu_incident_id
+      description: ""
+    - name: comment
+      description: ""
+    outputs:
+    - contextPath: Lumu.CloseIncident.statusCode
+      description: ""
+    description: |-
+      | `{incident-uuid}` | uuid of the specific incident |
+      |---|---|
+
+      >To associate a specific user to this transaction, include the header `Lumu-User-Id` with the user id as a value. [Read more](#user-identification-considerations).
+  - name: get-modified-remote-data
+    arguments:
+    - name: lastUpdate
+      description: ""
+    description: ""
+  - name: get-remote-data
+    description: ""
+    arguments:
+    - name: lastUpdate
+      description: ""
+      required: true
+    - name: id
+      description: ""
+      required: true
+  - name: get-mapping-fields
+    description: ""
+    arguments: []
+  - name: lumu-clear-cache
+    description: ""
+    arguments: []
+  - name: update-remote-system
+    description: ""
+    arguments:
+    - name: data
+      description: ""
+      required: true
+    - name: entries
+      description: ""
+    - name: incident_changed
+      description: ""
+    - name: remote_incident_id
+      description: ""
+  - name: lumu-get-cache
+    arguments: []
+    description: ""
+    outputs:
+    - contextPath: Lumu.GetCache.cache
+      type: string
+      description: ""
+    - contextPath: Lumu.GetCache.lumu_incidentsId
+      type: string
+      description: ""
+  dockerimage: demisto/python3:3.10.9.45313
+  isfetch: true
+  runonce: false
+  subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  isFetchSamples: true
+defaultmapperin: LumuInMap
+defaultclassifier: Lumu
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
