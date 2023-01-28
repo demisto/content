@@ -1302,11 +1302,11 @@ class TestPanoramaEditRuleCommand:
         }
 
 
-def test_panorama_edit_address_group_command_main_flow(mocker):
+def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     """
     Given
      - integrations parameters.
-     - pan-os-edit-address-group command arguments including device_group
+     - pan-os-edit-address-group command arguments including device_group and description to add.
 
     When -
         running the pan-os-edit-address-group command through the main flow
@@ -1342,6 +1342,54 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
         'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
     }
     assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
+
+
+def test_panorama_edit_address_group_command_main_flow_remove_address(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-address-group command arguments including an address to remove.
+
+    When -
+        running the pan-os-edit-address-group command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the body request is sent as expected.
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={'name': 'test', 'device-group': 'Shared', 'type': 'static', 'element_to_remove': '5.5.5.5'}
+    )
+
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-address-group')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        side_effect=[
+            {
+                'response': {
+                    '@status': 'success', 'result': {
+                        'entry': {
+                            '@name': 'test5',
+                            'static': {'member': ['5.5.5.5']},
+                            'description': 'dfdf'
+                        }
+                    }
+                }
+            },
+            {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+        ]
+    )
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['body']
+
 
 
 @pytest.mark.parametrize(
