@@ -12,8 +12,12 @@ from typing import Union, Tuple, Dict, Any, Generator
 from tempfile import NamedTemporaryFile
 import logging.config
 import logging
-#  from rfc5424logging import Rfc5424SysLogHandler as SyslogHandlerTLS
+# import syslogmp
+# from gevent.server import StreamServer
+# from syslog_rfc5424_parser import SyslogMessage, ParseError
 
+# from rfc5424logging import Rfc5424SysLogHandler as SyslogHandlerTLS
+# 'tlssyslog.handlers.TLSSysLogHandler
 ''' CONSTANTS '''
 
 
@@ -116,20 +120,6 @@ class SyslogManager:
 
         return SysLogHandler(**kwargs)
 
-    def _get_handler_tls(self):
-        pass
-        handler = {'syslog': {
-                   'level': self.logging_level,
-                   'class': 'tlssyslog.handlers.TLSSysLogHandler',
-                   'address': (self.address, self.port),
-                   'facility': self.facility,
-                   'ssl_kwargs': {
-                       'cert_reqs': ssl.CERT_REQUIRED,
-                       'ssl_version': ssl.PROTOCOL_TLS,
-                       'ca_certs': self.syslog_cert_path,
-                   }, }}
-        return handler
-
     def _init_logger_tls(self, handler):
         # SyslogHandlerTLS
         logging.config.dictConfig({'version': 1,
@@ -168,8 +158,32 @@ def prepare_certificate_file(certificate: str):
     certificate_file.write(bytes(certificate, 'utf-8'))
     certificate_file.close()
     demisto.debug('Starting HTTPS Server')
-    demisto.info(certificate_file)
     return certificate_path
+
+
+def init_manager_tls(port: int, syslog_address: str, certificate_path: str):
+    import socket
+    # creating a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # creating a context for the SSL/TLS connection
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.load_verify_locations(certificate_path)
+    
+    # bind the socket to a specific address and port
+    server_address = (syslog_address, port)
+    sock.bind(server_address)
+
+    # Listen for incoming connections
+    sock.listen(1)
+
+    while True:
+        # Wait for a client to connect
+        (connection, client_address) = sock.accept()
+        connection = context.wrap_socket(connection, server_side=True)
+
+        connection.close()
+
 
 
 def init_manager(params: dict) -> SyslogManager:
@@ -314,56 +328,18 @@ def syslog_send(manager):
 
 def main():
     LOG(f'Command being called is {demisto.command()}')
-    params = demisto.params()
     try:
         if demisto.command() == 'test-module':
-            protocol = params.get('protocol', UDP).lower()
-            address = params.get('address', '')
-            port = int(params.get('port', 514))
-            certificate = params.get('certificate')
             if protocol == 'tls':
                 certificate_path = prepare_certificate_file(certificate)
-                log_settings = {
-                    'version': 1,
-                    'formatters': {
-                        'console': {
-                            'format': '[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s',
-                        },
-                    },
-                    'handlers': {
-                        'console': {
-                            'level': 'DEBUG',
-                            'class': 'logging.StreamHandler',
-                            'formatter': 'console'
-                        },
-                        'syslog': {
-                            'level': 'INFO',
-                            'class': 'tlssyslog.handlers.TLSSysLogHandler',
-                            'address': (address, port),
-                            'enterprise_id': 32473,
-                            'structured_data': {'sd_id_1': {'key1': 'value1'}},
-                            'ssl_kwargs': {
-                                'cert_reqs': ssl.CERT_REQUIRED,
-                                'ssl_version': ssl.PROTOCOL_TLS,
-                                'ca_certs': certificate_path,
-                            },
-                        },
-                    },
-                    'loggers': {
-                        'syslogtest': {
-                            'handlers': ['console', 'syslog'],
-                            'level': 'DEBUG',
-                        },
-                    }
-                }
-                logging.config.dictConfig(log_settings)
+                context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+                context.load_verify_locations(certificate_path)
 
-                logger = logging.getLogger('syslogtest')
-                logger.info('This message appears on console and is sent to syslog')
-                logger.debug('This debug message appears on console only')
-                logger.info('This is a test')
-                demisto.debug(logger)
-            else:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
+                    with context.wrap_socket(sock, server_hostname=address) as ssock:
+                        ssock.sendall('test')
+                        print(ssock.version())
+                demisto.debug('after prepare_certificate_file')
                 syslog_manager = init_manager(demisto.params())
                 with syslog_manager.get_logger() as syslog_logger:  # type: Logger
                     syslog_logger.info('This is a test')
