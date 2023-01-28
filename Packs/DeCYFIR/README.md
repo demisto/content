@@ -11,6 +11,6 @@ With DeCYFIR’s APIs, security teams obtain a complete view of their external t
 - Use the insights to expedite threat hunting and accelerate incident response activities.
 
 
-#### _Contact Us_ 
-Support and maintenance for this integration are provided by the **[Cyfirma](https://www.cyfirma.com)**. 
+**Note:**
+Support and maintenance for this integration are provided by the **[Cyfirma](https://www.cyfirma.com)**. \
 Please contact us for more details on this email **_contact@cyfirma.com_**.
