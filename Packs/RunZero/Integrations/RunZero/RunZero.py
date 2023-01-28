@@ -1,9 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
 import urllib3
-# from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,7 +9,6 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MAX_RTT = 1_000_000
 DEFAULT_LIMIT = 50
 
@@ -28,16 +25,19 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def asset_search(self, search_str: str = None):
-        url_suffix = f'/org/assets{search_str}' if search_str else '/org/assets'
+    def asset_search(self, params: dict = None):
+        url_suffix = '/org/assets'
         return self._http_request(method='GET',
                                   url_suffix=url_suffix,
+                                  params=params,
                                   headers=self._headers)
 
     def asset_delete(self, asset_ids: list):
-        url_suffix = f'/org/assets/bulk/delete?asset_ids={asset_ids}'
+        url_suffix = '/org/assets/bulk/delete'
+        params_value = f"[{','.join(asset_ids)}]"
         return self._http_request(method='DELETE',
                                   url_suffix=url_suffix,
+                                  params={'asset_ids': params_value},
                                   headers=self._headers)
 
     def comment_add(self, asset_id, comment):
@@ -101,9 +101,13 @@ class Client(BaseClient):
 
 
 def normalize_rtt(raw_rtt: float) -> float:
-    # normalizing a number:
-    # normalized = (x-min(x))/(max(x)-min(x))
-    # min RTT = 0, MAX_RTT = 1_000_000
+    """Return the normalized value of raw_rtt,
+    normalized = (x-min(x))/(max(x)-min(x))
+    input is a float 0 <= raw_rtt <= 1_000_000
+    return value 0.0 <= float <= 1.0
+
+    >>> factorial(837561)
+    0.84"""
     if raw_rtt is None:
         return 0
     normalized_rtt = raw_rtt / MAX_RTT
@@ -214,37 +218,37 @@ def parse_raw_wireless(raw: dict) -> list:
 ''' COMMAND FUNCTIONS '''
 
 
-def asset_search(client: Client, args: dict) -> CommandResults:
-    search_string = ''
+def asset_search_command(client: Client, args: dict) -> CommandResults:
+    search_params = {}
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('ips'):
-        search_string = ' or address:'.join(argToList(args.get('ips')))
-        search_string = f'?search=address:{search_string}'
+        search_list = ' or address:'.join(argToList(args.get('ips')))
+        search_params = {'search': f'address:{search_list}'}
     elif args.get('hostnames'):
-        search_string = ' or name:'.join(argToList(args.get('hostnames')))
-        search_string = f'?search=name:{search_string}'
+        search_list = ' or name:'.join(argToList(args.get('hostnames')))
+        search_params = {'search': f'name:{search_list}'}
     elif args.get('asset_ids'):
-        search_string = ' or id:'.join(argToList(args.get('asset_ids')))
-        search_string = f'?search=id:{search_string}'
+        search_list = ' or id:'.join(argToList(args.get('asset_ids')))
+        search_params = {'search': f'id:{search_list}'}
     elif args.get('search'):
-        search_string = f'?search={args.get("search")}'
-    raw = client.asset_search(search_string)
+        search_params = {'search': args.get('search')}
+    raw = client.asset_search(search_params)
     remove_attr = not argToBoolean(args.get('display_attributes', 'False'))
     remove_svc = not argToBoolean(args.get('display_services', 'False'))
     message = []
-    if type(raw) is list:
+    if isinstance(raw, list):
         raw = raw[:limit]
         for item_raw in raw:
             if remove_attr:
-                del item_raw['attributes']
+                item_raw.pop('attributes', None)
             if remove_svc:
-                del item_raw['services']
+                item_raw.pop('services', None)
             message.extend(parse_raw_asset(item_raw))
     if type(raw) is dict:
         if remove_attr:
-            del raw['attributes']
+            raw.pop('attributes')
         if remove_svc:
-            del raw['services']
+            raw.pop('services')
         message.extend(parse_raw_asset(raw))
     human_readable = tableToMarkdown('Asset',
                                      message,
@@ -258,7 +262,7 @@ def asset_search(client: Client, args: dict) -> CommandResults:
     )
 
 
-def asset_delete(client: Client, args: dict) -> CommandResults:
+def asset_delete_command(client: Client, args: dict) -> CommandResults:
     asset_list = argToList(args.get('asset_ids', []))
     raw = client.asset_delete(asset_list)
     message = f'Assets {asset_list} deleted successfully.'
@@ -271,7 +275,7 @@ def asset_delete(client: Client, args: dict) -> CommandResults:
     )
 
 
-def comment_add(client: Client, args: dict) -> CommandResults:
+def comment_add_command(client: Client, args: dict) -> CommandResults:
     asset_id = args['asset_id']
     comment = args['comment']
     raw = client.comment_add(asset_id, comment)
@@ -285,10 +289,10 @@ def comment_add(client: Client, args: dict) -> CommandResults:
     )
 
 
-def tags_add(client: Client, args: dict) -> CommandResults:
+def tags_add_command(client: Client, args: dict) -> CommandResults:
     asset_id = args['asset_id']
-    tagsList = argToList(args['tags'])
-    tags = " ".join(tagsList)
+    tags_list = argToList(args['tags'])
+    tags = " ".join(tags_list)
     raw = client.tags_add(asset_id, tags)
     message = f'Tags added to {asset_id} successfully.'
     return CommandResults(
@@ -300,7 +304,7 @@ def tags_add(client: Client, args: dict) -> CommandResults:
     )
 
 
-def service_search(client: Client, args: dict) -> CommandResults:
+def service_search_command(client: Client, args: dict) -> CommandResults:
     service_string = ''
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('service_id'):
@@ -317,11 +321,11 @@ def service_search(client: Client, args: dict) -> CommandResults:
         raw = raw[:limit]
         for item_raw in raw:
             if remove_attr:
-                del item_raw['attributes']
+                item_raw.pop('attributes', None)
             message.extend(parse_raw_service(item_raw))
     if type(raw) is dict:
         if remove_attr:
-            del raw['attributes']
+            raw.pop('attributes', None)
         message.extend(parse_raw_service(raw))
     human_readable = tableToMarkdown('Service',
                                      message,
@@ -335,7 +339,7 @@ def service_search(client: Client, args: dict) -> CommandResults:
     )
 
 
-def service_delete(client: Client, args: dict) -> CommandResults:
+def service_delete_command(client: Client, args: dict) -> CommandResults:
     service_id = args.get('service_id', '')
     raw = client.service_delete(service_id)
     message = f'Service {service_id} deleted successfully.'
@@ -348,7 +352,7 @@ def service_delete(client: Client, args: dict) -> CommandResults:
     )
 
 
-def quota_get(client: Client) -> CommandResults:
+def quota_get_command(client: Client) -> CommandResults:
     raw = client.quota_get()
     message = parse_raw_quota_get(raw)
     human_readable = tableToMarkdown('Quota',
@@ -363,7 +367,7 @@ def quota_get(client: Client) -> CommandResults:
     )
 
 
-def tag_delete(client: Client, args: dict) -> CommandResults:
+def tag_delete_command(client: Client, args: dict) -> CommandResults:
     asset_id = args.get('asset_id', '')
     tagsList = argToList(args.get('tags', []))
     tags = '-'.join(tagsList)
@@ -404,7 +408,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def wireless_lan_search(client: Client, args: dict) -> CommandResults:
+def wireless_lan_search_command(client: Client, args: dict) -> CommandResults:
     wireless_string = ''
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('wireless_id'):
@@ -432,7 +436,7 @@ def wireless_lan_search(client: Client, args: dict) -> CommandResults:
     )
 
 
-def wireless_lan_delete(client: Client, args: dict) -> CommandResults:
+def wireless_lan_delete_command(client: Client, args: dict) -> CommandResults:
     wireless_id = args.get('wireless_id', '')
     raw = client.wireless_delete(wireless_id)
     message = f'Wireless LAN {wireless_id} deleted successfully.'
@@ -469,47 +473,37 @@ def main() -> None:
 
         args = demisto.args()
         if demisto.command() == 'test-module':
-            result = test_module(client)
-            return_results(result)
+            return_results((client))
 
         elif demisto.command() == 'runzero-quota-get':
-            result = quota_get(client)
-            return_results(result)
+            return_results(quota_get_command(client))
 
         elif demisto.command() == 'runzero-asset-search':
-            commandResult = asset_search(client, args)
-            return_results(commandResult)
+            return_results(asset_search_command(client, args))
 
         elif demisto.command() == 'runzero-asset-delete':
-            commandResult = asset_delete(client, args)
-            return_results(commandResult)
+            return_results(asset_delete_command(client, args))
 
         elif demisto.command() == 'runzero-service-search':
-            commandResult = service_search(client, args)
-            return_results(commandResult)
+            return_results(service_search_command(client, args))
 
         elif demisto.command() == 'runzero-service-delete':
-            commandResult = service_delete(client, args)
-            return_results(commandResult)
+            return_results(service_delete_command(client, args))
 
         elif demisto.command() == 'runzero-comment-add':
-            commandResult = comment_add(client, args)
-            return_results(commandResult)
+            return_results(comment_add_command(client, args))
 
         elif demisto.command() == 'runzero-tag-add':
-            commandResult = tags_add(client, args)
-            return_results(commandResult)
+            return_results(tags_add_command(client, args))
+
         elif demisto.command() == 'runzero-tag-delete':
-            commandResult = tag_delete(client, args)
-            return_results(commandResult)
+            return_results(tag_delete_command(client, args))
 
         elif demisto.command() == 'runzero-wireless-lan-search':
-            commandResult = wireless_lan_search(client, args)
-            return_results(commandResult)
+            return_results(wireless_lan_search_command(client, args))
 
         elif demisto.command() == 'runzero-wireless-lan-delete':
-            commandResult = wireless_lan_delete(client, args)
-            return_results(commandResult)
+            return_results(wireless_lan_delete_command(client, args))
 
     # Log exceptions and return errors
     except Exception as e:

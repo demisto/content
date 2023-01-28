@@ -92,7 +92,7 @@ def test_assets_search(requests_mock):
         When: Searching for all assets
         Then: Returns the assets
     """
-    from RunZero import asset_search
+    from RunZero import asset_search_command
     mock_response = util_load_json('test_data/assets.json')
     requests_mock.get(
         f'{BASE_URL}/org/assets',
@@ -100,7 +100,7 @@ def test_assets_search(requests_mock):
 
     client = get_client()
 
-    actual_commandResult = asset_search(
+    actual_commandResult = asset_search_command(
         client=client,
         args={}
     )
@@ -125,7 +125,7 @@ def test_asset_search(requests_mock):
         When:
         Then:
     """
-    from RunZero import asset_search
+    from RunZero import asset_search_command
     mock_response = util_load_json('test_data/assets.json')
     requests_mock.get(
         f'{BASE_URL}/org/assets?search=address:192.168.1.91',
@@ -133,7 +133,7 @@ def test_asset_search(requests_mock):
 
     client = client = get_client()
 
-    actual_commandResult = asset_search(
+    actual_commandResult = asset_search_command(
         client=client,
         args={'ips': '192.168.1.91', 'display_attributes': 'True', 'display_services': 'True'}
     )
@@ -154,7 +154,7 @@ def test_comment_add(requests_mock):
         When: Posting publishing new comment asset
         Then: New comment is attached to asset.
     """
-    from RunZero import comment_add
+    from RunZero import comment_add_command
     mock_response = util_load_json('test_data/assets.json')
     requests_mock.patch(
         f'{BASE_URL}/org/assets/{ASSET_ID}/comments',
@@ -162,7 +162,7 @@ def test_comment_add(requests_mock):
 
     client = get_client()
 
-    actual_commandResult = comment_add(
+    actual_commandResult = comment_add_command(
         client=client,
         args={'asset_id': ASSET_ID,
               'comment': 'My comment2'}
@@ -179,7 +179,7 @@ def test_tag_add(requests_mock):
         When: Posting publishing new tags for asset
         Then: New tags are attached to asset.
     """
-    from RunZero import tags_add    
+    from RunZero import tags_add_command    
     mock_response = util_load_json('test_data/assets.json')
     requests_mock.patch(
         f'{BASE_URL}/org/assets/{ASSET_ID}/tags',
@@ -187,7 +187,7 @@ def test_tag_add(requests_mock):
 
     client = get_client()
 
-    actual_commandResult = tags_add(
+    actual_commandResult = tags_add_command(
         client=client,
         args={'asset_id': ASSET_ID,
               'tags': 'tag1 tag2'}
@@ -205,7 +205,7 @@ def test_service_search(requests_mock):
         When: Calling RunService service search command
         Then: Returning the expected services
     """
-    from RunZero import service_search
+    from RunZero import service_search_command
     mock_response = util_load_json('test_data/services.json')
     requests_mock.get(
         f'{BASE_URL}/org/services',
@@ -213,7 +213,7 @@ def test_service_search(requests_mock):
 
     client = get_client()
 
-    actual_commandResult = service_search(
+    actual_commandResult = service_search_command(
         client=client,
         args={'display_attributes': 'True'}
     )
@@ -236,7 +236,7 @@ def test_service_search_using_search_string(requests_mock):
         When: Calling service-search command with specific search query
         Then: Returning the desired service.
     """
-    from RunZero import service_search
+    from RunZero import service_search_command
     mock_response = util_load_json('test_data/services.json')
     requests_mock.get(
         f'{BASE_URL}/org/services',
@@ -244,7 +244,7 @@ def test_service_search_using_search_string(requests_mock):
 
     client = get_client()
 
-    actual_commandResult = service_search(
+    actual_commandResult = service_search_command(
         client=client,
         args={'search': 'service_address:192.168.1.91',
               'display_attributes': 'False'}
@@ -271,7 +271,7 @@ def test_quota_get(requests_mock):
         When: Calling quota-get command
         Then: Returns information about api key (limit, usage, type ..)
     """
-    from RunZero import quota_get
+    from RunZero import quota_get_command
     mock_response = util_load_json('test_data/quota.json')
     requests_mock.get(
         f'{BASE_URL}/org/key',
@@ -279,7 +279,7 @@ def test_quota_get(requests_mock):
 
     client = get_client()
 
-    actual_commandResult = quota_get(client=client)
+    actual_commandResult = quota_get_command(client=client)
 
     expected_commandResult = CommandResults(outputs_prefix='RunZero.Quota',
                                             outputs_key_field='id',
@@ -297,7 +297,7 @@ def test__wireless_lan_search(requests_mock):
         When: Calling wireless_lan_search command
         Then: Returns the wireless_lan asset
     """
-    from RunZero import wireless_lan_search
+    from RunZero import wireless_lan_search_command
     mock_response = util_load_json('test_data/wireless.json')
     requests_mock.get(
         f'{BASE_URL}/org/wireless',
@@ -305,7 +305,7 @@ def test__wireless_lan_search(requests_mock):
 
     client = get_client()
 
-    actual_commandResult = wireless_lan_search(client=client, args={})
+    actual_commandResult = wireless_lan_search_command(client=client, args={})
     expected_commandResult = CommandResults(outputs_prefix='RunZero.WirelessLAN',
                                             outputs_key_field='id',
                                             raw_response=mock_response,
@@ -322,14 +322,14 @@ def test_asset_delete(requests_mock):
         When: Calling asset delete command with the corresponding asset id.
         Then: Returns the asset deleted successfully.
     """
-    from RunZero import asset_delete
+    from RunZero import asset_delete_command
     requests_mock.delete(
-        f"{BASE_URL}/org/assets/bulk/delete?asset_ids=['{ASSET_ID}']",
+        f"{BASE_URL}/org/assets/bulk/delete?asset_ids=[{ASSET_ID}]",
         json={})
 
     client = get_client()
 
-    actual_commandResult = asset_delete(client, {'asset_ids': [ASSET_ID]})
+    actual_commandResult = asset_delete_command(client, {'asset_ids': [ASSET_ID]})
     expected_commandResult = CommandResults(outputs_prefix='RunZero.Asset',
                                             outputs_key_field=None,
                                             raw_response={},
@@ -346,13 +346,13 @@ def test_service_delete(requests_mock):
         When: Calling service delete command with the corresponding service id.
         Then: Returns the service deleted successfully.
     """
-    from RunZero import service_delete
+    from RunZero import service_delete_command
     requests_mock.delete(
         f"{BASE_URL}/org/services/{ASSET_ID}",
         json={})
 
     client = get_client()
-    actual_commandResult = service_delete(client, {'service_id': ASSET_ID})
+    actual_commandResult = service_delete_command(client, {'service_id': ASSET_ID})
     expected_commandResult = CommandResults(outputs_prefix='RunZero.Service',
                                             outputs_key_field=None,
                                             raw_response={},
@@ -369,13 +369,13 @@ def test_wireless_lan_delete(requests_mock):
         When: Calling wireless LAN delete command with the corresponding wireless id.
         Then: Returns the wireless deleted successfully.
     """
-    from RunZero import wireless_lan_delete
+    from RunZero import wireless_lan_delete_command
     requests_mock.delete(
         f'{BASE_URL}/org/wireless/{ASSET_ID}',
         json={})
 
     client = get_client()
-    actual_commandResult = wireless_lan_delete(client, {'wireless_id': ASSET_ID})
+    actual_commandResult = wireless_lan_delete_command(client, {'wireless_id': ASSET_ID})
     expected_commandResult = CommandResults(outputs_prefix='RunZero.WirelessLAN',
                                             outputs_key_field=None,
                                             raw_response={},
@@ -392,13 +392,13 @@ def test_tag_delete(requests_mock):
         When: Calling tag delete command with asset id and tags to delete.
         Then: Returns the tags deleted successfully.
     """
-    from RunZero import tag_delete
+    from RunZero import tag_delete_command
     requests_mock.patch(
         f'{BASE_URL}/org/assets/{ASSET_ID}/tags',
         json={})
     client = get_client()
     tagsList = ['tag1', 'tag2']
-    actual_commandResult = tag_delete(client, {'asset_id': ASSET_ID, 'tags': tagsList})
+    actual_commandResult = tag_delete_command(client, {'asset_id': ASSET_ID, 'tags': tagsList})
     expected_commandResult = CommandResults(outputs_prefix='RunZero.Tag',
                                             outputs_key_field=None,
                                             raw_response={},
