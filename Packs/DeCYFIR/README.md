@@ -1,4 +1,5 @@
 ## DeCYFIR Content Pack for XSOAR
+
 CYFIRMA’s core platform, DeCYFIR, combines cyber threat intelligence with attack surface discovery and digital risk protection to deliver predictive, personalized, contextual, outside-in, and multi-layered cyber-intelligence. 
 With DeCYFIR’s APIs, security teams obtain a complete view of their external threat landscape and receive actionable insights to ensure their cybersecurity posture is robust, resilient, and able to counter emerging cyber threats.
 
