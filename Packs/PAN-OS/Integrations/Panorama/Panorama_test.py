@@ -1344,51 +1344,44 @@ def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
 
 
-def test_panorama_edit_address_group_command_main_flow_remove_address(mocker):
+def test_panorama_edit_address_group_command_main_flow_remove_single_address(mocker):
     """
     Given
-     - integrations parameters.
-     - pan-os-edit-address-group command arguments including an address to remove.
+     - pan-os-edit-address-group command arguments including a single address to remove.
 
-    When -
-        running the pan-os-edit-address-group command through the main flow
+    When
+     - running the pan-os-edit-address-group command through the main flow
 
     Then
-     - make sure the context output is returned as expected.
-     - make sure the body request is sent as expected.
+     - make sure an exception is raised because address group must always have at least one address.
     """
-    from Panorama import main
+    import Panorama
 
-    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={'name': 'test', 'device-group': 'Shared', 'type': 'static', 'element_to_remove': '5.5.5.5'}
-    )
+    Panorama.DEVICE_GROUP = integration_panorama_params['device_group']
 
-    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-address-group')
-    request_mock = mocker.patch(
+    mocker.patch(
         'Panorama.http_request',
-        side_effect=[
-            {
-                'response': {
-                    '@status': 'success', 'result': {
-                        'entry': {
-                            '@name': 'test5',
-                            'static': {'member': ['5.5.5.5']},
-                            'description': 'dfdf'
-                        }
+        return_value={
+            'response': {
+                '@status': 'success', 'result': {
+                    'entry': {
+                        '@name': 'test5',
+                        'static': {'member': ['5.5.5.5']},
+                        'description': 'dfdf'
                     }
                 }
-            },
-            {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-        ]
+            }
+        }
     )
 
-    res = mocker.patch('demistomock.results')
-    main()
+    with pytest.raises(DemistoException) as exc_info:
+        Panorama.panorama_edit_address_group_command(
+            {'name': 'test', 'device-group': 'Shared', 'type': 'static', 'element_to_remove': '5.5.5.5'}
+        )
 
-    assert request_mock.call_args.kwargs['body']
+    assert exc_info.type == DemistoException
+    assert exc_info.value.message == "cannot remove ['5.5.5.5'] addresses from address group test, " \
+                                     "address-group test must have at least one address in its configuration"
 
 
 
