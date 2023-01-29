@@ -22,7 +22,7 @@ DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
                 ['Long message without domain name']]
 
 IP_LIST = [['1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)',
-            '1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)', '1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)']]
+            '1.1.1.1/1 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)', '1.2.3.4/5 (CIDR) or 8.8.8.8 - 8.8.8.8 (net range)']]
 
 HTML_DOMAIN_SECTION = util_load_json('tests_data_1.json')
 
@@ -54,15 +54,14 @@ def test_grab_domains():
 def test_grab_CIDR_ips():
     """
     Given:
-        -Raw list of lists that contains ips CIDR and net range, returned by api call:
-        first array is the title, 2 seconds arrays are data, last array is message.
+        - Raw list  that contains ips CIDR and NET RANGE, returned by api call:
     When:
-        - Filtered list contains domain's urls only
+        - Calling grab_CIDR_ips
     Then:
-        - Return CIDR ips list without errors
+        - Return CIDR ips list without without diplicates
     """
     from CiscoWebExFeed import grab_CIDR_ips
-    expected_result = ['1.1.1.1/1', '1.1.1.1/1', '1.1.1.1/1']
+    expected_result = ['1.1.1.1/1', '1.2.3.4/5']
     assert grab_CIDR_ips(IP_LIST) == expected_result
 
 

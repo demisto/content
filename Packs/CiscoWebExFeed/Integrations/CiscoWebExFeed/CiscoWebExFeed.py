@@ -91,20 +91,6 @@ def parse_indicators_from_response(response: requests.Response) -> Dict[str, Lis
     return all_info_dict
 
 
-class Client(BaseClient):
-    """ A client class that implements connectivity with the website."""
-
-    def all_raw_data(self) -> requests.Response:
-        """ Gets the entire html page from the website."""
-        try:
-            return self._http_request(
-                method='GET',
-                url_suffix='',
-                resp_type='response')
-        except DemistoException as e:
-            raise e
-
-
 def check_indicator_type(indicator: str) -> str:
     """Checks the indicator type.
         The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
@@ -123,6 +109,20 @@ def check_indicator_type(indicator: str) -> str:
     # domain
     else:
         return FeedIndicatorType.Domain
+
+
+class Client(BaseClient):
+    """ A client class that implements connectivity with the website."""
+
+    def all_raw_data(self) -> requests.Response:
+        """ Gets the entire html page from the website."""
+        try:
+            return self._http_request(
+                method='GET',
+                url_suffix='',
+                resp_type='response')
+        except DemistoException as e:
+            raise e
 
 
 def test_module(client: Client) -> str:
