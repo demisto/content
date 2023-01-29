@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Autofocus - Hunting And Threat Detection
 description: "This playbook queries the PANW Threat Intelligence Autofocus system for file and traffic indicators, such as SHA256, SHA1, MD5, IP addresses, URLs, and domains. 
 \n\nA simple search mode queries Autofocus based on the indicators specified in the playbook inputs. Advanced queries can also use with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
-\nWe recommended using the Autofocus UI to create an advanced query, export it, and paste it into the relevant playbook inputs.
+\nWe recommended using the Autofocus UI to create an advanced query, exporting it, and pasting it into the relevant playbook inputs.
 \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
 starttaskid: "0"
 tasks:
@@ -77,7 +77,7 @@ tasks:
       name: Autofocus - Traffic Indicators Hunting
       description: "Queries the PANW Threat Intelligence Autofocus system. Traffic indicators such as URLs, IP addresses, and domains can be used to run basic queries in the playbook.
       \nAdvanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
-      \nWe recommended using the Autofocus UI to create an advanced query, export it, and paste it into the relevant playbook inputs."
+      \nWe recommended using the Autofocus UI to create an advanced query, exporting it, and pasting it into the relevant playbook inputs."
       playbookName: Autofocus - Traffic Indicators Hunting
       type: playbook
       iscommand: false
