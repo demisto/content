@@ -87,6 +87,9 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'url': FeedIndicatorType.URL,
     'file': FeedIndicatorType.File,
     'windows-registry-key': FeedIndicatorType.Registry,
+    'indicator': (FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.DomainGlob,
+                  FeedIndicatorType.Domain, FeedIndicatorType.Account, FeedIndicatorType.Email,
+                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry)
 }
 
 ''' TAXII2 Server '''
