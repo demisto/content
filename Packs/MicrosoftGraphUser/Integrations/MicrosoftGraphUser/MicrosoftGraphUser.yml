@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Graph User
   version: -1
@@ -8,25 +11,31 @@ configuration:
   name: host
   required: true
   type: 0
+  section: Connect
 - name: creds_auth_id
   type: 9
   displaypassword: ID (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
+  section: Connect
 - name: creds_tenant_id
   type: 9
   displaypassword: Token (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
+  section: Connect
 - name: creds_enc_key
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
+  section: Connect
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   type: 4
   hidden: true
+  section: Connect
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
+  section: Connect
   hidden: true
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
@@ -37,10 +46,13 @@ configuration:
   name: creds_certificate
   type: 9
   displaypassword: Private Key
+  section: Connect
 - display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  section: Connect
+  advanced: true
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   hidden: true
 - display: Private Key
@@ -49,14 +61,18 @@ configuration:
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
+  section: Connect
 - display: Use a self-deployed Azure application
   name: self_deployed
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
 - name: creds_auth_code
   type: 9
   displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
@@ -66,21 +82,28 @@ configuration:
   required: false
   type: 4
   hidden: true
+  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Suppress Errors for Non Found Users
   name: handle_error
   required: false
   defaultvalue: 'true'
   type: 8
+  section: Collect
+  advanced: true
 description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Azure Active Directory Users
 name: Microsoft Graph User
