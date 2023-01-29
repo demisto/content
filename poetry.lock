@@ -404,7 +404,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "demisto-py"
-version = "3.2.6"
+version = "3.2.7"
 description = "A Python library for the Demisto API"
 category = "dev"
 optional = false
@@ -520,8 +520,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "4a765279eeace1025d0659b428679b7d4c42f1cd"
-resolved_reference = "4a765279eeace1025d0659b428679b7d4c42f1cd"
+reference = "481a56d1ecc4826240528c07f8786a7377129210"
+resolved_reference = "481a56d1ecc4826240528c07f8786a7377129210"
 
 [[package]]
 name = "deprecated"
@@ -2480,7 +2480,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "8ac65d9b2b3b72ad6925e1c52248902ba8b43dd82a091531ac8705759be2187b"
+content-hash = "52ea7360e52ae8198b07b5481354a2001f062c65358b00b5a55316c47cb37a30"
 
 [metadata.files]
 aiohttp = [
@@ -2854,8 +2854,8 @@ decorator = [
     {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
 demisto-py = [
-    {file = "demisto-py-3.2.6.tar.gz", hash = "sha256:61aa8c8a7a34f7f2c9503a8fb3f3c66845cfa97249b92f4e1acf60e3a493d22e"},
-    {file = "demisto_py-3.2.6-py3-none-any.whl", hash = "sha256:0cce521907f9de0601465c51f3f5762eda8596a8259d271819295d68950f3073"},
+    {file = "demisto-py-3.2.7.tar.gz", hash = "sha256:5b41a9d7b03fc4d36f25bfd1929c31d2974805101426885f7650c321f992472c"},
+    {file = "demisto_py-3.2.7-py3-none-any.whl", hash = "sha256:32e48931970d6b5aa69f525edf10fb6e9ee4c190c88e7c6db57f84790d2b6b86"},
 ]
 demisto-sdk = []
 deprecated = [

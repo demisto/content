@@ -12,6 +12,7 @@ Integrations/SymantecMSS/test_data/SymantecXML.txt
 *.swp
 .pytest_cache
 pytest_report.json
+test_runner.sh
 .python-version
 CommonServerPython.py
 *Module.py
