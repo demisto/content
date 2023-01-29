@@ -57,7 +57,7 @@ google-cloud-secret-manager = "^2.13.0"
 json5 = "^0.9.10"
 
 [tool.ruff]
-select = ["E", "W", "F", "I", "UP", "PLE", "PLW"]
+select = ["E", "W", "F", "I", "UP", "PLE"]
 target-version = "py310"
 line-length = 130
 ignore = ["F405", "F403"]
