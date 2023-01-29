@@ -1,48 +1,5 @@
-"""RunZero Integration for Cortex XSOAR - Unit Tests file
-
-This file contains the Unit Tests for the RunZero Integration based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-integration should have a proper set of unit tests to automatically
-verify that the integration is behaving as expected during CI/CD pipeline.
-
-Coverage
---------
-
-There should be at least one unit test per command function. In each unit
-test, the target command function is executed with specific parameters and the
-output of the command function is checked against an expected output.
-
-Unit tests should be self contained and should not interact with external
-resources like (API, devices, ...). To isolate the code from external resources
-you need to mock the API of the external resource using pytest-mock:
-https://github.com/pytest-dev/pytest-mock/
-
-In the following code we configure requests-mock (a mock of Python requests)
-before each test to simulate the API calls to the RunZero API. This way we
-can have full control of the API behavior and focus only on testing the logic
-inside the integration code.
-
-We recommend to use outputs from the API calls and use them to compare the
-results when possible. See the ``test_data`` directory that contains the data
-we use for comparison, in order to reduce the complexity of the unit tests and
-avoiding to manually mock all the fields.
-
-NOTE: we do not have to import or build a requests-mock instance explicitly.
-requests-mock library uses a pytest specific mechanism to provide a
-requests_mock instance to any function with an argument named requests_mock.
-
-More Details
-------------
-
-More information about Unit Tests in Cortex XSOAR:
-https://xsoar.pan.dev/docs/integrations/unit-testing
-
-"""
-
 import json
 import io
-
-# import pytest
 
 
 def util_load_json(path):
