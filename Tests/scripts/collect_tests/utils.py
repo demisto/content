@@ -1,3 +1,5 @@
+import os
+
 from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
@@ -322,3 +324,10 @@ def hotfix_detect_old_script_yml(path: Path):
 class FilesToCollect(NamedTuple):
     changed_files: tuple[str, ...]
     pack_ids_files_were_removed_from: tuple[str, ...]
+
+
+def is_test_data_exist(modeling_rule_dir):
+    for modeling_rule_file in os.scandir(modeling_rule_dir):
+        if modeling_rule_file.name.endswith('testdata.json'):
+            return True
+    return False
