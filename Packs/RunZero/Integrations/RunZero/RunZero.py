@@ -215,11 +215,17 @@ def parse_raw_wireless(raw: dict) -> list:
     return [message]
 
 
+def check_if_valid_options(args: dict, valid_options: set):
+    if len(valid_options.intersection(args.keys())) > 1:
+        return_error(f'Please choose one option from the following: {valid_options}')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
 def asset_search_command(client: Client, args: dict) -> CommandResults:
     search_params = {}
+    check_if_valid_options(args, {'ips', 'hostnames', 'asset_ids', 'search'})
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('ips'):
         search_list = ' or address:'.join(argToList(args.get('ips')))
@@ -244,7 +250,7 @@ def asset_search_command(client: Client, args: dict) -> CommandResults:
             if remove_svc:
                 item_raw.pop('services', None)
             message.extend(parse_raw_asset(item_raw))
-    if type(raw) is dict:
+    if isinstance(raw, dict):
         if remove_attr:
             raw.pop('attributes')
         if remove_svc:
@@ -305,6 +311,7 @@ def tags_add_command(client: Client, args: dict) -> CommandResults:
 
 
 def service_search_command(client: Client, args: dict) -> CommandResults:
+    check_if_valid_options(args, {'service_id', 'service_addresses', 'search'})
     service_string = ''
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('service_id'):
@@ -317,13 +324,13 @@ def service_search_command(client: Client, args: dict) -> CommandResults:
     raw = client.service_search(service_string)
     remove_attr = not argToBoolean(args.get('display_attributes', 'False'))
     message = []
-    if type(raw) is list:
+    if isinstance(raw, list):
         raw = raw[:limit]
         for item_raw in raw:
             if remove_attr:
                 item_raw.pop('attributes', None)
             message.extend(parse_raw_service(item_raw))
-    if type(raw) is dict:
+    if isinstance(raw, dict):
         if remove_attr:
             raw.pop('attributes', None)
         message.extend(parse_raw_service(raw))
@@ -410,6 +417,7 @@ def test_module(client: Client) -> str:
 
 def wireless_lan_search_command(client: Client, args: dict) -> CommandResults:
     wireless_string = ''
+    check_if_valid_options(args, {'wireless_id', 'search'})
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('wireless_id'):
         wireless_string = f'/{args["wireless_id"]}'
@@ -418,11 +426,11 @@ def wireless_lan_search_command(client: Client, args: dict) -> CommandResults:
     raw = client.wireless_search(wireless_string)
     raw = raw[:limit]
     message = []
-    if type(raw) is list:
+    if isinstance(raw, list):
         raw = raw[:limit]
         for item_raw in raw:
             message.extend(parse_raw_wireless(item_raw))
-    if type(raw) is dict:
+    if isinstance(raw, dict):
         message.extend(parse_raw_wireless(raw))
     human_readable = tableToMarkdown('Wireless',
                                      message,

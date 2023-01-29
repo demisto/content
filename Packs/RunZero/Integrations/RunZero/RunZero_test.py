@@ -1,5 +1,6 @@
 import json
 import io
+import pytest
 from CommonServerPython import CommandResults
 
 ASSET_ID = 'bf707048-7ce9-4249-a58c-0aaa257d69f0'
@@ -88,7 +89,7 @@ def test_parse_raw_wireless():
 def test_assets_search(requests_mock):
     """
     Tests the assets-search command function.
-        Given: Asssets in RunZero
+        Given: Assets in RunZero
         When: Searching for all assets
         Then: Returns the assets
     """
@@ -116,6 +117,73 @@ def test_assets_search(requests_mock):
                                             )
 
     assertCommandResults(actual_commandResult, expected_commandResult)
+
+
+def test_assets_search_exits_if_invalid_args(requests_mock):
+    """
+    Tests the assets-search command function.
+        Given: Assets in RunZero
+        When: Searching for all assets with more than one valid arg.
+        Then: The command exits with SystemExit(0)
+    """
+    from RunZero import asset_search_command
+    mock_response = util_load_json('test_data/assets.json')
+    requests_mock.get(
+        f'{BASE_URL}/org/assets',
+        json=mock_response)
+
+    client = get_client()
+    with pytest.raises(SystemExit) as excinfo:
+        asset_search_command(
+            client=client,
+            args={'ips': '192.168.1.1', 'hostnames': 'localhost'}
+        )
+    assert excinfo.value.code == 0
+
+
+def test_service_search_exits_if_invalid_args(requests_mock):
+    """
+    Tests the service-search command function.
+        Given: Services in RunZero.
+        When: Searching for all services providing more than one valid arg.
+        Then: The command exits with SystemExit(0).
+    """
+    from RunZero import service_search_command
+    mock_response = util_load_json('test_data/services.json')
+    requests_mock.get(
+        f'{BASE_URL}/org/services',
+        json=mock_response)
+
+    client = get_client()
+    with pytest.raises(SystemExit) as excinfo:
+        service_search_command(
+            client=client,
+            args={'service_id': '04d60ddf-8d28-494c-8186-8cd514e5b9cb', 'search': 'ips:191.168.1.1'}
+        )
+    assert excinfo.value.code == 0
+
+
+def test_wireless_search_exits_if_invalid_args(requests_mock):
+    """
+    Tests the wirelessLAN-search command function.
+        Given: Wireless LAN in RunZero.
+        When: Searching for all wirelessLAN providing more than one valid arg.
+        Then: The command exits with SystemExit(0).
+    """
+    from RunZero import wireless_lan_search_command
+    mock_response = util_load_json('test_data/wireless.json')
+    requests_mock.get(
+        f'{BASE_URL}/org/wireless',
+        json=mock_response)
+
+    client = get_client()
+    with pytest.raises(SystemExit) as excinfo:
+        wireless_lan_search_command(
+            client=client,
+            args={'wireless_id': '04d60ddf-8d28-494c-8186-8cd514e5b9cb', 'search': 'interface:wlan0'}
+        )
+    assert excinfo.value.code == 0
+
 
 
 def test_asset_search(requests_mock):
@@ -406,4 +474,3 @@ def test_tag_delete(requests_mock):
                                             readable_output=f'Tags {tagsList} from asset: {ASSET_ID} deleted successfully.'
                                             )
     assertCommandResults(actual_commandResult, expected_commandResult)
-
