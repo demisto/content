@@ -54,7 +54,7 @@
       "dst_timezone":"America/City",
       "dst_zipcode":"12345",
       "dstip":"5.5.5.5",
-      "event_type":"alert",
+      "source_log_event":"alert",
       "from_user":"testt@test.com",
       "hostname":"HOSTNAME",
       "incident_id":1303665328656929400,
@@ -165,7 +165,7 @@
       "dst_timezone":"America/Los_Angeles",
       "dst_zipcode":"N/A",
       "dstip":"3.3.3.3",
-      "event_type":"alert",
+      "source_log_event":"alert",
       "from_user":"my.user@test.com",
       "hostname":"hostname",
       "incident_id":3748589532603481234,
@@ -310,7 +310,7 @@
       "useragent":"",
       "userip":"5.5.5.5",
       "userkey":"my.user@test.com",
-      "event_type":"application"
+      "source_log_event":"application"
    },
    {
       "_appsession_start":"yes",
@@ -402,7 +402,7 @@
       "useragent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
       "userip":"2.2.2.2",
       "userkey":"user@test.com",
-      "event_type":"application"
+      "source_log_event":"application"
    },
    {
       "timestamp":1658384700,
@@ -423,7 +423,7 @@
       "count":1,
       "_insertion_epoch_timestamp":1658385000,
       "_id":"d3ad748bf011262fa142123",
-      "event_type":"audit"
+      "source_log_event":"audit"
    },
    {
       "timestamp":1658381961,
@@ -443,7 +443,7 @@
       "count":1,
       "_insertion_epoch_timestamp":1658382261,
       "_id":"c8d6aed8f613f5de0fa5e123",
-      "event_type":"audit"
+      "source_log_event":"audit"
    },
    {
       "_correlation_id":"851b5bce-81bf-4227-a23d-151a23ab1234",
@@ -503,7 +503,7 @@
       "user":"test@test.com",
       "userip":"",
       "userkey":"test@test.com",
-      "event_type":"network"
+      "source_log_event":"network"
    },
    {
       "_correlation_id":"1355542e-cdad-4fef-8e5a-108231b1f123",
@@ -563,6 +563,93 @@
       "user":"test@test.com",
       "userip":"",
       "userkey":"test@test.com",
-      "event_type":"network"
-   }
+      "source_log_event":"network"
+   },
+   {
+      "_id": "005f825a0b3be6fc70ea4763",
+      "_insertion_epoch_timestamp": 1673866623,
+      "access_method": "Client",
+      "acked": "false",
+      "action": "alert",
+      "activity": "Download",
+      "alert": "yes",
+      "alert_name": "Azure Activity Monitoring",
+      "alert_type": "policy",
+      "all_policy_matches": [
+          "Azure Activity Monitoring"
+      ],
+      "app": "Microsoft Azure",
+      "app_session_id": 7779657025619615505,
+      "appcategory": "IaaS/PaaS",
+      "appsuite": "Office365",
+      "browser": "Native",
+      "browser_session_id": 6351725111154165988,
+      "category": "IaaS/PaaS",
+      "cci": 95,
+      "ccl": "excellent",
+      "connection_id": 0,
+      "count": 1,
+      "device": "Windows Device",
+      "device_classification": "managed",
+      "domain": "nxsea.blob.core.windows.net",
+      "dst_country": "S",
+      "dst_geoip_src": 2,
+      "dst_latitude": 1.1,
+      "dst_location": "Singapore",
+      "dst_longitude": 1.1,
+      "dst_region": "Singapore",
+      "dst_timezone": "Asia/Singapore",
+      "dst_zipcode": "18",
+      "dstip": "192.168.1.2",
+      "file_category": "File Type Not Detected",
+      "file_size": 34134,
+      "file_type": "File Type Not Detected",
+      "hostname": "BES01L3GAP-B97",
+      "incident_id": 67686944653563251,
+      "managed_app": "no",
+      "managementID": "",
+      "md5": "04b833dc02118a572fd28041cf023",
+      "netskope_pop": "IN-DEL1",
+      "nsdeviceuid": "0-B2D0-B7EF-0EF9-4F062836DE28",
+      "object": "Windows10.0-KB5022282-x64.cab",
+      "object_type": "File",
+      "organization_unit": "",
+      "os": "Windows 10",
+      "os_version": "Windows 10",
+      "other_categories": [
+          "WFM_Support_Users_Blocked"
+      ],
+      "page": "sea.blob.core.windows.net",
+      "page_site": "Windows Azure",
+      "policy": "Azure Activity Monitoring",
+      "policy_id": "70A3DD95B43B341AC565F5B2546 2023-01-12 08:01:45.238070",
+      "port": 443,
+      "protocol": "HTTPS/1.1",
+      "request_id": 249009331548984,
+      "severity": "unknown",
+      "site": "Windows Azure",
+      "src_country": "IN",
+      "src_geoip_src": 2,
+      "src_latitude": 1.1,
+      "src_location": "Del",
+      "src_longitude": 1.1,
+      "src_region": "National Capital Territory of Delhi",
+      "src_time": "Mon Jan 16 16:26:08 2023",
+      "src_timezone": "Asia/Kolkata",
+      "src_zipcode": "110003",
+      "srcip": "192.168.1.2",
+      "telemetry_app": "",
+      "timestamp": 1673866616,
+      "traffic_type": "CloudApp",
+      "transaction_id": 67686944653,
+      "tss_mode": "inline",
+      "type": "nspolicy",
+      "ur_normalized": "test@test.com",
+      "url": "blob.core.windows.net/content-cas0/c1-4c88-86f2-84c846f715c3/Windows10.0-KB5022282-x64.cab",
+      "user": "test@test.com",
+      "useragent": "Microsoft BITS/7.8",
+      "userip": "192.168.1.2",
+      "userkey": "test@test.com",
+      "source_log_event": "page"
+  }
 ]

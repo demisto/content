@@ -1,0 +1,515 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self",
+            "next": "metadata_links_next"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": [
+        {
+            "id": "data[0]_id",
+            "timestamp": "data[0]_timestamp",
+            "timestamp_nanoseconds": "data[0]_timestamp_nanoseconds",
+            "date": "data[0]_date",
+            "event_type": "data[0]_event_type",
+            "event_type_id": "data[0]_event_type_id",
+            "connector_guid": "data[0]_connector_guid",
+            "group_guids": [
+                "data[0]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[0]_computer_connector_guid",
+                "hostname": "data[0]_computer_hostname",
+                "external_ip": "data[0]_computer_external_ip",
+                "active": "data[0]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[0]_computer_network_addresses[0]_ip",
+                        "mac": "data[0]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[0]_computer_links_computer",
+                    "trajectory": "data[0]_computer_links_trajectory",
+                    "group": "data[0]_computer_links_group"
+                }
+            }
+        },
+        {
+            "id": "data[1]_id",
+            "timestamp": "data[1]_timestamp",
+            "timestamp_nanoseconds": "data[1]_timestamp_nanoseconds",
+            "date": "data[1]_date",
+            "event_type": "data[1]_event_type",
+            "event_type_id": "data[1]_event_type_id",
+            "connector_guid": "data[1]_connector_guid",
+            "group_guids": [
+                "data[1]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[1]_computer_connector_guid",
+                "hostname": "data[1]_computer_hostname",
+                "external_ip": "data[1]_computer_external_ip",
+                "active": "data[1]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[1]_computer_network_addresses[0]_ip",
+                        "mac": "data[1]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[1]_computer_links_computer",
+                    "trajectory": "data[1]_computer_links_trajectory",
+                    "group": "data[1]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "package_manager_serial_number": "data[1]_bp_data_package_manager_serial_number",
+                "sts": "data[1]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[2]_id",
+            "timestamp": "data[2]_timestamp",
+            "timestamp_nanoseconds": "data[2]_timestamp_nanoseconds",
+            "date": "data[2]_date",
+            "event_type": "data[2]_event_type",
+            "event_type_id": "data[2]_event_type_id",
+            "connector_guid": "data[2]_connector_guid",
+            "group_guids": [
+                "data[2]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[2]_computer_connector_guid",
+                "hostname": "data[2]_computer_hostname",
+                "external_ip": "data[2]_computer_external_ip",
+                "active": "data[2]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[2]_computer_network_addresses[0]_ip",
+                        "mac": "data[2]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[2]_computer_links_computer",
+                    "trajectory": "data[2]_computer_links_trajectory",
+                    "group": "data[2]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "package_manager_serial_number": "data[2]_bp_data_package_manager_serial_number",
+                "sts": "data[2]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[3]_id",
+            "timestamp": "data[3]_timestamp",
+            "timestamp_nanoseconds": "data[3]_timestamp_nanoseconds",
+            "date": "data[3]_date",
+            "event_type": "data[3]_event_type",
+            "event_type_id": "data[3]_event_type_id",
+            "connector_guid": "data[3]_connector_guid",
+            "group_guids": [
+                "data[3]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[3]_computer_connector_guid",
+                "hostname": "data[3]_computer_hostname",
+                "external_ip": "data[3]_computer_external_ip",
+                "active": "data[3]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[3]_computer_network_addresses[0]_ip",
+                        "mac": "data[3]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[3]_computer_links_computer",
+                    "trajectory": "data[3]_computer_links_trajectory",
+                    "group": "data[3]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "package_manager_current_version": "data[3]_bp_data_package_manager_current_version",
+                "package_manager_pending_version": "data[3]_bp_data_package_manager_pending_version",
+                "sts": "data[3]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[4]_id",
+            "timestamp": "data[4]_timestamp",
+            "timestamp_nanoseconds": "data[4]_timestamp_nanoseconds",
+            "date": "data[4]_date",
+            "event_type": "data[4]_event_type",
+            "event_type_id": "data[4]_event_type_id",
+            "connector_guid": "data[4]_connector_guid",
+            "group_guids": [
+                "data[4]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[4]_computer_connector_guid",
+                "hostname": "data[4]_computer_hostname",
+                "external_ip": "data[4]_computer_external_ip",
+                "active": "data[4]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[4]_computer_network_addresses[0]_ip",
+                        "mac": "data[4]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[4]_computer_links_computer",
+                    "trajectory": "data[4]_computer_links_trajectory",
+                    "group": "data[4]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "package_manager_current_version": "data[4]_bp_data_package_manager_current_version",
+                "package_manager_pending_version": "data[4]_bp_data_package_manager_pending_version",
+                "sts": "data[4]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[5]_id",
+            "timestamp": "data[5]_timestamp",
+            "timestamp_nanoseconds": "data[5]_timestamp_nanoseconds",
+            "date": "data[5]_date",
+            "event_type": "data[5]_event_type",
+            "event_type_id": "data[5]_event_type_id",
+            "connector_guid": "data[5]_connector_guid",
+            "group_guids": [
+                "data[5]_group_guids_0"
+            ],
+            "error": {
+                "error_code": "data[5]_error_error_code",
+                "description": "data[5]_error_description"
+            },
+            "computer": {
+                "connector_guid": "data[5]_computer_connector_guid",
+                "hostname": "data[5]_computer_hostname",
+                "external_ip": "data[5]_computer_external_ip",
+                "active": "data[5]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[5]_computer_network_addresses[0]_ip",
+                        "mac": "data[5]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[5]_computer_links_computer",
+                    "trajectory": "data[5]_computer_links_trajectory",
+                    "group": "data[5]_computer_links_group"
+                }
+            },
+            "isolation": {
+                "error_code": "data[5]_isolation_error_code"
+            }
+        },
+        {
+            "id": "data[6]_id",
+            "timestamp": "data[6]_timestamp",
+            "timestamp_nanoseconds": "data[6]_timestamp_nanoseconds",
+            "date": "data[6]_date",
+            "event_type": "data[6]_event_type",
+            "event_type_id": "data[6]_event_type_id",
+            "connector_guid": "data[6]_connector_guid",
+            "group_guids": [
+                "data[6]_group_guids_0"
+            ],
+            "error": {
+                "error_code": "data[6]_error_error_code",
+                "description": "data[6]_error_description"
+            },
+            "computer": {
+                "connector_guid": "data[6]_computer_connector_guid",
+                "hostname": "data[6]_computer_hostname",
+                "external_ip": "data[6]_computer_external_ip",
+                "active": "data[6]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[6]_computer_network_addresses[0]_ip",
+                        "mac": "data[6]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[6]_computer_links_computer",
+                    "trajectory": "data[6]_computer_links_trajectory",
+                    "group": "data[6]_computer_links_group"
+                }
+            },
+            "isolation": {
+                "error_code": "data[6]_isolation_error_code"
+            }
+        },
+        {
+            "id": "data[7]_id",
+            "timestamp": "data[7]_timestamp",
+            "timestamp_nanoseconds": "data[7]_timestamp_nanoseconds",
+            "date": "data[7]_date",
+            "event_type": "data[7]_event_type",
+            "event_type_id": "data[7]_event_type_id",
+            "connector_guid": "data[7]_connector_guid",
+            "group_guids": [
+                "data[7]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[7]_computer_connector_guid",
+                "hostname": "data[7]_computer_hostname",
+                "external_ip": "data[7]_computer_external_ip",
+                "active": "data[7]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[7]_computer_network_addresses[0]_ip",
+                        "mac": "data[7]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[7]_computer_links_computer",
+                    "trajectory": "data[7]_computer_links_trajectory",
+                    "group": "data[7]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "package_manager_serial_number": "data[7]_bp_data_package_manager_serial_number",
+                "sts": "data[7]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[8]_id",
+            "timestamp": "data[8]_timestamp",
+            "timestamp_nanoseconds": "data[8]_timestamp_nanoseconds",
+            "date": "data[8]_date",
+            "event_type": "data[8]_event_type",
+            "event_type_id": "data[8]_event_type_id",
+            "connector_guid": "data[8]_connector_guid",
+            "group_guids": [
+                "data[8]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[8]_computer_connector_guid",
+                "hostname": "data[8]_computer_hostname",
+                "external_ip": "data[8]_computer_external_ip",
+                "active": "data[8]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[8]_computer_network_addresses[0]_ip",
+                        "mac": "data[8]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[8]_computer_links_computer",
+                    "trajectory": "data[8]_computer_links_trajectory",
+                    "group": "data[8]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "package_manager_serial_number": "data[8]_bp_data_package_manager_serial_number",
+                "sts": "data[8]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[9]_id",
+            "timestamp": "data[9]_timestamp",
+            "timestamp_nanoseconds": "data[9]_timestamp_nanoseconds",
+            "date": "data[9]_date",
+            "event_type": "data[9]_event_type",
+            "event_type_id": "data[9]_event_type_id",
+            "connector_guid": "data[9]_connector_guid",
+            "group_guids": [
+                "data[9]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[9]_computer_connector_guid",
+                "hostname": "data[9]_computer_hostname",
+                "external_ip": "data[9]_computer_external_ip",
+                "active": "data[9]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[9]_computer_network_addresses[0]_ip",
+                        "mac": "data[9]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[9]_computer_links_computer",
+                    "trajectory": "data[9]_computer_links_trajectory",
+                    "group": "data[9]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "package_manager_pending_version": "data[9]_bp_data_package_manager_pending_version",
+                "sts": "data[9]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[10]_id",
+            "timestamp": "data[10]_timestamp",
+            "timestamp_nanoseconds": "data[10]_timestamp_nanoseconds",
+            "date": "data[10]_date",
+            "event_type": "data[10]_event_type",
+            "event_type_id": "data[10]_event_type_id",
+            "connector_guid": "data[10]_connector_guid",
+            "group_guids": [
+                "data[10]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[10]_computer_connector_guid",
+                "hostname": "data[10]_computer_hostname",
+                "external_ip": "data[10]_computer_external_ip",
+                "active": "data[10]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[10]_computer_network_addresses[0]_ip",
+                        "mac": "data[10]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[10]_computer_links_computer",
+                    "trajectory": "data[10]_computer_links_trajectory",
+                    "group": "data[10]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "package_manager_pending_version": "data[10]_bp_data_package_manager_pending_version",
+                "sts": "data[10]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[11]_id",
+            "timestamp": "data[11]_timestamp",
+            "timestamp_nanoseconds": "data[11]_timestamp_nanoseconds",
+            "date": "data[11]_date",
+            "event_type": "data[11]_event_type",
+            "event_type_id": "data[11]_event_type_id",
+            "connector_guid": "data[11]_connector_guid",
+            "group_guids": [
+                "data[11]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[11]_computer_connector_guid",
+                "hostname": "data[11]_computer_hostname",
+                "external_ip": "data[11]_computer_external_ip",
+                "active": "data[11]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[11]_computer_network_addresses[0]_ip",
+                        "mac": "data[11]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[11]_computer_links_computer",
+                    "trajectory": "data[11]_computer_links_trajectory",
+                    "group": "data[11]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "ecx": "data[11]_bp_data_ecx",
+                "error_code": "data[11]_bp_data_error_code",
+                "error_source": "data[11]_bp_data_error_source",
+                "package_name": "data[11]_bp_data_package_name",
+                "package_uri": "data[11]_bp_data_package_uri",
+                "sts": "data[11]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[12]_id",
+            "timestamp": "data[12]_timestamp",
+            "timestamp_nanoseconds": "data[12]_timestamp_nanoseconds",
+            "date": "data[12]_date",
+            "event_type": "data[12]_event_type",
+            "event_type_id": "data[12]_event_type_id",
+            "connector_guid": "data[12]_connector_guid",
+            "group_guids": [
+                "data[12]_group_guids_0"
+            ],
+            "computer": {
+                "connector_guid": "data[12]_computer_connector_guid",
+                "hostname": "data[12]_computer_hostname",
+                "external_ip": "data[12]_computer_external_ip",
+                "active": "data[12]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[12]_computer_network_addresses[0]_ip",
+                        "mac": "data[12]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[12]_computer_links_computer",
+                    "trajectory": "data[12]_computer_links_trajectory",
+                    "group": "data[12]_computer_links_group"
+                }
+            },
+            "bp_data": {
+                "ecx": "data[12]_bp_data_ecx",
+                "error_code": "data[12]_bp_data_error_code",
+                "error_source": "data[12]_bp_data_error_source",
+                "package_name": "data[12]_bp_data_package_name",
+                "package_uri": "data[12]_bp_data_package_uri",
+                "sts": "data[12]_bp_data_sts"
+            }
+        },
+        {
+            "id": "data[13]_id",
+            "timestamp": "data[13]_timestamp",
+            "timestamp_nanoseconds": "data[13]_timestamp_nanoseconds",
+            "date": "data[13]_date",
+            "event_type": "data[13]_event_type",
+            "event_type_id": "data[13]_event_type_id",
+            "hostname": "data[13]_hostname"
+        },
+        {
+            "id": "data[14]_id",
+            "timestamp": "data[14]_timestamp",
+            "timestamp_nanoseconds": "data[14]_timestamp_nanoseconds",
+            "date": "data[14]_date",
+            "event_type": "data[14]_event_type",
+            "event_type_id": "data[14]_event_type_id",
+            "detection": "data[14]_detection",
+            "detection_id": "data[14]_detection_id",
+            "connector_guid": "data[14]_connector_guid",
+            "group_guids": [
+                "data[14]_group_guids_0"
+            ],
+            "severity": "data[14]_severity",
+            "computer": {
+                "connector_guid": "data[14]_computer_connector_guid",
+                "hostname": "data[14]_computer_hostname",
+                "external_ip": "data[14]_computer_external_ip",
+                "active": "data[14]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[14]_computer_network_addresses[0]_ip",
+                        "mac": "data[14]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[14]_computer_links_computer",
+                    "trajectory": "data[14]_computer_links_trajectory",
+                    "group": "data[14]_computer_links_group"
+                }
+            },
+            "file": {
+                "disposition": "data[14]_file_disposition",
+                "file_name": "data[14]_file_file_name",
+                "file_path": "data[14]_file_file_path",
+                "identity": {
+                    "sha256": "data[14]_file_identity_sha256",
+                    "sha1": "data[14]_file_identity_sha1",
+                    "md5": "data[14]_file_identity_md5"
+                }
+            },
+            "tactics": [
+                "data[14]_tactics_0"
+            ],
+            "techniques": [
+                "data[14]_techniques_0"
+            ]
+        }
+    ]
+}
