@@ -18,6 +18,8 @@
 Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved
     questions, packages and sensor information.
 
+The integration was not effected by the latest released version (4.x) of THR.
+
   ## Configuration Parameters
   <ul>
   <li><i>Hostname</i>
