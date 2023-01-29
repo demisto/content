@@ -4,9 +4,9 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: |-
-    The United States: api-us.security.microsoft.com
-    Europe: api-eu.security.microsoft.com
-    The United Kingdom: api-uk.security.microsoft.com
+    Use one of the following:
+    https://portal.cloudappsecurity.com or
+    https://yourdomain.eu2.portal.cloudappsecurity.com
   display: Endpoint URI
   hidden: false
   name: url
@@ -27,9 +27,11 @@ configuration:
   required: true
   type: 0
 - display: Scope
+  additionalinfo: The scope of the application (only if self-deployed).
   name: scope
   required: true
   type: 0
+  defaultvalue: '05a65629-4c1b-48c1-a78b-804c4abdd4af/.default'
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
@@ -96,7 +98,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.32858
+  dockerimage: demisto/pydantic-jwt3:1.0.0.45851
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
