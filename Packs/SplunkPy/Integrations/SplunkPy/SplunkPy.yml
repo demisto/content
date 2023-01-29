@@ -112,17 +112,17 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: If selected, closing a Notable Event on Splunk with a status of "Closed" will close the corresponding fetched incident on XSOAR.
+- additionalinfo: If selected, closing a Notable Event in Splunk with a status of "Closed" will close the corresponding fetched incident in Cortex XSOAR.
   defaultvalue: 'false'
-  display: Mirror closed XSOAR Incidents (Incoming Mirroring)
+  display: Mirror closed Cortex XSOAR Incidents (Incoming Mirroring)
   name: close_incident
   required: false
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: If selected, Notables with a status label that is marked as "End Status" on Splunk will also be mirrored on closure.
+- additionalinfo: If selected, Notables with a status that is marked as "End Status" in Splunk will also be mirrored on closure.
   defaultvalue: 'false'
-  display: Add Splunk "End Status" statuses to mirroring (Incoming Mirroring)
+  display: Add Splunk statuses marked as "End Status" to mirroring (Incoming Mirroring)
   name: close_end_status_labels
   required: false
   type: 8
@@ -140,7 +140,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-  additionalinfo: If selected, closing a fetched incident of a Splunk Notable on XSOAR will close the corresponding Notable Event on Splunk.
+  additionalinfo: If selected, closing a fetched incident of a Splunk Notable in Cortex XSOAR will close the corresponding Notable Event in Splunk.
   defaultvalue: 'false'
 - display: Trust any certificate (not secure)
   name: unsecure
