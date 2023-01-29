@@ -274,7 +274,7 @@ def header_transform_get_user(header: str) -> str:
     return ""
 
 
-def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Gets args and client and returns List[CommandResults] of Tweets according to the reqested search.
         Args:
             client: client -  A Twitter client.
@@ -297,28 +297,26 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[C
     human_readable = tableToMarkdown("Tweets search results:", dict_to_tableToMarkdown,
                                      headers=headers, removeNull=False, headerTransform=header_transform_tweet_search)
     if next_token:
-        outputs = {'Twitter.Tweet.NextToken(val.next_token)': {'next_token': next_token}}
-        return [CommandResults(
-            outputs_prefix='Twitter.Tweet.TweetList',
-            outputs=result,
-            outputs_key_field='id',
-            readable_output=human_readable,
-            raw_response=raw_response
-        ), CommandResults(
+        outputs = {
+            'Twitter.Tweet(val.NextToken)': {'NextToken': next_token},
+            'Twitter.Tweet.TweetList(val.id === obj.id)': result
+        }
+        readable_output_next_token = tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
+                                                     headers=['next_token'], removeNull=False,
+                                                     headerTransform=header_transform_tweet_search)
+        return CommandResults(
             outputs=outputs,
-            readable_output=tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
-                                            headers=['next_token'], removeNull=False,
-                                            headerTransform=header_transform_tweet_search),
-            raw_response=next_token
-        )]
+            readable_output=human_readable + readable_output_next_token,
+            raw_response=raw_response
+        )
     else:
-        return [CommandResults(
+        return CommandResults(
             outputs_prefix='Twitter.Tweet.TweetList',
             outputs_key_field='id',
             outputs=result,
             readable_output=human_readable,
             raw_response=raw_response
-        )]
+        )
 
 
 def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:

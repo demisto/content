@@ -48,9 +48,9 @@ def test_twitter_tweet_search_command(mocker, response, expected_output, expecte
     mocker.patch.object(Client, '_http_request', return_value=response)
     result = twitter_tweet_search_command(client, args)
 
-    assert result[0].outputs == expected_output
-    assert result[0].readable_output == expected_human_readable
-    assert result[0].raw_response == expected_raw
+    assert result.outputs == expected_output
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == expected_raw
 
 
 @pytest.mark.parametrize('response, expected_output, expected_human_readable, expected_raw', [

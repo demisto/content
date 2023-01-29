@@ -34,8 +34,8 @@ This command will search for tweets posted over the past week and return all inf
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Search query to submit to the recent search endpoint. | Required | 
-| start_time | The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. | Optional | 
-| end_time | The most recent UTC timestamp to which the Tweets will be provided. | Optional | 
+| start_time | The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional | 
+| end_time | The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional | 
 | limit | Maximum number of results to return a number between 10 and 100. Default is 50. | Optional | 
 | next_token | When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Twitter returns a NextToken value in the response. To retrieve the next batch of objects, use the token returned from the prior request in your next request. | Optional | 
 
@@ -64,7 +64,7 @@ This command will search for tweets posted over the past week and return all inf
 | Twitter.Tweet.TweetList.media.url | String | A direct URL to the media file on Twitter. | 
 | Twitter.Tweet.TweetList.media.media_key | String | Unique identifier of the expanded media content | 
 | Twitter.Tweet.TweetList.media.alt_text | String | A description of an image to enable and support accessibility. Can be up to 1000 characters long. | 
-| Twitter.Tweet.NextToken.next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
+| Twitter.Tweet.NextToken | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
 
 #### Command example
 ```!twitter-tweet-search query="twitter" limit="10"```
@@ -223,7 +223,6 @@ This command will search for tweets posted over the past week and return all inf
 >|Next Token|
 >|---|
 >| xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx |
-
 
 ### twitter-user-get
 ***

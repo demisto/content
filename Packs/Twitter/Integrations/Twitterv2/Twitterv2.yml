@@ -35,13 +35,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided'
+      description: 'The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The most recent UTC timestamp to which the Tweets will be provided.'
+      description: 'The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.'
       isArray: false
       name: end_time
       required: false
@@ -124,7 +124,7 @@ script:
     - contextPath: Twitter.Tweet.TweetList.media.alt_text
       description: A description of an image to enable and support accessibility. Can be up to 1000 characters long.
       type: String
-    - contextPath: Twitter.Tweet.NextToken.next_token
+    - contextPath: Twitter.Tweet.NextToken
       description: A value that encodes the next 'page' of results that can be requested, via the next_token request parameter.
       type: String
   - arguments:
@@ -239,7 +239,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.9.46032
 fromversion: 6.5.0
 tests:
 - playbook-Test_Twitter_v2
