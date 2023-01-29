@@ -615,7 +615,8 @@ def main() -> None:
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
         params.get('certificate_thumbprint', '')
 
-    private_key = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
+    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                   or params.get('private_key', ''))
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()

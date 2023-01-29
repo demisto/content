@@ -523,7 +523,7 @@ def main():
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
-    private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
 
