@@ -184,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+      - "57"
     scriptarguments:
       body:
         simple: |-
@@ -212,53 +212,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: acbd4be2-6dbf-41f0-80ff-79f3946c76e5
-    type: playbook
-    task:
-      id: acbd4be2-6dbf-41f0-80ff-79f3946c76e5
-      version: -1
-      name: Cloud Response - Generic
-      description: |-
-        This playbook provides response playbooks for:
-            * AWS - Fully supported
-            * Azure - Fully supported
-            * GCP - Requires input adjustment (Beta)
-
-        The response actions available are:
-            * Terminate/Shut down/Power off an instance
-            * Delete/Disable a user
-            * Delete/Revoke/Disable credentials
-            * Block indicators
-      playbookName: Cloud Response - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-    separatecontext: false
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1310,
-          "y": 1540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -271,19 +224,31 @@ tasks:
       id: 7750a275-1ce8-4d59-8cff-bb6ff0b3855b
       version: -1
       name: Cortex XDR - Cloud Enrichment
+      description: |-
+        This playbook is responsible for collecting data from Cortex XDR detector and enriching data for further usage and building the layout.
+
+        The playbook collects or enriches the following data:
+        - Resource enrichment
+           - Previous activity seen in the specified region or project
+        - Account enrichment
+        - Network enrichment
+           - Attacker IP
+           - Geolocation
+           - ASN
       playbookName: Cortex XDR - Cloud Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "25"
     scriptarguments:
-      ResolveIP:
-        simple: "True"
       InternalRange:
-        simple: inputs.InternalRange
+        complex:
+          root: inputs.InternalRange
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -355,18 +320,7 @@ tasks:
     scriptarguments:
       alert_ids:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.name
-                iscontext: true
-              right:
-                value:
-                  simple: Unusual allocation of multiple cloud compute resources
-              ignorecase: true
-          accessor: alert_id
+          root: inputs.alert_id
       extend-context:
         simple: alertData=
       ignore-outputs:
@@ -412,7 +366,7 @@ tasks:
           left:
             value:
               complex:
-                root: requireAnalystReview
+                root: inputs.requireAnalystReview
             iscontext: true
           right:
             value:
@@ -887,6 +841,151 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 3e703855-68ed-4cc4-8b7a-3eb8a90e18dc
+    type: playbook
+    task:
+      id: 3e703855-68ed-4cc4-8b7a-3eb8a90e18dc
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        complex:
+          root: inputs.AWS-accessKeyRemediationType
+      AWS-resourceRemediationType:
+        complex:
+          root: inputs.AWS-resourceRemediationType
+      AWS-userRemediationType:
+        complex:
+          root: inputs.AWS-userRemediationType
+      Azure-resourceRemediationType:
+        complex:
+          root: inputs.Azure-resourceRemediationType
+      Azure-userRemediationType:
+        complex:
+          root: inputs.Azure-userRemediationType
+      GCP-accessKeyRemediationType:
+        complex:
+          root: inputs.GCP-accessKeyRemediationType
+      GCP-resourceRemediationType:
+        complex:
+          root: inputs.GCP-resourceRemediationType
+      GCP-userRemediationType:
+        complex:
+          root: inputs.GCP-userRemediationType
+      accessKeyId:
+        complex:
+          root: alertJson._all_events._aws_specific_fields
+          accessor: access_key_id
+      autoAccessKeyRemediation:
+        complex:
+          root: inputs.autoAccessKeyRemediation
+      autoBlockIndicators:
+        complex:
+          root: inputs.autoBlockIndicators
+      autoResourceRemediation:
+        complex:
+          root: inputs.autoResourceRemediation
+      autoUserRemediation:
+        complex:
+          root: inputs.autoUserRemediation
+      cloudProvider:
+        complex:
+          root: inputs.cloudProvider
+      region:
+        complex:
+          root: alertJson._all_events
+          accessor: region
+      resourceGroup:
+        complex:
+          root: |2-
+
+            alertJson._all_events
+          accessor: referenced_resource
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "5"
+      resourceName:
+        complex:
+          root: alertJson._all_events
+          accessor: referenced_resource_name
+      resourceZone:
+        complex:
+          root: alertJson._all_events
+          accessor: zone
+      username:
+        complex:
+          root: alertJson._all_events
+          accessor: actor_effective_username
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: alertJson._all_events.actor_effective_username
+              equals: {}
+              lhs:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider
+                iscontext: true
+              options:
+                value:
+                  simple: case_insensitive
+              rhs:
+                value:
+                  simple: GCP
+              then:
+                value:
+                  simple: alertJson._all_events.identity_name
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -931,11 +1030,136 @@ inputs:
   required: false
   description: Whether to require an analyst review after the alert remediation.
   playbookInputQuery:
-- key: InternalRange
+- key: cloudProvider
   value:
-    simple:
+    complex:
+      root: PaloAltoNetworksXDR.OriginalAlert.event
+      accessor: cloud_provider
   required: false
-  description: A list of internal IP ranges to check IP addresses against.
+  description: The cloud service provider involved.
+  playbookInputQuery:
+- key: autoResourceRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the resource remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    AWS available types:
+    Stop - for stopping the instances.
+    Terminate - for terminating the instances.
+  playbookInputQuery:
+- key: Azure-resourceRemediationType
+  value:
+    simple: Poweroff
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    Azure available types:
+    Poweroff - for shutting down the instances.
+    Delete - for deleting the instances.
+  playbookInputQuery:
+- key: GCP-resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    GCP available types:
+    Stop - For stopping the instances.
+    Delete - For deleting the instances.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    AWS available types:
+    Disable - for disabling the user's access key.
+    Delete - for the user's access key deletion.
+  playbookInputQuery:
+- key: GCP-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    GCP available types:
+    Disable - For disabling the user's access key.
+    Delete - For the deleting user's access key.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: AWS-userRemediationType
+  value:
+    simple: Revoke
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    AWS available types:
+    Delete - for the user deletion.
+    Revoke - for revoking the user's credentials.
+  playbookInputQuery:
+- key: Azure-userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    Azure available types:
+    Disable - for disabling the user.
+    Delete - for deleting the user.
+  playbookInputQuery:
+- key: GCP-userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+
+    GCP available types:
+    Delete - For deleting the user.
+    Disable - For disabling the user.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
 outputs: []
 tests:
