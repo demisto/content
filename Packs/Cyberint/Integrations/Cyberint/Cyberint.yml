@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: cyberint1
+  id: cyberint
   version: -1
 configuration:
 - display: Incident type
@@ -123,7 +123,7 @@ description: Cyberint provides intelligence-driven digital risk protection. This
   will help your enterprise effectively consume actionable cyber alerts to increase
   your security posture.
 display: Cyberint
-name: cyberint1
+name: cyberint
 script:
   commands:
   - arguments:
