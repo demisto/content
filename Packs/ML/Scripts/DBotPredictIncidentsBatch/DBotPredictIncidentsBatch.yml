@@ -98,7 +98,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.45297
+dockerimage: demisto/ml:1.0.0.45981
 fromversion: 5.0.0
 tests:
 - VerifyOOBV2Predictions-Test
