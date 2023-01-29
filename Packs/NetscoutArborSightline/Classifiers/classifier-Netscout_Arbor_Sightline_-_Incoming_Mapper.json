@@ -8,51 +8,63 @@
             "internalMapping": {
                 "Netscout Arbor Sightline Alert Type": {
                     "complex": null,
-                    "simple": "attributes.alert_class"
+                    "simple": "attributes.alert_class",
+                    "cliName": "netscoutarborsightlinealerttype"
                 },
                 "Classification": {
                     "complex": null,
-                    "simple": "attributes.classification"
+                    "simple": "attributes.classification",
+                    "cliName": "classification"
                 },
                 "Close Time": {
                     "complex": null,
-                    "simple": "attributes.stop_time"
+                    "simple": "attributes.stop_time",
+                    "cliName": "closetime"
                 },
                 "Country Name": {
                     "complex": null,
-                    "simple": "attributes.subobject.countries"
+                    "simple": "attributes.subobject.countries",
+                    "cliName": "countryname"
                 },
                 "Description": {
                     "complex": null,
-                    "simple": "attributes.subobject.description"
+                    "simple": "attributes.subobject.description",
+                    "cliName": "description"
                 },
                 "Destination IP": {
                     "complex": null,
-                    "simple": "attributes.subobject.dst_address"
+                    "simple": "attributes.subobject.dst_address",
+                    "cliName": "destinationip"
                 },
                 "Destination MAC Address": {
                     "complex": null,
-                    "simple": "attributes.subobject.destination_mac_address"
+                    "simple": "attributes.subobject.destination_mac_address",
+                    "cliName": "destinationmacaddress"
                 },
                 "Device Local IP": {
                     "complex": null,
-                    "simple": "attributes.subobject.host_address"
+                    "simple": "attributes.subobject.host_address",
+                    "cliName": "devicelocalip"
                 },
                 "Is Active": {
                     "complex": null,
-                    "simple": "attributes.ongoing"
+                    "simple": "attributes.ongoing",
+                    "cliName": "isactive"
                 },
                 "Start Time": {
                     "complex": null,
-                    "simple": "attributes.start_time"
+                    "simple": "attributes.start_time",
+                    "cliName": "starttime"
                 },
                 "Subtype": {
                     "complex": null,
-                    "simple": "attributes.alert_type"
+                    "simple": "attributes.alert_type",
+                    "cliName": "subtype"
                 },
                 "Traffic Direction": {
                     "complex": null,
-                    "simple": "attributes.subobject.direction"
+                    "simple": "attributes.subobject.direction",
+                    "cliName": "trafficdirection"
                 },
                 "severity": {
                     "complex": null,

@@ -16,7 +16,8 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpiassignedto"
                 },
                 "GLPI Assigned To Group": {
                     "complex": {
@@ -27,16 +28,20 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpiassignedtogroup"
                 },
                 "GLPI Category": {
-                    "simple": "itilcategories_id"
+                    "simple": "itilcategories_id",
+                    "cliName": "glpicategory"
                 },
                 "GLPI Closing Date": {
-                    "simple": "closedate"
+                    "simple": "closedate",
+                    "cliName": "glpiclosingdate"
                 },
                 "GLPI Description": {
-                    "simple": "content"
+                    "simple": "content",
+                    "cliName": "glpidescription"
                 },
                 "GLPI Impact": {
                     "complex": {
@@ -65,16 +70,20 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpiimpact"
                 },
                 "GLPI Internal Time To Own": {
-                    "simple": "internal_time_to_own"
+                    "simple": "internal_time_to_own",
+                    "cliName": "glpiinternaltimetoown"
                 },
                 "GLPI Internal Time To Resolve": {
-                    "simple": "internal_time_to_resolve"
+                    "simple": "internal_time_to_resolve",
+                    "cliName": "glpiinternaltimetoresolve"
                 },
                 "GLPI Opening Date": {
-                    "simple": "date"
+                    "simple": "date",
+                    "cliName": "glpiopeningdate"
                 },
                 "GLPI Priority": {
                     "complex": {
@@ -103,7 +112,8 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpipriority"
                 },
                 "GLPI Request Source": {
                     "complex": {
@@ -132,7 +142,8 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpirequestsource"
                 },
                 "GLPI Requester": {
                     "complex": {
@@ -143,7 +154,8 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpirequester"
                 },
                 "GLPI Requester Group": {
                     "complex": {
@@ -154,10 +166,12 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpirequestergroup"
                 },
                 "GLPI Solved Date": {
-                    "simple": "solvedate"
+                    "simple": "solvedate",
+                    "cliName": "glpisolveddate"
                 },
                 "GLPI Status": {
                     "complex": {
@@ -186,16 +200,20 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpistatus"
                 },
                 "GLPI Ticket ID": {
-                    "simple": "id"
+                    "simple": "id",
+                    "cliName": "glpiticketid"
                 },
                 "GLPI Time To Own": {
-                    "simple": "time_to_own"
+                    "simple": "time_to_own",
+                    "cliName": "glpitimetoown"
                 },
                 "GLPI Time To Resolve": {
-                    "simple": "time_to_resolve"
+                    "simple": "time_to_resolve",
+                    "cliName": "glpitimetoresolve"
                 },
                 "GLPI Type": {
                     "complex": {
@@ -224,7 +242,8 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpitype"
                 },
                 "GLPI Urgency": {
                     "complex": {
@@ -253,7 +272,8 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpiurgency"
                 },
                 "GLPI Watcher": {
                     "complex": {
@@ -264,7 +284,8 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpiwatcher"
                 },
                 "GLPI Watcher Group": {
                     "complex": {
@@ -275,7 +296,8 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpiwatchergroup"
                 },
                 "Ticket Closed Date": {
                     "complex": {
@@ -296,7 +318,8 @@
                                 "operator": "DateStringToISOFormat"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "ticketcloseddate"
                 },
                 "Ticket Opened Date": {
                     "complex": {
@@ -317,7 +340,8 @@
                                 "operator": "DateStringToISOFormat"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "ticketopeneddate"
                 },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
@@ -348,7 +372,8 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpiassignedto"
                 },
                 "GLPI Assigned To Group": {
                     "complex": {
@@ -359,16 +384,20 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpiassignedtogroup"
                 },
                 "GLPI Category": {
-                    "simple": "itilcategories_id"
+                    "simple": "itilcategories_id",
+                    "cliName": "glpicategory"
                 },
                 "GLPI Closing Date": {
-                    "simple": "closedate"
+                    "simple": "closedate",
+                    "cliName": "glpiclosingdate"
                 },
                 "GLPI Description": {
-                    "simple": "content"
+                    "simple": "content",
+                    "cliName": "glpidescription"
                 },
                 "GLPI Impact": {
                     "complex": {
@@ -397,16 +426,20 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpiimpact"
                 },
                 "GLPI Internal Time To Own": {
-                    "simple": "internal_time_to_own"
+                    "simple": "internal_time_to_own",
+                    "cliName": "glpiinternaltimetoown"
                 },
                 "GLPI Internal Time To Resolve": {
-                    "simple": "internal_time_to_resolve"
+                    "simple": "internal_time_to_resolve",
+                    "cliName": "glpiinternaltimetoresolve"
                 },
                 "GLPI Opening Date": {
-                    "simple": "date"
+                    "simple": "date",
+                    "cliName": "glpiopeningdate"
                 },
                 "GLPI Priority": {
                     "complex": {
@@ -435,7 +468,8 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpipriority"
                 },
                 "GLPI Request Source": {
                     "complex": {
@@ -464,7 +498,8 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpirequestsource"
                 },
                 "GLPI Requester": {
                     "complex": {
@@ -475,7 +510,8 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpirequester"
                 },
                 "GLPI Requester Group": {
                     "complex": {
@@ -486,10 +522,12 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpirequestergroup"
                 },
                 "GLPI Solved Date": {
-                    "simple": "solvedate"
+                    "simple": "solvedate",
+                    "cliName": "glpisolveddate"
                 },
                 "GLPI Status": {
                     "complex": {
@@ -518,16 +556,20 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpistatus"
                 },
                 "GLPI Ticket ID": {
-                    "simple": "id"
+                    "simple": "id",
+                    "cliName": "glpiticketid"
                 },
                 "GLPI Time To Own": {
-                    "simple": "time_to_own"
+                    "simple": "time_to_own",
+                    "cliName": "glpitimetoown"
                 },
                 "GLPI Time To Resolve": {
-                    "simple": "time_to_resolve"
+                    "simple": "time_to_resolve",
+                    "cliName": "glpitimetoresolve"
                 },
                 "GLPI Type": {
                     "complex": {
@@ -556,7 +598,8 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpitype"
                 },
                 "GLPI Urgency": {
                     "complex": {
@@ -585,7 +628,8 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "",
+                    "cliName": "glpiurgency"
                 },
                 "GLPI Watcher": {
                     "complex": {
@@ -596,7 +640,8 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpiwatcher"
                 },
                 "GLPI Watcher Group": {
                     "complex": {
@@ -607,7 +652,8 @@
                                 "operator": "Stringify"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "glpiwatchergroup"
                 },
                 "Ticket Closed Date": {
                     "complex": {
@@ -628,7 +674,8 @@
                                 "operator": "DateStringToISOFormat"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "ticketcloseddate"
                 },
                 "Ticket Opened Date": {
                     "complex": {
@@ -649,7 +696,8 @@
                                 "operator": "DateStringToISOFormat"
                             }
                         ]
-                    }
+                    },
+                    "cliName": "ticketopeneddate"
                 },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
@@ -676,7 +724,8 @@
                         "filters": [],
                         "root": "content",
                         "transformers": []
-                    }
+                    },
+                    "cliName": "description"
                 },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
