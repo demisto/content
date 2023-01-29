@@ -1344,7 +1344,7 @@ def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
 
 
-def test_panorama_edit_address_group_command_main_flow_remove_single_address(mocker):
+def test_panorama_edit_address_group_command_remove_single_address(mocker):
     """
     Given
      - pan-os-edit-address-group command arguments including a single address to remove.
@@ -1382,7 +1382,6 @@ def test_panorama_edit_address_group_command_main_flow_remove_single_address(moc
     assert exc_info.type == DemistoException
     assert exc_info.value.message == "cannot remove ['5.5.5.5'] addresses from address group test, " \
                                      "address-group test must have at least one address in its configuration"
-
 
 
 @pytest.mark.parametrize(
