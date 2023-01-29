@@ -86,7 +86,7 @@ script:
       description: Number of times this Tweet has been Retweeted.
       type: Number
     - contextPath: Twitter.Tweet.TweetList.public_metrics.reply_count
-      description: Number of Replies to this Tweet.
+      description: Number of replies to this Tweet.
       type: Number
     - contextPath: Twitter.Tweet.TweetList.public_metrics.like_count
       description: Number of Likes to this Tweet.

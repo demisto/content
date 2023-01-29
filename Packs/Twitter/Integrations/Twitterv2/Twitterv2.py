@@ -298,7 +298,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> Comman
                                      headers=headers, removeNull=False, headerTransform=header_transform_tweet_search)
     if next_token:
         outputs = {
-            'Twitter.Tweet(val.NextToken)': {'NextToken': next_token},
+            'Twitter.Tweet(val.next_token)': {'next_token': next_token},
             'Twitter.Tweet.TweetList(val.id === obj.id)': result
         }
         readable_output_next_token = tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
@@ -309,11 +309,17 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> Comman
             readable_output=human_readable + readable_output_next_token,
             raw_response=raw_response
         )
-    else:
+    elif result:
         return CommandResults(
             outputs_prefix='Twitter.Tweet.TweetList',
             outputs_key_field='id',
             outputs=result,
+            readable_output=human_readable,
+            raw_response=raw_response)
+    else:
+        return CommandResults(
+            outputs_prefix='Twitter.Tweet.TweetList',
+            outputs_key_field='id',
             readable_output=human_readable,
             raw_response=raw_response
         )

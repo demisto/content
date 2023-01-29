@@ -73,7 +73,6 @@ This command will search for Tweets posted over the past week and return all inf
 {
     "Twitter": {
         "Tweet": {
-            "next_token":  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
             "TweetList": [
                 {
                     "author": {
@@ -200,7 +199,8 @@ This command will search for Tweets posted over the past week and return all inf
                     },
                     "text": "some_text_twitter"
                 }
-            ]
+            ],
+            "next_token":  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         }
     }
 }
