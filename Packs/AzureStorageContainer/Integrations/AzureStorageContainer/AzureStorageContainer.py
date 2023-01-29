@@ -864,7 +864,7 @@ def set_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 # generate signature helper function
-def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str, expiry: str, sr: str, api_version: str, sip: str = ''):
+def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str, expiry: str, sr: str, api_version: str, sip: str = '') -> str:
     """
     Generate sas token for Container
 
@@ -878,7 +878,9 @@ def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str,
         sas token
 
     """
-   string_to_sign = (sp + "\n" +
+    if sip is None:
+        sip = ''
+    string_to_sign = (sp + "\n" +
                   signedstart + "\n"
                   + expiry + "\n"
                   + cr + "\n"
@@ -893,27 +895,25 @@ def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str,
                   + "" + "\n"
                   + "" + "\n"
                   + "").encode('UTF-8')
-signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), string_to_sign, hashlib.sha256)
-sig = base64.b64encode(signed_hmac_sha256.digest())
+    signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), string_to_sign, hashlib.sha256)
+    sig = base64.b64encode(signed_hmac_sha256.digest())
 
-token = {
-    'sp': sp,
-    'st': signedstart,
-    'se': expiry,
-    'sip': sip,
-    'spr': "https",
-    'sv': api_version,
-    'sr': sr,
-    'sig': sig
-}
-if sip:
-    token['sip'] = sip
-
+    token = {
+        'sp': sp,
+        'st': signedstart,
+        'se': expiry,
+        'sip': sip,
+        'spr': "https",
+        'sv': api_version,
+        'sr': sr,
+        'sig': sig
+    }
+  
     sas_token = urllib.parse.urlencode(token)
     return sas_token
 
 
-def check_valid_permission(valid_permissions: str, input_permissions: str):
+def check_valid_permission(valid_permissions: str, input_permissions: str) -> bool:
     """
     Check the permissions follows valid permission order.
 
@@ -929,10 +929,8 @@ def check_valid_permission(valid_permissions: str, input_permissions: str):
     if len(valid_permissions) < permissions_length:
         return False
     for i in range(permissions_length - 1):
-        x = input_permissions[i]
-        y = input_permissions[i + 1]
-        last = valid_permissions.rindex(x)
-        first = valid_permissions.index(y)
+        last = valid_permissions.rindex(input_permissions[i])
+        first = valid_permissions.index(input_permissions[i + 1])
         if last == -1 or first == -1 or last > first:
             return False
     return True
@@ -950,38 +948,35 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:
         CommandResults: outputs and raw response for XSOAR.
 
     """
-    api_version = client.get_api_version()
-    container_name = args.get("container_name")
+    apiVersion = client.get_api_version()
+    containerName = args.get("container_name")
     signedResource = args.get("signed_resources")
     signedPermissions = args.get("signed_permissions")
-    valid_permissions = "racwdxltmeop"
+    validPermissions = "racwdxltmeop"
     signedIp = args.get("signed_ip")
     # Check Permissions
-    if check_valid_permission(valid_permissions, signedPermissions):
+    if check_valid_permission(validPermissions, signedPermissions):
         # Set start time
-        signedstart = str((datetime.utcnow() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        account_key = demisto.params().get("key")
-        time_taken = int(args.get('expiry_time'))
-        signedExpiry = str((datetime.utcnow() + timedelta(hours=time_taken)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        url_suffix = f"{container_name}"
-        canonicalizedResource = f"/blob/{storage_account_name}/{container_name}"
-        url = client.get_base_url() + url_suffix
-        uri = urllib.parse.quote_plus(f"{url}")
-        sas_token = generate_sas_signature(account_key, canonicalizedResource, signedPermissions,
-                                           signedstart, signedExpiry, signedResource, api_version, signedIp)
-        sas_url = f"{url}?{sas_token}"
+        signedStart = str((datetime.utcnow() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        accountKey = demisto.params().get("key")
+        timeTaken = int(args.get('expiry_time'))
+        signedExpiry = str((datetime.utcnow() + timedelta(hours=timeTaken)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        urlSuffix = f"{containerName}"
+        canonicalizedResource = f"/blob/{storage_account_name}/{containerName}"
+        url = client.get_base_url() + urlSuffix
+        sasToken = generate_sas_signature(accountKey, canonicalizedResource, signedPermissions, signedStart, signedExpiry, signedResource, apiVersion, signedIp)
+        sas_url = f"{url}?{sasToken}"
         res_data = sas_url
-        markdown = tableToMarkdown('Azure storage container SAS url', res_data, headers=[container_name])
+        markdown = tableToMarkdown('Azure storage container SAS url', res_data, headers=[containerName])
         result = CommandResults(
             readable_output=markdown,
             outputs_prefix='AzureStorageContainer.Container',
-            outputs_key_field=container_name,
+            outputs_key_field=containerName,
             outputs=res_data
         )
         return result
     else:
         return_error(f"Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\' ")
-
 
 def test_module(client: Client) -> None:
     """
