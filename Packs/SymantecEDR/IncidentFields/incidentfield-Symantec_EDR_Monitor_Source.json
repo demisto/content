@@ -1,7 +1,7 @@
 {
     "id": "incident_edrmonitorsource",
     "version": -1,
-    "fromVersion": "6.9.0",
+    "fromVersion": "6.8.0",
     "modified": "2023-01-11T16:34:46.133402858+05:30",
     "name": "EDR Monitor Source",
     "ownerOnly": false,

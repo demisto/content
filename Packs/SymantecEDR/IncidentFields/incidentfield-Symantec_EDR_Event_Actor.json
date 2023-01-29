@@ -1,7 +1,7 @@
 {
     "id": "incident_edreventactor",
     "version": -1,
-    "fromVersion": "6.9.0",
+    "fromVersion": "6.8.0",
     "modified": "2023-01-11T16:33:58.860907227+05:30",
     "name": "EDR Event Actor",
     "ownerOnly": false,

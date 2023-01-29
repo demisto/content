@@ -1,7 +1,7 @@
 {
     "id": "incident_edrincidentcreatetime",
     "version": -1,
-    "fromVersion": "6.9.0",
+    "fromVersion": "6.8.0",
     "modified": "2023-01-10T08:18:44.80748312+05:30",
     "name": "EDR Incident Create Time",
     "ownerOnly": false,

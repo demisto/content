@@ -1,7 +1,10 @@
 {
-    "description": "",
-    "feed": false,
+    "fromVersion": "6.8.0",
+    "name": "Symantec EDR - Incident Classifier",
+    "type": "classification",
     "id": "Symantec EDR - Incident Classifier",
+    "description": "Symantec EDR Classifier",
+    "feed": false,
     "keyTypeMap": {
         "Advanced Attack Techniques": "Symantec EDR Incident",
         "Analyst Reviewed": "Symantec EDR Incident",
@@ -11,7 +14,6 @@
         "SEP Detection": "Symantec EDR Incident",
         "Sandboxing": "Symantec EDR Incident"
     },
-    "name": "Symantec EDR - Incident Classifier",
     "propagationLabels": [
         "all"
     ],
@@ -23,7 +25,5 @@
             "transformers": []
         }
     },
-    "type": "classification",
-    "version": -1,
-    "fromVersion": "6.5.0"
+    "version": -1
 }

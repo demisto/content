@@ -1,7 +1,7 @@
 {
     "id": "incident_edrincidentstate",
     "version": -1,
-    "fromVersion": "6.9.0",
+    "fromVersion": "6.8.0",
     "modified": "2023-01-10T08:06:47.380810507+05:30",
     "name": "EDR Incident State",
     "ownerOnly": false,
