@@ -4,7 +4,6 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from pydantic import parse_obj_as, HttpUrl
 from abc import ABC
 from typing import Any, Callable, Optional
 
