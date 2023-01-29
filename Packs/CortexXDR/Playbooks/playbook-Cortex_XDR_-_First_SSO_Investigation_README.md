@@ -1,6 +1,6 @@
 This playbook performs an investigation to Cortex XDR - First SSO Access alerts, using queries to Okta.
-Supported Integration:
--Okta
+Supported integration:
+- Okta
 
 
 ## Dependencies
@@ -10,14 +10,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Okta v2
+Okta v2
 
 ### Scripts
 * CountArraySize
 * GetTime
 
 ### Commands
-* okta-get-logs
+okta-get-logs
 
 ## Playbook Inputs
 ---
@@ -31,7 +31,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| NumOfFailedLogonASN | Number of failed logon from the ASN. | unknown |
+| NumOfFailedLogonASN | Number of failed logins from the ASN. | unknown |
 
 ## Playbook Image
 ---
