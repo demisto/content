@@ -51,9 +51,96 @@ script:
       isArray: false
       name: issue_type
       predefined:
-      - ''
+      - ACCESS_ROLE
+      - ACCESS_ROLE_BINDING
+      - ACCESS_ROLE_PERMISSION
+      - API_GATEWAY
+      - APPLICATION
+      - AUTHENTICATION_CONFIGURATION
+      - BACKUP_SERVICE
+      - BUCKET
+      - CDN
+      - CERTIFICATE
+      - CICD_SERVICE
+      - CLOUD_LOG_CONFIGURATION
+      - CLOUD_ORGANIZATION
+      - COMPUTE_INSTANCE_GROUP
+      - CONFIG_MAP
+      - CONTAINER
+      - CONTAINER_GROUP
+      - CONTAINER_IMAGE
+      - CONTAINER_REGISTRY
+      - CONTAINER_SERVICE
+      - DAEMON_SET
+      - DATABASE
+      - DATA_WORKLOAD
+      - DB_SERVER
+      - DEPLOYMENT
+      - DNS_RECORD
+      - DNS_ZONE
+      - DOMAIN
+      - EMAIL_SERVICE
+      - ENCRYPTION_KEY
+      - ENDPOINT
+      - FILE_SYSTEM_SERVICE
+      - FIREWALL
+      - GATEWAY
+      - GOVERNANCE_POLICY
+      - GOVERNANCE_POLICY_GROUP
+      - HOSTED_APPLICATION
+      - IAM_BINDING
+      - IP_RANGE
+      - KUBERNETES_CLUSTER
+      - KUBERNETES_CRON_JOB
+      - KUBERNETES_INGRESS
+      - KUBERNETES_INGRESS_CONTROLLER
+      - KUBERNETES_JOB
+      - KUBERNETES_NETWORK_POLICY
+      - KUBERNETES_NODE
+      - KUBERNETES_PERSISTENT_VOLUME
+      - KUBERNETES_PERSISTENT_VOLUME_CLAIM
+      - KUBERNETES_POD_SECURITY_POLICY
+      - KUBERNETES_SERVICE
+      - KUBERNETES_STORAGE_CLASS
+      - KUBERNETES_VOLUME
+      - LOAD_BALANCER
+      - MANAGED_CERTIFICATE
+      - MANAGEMENT_SERVICE
+      - NETWORK_ADDRESS
+      - NETWORK_INTERFACE
+      - NETWORK_ROUTING_RULE
+      - NETWORK_SECURITY_RULE
+      - PEERING
+      - POD
+      - PORT_RANGE
+      - PRIVATE_ENDPOINT
+      - PROXY
+      - PROXY_RULE
+      - RAW_ACCESS_POLICY
+      - REGISTERED_DOMAIN
+      - REPLICA_SET
+      - RESOURCE_GROUP
+      - SEARCH_INDEX
+      - SECRET
+      - SECRET_CONTAINER
+      - SERVERLESS
+      - SERVERLESS_PACKAGE
+      - SERVICE_ACCOUNT
+      - STORAGE_ACCOUNT
+      - SUBNET
+      - SUBSCRIPTION
+      - SWITCH
+      - USER_ACCOUNT
+      - VIRTUAL_DESKTOP
+      - VIRTUAL_MACHINE
+      - VIRTUAL_MACHINE_IMAGE
+      - VIRTUAL_NETWORK
+      - VOLUME
+      - WEB_SERVICE
+      - DATA_WORKFLOW
       required: false
       secret: false
+      auto: PREDEFINED
     - default: false
       description: Get Issues of a specific resource
       isArray: false
@@ -215,7 +302,7 @@ script:
     - name: vm_id
       description: vm cloud provider id
       required: true
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: true
   longRunning: false
