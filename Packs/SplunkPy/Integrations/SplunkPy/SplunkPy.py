@@ -2681,7 +2681,7 @@ def main():  # pragma: no cover
         demisto.info('########### MIRROR IN #############')
         get_remote_data_command(service=service, args=demisto.args(),
                                 close_incident=demisto.params().get('close_incident'),
-                                close_end_statuses=demisto.params().get('close_end_status_labels'),
+                                close_end_statuses=demisto.params().get('close_end_status_statuses'),
                                 close_extra_labels=argToList(demisto.params().get('close_extra_labels', '')),
                                 mapper=mapper)
     elif command == 'get-modified-remote-data':

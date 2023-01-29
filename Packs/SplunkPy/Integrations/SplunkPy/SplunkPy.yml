@@ -123,7 +123,7 @@ configuration:
 - additionalinfo: If selected, Notables with a status that is marked as "End Status" in Splunk will also be mirrored on closure.
   defaultvalue: 'false'
   display: Add Splunk statuses marked as "End Status" to mirroring (Incoming Mirroring)
-  name: close_end_status_labels
+  name: close_end_status_statuses
   required: false
   type: 8
   section: Collect
