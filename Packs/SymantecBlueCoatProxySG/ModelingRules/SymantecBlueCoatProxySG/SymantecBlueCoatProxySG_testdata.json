@@ -25,7 +25,7 @@
                 "xdm.network.ip_protocol": "tcp",
                 "xdm.network.http.method": "CONNECT",
                 "xdm.source.user.username": "anonymous%20logon",
-                "xdm.source.port": 433.0,
+                "xdm.source.port": "433.0",
                 "xdm.network.http.content_type": "text/plain;%20charset=utf-8",
                 "xdm.event.duration": 467.0,
                 "xdm.target.sent_bytes": 383.0
