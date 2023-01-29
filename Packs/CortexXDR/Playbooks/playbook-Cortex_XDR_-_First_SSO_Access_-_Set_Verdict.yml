@@ -3,10 +3,10 @@ version: -1
 name: Cortex XDR - First SSO Access - Set Verdict
 description: |-
   This playbook determines the alert’s verdict based on the results of multiple checks.
-  By default, if at least two of the checks' results are true the verdict is set to malicious.
-  else if only one check's results are true the verdict is set to suspicious.
-  If none of the conditions is true,  the verdict is set to non-malicious.
-  It possible to change the threshold value of the inputs to change the sensitivity of the verdict is set.
+  By default, if at least two of the checks' results are true, the verdict is set to malicious.
+  else if only one check's results are true, the verdict is set to suspicious.
+  If none of the conditions is true, the verdict is set to non-malicious.
+  It is possible to change the threshold value of the inputs to change the sensitivity of the verdict.
 starttaskid: "0"
 tasks:
   "0":
@@ -919,7 +919,7 @@ tasks:
       id: 3b62f061-e8f0-424b-8293-7c2bf0f7430d
       version: -1
       name: Set Grid
-      description: Creates a Grid table from items or key-value pairs.
+      description: Creates a grid table from items or key-value pairs.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -1091,7 +1091,7 @@ inputs:
 - key: NumOfFailedLogonASN
   value: {}
   required: false
-  description: The number of failed logon from the ASN.
+  description: The number of failed logins from the ASN.
   playbookInputQuery:
 - key: RelatedCampaign
   value: {}
@@ -1101,7 +1101,7 @@ inputs:
 - key: NumOfXDRAlerts
   value: {}
   required: false
-  description: The number of XDR alert for the user.
+  description: The number of XDR alerts for the user.
   playbookInputQuery:
 - key: NumOfFailedLogon
   value: {}
@@ -1111,17 +1111,17 @@ inputs:
 - key: NumOfOktaSuspiciousUserAgent
   value: {}
   required: false
-  description: The number of Suspicious User Agent from Okta.
+  description: The number of suspicious user agents from Okta.
   playbookInputQuery:
 - key: NumOfOktaSuspiciousActivities
   value: {}
   required: false
-  description: Number of Suspicious Activities for the user from Okta.
+  description: Number of suspicious activities for the user from Okta.
   playbookInputQuery:
 - key: PermanentCountry
   value: {}
   required: false
-  description: True if the user works from a permanent country from Okta. False if else.
+  description: True if the user works from a permanent country from Okta. Otherwise, false.
   playbookInputQuery:
 outputs:
 - contextPath: Verdict
