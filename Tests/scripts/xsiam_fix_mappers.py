@@ -126,14 +126,5 @@ def main():
         if counter > 3:
             exit()
 
-def main2():
-    print('main2')
-    counter = 0
-    for filename in glob.iglob(CONTENT_ROOT + '**/**', recursive=True):
-        counter += 1
-        if counter > 3:
-            exit()
-
 if __name__ == "__main__":
     main()
-    # main2()
