@@ -1,8 +1,9 @@
 {
 	"aliasTo": "",
 	"aliases": null,
-	"associatedToAll": true,
-	"associatedTypes": [],
+	"associatedTypes": [
+        "Cyberint Incident"
+    ],
 	"autoCompleteTags": null,
 	"breachScript": "",
 	"cacheVersn": 0,
