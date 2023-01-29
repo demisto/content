@@ -1,7 +1,6 @@
 
 import glob
 import json
-import os
 from os.path import join
 
 CONTENT_ROOT = './Packs/'
@@ -35,12 +34,10 @@ def get_all_incident_fields(folder):
 def file_matcher_incident_field(folder, file):
     # Sample filename:
     #   incidentfield-MD5.json
-    # Also should check that it's in marketplacev2
 
     if '/IncidentFields/incidentfield-' in file and file.endswith('.json'):
         with open(file, 'r') as if_file:
             incident_field = json.load(if_file)
-            # "marketplaces": ["xsoar", "marketplacev2"]
             if not "marketplaces" in incident_field:
                 return incident_field
             if "marketplacev2" in incident_field["marketplaces"]:
@@ -56,16 +53,6 @@ def file_matcher_mapper(folder, file):
     if 'classifier-' in file and file.endswith('-__Outgoing_Mapper.json'):
         return True
     return False
-
-# def get_incident_field_details(incident_field):
-#     return {
-#         # "file": if_file,
-#         # "json": incident_field,
-
-#         # "id": incident_field["id"],
-#         "name": incident_field["name"],
-#         "cliName": incident_field["cliName"],
-#     }
 
 def fix_mapper_file(mapper_file, incident_fields_by_name):
     print(f'fix_mapper_file, {mapper_file=}')
