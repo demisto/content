@@ -655,6 +655,7 @@ class URLFormatter(object):
 
         schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
         url = url.replace("[.]", ".")
+        url = url.replace("[:]", ":")
         url = re.sub(schemas, "http", url)
 
         def fix_scheme(match: Match) -> str:
