@@ -18,7 +18,4 @@ Identify whether the service is a "development" server. Development servers have
 
 ## Outputs
 ---
-
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| ASM - Dev Check | whether there is an indication within either \`asm_tags\` or \`active_classifications\` that the described system is used for development | boolean |
+There are no outputs for this script.
