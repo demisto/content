@@ -15,7 +15,7 @@ configuration:
 - display: Token (received from the admin consent - see Detailed Instructions (?)
     section)
   name: tenant_id
-  required: true
+  required: false
   type: 4
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key

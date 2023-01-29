@@ -19,7 +19,7 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended), Device Code Flow or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
   required: true
