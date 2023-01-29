@@ -14,6 +14,19 @@ INTEGRATION_NAME = 'WebEx'
 BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
 
 
+def grab_domain_table(html_section: element.Tag) -> List:
+    """ Gets the domain table from the html section"""
+    table = html_section.find('table', attrs={'class': 'li'})
+    table_body = table.find('tbody')
+    rows = table_body.find_all('tr')
+    data = []
+    for row in rows:
+        cols = row.find_all('td')
+        cols = [ele.text.strip() for ele in cols]
+        data.append([ele for ele in cols if ele])
+    return data
+
+
 def grab_domains(data: list) -> List:
     """ From WebExDomain Table get only domain names with wildcards"""
     domainList: List = []
@@ -36,30 +49,6 @@ def grab_domains(data: list) -> List:
     return finel_domainList
 
 
-def grab_CIDR_ips(data: list) -> List:
-    """ From list of lists that contain all ips from webex table, get only CIDR ip addresses"""
-    CIDR_ip_list: List = []
-    for line in data[0]:
-        values = line.split(' (CIDR)')
-        CIDR_ip_list.append(values[0])
-    # Dedup List
-    finel_CIDR_ip_list = list(dict.fromkeys(CIDR_ip_list))
-    return finel_CIDR_ip_list
-
-
-def grab_domain_table(html_section: element.Tag) -> List:
-    """ Gets the domain table from the html section"""
-    table = html_section.find('table', attrs={'class': 'li'})
-    table_body = table.find('tbody')
-    rows = table_body.find_all('tr')
-    data = []
-    for row in rows:
-        cols = row.find_all('td')
-        cols = [ele.text.strip() for ele in cols]
-        data.append([ele for ele in cols if ele])
-    return data
-
-
 def grab_ip_table(html_section: element.Tag) -> List:
     """ Gets the IP table from the html section and returns a list of lists"""
     rows = html_section.find_all('ul')
@@ -69,6 +58,17 @@ def grab_ip_table(html_section: element.Tag) -> List:
         cols = [ele.text.strip() for ele in cols]
         data.append([ele for ele in cols if ele])  # Get rid of empty values
     return data
+
+
+def grab_CIDR_ips(data: list) -> List:
+    """ From list of lists that contain all ips from webex table, get only CIDR ip addresses"""
+    CIDR_ip_list: List = []
+    for line in data[0]:
+        values = line.split(' (CIDR)')
+        CIDR_ip_list.append(values[0])
+    # Dedup List
+    finel_CIDR_ip_list = list(dict.fromkeys(CIDR_ip_list))
+    return finel_CIDR_ip_list
 
 
 def parse_indicators_from_response(response: requests.Response) -> Dict[str, List[str]]:
