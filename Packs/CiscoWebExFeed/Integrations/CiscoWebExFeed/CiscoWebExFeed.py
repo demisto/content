@@ -31,9 +31,9 @@ def grab_domains(data: list) -> List:
                 domainList.append(domain)
         elif len(cleanDomain) > 0:
             domainList.append(cleanDomain)
-        # Dedup List
-        list(dict.fromkeys(domainList))
-    return domainList
+    # Dedup List
+    finel_domainList = list(dict.fromkeys(domainList))
+    return finel_domainList
 
 
 def grab_CIDR_ips(data: list) -> List:
@@ -43,8 +43,8 @@ def grab_CIDR_ips(data: list) -> List:
         values = line.split(' (CIDR)')
         CIDR_ip_list.append(values[0])
     # Dedup List
-    list(dict.fromkeys(CIDR_ip_list))
-    return CIDR_ip_list
+    finel_CIDR_ip_list = list(dict.fromkeys(CIDR_ip_list))
+    return finel_CIDR_ip_list
 
 
 def grab_domain_table(html_section: element.Tag) -> List:
