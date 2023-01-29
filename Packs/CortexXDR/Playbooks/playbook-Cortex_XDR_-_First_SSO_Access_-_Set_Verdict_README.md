@@ -1,6 +1,6 @@
 This playbook determines the alert’s verdict based on the results of multiple checks.
-By default, if at least two of the checks' results are true the verdict is set to malicious.
-else if only one check's results are true the verdict is set to suspicious.
+By default, if at least two of the checks' results are true, the verdict is set to malicious.
+else if only one check's results are true, the verdict is set to suspicious.
 If none of the conditions is true,  the verdict is set to non-malicious.
 It possible to change the threshold value of the inputs to change the sensitivity of the verdict is set.
 
@@ -19,7 +19,7 @@ This playbook does not use any integrations.
 * Set
 
 ### Commands
-* setIncident
+setIncident
 
 ## Playbook Inputs
 ---
@@ -31,14 +31,14 @@ This playbook does not use any integrations.
 | XDRRelatedAlertsThreshold | The 'XDR related alerts' threshold to determine the 'Check for XDR related alerts' check result. |  | Optional |
 | MaliciousVerdictThreshold | The 'Malicious verdict' threshold to determine a malicious verdict.<br/>The default value is '2'. | 2 | Optional |
 | SuspiciousVerdictThreshold | The 'Suspicious verdict' threshold to determine a suspicious verdict.<br/>The default value is '1'. | 1 | Optional |
-| AlertName | Alert Name. |  | Optional |
-| NumOfFailedLogonASN | The number of failed logon from the ASN. |  | Optional |
+| AlertName | Alert name. |  | Optional |
+| NumOfFailedLogonASN | The number of failed logins from the ASN. |  | Optional |
 | RelatedCampaign | Campaign related to the indicator. |  | Optional |
-| NumOfXDRAlerts | The number of XDR alert for the user. |  | Optional |
+| NumOfXDRAlerts | The number of XDR alerts for the user. |  | Optional |
 | NumOfFailedLogon | The number of failed logins. |  | Optional |
-| NumOfOktaSuspiciousUserAgent | The number of Suspicious User Agent from Okta. |  | Optional |
-| NumOfOktaSuspiciousActivities | Number of Suspicious Activities for the user from Okta. |  | Optional |
-| PermanentCountry | True if the user works from a permanent country from Okta. False if else. |  | Optional |
+| NumOfOktaSuspiciousUserAgent | The number of suspicious user agents from Okta. |  | Optional |
+| NumOfOktaSuspiciousActivities | The number of suspicious activities for the user from Okta. |  | Optional |
+| PermanentCountry | True if the user works from a permanent country from Okta. Otherwise, false. |  | Optional |
 
 ## Playbook Outputs
 ---
