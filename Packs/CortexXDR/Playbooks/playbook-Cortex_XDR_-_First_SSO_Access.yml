@@ -6,13 +6,13 @@ description: |-
    or First successful SSO connection from a country in organization.
 
   The playbook executes the following:
-  -IP and User Enrichment.
-  -User Investigation - Using 'User Investigation - Generic' sub-playbook
-  -First SSO Access investigation - Using 'Cortex XDR - First SSO Investigation' sub-playbook
-  -Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook
-  -Response based on the verdict
+  - IP and User Enrichment.
+  - User Investigation - Using 'User Investigation - Generic' sub-playbook.
+  - First SSO Access investigation - Using 'Cortex XDR - First SSO Investigation' sub-playbook.
+  - Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook.
+  - Response based on the verdict.
 
-  The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’
+  The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
 starttaskid: "0"
 tasks:
   "0":
@@ -53,7 +53,7 @@ tasks:
       id: e337418e-95d8-4cac-8585-f9f2f19daf46
       version: -1
       name: IP Enrichment
-      description: IP to check
+      description: IP to check.
       script: '|||ip'
       type: regular
       iscommand: true
@@ -360,7 +360,7 @@ tasks:
       id: 966c70ad-4d4f-4c65-8623-44b00208ff4b
       version: -1
       name: Manually reset account password
-      description: Please take manual steps to disable the user account.
+      description: Manually disable the user account.
       type: regular
       iscommand: false
       brand: ""
@@ -455,7 +455,7 @@ tasks:
         - Okta
         - AWS IAM
 
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -507,7 +507,7 @@ tasks:
       name: Get Manager Response
       description: |-
         Ask for the user's manager.
-        Did the user work from the country? (the country from the incident)
+        Did the user work from the country? (The country from the incident.)
       type: collection
       iscommand: false
       brand: ""
@@ -581,8 +581,8 @@ tasks:
       name: Cortex XDR - First SSO Investigation
       description: |
         This playbook performs an investigation to Cortex XDR - First SSO Access alerts, using queries to Okta.
-        Supported Integration:
-        -Okta
+        Supported integration:
+        - Okta
       playbookName: Cortex XDR - First SSO Investigation
       type: playbook
       iscommand: false
@@ -624,7 +624,7 @@ tasks:
       id: 3b6bc054-4584-41a4-80b6-7a4e2842b490
       version: -1
       name: IP is malicious?
-      description: Check If the IP is malicious.
+      description: Check if the IP is malicious.
       type: condition
       iscommand: false
       brand: ""
@@ -734,7 +734,7 @@ tasks:
       id: 74577fe2-2dc9-4913-8f77-18be32c48ca2
       version: -1
       name: Should the Endpoint be isolated automatically?
-      description: Checks if the Endpoint can be isolated automatically based on the input's value. (inputs.AutomaticallyIsolateEndpoint)
+      description: Checks if the endpoint can be isolated automatically based on the input's value. (inputs.AutomaticallyIsolateEndpoint)
       type: condition
       iscommand: false
       brand: ""
@@ -780,7 +780,7 @@ tasks:
       id: 7b5e0833-f7b6-4195-8398-af16a0d718f3
       version: -1
       name: Manually Endpoint isolation
-      description: Please take manual steps to isolate the endpoint.
+      description: Manually isolate the endpoint.
       type: regular
       iscommand: false
       brand: ""
@@ -1072,7 +1072,7 @@ tasks:
       id: 8c539bb2-beb6-48ca-8e19-aacf87e28277
       version: -1
       name: Manually reset account password
-      description: Please take manual steps to disable the user account, or expire his or her password.
+      description: Manually disable the user account, or expire the user's password.
       type: regular
       iscommand: false
       brand: ""
@@ -1383,9 +1383,9 @@ tasks:
       version: -1
       name: User Investigation - Generic
       description: |-
-        This playbook performs an investigation on a specific user, using queries and logs from SIEM, Identity management systems, XDR, and firewalls.
+        This playbook performs an investigation on a specific user, using queries and logs from SIEM, identity management systems, XDR, and firewalls.
 
-        Supported Integrations:
+        Supported integrations:
         -Okta
         -Splunk
         -QRadar
@@ -1593,10 +1593,10 @@ tasks:
       name: Cortex XDR - First SSO Access - Set Verdict
       description: |-
         This playbook determines the alert’s verdict based on the results of multiple checks.
-        By default, if at least two of the checks' results are true the verdict is set to malicious.
-        else if only one check's results are true the verdict is set to suspicious.
+        By default, if at least two of the checks' results are true, the verdict is set to malicious.
+        else if only one check's results are true, the verdict is set to suspicious.
         If none of the conditions is true,  the verdict is set to non-malicious.
-        It possible to change the threshold value of the inputs to change the sensitivity of the verdict is set.
+        It is possible to change the threshold value of the inputs to change the sensitivity of the verdict
       playbookName: Cortex XDR - First SSO Access - Set Verdict
       type: playbook
       iscommand: false
@@ -1671,7 +1671,7 @@ tasks:
       id: 9b79bb04-5cd7-409d-8f97-24995c148492
       version: -1
       name: Relate campaign exist?
-      description: Check if there are related campaigns to the IP Address.
+      description: Check if there are related campaigns to the IP address.
       type: condition
       iscommand: false
       brand: ""
@@ -1761,7 +1761,7 @@ tasks:
       id: 36cba334-80b3-45b9-8f46-d04ab74bc01a
       version: -1
       name: Should the Account be disabled automatically?
-      description: Checks if the account can be disabled and reset the account's password automatically based on the input's value. (inputs.AutomaticallyBlockAccount)
+      description: Checks if the account can be disabled and resets the account's password automatically based on the input's value. (inputs.AutomaticallyBlockAccount)
       type: condition
       iscommand: false
       brand: ""
@@ -1839,7 +1839,7 @@ inputs:
     simple: "3"
   required: false
   description: |-
-    The 'XDR related alerts' threshold to determine the 'Check for XDR related alerts' check result on 'Cortex XDR - First SSO Access - Set Verdict'  sub-playbook.
+    The 'XDR related alerts' threshold to determine the 'Check for XDR related alerts' check result in the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
     The default value is '3'.
   playbookInputQuery:
 - key: FailedlogonUserThreshold
@@ -1847,7 +1847,7 @@ inputs:
     simple: "30"
   required: false
   description: |-
-    The 'Failed login' threshold to determine the 'Check for massive failed logon' check result on 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
+    The 'Failed login' threshold to determine the 'Check for massive failed logon' check result in the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
     The default value is '30'.
   playbookInputQuery:
 - key: FailedlogonFromASNThreshold
@@ -1855,7 +1855,7 @@ inputs:
     simple: "20"
   required: false
   description: |-
-    The 'Failed login from ASN' threshold to determine the 'Check for massively failed logon from the ASN' check result on 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
+    The 'Failed login from ASN' threshold to determine the 'Check for massively failed logon from the ASN' check result in the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook.
     The default value is '20'.
   playbookInputQuery:
 - key: EndpointID
@@ -1866,12 +1866,12 @@ inputs:
 - key: Username
   value: {}
   required: false
-  description: User Name.
+  description: User name.
   playbookInputQuery:
 - key: IPAddress
   value: {}
   required: false
-  description: IP Address.
+  description: IP address.
   playbookInputQuery:
 - key: AlertID
   value: {}
@@ -1881,7 +1881,7 @@ inputs:
 - key: LoginCountry
   value: {}
   required: false
-  description: The Country from which the user logged in.
+  description: The country from which the user logged in.
   playbookInputQuery:
 - key: AutomaticallyBlockAccount
   value:
@@ -1898,7 +1898,7 @@ inputs:
 - key: AlertName
   value: {}
   required: false
-  description: Alert Name.
+  description: Alert name.
   playbookInputQuery:
 outputs: []
 tests:
