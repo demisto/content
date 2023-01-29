@@ -1,41 +1,52 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Defender for Cloud Apps Event Collector
   version: -1
 configuration:
 - additionalinfo: |-
-    The United States: api-us.security.microsoft.com
-    Europe: api-eu.security.microsoft.com
-    The United Kingdom: api-uk.security.microsoft.com
+    Use one of the following:
+    https://portal.cloudappsecurity.com or
+    https://yourdomain.eu2.portal.cloudappsecurity.com
   display: Endpoint URI
   hidden: false
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The Client (Application) ID to use to connect.
   display: Client (Application) ID
   name: client_id
   required: true
   type: 0
+  section: Connect
 - displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
   hiddenusername: true
+  section: Connect
 - display: Tenant ID
   name: tenant_id
   required: true
   type: 0
+  section: Connect
 - display: Scope
+  additionalinfo: The scope of the application (only if self-deployed).
   name: scope
   required: true
   type: 0
+  defaultvalue: '05a65629-4c1b-48c1-a78b-804c4abdd4af/.default'
+  section: Connect
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
   name: after
   required: false
   type: 0
+  section: Collect
 - defaultvalue: '1000'
   additionalinfo: Due to API limitations, the maximum is 10,000.
   display: Number of alerts for each fetch.
@@ -43,20 +54,26 @@ configuration:
   name: limit
   required: false
   type: 0
+  section: Collect
 - display: Fetch events
   name: isFetchEvents
   required: false
   type: 8
+  section: Collect
 - defaultvalue: 'true'
   display: Verify SSL Certificate
   hidden: false
   name: verify
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Collects the events log for alerts and activities provided Microsoft Defender for Cloud Apps API.
 display: Microsoft Defender for Cloud Apps Event Collector
 name: Microsoft Defender for Cloud Apps Event Collector
@@ -96,7 +113,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.32858
+  dockerimage: demisto/pydantic-jwt3:1.0.0.45851
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
