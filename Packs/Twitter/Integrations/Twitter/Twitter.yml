@@ -4,7 +4,7 @@ commonfields:
 name: Twitter
 display: Twitter (Deprecated)
 category: Utilities
-description: 'Deprecated. Deprecated. Use Twitter v2 instead.'
+description: 'Deprecated. Use Twitter v2 instead.'
 configuration:
 - display: API Key
   name: apikey
@@ -36,7 +36,7 @@ script:
       required: true
       description: The string to search for accounts with similar names
     - name: count
-      description: 'Number of accounts to return. Note: The max is 20. Any number greater than 20 will return 20 accounts.'
+      description: 'Number of accounts to return. Note: The max is 20.'
       defaultValue: "15"
     - name: page
       description: Page to look for search results on
@@ -70,14 +70,14 @@ script:
     - name: lang
       description: 'The language code of tweets to search for. List of supported languages:  https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages'
     - name: count
-      description: The number of tweets to return. The max is 100. Any number greater than 100  will return 100.
+      description: The number of tweets to return. The max is 100. 
     - name: include_entities
       description: Display entities (True/False), Defaults to True
       defaultValue: "True"
     - name: from_user
-      description: 'Search tweets from a given user. Ex: "from_user=PaloAltoNtwks" returns only tweets from Palo Alto Networks'
+      description: 'Search tweets from a given user. Ex: "from_user=PaloAltoNtwks" returns only tweets from Palo Alto Networks.'
     - name: to_user
-      description: 'Search tweets to a given user. Ex: "to_user=PaloAltoNtwks" returns only tweets in reply to Palo Alto Networks'
+      description: 'Search tweets to a given user. Ex: "to_user=PaloAltoNtwks" returns only tweets in reply to Palo Alto Networks.'
     outputs:
     - contextPath: TwitterSOARx
       description: Results of the twitter-get-tweets command
