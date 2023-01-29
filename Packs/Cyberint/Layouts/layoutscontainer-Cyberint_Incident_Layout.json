@@ -758,11 +758,13 @@
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
 								"endCol": 1,
 								"fieldId": "cyberinttargetedbrand",
 								"height": 53,
-								"id": "c4d6c6b0-7c06-11eb-be8b-1b6b5950a0fc",
+								"id": "5cb5be00-9d5c-11ed-8f36-ab5d128aea6b",
 								"index": 1,
+								"listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -770,7 +772,7 @@
 								"endCol": 2,
 								"fieldId": "cyberintimpact",
 								"height": 53,
-								"id": "e5d5e3a0-7c06-11eb-be8b-1b6b5950a0fc",
+								"id": "6cfacb30-9d60-11ed-b3d3-65a739574b9a",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -779,7 +781,7 @@
 								"endCol": 2,
 								"fieldId": "cyberintrelatedentities",
 								"height": 53,
-								"id": "d509cf50-7c06-11eb-be8b-1b6b5950a0fc",
+								"id": "7d622a40-9d60-11ed-b3d3-65a739574b9a",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -794,13 +796,11 @@
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "cyberinttags",
 								"height": 53,
-								"id": "ec03c490-7c06-11eb-be8b-1b6b5950a0fc",
-								"index": 5,
-								"listId": "gyt4oyoflh-26cdff80-7c04-11eb-be8b-1b6b5950a0fc",
+								"id": "9d016d70-9d7e-11ed-b015-bb48fb7e22f0",
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -809,9 +809,9 @@
 								"endCol": 2,
 								"fieldId": "cyberinttargetedvector",
 								"height": 53,
-								"id": "c5c34990-7c06-11eb-be8b-1b6b5950a0fc",
+								"id": "73950280-9d60-11ed-b3d3-65a739574b9a",
 								"index": 1,
-								"listId": "gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc",
+								"listId": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-f50d43a0-7c05-11eb-be8b-1b6b5950a0fc",
 								"sectionItemType": "field",
 								"startCol": 1
 							}
@@ -949,7 +949,7 @@
 						"type": "indicators",
 						"w": 2,
 						"x": 0,
-						"y": 8
+						"y": 10
 					},
 					{
 						"displayType": "CARD",
@@ -1027,6 +1027,21 @@
 						"name": "Attachments",
 						"static": false,
 						"type": "",
+						"w": 1,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-52ce3070-9d5c-11ed-8f36-ab5d128aea6b",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "New Section",
+						"static": false,
 						"w": 1,
 						"x": 0,
 						"y": 6
