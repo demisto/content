@@ -22,14 +22,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Twitter integration provide access to searching recent tweets (in last 7 days) and user information using twitter v2 API'
+description: Twitter integration provides access to searching recent Tweets (in last 7 days) and user information using the Twitter v2 API.
 display: 'Twitter v2'
 name: Twitterv2
 script:
   commands:
   - arguments:
     - default: false
-      description: 'Search query to submit to the recent search endpoint'
+      description: 'Search query to submit to the recent search endpoint.'
       isArray: true
       name: query
       required: true
@@ -41,26 +41,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.'
+      description: The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'Maximum number of results to return a number between 10 and 100.'
+      description: Maximum number of results to return. Value can be between 10 and 100.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: 'When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Twitter returns a NextToken value in the response. To retrieve the next batch of objects, use the token returned from the prior request in your next request.'
+      description: When you request a list of objects with a MaxResults setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Twitter returns a NextToken value in the response. To retrieve the next batch of objects, use the token returned from the prior request in your next request.
       isArray: false
       name: next_token
       required: false
       secret: false
     deprecated: false
-    description: 'This command will search for tweets posted over the past week and return all information available'
+    description: This command will search for Tweets posted over the past week and return all information available.
     execution: false
     name: twitter-tweet-search
     outputs:
@@ -86,10 +86,10 @@ script:
       description: Number of times this Tweet has been Retweeted.
       type: Number
     - contextPath: Twitter.Tweet.TweetList.public_metrics.reply_count
-      description: Number of Replies of this Tweet.
+      description: Number of Replies to this Tweet.
       type: Number
     - contextPath: Twitter.Tweet.TweetList.public_metrics.like_count
-      description: Number of Likes of this Tweet.
+      description: Number of Likes to this Tweet.
       type: Number
     - contextPath: Twitter.Tweet.TweetList.public_metrics.quote_count
       description: Number of times this Tweet has been Retweeted with a comment.
@@ -98,7 +98,7 @@ script:
       description: The unique identifier of this user.
       type: String
     - contextPath: Twitter.Tweet.TweetList.author.verified
-      description: Indicates if this user is a verified Twitter User.
+      description: Indicates if this user is a verified Twitter user.
       type: Boolean
     - contextPath: Twitter.Tweet.TweetList.author.description
       description: The text of this user's profile description (also known as bio), if the user provided one.
@@ -107,7 +107,7 @@ script:
       description: The unique identifier of this user.
       type: String
     - contextPath: Twitter.Tweet.TweetList.author.created_at
-      description: The UTC datetime that the user account was created on Twitter.
+      description: The UTC datetime when the user account was created on Twitter.
       type: Date
     - contextPath: Twitter.Tweet.TweetList.author.username
       description: The Twitter screen name, handle, or alias that this user identifies themselves with.
@@ -129,7 +129,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A comma separated list of Twitter usernames (handles). Up to 100 are allowed in a single request.'
+      description: A comma-separated list of Twitter usernames (handles). Up to 100 are allowed in a single request.
       isArray: true
       name: user_name
       required: true
@@ -137,7 +137,7 @@ script:
     - default: false
       defaultValue: 'false'
       auto: PREDEFINED
-      description: Indicates whether to return user's pinned Tweets.
+      description: Indicates whether to return a user's pinned Tweets.
       isArray: false
       name: return_pinned_tweets
       required: false
@@ -146,7 +146,7 @@ script:
       - 'false'
       secret: false
     deprecated: false
-    description: "Lookup users by name to display information about them.Search multiple users simultaneously by separating them by commas. Ex: 'name='user1,user2,user3'"
+    description: "Lookup users by name to display information about them. Search multiple users simultaneously by separating them by commas. Ex: 'name='user1,user2,user3'"
     execution: false
     name: twitter-user-get
     outputs:
@@ -169,7 +169,7 @@ script:
       description: The location specified in the user's profile.
       type: String
     - contextPath: Twitter.User.pinned_tweet_id
-      description: nique identifier of this user's pinned Tweet.
+      description: Unique identifier of this user's pinned Tweet.
       type: String
     - contextPath: Twitter.User.profile_image_url
       description: The URL to the profile image for this user, as shown on the user's profile.
@@ -193,7 +193,7 @@ script:
       description: The URL specified in the user's profile, if present.
       type: String
     - contextPath: Twitter.User.verified
-      description: Indicate if this user is a verified Twitter user.
+      description: Indicates if this user is a verified Twitter user.
       type: Boolean
     - contextPath: Twitter.User.withheld
       description: Contains withholding details for withheld content.
@@ -226,10 +226,10 @@ script:
       description: Number of times this Tweet has been Retweeted.
       type: Number
     - contextPath: Twitter.User.pinned_tweets.reply_count
-      description: Number of Replies of this Tweet.
+      description: Number of Replies to this Tweet.
       type: Number
     - contextPath: Twitter.User.Pinned_tweets.like_count
-      description: Number of Likes of this Tweet.
+      description: Number of Likes to this Tweet.
       type: Number
     - contextPath: Twitter.User.pinned_tweets.quote_count
       description: Number of times this Tweet has been Retweeted with a comment.
