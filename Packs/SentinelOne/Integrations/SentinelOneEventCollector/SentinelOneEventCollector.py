@@ -1,6 +1,6 @@
 from CommonServerPython import *
 import urllib3
-from typing import Dict, Tuple, List
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,7 +24,8 @@ class Client(BaseClient):
     For this SentinelOne implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify=True, headers=None, proxy=False, fetch_limit=1000):
+    def __init__(self, base_url, verify: bool = True, headers: dict = None, proxy: bool = False,
+                 fetch_limit: int | None = 1000):
         super().__init__(
             base_url=base_url,
             verify=verify,
@@ -33,7 +34,7 @@ class Client(BaseClient):
         )
         self.limit = fetch_limit
 
-    def get_activities(self, from_time: str) -> List:
+    def get_activities(self, from_time: str) -> list[dict[str, Any]]:
         """
         Returns SentinelOne activities using the '/activities' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -53,7 +54,7 @@ class Client(BaseClient):
         result = self._http_request('GET', url_suffix='/activities', params=params)
         return result.get('data', [])
 
-    def get_threats(self, from_time: datetime | str) -> List:
+    def get_threats(self, from_time: str) -> list[dict[str, Any]]:
         """
         Returns SentinelOne threats using the '/threats' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -73,7 +74,7 @@ class Client(BaseClient):
         result = self._http_request('GET', url_suffix='/threats', params=params)
         return result.get('data', [])
 
-    def get_alerts(self, from_time: datetime | str) -> List:
+    def get_alerts(self, from_time: str) -> list[dict[str, Any]]:
         """
         Returns SentinelOne alerts using the '/cloud-detection/alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP GET parameters in the request
@@ -97,8 +98,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_events(client: Client, event_type: List,
-               from_time: str = str(arg_to_datetime('3 days'))) -> List:  # type: ignore
+def get_events(client: Client, event_type: list[str],
+               from_time: str = str(arg_to_datetime('3 days'))) -> list[dict[str, Any]]:
     events = []
     if 'activities' in event_type:
         events.extend(client.get_activities(from_time))
@@ -110,7 +111,7 @@ def get_events(client: Client, event_type: List,
     return events
 
 
-def first_run(from_time: str = arg_to_datetime('3 days')) -> Dict:  # type: ignore
+def first_run(from_time: str = str(arg_to_datetime('3 days'))) -> dict[str, str]:
     return {
         'last_activity_created': from_time,
         'last_threat_created': from_time,
@@ -118,7 +119,7 @@ def first_run(from_time: str = arg_to_datetime('3 days')) -> Dict:  # type: igno
     }
 
 
-def add_time_key_to_events(events: Optional[List[Dict[str, Any]]]):
+def add_time_key_to_events(events: list[dict[str, Any]] | None):
     """
     Adds the _time key to the events.
     Args:
@@ -126,20 +127,20 @@ def add_time_key_to_events(events: Optional[List[Dict[str, Any]]]):
     """
     for event in events or []:
         if alert_info := event.get('alertInfo'):
-            event["_time"] = alert_info.get("createdAt").split('.')[0]
+            event["_time"] = alert_info.get("createdAt")
             event["eventType"] = 'Alert'
         elif threat_info := event.get('threatInfo'):
-            event["_time"] = threat_info.get("createdAt").split('.')[0]
+            event["_time"] = threat_info.get("createdAt")
             event["eventType"] = 'Threat'
         else:  # Otherwise, it's an activity.
-            event["_time"] = event.get("createdAt").split('.')[0]
+            event["_time"] = event.get("createdAt")
             event["eventType"] = 'Activity'
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, event_type: List) -> str:
+def test_module(client: Client, event_type: list[str]) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -148,10 +149,10 @@ def test_module(client: Client, event_type: List) -> str:
 
     Args:
         client (Client): SentinelOne client to use.
-        event_type (List): Integration parameters.
+        event_type (list): Integration parameters.
 
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: 'ok' if test passed, Anything else will raise an exception and will fail the test.
     """
     try:
         get_events(client, event_type=event_type)
@@ -164,13 +165,15 @@ def test_module(client: Client, event_type: List) -> str:
     return 'ok'
 
 
-def get_events_command(client: Client, first_fetch_time: str, event_type: List) -> Tuple[List, CommandResults]:
+def get_events_command(client: Client, first_fetch_time: str,
+                       event_type: list[str]) -> tuple[list[dict[str, Any]], CommandResults]:
     events = get_events(client, from_time=first_fetch_time, event_type=event_type)
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type: Optional[List]) -> Tuple[Dict, List]:
+def fetch_events(client: Client, last_run: dict[str, str],
+                 event_type: list | None) -> tuple[dict[str, str], list[dict[str, Any]]]:
     """
     Args:
         client (Client): SentinelOne client to use.
@@ -179,7 +182,7 @@ def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type
         event_type (list): Event type to be fetched ['ACTIVITIES', 'THREATS', 'ALERTS']
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        list: list of events that will be created in XSIAM.
     """
     if not event_type:
         event_type = ['activities', 'threats', 'alerts']
@@ -189,15 +192,15 @@ def fetch_events(client: Client, last_run: Dict[str, datetime | str], event_type
     if 'activities' in event_type:
         if activities := client.get_activities(last_run['last_activity_created']):
             events.extend(activities)
-            last_run['last_activity_created'] = activities[-1].get('createdAt')
+            last_run['last_activity_created'] = str(activities[-1].get('createdAt', ''))
     if 'threats' in event_type:
         if threats := client.get_threats(last_run['last_threat_created']):
             events.extend(threats)
-            last_run['last_threat_created'] = threats[-1].get('threatInfo', {}).get('createdAt')
+            last_run['last_threat_created'] = str(threats[-1].get('threatInfo', {}).get('createdAt', ''))
     if 'alerts' in event_type:
         if alerts := client.get_alerts(last_run['last_alert_created']):
             events.extend(alerts)
-            last_run['last_alert_created'] = alerts[-1].get('alertInfo', {}).get('createdAt')
+            last_run['last_alert_created'] = str(alerts[-1].get('alertInfo', {}).get('createdAt', ''))
 
     demisto.info(f'Setting next run {last_run}.')
     return last_run, events
@@ -245,7 +248,7 @@ def main() -> None:
 
         elif command in (f'{VENDOR}-get-events', 'fetch-events'):
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            events = []  # type: List[Dict]
+            events = []  # type: list[dict[str, Any]]
             if command == f'{VENDOR}-get-events':
                 events, results = get_events_command(client, first_fetch_time, event_type)  # type: ignore
                 return_results(results)
