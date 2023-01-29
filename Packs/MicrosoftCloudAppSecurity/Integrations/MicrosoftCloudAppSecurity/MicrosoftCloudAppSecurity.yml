@@ -96,6 +96,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   section: Collect
 - display: Incident resolution status
   hidden: false
