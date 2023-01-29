@@ -10,5 +10,5 @@ Cisco Webex is a video conferencing and collaboration product suite. This cloud-
 `Cisco WebEx Feed` integration -  Fetches indicators from the Cisco WebEx website within Cortex XSOAR.
  
 ### Acknowledgements
-Special Thanks to Scott Brumley  for his significant code contribution in developing this content pack.
- thank you!
+Special Thanks to Scott Brumley for his significant code contribution to developing this content pack.
+Thank you!
