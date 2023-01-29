@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API Key to use for connection.
   name: api_key
   required: true
   hiddenusername: true
@@ -22,7 +22,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "RunZero is a network discovery and asset inventory\n platform that uncovers every network in use and identifies every device connected–without credentials.\n Scan your network and build your asset inventory in minutes."
+description: "RunZero is a network discovery and asset inventory\n platform that uncovers every network in use and identifies every device connected – without credentials.\n Scan your network and build your asset inventory in minutes."
 display: 'RunZero'
 name: RunZero
 script:
@@ -32,29 +32,29 @@ script:
     deprecated: false
     arguments:
     - name: asset_ids
-      description: Search assets by ids comma separated.
+      description: A comma-separated list of asset IDs.
       isArray: true
       required: false
       secret: false
     - name: search
-      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288."
+      description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288."
       isArray: false
       required: false
       secret: false
     - name: ips
-      description: Search assets by IPs.
+      description: A comma-separated list of IP addresses.
       isArray: true
       required: false
       secret: false
     - name: hostnames
-      description: Search assets by hostnames.
+      description: A comma-separated list of hostnames.
       isArray: true
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: Include attributes section in returned result.
+      description: Whether to include the attributes section in the returned result.
       isArray: false
       name: display_attributes
       predefined:
@@ -65,7 +65,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: Include services section in returned result.
+      description: Whether to include a services section in the returned result.
       isArray: false
       name: display_services
       predefined:
@@ -74,7 +74,7 @@ script:
       required: false
       secret: false
     - name: limit
-      description: Limit the number of assets returned. Default is 50.
+      description: Limit the number of assets returned. 
       default: false
       defaultValue: 50
       isArray: false
@@ -82,19 +82,19 @@ script:
     execution: false
     outputs:
     - contextPath: RunZero.Asset.ID
-      description: Asset service id.
+      description: Asset service ID.
       type: UUID
     - contextPath: RunZero.Asset.Addresses
       description: Asset addresses.
       type: Array
     - contextPath: RunZero.Asset.Asset_Status
-      description: Asset asset status.
+      description: Asset status.
       type: Boolean
     - contextPath: RunZero.Asset.Hostname
       description: Asset hostname.
       type: Array
     - contextPath: RunZero.Asset.OS
-      description: OS version.
+      description: Operating system version.
       type: String
     - contextPath: RunZero.Asset.Type
       description: Asset type.
@@ -106,7 +106,7 @@ script:
       description: Asset outlier.
       type: String
     - contextPath: RunZero.Asset.MAC_Vendor
-      description: Asset mac vendor.
+      description: Asset MAC vendor.
       type: String
     - contextPath: RunZero.Asset.MAC_Age
       description: Asset outlier.
@@ -115,19 +115,19 @@ script:
       description: Asset MAC address.
       type: UUID
     - contextPath: RunZero.Asset.OS_EOL
-      description: Asset OS End of Life.
+      description: Asset operating system end-of-life.
       type: String
     - contextPath: RunZero.Asset.Sources
       description: Asset outlier.
       type: String
     - contextPath: RunZero.Asset.Comments
-      description: Comments attached to asset.
+      description: Comments attached to the asset.
       type: String
     - contextPath: RunZero.Asset.Tags
-      description: Tags attched to asset.
+      description: Tags attached to the asset.
       type: Array
     - contextPath: RunZero.Asset.Svcs
-      description: Number of services on asset.
+      description: Number of services on the asset.
       type: Integer
     - contextPath: RunZero.Asset.TCP
       description: Asset outlier.
@@ -145,22 +145,22 @@ script:
       description: Asset vulnerability count.
       type: Integer
     - contextPath: RunZero.Asset.RTT/ms
-      description: Asset Round Trip Time.
+      description: Asset round-trip time.
       type: Integer
     - contextPath: RunZero.Asset.Hops
-      description: Asset Time To Live.
+      description: Asset time-to-live.
       type: Integer
     - contextPath: RunZero.Asset.Detected
       description: Asset is detected by.
       type: String
     - contextPath: RunZero.Asset.First_Seen
-      description: Asset date time first seen.
+      description: Datetime of when the asset was first seen.
       type: String
     - contextPath: RunZero.Asset.Last_Seen
-      description: Asset date time last seen.
+      description: Datetime of when the asset was last seen.
       type: String
     - contextPath: RunZero.Asset.Explorer
-      description: Asset detected by which agent.
+      description: The agent that detected the asset.
       type: String
     - contextPath: RunZero.Asset.Hosted_Zone
       description: Asset hosted zone.
@@ -173,13 +173,13 @@ script:
     deprecated: false
     arguments: 
     - name: asset_ids
-      description: UUID of the asset to delete.
+      description: A comma-separated list of UUIDs of the asset to delete.
       isArray: true
       required: true
       secret: false
     execution: false
   - name: runzero-service-search
-    description: 'Get services.'
+    description: Get services.
     deprecated: false
     arguments:
     - name: service_id
@@ -188,19 +188,19 @@ script:
       required: false
       secret: false
     - name: search
-      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288"
+      description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288"
       isArray: false
       required: false
       secret: false
     - name: service_addresses
-      description: Search services by addresses.
+      description: A comma-separated list of services by addresses.
       isArray: true
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: false
-      description: Include attributes section in returned result.
+      description: Whether to include an attributes section in the returned result.
       isArray: false
       name: display_attributes
       predefined:
@@ -209,7 +209,7 @@ script:
       required: false
       secret: false
     - name: limit
-      description: Limit the number of assets returned. Default is 50.
+      description: Limit the number of assets returned. 
       default: false
       defaultValue: 50
       isArray: false
@@ -217,7 +217,7 @@ script:
     execution: false
     outputs:
     - contextPath: RunZero.Service.ID
-      description: Service service id.
+      description: Service ID.
       type: UUID
     - contextPath: RunZero.Service.Address
       description: Service addresses.
@@ -244,7 +244,7 @@ script:
       description: Service hostname.
       type: Array
     - contextPath: RunZero.Service.OS
-      description: OS version.
+      description: Operating system version.
       type: String
     - contextPath: RunZero.Service.Type
       description: Service type.
@@ -265,16 +265,16 @@ script:
       description: Service MAC address.
       type: UUID
     - contextPath: RunZero.Service.OS_EOL
-      description: Service OS End of Life.
+      description: Service operating system end-of-life.
       type: String
     - contextPath: RunZero.Service.Comments
-      description: Comments attached to asset.
+      description: Comments attached to the asset.
       type: String
     - contextPath: RunZero.Service.Tags
-      description: Tags attached to asset.
+      description: Tags attached to the asset.
       type: Array
     - contextPath: RunZero.Service.Svcs
-      description: Number of services on asset.
+      description: Number of services on the asset.
       type: Integer
     - contextPath: RunZero.Service.TCP
       description: Service outlier.
@@ -292,22 +292,22 @@ script:
       description: Service vulnerability count.
       type: Integer
     - contextPath: RunZero.Service.RTT/ms
-      description: Service Round Trip Time.
+      description: Service round-trip time.
       type: Integer
     - contextPath: RunZero.Service.Hops
-      description: Service Time To Live.
+      description: Service time-to-live.
       type: Integer
     - contextPath: RunZero.Service.Detected
       description: Service is detected by.
       type: String
     - contextPath: RunZero.Service.First_Seen
-      description: Service date time first seen.
+      description: Datetime of when the service was first seen.
       type: String
     - contextPath: RunZero.Service.Last_Seen
-      description: Service date time last seen.
+      description: Datetime of when the service was last seen.
       type: String
     - contextPath: RunZero.Service.Explorer
-      description: Service detected by which agent.
+      description: The agent that detected the service        .
       type: String
     - contextPath: RunZero.Service.Hosted_Zone
       description: Service hosted zone.
@@ -326,11 +326,11 @@ script:
       secret: false
     execution: false
   - name: runzero-comment-add
-    description: 'Add a comment or overrides existing asset comment'
+    description: Add a comment or override an existing asset comment.
     deprecated: false
     arguments:
     - name: asset_id
-      description: Choose asset.
+      description: Asset ID.
       isArray: false
       required: true
       secret: false
@@ -341,22 +341,22 @@ script:
       secret: false
     execution: false
   - name: runzero-tag-add
-    description: 'Add tag or tags to asset'
+    description: Add tag or tags to the asset.
     deprecated: false
     arguments:
     - name: asset_id
-      description: Choose asset.
+      description: Asset ID.
       isArray: false
       required: true
       secret: false
     - name: tags
-      description: Tags to add to asset.
+      description: Tags to add to the asset.
       isArray: false
       required: true
       secret: false
     execution: false
   - name: runzero-quota-get
-    description: 'Get information about the API key used. Type, Limit, usage etc.'
+    description: Get information about the API key used. Type, Limit, usage etc.
     deprecated: false
     execution: false
     outputs:
@@ -370,49 +370,49 @@ script:
       description: Organization ID.
       type: UUID
     - contextPath: RunZero.Quota.created_at
-      description: API key created at time.
+      description: Time the API was created.
       type: Integer
     - contextPath: RunZero.Quota.comment
-      description: API key comments.
+      description: API key comment.
       type: String
     - contextPath: RunZero.Quota.last_used_at
-      description: API key last used time.
+      description: The time when the API key was last seen.
       type: Integer
     - contextPath: RunZero.Quota.last_used_ip
-      description: API key last used from IP.
+      description: The IP address last used by the API key.
       type: String
     - contextPath: RunZero.Quota.last_used_ua
-      description: API key last used from User Agent.
+      description: The user agent last used by the API key.
       type: String
     - contextPath: RunZero.Quota.counter
-      description: API key usage counter.
+      description: The API key usage counter.
       type: Integer
     - contextPath: RunZero.Quota.usage_today
-      description: API key usage today.
+      description: The API key usage today.
       type: Integer
     - contextPath: RunZero.Quota.usage_limit
-      description: API key usage limit.
+      description: The API key usage limit.
       type: Integer
     - contextPath: RunZero.Quota.token
       description: The API key.
       type: String
     - contextPath: RunZero.Quota.inactive
-      description: API key active or inactive.
+      description: Whether the API key is inactive.
       type: String
     - contextPath: RunZero.Quota.type
-      description: API key type. org etc.
+      description: API key type (org, etc.).
       type: String
-  - name: runzero-tag-delete
-    description: 'Bulk delete tags according.'
+  - name: runzero-bulk-clear-tags
+    description: Bulk clear tags according to RunZero query search.
     deprecated: false
     arguments:
     - name: asset_id
-      description: "Asset ID to remove tags"
+      description: Asset ID from which to remove tags.
       isArray: false
       required: true
       secret: false
-    - name: tags
-      description: "Specify the tags to delete."
+    - name: tags 
+      description: A comma-separated list of tags to delete.
       isArray: true
       required: true
       secret: false
@@ -422,61 +422,61 @@ script:
     deprecated: false
     arguments:
     - name: wireless_id
-      description: Get a specific wireless LAN.
+      description: The wireless LAN ID.
       isArray: false
-      required: false
+      required: true
       secret: false
     - name: search
-      description: "Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288."
+      description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288."
       isArray: false
       required: false
       secret: false
     - name: limit
-      description: Limit the number of wireless LAN returned. Default is 50.
+      description: Limit the number of wireless LAN returned. 
       defaultValue: 50
     execution: false
     outputs:
     - contextPath: RunZero.WirelessLAN.ID
-      description: WirelessLAN ID.
+      description: Wireless LAN ID.
       type: UUID
     - contextPath: RunZero.WirelessLAN.ESSID
-      description: WirelessLAN ESSID.
+      description: Wireless LAN extended service set identifier (ESSID).
       type: String
     - contextPath: RunZero.WirelessLAN.BSSID
-      description: WirelessLAN BSSID.
+      description: Wireless LAN basic service set identifier (BSSID).
       type: String
     - contextPath: RunZero.WirelessLAN.Vendor
-      description: WirelessLAN vendor.
+      description: Wireless LAN vendor.
       type: String
     - contextPath: RunZero.WirelessLAN.Family
-      description: WirelessLAN family.
+      description: Wireless LAN family.
       type: String
     - contextPath: RunZero.WirelessLAN.Type
-      description: WirelessLAN type.
+      description: Wireless LAN type.
       type: String
     - contextPath: RunZero.WirelessLAN.Auth
-      description: WirelessLAN auth.
+      description: Wireless LAN auth.
       type: String
     - contextPath: RunZero.WirelessLAN.Enc
-      description: WirelessLAN encryption.
+      description: Wireless LAN encryption.
       type: String
     - contextPath: RunZero.WirelessLAN.Sig
-      description: WirelessLAN signal strengh.
+      description: WirelessLAN signal strength.
       type: Integer
     - contextPath: RunZero.WirelessLAN.Int
-      description: WirelessLAN interface.
+      description: Wireless LAN interface.
       type: String
     - contextPath: RunZero.WirelessLAN.Additional
-      description: WirelessLAN additional information.
+      description: Wireless LAN additional information.
       type: Array
     - contextPath: RunZero.WirelessLAN.First_seen
-      description: WirelessLAN first seen timestamp.
+      description: Datetime of when the wireless LAN was first seen. 
       type: String
     - contextPath: RunZero.WirelessLAN.Last_seen
-      description: WirelessLAN last seen timestamp.
+      description: Datetime of when the wireless LAN was last seen. 
       type: String
     - contextPath: RunZero.WirelessLAN.Site
-      description: WirelessLAN site name.
+      description: Wireless LAN site name.
       type: String
   - name: runzero-wireless-lan-delete
     description: Remove a wireless LAN.
