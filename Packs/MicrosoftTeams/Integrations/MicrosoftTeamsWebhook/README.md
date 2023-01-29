@@ -9,6 +9,8 @@ Integration for sending notifications to a Microsoft Teams channel via an incomi
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Microsoft Webhook URL | The webhook URL in the Teams Channel | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
