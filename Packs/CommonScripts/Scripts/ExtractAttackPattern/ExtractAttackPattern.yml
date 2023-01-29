@@ -21,3 +21,6 @@ runas: DBotWeakRole
 tests:
 - ExtractAttackPattern-Test
 fromversion: 5.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
