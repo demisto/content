@@ -326,8 +326,5 @@ class FilesToCollect(NamedTuple):
     pack_ids_files_were_removed_from: tuple[str, ...]
 
 
-def is_test_data_exist(modeling_rule_dir):
-    for modeling_rule_file in os.scandir(modeling_rule_dir):
-        if modeling_rule_file.name.endswith('testdata.json'):
-            return True
-    return False
+def has_modeling_rule_test_data(modeling_rule_dir: Path):
+    return any((file.name.endswith('testdata.json') for file in modeling_rule_dir.glob("*")))

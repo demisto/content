@@ -32,7 +32,7 @@ from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, find_pack_folder,
                                                find_yml_content_type, to_tuple, hotfix_detect_old_script_yml,
-                                               FilesToCollect, is_test_data_exist)
+                                               FilesToCollect, has_modeling_rule_test_data)
 from Tests.scripts.collect_tests.version_range import VersionRange
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
@@ -582,8 +582,7 @@ class TestCollector(ABC):
                 raise RuntimeError(f'Unexpected file type {file_type} for changed file {changed_file_path}')
         # the modeling rule to test will be the containing directory of the modeling rule's component files
         modeling_rule_to_test = None
-        logging.info(f'hereee checking: {changed_file_path.parent}')
-        if is_test_data_exist(changed_file_path.parent):
+        if has_modeling_rule_test_data(changed_file_path.parent):
             relative_path_of_mr = PACK_MANAGER.relative_to_packs(changed_file_path)
             modeling_rule_to_test = relative_path_of_mr.parent
         return CollectionResult(

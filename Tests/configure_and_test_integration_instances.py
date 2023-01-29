@@ -1890,6 +1890,7 @@ def main():
         if not success or not installed_content_packs_successfully:
             logging.exception('Failed to configure and test integration instances.')
             sys.exit(2)
+    sys.exit(3)
 
 
 if __name__ == '__main__':
