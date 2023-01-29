@@ -980,7 +980,7 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:
         )
         return result
     else:
-        return_error(f"Permission are invalid or in wrong order. Correct order for permissions are \'racwdl\' ")
+        return_error(f"Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\' ")
 
 
 def test_module(client: Client) -> None:
