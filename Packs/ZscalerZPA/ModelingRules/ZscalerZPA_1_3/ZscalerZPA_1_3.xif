@@ -31,7 +31,11 @@ filter
     xdm.event.id = SessionID,
     xdm.source.sent_bytes = to_integer(srcBytes),
     xdm.target.sent_bytes = to_integer(dstBytes),
-    xdm.source.host.os_family = if(Platform = "windows",XDM_CONST.OS_FAMILY_WINDOWS, Platform = "mac", XDM_CONST.OS_FAMILY_MACOS , Platform ~= "el\d",XDM_CONST.OS_FAMILY_LINUX,to_string(Platform));
+    xdm.source.host.os_family = if(Platform = "windows",XDM_CONST.OS_FAMILY_WINDOWS, Platform = "mac", XDM_CONST.OS_FAMILY_MACOS , Platform ~= "el\d",XDM_CONST.OS_FAMILY_LINUX,to_string(Platform))
+    xdm.source.agent.version = Version
+    xdm.event.description = SessionStatus;
+
+
 
 filter cat in ("Connector Status")
 | alter
