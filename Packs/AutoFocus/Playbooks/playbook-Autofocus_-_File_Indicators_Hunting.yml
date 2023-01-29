@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Autofocus - File Indicators Hunting
 description: "This playbook queries the PANW Threat Intelligence Autofocus system for file indicators such as MD5, SHA256, and SHA1 hashes.
 \n\nA simple search mode is used to query Autofocus based on the file indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
-\nWe recommended using the Autofocus UI to create an advanced query, export it, and paste it into the relevant playbook inputs.
+\nWe recommended using the Autofocus UI to create an advanced query, exporting it, and pasting it into the relevant playbook inputs.
 \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
 starttaskid: "0"
 tasks:
@@ -151,8 +151,8 @@ tasks:
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
-        This playbook queries the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IPs, hashes, and domains to run basic queries or advanced queries that can leverage several query parameters.
-        To run the more advanced queries we recommended using the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query and then use the export search button. The result can be used as a playbook input.
+        This playbook queries the PANW Threat Intelligence Autofocus system. The playbook accepts indicators such as IPs, hashes, and domains to run basic queries or advanced queries that can leverage several query parameters.
+        To run the more advanced queries we recommended using the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query and then using the export search button. The result can be used as a playbook input.
 
         This playbook supports searching both the Samples API and the Sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
