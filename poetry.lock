@@ -171,14 +171,22 @@ six = "*"
 
 [[package]]
 name = "boto3"
+<<<<<<< HEAD
 version = "1.26.59"
+=======
+version = "1.26.57"
+>>>>>>> origin/master
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
+<<<<<<< HEAD
 botocore = ">=1.29.59,<1.30.0"
+=======
+botocore = ">=1.29.57,<1.30.0"
+>>>>>>> origin/master
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -187,7 +195,11 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
+<<<<<<< HEAD
 version = "1.29.59"
+=======
+version = "1.29.57"
+>>>>>>> origin/master
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -456,11 +468,17 @@ inflection = "^0.5.1"
 isort = "^5.10.1"
 Jinja2 = "^3.1.1"
 jsonschema = "^4.4.0"
+<<<<<<< HEAD
 junitparser = "^2.8.0"
 klara = "^0.6.3"
 MarkupSafe = "^2.1.1"
 mergedeep = "^1.3.4"
 more-itertools = "^9.0.0"
+=======
+klara = "^0.6.3"
+MarkupSafe = "^2.1.1"
+mergedeep = "^1.3.4"
+>>>>>>> origin/master
 mypy = "^0.982"
 neo4j = "^4.4.8"
 networkx = "^2.7.1"
@@ -520,8 +538,13 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
+<<<<<<< HEAD
 reference = "e775e6d8c88c7c2b620bac1179e3a0761b4b75bc"
 resolved_reference = "e775e6d8c88c7c2b620bac1179e3a0761b4b75bc"
+=======
+reference = "b111a7797cb1b82e1345a32635fe820a0ea02086"
+resolved_reference = "b111a7797cb1b82e1345a32635fe820a0ea02086"
+>>>>>>> origin/master
 
 [[package]]
 name = "deprecated"
@@ -913,7 +936,11 @@ pyreadline3 = {version = "*", markers = "sys_platform == \"win32\" and python_ve
 
 [[package]]
 name = "identify"
+<<<<<<< HEAD
 version = "2.5.16"
+=======
+version = "2.5.15"
+>>>>>>> origin/master
 description = "File identification library for Python"
 category = "dev"
 optional = false
@@ -1927,7 +1954,11 @@ starkbank-ecdsa = ">=2.0.1"
 
 [[package]]
 name = "setuptools"
+<<<<<<< HEAD
 version = "67.0.0"
+=======
+version = "66.1.1"
+>>>>>>> origin/master
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
@@ -2480,7 +2511,11 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
+<<<<<<< HEAD
 content-hash = "ab3ad64c46a93a10c0b31eb6aba1722cf95e8b104e8b79230a1e75e7f3ab3686"
+=======
+content-hash = "dc98d4498eb12698af79e4f5444c38f5fc13287124e172d0f9b63baf4308a623"
+>>>>>>> origin/master
 
 [metadata.files]
 aiohttp = [
@@ -2655,12 +2690,21 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
+<<<<<<< HEAD
     {file = "boto3-1.26.59-py3-none-any.whl", hash = "sha256:34ee771a5cc84c16e75d4b9ef4672f51c2bafdce66ec457bbaac630b37d9cd5e"},
     {file = "boto3-1.26.59.tar.gz", hash = "sha256:7d9cebb507fc96e6eb429621ccb2e731b75e7bbb8d6d9f0cf0c08089ee3c1ab7"},
 ]
 botocore = [
     {file = "botocore-1.29.59-py3-none-any.whl", hash = "sha256:5533644ddefaccfaa98460a63eb73e61a46aad019771226d103b1054b0df6103"},
     {file = "botocore-1.29.59.tar.gz", hash = "sha256:bc75d41c5eecf624a2f9875483135aa78088a50c8d29847793f92756697cfed5"},
+=======
+    {file = "boto3-1.26.57-py3-none-any.whl", hash = "sha256:f1f13bfcb34d2175cf6f515a632bc432e0b357e4ebee7d4efda7ab5ec2914ef2"},
+    {file = "boto3-1.26.57.tar.gz", hash = "sha256:9c34ceac30a0672d2b6b030d459eb87f1a02d48f86f347fb4b054de85fb8a4b1"},
+]
+botocore = [
+    {file = "botocore-1.29.57-py3-none-any.whl", hash = "sha256:f43382babffc07645a084484b1f08fb9d3fa4744bb08b74065ae0b4b1f4103b6"},
+    {file = "botocore-1.29.57.tar.gz", hash = "sha256:02078e37d6b3626794f821385f3357195d87610fa1b25355577ed5393f16f7b8"},
+>>>>>>> origin/master
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -3157,8 +3201,13 @@ humanfriendly = [
     {file = "humanfriendly-10.0.tar.gz", hash = "sha256:6b0b831ce8f15f7300721aa49829fc4e83921a9a301cc7f606be6686a2288ddc"},
 ]
 identify = [
+<<<<<<< HEAD
     {file = "identify-2.5.16-py2.py3-none-any.whl", hash = "sha256:832832a58ecc1b8f33d5e8cb4f7d3db2f5c7fbe922dfee5f958b48fed691501a"},
     {file = "identify-2.5.16.tar.gz", hash = "sha256:c47acedfe6495b1c603ed7e93469b26e839cab38db4155113f36f718f8b3dc47"},
+=======
+    {file = "identify-2.5.15-py2.py3-none-any.whl", hash = "sha256:1f4b36c5f50f3f950864b2a047308743f064eaa6f6645da5e5c780d1c7125487"},
+    {file = "identify-2.5.15.tar.gz", hash = "sha256:c22aa206f47cc40486ecf585d27ad5f40adbfc494a3fa41dc3ed0499a23b123f"},
+>>>>>>> origin/master
 ]
 idna = [
     {file = "idna-3.4-py3-none-any.whl", hash = "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"},
@@ -4055,8 +4104,13 @@ sendgrid = [
     {file = "sendgrid-6.9.7.tar.gz", hash = "sha256:fa30411c627690fecd0ef6b1d4e1783f2d0272aa14b5fffb133ebd1e31114f16"},
 ]
 setuptools = [
+<<<<<<< HEAD
     {file = "setuptools-67.0.0-py3-none-any.whl", hash = "sha256:9d790961ba6219e9ff7d9557622d2fe136816a264dd01d5997cfc057d804853d"},
     {file = "setuptools-67.0.0.tar.gz", hash = "sha256:883131c5b6efa70b9101c7ef30b2b7b780a4283d5fc1616383cdf22c83cbefe6"},
+=======
+    {file = "setuptools-66.1.1-py3-none-any.whl", hash = "sha256:6f590d76b713d5de4e49fe4fbca24474469f53c83632d5d0fd056f7ff7e8112b"},
+    {file = "setuptools-66.1.1.tar.gz", hash = "sha256:ac4008d396bc9cd983ea483cb7139c0240a07bbc74ffb6232fceffedc6cf03a8"},
+>>>>>>> origin/master
 ]
 shellingham = [
     {file = "shellingham-1.5.0.post1-py2.py3-none-any.whl", hash = "sha256:368bf8c00754fd4f55afb7bbb86e272df77e4dc76ac29dbcbb81a59e9fc15744"},
