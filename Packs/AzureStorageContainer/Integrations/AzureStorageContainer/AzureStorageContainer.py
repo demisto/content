@@ -878,62 +878,36 @@ def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str,
         sas token
 
     """
-    if sip:
-        StringToSign = (sp + "\n" +
-                        signedstart + "\n"
-                        + expiry + "\n"
-                        + cr + "\n"
-                        + "" + "\n"
-                        + sip + "\n"
-                        + "https" + "\n"
-                        + api_version + "\n"
-                        + sr + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "").encode('UTF-8')
-        signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), StringToSign, hashlib.sha256)
-        sig = base64.b64encode(signed_hmac_sha256.digest())
+   string_to_sign = (sp + "\n" +
+                  signedstart + "\n"
+                  + expiry + "\n"
+                  + cr + "\n"
+                  + "" + "\n"
+                  + sip + "\n"
+                  + "https" + "\n"
+                  + api_version + "\n"
+                  + sr + "\n"
+                  + "" + "\n"
+                  + "" + "\n"
+                  + "" + "\n"
+                  + "" + "\n"
+                  + "" + "\n"
+                  + "").encode('UTF-8')
+signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), string_to_sign, hashlib.sha256)
+sig = base64.b64encode(signed_hmac_sha256.digest())
 
-        token = {
-            'sp': sp,
-            'st': signedstart,
-            'se': expiry,
-            'sip': sip,
-            'spr': "https",
-            'sv': api_version,
-            'sr': sr,
-            'sig': sig
-        }
-    else:
-        StringToSign = (sp + "\n" +
-                        signedstart + "\n"
-                        + expiry + "\n"
-                        + cr + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "https" + "\n"
-                        + api_version + "\n"
-                        + sr + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "" + "\n"
-                        + "").encode('UTF-8')
-        signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), StringToSign, hashlib.sha256)
-        sig = base64.b64encode(signed_hmac_sha256.digest())
-        token = {
-            'sp': sp,
-            'st': signedstart,
-            'se': expiry,
-            'spr': "https",
-            'sv': api_version,
-            'sr': sr,
-            'sig': sig
-        }
+token = {
+    'sp': sp,
+    'st': signedstart,
+    'se': expiry,
+    'sip': sip,
+    'spr': "https",
+    'sv': api_version,
+    'sr': sr,
+    'sig': sig
+}
+if sip:
+    token['sip'] = sip
 
     sas_token = urllib.parse.urlencode(token)
     return sas_token
