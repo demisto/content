@@ -9,7 +9,7 @@ Note that multiple search values should be separated by commas only (without spa
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Autofocus Query Samples, Sessions and Tags_copy
+* Autofocus Query Samples, Sessions and Tags
 
 ### Integrations
 This playbook does not use any integrations.
@@ -25,9 +25,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MD5 | A single or multiple MD5 file hashes to search for within Autofocus simple mode search.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| SHA256 | A single or multiple SHA256 file hashes to search for within Autofocus simple mode search.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| SHA1 | A single or multiple SHA1 file hashes to search for within Autofocus simple mode search.<br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| FileHash | A single or multiple file hashes to search for within Autofocus simple mode search. Supports MD5, SHA1, and SHA256 file hashes. <br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
 | Search Type | Determine which Autofocus search types should be executed. An overview of autofocus search types is provided below.<br/><br/>Various values can be specified, including session, sample, tag, or all. Session and sample are the recommended search types for this playbook. <br/><br/>Sample-based search is used to detect threat indicators or identifiers within samples sent to WildFire for analysis.<br/><br/>Session-based search is used to detect threat indicators or identifiers within various context details and session data provided by samples during sample submission.<br/><br/>Tag-based search is used to identify the most popular tags. |  | Required |
 | Scope | Search scope for sample and session. Possible values are "industry", "organization", "global", or "all". |  | Required |
 | SampleQuery | Utilize the Autofocus advanced search mode to leverage a variety of query options within a sample search. Advanced search requires you to specify all field names, parameters, and operators.<br/><br/>The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button. |  | Optional |
