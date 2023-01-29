@@ -1039,7 +1039,7 @@ def main() -> None:
             'azure-storage-container-blob-delete': delete_blob_command,
             'azure-storage-container-blob-property-get': get_blob_properties_command,
             'azure-storage-container-blob-property-set': set_blob_properties_command,
-            'azure-storage-container-sas-create': generate_sas_token,
+            'azure-storage-container-sas-create': generate_sas_token_command,
         }
 
         if command == 'test-module':
