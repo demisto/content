@@ -3,8 +3,8 @@ version: -1
 name: Cortex XDR - First SSO Investigation
 description: |
   This playbook performs an investigation to Cortex XDR - First SSO Access alerts, using queries to Okta.
-  Supported Integration:
-  -Okta
+  Supported integration:
+  - Okta
 starttaskid: "0"
 tasks:
   "0":
@@ -164,7 +164,7 @@ tasks:
       id: dc9466c1-d2dc-4ed9-8248-00972a4d8266
       version: -1
       name: Is Okta V2 integration enabled?
-      description: Checks if Okta V2 integration enabled.
+      description: Checks if the Okta V2 integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -419,7 +419,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: NumOfFailedLogonASN
-  description: Number of failed logon from the ASN.
+  description: Number of failed logins from the ASN.
   type: unknown
 quiet: true
 tests:
