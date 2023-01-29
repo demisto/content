@@ -52,7 +52,6 @@ The application must have *user_impersonation* permission and must allow public 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Application ID |  | False |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Subscription ID |  | True |
     | Resource Group Name |  | True |
     | Trust any certificate (not secure) |  | False |
@@ -60,6 +59,7 @@ The application must have *user_impersonation* permission and must allow public 
     | Authentication Type | Type of authentication - could be Authorization Code flow \(recommended\) or Device Code flow. | True |
     | Tenant ID (for user-auth mode) |  | False |
     | Client Secret (for user-auth mode) |  | False |
+    | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Application redirect URI (for user-auth mode) |  | False |
     | Authorization code | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
 

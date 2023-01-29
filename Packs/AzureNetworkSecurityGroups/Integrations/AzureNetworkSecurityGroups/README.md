@@ -9,7 +9,7 @@ Azure network security groups are used to filter network traffic to and from Azu
     | --- | --- | --- |
     | Application ID |  | False |
     | Subscription ID |  | True |
-    | Azure Managed Identities client id | False |
+    | Azure Managed Identities Client ID | False |
     | Resource Group Name |  | True |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |

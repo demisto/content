@@ -35,7 +35,6 @@ Required Permissions
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Application ID |  | False |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
@@ -43,6 +42,7 @@ Required Permissions
     | Authentication Type | Type of authentication - could be Client Credentials Authorization Flow \(recommended\) or Device Flow | False |
     | Tenant ID (for Client Credentials mode) |  | False |
     | Client Secret (for Client Credentials mode) |  | False |
+    | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

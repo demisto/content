@@ -12,9 +12,10 @@ This integration was integrated and tested with version 2019-09-01 of AzureKeyVa
     | Client ID | False |
     | Client Secret | False |
     | Tenant ID | True |
-    | Azure Managed Identities client id | False |
     | Certificate Thumbprint | False |
     | Private Key | False |
+    | Use Azure Managed Identities | False |
+    | Azure Managed Identities Client ID | False |
     | Subscription ID | True |
     | Resource Group Name | True |
     | Fetches credentials | False |

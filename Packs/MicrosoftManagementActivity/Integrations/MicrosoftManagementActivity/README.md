@@ -29,7 +29,6 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Base URL | The host URL. | False |
-    | Azure Managed Identities client id | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Application ID or Client ID | The app registration ID. | False |
     | Key or Client Secret | The app registration secret. | False |
     | Token or Tenant ID | The tenant ID. | False |
@@ -38,6 +37,8 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
     | Use a self-deployed Azure application | Whether to use a selp-deployed application. | False |
     | Application redirect URI (for self-deployed mode) | The app registration redirect URI. | False |
     | The authentication code you got for the service | For instructions on how to receive it, see the Help tab. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
     | Trust any certificate (not secure) | Whether to trust any certificate. If set to True, is not secure. | False |
     | Use system proxy settings | Whether to use system proxy settings. | False |
     | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes. | False |

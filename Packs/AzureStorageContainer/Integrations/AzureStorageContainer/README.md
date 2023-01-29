@@ -12,7 +12,8 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | --- | --- |
     | Storage account name | True |
     | Account SAS Token | False |
-    | Azure Managed Identities client id | False |
+    | Use Azure Managed Identities | False |
+    | Azure Managed Identities Client ID | False |   
     | Use system proxy settings | False |
     | Trust any certificate (not secure) | False |
 
