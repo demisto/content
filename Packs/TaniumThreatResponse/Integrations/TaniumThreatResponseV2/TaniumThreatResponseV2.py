@@ -863,10 +863,12 @@ def start_quick_scan(client, data_args):
         'intelDocId': int(data_args.get('intel_doc_id')),
         'computerGroupId': int(raw_response_data.get('id'))
     }
-    raw_response = client.do_request('POST', f'/plugin/products/'
-                                             f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
-                                             f'/api/v1/quick-scans/', data=data)
-    quick_scan = get_quick_scan_item(raw_response)
+    if client.api_version == "4.x":
+        url_suffix = '/plugin/products/threat-response/api/v1/on-demand-scans/'
+    else:
+        url_suffix = '/plugin/products/detect3/api/v1/quick-scans/'
+    raw_response = client.do_request('POST', url_suffix, data=data)
+    quick_scan = get_quick_scan_item(raw_response.get("data", raw_response))
 
     context = createContext(quick_scan, removeNull=True)
     outputs = {'Tanium.QuickScan(val.ID && val.ID === obj.ID)': context}
@@ -1028,16 +1030,19 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         :rtype: ``tuple``
 
     """
-    alert_ids = argToList(data_args.get('alert_ids'))
+    alert_ids = int(data_args.get('alert_ids'))
     state = data_args.get('state')
 
     body = {
-        'state': state.lower(),
-        'id': alert_ids
+        'state': state.lower()
     }
-    client.do_request('PUT', f'/plugin/products/'
-                             f'{"threat-response" if client.api_version == "4.x" else "detect3"}/api/v1/alerts/',
-                      data=body)
+    if client.api_version == "4.x":
+        url_suffix = f'/plugin/products/threat-response/api/v1/alerts/{alert_ids}'
+    else:
+        url_suffix = '/plugin/products/detect3/api/v1/alerts/'
+        body['id'] = alert_ids
+
+    client.do_request('PUT', url_suffix, data=body)
 
     return f'Alert state updated to {state}.', {}, {}
 
@@ -1304,6 +1309,10 @@ def get_events_by_connection(client, data_args) -> Tuple[str, dict, Union[list, 
         params['gm1'] = match
         params['g1'] = g1
         params.update(filter_dict)
+
+    if client.api_version == "4.x":     # todo: check this part with the api docs
+        params['cid'] = cid
+        params['type'] = event_type
 
     raw_response = client.do_request('GET',
                                      f'/plugin/products/threat-response/api/v1/conns/{cid}/views/{event_type}/events',
@@ -2087,11 +2096,11 @@ def main():
         'tanium-tr-intel-doc-delete': delete_intel_doc,
         'tanium-tr-intel-deploy': deploy_intel,
         'tanium-tr-intel-deploy-status': get_deploy_status,
-        'tanium-tr-start-quick-scan': start_quick_scan,  # not working
+        'tanium-tr-start-quick-scan': start_quick_scan,
 
         'tanium-tr-list-alerts': get_alerts,
         'tanium-tr-get-alert-by-id': get_alert,
-        'tanium-tr-alert-update-state': alert_update_state,  # not working
+        'tanium-tr-alert-update-state': alert_update_state,
 
         'tanium-tr-create-snapshot': create_snapshot,
         'tanium-tr-delete-snapshot': delete_snapshot,
