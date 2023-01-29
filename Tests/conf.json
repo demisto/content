@@ -5291,6 +5291,10 @@
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
             "fromversion": "5.0.0",
             "has_api": false
+        },
+        {
+            "integrations": "Microsoft Teams via Webhook",
+            "playbookID": "Microsoft Teams Webhook - Test"
         }
     ],
     "skipped_tests": {
