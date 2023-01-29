@@ -1116,7 +1116,7 @@ inputs:
 - key: NumOfOktaSuspiciousActivities
   value: {}
   required: false
-  description: Number of suspicious activities for the user from Okta.
+  description: The number of suspicious activities for the user from Okta.
   playbookInputQuery:
 - key: PermanentCountry
   value: {}
