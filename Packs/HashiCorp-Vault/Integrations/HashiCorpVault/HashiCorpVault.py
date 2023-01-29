@@ -611,7 +611,7 @@ def fetch_credentials():  # pragma: no cover
             if engine.get('aws_roles_list'):
                 aws_roles_list = engine.get('aws_roles_list').split(',')
             credentials += get_aws_secrets(engine['path'], concat_username_to_cred_name,
-                                           aws_roles_list, engine.get('aws_method', None))
+                                           aws_roles_list, engine.get('aws_method'))
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
