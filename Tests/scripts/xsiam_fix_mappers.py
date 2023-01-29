@@ -26,12 +26,9 @@ def get_all_incident_fields(folder):
         seen_files.append(filename)
         incident_field = file_matcher_incident_field(folder, filename)
         if incident_field:
-            # incident_field_details = get_incident_field_details(incident_field)
             ret_value[incident_field["name"]] = incident_field["cliName"]
             if "Aliases" in incident_field:
                 for current_alias in incident_field["Aliases"]:
-                    # print(f'{incident_field["Aliases"][current_alias["name"]]=}')
-                    # print(f'{incident_field["Aliases"][current_alias["cliName"]]=}')
                     ret_value[current_alias["name"]] = current_alias["cliName"]
     return ret_value
 
@@ -39,11 +36,6 @@ def file_matcher_incident_field(folder, file):
     # Sample filename:
     #   incidentfield-MD5.json
     # Also should check that it's in marketplacev2
-
-    # print(f'file_matcher_incident_field, {folder}, {file}')
-    # print(f'file_matcher_incident_field, {folder=}, {file=}')
-    # if file.startswith('./Packs/Expanse/IncidentFields/incidentfield-'):
-    #     return None
 
     if '/IncidentFields/incidentfield-' in file and file.endswith('.json'):
         with open(file, 'r') as if_file:
