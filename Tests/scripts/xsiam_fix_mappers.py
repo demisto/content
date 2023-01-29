@@ -107,7 +107,6 @@ def fix_mapper_file(mapper_file, incident_fields_by_name):
 def print_first_list_items(list_of_items, count):
     counter = 0
     for current_item in list_of_items:
-        print(str(current_item) + ', type: ' + str(type(current_item)))
         counter += 1
         if counter > count:
             break
@@ -131,7 +130,6 @@ def main2():
     print('main2')
     counter = 0
     for filename in glob.iglob(CONTENT_ROOT + '**/**', recursive=True):
-        print(str(filename) + ': ' + str(type(filename)))
         counter += 1
         if counter > 3:
             exit()
