@@ -30,6 +30,42 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.data = data
 
+    def get_api_token(self):
+        """
+        Get api token for RunZero account API requests.
+        """
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        try:
+            api_token_res = self._http_request(
+                method='POST',
+                url_suffix='/account/api/token',
+                headers=headers,
+                data=self.data,
+            )
+        except Exception as e:
+            if 'Forbidden' in str(e):
+                return 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
+        return api_token_res.get('access_token', '')
+
+    def http_request(self, method: str, url_suffix: str, params: dict):
+        api_token = self.get_api_token()
+
+        headers = {
+            'Authorization': f'Bearer {api_token}'
+        }
+
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            params=params,
+            headers=headers,
+        )
+
     def fetch_system_event_logs(self, search_query: str) -> list:
         """
         Searches for RunZero system event logs using the '/account/events.json' API endpoint.
@@ -41,31 +77,12 @@ class Client(BaseClient):
         Returns:
             list: list of RunZero system event logs as dicts.
         """
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-
-        api_token_res = self._http_request(
-            method='POST',
-            url_suffix='/account/api/token',
-            headers=headers,
-            data=self.data
-        )
-
-        api_token = api_token_res.get('access_token', '')
-
-        headers = {
-            'Authorization': f'Bearer {api_token}'
-        }
-
-        # # search_query in the form of: created_at:>1673719953
         request_params: Dict[str, str] = {"search": search_query}
 
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix='/account/events.json',
             params=request_params,
-            headers=headers
         )
 
 
@@ -89,7 +106,6 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     """
 
     try:
-
         fetch_events(
             client=client,
             max_results=1,
@@ -208,10 +224,11 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    data = {}
-    data['client_secret'] = params.get('client_secret', {}).get('password', {})
-    data['client_id'] = params.get('client_id', '')
-    data['grant_type'] = 'client_credentials'
+    data = {
+        'client_secret': params.get('client_secret', {}).get('password', ''),
+        'client_id': params.get('client_id', ''),
+        'grant_type': 'client_credentials',
+    }
     base_url = urljoin(params.get('url'), '/api/v1.0')
     verify_certificate = not params.get('insecure', False)
     first_fetch_time = arg_to_datetime(
@@ -219,7 +236,11 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    first_fetch_epoch_time = int(first_fetch_time.timestamp()) if first_fetch_time else None
+    try:
+        first_fetch_epoch_time = arg_to_number(first_fetch_time.timestamp())
+    except Exception as e:
+        demisto.debug(f'Error in parsing First fetch time. {e}')
+        first_fetch_epoch_time = None
 
     assert isinstance(first_fetch_epoch_time, int)
 
@@ -231,7 +252,8 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            data=data)
+            data=data,
+        )
 
         if command == 'test-module':
             result = test_module(client, params, first_fetch_epoch_time)
