@@ -778,17 +778,17 @@ tasks:
       version: -1
       name: Cortex XDR - First SSO Access
       description: |-
-        Investigates a Cortex XDR incident containing First SSO access from ASN in organization
-         or First successful SSO connection from a country in organization.
+        Investigates a Cortex XDR incident containing First SSO access from ASN in an organization
+         or First successful SSO connection from a country in an organization.
 
         The playbook executes the following:
-        -IP and User Enrichment.
-        -User Investigation - Using 'User Investigation - Generic' sub-playbook
-        -First SSO Access investigation - Using 'Cortex XDR - First SSO Investigation' sub-playbook
-        -Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook
-        -Response based on the verdict
+        - IP and User Enrichment.
+        - User Investigation - Using 'User Investigation - Generic' sub-playbook.
+        - First SSO Access investigation - Using 'Cortex XDR - First SSO Investigation' sub-playbook.
+        - Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook.
+        - Response based on the verdict.
 
-        The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’
+        The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
       playbookName: Cortex XDR - First SSO Access
       type: playbook
       iscommand: false
