@@ -236,11 +236,12 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    try:
-        first_fetch_epoch_time = arg_to_number(first_fetch_time.timestamp())
-    except Exception as e:
-        demisto.debug(f'Error in parsing First fetch time. {e}')
-        first_fetch_epoch_time = None
+    if first_fetch_time:
+        try:
+            first_fetch_epoch_time = arg_to_number(first_fetch_time.timestamp())
+        except Exception as e:
+            demisto.debug(f'Error in parsing First fetch time. {e}')
+            first_fetch_epoch_time = None
 
     assert isinstance(first_fetch_epoch_time, int)
 

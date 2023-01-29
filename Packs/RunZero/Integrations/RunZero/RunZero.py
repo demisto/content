@@ -237,7 +237,7 @@ def asset_search_command(client: Client, args: dict) -> CommandResults:
         search_list = ' or id:'.join(argToList(args.get('asset_ids')))
         search_params = {'search': f'id:{search_list}'}
     elif args.get('search'):
-        search_params = {'search': args.get('search')}
+        search_params = {'search': str(args.get('search'))}
     raw = client.asset_search(search_params)
     remove_attr = not argToBoolean(args.get('display_attributes', 'False'))
     remove_svc = not argToBoolean(args.get('display_services', 'False'))

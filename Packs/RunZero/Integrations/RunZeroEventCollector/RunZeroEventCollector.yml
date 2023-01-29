@@ -83,7 +83,7 @@ script:
     description: Gets events from RunZero.
     execution: false
     name: runzero-get-events
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.9.46032
   isfetchevents: true
   runonce: false
   script: '-'

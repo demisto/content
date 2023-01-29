@@ -1,5 +1,5 @@
 RunZero is a network discovery and asset inventory
- platform that uncovers every network in use and identifies every device connected–without credentials.
+ platform that uncovers every network in use and identifies every device connected – without credentials.
  Scan your network and build your asset inventory in minutes.
 This integration was integrated and tested with version 3.3.0 of RunZero
 
@@ -12,7 +12,7 @@ This integration was integrated and tested with version 3.3.0 of RunZero
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | API Key | The API Key to use for connection | True |
+    | API Key | The API Key to use for connection. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -32,46 +32,47 @@ Get assets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_ids | Search assets by ids comma separated. | Optional | 
-| search | Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
-| ips | Search assets by IPs. | Optional | 
-| hostnames | Search assets by hostnames. | Optional | 
-| display_attributes | Include attributes section in returned result. Possible values are: True, False. | Optional | 
-| display_services | Include services section in returned result. Possible values are: True, False. | Optional | 
-| limit | Limit the number of assets returned. Default is 50. Default is 50. | Optional | 
+| asset_ids | A comma-separated list of asset IDs. | Optional | 
+| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
+| ips | A comma-separated list of IP addresses. | Optional | 
+| hostnames | A comma-separated list of hostnames. | Optional | 
+| display_attributes | Whether to include the attributes section in the returned result. Possible values are: True, False. | Optional | 
+| display_services | Whether to include a services section in the returned result. Possible values are: True, False. | Optional | 
+| limit | Limit the number of assets returned. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RunZero.Asset.ID | UUID | Asset service id. | 
+| RunZero.Asset.ID | UUID | Asset service ID. | 
 | RunZero.Asset.Addresses | Array | Asset addresses. | 
-| RunZero.Asset.Asset_Status | Boolean | Asset asset status. | 
+| RunZero.Asset.Asset_Status | Boolean | Asset status. | 
 | RunZero.Asset.Hostname | Array | Asset hostname. | 
-| RunZero.Asset.OS | String | OS version. | 
+| RunZero.Asset.OS | String | Operating system version. | 
 | RunZero.Asset.Type | String | Asset type. | 
 | RunZero.Asset.Hardware | String | Asset hardware. | 
-| RunZero.Asset.Outlier | String | Asset outlier. | 
-| RunZero.Asset.MAC_Vendor | String | Asset mac vendor. | 
-| RunZero.Asset.MAC_Age | Integer | Asset outlier. | 
+| RunZero.Asset.Outlier | String | Asset outlier score. | 
+| RunZero.Asset.MAC_Vendor | String | Asset vendor MAC address is allocated to. | 
+| RunZero.Asset.MAC_Age | Integer | Asset date MAC address was allocated. | 
 | RunZero.Asset.MAC | UUID | Asset MAC address. | 
-| RunZero.Asset.OS_EOL | String | Asset OS End of Life. | 
-| RunZero.Asset.Sources | String | Asset outlier. | 
-| RunZero.Asset.Comments | String | Comments attached to asset. | 
-| RunZero.Asset.Tags | Array | Tags attched to asset. | 
-| RunZero.Asset.Svcs | Integer | Number of services on asset. | 
-| RunZero.Asset.TCP | Integer | Asset outlier. | 
-| RunZero.Asset.UDP | Integer | Asset outlier. | 
-| RunZero.Asset.ICMP | Integer | Asset outlier. | 
-| RunZero.Asset.SW | Integer | Asset outlier. | 
-| RunZero.Asset.Vulns | Integer | Asset vulnerability count. | 
-| RunZero.Asset.RTT/ms | Integer | Asset Round Trip Time. | 
-| RunZero.Asset.Hops | Integer | Asset Time To Live. | 
-| RunZero.Asset.Detected | String | Asset is detected by. | 
-| RunZero.Asset.First_Seen | String | Asset date time first seen. | 
-| RunZero.Asset.Last_Seen | String | Asset date time last seen. | 
-| RunZero.Asset.Explorer | String | Asset detected by which agent. | 
+| RunZero.Asset.OS_EOL | String | Asset operating system end-of-life date. | 
+| RunZero.Asset.Sources | String | Asset data sources. | 
+| RunZero.Asset.Comments | String | Comments attached to the asset. | 
+| RunZero.Asset.Tags | Array | Tags attached to the asset. | 
+| RunZero.Asset.Svcs | Integer | Number of total service count. | 
+| RunZero.Asset.TCP | Integer | Asset TCP service count. | 
+| RunZero.Asset.UDP | Integer | Asset UDP service count. | 
+| RunZero.Asset.ICMP | Integer | Asset ICMP response. | 
+| RunZero.Asset.ARP | Integer | Asset ARP response. | 
+| RunZero.Asset.SW | Integer | Asset identified software. | 
+| RunZero.Asset.Vulns | Integer | Asset identified vulnerability count. | 
+| RunZero.Asset.RTT/ms | Integer | Asset round-trip time latency. | 
+| RunZero.Asset.Hops | Integer | Asset estimated hop count from scanner. | 
+| RunZero.Asset.Detected | String | Asset method of detection. | 
+| RunZero.Asset.First_Seen | String | Datetime of when the asset was first seen. | 
+| RunZero.Asset.Last_Seen | String | Datetime of when the asset was last seen. | 
+| RunZero.Asset.Explorer | String | Name of the RunZero explorer which most recently found the asset. | 
 | RunZero.Asset.Hosted_Zone | String | Asset hosted zone. | 
 | RunZero.Asset.Site | String | Asset site name. | 
 
@@ -123,7 +124,7 @@ Get assets.
             "newest_mac": "00:50:56:89:b0:e1",
             "newest_mac_age": null,
             "newest_mac_vendor": "VMware, Inc.",
-            "org_name": "Org name",
+            "org_name": "Org name LTD",
             "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
             "os": "Red Hat Enterprise Linux",
             "os_product": "Enterprise Linux",
@@ -248,7 +249,7 @@ Get assets.
             "newest_mac": "00:50:56:89:b0:e1",
             "newest_mac_age": null,
             "newest_mac_vendor": "VMware, Inc.",
-            "org_name": "Org name",
+            "org_name": "Org name LTD",
             "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
             "os": "Red Hat Enterprise Linux",
             "os_product": "Enterprise Linux",
@@ -373,7 +374,7 @@ Get assets.
             "newest_mac": "00:50:56:89:b0:e1",
             "newest_mac_age": null,
             "newest_mac_vendor": "VMware, Inc.",
-            "org_name": "Org name",
+            "org_name": "Org name LTD",
             "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
             "os": "Red Hat Enterprise Linux",
             "os_product": "Enterprise Linux",
@@ -470,7 +471,7 @@ Bulk delete assets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_ids | UUID of the asset to delete. | Required | 
+| asset_ids | A comma-separated list of UUIDs of the asset to delete. | Required | 
 
 
 #### Context Output
@@ -489,47 +490,49 @@ Get services.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | service_id | UUID of the service to retrieve. | Optional | 
-| search | Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
-| service_addresses | Search services by addresses. | Optional | 
-| display_attributes | Include attributes section in returned result. Possible values are: True, False. | Optional | 
-| limit | Limit the number of assets returned. Default is 50. Default is 50. | Optional | 
+| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
+| service_addresses | A comma-separated list of services by addresses. | Optional | 
+| display_attributes | Whether to include an attributes section in the returned result. Possible values are: True, False. | Optional | 
+| limit | Limit the number of assets returned. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RunZero.Service.ID | UUID | Service service id. | 
+| RunZero.Service.ID | UUID | Service ID. | 
 | RunZero.Service.Address | String | Service addresses. | 
 | RunZero.Service.Asset_Status | Boolean | Service asset status. | 
 | RunZero.Service.Hostname | Array | Service hostname. | 
-| RunZero.Service.Transport | String | Service hostname. | 
-| RunZero.Service.Port | Integer | Service hostname. | 
-| RunZero.Service.Protocol | Array | Service hostname. | 
-| RunZero.Service.VHost | Array | Service hostname. | 
-| RunZero.Service.Summary | Array | Service hostname. | 
-| RunZero.Service.OS | String | OS version. | 
+| RunZero.Service.Transport | String | Service transport. | 
+| RunZero.Service.Port | Integer | Service port. | 
+| RunZero.Service.Protocol | Array | Service protocol. | 
+| RunZero.Service.VHost | Array | Service virtual host. | 
+| RunZero.Service.Summary | Array | Service summary. | 
+| RunZero.Service.Hostname | Array | Service hostname. | 
+| RunZero.Service.OS | String | Service operating system version. | 
 | RunZero.Service.Type | String | Service type. | 
 | RunZero.Service.Hardware | String | Service hardware. | 
-| RunZero.Service.Outlier | String | Service outlier. | 
-| RunZero.Service.MAC_Vendor | String | Service mac vendor. | 
-| RunZero.Service.MAC_Age | Integer | Service outlier. | 
+| RunZero.Service.Outlier | String | Service outlier score. | 
+| RunZero.Service.MAC_Vendor | String | Service vendor MAC address is allocated to. | 
+| RunZero.Service.MAC_Age | Integer | Service date MAC address was allocated. | 
 | RunZero.Service.MAC | UUID | Service MAC address. | 
-| RunZero.Service.OS_EOL | String | Service OS End of Life. | 
-| RunZero.Service.Comments | String | Comments attached to asset. | 
-| RunZero.Service.Tags | Array | Tags attached to asset. | 
-| RunZero.Service.Svcs | Integer | Number of services on asset. | 
-| RunZero.Service.TCP | Integer | Service outlier. | 
-| RunZero.Service.UDP | Integer | Service outlier. | 
-| RunZero.Service.ICMP | Integer | Service outlier. | 
-| RunZero.Service.SW | Integer | Service outlier. | 
-| RunZero.Service.Vulns | Integer | Service vulnerability count. | 
-| RunZero.Service.RTT/ms | Integer | Service Round Trip Time. | 
-| RunZero.Service.Hops | Integer | Service Time To Live. | 
-| RunZero.Service.Detected | String | Service is detected by. | 
-| RunZero.Service.First_Seen | String | Service date time first seen. | 
-| RunZero.Service.Last_Seen | String | Service date time last seen. | 
-| RunZero.Service.Explorer | String | Service detected by which agent. | 
+| RunZero.Service.OS_EOL | String | Service operating system end-of-life. | 
+| RunZero.Service.Comments | String | Comments attached to the service. | 
+| RunZero.Service.Tags | Array | Tags attached to the service. | 
+| RunZero.Service.Svcs | Integer | Total service count. | 
+| RunZero.Service.TCP | Integer | TCP service count. | 
+| RunZero.Service.UDP | Integer | UDP service count. | 
+| RunZero.Service.ICMP | Integer | ICMP response. | 
+| RunZero.Service.ARP | Integer | ARP response. | 
+| RunZero.Service.SW | Integer | Identified software. | 
+| RunZero.Service.Vulns | Integer | Identified vulnerabilities. | 
+| RunZero.Service.RTT/ms | Integer | Service round-trip time latency. | 
+| RunZero.Service.Hops | Integer | Estimated hop count from scanner. | 
+| RunZero.Service.Detected | String | Method of detection. | 
+| RunZero.Service.First_Seen | String | Datetime of when the service was first seen. | 
+| RunZero.Service.Last_Seen | String | Datetime of when the service was last seen. | 
+| RunZero.Service.Explorer | String | Name of the RunZero explorer which most recently found the asset. | 
 | RunZero.Service.Hosted_Zone | String | Service hosted zone. | 
 | RunZero.Service.Site | String | Service site name. | 
 
@@ -582,7 +585,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -711,7 +714,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -842,7 +845,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -989,7 +992,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1119,7 +1122,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1249,7 +1252,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1376,7 +1379,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1510,7 +1513,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1640,7 +1643,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1767,7 +1770,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1941,7 +1944,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -2117,7 +2120,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -2283,7 +2286,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -2432,7 +2435,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name",
+                "org_name": "Org name LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -2563,7 +2566,7 @@ Delete a service.
 There is no context output for this command.
 ### runzero-comment-add
 ***
-Add a comment or overrides existing asset comment
+Add a comment or override an existing asset comment.
 
 
 #### Base Command
@@ -2573,7 +2576,7 @@ Add a comment or overrides existing asset comment
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Choose asset. | Required | 
+| asset_id | Asset ID. | Required | 
 | comment | Comment to add. | Required | 
 
 
@@ -2582,7 +2585,7 @@ Add a comment or overrides existing asset comment
 There is no context output for this command.
 ### runzero-tag-add
 ***
-Add tag or tags to asset
+Add tag or tags to the asset.
 
 
 #### Base Command
@@ -2592,8 +2595,8 @@ Add tag or tags to asset
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Choose asset. | Required | 
-| tags | Tags to add to asset. | Required | 
+| asset_id | Asset ID. | Required | 
+| tags | Tags to add to the asset. | Required | 
 
 
 #### Context Output
@@ -2618,17 +2621,17 @@ There are no input arguments for this command.
 | RunZero.Quota.id | UUID | API key ID. | 
 | RunZero.Quota.client_id | UUID | Client ID. | 
 | RunZero.Quota.organization_id | UUID | Organization ID. | 
-| RunZero.Quota.created_at | Integer | API key created at time. | 
-| RunZero.Quota.comment | String | API key comments. | 
-| RunZero.Quota.last_used_at | Integer | API key last used time. | 
-| RunZero.Quota.last_used_ip | String | API key last used from IP. | 
-| RunZero.Quota.last_used_ua | String | API key last used from User Agent. | 
-| RunZero.Quota.counter | Integer | API key usage counter. | 
-| RunZero.Quota.usage_today | Integer | API key usage today. | 
-| RunZero.Quota.usage_limit | Integer | API key usage limit. | 
+| RunZero.Quota.created_at | Integer | Time the API was created. | 
+| RunZero.Quota.comment | String | API key comment. | 
+| RunZero.Quota.last_used_at | Integer | The time when the API key was last seen. | 
+| RunZero.Quota.last_used_ip | String | The IP address last used by the API key. | 
+| RunZero.Quota.last_used_ua | String | The user agent last used by the API key. | 
+| RunZero.Quota.counter | Integer | The API key usage counter. | 
+| RunZero.Quota.usage_today | Integer | The API key usage today. | 
+| RunZero.Quota.usage_limit | Integer | The API key usage limit. | 
 | RunZero.Quota.token | String | The API key. | 
-| RunZero.Quota.inactive | String | API key active or inactive. | 
-| RunZero.Quota.type | String | API key type. org etc. | 
+| RunZero.Quota.inactive | String | Whether the API key is inactive. | 
+| RunZero.Quota.type | String | API key type \(org, etc.\). | 
 
 #### Command example
 ```!runzero-quota-get```
@@ -2639,19 +2642,19 @@ There are no input arguments for this command.
         "Quota": {
             "client_id": "3c4f1d12-352b-4c0a-a5bf-7d37ab3d4dac",
             "comment": "",
-            "counter": 406,
+            "counter": 425,
             "created_at": 1672325319,
-            "created_by": "",
+            "created_by": "user@orgid.com",
             "id": "5e866cc5-8d81-434f-adf3-ffb2345667f9",
             "inactive": false,
-            "last_used_at": 1674737787,
+            "last_used_at": 1675007349,
             "last_used_ip": "31.154.166.148",
             "last_used_ua": "python-requests/2.28.2",
             "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
             "token": "",
             "type": "org",
             "usage_limit": 1000,
-            "usage_today": 63
+            "usage_today": 15
         }
     }
 }
@@ -2662,23 +2665,23 @@ There are no input arguments for this command.
 >### Quota
 >|counter|usage_limit|usage_today|
 >|---|---|---|
->| 406 | 1672325319 | 63 |
+>| 425 | 1672325319 | 15 |
 
 
-### runzero-tag-delete
+### runzero-bulk-clear-tags
 ***
-Bulk delete tags according.
+Bulk clear tags according to RunZero query search.
 
 
 #### Base Command
 
-`runzero-tag-delete`
+`runzero-bulk-clear-tags`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Asset ID to remove tags. | Required | 
-| tags | Specify the tags to delete. | Required | 
+| asset_id | Asset ID from which to remove tags. | Required | 
+| tags | A comma-separated list of tags to delete. | Required | 
 
 
 #### Context Output
@@ -2696,29 +2699,29 @@ Get all wireless LANs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| wireless_id | Get a specific wireless LAN. | Optional | 
-| search | Search using RunZero search syntax: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
-| limit | Limit the number of wireless LAN returned. Default is 50. Default is 50. | Optional | 
+| wireless_id | The wireless LAN ID. | Required | 
+| search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
+| limit | Limit the number of wireless LAN returned. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RunZero.WirelessLAN.ID | UUID | WirelessLAN ID. | 
-| RunZero.WirelessLAN.ESSID | String | WirelessLAN ESSID. | 
-| RunZero.WirelessLAN.BSSID | String | WirelessLAN BSSID. | 
-| RunZero.WirelessLAN.Vendor | String | WirelessLAN vendor. | 
-| RunZero.WirelessLAN.Family | String | WirelessLAN family. | 
-| RunZero.WirelessLAN.Type | String | WirelessLAN type. | 
-| RunZero.WirelessLAN.Auth | String | WirelessLAN auth. | 
-| RunZero.WirelessLAN.Enc | String | WirelessLAN encryption. | 
-| RunZero.WirelessLAN.Sig | Integer | WirelessLAN signal strengh. | 
-| RunZero.WirelessLAN.Int | String | WirelessLAN interface. | 
-| RunZero.WirelessLAN.Additional | Array | WirelessLAN additional information. | 
-| RunZero.WirelessLAN.First_seen | String | WirelessLAN first seen timestamp. | 
-| RunZero.WirelessLAN.Last_seen | String | WirelessLAN last seen timestamp. | 
-| RunZero.WirelessLAN.Site | String | WirelessLAN site name. | 
+| RunZero.WirelessLAN.ID | UUID | Wireless LAN ID. | 
+| RunZero.WirelessLAN.ESSID | String | Wireless LAN extended service set identifier \(ESSID\). | 
+| RunZero.WirelessLAN.BSSID | String | Wireless LAN basic service set identifier \(BSSID\). | 
+| RunZero.WirelessLAN.Vendor | String | Wireless LAN vendor. | 
+| RunZero.WirelessLAN.Family | String | Wireless LAN family. | 
+| RunZero.WirelessLAN.Type | String | Wireless LAN type. | 
+| RunZero.WirelessLAN.Auth | String | Wireless LAN auth. | 
+| RunZero.WirelessLAN.Enc | String | Wireless LAN encryption. | 
+| RunZero.WirelessLAN.Sig | Integer | WirelessLAN signal strength. | 
+| RunZero.WirelessLAN.Int | String | Wireless LAN interface. | 
+| RunZero.WirelessLAN.Additional | Array | Wireless LAN additional information. | 
+| RunZero.WirelessLAN.First_seen | String | Datetime of when the wireless LAN was first seen. | 
+| RunZero.WirelessLAN.Last_seen | String | Datetime of when the wireless LAN was last seen. | 
+| RunZero.WirelessLAN.Site | String | Wireless LAN site name. | 
 
 #### Command example
 ```!runzero-wireless-lan-search```
