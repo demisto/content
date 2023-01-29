@@ -3,7 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Autofocus - Traffic Indicators Hunting
-description: "The playbook querying the PANW Threat Intelligence Autofocus System for traffic indicators such as URLs, IP addresses, and domains.\n\nA simple search mode is used to query Autofocus based on the traffic indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. \nIt is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+description: "This playbook queries the PANW Threat Intelligence Autofocus system for traffic indicators such as URLs, IP addresses, and domains.
+\n\nA simple search mode queries Autofocus based on the traffic indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
+\nWe recommended using the Autofocus UI to create an advanced query, exporting it, and pasting it into the relevant playbook inputs.
+\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
 starttaskid: "0"
 tasks:
   "0":
@@ -225,9 +228,10 @@ tasks:
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
-        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+        This playbook queries the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IPs, hashes, and domains to run basic queries or mode advanced queries that can leverage several query parameters. 
+        To run advanced queries, we recommend using the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query and then using the export search button. The result can be used as a playbook input.
 
-        The playbook supports searching both the Samples API and the sessions API.
+        The playbook supports searching both the Samples API and the Sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
       type: playbook
       iscommand: false
@@ -534,7 +538,8 @@ tasks:
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
-        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+        This playbook queries the PANW Threat Intelligence Autofocus system. The playbook accepts indicators such as IPs, hashes, and domains to run basic queries or mode advanced queries that can leverage several query parameters. 
+        To run advanced queries, we recommend using the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query and then using the export search button. The result can be used as a playbook input.
 
         The playbook supports searching both the Samples API and the sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
@@ -843,7 +848,8 @@ tasks:
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
-        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+        This playbook queries the PANW Threat Intelligence Autofocus system. The playbook accepts indicators such as IPs, hashes, and domains to run basic queries or advanced queries that can leverage several query parameters. 
+        To run advanced queries, we recommend using the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query and then using the export search button. The result can be used as a playbook input.
 
         The playbook supports searching both the Samples API and the sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
@@ -1621,7 +1627,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP addresses to search for within Autofocus simple mode search.
+    One or more IP addresses to search for in Autofocus simple mode search.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1629,7 +1635,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for within Autofocus simple mode search.
+    One or more URLs and/or domains to search for in Autofocus simple mode search.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1637,19 +1643,22 @@ inputs:
   value:
     simple: session,sample
   required: true
-  description: "Determine which Autofocus search types should be executed. An overview of autofocus search types is provided below.\n\nVarious values can be specified, including session, sample, tag, or all. Session and sample are the recommended search types for this playbook. \n\nSample-based search is used to detect threat indicators or identifiers within samples sent to WildFire for analysis.\n\nSession-based search is used to detect threat indicators or identifiers within various context details and session data provided by samples during sample submission.\n\nTag-based search is used to identify the most popular tags."
+  description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. 
+  \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis.
+  \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission.
+  \n\nTag-based search identifies the most popular tags."
   playbookInputQuery:
 - key: Scope
   value:
     simple: global
   required: true
-  description: Search scope for sample and session. Possible values are "industry", "organization", or "global".
+  description: Search scope for sample and session. Possible values are industry, organization, or global.
   playbookInputQuery:
 - key: SampleQuery
   value: {}
   required: false
   description: |-
-    Utilize the Autofocus advanced search mode to leverage a variety of query options within a sample search. Advanced search requires you to specify all field names, parameters, and operators.
+    use the Autofocus advanced search mode to leverage a variety of query options within a sample search. Advanced search requires you to specify all field names, parameters, and operators.
 
     The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
   playbookInputQuery:
@@ -1657,7 +1666,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A sample-based search can be narrowed down by specifying the timestamp at which samples were first uploaded to WildFire for analysis (indicators will be searched within samples after this timestamp).
+    Narrow down a sample-based search by specifying the timestamp samples were first uploaded to WildFire for analysis (indicators will be searched within samples after this timestamp).
 
     Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
   playbookInputQuery:
@@ -1665,7 +1674,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A sample-based search can be narrowed down by specifying the timestamp at which samples were last modified (indicators will be searched within samples after this timestamp).
+    Narrow down a sample-based search by specifying the timestamp samples were last modified (indicators will be searched within samples after this timestamp).
 
     Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
   playbookInputQuery:
@@ -1673,7 +1682,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Utilize the Autofocus advanced search mode to leverage a variety of query options within a session search. Advanced search requires you to specify all field names, parameters, and operators.
+    Use the Autofocus advanced search mode to leverage a variety of query options in a session search. Advanced search requires you to specify all field names, parameters, and operators.
 
     The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
   playbookInputQuery:
@@ -1681,7 +1690,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A session-based search can be narrowed down by specifying the query end timestamp (indicators will be searched within sessions before this timestamp).
+    Narrow down a session-based search by specifying the query end timestamp (indicators will be searched within sessions before this timestamp).
 
     Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
   playbookInputQuery:
@@ -1689,7 +1698,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A session-based search can be narrowed down by specifying the query start timestamp (indicators will be searched within sessions after this timestamp).
+    Narrow down a session-based search by specifying the query start timestamp (indicators will be searched within sessions after this timestamp).
 
     Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
   playbookInputQuery:
@@ -1703,7 +1712,7 @@ outputs:
   description: Sample objects containing relevant fields.
   type: string
 - contextPath: Autofocus.Samples.HuntingResults.Created
-  description: The date that the file was created.
+  description: The date the file was created.
   type: date
 - contextPath: Autofocus.Samples.HuntingResults.Finished
   description: The date the file was finished.
@@ -1736,7 +1745,7 @@ outputs:
   description: The verdict of the sample.
   type: number
 - contextPath: Autofocus.Samples.HuntingResults.Artifact.confidence
-  description: How confident the decision.
+  description: The decision confidence.
   type: string
 - contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator
   description: The indicator that was tested.
@@ -1805,7 +1814,7 @@ outputs:
   description: The associated source port number.
   type: number
 - contextPath: Autofocus.Sessions.HuntingResults.user_id
-  description: Recipient User ID
+  description: The recipient user ID.
   type: string
 tests:
 - No tests (auto formatted)
