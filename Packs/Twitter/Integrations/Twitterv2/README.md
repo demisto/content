@@ -1,4 +1,4 @@
-Twitter integration provide access to searching recent tweets (in last 7 days) and user information using Twitter v2 API
+Twitter integration provides access to searching recent Tweets (in last 7 days) and user information using the Twitter v2 API.
 This integration was integrated and tested with version v2 of Twitter API.
 
 Some changes have been made that might affect your existing content. 
