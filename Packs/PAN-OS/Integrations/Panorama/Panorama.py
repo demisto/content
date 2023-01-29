@@ -11712,6 +11712,7 @@ def parse_pan_os_list_nat_rules(entries: Union[List, Dict], show_uncommited) -> 
             'DestinationInterface': extract_objects_info_by_key(entry, 'to-interface'),
             'Service': extract_objects_info_by_key(entry, 'service'),
             'Description': extract_objects_info_by_key(entry, 'description'),
+            'Disabled': extract_objects_info_by_key(entry, 'disabled') or 'no',
             'SourceTranslation': parse_source_translation(entry),
             'DestinationTranslation': parse_destination_translation(entry),
             'DynamicDestinationTranslation': parse_dynamic_destination_translation(entry)
@@ -11723,6 +11724,9 @@ def pan_os_list_nat_rules_command(args):
     name = args.get('name')
     pre_post = args.get('pre_post')
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
+    disabled = argToBoolean(args.get('disabled', False))
+    nat_type = args.get('nat_type')
+    tags = argToList(args.get('tags'))
 
     raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted)
     result = raw_response.get('response', {}).get('result', {})
@@ -11750,7 +11754,7 @@ def pan_os_list_nat_rules_command(args):
             removeNull=True,
             headerTransform=pascalToSpace,
             headers=[
-                'Name', 'Tags', 'SourceZone', 'DestinationZone', 'SourceAddress',
+                'Name', 'Tags', 'SourceZone', 'DestinationZone', 'SourceAddress', 'Disabled',
                 'DestinationAddress', 'DestinationInterface', 'Service', 'Description'
             ]
         ),

@@ -8467,6 +8467,27 @@ script:
       isArray: false
       name: page
       required: false
+    - description: Whether to show the disabled rules or not. If not mentioned, will bring all the NAT rules.
+      isArray: false
+      name: disabled
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'yes'
+        - 'no'
+    - description: The type of the NAT rule to retrieve. If not mentioned, will bring all the NAT rules.
+      isArray: false
+      name: nat_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'ipv4'
+        - 'nat64'
+        - 'nptv6'
+    - description: The tag of the NAT rule to retrieve. If not mentioned, will bring all the NAT rules.
+      isArray: true
+      name: tags
+      required: false
     description: Returns a list of NAT rules of either a Panorama/firewall instance.
     name: pan-os-list-nat-rules
     outputs:
@@ -8508,6 +8529,9 @@ script:
       type: Unknown
     - contextPath: Panorama.NAT.DynamicDestinationTranslation
       description: The dynamic destination translation of the rule.
+      type: Unknown
+    - contextPath: Panorama.NAT.Disabled
+      description: The status of the rule (enabled, disabled).
       type: Unknown
   - arguments:
     - description: The name of the NAT rule to create.
@@ -9212,6 +9236,7 @@ script:
       - replace
       - add
       - remove
+      - disabled
       defaultValue: 'replace'
     description: Edits a PBF rule.
     name: pan-os-edit-pbf-rule
