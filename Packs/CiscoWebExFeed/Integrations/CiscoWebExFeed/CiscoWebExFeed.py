@@ -34,7 +34,7 @@ def grab_domains(data: list) -> List:
         if len(lines) < 2:
             continue
         domains = lines[1].split(' ')
-        cleanDomain = " ".join(re.findall(r"([\^]*[\*\.]*[a-z0-9]+\.+.*)*", domains[0]))
+        cleanDomain = " ".join(re.findall(r"([\^]*[\*\.]*[a-z0-9+\-]+\.+.*)*", domains[0]))
 
         # Strip Whitespace lines to remove blank values
         cleanDomain = cleanDomain.strip()
