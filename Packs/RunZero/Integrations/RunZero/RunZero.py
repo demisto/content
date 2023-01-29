@@ -111,104 +111,104 @@ def normalize_rtt(raw_rtt: float) -> float:
 
 
 def parse_raw_asset(raw: dict) -> list:
-    message = {}
-    message['ID'] = raw.get('id', '')
-    message['Addresses'] = raw.get('addresses', [])
-    message['Asset_Status'] = raw.get('alive', '')
-    message['Hostname'] = raw.get('names', [])
-    message['OS'] = f'{raw.get("os", "")} {raw.get("os_version","")}'
-    message['Type'] = raw.get('type', '')
-    message['Hardware'] = raw.get('hw', '')
-    message['Outlier'] = raw.get('outlier_score', 0)
-    message['MAC_Vendor'] = raw.get('mac_vendors', [])
-    message['MAC_Age'] = raw.get('mag_age', '')
-    message['MAC'] = raw.get('macs', [])
-    message['OS_EOL'] = raw.get('eol_os', '')
-    message['Sources'] = raw.get('sources', [])
-    message['Comments'] = raw.get('comments', '')
-    message['Tags'] = raw.get('tags', [])
-    message['Svcs'] = raw.get('service_count', 0)
-    message['TCP'] = raw.get('service_count_tcp', 0)
-    message['UDP'] = raw.get('service_count_udp', 0)
-    message['ICMP'] = raw.get('service_count_icmp', 0)
-    message['ARP'] = raw.get('service_count_arp', 0)
-    message['SW'] = raw.get('software_count', 0)
-    message['Vulns'] = raw.get('vulnerability_count', 0)
-    message['RTT/ms'] = normalize_rtt(raw.get('lowest_rtt', 0))
-    message['Hops'] = raw.get('lowest_ttl', 0)
-    message['Detected'] = raw.get('detected_by', '')
-    message['First_Seen'] = timestamp_to_datestring(raw.get('first_seen', '') * 1000)
-    message['Last_Seen'] = timestamp_to_datestring(raw.get('last_seen', '') * 1000)
-    message['Explorer'] = raw.get('agent_name', '')
-    message['Hosted_Zone'] = raw.get('hosted_zone_name', '')
-    message['Site'] = raw.get('site_name', '')
-    return [message]
+    return [{
+        'ID': raw.get('id', ''),
+        'Addresses': raw.get('addresses', []),
+        'Asset_Status': raw.get('alive', ''),
+        'Hostname': raw.get('names', []),
+        'OS': f'{raw.get("os", "")} {raw.get("os_version","")}',
+        'Type': raw.get('type', ''),
+        'Hardware': raw.get('hw', ''),
+        'Outlier': raw.get('outlier_score', 0),
+        'MAC_Vendor': raw.get('mac_vendors', []),
+        'MAC_Age': raw.get('mag_age', ''),
+        'MAC': raw.get('macs', []),
+        'OS_EOL': raw.get('eol_os', ''),
+        'Sources': raw.get('sources', []),
+        'Comments': raw.get('comments', ''),
+        'Tags': raw.get('tags', []),
+        'Svcs': raw.get('service_count', 0),
+        'TCP': raw.get('service_count_tcp', 0),
+        'UDP': raw.get('service_count_udp', 0),
+        'ICMP': raw.get('service_count_icmp', 0),
+        'ARP': raw.get('service_count_arp', 0),
+        'SW': raw.get('software_count', 0),
+        'Vulns': raw.get('vulnerability_count', 0),
+        'RTT/ms': normalize_rtt(raw.get('lowest_rtt', 0)),
+        'Hops': raw.get('lowest_ttl', 0),
+        'Detected': raw.get('detected_by', ''),
+        'First_Seen': timestamp_to_datestring(raw.get('first_seen', '') * 1000),
+        'Last_Seen': timestamp_to_datestring(raw.get('last_seen', '') * 1000),
+        'Explorer': raw.get('agent_name', ''),
+        'Hosted_Zone': raw.get('hosted_zone_name', ''),
+        'Site': raw.get('site_name', ''),
+    }]
 
 
 def parse_raw_service(raw: dict) -> list:
-    message = {}
-    message['ID'] = raw.get('service_id', '')
-    message['Asset_Status'] = raw.get('alive', '')
-    message['Address'] = raw.get('service_address', '')
-    message['Transport'] = raw.get('service_transport', '')
-    message['Port'] = raw.get('service_port', 0)
-    message['Protocol'] = raw.get('service_protocol', [])
-    message['VHost'] = raw.get('service_vhost', '')
-    message['Summary'] = raw.get('service_summary', '')
-    message['Hostname'] = raw.get('names', [])
-    message['OS'] = f"{raw.get('os', '')} {raw.get('os_version', '')}"
-    message['Type'] = raw.get('type', '')
-    message['Hardware'] = raw.get('hw', '')
-    message['Outlier'] = raw.get('outlier_score', 0)
-    message['MAC_Vendor'] = raw.get('mac_vendors', [])
-    message['MAC_Age'] = raw.get('newest_mac_age', '')
-    message['MAC'] = raw.get('macs', [])
-    message['OS_EOL'] = raw.get('eol_os', 0)
-    message['Comments'] = raw.get('comments', '')
-    message['Tags'] = raw.get('tags', {})
-    message['Svcs'] = raw.get('service_count', 0)
-    message['TCP'] = raw.get('service_count_tcp', 0)
-    message['UDP'] = raw.get('service_count_udp', 0)
-    message['ICMP'] = raw.get('service_count_icmp', 0)
-    message['ARP'] = raw.get('service_count_arp', 0)
-    message['SW'] = raw.get('software_count', 0)
-    message['Vulns'] = raw.get('vulnerability_count', 0)
-    message['RTT/ms'] = normalize_rtt(raw.get('lowest_rtt', 0))
-    message['Hops'] = raw.get('lowest_ttl', 0)
-    message['Detected'] = raw.get('detected_by', 0)
-    message['First_Seen'] = timestamp_to_datestring(raw.get('first_seen', '') * 1000)
-    message['Last_Seen'] = timestamp_to_datestring(raw.get('last_seen', '') * 1000)
-    message['Explorer'] = raw.get('agent_name', '')
-    message['Hosted_Zone'] = raw.get('hosted_zone_name', '')
-    message['Site'] = raw.get('site_name', '')
-    return [message]
+    return [{
+        'ID': raw.get('service_id', ''),
+        'Asset_Status': raw.get('alive', ''),
+        'Address': raw.get('service_address', ''),
+        'Transport': raw.get('service_transport', ''),
+        'Port': raw.get('service_port', 0),
+        'Protocol': raw.get('service_protocol', []),
+        'VHost': raw.get('service_vhost', ''),
+        'Summary': raw.get('service_summary', ''),
+        'Hostname': raw.get('names', []),
+        'OS': f"{raw.get('os', '')} {raw.get('os_version', '')}",
+        'Type': raw.get('type', ''),
+        'Hardware': raw.get('hw', ''),
+        'Outlier': raw.get('outlier_score', 0),
+        'MAC_Vendor': raw.get('mac_vendors', []),
+        'MAC_Age': raw.get('newest_mac_age', ''),
+        'MAC': raw.get('macs', []),
+        'OS_EOL': raw.get('eol_os', 0),
+        'Comments': raw.get('comments', ''),
+        'Tags': raw.get('tags', {}),
+        'Svcs': raw.get('service_count', 0),
+        'TCP': raw.get('service_count_tcp', 0),
+        'UDP': raw.get('service_count_udp', 0),
+        'ICMP': raw.get('service_count_icmp', 0),
+        'ARP': raw.get('service_count_arp', 0),
+        'SW': raw.get('software_count', 0),
+        'Vulns': raw.get('vulnerability_count', 0),
+        'RTT/ms': normalize_rtt(raw.get('lowest_rtt', 0)),
+        'Hops': raw.get('lowest_ttl', 0),
+        'Detected': raw.get('detected_by', 0),
+        'First_Seen': timestamp_to_datestring(raw.get('first_seen', '') * 1000),
+        'Last_Seen': timestamp_to_datestring(raw.get('last_seen', '') * 1000),
+        'Explorer': raw.get('agent_name', ''),
+        'Hosted_Zone': raw.get('hosted_zone_name', ''),
+        'Site': raw.get('site_name', ''),
+    }]
 
 
 def parse_raw_quota_get(raw: dict) -> dict:
-    message = {}
-    message['usage_limit'] = raw.get('created_at', '')
-    message['usage_today'] = raw.get('usage_today', '')
-    message['counter'] = raw.get('counter', '')
-    return message
+    return {
+        'usage_limit': raw.get('created_at', ''),
+        'usage_today': raw.get('usage_today', ''),
+        'counter': raw.get('counter', ''),
+    }
 
 
 def parse_raw_wireless(raw: dict) -> list:
-    message = {}
-    message['ID'] = raw.get('id', '')
-    message['ESSID'] = raw.get('essid', '')
-    message['BSSID'] = raw.get('bssid', '')
-    message['Vendor'] = raw.get('vendor', '')
-    message['Family'] = raw.get('family', '')
-    message['Type'] = raw.get('type', '')
-    message['Auth'] = raw.get('authentication', '')
-    message['Enc'] = raw.get('encryption', '')
-    message['Sig'] = raw.get('signal', 0)
-    message['Int'] = raw.get('interface', '')
-    message['Additional'] = raw.get('data', {})
-    message['First_seen'] = timestamp_to_datestring(raw.get('created_at', ''))
-    message['Last_seen'] = timestamp_to_datestring(raw.get('last_seen', ''))
-    message['Site'] = raw.get('site_name', '')
-    return [message]
+    return [{
+        'ID': raw.get('id', ''),
+        'ESSID': raw.get('essid', ''),
+        'BSSID': raw.get('bssid', ''),
+        'Vendor': raw.get('vendor', ''),
+        'Family': raw.get('family', ''),
+        'Type': raw.get('type', ''),
+        'Auth': raw.get('authentication', ''),
+        'Enc': raw.get('encryption', ''),
+        'Sig': raw.get('signal', 0),
+        'Int': raw.get('interface', ''),
+        'Additional': raw.get('data', {}),
+        'First_seen': timestamp_to_datestring(raw.get('created_at', '')),
+        'Last_seen': timestamp_to_datestring(raw.get('last_seen', '')),
+        'Site': raw.get('site_name', ''),
+    }]
 
 
 def check_if_valid_options(args: dict, valid_options: set):
@@ -278,8 +278,8 @@ def asset_delete_command(client: Client, args: dict) -> CommandResults:
 
 
 def comment_add_command(client: Client, args: dict) -> CommandResults:
-    asset_id = args['asset_id']
-    comment = args['comment']
+    asset_id = args.get('asset_id', '')
+    comment = args.get('comment', '')
     raw = client.comment_add(asset_id, comment)
     message = f'Comment added to {asset_id} successfully.'
     return CommandResults(
@@ -292,8 +292,8 @@ def comment_add_command(client: Client, args: dict) -> CommandResults:
 
 
 def tags_add_command(client: Client, args: dict) -> CommandResults:
-    asset_id = args['asset_id']
-    tags_list = argToList(args['tags'])
+    asset_id = args.get('asset_id', '')
+    tags_list = argToList(args.get('tags', ''))
     tags = " ".join(tags_list)
     raw = client.tags_add(asset_id, tags)
     message = f'Tags added to {asset_id} successfully.'
@@ -311,9 +311,9 @@ def service_search_command(client: Client, args: dict) -> CommandResults:
     service_string = ''
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('service_id'):
-        service_string = f'/{args["service_id"]}'
+        service_string = f'/{args.get("service_id", "")}'
     elif args.get('search'):
-        service_string = f'?search={args["search"]}'
+        service_string = f'?search={args.get("search", "")}'
     elif args.get('service_addresses'):
         service_string = ' or service_address:'.join(argToList(args.get('service_addresses')))
         service_string = f'?search=service_address:{service_string}'
@@ -416,9 +416,9 @@ def wireless_lan_search_command(client: Client, args: dict) -> CommandResults:
     check_if_valid_options(args, {'wireless_id', 'search'})
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     if args.get('wireless_id'):
-        wireless_string = f'/{args["wireless_id"]}'
+        wireless_string = f'/{args.get("wireless_id", "")}'
     elif args.get('search'):
-        wireless_string = f'?search={args["search"]}'
+        wireless_string = f'?search={args.get("search", "")}'
     raw = client.wireless_search(wireless_string)
     raw = raw[:limit]
     message = []

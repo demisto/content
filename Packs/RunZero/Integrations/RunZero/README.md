@@ -549,7 +549,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -678,7 +678,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -809,7 +809,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -881,8 +881,8 @@ Get services.
                     "ssh.authPassword": "true",
                     "ssh.authPublicKey": "true",
                     "ssh.hostKey.data": "AAAAB3NzaC1yc2EAAAADAQABAAABgQDcG6E/EoCvbnwDNgz7GPvM7rireCOeuWdHF1cxdR+yAzlltEeTrBoFNx/AdePTpsnIvBF9g4aP0XV7JVJXIWmI3UmAG/KBcIeXBdp5amnbSo7EVpyyQi6sAc5bmdYS3OjM9AdOL7aRpWdt/kzqUtDx60O/igS2QJf5LX+oxAWk1fQcaJtW+FxWVw2H6RVI4mBJ+T9LWvMmqMui56wa/onIkFQEVecHxCF868LtdGm+cChk/BtZKkUjG/CO/uzbBdCx6FjBIsK9kp3w6v2iLlxfPL9wVO5ilO8PBZCzVOnkr3ZgaYs/v1UYPiKD7NFEteW1pdFhuROWg7H9mdkd2VNG+6j28Xb1fLhOSUJu7flGXGx3mqmPsdog4+L06ZCXqpRBPCXimByYrstOkNm/kKZSqrigj+pM9i8QXnBTrokPd7VbQ1eCgHTyJzGefqv6JjoXnwEmxXGKQxw2kj6H9SyPaNqfIaPcIk3sRq6MncuQL+zvvH8QC0iyykeRlQxHlTk=",
-                    "ssh.hostKey.md5": "d2:47:54:1f:05:59:6f:98:6f:1b:54:cd:3d:83:dd:6e",
-                    "ssh.hostKey.sha256": "SHA256:tovkrBOsS9d1cTtdZMBi53eZY3DLO8bNvrUWgTrr9vg",
+                    "ssh.hostKey.md5": "md5",
+                    "ssh.hostKey.sha256": "SHA256",
                     "ssh.hostKey.type": "ssh-rsa",
                     "ssh.hostKeyAlgorithms": "ecdsa-sha2-nistp256\trsa-sha2-256\trsa-sha2-512\tssh-ed25519\tssh-rsa",
                     "ssh.kexAlgorithms": "curve25519-sha256\tcurve25519-sha256@libssh.org\tdiffie-hellman-group-exchange-sha1\tdiffie-hellman-group-exchange-sha256\tdiffie-hellman-group14-sha1\tdiffie-hellman-group14-sha256\tdiffie-hellman-group16-sha512\tdiffie-hellman-group18-sha512\tecdh-sha2-nistp256\tecdh-sha2-nistp384\tecdh-sha2-nistp521",
@@ -956,7 +956,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -1086,7 +1086,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -1216,7 +1216,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -1343,7 +1343,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -1477,7 +1477,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -1607,7 +1607,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -1734,7 +1734,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -1833,7 +1833,7 @@ Get services.
                     "tls.cipherName": "TLS_CHACHA20_POLY1305_SHA256",
                     "tls.cn": "RHEL85.localdomain",
                     "tls.fp.sha1": "6e02c6bbf44cbc812575217e3ac0709366286d80",
-                    "tls.fp.sha256": "SHA256:GoDqRHc5mzn4b85Ub4V5FazbiDxGX1RLMW7YuvoKI7M=",
+                    "tls.fp.sha256": "sha256",
                     "tls.issuer": "CN=RHEL85.localdomain, OU=ca-93049768678360241, O=a1e0eaed94b94ba38e499f8c45abf326, C=US",
                     "tls.names": "127.0.0.1\tlocalhost\trhel85.localdomain",
                     "tls.notAfter": "2024-01-30T10:09:03Z",
@@ -1908,7 +1908,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -2065,7 +2065,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "attributes": {
@@ -2156,8 +2156,8 @@ Get services.
                     "ssh.authPassword": "true",
                     "ssh.authPublicKey": "true",
                     "ssh.hostKey.data": "AAAAB3NzaC1yc2EAAAADAQABAAABgQDcG6E/EoCvbnwDNgz7GPvM7rireCOeuWdHF1cxdR+yAzlltEeTrBoFNx/AdePTpsnIvBF9g4aP0XV7JVJXIWmI3UmAG/KBcIeXBdp5amnbSo7EVpyyQi6sAc5bmdYS3OjM9AdOL7aRpWdt/kzqUtDx60O/igS2QJf5LX+oxAWk1fQcaJtW+FxWVw2H6RVI4mBJ+T9LWvMmqMui56wa/onIkFQEVecHxCF868LtdGm+cChk/BtZKkUjG/CO/uzbBdCx6FjBIsK9kp3w6v2iLlxfPL9wVO5ilO8PBZCzVOnkr3ZgaYs/v1UYPiKD7NFEteW1pdFhuROWg7H9mdkd2VNG+6j28Xb1fLhOSUJu7flGXGx3mqmPsdog4+L06ZCXqpRBPCXimByYrstOkNm/kKZSqrigj+pM9i8QXnBTrokPd7VbQ1eCgHTyJzGefqv6JjoXnwEmxXGKQxw2kj6H9SyPaNqfIaPcIk3sRq6MncuQL+zvvH8QC0iyykeRlQxHlTk=",
-                    "ssh.hostKey.md5": "d2:47:54:1f:05:59:6f:98:6f:1b:54:cd:3d:83:dd:6e",
-                    "ssh.hostKey.sha256": "SHA256:tovkrBOsS9d1cTtdZMBi53eZY3DLO8bNvrUWgTrr9vg",
+                    "ssh.hostKey.md5": "md5",
+                    "ssh.hostKey.sha256": "sha256",
                     "ssh.hostKey.type": "ssh-rsa",
                     "ssh.hostKeyAlgorithms": "ecdsa-sha2-nistp256\trsa-sha2-256\trsa-sha2-512\tssh-ed25519\tssh-rsa",
                     "ssh.kexAlgorithms": "curve25519-sha256\tcurve25519-sha256@libssh.org\tdiffie-hellman-group-exchange-sha1\tdiffie-hellman-group-exchange-sha256\tdiffie-hellman-group14-sha1\tdiffie-hellman-group14-sha256\tdiffie-hellman-group16-sha512\tdiffie-hellman-group18-sha512\tecdh-sha2-nistp256\tecdh-sha2-nistp384\tecdh-sha2-nistp521",
@@ -2231,7 +2231,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "attributes": {
@@ -2380,7 +2380,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "attributes": {
@@ -2648,7 +2648,7 @@ There are no input arguments for this command.
             "id": "5e866cc5-8d81-434f-adf3-ffb2345667f9",
             "inactive": false,
             "last_used_at": 1675007349,
-            "last_used_ip": "31.154.166.148",
+            "last_used_ip": "last_used_ip",
             "last_used_ua": "python-requests/2.28.2",
             "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
             "token": "",

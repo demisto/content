@@ -112,7 +112,7 @@ def test_assets_search(requests_mock):
     )
     del mock_response[0]['attributes']  # display attributes is defaulted to false
     del mock_response[0]['services']  # display services is defaulted to false
-    readable_output = util_load_file('test_data/asset_hr.txt')    
+    readable_output = util_load_file('test_data/asset_hr.txt')
     expected_commandResult = CommandResults(outputs_prefix='RunZero.Asset',
                                             outputs_key_field='id',
                                             raw_response=mock_response,
@@ -351,12 +351,12 @@ def test_quota_get(requests_mock):
     client = get_client()
 
     actual_commandResult = quota_get_command(client=client)
-
+    readable_output = util_load_file('test_data/quota_hr.txt')
     expected_commandResult = CommandResults(outputs_prefix='RunZero.Quota',
                                             outputs_key_field='id',
                                             raw_response=mock_response,
                                             outputs=mock_response,
-                                            readable_output='### Quota\n|counter|usage_limit|usage_today|\n|---|---|---|\n| 1 | 1576300370 | 100 |\n',
+                                            readable_output=readable_output,
                                             )
     assertCommandResults(actual_commandResult, expected_commandResult)
 

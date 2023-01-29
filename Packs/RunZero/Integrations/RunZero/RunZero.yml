@@ -411,17 +411,17 @@ script:
     - contextPath: RunZero.Quota.type
       description: API key type (org, etc.).
       type: String
-  - name: runzero-bulk-clear-tags
-    description: Bulk clear tags according to RunZero query search.
+  - name: runzero-tag-delete
+    description: Delete tags for specific asset.
     deprecated: false
     arguments:
     - name: asset_id
-      description: Asset ID from which to remove tags.
+      description: Asset ID from which to remove specified tags.
       isArray: false
       required: true
       secret: false
     - name: tags
-      description: A comma-separated list of tags to delete.
+      description: A comma separated list of tags to delete.
       isArray: true
       required: true
       secret: false
