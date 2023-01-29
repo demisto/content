@@ -11,7 +11,7 @@ import os.path
 import copy
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
 if not demisto.params().get("proxy", True):
     del os.environ["HTTP_PROXY"]
@@ -97,7 +97,7 @@ def http_request(uri, method, headers, body={}, params={}, files={}):
 
     if (res.status_code != 102 and (res.status_code < 200 or res.status_code >= 300)):
         raise Exception('Got status code ' + str(res.status_code) + ' with body '
-                        + res.content + ' with headers ' + str(res.headers))
+                        + str(res.content) + ' with headers ' + str(res.headers))
     return res
 
 
