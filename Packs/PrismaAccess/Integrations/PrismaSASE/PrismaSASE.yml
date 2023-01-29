@@ -249,11 +249,6 @@ script:
       - pre
       - post
       required: true
-    - default: false
-      description: The name of the security rule.
-      isArray: false
-      name: name
-      required: false
     - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
       isArray: false
@@ -621,9 +616,6 @@ script:
     execution: false
     name: prisma-sase-address-object-update
     outputs:
-    - contextPath: PrismaSase.Address
-      description: Edited address object.
-      type: String
     - contextPath: PrismaSase.Address.description
       description: Address description.
       type: String
@@ -633,8 +625,11 @@ script:
     - contextPath: PrismaSase.Address.id
       description: Address ID.
       type: String
-    - contextPath: PrismaSase.Address.ip_netmask
-      description: Address IP netmask.
+    - contextPath: PrismaSase.Address.address_value
+      description: Address value.
+      type: String
+    - contextPath: PrismaSase.Address.type
+      description: Address type.
       type: String
     - contextPath: PrismaSase.Address.name
       description: Address name.
@@ -780,8 +775,11 @@ script:
     - contextPath: PrismaSase.Address.id
       description: Address ID.
       type: String
-    - contextPath: PrismaSase.Address.ip_netmask
-      description: Address IP netmask.
+    - contextPath: PrismaSase.Address.type
+      description: Address type.
+      type: String
+    - contextPath: PrismaSase.Address.address_value
+      description: Address value.
       type: String
     - contextPath: PrismaSase.Address.name
       description: Address name.
@@ -840,17 +838,11 @@ script:
     execution: false
     name: prisma-sase-address-object-list
     outputs:
-    - contextPath: PrismaSase.Address
-      description: Found security rule.
-      type: String
     - contextPath: PrismaSase.Address.description
       description: Address description.
       type: String
     - contextPath: PrismaSase.Address.folder
       description: Address folder.
-      type: String
-    - contextPath: PrismaSase.Address.fqdn
-      description: Address FQDN.
       type: String
     - contextPath: PrismaSase.Address.id
       description: Address ID.
@@ -858,8 +850,11 @@ script:
     - contextPath: PrismaSase.Address.name
       description: Address name.
       type: String
-    - contextPath: PrismaSase.Address.ip_netmask
-      description: Address IP netmask.
+    - contextPath: PrismaSase.Address.address_value
+      description: Address value.
+      type: String
+    - contextPath: PrismaSase.Address.type
+      description: Address type.
       type: String
   - arguments:
     - default: false
@@ -901,20 +896,20 @@ script:
     execution: false
     name: prisma-sase-tag-list
     outputs:
-    - contextPath: PrismaSase.Tag
-      description: Found security rule.
-      type: String
     - contextPath: PrismaSase.Tag.id
-      description: Address description.
+      description: Tag ID.
       type: String
     - contextPath: PrismaSase.Tag.name
-      description: Address folder.
+      description: Tag name.
       type: String
     - contextPath: PrismaSase.Tag.folder
-      description: Address FQDN.
+      description: Tag folder.
       type: String
     - contextPath: PrismaSase.Tag.comments
-      description: Address ID.
+      description: Tag comments.
+      type: String
+    - contextPath: PrismaSase.Tag.color
+      description: The tag color.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1009,7 +1004,7 @@ script:
       description: The tag color.
       type: String
     - contextPath: PrismaSase.Tag.comments
-      description: The tag omments.
+      description: The tag momments.
       type: String
   - arguments:
     - auto: PREDEFINED

@@ -245,7 +245,7 @@ class Client(BaseClient):
             tsg_id=tsg_id
         )
 
-    def push_candidate_config(self, folders: list, tsg_id: str | None, description: str = None) \
+    def push_candidate_config(self, folders: list, tsg_id: str | None, description: str | None = None) \
             -> dict:  # pragma: no cover
         """Push candidate configuration
         Args:
@@ -1109,7 +1109,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Address Object Created', raw_response, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown('Address Object Created', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -1589,7 +1589,7 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
         outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Address Group Created', raw_response, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown('Address Group Created', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -1628,9 +1628,9 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     static_addresses = argToList(args.get('static_addresses'))
     dynamic_filter = args.get('dynamic_filter')
     if group_type == 'static' and (dynamic_filter and not static_addresses):
-        raise DemistoException("noooo")
+        raise DemistoException("Please provide the static_addresses argument with type static")
     if group_type == 'dynamic' and (not dynamic_filter and static_addresses):
-        raise DemistoException("noooo")
+        raise DemistoException("Please provide the dynamic_filter argument with type dynamic")
     if group_type == 'static':
         if overwrite:
             original_address_group['static'] = static_addresses
@@ -1655,7 +1655,7 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     modify_group_address(outputs)
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Group updated', outputs, headerTransform=string_to_table_header),
