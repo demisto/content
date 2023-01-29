@@ -103,22 +103,22 @@ script:
       description: Asset hardware.
       type: String
     - contextPath: RunZero.Asset.Outlier
-      description: Asset outlier.
+      description: Asset outlier score.
       type: String
     - contextPath: RunZero.Asset.MAC_Vendor
-      description: Asset MAC vendor.
+      description: Asset vendor MAC address is allocated to.
       type: String
     - contextPath: RunZero.Asset.MAC_Age
-      description: Asset outlier.
+      description: Asset date MAC address was allocated.
       type: Integer
     - contextPath: RunZero.Asset.MAC
       description: Asset MAC address.
       type: UUID
     - contextPath: RunZero.Asset.OS_EOL
-      description: Asset operating system end-of-life.
+      description: Asset operating system end-of-life date.
       type: String
     - contextPath: RunZero.Asset.Sources
-      description: Asset outlier.
+      description: Asset data sources.
       type: String
     - contextPath: RunZero.Asset.Comments
       description: Comments attached to the asset.
@@ -127,31 +127,34 @@ script:
       description: Tags attached to the asset.
       type: Array
     - contextPath: RunZero.Asset.Svcs
-      description: Number of services on the asset.
+      description: Number of total service count.
       type: Integer
     - contextPath: RunZero.Asset.TCP
-      description: Asset outlier.
+      description: Asset TCP service count.
       type: Integer
     - contextPath: RunZero.Asset.UDP
-      description: Asset outlier.
+      description: Asset UDP service count.
       type: Integer
     - contextPath: RunZero.Asset.ICMP
-      description: Asset outlier.
+      description: Asset ICMP response.
+      type: Integer
+    - contextPath: RunZero.Asset.ARP
+      description: Asset ARP response.
       type: Integer
     - contextPath: RunZero.Asset.SW
-      description: Asset outlier.
+      description: Asset identified software.
       type: Integer
     - contextPath: RunZero.Asset.Vulns
-      description: Asset vulnerability count.
+      description: Asset identified vulnerability count.
       type: Integer
     - contextPath: RunZero.Asset.RTT/ms
-      description: Asset round-trip time.
+      description: Asset round-trip time latency.
       type: Integer
     - contextPath: RunZero.Asset.Hops
-      description: Asset time-to-live.
+      description: Asset estimated hop count from scanner.
       type: Integer
     - contextPath: RunZero.Asset.Detected
-      description: Asset is detected by.
+      description: Asset method of detection.
       type: String
     - contextPath: RunZero.Asset.First_Seen
       description: Datetime of when the asset was first seen.
@@ -160,7 +163,7 @@ script:
       description: Datetime of when the asset was last seen.
       type: String
     - contextPath: RunZero.Asset.Explorer
-      description: The agent that detected the asset.
+      description: Name of the RunZero explorer which most recently found the asset.
       type: String
     - contextPath: RunZero.Asset.Hosted_Zone
       description: Asset hosted zone.
@@ -229,22 +232,25 @@ script:
       description: Service hostname.
       type: Array
     - contextPath: RunZero.Service.Transport
-      description: Service hostname.
+      description: Service transport.
       type: String
     - contextPath: RunZero.Service.Port
-      description: Service hostname.
+      description: Service port.
       type: Integer
     - contextPath: RunZero.Service.Protocol
-      description: Service hostname.
+      description: Service protocol.
       type: Array
     - contextPath: RunZero.Service.VHost
-      description: Service hostname.
+      description: Service virtual host.
       type: Array
     - contextPath: RunZero.Service.Summary
+      description: Service summary.
+      type: Array
+    - contextPath: RunZero.Service.Hostname
       description: Service hostname.
       type: Array
     - contextPath: RunZero.Service.OS
-      description: Operating system version.
+      description: Service operating system version.
       type: String
     - contextPath: RunZero.Service.Type
       description: Service type.
@@ -253,13 +259,13 @@ script:
       description: Service hardware.
       type: String
     - contextPath: RunZero.Service.Outlier
-      description: Service outlier.
+      description: Service outlier score.
       type: String
     - contextPath: RunZero.Service.MAC_Vendor
-      description: Service mac vendor.
+      description: Service vendor MAC address is allocated to.
       type: String
     - contextPath: RunZero.Service.MAC_Age
-      description: Service outlier.
+      description: Service date MAC address was allocated.
       type: Integer
     - contextPath: RunZero.Service.MAC
       description: Service MAC address.
@@ -268,37 +274,40 @@ script:
       description: Service operating system end-of-life.
       type: String
     - contextPath: RunZero.Service.Comments
-      description: Comments attached to the asset.
+      description: Comments attached to the service.
       type: String
     - contextPath: RunZero.Service.Tags
-      description: Tags attached to the asset.
+      description: Tags attached to the service.
       type: Array
     - contextPath: RunZero.Service.Svcs
-      description: Number of services on the asset.
+      description: Total service count.
       type: Integer
     - contextPath: RunZero.Service.TCP
-      description: Service outlier.
+      description: TCP service count.
       type: Integer
     - contextPath: RunZero.Service.UDP
-      description: Service outlier.
+      description: UDP service count.
       type: Integer
     - contextPath: RunZero.Service.ICMP
-      description: Service outlier.
+      description: ICMP response.
+      type: Integer
+    - contextPath: RunZero.Service.ARP
+      description: ARP response.
       type: Integer
     - contextPath: RunZero.Service.SW
-      description: Service outlier.
+      description: Identified software.
       type: Integer
     - contextPath: RunZero.Service.Vulns
-      description: Service vulnerability count.
+      description: Identified vulnerabilities.
       type: Integer
     - contextPath: RunZero.Service.RTT/ms
-      description: Service round-trip time.
+      description: Service round-trip time latency.
       type: Integer
     - contextPath: RunZero.Service.Hops
-      description: Service time-to-live.
+      description: Estimated hop count from scanner.
       type: Integer
     - contextPath: RunZero.Service.Detected
-      description: Service is detected by.
+      description: Method of detection.
       type: String
     - contextPath: RunZero.Service.First_Seen
       description: Datetime of when the service was first seen.
@@ -307,7 +316,7 @@ script:
       description: Datetime of when the service was last seen.
       type: String
     - contextPath: RunZero.Service.Explorer
-      description: The agent that detected the service        .
+      description: Name of the RunZero explorer which most recently found the asset.
       type: String
     - contextPath: RunZero.Service.Hosted_Zone
       description: Service hosted zone.
