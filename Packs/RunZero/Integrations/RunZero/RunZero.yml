@@ -74,7 +74,7 @@ script:
       required: false
       secret: false
     - name: limit
-      description: Limit the number of assets returned. 
+      description: Limit the number of assets returned.
       default: false
       defaultValue: 50
       isArray: false
@@ -174,7 +174,7 @@ script:
   - name: runzero-asset-delete
     description: Bulk delete assets.
     deprecated: false
-    arguments: 
+    arguments:
     - name: asset_ids
       description: A comma-separated list of UUIDs of the asset to delete.
       isArray: true
@@ -212,7 +212,7 @@ script:
       required: false
       secret: false
     - name: limit
-      description: Limit the number of assets returned. 
+      description: Limit the number of assets returned.
       default: false
       defaultValue: 50
       isArray: false
@@ -420,7 +420,7 @@ script:
       isArray: false
       required: true
       secret: false
-    - name: tags 
+    - name: tags
       description: A comma-separated list of tags to delete.
       isArray: true
       required: true
@@ -441,7 +441,7 @@ script:
       required: false
       secret: false
     - name: limit
-      description: Limit the number of wireless LAN returned. 
+      description: Limit the number of wireless LAN returned.
       defaultValue: 50
     execution: false
     outputs:
@@ -479,10 +479,10 @@ script:
       description: Wireless LAN additional information.
       type: Array
     - contextPath: RunZero.WirelessLAN.First_seen
-      description: Datetime of when the wireless LAN was first seen. 
+      description: Datetime of when the wireless LAN was first seen.
       type: String
     - contextPath: RunZero.WirelessLAN.Last_seen
-      description: Datetime of when the wireless LAN was last seen. 
+      description: Datetime of when the wireless LAN was last seen.
       type: String
     - contextPath: RunZero.WirelessLAN.Site
       description: Wireless LAN site name.

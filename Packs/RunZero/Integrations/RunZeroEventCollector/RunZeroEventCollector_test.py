@@ -146,11 +146,11 @@ def test_fetch_events(requests_mock):
     from RunZeroEventCollector import Client, fetch_events
 
     mock_response = util_load_json('test_data/system_event_logs.json')
-    
+
     requests_mock.post(
         'https://console.runzero.com/api/v1.0/account/api/token',
         json={'access_token': 'access_token'})
-    
+
     requests_mock.get(
         'https://console.runzero.com/api/v1.0/account/events.json?search=created_at:>1673719953',
         json=mock_response)

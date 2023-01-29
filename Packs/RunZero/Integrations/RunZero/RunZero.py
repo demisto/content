@@ -101,13 +101,9 @@ class Client(BaseClient):
 
 
 def normalize_rtt(raw_rtt: float) -> float:
-    """Return the normalized value of raw_rtt,
+    """ normalizing a number:
     normalized = (x-min(x))/(max(x)-min(x))
-    input is a float 0 <= raw_rtt <= 1_000_000
-    return value 0.0 <= float <= 1.0
-
-    >>> factorial(837561)
-    0.84"""
+    min RTT = 0, MAX_RTT = 1_000_000 """
     if raw_rtt is None:
         return 0
     normalized_rtt = raw_rtt / MAX_RTT
