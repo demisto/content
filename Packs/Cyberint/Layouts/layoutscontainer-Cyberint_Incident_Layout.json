@@ -948,8 +948,8 @@
 						"static": false,
 						"type": "indicators",
 						"w": 2,
-						"x": 0,
-						"y": 10
+						"x": 1,
+						"y": 6
 					},
 					{
 						"displayType": "CARD",
@@ -1029,21 +1029,6 @@
 						"type": "",
 						"w": 1,
 						"x": 0,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-52ce3070-9d5c-11ed-8f36-ab5d128aea6b",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "New Section",
-						"static": false,
-						"w": 1,
-						"x": 0,
 						"y": 6
 					}
 				],
@@ -1077,7 +1062,7 @@
 		]
 	},
 	"edit": null,
-	"fromServerVersion": "",
+	"fromServerVersion": "0.0.0",
 	"group": "incident",
 	"id": "b094831f-4dc5-495c-8b9e-9be7b0c2723b",
 	"indicatorsDetails": null,
@@ -1091,6 +1076,6 @@
 	"quickView": null,
 	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
+	"toServerVersion": "99.99.99",
 	"version": -1
 }
