@@ -12,6 +12,8 @@ on:
       - .devcontainer/**
 jobs:
   Build-Devcontainer:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
