@@ -46,7 +46,7 @@ jobs:
       with:
         file: .devcontainer/devcontainer.json
         field: name
-        value: Content (${{ POETRY_LOCK_HASH }})
+        value: Content (${{ env.POETRY_LOCK_HASH }})
 
     - name: commit file
       if: steps.changed-files-poetry.outputs.any_changed == 'true'
