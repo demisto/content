@@ -264,7 +264,7 @@ Converts an html file to a PDF or PNG file.
 | file_name | The name the file will be saved as. Default is the EntryID. | Optional | 
 | type | The file type to which to convert the html file. Can be "pdf" or "png". Default is "png". | Optional | 
 | full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional |
-| wait_time | Time to wait before taking a screenshot \(in seconds\). | False |
+| wait_time | Time to wait before taking a screenshot (in seconds ). | Optional |
 
 #### Context Output
 
