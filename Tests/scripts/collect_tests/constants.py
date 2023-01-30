@@ -62,12 +62,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.WIDGET,
     FileType.DASHBOARD,
     FileType.REPORT,
-    FileType.PARSING_RULE,
-    FileType.MODELING_RULE,
-    FileType.MODELING_RULE_XIF,
-    FileType.CORRELATION_RULE,
-    FileType.XSIAM_DASHBOARD,
-    FileType.XSIAM_REPORT,
     FileType.REPORT,
     FileType.GENERIC_TYPE,
     FileType.GENERIC_FIELD,
@@ -83,12 +77,9 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.DOC_IMAGE,
     FileType.BUILD_CONFIG_FILE,
     FileType.WIZARD,
-    FileType.TRIGGER,
     FileType.LISTS,
     FileType.CONF_JSON,
-    FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
-    FileType.XDRC_TEMPLATE,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
