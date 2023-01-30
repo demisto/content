@@ -1,4 +1,4 @@
-Given the IP address this playbook enriches Azure Compute, IAM, and User information.
+Given the IP address, this playbook enriches Azure Compute, IAM, and User information.
 
 ## Dependencies
 
