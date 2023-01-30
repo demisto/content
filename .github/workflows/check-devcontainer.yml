@@ -29,12 +29,10 @@ jobs:
           poetry.lock
     - name: Update .devcontainer.json description
       if: steps.changed-files-poetry.outputs.any_changed == 'true'
-      uses: jossef/action-set-json-field@v2.1
-      with:
-        file: .devcontainer/devcontainer.json
-        field: name
-        value: Content (${{ hashFiles('poetry.lock') }})
-
+      run: |
+        # replace the first line of .devcontainer/devcontainer.json with the new description
+        POETRY_LOCK_HASH=${{ hashFiles('poetry.lock') }}
+        sed -i '1s/.*/  "// Development container for Content. Poetry hash: $POETRY_LOCK_HASH",/' .devcontainer/devcontainer.json
     - name: commit file
       if: steps.changed-files-poetry.outputs.any_changed == 'true'
       uses: stefanzweifel/git-auto-commit-action@v4
