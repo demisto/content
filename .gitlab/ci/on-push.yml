@@ -46,30 +46,11 @@ stop-running-pipelines:
     - .default-job-settings
   variables:
     master_branch_name: master
-    CONTENT_PIPELINES_API_URL: https://code.pan.run/api/v4/projects/2596/pipelines # disable-secrets-detection
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running piplines on current branch"
-    - |
-      if [[ $CI_COMMIT_BRANCH = "master" ]]; then
-        echo "Skipping, Should not run on master branch."
-      else
-        RESP=$(curl -v -H "Content-Type: application/json" -H "PRIVATE-TOKEN: $GITLAB_CANCEL_TOKEN" $CONTENT_PIPELINES_API_URL\?ref\=$CI_COMMIT_BRANCH)
-        if [ "$RESP" != "[]" ]; then
-            PIPELINES=$(echo "${RESP}" | jq -c '.[]')
-            for pipeline in ${PIPELINES}
-            do 
-                source=$(echo $pipeline | jq -r ".source")
-                status=$(echo $pipeline | jq -r ".status")
-                id=$(echo $pipeline | jq -r ".id")
-                if [ "$status" = "running" ] && [ "$source" = "push" ] && [ "$id" != $CI_PIPELINE_ID ]; then
-                    echo "Found running pipeline with id $id, and status $status. Stoping it."
-                    curl --request POST --header "PRIVATE-TOKEN: $GITLAB_CANCEL_TOKEN" "$CONTENT_PIPELINES_API_URL/$id/cancel"
-                fi
-            done
-        fi
-      fi
+    - Utils/gitlab/stop_running_pipelines.sh "$CI_COMMIT_BRANCH" "$GITLAB_CANCEL_TOKEN" "$CI_PIPELINE_ID"
     - section_end "Stop running piplines on current branch"
 
 
