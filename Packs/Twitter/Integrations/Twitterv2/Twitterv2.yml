@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.twitter.com
-  display: Your server URL
+  display: Server URL
   name: url
   required: true
   type: 0
@@ -35,13 +35,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.'
+      description: 'The oldest UTC timestamp (from most recent seven days) from which the Tweets will be provided. Date format will be in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) or relational expressions like “7 days ago”.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
+      description: The most recent UTC timestamp to which the Tweets will be provided. Date format will be in ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ) or relational expressions like “7 days ago”.
       isArray: false
       name: end_time
       required: false

@@ -175,8 +175,8 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        query_params = {'query': 'from:Twitter', 'granularity': 'day'}
-        client._http_request(method="GET", url_suffix='/tweets/counts/recent',
+        query_params = {'query': 'Twitter'}
+        client._http_request(method="GET", url_suffix='/tweets/search/recent',
                              headers=client._headers, params=query_params, ok_codes=[200])
         message = 'ok'
     except DemistoException as e:
@@ -275,23 +275,21 @@ def header_transform_get_user(header: str) -> str:
 
 
 def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """ Gets args and client and returns List[CommandResults] of Tweets according to the reqested search.
+    """ Gets args and client and returns CommandResults of Tweets according to the reqested search.
         Args:
             client: client -  A Twitter client.
             args: Dict - The function arguments.
         Returns:
-            A List of CommandResult objects with users data according to to the reqested.
+            A CommandResult object with Tweets data according to to the reqested.
     """
     headers = ['id', 'text', 'created_at', 'author.name', 'author.username', 'public_metrics.like_count', 'media.url']
     query = argToList(args.get('query'))
-    if not query:
-        raise ValueError('query not specified')
     start_time = date_to_iso_format(args.get('start_time', '')) if args.get('start_time', None) else None
     end_time = date_to_iso_format(args.get('end_time', '')) if args.get('end_time', None) else None
     limit = arg_to_number(args.get('limit', 50))
-    limit = 100 if limit and limit >= 100 else limit
+    if limit and (limit > 100 or limit < 10):
+        raise ValueError('Twitter: Limit should be a value between 10 and 100')
     next_token = args.get('next_token', None)
-    # Call the Client function and get the raw response
     raw_response, result, next_token = client.tweet_search(query, start_time, end_time, limit, next_token)
     dict_to_tableToMarkdown = create_human_readable(result)
     human_readable = tableToMarkdown("Tweets search results:", dict_to_tableToMarkdown,
@@ -326,7 +324,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """ Gets args and client and returns List[CommandResults] of users according to the reqested users names.
+    """ Retruns users information according to the requested user's names.
         Args:
             client: client -  A Twitter client.
             args: Dict - The function arguments.
@@ -336,10 +334,7 @@ def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
     headers = ['name', 'username', 'created_at', 'description', 'public_metrics.followers_count',
                'public_metrics.tweet_count', 'verified']
     user_name = argToList(args.get('user_name'))
-    if not user_name:
-        raise ValueError('user name not specified')
     return_pinned_tweets = args.get('return_pinned_tweets', 'false')
-    # Call the Client function and get the raw response
     raw_response, result = client.twitter_user_get(user_name, return_pinned_tweets)
     dict_to_tableToMarkdown = create_human_readable(result)
     human_readable = tableToMarkdown("twitter user get results:", dict_to_tableToMarkdown,
@@ -358,32 +353,16 @@ def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
 
-    :return:
-    :rtype:
-    """
-
-    # TODO: make sure you properly handle authentication
     bearer_token = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/2')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
         headers: Dict = {'Authorization': f'Bearer {bearer_token}'}
         headers
         client = Client(

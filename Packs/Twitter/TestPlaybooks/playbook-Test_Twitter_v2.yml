@@ -1,6 +1,6 @@
 id: playbook-Test_Twitter_v2
 version: -1
-name: playbook-Test_Twitter v2
+name: playbook-Test_Twitter_v2
 starttaskid: "0"
 tasks:
   "0":
