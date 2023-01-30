@@ -1,23 +1,24 @@
 id: TAXII2 Server Performance Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: TAXII2 Server Performance Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b45aae2d-bbd0-4982-8f06-4c2f82c3fddb
+    taskid: cd603bed-c6f9-4f27-8b43-83026bb7f831
     type: start
     task:
-      id: b45aae2d-bbd0-4982-8f06-4c2f82c3fddb
+      id: cd603bed-c6f9-4f27-8b43-83026bb7f831
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 254907c9-714d-4661-8791-310b5f2e21a2
+    taskid: 2f5059c6-115d-40db-8df1-ab2039258f2e
     type: regular
     task:
-      id: 254907c9-714d-4661-8791-310b5f2e21a2
+      id: 2f5059c6-115d-40db-8df1-ab2039258f2e
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -51,8 +52,9 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -69,20 +71,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0c074418-50f8-48eb-8411-3ebd2663ab33
+    taskid: 1f0b540e-cef5-4c30-8faa-c74a85418241
     type: title
     task:
-      id: 0c074418-50f8-48eb-8411-3ebd2663ab33
+      id: 1f0b540e-cef5-4c30-8faa-c74a85418241
       version: -1
       name: 10,000 Indicators
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "29"
+      - "61"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -99,17 +101,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b50184a3-4c65-4baf-81b9-6b44af648aae
+    taskid: 427f4a6f-a7d5-44b6-8a67-7e32c4c3be3e
     type: playbook
     task:
-      id: b50184a3-4c65-4baf-81b9-6b44af648aae
+      id: 427f4a6f-a7d5-44b6-8a67-7e32c4c3be3e
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -125,10 +126,24 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=10000
       z:
         simple: ${inputs.z}
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -138,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4540
+          "y": 4690
         }
       }
     note: false
@@ -150,17 +165,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f2b6cfad-2b7f-4108-8ba4-16c3e9c69b70
+    taskid: 9136f288-916e-4b86-8fa5-ed592a5f87f1
     type: playbook
     task:
-      id: f2b6cfad-2b7f-4108-8ba4-16c3e9c69b70
+      id: 9136f288-916e-4b86-8fa5-ed592a5f87f1
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -174,8 +188,22 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=50000
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -185,7 +213,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6785
+          "y": 6935
         }
       }
     note: false
@@ -197,25 +225,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f306fab2-858b-4c9b-8d37-f8d9d1f3b319
+    taskid: 0ebc5090-e80b-489e-8495-7b653356b281
     type: title
     task:
-      id: f306fab2-858b-4c9b-8d37-f8d9d1f3b319
+      id: 0ebc5090-e80b-489e-8495-7b653356b281
       version: -1
       name: 50,000 Indicators
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "38"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5065
+          "y": 5215
         }
       }
     note: false
@@ -227,25 +255,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 148711a5-695b-4116-8cf6-ef5c6390805b
+    taskid: 4cb3dee5-788a-42dd-8299-1128ab1a079d
     type: title
     task:
-      id: 148711a5-695b-4116-8cf6-ef5c6390805b
+      id: 4cb3dee5-788a-42dd-8299-1128ab1a079d
       version: -1
       name: 100,000 Indicators
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "48"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7310
+          "y": 7460
         }
       }
     note: false
@@ -257,17 +285,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: fab7abf3-38f2-4a54-8f73-e9d4027f0abe
+    taskid: 0bbe286d-228e-47b9-8fd4-5047604e4b0e
     type: playbook
     task:
-      id: fab7abf3-38f2-4a54-8f73-e9d4027f0abe
+      id: 0bbe286d-228e-47b9-8fd4-5047604e4b0e
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -281,8 +308,22 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=100000
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -292,7 +333,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9030
+          "y": 9180
         }
       }
     note: false
@@ -304,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c381d530-1ad4-4cd7-86af-8add4137522a
+    taskid: e343a521-be81-4c7a-8012-cb1c3b8b496d
     type: regular
     task:
-      id: c381d530-1ad4-4cd7-86af-8add4137522a
+      id: e343a521-be81-4c7a-8012-cb1c3b8b496d
       version: -1
       name: Set Small Outputs
       description: Set a value in context under the key you entered.
@@ -325,11 +366,12 @@ tasks:
         complex:
           root: HeyConcurrency
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4715
+          "y": 4865
         }
       }
     note: false
@@ -341,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 41e78d11-d223-4ddf-8464-29ebaf17c6f7
+    taskid: ba6d1029-39fb-49b5-89f0-c654866d4e3b
     type: regular
     task:
-      id: 41e78d11-d223-4ddf-8464-29ebaf17c6f7
+      id: ba6d1029-39fb-49b5-89f0-c654866d4e3b
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -360,13 +402,14 @@ tasks:
         simple: "no"
       key:
         simple: HeyConcurrency
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4890
+          "y": 5040
         }
       }
     note: false
@@ -378,10 +421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b424eddc-095e-4670-8cc2-18ba88c76119
+    taskid: 3615c5ac-22e6-4fb5-829e-89a408e3cc9c
     type: regular
     task:
-      id: b424eddc-095e-4670-8cc2-18ba88c76119
+      id: 3615c5ac-22e6-4fb5-829e-89a408e3cc9c
       version: -1
       name: Set Medium Outputs
       description: Set a value in context under the key you entered.
@@ -398,11 +441,12 @@ tasks:
       value:
         simple: ${HeyConcurrency}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6960
+          "y": 7110
         }
       }
     note: false
@@ -414,10 +458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1c77813a-f12c-4719-8ef1-26d5bce38190
+    taskid: 1f4e4943-44e4-4d44-860b-7b12f8de05c9
     type: regular
     task:
-      id: 1c77813a-f12c-4719-8ef1-26d5bce38190
+      id: 1f4e4943-44e4-4d44-860b-7b12f8de05c9
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -433,13 +477,14 @@ tasks:
         simple: "no"
       key:
         simple: HeyConcurrency
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7135
+          "y": 7285
         }
       }
     note: false
@@ -451,10 +496,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 10508047-fdbf-4931-8e1b-a4fb67148d6a
+    taskid: 1123495a-200f-4f67-8fc7-885b502e6aa5
     type: regular
     task:
-      id: 10508047-fdbf-4931-8e1b-a4fb67148d6a
+      id: 1123495a-200f-4f67-8fc7-885b502e6aa5
       version: -1
       name: Set Large Outputs
       description: Set a value in context under the key you entered.
@@ -471,11 +516,12 @@ tasks:
       value:
         simple: ${HeyConcurrency}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 9205
+          "y": 9355
         }
       }
     note: false
@@ -487,10 +533,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 7a2a12a8-3621-4944-8278-6fadda161b3c
+    taskid: 3fae1920-4bfc-49e2-870a-68b4162d6de8
     type: regular
     task:
-      id: 7a2a12a8-3621-4944-8278-6fadda161b3c
+      id: 3fae1920-4bfc-49e2-870a-68b4162d6de8
       version: -1
       name: Check IP Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -507,6 +553,7 @@ tasks:
       size:
         simple: ${inputs.iocs_in_xsoar}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -523,10 +570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: eeb75ad1-2da0-4001-86a9-1d5e0c1e6d14
+    taskid: 4ce02c35-7a88-4dce-8861-eb753b530390
     type: condition
     task:
-      id: eeb75ad1-2da0-4001-86a9-1d5e0c1e6d14
+      id: 4ce02c35-7a88-4dce-8861-eb753b530390
       version: -1
       name: Verify IP Is Ready
       type: condition
@@ -546,6 +593,7 @@ tasks:
             value:
               simple: IndicatorsCheck.ConditionMet
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -562,10 +610,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: caddb313-771d-480b-86ed-eea9586bc1cd
+    taskid: ccca8790-864e-45d7-89af-28116b9d5669
     type: regular
     task:
-      id: caddb313-771d-480b-86ed-eea9586bc1cd
+      id: ccca8790-864e-45d7-89af-28116b9d5669
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -579,13 +627,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 885
         }
       }
     note: false
@@ -597,10 +646,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 1b2b8bce-2655-4fae-88a0-2c047d84312f
+    taskid: a7838c25-73b5-46d7-83fc-d8c65be0c97a
     type: playbook
     task:
-      id: 1b2b8bce-2655-4fae-88a0-2c047d84312f
+      id: a7838c25-73b5-46d7-83fc-d8c65be0c97a
       version: -1
       name: GenericPolling
       description: |-
@@ -636,6 +685,7 @@ tasks:
       dt:
         simple: IndicatorsCheck(val.ConditionMet !== true).Query
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -657,10 +707,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 904820df-a19d-4aa2-8aea-b964a9a49329
+    taskid: c2efbff9-21e8-4387-8110-2c2723329f10
     type: regular
     task:
-      id: 904820df-a19d-4aa2-8aea-b964a9a49329
+      id: c2efbff9-21e8-4387-8110-2c2723329f10
       version: -1
       name: Check Domain Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -677,6 +727,7 @@ tasks:
       size:
         simple: ${inputs.iocs_in_xsoar}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -693,10 +744,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: d7d153de-b29c-4584-8d4b-e0b287aa9ad6
+    taskid: 98947149-2db3-4d22-8e63-df4e6b0cc662
     type: condition
     task:
-      id: d7d153de-b29c-4584-8d4b-e0b287aa9ad6
+      id: 98947149-2db3-4d22-8e63-df4e6b0cc662
       version: -1
       name: Verify Domain Is Ready
       type: condition
@@ -716,6 +767,7 @@ tasks:
             value:
               simple: IndicatorsCheck.ConditionMet
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -732,10 +784,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: f24880ba-b2a3-4e8e-8dd6-18fd6e91558b
+    taskid: 837122db-ac7f-45e7-863c-04ae627675de
     type: regular
     task:
-      id: f24880ba-b2a3-4e8e-8dd6-18fd6e91558b
+      id: 837122db-ac7f-45e7-863c-04ae627675de
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -749,8 +801,9 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -767,10 +820,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: e9094cca-0907-4b6a-8f9f-9237d9b8527f
+    taskid: 81e4b5ed-6cdf-4715-89af-cc3facda9c17
     type: playbook
     task:
-      id: e9094cca-0907-4b6a-8f9f-9237d9b8527f
+      id: 81e4b5ed-6cdf-4715-89af-cc3facda9c17
       version: -1
       name: GenericPolling
       description: |-
@@ -806,6 +859,7 @@ tasks:
       dt:
         simple: IndicatorsCheck(val.ConditionMet !== true).Query
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -827,10 +881,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: fad1c9eb-a701-406a-80ec-e9b4a3e56f75
+    taskid: d2180ff0-aa03-45a1-85a6-0fa982e24794
     type: regular
     task:
-      id: fad1c9eb-a701-406a-80ec-e9b4a3e56f75
+      id: d2180ff0-aa03-45a1-85a6-0fa982e24794
       version: -1
       name: Check URL Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -847,6 +901,7 @@ tasks:
       size:
         simple: ${inputs.iocs_in_xsoar}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -863,10 +918,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 216b8d14-ac3d-4081-8eef-e5173e2dda98
+    taskid: b81cafbb-5b5c-4ad8-8d40-7748f2886daf
     type: regular
     task:
-      id: 216b8d14-ac3d-4081-8eef-e5173e2dda98
+      id: b81cafbb-5b5c-4ad8-8d40-7748f2886daf
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -880,8 +935,9 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -898,10 +954,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 330a570e-9e41-49ef-8fbb-15fe7b43db76
+    taskid: 350b4390-92d7-496c-823a-67d5985ba800
     type: condition
     task:
-      id: 330a570e-9e41-49ef-8fbb-15fe7b43db76
+      id: 350b4390-92d7-496c-823a-67d5985ba800
       version: -1
       name: Verify URL Is Ready
       type: condition
@@ -921,6 +977,7 @@ tasks:
             value:
               simple: IndicatorsCheck.ConditionMet
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -937,10 +994,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8ecce3cf-4216-4bf1-86b0-b9f46146e35d
+    taskid: 282f5177-8cf2-4ed6-8a34-c17e009f4850
     type: playbook
     task:
-      id: 8ecce3cf-4216-4bf1-86b0-b9f46146e35d
+      id: 282f5177-8cf2-4ed6-8a34-c17e009f4850
       version: -1
       name: GenericPolling
       description: |-
@@ -976,6 +1033,7 @@ tasks:
       dt:
         simple: IndicatorsCheck(val.ConditionMet !== true).Query
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -997,10 +1055,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 0f59b4b2-c078-439c-8b4f-b96b43e2f90c
+    taskid: cdd30184-abc9-47b2-8a5a-07ed7d7aaa1e
     type: regular
     task:
-      id: 0f59b4b2-c078-439c-8b4f-b96b43e2f90c
+      id: cdd30184-abc9-47b2-8a5a-07ed7d7aaa1e
       version: -1
       name: Set URL
       description: Set a value in context under the key you entered.
@@ -1026,6 +1084,7 @@ tasks:
                 value:
                   simple: /instance/execute/taxii2server/
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1042,10 +1101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 6665b2a3-4ab4-44ac-8ebc-3cabafd6d906
+    taskid: 38277ffb-60a7-4bfe-88d6-b8356b3c86d7
     type: regular
     task:
-      id: 6665b2a3-4ab4-44ac-8ebc-3cabafd6d906
+      id: 38277ffb-60a7-4bfe-88d6-b8356b3c86d7
       version: -1
       name: Get Server URL
       description: Get the Server URL.
@@ -1057,6 +1116,7 @@ tasks:
       '#none#':
       - "27"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1073,10 +1133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 782b55dd-bfb1-49aa-8bc2-851b27ebf8a0
+    taskid: dc963372-3942-43f0-87e2-2d88f8d314a2
     type: regular
     task:
-      id: 782b55dd-bfb1-49aa-8bc2-851b27ebf8a0
+      id: dc963372-3942-43f0-87e2-2d88f8d314a2
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1101,13 +1161,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=url
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=10000&match[type]=url
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2965
+          "y": 3115
         }
       }
     note: false
@@ -1119,10 +1193,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: d18131ea-d675-4aef-8524-f65a7b0755f6
+    taskid: 3ca965c9-be26-4736-83b2-e8191d00c7fd
     type: condition
     task:
-      id: d18131ea-d675-4aef-8524-f65a7b0755f6
+      id: 3ca965c9-be26-4736-83b2-e8191d00c7fd
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1147,11 +1221,12 @@ tasks:
           right:
             value:
               simple: "18"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3140
+          "y": 3290
         }
       }
     note: false
@@ -1163,10 +1238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: c9c48bb4-c477-4535-8c61-dbf0a96c7999
+    taskid: 018015db-908c-4087-885c-3769ea9b0483
     type: regular
     task:
-      id: c9c48bb4-c477-4535-8c61-dbf0a96c7999
+      id: 018015db-908c-4087-885c-3769ea9b0483
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1191,13 +1266,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=ip
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=10000&match[type]=ip
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3490
+          "y": 3640
         }
       }
     note: false
@@ -1209,10 +1298,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: eaa7ad89-20e0-482f-8bec-d2005e011bb0
+    taskid: 25ee9bf6-f687-4bb4-8795-03c238818fec
     type: condition
     task:
-      id: eaa7ad89-20e0-482f-8bec-d2005e011bb0
+      id: 25ee9bf6-f687-4bb4-8795-03c238818fec
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1237,11 +1326,12 @@ tasks:
           right:
             value:
               simple: "18"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3665
+          "y": 3815
         }
       }
     note: false
@@ -1253,10 +1343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: c33d8935-889c-4cfa-8bd6-c5dd256b1ea6
+    taskid: 1d1f55f2-c1c6-4712-8484-4f0efd3f23b7
     type: regular
     task:
-      id: c33d8935-889c-4cfa-8bd6-c5dd256b1ea6
+      id: 1d1f55f2-c1c6-4712-8484-4f0efd3f23b7
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1272,13 +1362,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3315
+          "y": 3465
         }
       }
     note: false
@@ -1290,10 +1381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 7941dcd1-f60a-4f01-8f52-f397f9cc8600
+    taskid: 6373a0d1-85be-4905-8f51-945b607d867c
     type: regular
     task:
-      id: 7941dcd1-f60a-4f01-8f52-f397f9cc8600
+      id: 6373a0d1-85be-4905-8f51-945b607d867c
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1309,13 +1400,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3840
+          "y": 3990
         }
       }
     note: false
@@ -1327,10 +1419,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: ded5d2a2-635e-4368-8ba0-53007dc2f79f
+    taskid: b09015ed-04fe-4df3-878c-74c3d3dd5520
     type: regular
     task:
-      id: ded5d2a2-635e-4368-8ba0-53007dc2f79f
+      id: b09015ed-04fe-4df3-878c-74c3d3dd5520
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -1355,13 +1447,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=domain-name
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=10000&match[type]=domain-name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4015
+          "y": 4165
         }
       }
     note: false
@@ -1373,10 +1479,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 3b896f0d-2367-4ab1-8b59-2435bb4daa0c
+    taskid: 0200298b-dff9-47b0-8a9f-e2b51790f6cb
     type: condition
     task:
-      id: 3b896f0d-2367-4ab1-8b59-2435bb4daa0c
+      id: 0200298b-dff9-47b0-8a9f-e2b51790f6cb
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1401,11 +1507,12 @@ tasks:
           right:
             value:
               simple: "18"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4190
+          "y": 4340
         }
       }
     note: false
@@ -1417,10 +1524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: a7f0f505-5809-4c57-8d83-6db28858fb4c
+    taskid: 85d84ae2-94c1-4533-8081-e6e722f2fd9e
     type: regular
     task:
-      id: a7f0f505-5809-4c57-8d83-6db28858fb4c
+      id: 85d84ae2-94c1-4533-8081-e6e722f2fd9e
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1445,13 +1552,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=url
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=50000&match[type]=url
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5210
+          "y": 5360
         }
       }
     note: false
@@ -1463,10 +1584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 49eeaedf-cfdc-411f-83b2-41f88646d5d1
+    taskid: cc030986-2d75-4e05-8b19-82d8c9513ae8
     type: condition
     task:
-      id: 49eeaedf-cfdc-411f-83b2-41f88646d5d1
+      id: cc030986-2d75-4e05-8b19-82d8c9513ae8
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1491,11 +1612,12 @@ tasks:
           right:
             value:
               simple: "30"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5385
+          "y": 5535
         }
       }
     note: false
@@ -1507,10 +1629,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: b3cf81bc-4fa6-4b41-8b2d-394b3b17aeda
+    taskid: e3c51ee0-c14b-46c6-825e-0b1046b2693a
     type: regular
     task:
-      id: b3cf81bc-4fa6-4b41-8b2d-394b3b17aeda
+      id: e3c51ee0-c14b-46c6-825e-0b1046b2693a
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1526,13 +1648,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5560
+          "y": 5710
         }
       }
     note: false
@@ -1544,10 +1667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 9c672553-7a77-4af0-814f-45bd0fc25f2f
+    taskid: 4e75f5f2-67be-4e7b-8c04-76e2bade989d
     type: regular
     task:
-      id: 9c672553-7a77-4af0-814f-45bd0fc25f2f
+      id: 4e75f5f2-67be-4e7b-8c04-76e2bade989d
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1572,13 +1695,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=ip
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=50000&match[type]=ip
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5735
+          "y": 5885
         }
       }
     note: false
@@ -1590,10 +1727,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 8f720cde-0889-4e10-8898-07e93bd24b41
+    taskid: 7bc7a0a0-df72-465f-8df8-d3029412eeb9
     type: condition
     task:
-      id: 8f720cde-0889-4e10-8898-07e93bd24b41
+      id: 7bc7a0a0-df72-465f-8df8-d3029412eeb9
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1618,11 +1755,12 @@ tasks:
           right:
             value:
               simple: "30"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5910
+          "y": 6060
         }
       }
     note: false
@@ -1634,10 +1772,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 2714b0bf-188c-4d55-8af5-4e817fc27881
+    taskid: 72389367-a574-4e80-8ec9-220623b5c990
     type: regular
     task:
-      id: 2714b0bf-188c-4d55-8af5-4e817fc27881
+      id: 72389367-a574-4e80-8ec9-220623b5c990
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1653,13 +1791,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6085
+          "y": 6235
         }
       }
     note: false
@@ -1671,10 +1810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 79fc7437-280f-4cb7-8e41-888245513f0c
+    taskid: 029df56c-f3ed-4996-869e-dbfb55d41a26
     type: regular
     task:
-      id: 79fc7437-280f-4cb7-8e41-888245513f0c
+      id: 029df56c-f3ed-4996-869e-dbfb55d41a26
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -1699,13 +1838,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=domain-name
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=50000&match[type]=domain-name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6260
+          "y": 6410
         }
       }
     note: false
@@ -1717,10 +1870,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 0b2de7e2-a900-412f-8394-51d8cda9f88f
+    taskid: 279a25d8-679b-4c68-8f93-57b0f87f3f73
     type: condition
     task:
-      id: 0b2de7e2-a900-412f-8394-51d8cda9f88f
+      id: 279a25d8-679b-4c68-8f93-57b0f87f3f73
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1745,11 +1898,12 @@ tasks:
           right:
             value:
               simple: "30"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6435
+          "y": 6585
         }
       }
     note: false
@@ -1761,10 +1915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: adb30327-7ea3-410e-8f91-ba97157b004c
+    taskid: 5885567d-48a4-421c-8052-53c0bd9c845a
     type: regular
     task:
-      id: adb30327-7ea3-410e-8f91-ba97157b004c
+      id: 5885567d-48a4-421c-8052-53c0bd9c845a
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1789,13 +1943,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=url
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=100000&match[type]=url
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7455
+          "y": 7605
         }
       }
     note: false
@@ -1807,10 +1975,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: b86bedf3-ce5b-475e-8ee5-12f65c5a0762
+    taskid: da32e3ed-c0c9-4256-89df-bcc6df50cdeb
     type: condition
     task:
-      id: b86bedf3-ce5b-475e-8ee5-12f65c5a0762
+      id: da32e3ed-c0c9-4256-89df-bcc6df50cdeb
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1835,11 +2003,12 @@ tasks:
           right:
             value:
               simple: "90"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7630
+          "y": 7780
         }
       }
     note: false
@@ -1851,10 +2020,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: e378869b-ef58-4acf-87d0-13517cf47509
+    taskid: 50d7ffef-fb81-4664-8dc3-f877387ef07b
     type: regular
     task:
-      id: e378869b-ef58-4acf-87d0-13517cf47509
+      id: 50d7ffef-fb81-4664-8dc3-f877387ef07b
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1870,13 +2039,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7805
+          "y": 7955
         }
       }
     note: false
@@ -1888,10 +2058,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 01ac87df-6977-4d0f-8765-017128cf4386
+    taskid: 2d344e33-4e0a-4554-8f60-71314311144d
     type: regular
     task:
-      id: 01ac87df-6977-4d0f-8765-017128cf4386
+      id: 2d344e33-4e0a-4554-8f60-71314311144d
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1916,13 +2086,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=ip
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=100000&match[type]=ip
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7980
+          "y": 8130
         }
       }
     note: false
@@ -1934,10 +2118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: bb59d23d-49de-4e53-8442-4e86854561b5
+    taskid: 8f00d7af-273c-40b2-88a3-ab1b2dd360ca
     type: condition
     task:
-      id: bb59d23d-49de-4e53-8442-4e86854561b5
+      id: 8f00d7af-273c-40b2-88a3-ab1b2dd360ca
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1962,11 +2146,12 @@ tasks:
           right:
             value:
               simple: "90"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 8155
+          "y": 8305
         }
       }
     note: false
@@ -1978,10 +2163,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 0d02d804-aec7-4040-86f7-5cd8222fd176
+    taskid: b655cfc8-b2e0-4df4-8c83-ea060dd2d746
     type: regular
     task:
-      id: 0d02d804-aec7-4040-86f7-5cd8222fd176
+      id: b655cfc8-b2e0-4df4-8c83-ea060dd2d746
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1997,13 +2182,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 8330
+          "y": 8480
         }
       }
     note: false
@@ -2015,10 +2201,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 36d0517b-5371-4657-8a4e-c2bba055342e
+    taskid: 3ae9690c-2a6d-4607-80dc-e9bf58490de6
     type: regular
     task:
-      id: 36d0517b-5371-4657-8a4e-c2bba055342e
+      id: 3ae9690c-2a6d-4607-80dc-e9bf58490de6
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -2043,13 +2229,27 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=domain-name
+                  simple: threatintel/collections/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /objects/?limit=100000&match[type]=domain-name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 8505
+          "y": 8655
         }
       }
     note: false
@@ -2061,10 +2261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 6b01cdec-c8b3-4dde-828f-38ecdb2ec8aa
+    taskid: 475203a0-79ab-401b-8cef-0daf9efeb1b2
     type: condition
     task:
-      id: 6b01cdec-c8b3-4dde-828f-38ecdb2ec8aa
+      id: 475203a0-79ab-401b-8cef-0daf9efeb1b2
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -2089,11 +2289,12 @@ tasks:
           right:
             value:
               simple: "90"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 8680
+          "y": 8830
         }
       }
     note: false
@@ -2105,22 +2306,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 99fbd272-bdf6-4244-8e40-b7ce9198f617
+    taskid: 7d45d389-de47-4680-8351-349e59da125b
     type: title
     task:
-      id: 99fbd272-bdf6-4244-8e40-b7ce9198f617
+      id: 7d45d389-de47-4680-8351-349e59da125b
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 9555
+          "y": 9705
         }
       }
     note: false
@@ -2132,10 +2333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 44d6f315-c98c-4136-825c-c514b15357ae
+    taskid: 974eb66b-f3ee-438b-8150-8196d5204687
     type: regular
     task:
-      id: 44d6f315-c98c-4136-825c-c514b15357ae
+      id: 974eb66b-f3ee-438b-8150-8196d5204687
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2151,13 +2352,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4365
+          "y": 4515
         }
       }
     note: false
@@ -2169,10 +2371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 831d5a5f-949f-4e96-8ac1-cfc7eecb7ade
+    taskid: bb1fe041-3e69-4bed-8787-26eabe40ad0b
     type: regular
     task:
-      id: 831d5a5f-949f-4e96-8ac1-cfc7eecb7ade
+      id: bb1fe041-3e69-4bed-8787-26eabe40ad0b
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2188,13 +2390,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6610
+          "y": 6760
         }
       }
     note: false
@@ -2206,10 +2409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 4712d789-b03d-40af-8022-3ef5ed0834ad
+    taskid: 45327fbd-6f64-4877-8462-ce3d744f2674
     type: regular
     task:
-      id: 4712d789-b03d-40af-8022-3ef5ed0834ad
+      id: 45327fbd-6f64-4877-8462-ce3d744f2674
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2225,13 +2428,14 @@ tasks:
         simple: "no"
       key:
         simple: ${HttpRequest}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 8855
+          "y": 9005
         }
       }
     note: false
@@ -2243,10 +2447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 478ce8d8-6d8e-458b-83c5-504d7371cd8c
+    taskid: 4f088905-a0bd-490c-8d32-5ebd6a7f2c78
     type: regular
     task:
-      id: 478ce8d8-6d8e-458b-83c5-504d7371cd8c
+      id: 4f088905-a0bd-490c-8d32-5ebd6a7f2c78
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -2262,13 +2466,46 @@ tasks:
         simple: "no"
       key:
         simple: HeyConcurrency
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 9380
+          "y": 9530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: c22b6109-8027-4413-833c-957ce796e110
+    type: regular
+    task:
+      id: c22b6109-8027-4413-833c-957ce796e110
+      version: -1
+      name: taxii-server-list-collections
+      description: Returns all the collections.
+      script: TAXII2 Server|||taxii-server-list-collections
+      type: regular
+      iscommand: true
+      brand: TAXII2 Server
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2950
         }
       }
     note: false
@@ -2283,7 +2520,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9570,
+        "height": 9720,
         "width": 492.5,
         "x": 50,
         "y": 50
@@ -2296,23 +2533,23 @@ inputs:
     simple: edl
   required: false
   description: EDL instance URL.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: z
   value: {}
   required: false
   description: Duration of application to send requests.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: "n"
   value: {}
   required: false
   description: The number of requests to run. Default is 200.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: iocs_in_xsoar
   value:
     simple: "100000"
   required: false
   description: Expected number of indicators in the system.
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 fromversion: 6.1.0
 description: ''
