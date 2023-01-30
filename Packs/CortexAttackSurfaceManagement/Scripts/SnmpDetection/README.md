@@ -19,8 +19,11 @@ This script is used in the following playbooks and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | ip_address | IP address. |
-| time_out | Time out. |
+| time_out | Request timeout value, in seconds. Default value is 3 seconds. |
 
 ## Outputs
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| SnmpDetection | Checks if SNMP version is enabled and gets the versions running | Unknown |

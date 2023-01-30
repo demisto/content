@@ -4,15 +4,18 @@ args:
   required: true
 - default: true
   defaultValue: "3"
-  description: Time out.
+  description: Request timeout value, in seconds. Default value is 3 seconds.
   name: time_out
 comment: Checks to see if SNMP is enabled on the IP address provided.
 commonfields:
   id: SnmpDetection
   version: -1
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.9.46032
 enabled: true
 name: SnmpDetection
+outputs:
+- contextPath: SnmpDetection
+  description: Checks if SNMP version is enabled and gets the versions running
 runas: DBotWeakRole
 runonce: false
 script: ''

@@ -103,7 +103,7 @@ def main():
             raw_response=results,
             readable_output=readable_output
         ))
-    except ValueError as ex:
+    except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"SnmpDetection failed, Error: {str(ex)}")
 
