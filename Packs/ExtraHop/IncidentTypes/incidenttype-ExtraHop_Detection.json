@@ -21,6 +21,5 @@
  "weeks": 0,
  "weeksR": 0,
  "layout": "ExtraHop Detection",
- "fromVersion": "5.0.0",
- "marketplaces": ["xsoar"]
+ "fromVersion": "5.0.0"
 }

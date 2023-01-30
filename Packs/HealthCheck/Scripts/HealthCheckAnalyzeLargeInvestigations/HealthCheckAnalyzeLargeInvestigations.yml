@@ -25,5 +25,3 @@ tests:
 fromversion: 6.0.0
 scripttarget: 0
 tags: []
-marketplaces:
-- xsoar
