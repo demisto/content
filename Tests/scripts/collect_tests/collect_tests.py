@@ -423,7 +423,7 @@ class TestCollector(ABC):
             only_to_install=True,
         )
 
-    def _collect_all_marketplace_compatible_packs(self, collect_only_to_upload=False) -> Optional[CollectionResult]:
+    def _collect_all_marketplace_compatible_packs(self, only_to_upload=False) -> Optional[CollectionResult]:
         result = []
         for pack_metadata in PACK_MANAGER.iter_pack_metadata():
             try:
@@ -433,7 +433,7 @@ class TestCollector(ABC):
                     reason_description=self.marketplace.value,
                     allow_incompatible_marketplace=False,
                     is_nightly=True,
-                    collect_only_to_upload=collect_only_to_upload
+                    collect_only_to_upload=only_to_upload
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.debug(str(e))
@@ -1101,7 +1101,7 @@ class NightlyTestCollector(TestCollector, ABC):
 
 class UploadAllCollector(TestCollector):
     def _collect(self) -> Optional[CollectionResult]:
-        return self._collect_all_marketplace_compatible_packs(collect_only_to_upload=True)
+        return self._collect_all_marketplace_compatible_packs(only_to_upload=True)
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
