@@ -1,5 +1,5 @@
 {
-    "name": "Remedy On-Demand",
+    "name": "BMC Remedy On-Demand",
     "description": "Use Remedy On-Demand to manage tickets",
     "support": "xsoar",
     "currentVersion": "1.1.1",
