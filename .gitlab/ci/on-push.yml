@@ -374,6 +374,12 @@ slack-notify-nightly-build:
 
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - |
+      if [[ $EXIT_CODE != 0 ]]
+      then
+        echo "Failed to install packs. Exiting"
+        exit $EXIT_CODE
+      fi
     - section_end "Install Packs and run Test-Module"
 
     - section_start "Run Tests"
