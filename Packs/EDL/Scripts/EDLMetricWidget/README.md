@@ -6,15 +6,19 @@ Schedule a daily job to run this widget script in a playbook to track EDL size o
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | widget |
-| Cortex XSOAR Version | 5.5.0 |
+| Tags | basescript |
+| Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| server_url | Server URL |
+| server_url | Demisto server URL |
 | edl_port | If using a port and not instance name |
 | edl_exclusions | Integration instances to not track or ignore in widget |
-| verify_ssl | Trust any certificate, insecure |
+| verify_ssl | Trust any certificate \(insecure\) |
+
+## Outputs
+---
+There are no outputs for this script.
