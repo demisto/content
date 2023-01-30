@@ -477,7 +477,7 @@ def main() -> None:
 
         args = demisto.args()
         if demisto.command() == 'test-module':
-            return_results((client))
+            return_results(test_module(client))
 
         elif demisto.command() == 'runzero-quota-get':
             return_results(quota_get_command(client))
