@@ -117,10 +117,10 @@ validate-content-conf:
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
       fi
 
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
@@ -353,6 +353,7 @@ slack-notify-nightly-build:
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
         # The files are empty.
         echo "Not running the instance flow, no tests to run were found."
+        job-done
         exit $EXIT_CODE
       fi
     - section_end "Are there tests to run?"
@@ -373,6 +374,12 @@ slack-notify-nightly-build:
 
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - |
+      if [[ $EXIT_CODE != 0 ]]
+      then
+        echo "Failed to install packs. Exiting"
+        exit $EXIT_CODE
+      fi
     - section_end "Install Packs and run Test-Module"
 
     - section_start "Run Tests"
