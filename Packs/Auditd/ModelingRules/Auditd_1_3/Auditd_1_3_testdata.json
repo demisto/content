@@ -16,7 +16,7 @@
                 "xdm.source.user.username": null,
                 "xdm.source.ipv4": null,
                 "xdm.event.id": "57688940",
-                "xdm.source.process.pid": 26435.0,
+                "xdm.source.process.pid": "26435",
                 "xdm.event.type": "LOGIN",
                 "xdm.source.process.command_line": null
             }
