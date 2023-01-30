@@ -21,6 +21,9 @@
                 "Note.Text": {
                     "simple": "comment"
                 },
+                "Note.UpdatedBy": {
+                    "simple": "owner"
+                },
                 "Severity.Label": {
                     "complex": {
                         "filters": [],

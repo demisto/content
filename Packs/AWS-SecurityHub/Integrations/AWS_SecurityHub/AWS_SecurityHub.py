@@ -844,65 +844,67 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     finding = response.get('Findings')[0]  # a list with one dict in it
     demisto.debug(f'The finding is: {finding} \nEnd of finding')
     incident_last_update = finding.get('UpdatedAt')
-    demisto.debug(f'The incident last update time is: {incident_last_update}')
+    incident_processed_at = finding.get('ProcessedAt')
+    demisto.debug(f'The incident last update time is: {incident_last_update}\n'
+                  f'The incident processed at time: {incident_processed_at}')
 
-    if remote_args.last_update > incident_last_update:
-        demisto.debug('Nothing new in the incident.')
-        return GetRemoteDataResponse(mirrored_object={}, entries=[{}])
-    else:
+    if (remote_args.last_update < incident_last_update) or (remote_args.last_update < incident_processed_at):
         demisto.debug(f'Updated incident {remote_incident_id}')
         return GetRemoteDataResponse(mirrored_object=finding, entries=[{}])
+    else:
+        demisto.debug('Nothing new in the incident.')
+        return GetRemoteDataResponse(mirrored_object={}, entries=[{}])
 
 
-def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str], aws_sh_severity: str,
-                                     additional_filters: str, finding_types: List[str], workflow_status: List[str],
-                                     product_name: List[str]) -> GetModifiedRemoteDataResponse:
-    """ Checks if there were any updates in the incidents on AWS Security Hub, that match the given filters.
-            Then returns a list of the updated incident ids.
-        Args:
-            client: boto3.client - An AWS client.
-            args: Dict[str, str] - The argument to the function.
-            aws_sh_severity: str - The severity we want to filter by.
-            additional_filters: str - More filters that the user provided.
-            finding_types: List[str] - A list of finding types to filter by.
-            workflow_status: List[str] - A list of workflow statuses to filter by.
-            product_name: List[str] - A list of product name to filter by.
-        Returns:
-            A GetModifiedRemoteDataResponse object that contains a list of the updated incident ids.
-    """
-    last_update = args.get('lastUpdate', None)
-    filters = {}
-    if last_update:
-        remote_args = GetModifiedRemoteDataArgs(args)
-        now = datetime.now(timezone.utc)
-        filters['UpdatedAt'] = [{
-            'Start': remote_args.last_update,
-            'End': now.isoformat()
-        }]
-
-    demisto.debug(f'The filters are: {filters} \nEND OF FILTERS')
-
-    response = client.get_findings(Filters=filters)
-    findings = response.get('Findings')
-    next_token = response.get('NextToken')
-    demisto.debug(f'Findings are: {findings}')
-
-    modified_incident_ids = []
-    while findings:
-        for finding in findings:
-            demisto.debug(f'A new incident id: {finding.get("Id")}\n')
-            modified_incident_ids.append(finding.get('Id'))
-        if next_token:
-            demisto.debug(f'In pagination part. The next token is {next_token}\nEND TOKEN')
-            response = client.get_findings(Filters=filters, NextToken=next_token)
-            findings = response.get('Findings')
-            next_token = response.get('NextToken')
-            demisto.debug(f'The new next token is {next_token}')
-        else:
-            demisto.debug('End of loop')
-            findings = None
-    demisto.debug(f'The incident ids are: {modified_incident_ids}')
-    return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
+# def get_modified_remote_data_command(client: boto3.client, args: Dict[str, str], aws_sh_severity: str,
+#                                      additional_filters: str, finding_types: List[str], workflow_status: List[str],
+#                                      product_name: List[str]) -> GetModifiedRemoteDataResponse:
+#     """ Checks if there were any updates in the incidents on AWS Security Hub, that match the given filters.
+#             Then returns a list of the updated incident ids.
+#         Args:
+#             client: boto3.client - An AWS client.
+#             args: Dict[str, str] - The argument to the function.
+#             aws_sh_severity: str - The severity we want to filter by.
+#             additional_filters: str - More filters that the user provided.
+#             finding_types: List[str] - A list of finding types to filter by.
+#             workflow_status: List[str] - A list of workflow statuses to filter by.
+#             product_name: List[str] - A list of product name to filter by.
+#         Returns:
+#             A GetModifiedRemoteDataResponse object that contains a list of the updated incident ids.
+#     """
+#     last_update = args.get('lastUpdate', None)
+#     filters = {}
+#     if last_update:
+#         remote_args = GetModifiedRemoteDataArgs(args)
+#         now = datetime.now(timezone.utc)
+#         filters['UpdatedAt'] = [{
+#             'Start': remote_args.last_update,
+#             'End': now.isoformat()
+#         }]
+#
+#     demisto.debug(f'The filters are: {filters} \nEND OF FILTERS')
+#
+#     # response = client.get_findings(Filters=filters)
+#     # findings = response.get('Findings')
+#     # next_token = response.get('NextToken')
+#     # demisto.debug(f'Findings are: {findings}')
+#
+#     modified_incident_ids = []
+#     while findings:
+#         for finding in findings:
+#             demisto.debug(f'A new incident id: {finding.get("Id")}\n')
+#             modified_incident_ids.append(finding.get('Id'))
+#         if next_token:
+#             demisto.debug(f'In pagination part. The next token is {next_token}\nEND TOKEN')
+#             response = client.get_findings(Filters=filters, NextToken=next_token)
+#             findings = response.get('Findings')
+#             next_token = response.get('NextToken')
+#             demisto.debug(f'The new next token is {next_token}')
+#         else:
+#             demisto.debug('End of loop')
+#             findings = None
+#     demisto.debug(f'The incident ids are: {modified_incident_ids}')
+#     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
@@ -938,7 +940,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any]) -> 
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
     data = parsed_args.data
-    demisto.debug(f'Got the following data {data}, delta {delta}, and remote ID: {remote_incident_id}.')
+    demisto.debug(f'Got the following {parsed_args=}, {data=}, {delta=}, and remote ID: {remote_incident_id}.')
     if delta:
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
     if parsed_args.incident_changed:
@@ -1022,10 +1024,10 @@ def main():  # pragma: no cover
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, args))
             return
-        elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, args, aws_sh_severity, additional_filters,
-                                                            finding_type, workflow_status, product_name))
-            return
+        # elif command == 'get-modified-remote-data':
+        #     return_results(get_modified_remote_data_command(client, args, aws_sh_severity, additional_filters,
+        #                                                     finding_type, workflow_status, product_name))
+        #     return
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
             return

@@ -79,7 +79,7 @@
                     "simple": "SourceUrl"
                 },
                 "Comment": {
-                    "simple": "Note.text"
+                    "simple": "Note.Text"
                 },
                 "Description": {
                     "simple": "Description"
