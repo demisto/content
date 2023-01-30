@@ -1377,6 +1377,9 @@ script:
     - contextPath: PrismaSase.CustomURLCategory.list
       description: The URL category match list.
       type: String
+    - contextPath: PrismaSase.CustomURLCategory.description
+      description: The URL category description.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -1429,7 +1432,7 @@ script:
     - contextPath: PrismaSase.CustomURLCategory.name
       description: The URL category name.
       type: String
-    - contextPath: PrismaSase.AddressGroup.folder
+    - contextPath: PrismaSase.CustomURLCategory.folder
       description: The URL category folder.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.type
@@ -1437,6 +1440,9 @@ script:
       type: String
     - contextPath: PrismaSase.CustomURLCategory.list
       description: The URL category match list.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.description
+      description: The URL category description.
       type: String
   - arguments:
     - default: false
@@ -1497,7 +1503,7 @@ script:
     - contextPath: PrismaSase.CustomURLCategory.name
       description: The URL category name.
       type: String
-    - contextPath: PrismaSase.AddressGroup.folder
+    - contextPath: PrismaSase.CustomURLCategory.folder
       description: The URL category folder.
       type: String
     - contextPath: PrismaSase.CustomURLCategory.type
@@ -1505,6 +1511,9 @@ script:
       type: String
     - contextPath: PrismaSase.CustomURLCategory.list
       description: The URL category match list.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.description
+      description: The URL category description.
       type: String
   - arguments:
     - default: false
@@ -1568,6 +1577,9 @@ script:
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.description
       description: The external dynamic list description.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.type
+      description: The external dynamic list type.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.source
       description: The external dynamic list source.
@@ -1685,6 +1697,9 @@ script:
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.description
       description: The external dynamic list description.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.type
+      description: The external dynamic list type.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.source
       description: The external dynamic list source.
@@ -1811,6 +1826,9 @@ script:
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.description
       description: The external dynamic list description.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.type
+      description: The external dynamic list type.
       type: String
     - contextPath: PrismaSase.ExternalDynamicList.source
       description: The external dynamic list source.

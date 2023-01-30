@@ -1924,7 +1924,7 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('External Dynamic List Created',
-                                        raw_response,
+                                        outputs,
                                         headers=['id', 'name', 'type', 'folder', 'description', 'source', 'frequency'],
                                         headerTransform=string_to_table_header,
                                         is_auto_json_transform=True),
