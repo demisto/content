@@ -331,7 +331,7 @@ class TAXII2Server:
         objects = limited_iocs
 
         if SERVER.has_extension:
-            limited_extensions = extensions[offset:offset + limit]
+            limited_extensions = get_limited_extensions(limited_iocs, extensions)
             objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
 
         if limited_iocs:
@@ -361,6 +361,24 @@ class TAXII2Server:
 SERVER: TAXII2Server = None  # type: ignore[assignment]
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_limited_extensions(limited_iocs, extensions):
+    """
+    Args:
+        limited_iocs: List of the limited iocs.
+        extensions: List of all the generated extensions to limit.
+
+    Returns: List of the limited extensions related to the limited iocs.
+    """
+    limited_extensions = []
+    required_extensions_ids = []
+    for ioc in limited_iocs:
+        required_extensions_ids.extend(list(ioc.get('extensions', {}).keys()))
+    for extension in extensions:
+        if extension.get('id') in required_extensions_ids:
+            limited_extensions.append(extension)
+    return limited_extensions
 
 
 def taxii_validate_request_headers(f: Callable) -> Callable:
