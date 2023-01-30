@@ -128,8 +128,24 @@ args:
   name: searchresultslabel
   required: false
   secret: false
+- default: false
+  description: If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false.
+  isArray: false
+  name: summarizedversion
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+- default: false
+  description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed)
+  isArray: false
+  name: add_fields_to_summarize_context
+  required: false
+  secret: false
 comment: |-
-  Searches Demisto incidents.
+  Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
@@ -186,7 +202,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.10.9.45313
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
