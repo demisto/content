@@ -1,3 +1,5 @@
+import json
+
 import dateutil.parser
 
 import demistomock as demisto
@@ -19,6 +21,7 @@ MAP_TYPE_TO_URL = {
     "Actors": "actor",
     "Indicators": "indicator",
     "Vulnerability": "vulnerability",
+    "Campaign": "campaign",
 }
 MAP_TYPE_TO_RESPONSE = {
     "Malware": "malware",
@@ -42,6 +45,9 @@ MAP_INDICATORS = {
         "name": ThreatIntel.ObjectsNames.THREAT_ACTOR,
         "dbotscore": DBotScoreType.CUSTOM,
     },
+    "Campaign": {
+        "name": ThreatIntel.ObjectsNames.CAMPAIGN
+    }
 }
 
 MAP_TYPE_TO_ATTACKPATTERN_KEY = {"Actors": "threat-actors", "Malware": "malware"}
@@ -216,7 +222,8 @@ class MandiantClient(BaseClient):
 
     def get_indicators_by_value(self, indicator_value: str, params: Dict = None):
         params = params or {}
-        request_body = {"requests": [{"values": [indicator_value]}]}
+        request_body = {"requests": [{"values": [indicator_value]}],
+                        "include_campaigns": True}
         try:
             url = f"/v4/indicator"
             response = self._http_request(
@@ -416,6 +423,69 @@ def create_malware_indicator(client: MandiantClient, raw_indicator: Dict) -> Dic
 
     return indicator_obj
 
+def create_campaign_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+    """
+    Creates a campaign indicator
+    Args:
+        client (MandiantClient): client
+        raw_indicator (Dict): indicator
+    Returns:
+        Dict: campaign indicator
+    """
+    raw_indicator = {
+        k: v for k, v in raw_indicator.items() if v and v != "redacted"
+    }  # filter none and redacted values
+
+    fields = {
+        "actors": [a['name'] for a in raw_indicator.get("actors")],
+        "description": raw_indicator.get("description"),
+        "tags": [i.get("name", "") for i in argToList(raw_indicator.get("industries"))] + client.tags,
+        "DBot Score": get_dbot_score(raw_indicator, indicator_type="Campaign"),
+        "publications": generate_publications(raw_indicator.get("reports", [])),
+    }
+
+    relationships = get_indicator_relationships(
+        raw_indicator,
+        "actors",
+        "short_name",
+        ThreatIntel.ObjectsNames.CAMPAIGN,
+        "name",
+        ThreatIntel.ObjectsNames.THREAT_ACTOR,
+        EntityRelationship.Relationships.RELATED_TO,
+        EntityRelationship.Relationships.RELATED_TO,
+    )
+
+    relationships += get_indicator_relationships(
+        raw_indicator,
+        "malware",
+        "short_name",
+        ThreatIntel.ObjectsNames.CAMPAIGN,
+        "name",
+        ThreatIntel.ObjectsNames.MALWARE,
+        EntityRelationship.Relationships.RELATED_TO,
+        EntityRelationship.Relationships.RELATED_TO,
+    )
+
+    relationships += get_indicator_relationships(
+        raw_indicator,
+        "vulnerabilities",
+        "short_name",
+        ThreatIntel.ObjectsNames.CAMPAIGN,
+        "name",
+        FeedIndicatorType.CVE,
+        EntityRelationship.Relationships.RELATED_TO,
+        EntityRelationship.Relationships.RELATED_TO,
+    )
+
+    indicator_obj = {
+        "value": raw_indicator.get("short_name"),
+        "type": ThreatIntel.ObjectsNames.CAMPAIGN,
+        "rawJSON": raw_indicator,
+        "fields": fields,
+        "relationships": relationships
+    }
+
+    return indicator_obj
 
 def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     """
@@ -729,6 +799,20 @@ def create_base_indicator(
     else:
       tlp_color = client.tlp_color
 
+    campaign_relationships = [
+        EntityRelationship(
+            entity_a=raw_indicator['value'],
+            entity_a_type=indicator_type,
+            name=EntityRelationship.Relationships.RELATED_TO,
+            entity_b=campaign.get("name"),
+            entity_b_type=ThreatIntel.ObjectsNames.CAMPAIGN,
+            reverse_name=EntityRelationship.Relationships.RELATED_TO,
+        ).to_indicator()
+        for campaign in raw_indicator.get("campaigns")
+        if campaign
+    ]
+
+
     fields = {
         "primarymotivation": raw_indicator.get("motivations"),
         "firstseenbysource": raw_indicator.get("first_seen"),
@@ -748,6 +832,7 @@ def create_base_indicator(
         "score": get_verdict(raw_indicator.get("mscore")),
         "type": indicator_type,
         "fields": fields,
+        "relationships": campaign_relationships
     }
     return indicator_obj
 
@@ -852,8 +937,28 @@ def enrich_indicators(
             for attack_pattern in attack_pattern_list
             if attack_pattern
         ]
+
+        campaigns_list = client.get_indicator_info(
+            indicator_type=indicator_type,
+            identifier=indicator_id,
+            info_type="campaigns",
+        )
+
+        campaign_relationships = [
+            EntityRelationship(
+                entity_a=indicator_name,
+                entity_a_type=MAP_INDICATORS[indicator_type]["name"],
+                name=EntityRelationship.Relationships.RELATED_TO,
+                entity_b=campaign.get("short_name"),
+                entity_b_type=ThreatIntel.ObjectsNames.CAMPAIGN,
+                reverse_name=EntityRelationship.Relationships.RELATED_TO,
+            ).to_indicator()
+            for campaign in campaigns_list
+            if campaign
+        ]
+
         relationships = (
-            reports_relationships + general_relationships + attack_pattern_relationships
+            reports_relationships + general_relationships + attack_pattern_relationships + campaign_relationships
         )
 
         indicator["relationships"] = relationships
@@ -1046,12 +1151,22 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
         for indicator in indicators_list
     ]
 
-    for indicator in indicators_list:
+    for indicator in indicators:
         indicator["value"] = indicators_value_to_clickable([indicator["value"]])
 
+        dummy_indicator = [
+            {
+                "value": "$$DummyIndicator$$",
+                "relationships": indicator["relationships"],
+            }
+        ]
+        demisto.createIndicators(dummy_indicator)
+
     return CommandResults(
+        content_format=formats["json"],
         outputs_prefix=INDICATOR_TYPE_MAP[indicators_list[0]["type"]],
-        outputs=indicators_list
+        outputs=indicators,
+        outputs_key_field="name",
     )
 
 
@@ -1120,6 +1235,37 @@ def fetch_malware_family(client: MandiantClient, args: Dict = None):
         outputs_key_field="name",
         ignore_auto_extract=True,
     )
+
+
+def fetch_campaign(client: MandiantClient, args: Dict = None):
+    args = args if args else {}
+    campaign = args.get("campaign_id")
+
+    indicator = client.get_indicator_info(
+        identifier=campaign, indicator_type="Campaign"
+    )
+
+    indicator = [create_campaign_indicator(client, indicator)]
+
+    if client.enrichment:
+        dummy_indicator = [
+            {
+                "value": "$$DummyIndicator$$",
+                "relationships": indicator[0]["relationships"],
+            }
+        ]
+        demisto.createIndicators(dummy_indicator)
+
+    demisto.createIndicators(indicator)
+
+    return CommandResults(
+        content_format=formats["json"],
+        outputs=indicator,
+        outputs_prefix="MANDIANTTI.Malware",
+        outputs_key_field="name",
+        ignore_auto_extract=True,
+    )
+
 
 
 def fetch_reputation(client: MandiantClient, args: Dict = None):
@@ -1221,6 +1367,7 @@ def main() -> None:
             "get-indicator": fetch_indicator_by_value,
             "get-actor": fetch_threat_actor,
             "get-malware": fetch_malware_family,
+            "get-campaign": fetch_campaign,
             "file": fetch_reputation,
             "ip": fetch_reputation,
             "url": fetch_reputation,

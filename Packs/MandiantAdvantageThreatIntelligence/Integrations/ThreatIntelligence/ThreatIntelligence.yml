@@ -297,6 +297,17 @@ script:
     deprecated: false
     description: Retrieve information about a Vulnerability (by CVE) from Mandiant
     execution: false
+  - name: get-campaign
+    arguments:
+    - default: true
+      description: ID of the campaign to lookup
+      isArray: false
+      name: campaign_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve information about a Campaign from Mandiant
+    execution: false
   dockerimage: demisto/python3:3.10.5.31797
   feed: true
   isfetch: false
