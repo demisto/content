@@ -1,11 +1,10 @@
+from typing import Callable
+from typing import Dict
+
 import dateutil.parser
 
-import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
-import requests
-from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -43,9 +42,7 @@ MAP_INDICATORS = {
         "name": ThreatIntel.ObjectsNames.THREAT_ACTOR,
         "dbotscore": DBotScoreType.CUSTOM,
     },
-    "Campaign": {
-        "name": ThreatIntel.ObjectsNames.CAMPAIGN
-    }
+    "Campaign": {"name": ThreatIntel.ObjectsNames.CAMPAIGN},
 }
 
 MAP_TYPE_TO_ATTACKPATTERN_KEY = {"Actors": "threat-actors", "Malware": "malware"}
@@ -70,7 +67,7 @@ class MandiantClient(BaseClient):
         metadata: bool = False,
         enrichment: bool = False,
         tags: List = None,
-        tlp_color: str = 'RED',
+        tlp_color: str = "RED",
     ):
         if not tags:
             tags = []
@@ -147,7 +144,9 @@ class MandiantClient(BaseClient):
 
         return self._token
 
-    def get_indicator_info_endpoint(self, identifier: str, indicator_type: str, info_type: str) -> List:
+    def get_indicator_info_endpoint(
+        self, identifier: str, indicator_type: str, info_type: str
+    ) -> List:
         """
         Retrieve detailed information for a given indicator.
         Args:
@@ -188,9 +187,7 @@ class MandiantClient(BaseClient):
         else:
             return call_result.get(info_type, [])
 
-    def get_indicator_info(
-        self, identifier: str, indicator_type: str
-    ) -> Dict:
+    def get_indicator_info(self, identifier: str, indicator_type: str) -> Dict:
         """
         Retrieve detailed information for a given indicator.
         Args:
@@ -216,7 +213,6 @@ class MandiantClient(BaseClient):
                 raise e
 
         return call_result
-
 
     def get_indicators(
         self, indicator_type: str = "Indicators", params: Dict = None
@@ -245,10 +241,12 @@ class MandiantClient(BaseClient):
 
     def get_indicators_by_value(self, indicator_value: str, params: Dict = None):
         params = params or {}
-        request_body = {"requests": [{"values": [indicator_value]}],
-                        "include_campaigns": True}
+        request_body = {
+            "requests": [{"values": [indicator_value]}],
+            "include_campaigns": True,
+        }
         try:
-            url = f"/v4/indicator"
+            url = "/v4/indicator"
             response = self._http_request(
                 method="POST",
                 url_suffix=url,
@@ -276,6 +274,19 @@ class MandiantClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def get_last_updated(indicator: dict) -> datetime:
+    last_updated = arg_to_datetime(indicator.get("last_updated"))
+    if not last_updated:
+        raise RuntimeError("Unable to retrieve `last_updated` date")
+    else:
+        return last_updated
+
+
+def filter_last_updated(indicator: dict, start_time: datetime) -> bool:
+    indicator_last_updated = get_last_updated(indicator)
+    return indicator_last_updated.timestamp() > start_time.timestamp()
+
+
 def get_verdict(mscore: Optional[str]) -> int:
     """
     Convert mscore to dbot score
@@ -286,14 +297,14 @@ def get_verdict(mscore: Optional[str]) -> int:
     """
     if not mscore:
         return Common.DBotScore.NONE
-    mscore = int(mscore)
-    if 0 <= mscore <= 20:
+    mscore_int: int = int(mscore)
+    if 0 <= mscore_int <= 20:
         return Common.DBotScore.GOOD
-    elif 21 <= mscore <= 50:
+    elif 21 <= mscore_int <= 50:
         return Common.DBotScore.NONE
-    elif 51 <= mscore <= 80:
+    elif 51 <= mscore_int <= 80:
         return Common.DBotScore.SUSPICIOUS
-    elif 81 <= mscore <= 100:
+    elif 81 <= mscore_int <= 100:
         return Common.DBotScore.BAD
     else:
         return Common.DBotScore.NONE
@@ -446,6 +457,7 @@ def create_malware_indicator(client: MandiantClient, raw_indicator: Dict) -> Dic
 
     return indicator_obj
 
+
 def create_campaign_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     """
     Creates a campaign indicator
@@ -460,9 +472,12 @@ def create_campaign_indicator(client: MandiantClient, raw_indicator: Dict) -> Di
     }  # filter none and redacted values
 
     fields = {
-        "actors": [a['name'] for a in raw_indicator.get("actors", [])],
+        "actors": [a["name"] for a in raw_indicator.get("actors", [])],
         "description": raw_indicator.get("description"),
-        "tags": [i.get("name", "") for i in argToList(raw_indicator.get("industries", []))] + client.tags,
+        "tags": [
+            i.get("name", "") for i in argToList(raw_indicator.get("industries", []))
+        ]
+        + client.tags,
         "DBot Score": get_dbot_score(raw_indicator, indicator_type="Campaign"),
         "publications": generate_publications(raw_indicator.get("reports", [])),
     }
@@ -505,10 +520,11 @@ def create_campaign_indicator(client: MandiantClient, raw_indicator: Dict) -> Di
         "type": ThreatIntel.ObjectsNames.CAMPAIGN,
         "rawJSON": raw_indicator,
         "fields": fields,
-        "relationships": relationships
+        "relationships": relationships,
     }
 
     return indicator_obj
+
 
 def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     """
@@ -525,13 +541,14 @@ def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
 
     primary_motivation = None
     if len(raw_indicator.get("motivations", [])) >= 1:
-        primary_motivation = raw_indicator['motivations'][0].get("name")
+        primary_motivation = raw_indicator["motivations"][0].get("name")
 
     fields = {
         "primarymotivation": primary_motivation,
         "tags": [
             industry.get("name")
-            for industry in raw_indicator.get("industries", [])  # type: ignore
+            for industry in raw_indicator.get("industries", [])
+            # type: ignore
         ]
         + client.tags,
         "aliases": [
@@ -816,18 +833,18 @@ def create_base_indicator(
     # GREEN.  Otherwise, use the configured value
 
     information_is_osint = True
-    for source in raw_indicator.get('sources', []):
-      if source.get('osint', False) == False:
-        information_is_osint = False
+    for source in raw_indicator.get("sources", []):
+        if not source.get("osint", False):
+            information_is_osint = False
 
     if information_is_osint:
-      tlp_color = 'GREEN'
+        tlp_color = "GREEN"
     else:
-      tlp_color = client.tlp_color
+        tlp_color = client.tlp_color
 
     campaign_relationships = [
         EntityRelationship(
-            entity_a=raw_indicator['value'],
+            entity_a=raw_indicator["value"],
             entity_a_type=indicator_type,
             name=EntityRelationship.Relationships.RELATED_TO,
             entity_b=campaign.get("name"),
@@ -837,7 +854,6 @@ def create_base_indicator(
         for campaign in raw_indicator.get("campaigns", [])
         if campaign
     ]
-
 
     fields = {
         "primarymotivation": raw_indicator.get("motivations"),
@@ -858,12 +874,12 @@ def create_base_indicator(
         "score": get_verdict(raw_indicator.get("mscore")),
         "type": indicator_type,
         "fields": fields,
-        "relationships": campaign_relationships
+        "relationships": campaign_relationships,
     }
     return indicator_obj
 
 
-MAP_INDICATORS_FUNCTIONS = {
+MAP_INDICATORS_FUNCTIONS: Dict[str, Callable] = {
     "Malware": create_malware_indicator,
     "Actors": create_actor_indicator,
     "Indicators": create_indicator,
@@ -984,7 +1000,10 @@ def enrich_indicators(
         ]
 
         relationships = (
-            reports_relationships + general_relationships + attack_pattern_relationships + campaign_relationships
+            reports_relationships
+            + general_relationships
+            + attack_pattern_relationships
+            + campaign_relationships
         )
 
         indicator["relationships"] = relationships
@@ -1015,9 +1034,9 @@ def get_new_indicators(
     if indicator_type == "Indicators":
         # for indicator type the earliest time to fetch is 90 days ago
         earliest_fetch = arg_to_datetime("90 days ago")
-        start_date = max(earliest_fetch, start_date)  # type:ignore
+        param_start_date: datetime = max(earliest_fetch, start_date)  # type:ignore
         params = {
-            "start_epoch": int(start_date.timestamp()),
+            "start_epoch": int(param_start_date.timestamp()),
             "limit": limit,
             "gte_mscore": minimum_mscore,
             "exclude_osint": exclude_osint,
@@ -1026,16 +1045,9 @@ def get_new_indicators(
     new_indicators_list = client.get_indicators(indicator_type, params=params)
 
     if indicator_type != "Indicators":  # new to old
-        sort_last_updated = lambda x: arg_to_datetime(x.get("last_updated"))
-        new_indicators_list.sort(
-            key=sort_last_updated, reverse=True
-        )  # type:ignore
-        filter_last_updated = lambda x: arg_to_datetime(x["last_updated"]).timestamp() > start_date.timestamp()
+        new_indicators_list.sort(key=get_last_updated, reverse=True)  # type:ignore
         new_indicators_list = list(
-            filter(
-                filter_last_updated,  # type: ignore
-                new_indicators_list
-            )
+            filter(filter_last_updated, new_indicators_list)  # type: ignore
         )
 
     return new_indicators_list
@@ -1167,7 +1179,7 @@ def batch_fetch_indicators(
 
 def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     args = args if args else {}
-    indicator_value: str = args['indicator_value']
+    indicator_value: str = args["indicator_value"]
 
     INDICATOR_TYPE_MAP = {"ipv4": "ip", "fqdn": "domain", "url": "url", "md5": "file"}
 
@@ -1200,7 +1212,7 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
 
 def fetch_threat_actor(client: MandiantClient, args: Dict = None):
     args = args if args else {}
-    actor_name: str = args['actor_name']
+    actor_name: str = args["actor_name"]
 
     indicator_obj: dict = client.get_indicator_info(
         identifier=actor_name, indicator_type="Actors"
@@ -1233,32 +1245,32 @@ def fetch_threat_actor(client: MandiantClient, args: Dict = None):
 
 def fetch_malware_family(client: MandiantClient, args: Dict = None):
     args = args if args else {}
-    malware_name = args.get("malware_name")
+    malware_name: str = str(args.get("malware_name"))
 
     indicator = client.get_indicator_info(
         identifier=malware_name, indicator_type="Malware"
     )
-    indicator = [create_malware_indicator(client, indicator)]
+    indicator_list = [create_malware_indicator(client, indicator)]
     if client.enrichment:
-        enrich_indicators(client, indicator, "Malware")
+        enrich_indicators(client, indicator_list, "Malware")
 
         dummy_indicator = [
             {
                 "value": "$$DummyIndicator$$",
-                "relationships": indicator[0]["relationships"],
+                "relationships": indicator_list[0]["relationships"],
             }
         ]
         demisto.createIndicators(dummy_indicator)
 
-    demisto.createIndicators(indicator)
+    demisto.createIndicators(indicator_list)
 
-    indicator[0]["fields"]["name"] = indicators_value_to_clickable(
-        [indicator[0]["fields"]["name"]]
+    indicator_list[0]["fields"]["name"] = indicators_value_to_clickable(
+        [indicator_list[0]["fields"]["name"]]
     )
 
     return CommandResults(
         content_format=formats["json"],
-        outputs=indicator,
+        outputs=indicator_list,
         outputs_prefix="MANDIANTTI.Malware",
         outputs_key_field="name",
         ignore_auto_extract=True,
@@ -1267,39 +1279,38 @@ def fetch_malware_family(client: MandiantClient, args: Dict = None):
 
 def fetch_campaign(client: MandiantClient, args: Dict = None):
     args = args if args else {}
-    campaign = args.get("campaign_id")
+    campaign: str = str(args.get("campaign_id"))
 
     indicator = client.get_indicator_info(
         identifier=campaign, indicator_type="Campaign"
     )
 
-    indicator = [create_campaign_indicator(client, indicator)]
+    indicator_list = [create_campaign_indicator(client, indicator)]
 
     if client.enrichment:
         dummy_indicator = [
             {
                 "value": "$$DummyIndicator$$",
-                "relationships": indicator[0]["relationships"],
+                "relationships": indicator_list[0]["relationships"],
             }
         ]
         demisto.createIndicators(dummy_indicator)
 
-    demisto.createIndicators(indicator)
+    demisto.createIndicators(indicator_list)
 
     return CommandResults(
         content_format=formats["json"],
-        outputs=indicator,
+        outputs=indicator_list,
         outputs_prefix="MANDIANTTI.Malware",
         outputs_key_field="name",
         ignore_auto_extract=True,
     )
 
 
-
 def fetch_reputation(client: MandiantClient, args: Dict = None):
     args = args if args else {}
-    input_type = demisto.command()
-    indicator_value = args.get(input_type)
+    input_type: str = demisto.command()
+    indicator_value: str = str(args.get(input_type))
 
     if input_type == "cve":
         indicators_list = [client.get_indicator_info(indicator_value, "Vulnerability")]
@@ -1388,7 +1399,7 @@ def main() -> None:
             types=types,
         )
 
-        command_map = {
+        command_map: Dict[str, Callable] = {
             "test-module": test_module,
             "threat-intelligence-get-indicators": fetch_indicators,
             "fetch-indicators": batch_fetch_indicators,
