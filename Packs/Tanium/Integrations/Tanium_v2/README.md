@@ -18,7 +18,7 @@
 Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved
     questions, packages and sensor information.
 
-The integration was tested with 4.x version of Tanium Threat Response, and its compatible with it.
+The integration was tested with 4.x version of Tanium Threat Response, and is compatible with it.
 
   ## Configuration Parameters
   <ul>
