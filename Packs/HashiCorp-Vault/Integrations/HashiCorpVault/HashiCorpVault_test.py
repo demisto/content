@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 
 from HashiCorpVault import *
-import demistomock as demisto
+
 
 class MockHttpResponse:
     def __init__(self, json_data, status_code):
