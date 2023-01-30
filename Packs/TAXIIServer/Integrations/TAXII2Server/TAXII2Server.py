@@ -332,8 +332,7 @@ class TAXII2Server:
 
         if SERVER.has_extension:
             limited_extensions = get_limited_extensions(limited_iocs, extensions)
-            objects = limited_iocs.extend(limited_extensions)
-            # objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
+            objects.extend(limited_extensions)
 
         if limited_iocs:
             first_added = limited_iocs[-1].get('created')
