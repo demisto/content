@@ -557,6 +557,7 @@ class TestCollector(ABC):
         Returns:
             CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
         """
+        logger.info(f"DDDD: collecting modeling rule for {changed_file_path}")
         if self.marketplace != MarketplaceVersions.MarketplaceV2:
             logger.info(f'Not collecting pack {pack_id} for Modeling Rule {changed_file_path} because '
                         f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
@@ -635,6 +636,7 @@ class TestCollector(ABC):
 
         return CollectionResult(
             test=None,
+            modeling_rule_to_test=None,
             pack=pack_id,
             reason=reason,
             version_range=version_range,
