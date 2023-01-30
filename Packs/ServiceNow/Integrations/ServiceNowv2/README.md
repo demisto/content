@@ -40,10 +40,11 @@ These scripts are wrapped around the incident table, so to wrap them around anot
    4. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
    5. To enable mirroring to close a ticket in Cortex XSOAR, under the **Mirrored XSOAR Ticket closure method** dropdown, select the ticket closing method,
       or set the **Mirrored XSOAR Ticket custom close state code** parameter, in order to override the default closure method with a custom state.
-      In order to use **Mirrored XSOAR Ticket custom close state code** parameter, it must follow this format example: “10=Design,11=Development,12=Testing”.
-      Also a matching user-defined list of customized incident close reasons must be configured as a "Server configuration" in XSOAR. Not following this format will result in a server error.
-      ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-xsoar.png)
+      In order to use **Mirrored XSOAR Ticket custom close state code** parameter, it must follow this format: "custom_state_code1=custom_label1,custom_state_code2=custom_label2,...",
+      for example: “10=Design,11=Development,12=Testing”.
+      Also, a matching user-defined list of customized incident close reasons must be configured as a "Server configuration" in XSOAR (By matching meaning each Service Now custom state label will have a matching XSOAR custom close reason with the same name). ***Not following this format will result in a server error!***
       For more information about Customize Incident Close Reasons, see [This Link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Customize-Incident-Close-Reasons).
+      ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-xsoar.png)
    6. To enable mirroring to close an incident in ServiceNow, under the **Mirrored ServiceNow Ticket closure method** dropdown, select the ticket closing method,
       or set the **Mirrored ServiceNow Ticket custom close state code** parameter, in order to override the default closure method with a custom state.
      
