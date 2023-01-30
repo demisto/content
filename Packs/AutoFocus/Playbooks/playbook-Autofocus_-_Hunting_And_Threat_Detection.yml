@@ -3,7 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Autofocus - Hunting And Threat Detection
-description: "The playbook queries the PANW Threat Intelligence Autofocus System for file and traffic indicators, such as SHA256, SHA1, MD5, IP addresses, URLs, and domains. \n\nA simple search mode is used to query Autofocus based on the indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. \nIt is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
+description: "This playbook queries the PANW Threat Intelligence Autofocus system for file and traffic indicators, such as SHA256, SHA1, MD5, IP addresses, URLs, and domains. 
+\n\nA simple search mode queries Autofocus based on the indicators specified in the playbook inputs. Advanced queries can also use with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
+\nWe recommended using the Autofocus UI to create an advanced query, exporting it, and pasting it into the relevant playbook inputs.
+\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters)."
 starttaskid: "0"
 tasks:
   "0":
@@ -72,7 +75,9 @@ tasks:
       id: a0015271-705b-4b2d-8d02-d09f2e3d4374
       version: -1
       name: Autofocus - Traffic Indicators Hunting
-      description: "Queries the PANW Threat Intelligence Autofocus System. Traffic indicators such as URLs, IP addresses, and domains can be used to run basic queries in the playbook.\nAdvanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. \nIt is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs."
+      description: "Queries the PANW Threat Intelligence Autofocus system. Traffic indicators such as URLs, IP addresses, and domains can be used to run basic queries in the playbook.
+      \nAdvanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
+      \nWe recommended using the Autofocus UI to create an advanced query, exporting it, and pasting it into the relevant playbook inputs."
       playbookName: Autofocus - Traffic Indicators Hunting
       type: playbook
       iscommand: false
@@ -143,7 +148,7 @@ tasks:
       id: a42c1add-d6d0-43c0-85d3-a0768def4a46
       version: -1
       name: Is Autofocus enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -268,7 +273,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP addresses to search for within Autofocus simple mode search.
+    One or more IP addresses to search for in Autofocus simple mode search.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -276,7 +281,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for within Autofocus simple mode search.
+    One or more URLs and/or domains to search for in Autofocus simple mode search.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -284,7 +289,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple MD5 file hashes to search for within Autofocus simple mode search.
+    One or more MD5 file hashes to search for in Autofocus simple mode search.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -292,7 +297,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple SHA256 file hashes to search for within Autofocus simple mode search.
+    One or more SHA256 file hashes to search for in Autofocus simple mode search.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -300,25 +305,28 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple SHA1 file hashes to search for within Autofocus simple mode search.
+    One or more SHA1 file hashes to search for in Autofocus simple mode search.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
 - key: Search Type
   value: {}
   required: true
-  description: "Determine which Autofocus search types should be executed. An overview of autofocus search types is provided below.\n\nVarious values can be specified, including session, sample, tag, or all. Session and sample are the recommended search types for this playbook. \n\nSample-based search is used to detect threat indicators or identifiers within samples sent to WildFire for analysis.\n\nSession-based search is used to detect threat indicators or identifiers within various context details and session data provided by samples during sample submission.\n\nTag-based search is used to identify the most popular tags."
+  description: "Which Autofocus search types should be executed. \n\nPossible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. 
+  \n\nSample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis.
+  \n\nSession-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission.
+  \n\nTag-based search identifies the most popular tags."
   playbookInputQuery:
 - key: Scope
   value: {}
   required: true
-  description: Search scope for sample and session. Possible values are "industry", "organization", "global", or "all".
+  description: Search scope for sample and session. Possible values are industry, organization, global, or all.
   playbookInputQuery:
 - key: SampleQuery
   value: {}
   required: false
   description: |-
-    Utilize the Autofocus advanced search mode to leverage a variety of query options within a sample search. Advanced search requires you to specify all field names, parameters, and operators.
+    Use the Autofocus advanced search mode to leverage a variety of query options within a sample search. Advanced search requires you to specify all field names, parameters, and operators.
 
     The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
   playbookInputQuery:
@@ -326,7 +334,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A sample-based search can be narrowed down by specifying the timestamp at which samples were first uploaded to WildFire for analysis (indicators will be searched within samples after this timestamp).
+    Narrow down a sample-based search by specifying the timestamp samples were first uploaded to WildFire for analysis (indicators will be searched within samples after this timestamp).
 
     Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
   playbookInputQuery:
@@ -334,7 +342,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A sample-based search can be narrowed down by specifying the timestamp at which samples were last modified (indicators will be searched within samples after this timestamp).
+    Narrow down a sample-based search by specifying the timestamp samples were last modified (indicators will be searched within samples after this timestamp).
 
     Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
   playbookInputQuery:
@@ -342,7 +350,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Utilize the Autofocus advanced search mode to leverage a variety of query options within a session search. Advanced search requires you to specify all field names, parameters, and operators.
+    Use the Autofocus advanced search mode to leverage a variety of query options within a session search. Advanced search requires you to specify all field names, parameters, and operators.
 
     The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button.
   playbookInputQuery:
@@ -350,7 +358,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A session-based search can be narrowed down by specifying the query end timestamp (indicators will be searched within sessions before this timestamp).
+    Narrow down a session-based search by specifying the query end timestamp (indicators will be searched within sessions before this timestamp).
 
     Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
   playbookInputQuery:
@@ -358,7 +366,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A session-based search can be narrowed down by specifying the query start timestamp (indicators will be searched within sessions after this timestamp).
+    Narrow down a session-based search by specifying the query start timestamp (indicators will be searched within sessions after this timestamp).
 
     Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00.
   playbookInputQuery:
@@ -372,7 +380,7 @@ outputs:
   description: Sample objects containing relevant fields.
   type: string
 - contextPath: Autofocus.Samples.HuntingResults.Created
-  description: The date that the file was created.
+  description: The date the file was created.
   type: date
 - contextPath: Autofocus.Samples.HuntingResults.Finished
   description: The date the file was finished.
@@ -405,7 +413,7 @@ outputs:
   description: The verdict of the sample.
   type: number
 - contextPath: Autofocus.Samples.HuntingResults.Artifact.confidence
-  description: How confident the decision.
+  description: The decision confidence.
   type: string
 - contextPath: Autofocus.Samples.HuntingResults.Artifact.indicator
   description: The indicator that was tested.
@@ -474,7 +482,7 @@ outputs:
   description: The associated source port number.
   type: number
 - contextPath: Autofocus.Sessions.HuntingResults.user_id
-  description: Recipient User ID
+  description: The recipient user ID.
   type: string
 tests:
 - No tests (auto formatted)
