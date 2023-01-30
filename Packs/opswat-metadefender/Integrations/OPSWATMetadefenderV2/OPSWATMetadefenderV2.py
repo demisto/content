@@ -2,9 +2,9 @@ import shutil
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 PARAMS = demisto.params()
@@ -37,7 +37,7 @@ def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
     if file_name:
         if type(file_name) == str:
             demisto.info("in string")
-            headers['filename'] = file_name.encode('utf-8')
+            headers['filename'] = file_name.encode('utf-8')  # type: ignore
         else:
             demisto.info(f"not in string: {type(file_name)}")
             headers['filename'] = file_name
