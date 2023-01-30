@@ -9,6 +9,11 @@ def test_get_phishing_map_labels():
     assert mapping['malware'] == "malicious"
     assert mapping['spam'] == "spam"
 
+    mapping = get_phishing_map_labels("Custom: Phishing:malicious , Custom: malware : malicious, spam")
+    assert mapping['Custom: Phishing'] == "malicious"
+    assert mapping['Custom: malware'] == "malicious"
+    assert mapping['spam'] == "spam"
+
     mapping = get_phishing_map_labels(ALL_LABELS)
     assert mapping == ALL_LABELS
 

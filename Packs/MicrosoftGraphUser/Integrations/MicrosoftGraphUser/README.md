@@ -1091,6 +1091,11 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 <td style="width: 530px;">The URL for the next page in the list.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 139px;">filter</td>
+<td style="width: 530px;">Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 </div>
