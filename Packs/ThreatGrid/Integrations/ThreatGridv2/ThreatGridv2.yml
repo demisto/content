@@ -1,7 +1,7 @@
 commonfields:
-  id: ThreatGrid_v2
+  id: ThreatGridv2
   version: -1
-name: ThreatGrid_v2
+name: ThreatGridv2
 display: Cisco Secure Malware Analytics (Threat Grid) v2
 category: Forensics & Malware Analysis
 description: Query and upload samples to Cisco threat grid.
@@ -1705,7 +1705,7 @@ script:
       description: The associated IP.
       type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.9.46032
   feed: false
   isfetch: false
   longRunning: false
