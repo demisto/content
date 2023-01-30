@@ -40,5 +40,8 @@
 			"type": "shortText",
 			"name": "Alert ID"
 		}
-	]
+	],
+    "marketplaces": [
+		"marketplacev2"
+    ]
 }

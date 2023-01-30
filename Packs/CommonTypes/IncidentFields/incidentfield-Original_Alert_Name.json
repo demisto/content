@@ -40,6 +40,8 @@
             "type": "shortText",
             "name": "Alert Name"
         }
-	]
-	
+	],
+    "marketplaces": [
+		"marketplacev2"
+    ]	
 }
