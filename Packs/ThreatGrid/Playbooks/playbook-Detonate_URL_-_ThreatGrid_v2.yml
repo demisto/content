@@ -1,6 +1,6 @@
-id: Detonate URL - ThreatGrid
+id: Detonate URL - ThreatGrid v2
 version: -1
-name: Detonate URL - ThreatGrid
+name: Detonate URL - ThreatGrid v2
 starttaskid: "0"
 tasks:
   "0":
