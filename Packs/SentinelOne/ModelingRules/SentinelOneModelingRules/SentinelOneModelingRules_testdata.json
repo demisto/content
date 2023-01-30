@@ -301,7 +301,6 @@
         "whiteningOptions": []
       },
       "expected_values": {
-        "_time": "2022-12-21T10:29:58.264166Z",
         "xdm.source.user.domain": "TRUSTNET-LABS",
         "xdm.event.id": null,
         "xdm.source.process.pid": null,
@@ -506,7 +505,6 @@
         }
       },
       "expected_values": {
-        "_time": "2022-12-20T13:54:47.350882Z",
         "xdm.source.user.domain": null,
         "xdm.event.id": null,
         "xdm.source.process.pid": "2980",
