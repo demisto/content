@@ -9,7 +9,7 @@ This integration was integrated and tested with version 3.3.0 of RunZero Event C
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://console.runzero.com/) |  | True |
+    | Server URL (e.g., https://console.runzero.com/) |  | True |
     | Fetch incidents |  | False |
     | Maximum number of incidents per fetch |  | False |
     | Client secret | The client secret to access the service REST API. | True |
