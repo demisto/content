@@ -13,14 +13,14 @@ This script takes in a list of numbers that represent Azure priorities for NSG r
 
 ---
 This script is used in the following playbooks and scripts.
-* Azure - Network Security Group Remediation
+- Azure - Network Security Group Remediation
 
 ## Inputs
 
 ---
 
 | **Argument Name** | **Description** | **Mandatory** |
-| --- | --- |
+| --- | --- | --- |
 | target_rule_priority | The NSG priority to start finding available priorities from. The target priority cannot be 100. | True |
 | number_of_available_priorities_to_retrieve | The number of priorities that are available to be returned. \(limit: 5\) | True |
 | list_of_priorities_from_rules | The list of priorities from rules in an Azure Network Security Group. \(limit: 995\) | True |
@@ -30,5 +30,5 @@ This script is used in the following playbooks and scripts.
 ---
 
 | **Context Path** | **Description** | **Type** |
-| --- | --- |
+| --- | --- | --- |
 | AvailableAzureNSGPriorities | List of numbers that represent available Azure NSG priorities | Unknown |
