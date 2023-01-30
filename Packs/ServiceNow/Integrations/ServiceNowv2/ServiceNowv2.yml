@@ -146,13 +146,18 @@ configuration:
   name: custom_fields
   required: false
   type: 12
-- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
-  defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+- additionalinfo: Define how to close the mirrored tickets in XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+  defaultvalue: 'None'
+  display: Mirrored XSOAR Ticket closure method
   name: close_incident
   required: false
-  type: 8
-- defaultvalue: 'None'
+  type: 15
+  options:
+  - None
+  - closed
+  - resolved
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+  defaultvalue: None
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
   required: false
@@ -1261,6 +1266,8 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
@@ -1561,7 +1568,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.9.43882
+  dockerimage: demisto/python3:3.10.9.46032
   isfetch: true
   ismappable: true
   isremotesyncin: true

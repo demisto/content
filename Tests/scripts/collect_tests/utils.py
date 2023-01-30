@@ -171,7 +171,13 @@ class ContentItem(DictFileBased):
     @property
     def _has_no_id(self):
         # some content files may not have an id
-        return self.path.name == 'pack_metadata.json' or self.path.name.endswith('_schema.json')
+        file_path_splitted = self.path.parts
+        return self.path.name == 'pack_metadata.json' \
+            or self.path.name.endswith('_schema.json') \
+            or self.path.name.endswith('testdata.json') \
+            or len(file_path_splitted) > 1 \
+            and file_path_splitted[-2] == 'ReleaseNotes' \
+            and self.path.suffix == '.json'
 
     @property
     def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
@@ -182,6 +188,14 @@ class ContentItem(DictFileBased):
             return self['commonfields']['id']
         if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
             return self['layout']['id']
+        if self.path.parent.name == 'CorrelationRules' and self.path.suffix == '.yml':
+            return self['global_rule_id']
+        if self.path.parent.name == 'XSIAMDashboards' and self.path.suffix == '.json':
+            return self['dashboards_data'][0]['global_id']
+        if self.path.parent.name == 'Triggers' and self.path.suffix == '.json':
+            return self['trigger_id']
+        if self.path.parent.parent.name == 'XDRCTemplates' and self.path.suffix == '.json':
+            return self['content_global_id']
         return self['id']
 
     @property
