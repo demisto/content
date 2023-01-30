@@ -1,5 +1,3 @@
-import json
-
 import dateutil.parser
 
 import demistomock as demisto
@@ -72,7 +70,7 @@ class MandiantClient(BaseClient):
         metadata: bool = False,
         enrichment: bool = False,
         tags: List = None,
-        tlp_color: Optional[str] = None,
+        tlp_color: str = 'RED',
     ):
         if not tags:
             tags = []
@@ -149,17 +147,15 @@ class MandiantClient(BaseClient):
 
         return self._token
 
-    def get_indicator_info(
-        self, identifier: str, indicator_type: str, info_type: str = ""
-    ) -> Union[Dict, List]:
+    def get_indicator_info_endpoint(self, identifier: str, indicator_type: str, info_type: str) -> List:
         """
         Retrieve detailed information for a given indicator.
         Args:
-            identifier (Dict): Indicator's identifier.
-            indicator_type (str): The indicator type.
-            info_type (str): Type of additional info
+          identifier (Dict): Indicator's identifier.
+          indicator_type (str): The indicator type.
+          info_type (str): Type of additional info
         Returns:
-            Dict: Additional data of the indicator.
+          List: A list containing the response values
         """
         url = f"v4/{MAP_TYPE_TO_URL[indicator_type]}"
         url = urljoin(url, identifier)
@@ -177,9 +173,6 @@ class MandiantClient(BaseClient):
             if e.res.status_code != 500:
                 raise e
 
-        if not info_type:
-            return call_result
-
         if info_type == "attack-pattern":
             res = call_result.get(MAP_TYPE_TO_ATTACKPATTERN_KEY[indicator_type], [])
             if len(res) >= 1:
@@ -194,6 +187,36 @@ class MandiantClient(BaseClient):
                 return []
         else:
             return call_result.get(info_type, [])
+
+    def get_indicator_info(
+        self, identifier: str, indicator_type: str
+    ) -> Dict:
+        """
+        Retrieve detailed information for a given indicator.
+        Args:
+            identifier (Dict): Indicator's identifier.
+            indicator_type (str): The indicator type
+        Returns:
+            Dict: Additional data of the indicator.
+        """
+        url = f"v4/{MAP_TYPE_TO_URL[indicator_type]}"
+        url = urljoin(url, identifier)
+
+        if url[-1] == "/":
+            url = url[:-1]
+
+        call_result = {}
+        try:
+            call_result = self._http_request(
+                method="GET", url_suffix=url, timeout=self.timeout
+            )
+        except DemistoException as e:
+            # If there is an internal issue inside the server, don't fail the entire fetch session
+            if e.res.status_code != 500:
+                raise e
+
+        return call_result
+
 
     def get_indicators(
         self, indicator_type: str = "Indicators", params: Dict = None
@@ -215,7 +238,7 @@ class MandiantClient(BaseClient):
             response = response.get(MAP_TYPE_TO_RESPONSE[indicator_type], [])
 
         except DemistoException as e:
-            demisto.log(f"Error retrieving objects from Mandiant Threat Intel: {e}")
+            demisto.debug(f"Error retrieving objects from Mandiant Threat Intel: {e}")
             response = []
 
         return response
@@ -236,7 +259,7 @@ class MandiantClient(BaseClient):
             response = response.get("indicators", [])
             if self.enrichment:
                 for indicator in response:
-                    reports = self.get_indicator_info(
+                    reports = self.get_indicator_info_endpoint(
                         indicator_type="Indicators",
                         identifier=indicator["id"],
                         info_type="reports",
@@ -244,7 +267,7 @@ class MandiantClient(BaseClient):
                     indicator["publications"] = reports
 
         except DemistoException as e:
-            demisto.log(f"Error retrieving objects from Mandiant Threat Intel: {e}")
+            demisto.debug(f"Error retrieving objects from Mandiant Threat Intel: {e}")
             response = []
 
         return response
@@ -437,9 +460,9 @@ def create_campaign_indicator(client: MandiantClient, raw_indicator: Dict) -> Di
     }  # filter none and redacted values
 
     fields = {
-        "actors": [a['name'] for a in raw_indicator.get("actors")],
+        "actors": [a['name'] for a in raw_indicator.get("actors", [])],
         "description": raw_indicator.get("description"),
-        "tags": [i.get("name", "") for i in argToList(raw_indicator.get("industries"))] + client.tags,
+        "tags": [i.get("name", "") for i in argToList(raw_indicator.get("industries", []))] + client.tags,
         "DBot Score": get_dbot_score(raw_indicator, indicator_type="Campaign"),
         "publications": generate_publications(raw_indicator.get("reports", [])),
     }
@@ -502,7 +525,7 @@ def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
 
     primary_motivation = None
     if len(raw_indicator.get("motivations", [])) >= 1:
-        primary_motivation = raw_indicator.get("motivations")[0].get("name")
+        primary_motivation = raw_indicator['motivations'][0].get("name")
 
     fields = {
         "primarymotivation": primary_motivation,
@@ -607,6 +630,9 @@ def get_cvss_score(cve: dict) -> str:
         return cve["common_vulnerability_scores"]["v3.1"]["base_score"]
     elif "v2.0" in cve.get("common_vulnerability_scores", {}):
         return cve["common_vulnerability_scores"]["v2.0"]["base_score"]
+
+    demisto.debug("No matching CVE score found")
+    return ""
 
 
 def parse_cvss(cve: dict) -> dict:
@@ -808,7 +834,7 @@ def create_base_indicator(
             entity_b_type=ThreatIntel.ObjectsNames.CAMPAIGN,
             reverse_name=EntityRelationship.Relationships.RELATED_TO,
         ).to_indicator()
-        for campaign in raw_indicator.get("campaigns")
+        for campaign in raw_indicator.get("campaigns", [])
         if campaign
     ]
 
@@ -856,10 +882,10 @@ def generate_publications(reports_list: list[dict]):
     return [
         {
             "source": "Mandiant",
-            "title": report.get("title"),
+            "title": report.get("title", ""),
             "link": f"https://advantage.mandiant.com/reports/{report.get('report_id')}",
             "timestamp": dateutil.parser.parse(
-                report.get("published_date")
+                report.get("published_date", str(datetime.utcnow()))
             ).timestamp(),
         }
         for report in reports_list
@@ -882,7 +908,7 @@ def enrich_indicators(
         indicator_id = indicator.get("fields", {}).get("stixid", "")
         indicator_name = indicator.get("fields", {}).get("name", "")
 
-        reports_list = client.get_indicator_info(
+        reports_list = client.get_indicator_info_endpoint(
             indicator_type=indicator_type, identifier=indicator_id, info_type="reports"
         )
 
@@ -900,7 +926,7 @@ def enrich_indicators(
             if report
         ]
 
-        general_list = client.get_indicator_info(
+        general_list = client.get_indicator_info_endpoint(
             indicator_type=indicator_type,
             identifier=indicator_id,
             info_type="indicators",
@@ -919,7 +945,7 @@ def enrich_indicators(
             if general_indicator
         ]
 
-        attack_pattern_list = client.get_indicator_info(
+        attack_pattern_list = client.get_indicator_info_endpoint(
             indicator_type=indicator_type,
             identifier=indicator_id,
             info_type="attack-pattern",
@@ -938,7 +964,7 @@ def enrich_indicators(
             if attack_pattern
         ]
 
-        campaigns_list = client.get_indicator_info(
+        campaigns_list = client.get_indicator_info_endpoint(
             indicator_type=indicator_type,
             identifier=indicator_id,
             info_type="campaigns",
@@ -1000,13 +1026,15 @@ def get_new_indicators(
     new_indicators_list = client.get_indicators(indicator_type, params=params)
 
     if indicator_type != "Indicators":  # new to old
+        sort_last_updated = lambda x: arg_to_datetime(x.get("last_updated"))
         new_indicators_list.sort(
-            key=lambda x: arg_to_datetime(x.get("last_updated")), reverse=True
+            key=sort_last_updated, reverse=True
         )  # type:ignore
+        filter_last_updated = lambda x: arg_to_datetime(x["last_updated"]).timestamp() > start_date.timestamp()
         new_indicators_list = list(
             filter(
-                lambda x: arg_to_datetime(x["last_updated"]).timestamp() > start_date.timestamp(),  # type: ignore
-                new_indicators_list,
+                filter_last_updated,  # type: ignore
+                new_indicators_list
             )
         )
 
@@ -1139,7 +1167,7 @@ def batch_fetch_indicators(
 
 def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     args = args if args else {}
-    indicator_value = args.get("indicator_value")
+    indicator_value: str = args['indicator_value']
 
     INDICATOR_TYPE_MAP = {"ipv4": "ip", "fqdn": "domain", "url": "url", "md5": "file"}
 
@@ -1172,9 +1200,9 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
 
 def fetch_threat_actor(client: MandiantClient, args: Dict = None):
     args = args if args else {}
-    actor_name = args.get("actor_name")
+    actor_name: str = args['actor_name']
 
-    indicator_obj = client.get_indicator_info(
+    indicator_obj: dict = client.get_indicator_info(
         identifier=actor_name, indicator_type="Actors"
     )
     indicator = [create_actor_indicator(client, indicator_obj)]
