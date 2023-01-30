@@ -6,7 +6,7 @@ Schedule a daily job to run this widget script in a playbook to track EDL size o
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags | basescript |
+| Tags | widget |
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
