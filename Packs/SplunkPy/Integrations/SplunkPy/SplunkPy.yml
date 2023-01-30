@@ -128,12 +128,12 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: "A comma-separated list of status labels to add to mirroring (Example: Resolved,False-Positive)."
-  display: Additional Splunk status labels to mirror (Incoming Mirroring)
+- display: Additional Splunk status labels to mirror (Incoming Mirroring)
   name: close_extra_labels
   required: false
   type: 0
   section: Collect
+  additionalinfo: "A comma-separated list of status labels to add to mirroring (Example: Resolved,False-Positive)."
 - display: Mirror Closed Splunk Notable Events (Outgoing Mirroring)
   name: close_notable
   required: false
@@ -148,18 +148,18 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: Use system proxy settings
-  name: proxy
+- name: proxy
   required: false
   type: 8
   section: Connect
   advanced: true
-- name: app
+  display: Use system proxy settings
+- display: 'The app context of the namespace'
+  name: app
   required: false
   type: 0
   section: Collect
   advanced: true
-  display: The app context of the namespace
 - name: cred_hec_token
   required: false
   type: 9
@@ -180,13 +180,13 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
-  display: Enrichment Types
+- display: 'Enrichment Types'
   name: enabled_enrichments
   required: false
   type: 16
   section: Collect
   advanced: true
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
   options:
   - Drilldown
   - Asset
@@ -199,13 +199,13 @@ configuration:
   advanced: true
   additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
   defaultvalue: '5'
-- display: 'Number of Events Per Enrichment Type'
+- additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
+  display: 'Number of Events Per Enrichment Type'
   name: num_enrichment_events
   required: false
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
   defaultvalue: '20'
 - display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
   name: extensive_logs
@@ -213,21 +213,21 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
+- defaultvalue: '15'
+  display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
   required: false
   type: 0
   section: Collect
   advanced: true
   additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
-  defaultvalue: '15'
-- display: 'Advanced: Unique ID fields'
+- additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
+  display: 'Advanced: Unique ID fields'
   name: unique_id_fields
   required: false
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
 - defaultvalue: 'false'
   display: Enable user mapping
   name: userMapping
@@ -235,14 +235,14 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: The name of the lookup table in Splunk, containing the username's mapping data.
-  defaultvalue: splunk_xsoar_users
+- defaultvalue: 'splunk_xsoar_users'
   display: Users Lookup table name
   name: user_map_lookup_name
   required: false
   type: 0
   section: Connect
   advanced: true
+  additionalinfo: The name of the lookup table in Splunk, containing the username's mapping data.
 - defaultvalue: 'xsoar_username'
   display: XSOAR user key
   name: xsoar_user_field
@@ -610,7 +610,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.45726
+  dockerimage: demisto/splunksdk-py3:1.0.0.46376
   isfetch: true
   ismappable: true
   isremotesyncin: true
