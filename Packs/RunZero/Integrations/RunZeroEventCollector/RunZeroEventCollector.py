@@ -25,8 +25,13 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def __init__(self, base_url, verify, proxy, data):
+    def __init__(self, base_url, verify, proxy, client_secret, client_id):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        data = {
+            'client_secret': client_secret,
+            'client_id': client_id,
+            'grant_type': 'client_credentials',
+        }
         self.data = data
 
     def get_api_token(self):
@@ -215,11 +220,8 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    data = {
-        'client_secret': params.get('client_secret', {}).get('password', ''),
-        'client_id': params.get('client_id', ''),
-        'grant_type': 'client_credentials',
-    }
+    client_id = params.get('client_id', '')
+    client_secret = params.get('client_secret', {}).get('password', '')
     base_url = urljoin(params.get('url'), '/api/v1.0')
     verify_certificate = not params.get('insecure', False)
     try:
@@ -228,7 +230,10 @@ def main() -> None:
             arg_name='First fetch time',
             required=True
         )
-        first_fetch_epoch_time: int = arg_to_number(first_fetch_time.timestamp(), required=True)  # type: ignore
+        first_fetch_epoch_time = int(first_fetch_time.timestamp()) if first_fetch_time else None  # type: ignore
+
+        if not first_fetch_epoch_time:
+            raise DemistoException('Did not set first_fetch_time.')
 
         proxy = params.get('proxy', False)
         demisto.debug(f'Command being called is {command}')
@@ -237,7 +242,8 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            data=data,
+            client_secret=client_secret,
+            client_id=client_id,
         )
 
         if command == 'test-module':

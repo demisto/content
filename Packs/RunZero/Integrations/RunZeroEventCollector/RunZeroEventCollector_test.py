@@ -91,7 +91,8 @@ def get_client():
         base_url=BASE_URL,
         verify=False,
         proxy=False,
-        data={},
+        client_id='',
+        client_secret='',
     )
 
 

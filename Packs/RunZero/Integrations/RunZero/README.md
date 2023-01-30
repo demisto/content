@@ -549,7 +549,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "agent_external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -678,7 +678,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "agent_external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -809,7 +809,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "agent_external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -1908,7 +1908,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "agent_external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -2065,7 +2065,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "82.166.99.236",
+                "agent_external_ip": "agent_external_ip",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "attributes": {

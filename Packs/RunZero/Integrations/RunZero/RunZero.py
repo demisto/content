@@ -239,30 +239,32 @@ def asset_search_command(client: Client, args: dict) -> CommandResults:
     elif args.get('search'):
         search_params = {'search': str(args.get('search'))}
     raw = client.asset_search(search_params)
+    outputs = raw
     remove_attr = not argToBoolean(args.get('display_attributes', 'False'))
     remove_svc = not argToBoolean(args.get('display_services', 'False'))
     message = []
-    if isinstance(raw, list):
+    if isinstance(outputs, list):
         raw = raw[:limit]
-        for item_raw in raw:
+        outputs = outputs[:limit]
+        for item in outputs:
             if remove_attr:
-                item_raw.pop('attributes', None)
+                item.pop('attributes', None)
             if remove_svc:
-                item_raw.pop('services', None)
-            message.extend(parse_raw_asset(item_raw))
-    if isinstance(raw, dict):
+                item.pop('services', None)
+            message.extend(parse_raw_asset(item))
+    if isinstance(outputs, dict):
         if remove_attr:
-            raw.pop('attributes')
+            outputs.pop('attributes')
         if remove_svc:
-            raw.pop('services')
-        message.extend(parse_raw_asset(raw))
+            outputs.pop('services')
+        message.extend(parse_raw_asset(outputs))
     human_readable = tableToMarkdown('Asset',
                                      message,
                                      removeNull=True)
     return CommandResults(
         outputs_prefix='RunZero.Asset',
         outputs_key_field='id',
-        outputs=raw,
+        outputs=outputs,
         raw_response=raw,
         readable_output=human_readable
     )
@@ -274,8 +276,6 @@ def asset_delete_command(client: Client, args: dict) -> CommandResults:
     message = f'Assets {asset_list} deleted successfully.'
     return CommandResults(
         outputs_prefix='RunZero.Asset',
-        outputs_key_field=None,
-        outputs=None,
         raw_response=raw,
         readable_output=message
     )
@@ -287,9 +287,6 @@ def comment_add_command(client: Client, args: dict) -> CommandResults:
     raw = client.comment_add(asset_id, comment)
     message = f'Comment added to {asset_id} successfully.'
     return CommandResults(
-        outputs_prefix=None,
-        outputs_key_field=None,
-        outputs=None,
         raw_response=raw,
         readable_output=message
     )
@@ -303,8 +300,6 @@ def tags_add_command(client: Client, args: dict) -> CommandResults:
     message = f'Tags added to {asset_id} successfully.'
     return CommandResults(
         outputs_prefix='RunZero.Tag',
-        outputs_key_field=None,
-        outputs=None,
         raw_response=raw,
         readable_output=message
     )
@@ -322,17 +317,19 @@ def service_search_command(client: Client, args: dict) -> CommandResults:
         service_string = ' or service_address:'.join(argToList(args.get('service_addresses')))
         service_string = f'?search=service_address:{service_string}'
     raw = client.service_search(service_string)
+    outputs = raw
     remove_attr = not argToBoolean(args.get('display_attributes', 'False'))
     message = []
-    if isinstance(raw, list):
+    if isinstance(outputs, list):
         raw = raw[:limit]
-        for item_raw in raw:
+        outputs = outputs[:limit]
+        for item in outputs:
             if remove_attr:
-                item_raw.pop('attributes', None)
-            message.extend(parse_raw_service(item_raw))
-    if isinstance(raw, dict):
+                item.pop('attributes', None)
+            message.extend(parse_raw_service(item))
+    if isinstance(outputs, dict):
         if remove_attr:
-            raw.pop('attributes', None)
+            outputs.pop('attributes', None)
         message.extend(parse_raw_service(raw))
     human_readable = tableToMarkdown('Service',
                                      message,
@@ -340,7 +337,7 @@ def service_search_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='RunZero.Service',
         outputs_key_field='service_id',
-        outputs=raw,
+        outputs=outputs,
         raw_response=raw,
         readable_output=human_readable
     )
@@ -352,8 +349,6 @@ def service_delete_command(client: Client, args: dict) -> CommandResults:
     message = f'Service {service_id} deleted successfully.'
     return CommandResults(
         outputs_prefix='RunZero.Service',
-        outputs_key_field=None,
-        outputs=None,
         raw_response=raw,
         readable_output=message
     )
@@ -382,8 +377,6 @@ def tag_delete_command(client: Client, args: dict) -> CommandResults:
     message = f'Tags {tags_list} from asset: {asset_id} deleted successfully.'
     return CommandResults(
         outputs_prefix='RunZero.Tag',
-        outputs_key_field=None,
-        outputs=None,
         raw_response=raw,
         readable_output=message
     )
@@ -404,14 +397,8 @@ def test_module(client: Client) -> str:
     """
 
     message: str = ''
-    try:
-        client.quota_get()
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+    client.quota_get()
+    message = 'ok'
     return message
 
 
@@ -423,8 +410,7 @@ def wireless_lan_search_command(client: Client, args: dict) -> CommandResults:
         wireless_string = f'/{args.get("wireless_id", "")}'
     elif args.get('search'):
         wireless_string = f'?search={args.get("search", "")}'
-    raw = client.wireless_search(wireless_string)
-    raw = raw[:limit]
+    raw = client.wireless_search(wireless_string)[:limit]
     message = []
     if isinstance(raw, list):
         raw = raw[:limit]
