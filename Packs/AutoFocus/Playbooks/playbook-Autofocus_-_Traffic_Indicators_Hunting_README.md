@@ -9,7 +9,7 @@ Note that multiple search values should be separated by commas only (without spa
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Autofocus Query Samples, Sessions and Tags_copy
+* Autofocus Query Samples, Sessions and Tags
 
 ### Integrations
 This playbook does not use any integrations.
