@@ -44,15 +44,18 @@ def test_file_scan_command(mocker, file_name, file_type, data):
     Then:
     - Ensures the String type was parsed correctly.
     """
-    _, file_path = tempfile.mkstemp(prefix=file_name, suffix=file_type)
-    with open(file_path, 'w') as temp_file:
-        temp_file.write(data)
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": file_path, "name": file_name})
-    mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
-    mocker.patch.object(requests, 'post', side_effect=mocked_requests_post)
+    try:
+        _, file_path = tempfile.mkstemp(prefix=file_name, suffix=file_type)
+        with open(file_path, 'w') as temp_file:
+            temp_file.write(data)
+        mocker.patch.object(demisto, 'getFilePath', return_value={"path": file_path, "name": file_name})
+        mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
+        mocker.patch.object(requests, 'post', side_effect=mocked_requests_post)
 
-    from OPSWATMetadefenderV2 import scan_file
-    res, extracted_file_name = scan_file('1191@302')
+        from OPSWATMetadefenderV2 import scan_file
+        res, extracted_file_name = scan_file('1191@302')
+    finally:
+        os.remove(file_path)
     assert res.get('data_id') == 'mock_id'
     assert file_name == extracted_file_name
 
