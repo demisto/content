@@ -548,3 +548,6 @@ outputs:
 sourceplaybookid: cve_enrichment_-_generic
 tests:
 - No test
+marketplaces:
+  - xsoar
+  - marketplacev2

@@ -1365,7 +1365,8 @@ def main():
         client_secret = params.get('credentials', {}).get('password')
         certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
             params.get('certificate_thumbprint')
-        private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
+        private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password'))
+                       or params.get('private_key'))
         if not client_secret and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 

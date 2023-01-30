@@ -1302,11 +1302,11 @@ class TestPanoramaEditRuleCommand:
         }
 
 
-def test_panorama_edit_address_group_command_main_flow(mocker):
+def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     """
     Given
      - integrations parameters.
-     - pan-os-edit-address-group command arguments including device_group
+     - pan-os-edit-address-group command arguments including device_group and description to add.
 
     When -
         running the pan-os-edit-address-group command through the main flow
@@ -1342,6 +1342,46 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
         'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
     }
     assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
+
+
+def test_panorama_edit_address_group_command_remove_single_address(mocker):
+    """
+    Given
+     - pan-os-edit-address-group command arguments including a single address to remove.
+
+    When
+     - running the pan-os-edit-address-group command through the main flow
+
+    Then
+     - make sure an exception is raised because address group must always have at least one address.
+    """
+    import Panorama
+
+    Panorama.DEVICE_GROUP = integration_panorama_params['device_group']
+
+    mocker.patch(
+        'Panorama.http_request',
+        return_value={
+            'response': {
+                '@status': 'success', 'result': {
+                    'entry': {
+                        '@name': 'test5',
+                        'static': {'member': ['5.5.5.5']},
+                        'description': 'dfdf'
+                    }
+                }
+            }
+        }
+    )
+
+    with pytest.raises(DemistoException) as exc_info:
+        Panorama.panorama_edit_address_group_command(
+            {'name': 'test', 'device-group': 'Shared', 'type': 'static', 'element_to_remove': '5.5.5.5'}
+        )
+
+    assert exc_info.type == DemistoException
+    assert exc_info.value.message == "cannot remove ['5.5.5.5'] addresses from address group test, " \
+                                     "address-group test must have at least one address in its configuration"
 
 
 @pytest.mark.parametrize(
