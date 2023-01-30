@@ -5,10 +5,11 @@ from CommonServerPython import *  # noqa: F401
 
 
 def check_ip_internal(ip, ranges):
-    for cidr in ranges:
-        if IPv4Address(ip) in IPv4Network(cidr):
-            return True
-    return False
+    try:
+        return any((IPv4Address(ip) in IPv4Network(cidr) for cidr in ranges))
+    except ValueError:
+        demisto.log("Returned ValueError")
+        return True
 
 
 def create_markdown_table(ip_list):
@@ -19,18 +20,20 @@ def create_markdown_table(ip_list):
     return markdown_string
 
 
-ranges_list_name = demisto.args().get("PrivateIPRangeList", None)
+ranges_list_name = demisto.args().get("PrivateIPsListName", "PrivateIPs")
 ip_addresses_to_check = argToList(demisto.args().get("IPAddresses", None))
 
 # Get the list of private IP ranges from the XSOAR list:
-private_ranges = demisto.executeCommand("getList", {"listName": "PrivateIPRanges"})[0]['Contents']
+private_ranges = demisto.executeCommand("getList", {"listName": ranges_list_name})[0]['Contents']
+if "Item not found" in private_ranges:
+    return_error(f"The list name {ranges_list_name} does not exist.")
 
 # Split ranges from XSOAR list to be a list:
 if private_ranges:
     try:
         private_ranges = private_ranges.split("\n")
     except Exception as ex:
-        demisto.error(
+        return_error(
             "Could not parse the private ranges list. Please make sure that the list contains ranges written in CIDR notation, separated by new lines.")
 else:
     private_ranges = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]  # No ranges in list, use default ranges
@@ -38,8 +41,7 @@ else:
 # Create list of IPs with private property
 ip_list = []
 for ip in ip_addresses_to_check:
-    isInRange = check_ip_internal(ip, private_ranges)
-    ip_list.append({"Address": ip, "Private": True if isInRange else False})
+    ip_list.append({"Address": ip, "Private": check_ip_internal(ip, private_ranges)})
 
 # Create entry context and human-readable results
 entry_context = {"IP(val.Address == obj.Address)": ip_list}
