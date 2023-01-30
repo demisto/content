@@ -44,16 +44,10 @@ class TestConf(DictFileBased):
         self.test_id_to_test = {test.playbook_id: test
                                 for test in self.tests}
 
-        self.tests_to_integrations: dict[str, tuple[str, ...]] = {}
+        tests_to_integration_set: dict[str, set[str, ...]] = defaultdict(set)
         for test in self.tests:
-            if integrations := test.integrations:
-                if test.playbook_id not in self.tests_to_integrations:
-                    self.tests_to_integrations[test.playbook_id] = ()
-                self.tests_to_integrations[test.playbook_id] = tuple(
-                    set(
-                        list(self.tests_to_integrations[test.playbook_id]) + list(integrations)
-                    )
-                )
+            self.tests_to_integration_set[test.playbook_id].update(test.integrations)
+        self.tests_to_integrations: dict[str, tuple[str, ...]] = {test: tuple(sorted(test_integrations)) for test,test_integrations in tests_to_integration_set.items()}
 
         # self.tests_to_integrations: dict[str, tuple[str, ...]] = {
         #     test.playbook_id: test.integrations
