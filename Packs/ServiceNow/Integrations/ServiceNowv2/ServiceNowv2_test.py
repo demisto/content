@@ -1309,7 +1309,7 @@ def test_get_remote_data_closing_incident(mocker):
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
 
     args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {'close_incident': True}
+    params = {'close_incident': 'closed'}
     mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
