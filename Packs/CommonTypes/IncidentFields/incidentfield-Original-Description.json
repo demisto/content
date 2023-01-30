@@ -1,10 +1,10 @@
 {
-    "id": "incident_description",
+    "id": "original_description",
     "version": -1,
-    "name": "Description",
+    "name": "Original Description",
     "ownerOnly": false,
     "description": "The description of the incident",
-    "cliName": "description",
+    "cliName": "originaldescription",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -24,7 +24,14 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "5.5.0",
+    "Aliases": [
+        {
+            "cliName": "description",
+            "type": "shortText",
+            "name": "Description"
+        }
+	],
     "marketplaces": [
-        "xsoar"
-    ]
+		"marketplacev2"
+    ]	
 }
