@@ -433,7 +433,7 @@ script:
     - name: wireless_id
       description: The wireless LAN ID.
       isArray: false
-      required: true
+      required: false
       secret: false
     - name: search
       description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288."

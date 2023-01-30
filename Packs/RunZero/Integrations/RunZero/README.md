@@ -1,7 +1,7 @@
 RunZero is a network discovery and asset inventory
  platform that uncovers every network in use and identifies every device connected – without credentials.
  Scan your network and build your asset inventory in minutes.
-This integration was integrated and tested with version 3.3.0 of RunZero.
+This integration was integrated and tested with version 3.3.0 of RunZero
 
 ## Configure RunZero on Cortex XSOAR
 
@@ -249,7 +249,7 @@ Get assets.
             "newest_mac": "00:50:56:89:b0:e1",
             "newest_mac_age": null,
             "newest_mac_vendor": "VMware, Inc.",
-            "org_name": "Org name LTD",
+            "org_name": "Palo Alto Networks LTD",
             "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
             "os": "Red Hat Enterprise Linux",
             "os_product": "Enterprise Linux",
@@ -549,7 +549,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "external_ip",
+                "agent_external_ip": "82.166.99.236",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -678,7 +678,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "external_ip",
+                "agent_external_ip": "82.166.99.236",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -809,7 +809,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "external_ip",
+                "agent_external_ip": "82.166.99.236",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -881,8 +881,8 @@ Get services.
                     "ssh.authPassword": "true",
                     "ssh.authPublicKey": "true",
                     "ssh.hostKey.data": "AAAAB3NzaC1yc2EAAAADAQABAAABgQDcG6E/EoCvbnwDNgz7GPvM7rireCOeuWdHF1cxdR+yAzlltEeTrBoFNx/AdePTpsnIvBF9g4aP0XV7JVJXIWmI3UmAG/KBcIeXBdp5amnbSo7EVpyyQi6sAc5bmdYS3OjM9AdOL7aRpWdt/kzqUtDx60O/igS2QJf5LX+oxAWk1fQcaJtW+FxWVw2H6RVI4mBJ+T9LWvMmqMui56wa/onIkFQEVecHxCF868LtdGm+cChk/BtZKkUjG/CO/uzbBdCx6FjBIsK9kp3w6v2iLlxfPL9wVO5ilO8PBZCzVOnkr3ZgaYs/v1UYPiKD7NFEteW1pdFhuROWg7H9mdkd2VNG+6j28Xb1fLhOSUJu7flGXGx3mqmPsdog4+L06ZCXqpRBPCXimByYrstOkNm/kKZSqrigj+pM9i8QXnBTrokPd7VbQ1eCgHTyJzGefqv6JjoXnwEmxXGKQxw2kj6H9SyPaNqfIaPcIk3sRq6MncuQL+zvvH8QC0iyykeRlQxHlTk=",
-                    "ssh.hostKey.md5": "md5",
-                    "ssh.hostKey.sha256": "SHA256",
+                    "ssh.hostKey.md5": "d2:47:54:1f:05:59:6f:98:6f:1b:54:cd:3d:83:dd:6e",
+                    "ssh.hostKey.sha256": "SHA256:tovkrBOsS9d1cTtdZMBi53eZY3DLO8bNvrUWgTrr9vg",
                     "ssh.hostKey.type": "ssh-rsa",
                     "ssh.hostKeyAlgorithms": "ecdsa-sha2-nistp256\trsa-sha2-256\trsa-sha2-512\tssh-ed25519\tssh-rsa",
                     "ssh.kexAlgorithms": "curve25519-sha256\tcurve25519-sha256@libssh.org\tdiffie-hellman-group-exchange-sha1\tdiffie-hellman-group-exchange-sha256\tdiffie-hellman-group14-sha1\tdiffie-hellman-group14-sha256\tdiffie-hellman-group16-sha512\tdiffie-hellman-group18-sha512\tecdh-sha2-nistp256\tecdh-sha2-nistp384\tecdh-sha2-nistp521",
@@ -992,7 +992,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1122,7 +1122,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1252,7 +1252,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1379,7 +1379,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1513,7 +1513,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1643,7 +1643,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1770,7 +1770,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -1908,7 +1908,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "external_ip",
+                "agent_external_ip": "82.166.99.236",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "comments": "integration comment",
@@ -2065,7 +2065,7 @@ Get services.
                     "fe80::250:56ff:fe89:b0e1"
                 ],
                 "addresses_extra": [],
-                "agent_external_ip": "external_ip",
+                "agent_external_ip": "82.166.99.236",
                 "agent_name": "RHEL85.LOCALDOMAIN",
                 "alive": true,
                 "attributes": {
@@ -2156,8 +2156,8 @@ Get services.
                     "ssh.authPassword": "true",
                     "ssh.authPublicKey": "true",
                     "ssh.hostKey.data": "AAAAB3NzaC1yc2EAAAADAQABAAABgQDcG6E/EoCvbnwDNgz7GPvM7rireCOeuWdHF1cxdR+yAzlltEeTrBoFNx/AdePTpsnIvBF9g4aP0XV7JVJXIWmI3UmAG/KBcIeXBdp5amnbSo7EVpyyQi6sAc5bmdYS3OjM9AdOL7aRpWdt/kzqUtDx60O/igS2QJf5LX+oxAWk1fQcaJtW+FxWVw2H6RVI4mBJ+T9LWvMmqMui56wa/onIkFQEVecHxCF868LtdGm+cChk/BtZKkUjG/CO/uzbBdCx6FjBIsK9kp3w6v2iLlxfPL9wVO5ilO8PBZCzVOnkr3ZgaYs/v1UYPiKD7NFEteW1pdFhuROWg7H9mdkd2VNG+6j28Xb1fLhOSUJu7flGXGx3mqmPsdog4+L06ZCXqpRBPCXimByYrstOkNm/kKZSqrigj+pM9i8QXnBTrokPd7VbQ1eCgHTyJzGefqv6JjoXnwEmxXGKQxw2kj6H9SyPaNqfIaPcIk3sRq6MncuQL+zvvH8QC0iyykeRlQxHlTk=",
-                    "ssh.hostKey.md5": "md5",
-                    "ssh.hostKey.sha256": "sha256",
+                    "ssh.hostKey.md5": "d2:47:54:1f:05:59:6f:98:6f:1b:54:cd:3d:83:dd:6e",
+                    "ssh.hostKey.sha256": "SHA256:tovkrBOsS9d1cTtdZMBi53eZY3DLO8bNvrUWgTrr9vg",
                     "ssh.hostKey.type": "ssh-rsa",
                     "ssh.hostKeyAlgorithms": "ecdsa-sha2-nistp256\trsa-sha2-256\trsa-sha2-512\tssh-ed25519\tssh-rsa",
                     "ssh.kexAlgorithms": "curve25519-sha256\tcurve25519-sha256@libssh.org\tdiffie-hellman-group-exchange-sha1\tdiffie-hellman-group-exchange-sha256\tdiffie-hellman-group14-sha1\tdiffie-hellman-group14-sha256\tdiffie-hellman-group16-sha512\tdiffie-hellman-group18-sha512\tecdh-sha2-nistp256\tecdh-sha2-nistp384\tecdh-sha2-nistp521",
@@ -2286,7 +2286,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -2435,7 +2435,7 @@ Get services.
                 "newest_mac": "00:50:56:89:b0:e1",
                 "newest_mac_age": null,
                 "newest_mac_vendor": "VMware, Inc.",
-                "org_name": "Org name LTD",
+                "org_name": "Palo Alto Networks LTD",
                 "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
                 "os": "Red Hat Enterprise Linux",
                 "os_product": "Enterprise Linux",
@@ -2642,19 +2642,19 @@ There are no input arguments for this command.
         "Quota": {
             "client_id": "3c4f1d12-352b-4c0a-a5bf-7d37ab3d4dac",
             "comment": "",
-            "counter": 425,
+            "counter": 454,
             "created_at": 1672325319,
             "created_by": "user@orgid.com",
-            "id": "5e866cc5-8d81-434f-adf3-ffb2345667f9",
+            "id": "id",
             "inactive": false,
             "last_used_at": 1675007349,
             "last_used_ip": "last_used_ip",
             "last_used_ua": "python-requests/2.28.2",
-            "organization_id": "ba370042-b8fc-44dd-8858-56747a2e716e",
+            "organization_id": "organization_id",
             "token": "",
             "type": "org",
             "usage_limit": 1000,
-            "usage_today": 15
+            "usage_today": 25
         }
     }
 }
@@ -2665,23 +2665,23 @@ There are no input arguments for this command.
 >### Quota
 >|counter|usage_limit|usage_today|
 >|---|---|---|
->| 425 | 1672325319 | 15 |
+>| 454 | 1672325319 | 25 |
 
 
-### runzero-bulk-clear-tags
+### runzero-tag-delete
 ***
-Bulk clear tags according to RunZero query search.
+Delete tags for specific asset.
 
 
 #### Base Command
 
-`runzero-bulk-clear-tags`
+`runzero-tag-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Asset ID from which to remove tags. | Required | 
-| tags | A comma-separated list of tags to delete. | Required | 
+| asset_id | Asset ID from which to remove specified tags. | Required | 
+| tags | A comma separated list of tags to delete. | Required | 
 
 
 #### Context Output
@@ -2699,7 +2699,7 @@ Get all wireless LANs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| wireless_id | The wireless LAN ID. | Required | 
+| wireless_id | The wireless LAN ID. | Optional | 
 | search | The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288. | Optional | 
 | limit | Limit the number of wireless LAN returned. Default is 50. | Optional | 
 
@@ -2722,22 +2722,6 @@ Get all wireless LANs.
 | RunZero.WirelessLAN.First_seen | String | Datetime of when the wireless LAN was first seen. | 
 | RunZero.WirelessLAN.Last_seen | String | Datetime of when the wireless LAN was last seen. | 
 | RunZero.WirelessLAN.Site | String | Wireless LAN site name. | 
-
-#### Command example
-```!runzero-wireless-lan-search```
-#### Human Readable Output
-
->### Wireless
->**No entries.**
-
-
-#### Command example
-```!runzero-wireless-lan-search search=MAC:AA:BB:CC:DD:EE```
-#### Human Readable Output
-
->### Wireless
->**No entries.**
-
 
 ### runzero-wireless-lan-delete
 ***

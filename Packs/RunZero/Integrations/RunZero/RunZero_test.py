@@ -478,3 +478,10 @@ def test_tag_delete(requests_mock):
                                             readable_output=f'Tags {tagsList} from asset: {ASSET_ID} deleted successfully.'
                                             )
     assertCommandResults(actual_commandResult, expected_commandResult)
+
+
+def test_parse_tags_from_list():
+    from RunZero import parse_tags_from_list
+    tag_list = ['tag1', 'tag2']
+    actual_string = parse_tags_from_list(tag_list)
+    assert actual_string == ' -tag1 -tag2'

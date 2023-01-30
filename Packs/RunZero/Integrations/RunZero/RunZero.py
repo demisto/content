@@ -216,6 +216,10 @@ def check_if_valid_options(args: dict, valid_options: set):
         return_error(f'Please choose one option from the following: {valid_options}')
 
 
+def parse_tags_from_list(tags_list: list):
+    return ' -'.join(['', *tags_list])
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -372,10 +376,10 @@ def quota_get_command(client: Client) -> CommandResults:
 
 def tag_delete_command(client: Client, args: dict) -> CommandResults:
     asset_id = args.get('asset_id', '')
-    tagsList = argToList(args.get('tags', []))
-    tags = '-'.join(tagsList)
+    tags_list = argToList(args.get('tags', []))
+    tags = parse_tags_from_list(tags_list)
     raw = client.tag_delete(asset_id, tags)
-    message = f'Tags {tagsList} from asset: {asset_id} deleted successfully.'
+    message = f'Tags {tags_list} from asset: {asset_id} deleted successfully.'
     return CommandResults(
         outputs_prefix='RunZero.Tag',
         outputs_key_field=None,
