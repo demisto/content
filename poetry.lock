@@ -520,94 +520,101 @@ description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
+develop = false
 
 [package.dependencies]
-autopep8 = ">=1.6.0,<2.0.0"
-bandit = ">=1.7.4,<2.0.0"
-beautifulsoup4 = ">=4.11.1,<5.0.0"
+autopep8 = "^1.6.0"
+bandit = "^1.7.4"
+beautifulsoup4 = "^4.11.1"
 chardet = ">=4,<6"
-click = ">=8.0.0,<9.0.0"
-colorama = ">=0.4.4,<0.5.0"
-coloredlogs = ">=15.0.1,<16.0.0"
-configparser = ">=5.2.0,<6.0.0"
+click = "^8.0.0"
+colorama = "^0.4.4"
+coloredlogs = "^15.0.1"
+configparser = "^5.2.0"
 coverage = "6.3.2"
-cryptography = ">=36.0.2,<37.0.0"
-dateparser = ">=1.1.1,<2.0.0"
-decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.2.5,<4.0.0"
-dictdiffer = ">=0.9.0,<0.10.0"
-dictor = ">=0.1.9,<0.2.0"
-docker = ">=5.0.3,<6.0.0"
-flake8 = ">=4.0.1,<5.0.0"
-flatten-dict = ">=0.4.2,<0.5.0"
-gitdb = ">=4.0.9,<5.0.0"
-GitPython = ">=3.1.27,<4.0.0"
-giturlparse = ">=0.10.0,<0.11.0"
-google-cloud-storage = ">=2.2.1,<3.0.0"
-imagesize = ">=1.3.0,<2.0.0"
-importlib-resources = ">=5.6.0,<6.0.0"
-inflection = ">=0.5.1,<0.6.0"
-isort = ">=5.10.1,<6.0.0"
-Jinja2 = ">=3.1.1,<4.0.0"
-jsonschema = ">=4.4.0,<5.0.0"
-klara = ">=0.6.3,<0.7.0"
-MarkupSafe = ">=2.1.1,<3.0.0"
-mergedeep = ">=1.3.4,<2.0.0"
-mypy = ">=0.982,<0.983"
-neo4j = ">=4.4.8,<5.0.0"
-networkx = ">=2.7.1,<3.0.0"
-nltk = ">=3.7,<4.0"
-ordered-set = ">=4.1.0,<5.0.0"
-orjson = ">=3.8.3,<4.0.0"
+cryptography = "^36.0.2"
+dateparser = "^1.1.1"
+decorator = "^5.1.1"
+demisto-py = "^3.2.5"
+dictdiffer = "^0.9.0"
+dictor = "^0.1.9"
+docker = "^5.0.3"
+flake8 = "^4.0.1"
+flatten-dict = "^0.4.2"
+gitdb = "^4.0.9"
+GitPython = "^3.1.27"
+giturlparse = "^0.10.0"
+google-cloud-storage = "^2.2.1"
+imagesize = "^1.3.0"
+importlib-resources = "^5.6.0"
+inflection = "^0.5.1"
+isort = "^5.10.1"
+Jinja2 = "^3.1.1"
+jsonschema = "^4.4.0"
+klara = "^0.6.3"
+MarkupSafe = "^2.1.1"
+mergedeep = "^1.3.4"
+mypy = "^0.982"
+neo4j = "^4.4.8"
+networkx = "^2.7.1"
+nltk = "^3.7"
+ordered-set = "^4.1.0"
+orjson = "^3.8.3"
 packaging = "<22"
-paramiko = ">=2.11.0,<3.0.0"
+paramiko = "^2.11.0"
 Pebble = ">=4.6.3,<6.0.0"
-pipenv = ">=2022.3.28,<2023.0.0"
-prettytable = ">=3.2.0,<4.0.0"
-pydantic = ">=1.9.2,<2.0.0"
-pykwalify = ">=1.8.0,<2.0.0"
+pipenv = "^2022.3.28"
+prettytable = "^3.2.0"
+pydantic = "^1.9.2"
+pykwalify = "^1.8.0"
 pylint = "2.12.2"
-PyPDF2 = ">=1.28.6,<2.0.0"
-pyspellchecker = ">=0.6.3,<0.7.0"
-pytest-freezegun = ">=0.4.2,<0.5.0"
-python-dotenv = ">=0.20.0,<0.21.0"
-requests = ">=2.27.1,<3.0.0"
-"ruamel.yaml" = ">=0.17.21,<0.18.0"
-slackclient = ">=2.9.3,<3.0.0"
+PyPDF2 = "^1.28.6"
+pyspellchecker = "^0.6.3"
+pytest-freezegun = "^0.4.2"
+python-dotenv = "^0.20.0"
+requests = "^2.27.1"
+"ruamel.yaml" = "^0.17.21"
+slackclient = "^2.9.3"
 tabulate = ">=0.8.9,<0.10.0"
-typed-ast = ">=1.5.2,<2.0.0"
+typed-ast = "^1.5.2"
 typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
-types-dateparser = ">=1.1.0,<2.0.0"
-types-decorator = ">=5.1.8,<6.0.0"
+types-dateparser = "^1.1.0"
+types-decorator = "^5.1.8"
 types-emoji = ">=1.2.7,<3.0.0"
-types-filelock = ">=3.2.5,<4.0.0"
-types-futures = ">=3.3.8,<4.0.0"
-types-ipaddress = ">=1.0.8,<2.0.0"
-types-Markdown = ">=3.3.21,<4.0.0"
-types-mock = ">=4.0.15,<5.0.0"
-types-paramiko = ">=2.8.17,<3.0.0"
-types-pkg-resources = ">=0.1.3,<0.2.0"
-types-protobuf = ">=3.19.15,<4.0.0"
-types-PyMySQL = ">=1.0.15,<2.0.0"
-types-python-dateutil = ">=2.8.10,<3.0.0"
+types-filelock = "^3.2.5"
+types-futures = "^3.3.8"
+types-ipaddress = "^1.0.8"
+types-Markdown = "^3.3.21"
+types-mock = "^4.0.15"
+types-paramiko = "^2.8.17"
+types-pkg-resources = "^0.1.3"
+types-protobuf = "^3.19.15"
+types-PyMySQL = "^1.0.15"
+types-python-dateutil = "^2.8.10"
 types-pytz = ">=2021.3.6,<2023.0.0"
 types-pyvmomi = ">=7.0.6,<9.0.0"
-types-PyYAML = ">=6.0.5,<7.0.0"
+types-PyYAML = "^6.0.5"
 types-requests = "2.28.11"
-types-setuptools = ">=65.6.0.1,<66.0.0.0"
-types-six = ">=1.16.12,<2.0.0"
+types-setuptools = "^65.6.0.1"
+types-six = "^1.16.12"
 types-tabulate = ">=0.8.6,<0.10.0"
-types-ujson = ">=5.6.0.0,<6.0.0.0"
-typing-extensions = ">=4.1.1,<5.0.0"
-ujson = ">=5.1.0,<6.0.0"
-urllib3 = ">=1.26.9,<2.0.0"
-vulture = ">=2.3,<3.0"
-wcmatch = ">=8.3,<9.0"
-yamlordereddictloader = ">=0.4.0,<0.5.0"
+types-ujson = "^5.6.0.0"
+typing-extensions = "^4.1.1"
+ujson = "^5.1.0"
+urllib3 = "^1.26.9"
+vulture = "^2.3"
+wcmatch = "^8.3"
+yamlordereddictloader = "^0.4.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/demisto/demisto-sdk.git"
+reference = "b111a7797cb1b82e1345a32635fe820a0ea02086"
+resolved_reference = "b111a7797cb1b82e1345a32635fe820a0ea02086"
 
 [[package]]
 name = "deprecated"
@@ -1636,7 +1643,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "oletools"
-version = "0.55.1"
+version = "0.60.1"
 description = "Python tools to analyze security characteristics of MS Office and OLE files (also called Structured Storage, Compound File Binary Format or Compound Document File Format), for Malware Analysis and Incident Response #DFIR"
 category = "dev"
 optional = false
@@ -1645,10 +1652,13 @@ python-versions = "*"
 [package.dependencies]
 colorclass = "*"
 easygui = "*"
-msoffcrypto-tool = "*"
+msoffcrypto-tool = {version = "*", markers = "platform_python_implementation != \"PyPy\" or python_version >= \"3\" and platform_system != \"Windows\" and platform_system != \"Darwin\""}
 olefile = ">=0.46"
 pcodedmp = ">=1.2.5"
-pyparsing = ">=2.1.0"
+pyparsing = ">=2.1.0,<3"
+
+[package.extras]
+full = ["XLMMacroDeobfuscator"]
 
 [[package]]
 name = "opensearch-dsl"
@@ -2222,14 +2232,11 @@ test = ["flaky", "pretend", "pytest (>=3.0.1)"]
 
 [[package]]
 name = "pyparsing"
-version = "3.0.9"
-description = "pyparsing module - Classes and methods to define and execute parsing grammars"
+version = "2.4.7"
+description = "Python parsing module"
 category = "dev"
 optional = false
-python-versions = ">=3.6.8"
-
-[package.extras]
-diagrams = ["jinja2", "railroad-diagrams"]
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "pypdf2"
@@ -2590,7 +2597,7 @@ pyasn1 = ">=0.1.3"
 
 [[package]]
 name = "rtfde"
-version = "0.0.1"
+version = "0.0.2"
 description = "A library for extracting HTML content from RTF encapsulated HTML as commonly found in the exchange MSG email format."
 category = "dev"
 optional = false
@@ -2598,7 +2605,7 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 lark-parser = ">=0.11"
-oletools = ">=0.5"
+oletools = ">=0.56"
 
 [package.extras]
 dev = ["lxml (>=4.6)"]
@@ -3443,7 +3450,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "2ab7981315816740526da97c27cf0fbaa4baab4b794e95b4679fb28eb43516b1"
+content-hash = "91b981a332ef248cfcbd6d2f6b127cfdf8c0b39415bd16d718ae372384fdbab0"
 
 [metadata.files]
 aiodns = [
@@ -3859,10 +3866,7 @@ demisto-py = [
     {file = "demisto-py-3.2.7.tar.gz", hash = "sha256:5b41a9d7b03fc4d36f25bfd1929c31d2974805101426885f7650c321f992472c"},
     {file = "demisto_py-3.2.7-py3-none-any.whl", hash = "sha256:32e48931970d6b5aa69f525edf10fb6e9ee4c190c88e7c6db57f84790d2b6b86"},
 ]
-demisto-sdk = [
-    {file = "demisto_sdk-1.9.0-py3-none-any.whl", hash = "sha256:0f89878b20032e947d7598144a1356d77b367efbea129295d056c112fb00b007"},
-    {file = "demisto_sdk-1.9.0.tar.gz", hash = "sha256:11a307e24bdec95445f530406a3d471ce7405216077cf5569b0300f1fe2666da"},
-]
+demisto-sdk = []
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
@@ -4711,7 +4715,8 @@ olefile = [
     {file = "olefile-0.46.zip", hash = "sha256:133b031eaf8fd2c9399b78b8bc5b8fcbe4c31e85295749bb17a87cba8f3c3964"},
 ]
 oletools = [
-    {file = "oletools-0.55.1.zip", hash = "sha256:edea57914c4040e7d0d64cfd88c84355d4305548d761d476fbac21ee26b25d8d"},
+    {file = "oletools-0.60.1-py2.py3-none-any.whl", hash = "sha256:edef92374e688989a39269eb9a11142fb20a023629c23538c849c14d1d1144ea"},
+    {file = "oletools-0.60.1.zip", hash = "sha256:67a796da4c4b8e2feb9a6b2495bef8798a3323a75512de4e5669d9dc9d1fae31"},
 ]
 opensearch-dsl = [
     {file = "opensearch-dsl-2.0.1.tar.gz", hash = "sha256:8226381665073f110ef3d3a5027e625255df55d91d302044999c590b4d662539"},
@@ -5232,8 +5237,8 @@ pyopenssl = [
     {file = "pyOpenSSL-22.0.0.tar.gz", hash = "sha256:660b1b1425aac4a1bea1d94168a85d99f0b3144c869dd4390d27629d0087f1bf"},
 ]
 pyparsing = [
-    {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
-    {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
+    {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
+    {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
 ]
 pypdf2 = [
     {file = "PyPDF2-1.28.6-py3-none-any.whl", hash = "sha256:d7118f0187153257b1f906dcfcd8236608f4987b6a9999b7c5ad49114706a1ad"},
@@ -5518,8 +5523,8 @@ rsa = [
     {file = "rsa-4.9.tar.gz", hash = "sha256:e38464a49c6c85d7f1351b0126661487a7e0a14a50f1675ec50eb34d4f20ef21"},
 ]
 rtfde = [
-    {file = "RTFDE-0.0.1-py3-none-any.whl", hash = "sha256:a8962c651f17c7b9a994fccc6951429921abc0a82a736f58bb5f2a34a6ad561a"},
-    {file = "RTFDE-0.0.1.tar.gz", hash = "sha256:0e298ddfe17104f37f860cba071acd44ddb83db774c9f2788ad44882f0d32b06"},
+    {file = "RTFDE-0.0.2-py3-none-any.whl", hash = "sha256:18386e4f060cee12a2a8035b0acf0cc99689f5dff1bf347bab7e92351860a21d"},
+    {file = "RTFDE-0.0.2.tar.gz", hash = "sha256:b86b5d734950fe8745a5b89133f50554252dbd67c6d1b9265e23ee140e7ea8a2"},
 ]
 ruamel-yaml = [
     {file = "ruamel.yaml-0.17.21-py3-none-any.whl", hash = "sha256:742b35d3d665023981bd6d16b3d24248ce5df75fdb4e2924e93a05c1f8b61ca7"},
