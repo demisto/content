@@ -2127,8 +2127,21 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     base_url = params.get('base_url')
-    key_id = params.get('api_key_id', {}).get('password')
-    key_secret = params.get('api_key_secret', {}).get('password')
+
+    key_id = params.get('api_key_id')
+    key_secret = params.get('api_key_secret')
+    api_key_id_cred = params.get('api_key_id_cred', {}).get('password')
+    api_key_secret_cred = params.get('api_key_secret_cred', {}).get('password')
+
+    # get the api key and secret credentials
+    key_id = key_id or api_key_id_cred
+    key_secret = key_secret or api_key_secret_cred
+
+    # validate the api key and secret credentials
+    if not key_id:
+        raise ValueError('Please provide a valid API key ID.')
+    if not key_secret:
+        raise ValueError('Please provide a valid API key secret.')
 
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)

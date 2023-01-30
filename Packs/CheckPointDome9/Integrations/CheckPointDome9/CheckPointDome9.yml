@@ -9,13 +9,21 @@ configuration:
   required: true
   type: 0
 - name: api_key_id
+  display: API key ID
+  required: false
+  type: 0
+- name: api_key_secret
+  display: API key secret
+  required: false
+  type: 0
+- name: api_key_id_cred
   type: 9
-  required: true
+  required: false
   displaypassword: API key ID
   hiddenusername: true
-- name: api_key_secret
+- name: api_key_secret_cred
   type: 9
-  required: true
+  required: false
   displaypassword: API key secret
   hiddenusername: true
 - display: Use system proxy settings
