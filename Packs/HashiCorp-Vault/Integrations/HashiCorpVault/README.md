@@ -404,9 +404,9 @@ Create a new authentication token.
 #### Command example
 ```!hashicorp-create-token display_name=token explicit_max_ttl=3600 renewable=false```
 
-##Additional Information
-- In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the configure-engine command.
-- The default fetch rate for fetch-credentials is 10 minutes, this is configurable with the server parametr **vault.module.cache.expire**
+## Additional Information
+- In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the ***configure-engine*** command.
+- The default fetch rate for fetch-credentials is 10 minutes. This is configurable with the server parameter *vault.module.cache.expire*
 ## Known Limitations
 Currently the integration is able to fetch credentials from the following engines:  
 - **K/V Versions 1,2**  
