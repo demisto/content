@@ -224,6 +224,6 @@ inputs:
 outputs: []
 quiet: true
 fromversion: 5.0.0
-description: REAL
+description: ''
 tests:
- -  No tests
+ -  Detonate URL - Generic Test
