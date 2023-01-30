@@ -11,56 +11,49 @@
                         "filters": [],
                         "root": "category",
                         "transformers": []
-                    },
-                    "cliName": "alertcategory"
+                    }
                 },
                 "Categories": {
                     "complex": {
                         "filters": [],
                         "root": "category",
                         "transformers": []
-                    },
-                    "cliName": "categories"
+                    }
                 },
                 "Description": {
                     "complex": {
                         "filters": [],
                         "root": "description",
                         "transformers": []
-                    },
-                    "cliName": "description"
+                    }
                 },
                 "External Category Name": {
                     "complex": {
                         "filters": [],
                         "root": "category",
                         "transformers": []
-                    },
-                    "cliName": "externalcategoryname"
+                    }
                 },
                 "External Severity": {
                     "complex": {
                         "filters": [],
                         "root": "risk_score",
                         "transformers": []
-                    },
-                    "cliName": "externalseverity"
+                    }
                 },
                 "External Sub Category Name": {
                     "complex": {
                         "filters": [],
                         "root": "sub_category",
                         "transformers": []
-                    },
-                    "cliName": "externalsubcategoryname"
+                    }
                 },
                 "Sub Category": {
                     "complex": {
                         "filters": [],
                         "root": "sub_category",
                         "transformers": []
-                    },
-                    "cliName": "subcategory"
+                    }
                 },
                 "dbotMirrorId": {
                     "complex": {
