@@ -1712,7 +1712,7 @@ script:
   longRunningPort: false
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 5.0.0
 detaileddescription: |-
   1. In your threat grid instance, click your user name at the right top corner.
   2. Select my account.
