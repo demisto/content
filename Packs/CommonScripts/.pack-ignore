@@ -73,6 +73,15 @@ ignore=BA119
 [file:HideFieldsOnNewIncident.yml]
 ignore=SC105
 
+[file:ExportContextToJSONFile.yml]
+ignore=SC105
+
+[file:MarkAsEvidenceByTag.yml]
+ignore=SC105
+
+[file:LoadJSONFileToContext.yml]
+ignore=SC105
+
 [file:1_10_42.md]
 ignore=RN114
 
