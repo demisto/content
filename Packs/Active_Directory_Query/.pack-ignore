@@ -16,4 +16,5 @@ ignore=CJ105
 [known_words]
 LDAP
 TLS
+userAccountControl
 

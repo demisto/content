@@ -26,6 +26,7 @@ trigger-private-build:
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --private-branch-name $PRIVATE_BRANCH_NAME
     - sleep 60
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+    - job-done
   timeout: 2 hours
 
 .create-release-notes-and-common-docs:
@@ -75,11 +76,13 @@ validate-content-conf:
         if [ "$RESP" != "[]" ]; then
             echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
             echo "Merge it in order to merge the current branch into content repo."
+            job-done
             exit 1
         fi
             echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
       fi
     - section_end "Validate content-tesgt-conf Branch Merged"
+    - job-done
 
 .generic-prepare-testing-bucket:
   tags:
@@ -105,18 +108,19 @@ validate-content-conf:
     - mkdir $ARTIFACTS_FOLDER/content_graph
     - demisto-sdk create-content-graph --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph  # TODO: return to update with -g when fixed issues
     - echo "Successfully updated content graph"
-      
+
     - section_end "Create or update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
     - |
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
       fi
 
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
@@ -163,6 +167,7 @@ validate-content-conf:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+    - job-done
 
 
 
@@ -205,7 +210,6 @@ mpv2-prepare-testing-bucket:
   stage: run-instances
   needs: ["xsoar-prepare-testing-bucket"]
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
@@ -213,6 +217,7 @@ mpv2-prepare-testing-bucket:
     - |
       if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]]; then
         echo "Instance with role $INSTANCE_ROLE was not created"
+        job-done
         exit 0
       fi
     - !reference [.open-ssh-tunnel]
@@ -246,6 +251,7 @@ mpv2-prepare-testing-bucket:
         TIME_TO_LIVE=300
       fi
       python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - job-done
     - exit $EXIT_CODE
 
 xsoar_server_6_5:
@@ -294,6 +300,24 @@ fan-in-nightly:
   script:
     - echo "fan in"
 
+jobs-done-check-nightly:
+  extends:
+    - .jobs-done-check
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  tags:
+    - gke
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+
+jobs-done-check-on-push:
+  extends:
+    - .jobs-done-check
+    - .push-rule
+  needs: ['run-unittests-and-lint', 'trigger-private-build', 'validate-content-conf', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_6_5', 'xsoar_server_6_6', 'xsoar_server_6_8', 'xsoar_server_master']
+  tags:
+    - gke
+
 
 slack-notify-nightly-build:
   extends:
@@ -311,7 +335,7 @@ slack-notify-nightly-build:
     SLACK_JOB: 'true'
 
 
-.test_content_on_xsiam_server_instances_base:
+.test_content_on_cloud_server_instances_base:
   tags:
     - gke
     - us-west1
@@ -319,42 +343,43 @@ slack-notify-nightly-build:
     - .default-job-settings
     - .push-rule
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
-    SERVER_TYPE: "XSIAM"
-  needs: ["mpv2-prepare-testing-bucket"]
+    EXTRACT_PRIVATE_TESTDATA: "true"
   stage: run-instances
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
         # The files are empty.
-        echo "Not running XSIAM instance flow, no tests to run were found."
+        echo "Not running the instance flow, no tests to run were found."
+        job-done
         exit $EXIT_CODE
       fi
     - section_end "Are there tests to run?"
 
-    - section_start "Lock XSIAM Machine" --collapsed
+    - section_start "Lock Machine" --collapsed
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
-    - source XSIAMEnvVariables
-    - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
-    - section_end "Lock XSIAM Machine"
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - source CloudEnvVariables
+    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
+    - section_end "Lock Machine"
 
-    - section_start "Clean XSIAM Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
-    - section_end "Clean XSIAM Machine"
+    - section_start "Clean Machine" --collapsed
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
+    - section_end "Clean Machine"
 
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - |
+      if [[ $EXIT_CODE != 0 ]]
+      then
+        echo "Failed to install packs. Exiting"
+        exit $EXIT_CODE
+      fi
     - section_end "Install Packs and run Test-Module"
 
     - section_start "Run Tests"
@@ -370,22 +395,31 @@ slack-notify-nightly-build:
       fi
     - section_end "Run Tests"
 
-    - section_start "XSIAM Machine information"
-    - ./Tests/scripts/print_xsiam_machine_details.sh
-    - section_end "XSIAM Machine information"
+    - section_start "Test Modeling Rules"
+    - |
+      if [[ -s "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt" ]]; then
+        ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
+      else
+        echo "No modeling rules were marked for testing during test collection"
+      fi
+    - section_end "Test Modeling Rules"
+
+    - section_start "Cloud Machine information"
+    - ./Tests/scripts/print_cloud_machine_details.sh
+    - section_end "Cloud Machine information"
 
     - section_start "After script" --collapsed
     - |
-      if ! [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
+      if ! [ -z "$CLOUD_CHOSEN_MACHINE_ID" ]
       then
         echo "Job finished, removing lock file"
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-        gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+        gsutil rm "$GCS_LOCKS_PATH/*-lock-$CI_JOB_ID"
         echo "Finished removing lock file"
       fi
     - section_end "After script"
+    - job-done
     - exit $EXIT_CODE
-
 
 #xsiam_server_dev:
 #  extends:
@@ -402,12 +436,45 @@ slack-notify-nightly-build:
 
 xsiam_server_ga:
   extends:
-    - .test_content_on_xsiam_server_instances_base
+    - .test_content_on_cloud_server_instances_base
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
     - if: '$NIGHTLY'
       when: always
   variables:
-    INSTANCE_ROLE: "XSIAM 1.2"
+    INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
+    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
+    CLOUD_SERVERS_FILE: "xsiam_servers_path"
+    CLOUD_API_KEYS: $XSIAM_API_KEYS
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    SERVER_TYPE: "XSIAM"
+    MARKETPLACE_NAME: "marketplacev2"
+  needs: ["mpv2-prepare-testing-bucket"]
+
+xsoar_ng_server_ga:
+  extends:
+    - .test_content_on_cloud_server_instances_base
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM"
+    GCS_QUEUE_FILE: "queue-ga"
+    TEST_MACHINES_LIST: "test-machines-ga"
+    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsoar-ng"
+    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
+    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
+    SERVER_TYPE: "XSIAM"
+    MARKETPLACE_NAME: "xsoar"
+  needs: ["xsoar-prepare-testing-bucket"]
+  allow_failure: true
