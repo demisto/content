@@ -20,13 +20,6 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: install poetry
-      run: pipx install poetry
-    - name: setup python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.10"
-        cache: poetry
     - name: Check if pyproject.toml or poetry.lock has been changed
       id: changed-files-poetry
       uses: tj-actions/changed-files@v35
@@ -34,9 +27,6 @@ jobs:
         files: |
           pyproject.toml
           poetry.lock
-    - name: install dependencies
-      if: steps.changed-files-poetry.outputs.any_changed == 'true'
-      run: poetry install
     - name: Get hash of poetry.lock
       if: steps.changed-files-poetry.outputs.any_changed == 'true'
       run: echo "POETRY_LOCK_HASH=${{ hashFiles('poetry.lock') }}" >> $GITHUB_ENV
