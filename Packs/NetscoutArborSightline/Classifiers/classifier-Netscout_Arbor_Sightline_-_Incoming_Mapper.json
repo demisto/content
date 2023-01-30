@@ -8,38 +8,31 @@
             "internalMapping": {
                 "Netscout Arbor Sightline Alert Type": {
                     "complex": null,
-                    "simple": "attributes.alert_class",
-                    "cliName": "netscoutarborsightlinealerttype"
+                    "simple": "attributes.alert_class""
                 },
                 "Classification": {
                     "complex": null,
-                    "simple": "attributes.classification",
-                    "cliName": "classification"
+                    "simple": "attributes.classification"
                 },
                 "Close Time": {
                     "complex": null,
-                    "simple": "attributes.stop_time",
-                    "cliName": "closetime"
+                    "simple": "attributes.stop_time"
                 },
                 "Country Name": {
                     "complex": null,
-                    "simple": "attributes.subobject.countries",
-                    "cliName": "countryname"
+                    "simple": "attributes.subobject.countries"
                 },
                 "Description": {
                     "complex": null,
-                    "simple": "attributes.subobject.description",
-                    "cliName": "description"
+                    "simple": "attributes.subobject.description"
                 },
                 "Destination IP": {
                     "complex": null,
-                    "simple": "attributes.subobject.dst_address",
-                    "cliName": "destinationip"
+                    "simple": "attributes.subobject.dst_address"
                 },
                 "Destination MAC Address": {
                     "complex": null,
-                    "simple": "attributes.subobject.destination_mac_address",
-                    "cliName": "destinationmacaddress"
+                    "simple": "attributes.subobject.destination_mac_address"
                 },
                 "Device Local IP": {
                     "complex": null,
