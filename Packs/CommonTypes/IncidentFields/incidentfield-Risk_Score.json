@@ -11,7 +11,8 @@
 		"Trend Micro CAS Event",
 		"Netwitness Incident",
 		"Skyhigh Security Alert",
-		"Skyhigh Security Threat"
+		"Skyhigh Security Threat",
+		"AWS Security Hub Finding"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

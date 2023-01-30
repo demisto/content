@@ -844,11 +844,9 @@ def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRe
     finding = response.get('Findings')[0]  # a list with one dict in it
     demisto.debug(f'The finding is: {finding} \nEnd of finding')
     incident_last_update = finding.get('UpdatedAt')
-    incident_processed_at = finding.get('ProcessedAt')
-    demisto.debug(f'The incident last update time is: {incident_last_update}\n'
-                  f'The incident processed at time: {incident_processed_at}')
+    demisto.debug(f'The incident last update time is: {incident_last_update}\n')
 
-    if (remote_args.last_update < incident_last_update) or (remote_args.last_update < incident_processed_at):
+    if remote_args.last_update < incident_last_update:
         demisto.debug(f'Updated incident {remote_incident_id}')
         return GetRemoteDataResponse(mirrored_object=finding, entries=[{}])
     else:
