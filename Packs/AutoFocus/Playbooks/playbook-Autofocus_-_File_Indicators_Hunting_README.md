@@ -1,7 +1,7 @@
-The playbook queries the PANW Threat Intelligence Autofocus System for file indicators such as MD5, SHA256, and SHA1 hashes.
+The playbook queries the PANW Autofocus session and samples log data for file indicators such as MD5, SHA256, and SHA1 hashes. 
 
 A simple search mode is used to query Autofocus based on the file indicators specified in the playbook inputs. Advanced search mode queries can also be used with multiple query parameters, but require all field names, parameters, and operators (JSON format) to be specified. 
-It is recommended to use the Autofocus UI to create an advanced query, export it and paste it into the relevant playbook inputs.
+We recommended using the Autofocus UI to create an advanced query, exporting it, and pasting it into the relevant playbook inputs. 
 
 Note that multiple search values should be separated by commas only (without spaces or any special characters).
 
@@ -25,15 +25,15 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FileHash | A single or multiple file hashes to search for within Autofocus simple mode search. Supports MD5, SHA1, and SHA256 file hashes. <br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
-| Search Type | Determine which Autofocus search types should be executed. An overview of autofocus search types is provided below.<br/><br/>Various values can be specified, including session, sample, tag, or all. Session and sample are the recommended search types for this playbook. <br/><br/>Sample-based search is used to detect threat indicators or identifiers within samples sent to WildFire for analysis.<br/><br/>Session-based search is used to detect threat indicators or identifiers within various context details and session data provided by samples during sample submission.<br/><br/>Tag-based search is used to identify the most popular tags. |  | Required |
-| Scope | Search scope for sample and session. Possible values are "industry", "organization", "global", or "all". |  | Required |
-| SampleQuery | Utilize the Autofocus advanced search mode to leverage a variety of query options within a sample search. Advanced search requires you to specify all field names, parameters, and operators.<br/><br/>The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button. |  | Optional |
-| Sample first seen | A sample-based search can be narrowed down by specifying the timestamp at which samples were first uploaded to WildFire for analysis \(indicators will be searched within samples after this timestamp\).<br/><br/>Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00. |  | Optional |
-| Sample last modified | A sample-based search can be narrowed down by specifying the timestamp at which samples were last modified \(indicators will be searched within samples after this timestamp\).<br/><br/>Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00. |  | Optional |
-| SessionQuery | Utilize the Autofocus advanced search mode to leverage a variety of query options within a session search. Advanced search requires you to specify all field names, parameters, and operators.<br/><br/>The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button. |  | Optional |
-| Sessions time before | A session-based search can be narrowed down by specifying the query end timestamp \(indicators will be searched within sessions before this timestamp\).<br/><br/>Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00. |  | Optional |
-| Sessions time after | A session-based search can be narrowed down by specifying the query start timestamp \(indicators will be searched within sessions after this timestamp\).<br/><br/>Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00. |  | Optional |
+| FileHash | One or more file hashes to search for in Autofocus simple mode search. Supports MD5, SHA1, and SHA256 file hashes. <br/><br/>Separate multiple search values by commas only \(without spaces or any special characters\). |  | Optional |
+| Search Type | Which Autofocus search types should be executed. <br/><br/>Possible values are session, sample, tag, or all. Session and sample are the recommended search types for this playbook. <br/><br/>Sample-based search detects threat indicators or identifiers within samples sent to WildFire for analysis. <br/><br/>Session-based search detects threat indicators or identifiers within various context details and session data provided by samples during sample submission. <br/><br/>Tag-based search identifies the most popular tags. |  | Required |
+| Scope | Search scope for sample and session. Possible values are industry, organization, global, or all. |  | Required |
+| SampleQuery | Use the Autofocus advanced search mode to leverage a variety of query options in a sample search. Advanced search requires you to specify all field names, parameters, and operators.<br/><br/>The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button. |  | Optional |
+| Sample first seen | Narrow down a sample-based search by specifying the timestamp samples were first uploaded to WildFire for analysis \(indicators will be searched within samples after this timestamp\).<br/><br/>Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00. |  | Optional |
+| Sample last modified | Narrow down a sample-based search by specifying the timestamp samples were last modified \(indicators will be searched within samples after this timestamp\).<br/><br/>Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00. |  | Optional |
+| SessionQuery | Use the Autofocus advanced search mode to leverage a variety of query options in a session search. Advanced search requires you to specify all field names, parameters, and operators.<br/><br/>The query currently supports only JSON format which can be extracted from the Autofocus web console API radio button. |  | Optional |
+| Sessions time before | Narrow down a session-based search by specifying the query end timestamp \(indicators will be searched within sessions before this timestamp\).<br/><br/>Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00. |  | Optional |
+| Sessions time after | Narrow down a session-based search by specifying the query start timestamp \(indicators will be searched within sessions after this timestamp\).<br/><br/>Specify the time in ISO 8601 format, for example, 2019-09-12T00:00:00. |  | Optional |
 | Wildfire Verdict | Filter results by WildFire classification assigned to samples based on properties, behaviors, and activities observed for files or email links during static and dynamic analysis.<br/><br/>Possible values are malware, benign, phishing, and greyware.  |  | Optional |
 
 ## Playbook Outputs
@@ -42,7 +42,7 @@ This playbook does not use any commands.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Autofocus.Samples.HuntingResults | Sample objects containing relevant fields. | string |
-| Autofocus.Samples.HuntingResults.Created | The date that the file was created. | date |
+| Autofocus.Samples.HuntingResults.Created | The date the file was created. | date |
 | Autofocus.Samples.HuntingResults.Finished | The date the file was finished. | date |
 | Autofocus.Samples.HuntingResults.FileName | The name of the file. | string |
 | Autofocus.Samples.HuntingResults.FileType | The file type. | string |
@@ -53,7 +53,7 @@ This playbook does not use any commands.
 | Autofocus.Samples.HuntingResults.Tags | The tags attached to the sample. | string |
 | Autofocus.Samples.HuntingResults.TagGroups | The groups of relevant tags. | string |
 | Autofocus.Samples.HuntingResults.Verdict | The verdict of the sample. | number |
-| Autofocus.Samples.HuntingResults.Artifact.confidence | How confident the decision. | string |
+| Autofocus.Samples.HuntingResults.Artifact.confidence | The decision confidence. | string |
 | Autofocus.Samples.HuntingResults.Artifact.indicator | The indicator that was tested. | string |
 | Autofocus.Samples.HuntingResults.Artifact.indicator_type | The indicator type, for example: Mutex, User agent, IPv4, Domain. | string |
 | Autofocus.Samples.HuntingResults.Artifact.b | How many set the artifact as benign. | string |
@@ -76,7 +76,7 @@ This playbook does not use any commands.
 | Autofocus.Sessions.HuntingResults.src_countrycode | The associated source country code. | string |
 | Autofocus.Sessions.HuntingResults.dst_port | The associated destination port number. | number |
 | Autofocus.Sessions.HuntingResults.src_port | The associated source port number. | number |
-| Autofocus.Sessions.HuntingResults.user_id | Recipient User ID | string |
+| Autofocus.Sessions.HuntingResults.user_id | The recipient user ID. | string |
 
 ## Playbook Image
 ---
