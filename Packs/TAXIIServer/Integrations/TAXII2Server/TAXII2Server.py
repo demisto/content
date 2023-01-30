@@ -794,7 +794,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
         xsoar_indicator_to_return = xsoar_indicator
     extension_definition = {}
 
-    if SERVER.has_extension:
+    if SERVER.has_extension and object_type not in SERVER.types_for_indicator_sdo:
         if object_type in extensions_dict:
             extension_id = extensions_dict.get(object_type, {}).get('extension_id')
             xsoar_indicator_to_return = extensions_dict.get(object_type, {}).get('xsoar_indicator_to_return')
