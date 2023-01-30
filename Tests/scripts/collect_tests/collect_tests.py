@@ -16,7 +16,7 @@ from Tests.scripts.collect_tests.constants import (
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
-    ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES)
+    ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -61,6 +61,7 @@ class CollectionReason(str, Enum):
     MODELING_RULE_TEST_DATA_CHANGED = 'modeling rule\'s associated testdata file was changed'
     MODELING_RULE_NIGHTLY = 'nightly testing of modeling rules'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
+    XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -559,7 +560,7 @@ class TestCollector(ABC):
             logger.info(f'Not collecting pack {pack_id} for Modeling Rule {changed_file_path} because '
                         f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
                         f'marketplace is {self.marketplace}')
-            raise NothingToCollectException(changed_file_path, 'packs for Modeling Rules are only collected for XSIAM')
+            raise NothingToCollectException(changed_file_path, 'packs for XSIAM components are only collected for XSIAM')
 
         pack = PACK_MANAGER.get_pack_metadata(pack_id)
 
@@ -585,6 +586,53 @@ class TestCollector(ABC):
         return CollectionResult(
             test=None,
             modeling_rule_to_test=modeling_rule_to_test,
+            pack=pack_id,
+            reason=reason,
+            version_range=version_range,
+            reason_description=reason_description,
+            conf=self.conf,
+            id_set=self.id_set,
+            is_nightly=is_nightly
+        )
+
+    def _collect_pack_for_xsiam_component(
+        self, pack_id: str, reason_description: str, changed_file_path: Path,
+        content_item_range: Optional[VersionRange] = None, is_nightly: bool = False,
+        reason: Optional[CollectionReason] = None
+    ) -> CollectionResult:
+        """Create a CollectionResult for a pack because of an xsiam component.
+
+        Marks the pack being collected and the modeling rule that needs to be tested
+
+        Args:
+            pack_id (str): the id of the pack being collected
+            reason (Optional[CollectionReason]): the reason the pack is being collected. Defaults to None.
+            reason_description (str): the reason the pack is being collected
+            changed_file_path (Path): the path to the file that was modified
+            content_item_range (Optional[VersionRange], optional): version range. Defaults to None.
+            is_nightly (Optional[bool]): whether this is a nightly flow. Defaults to False.
+
+        Returns:
+            CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
+        """
+        if self.marketplace != MarketplaceVersions.MarketplaceV2:
+            logger.info(f'Not collecting pack {pack_id} for XSIAM component {changed_file_path} because '
+                        f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
+                        f'marketplace is {self.marketplace}')
+            raise NothingToCollectException(changed_file_path, 'packs for XSIAM components are only collected for XSIAM')
+
+        pack = PACK_MANAGER.get_pack_metadata(pack_id)
+
+        version_range = content_item_range \
+            if pack.version_range.is_default \
+            else (pack.version_range | content_item_range)
+
+        if not reason:
+            file_type = find_type(changed_file_path.as_posix())
+            reason = f"{CollectionReason.XSIAM_COMPONENT_CHANGED} {file_type.value}"
+
+        return CollectionResult(
+            test=None,
             pack=pack_id,
             reason=reason,
             version_range=version_range,
@@ -638,7 +686,8 @@ class TestCollector(ABC):
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
-                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces):
+                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
+                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
                 if self.marketplace not in content_item_marketplaces:
@@ -870,6 +919,14 @@ class BranchTestCollector(TestCollector):
                     pack_id=pack_id, reason_description=reason_description,
                     changed_file_path=path, content_item_range=content_item_range
                 )
+
+            if file_type in XSIAM_COMPONENT_FILES:
+                # if the file is an xsiam component and is not a modeling rule
+                return self._collect_pack_for_xsiam_component(
+                    pack_id=pack_id, reason_description=reason_description,
+                    changed_file_path=path, content_item_range=content_item_range
+                )
+
             else:
                 # install pack without collecting tests.
                 return self._collect_pack(
