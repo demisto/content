@@ -39,9 +39,7 @@ else:
     private_ranges = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]  # No ranges in list, use default ranges
 
 # Create list of IPs with private property
-ip_list = []
-for ip in ip_addresses_to_check:
-    ip_list.append({"Address": ip, "Private": check_ip_internal(ip, private_ranges)})
+ip_list = [{"Address": ip, "Private": check_ip_internal(ip, private_ranges)} for ip in ip_addresses_to_check]
 
 # Create entry context and human-readable results
 entry_context = {"IP(val.Address == obj.Address)": ip_list}
