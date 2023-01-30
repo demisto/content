@@ -16,6 +16,15 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: install poetry
+      run: pipx install poetry
+    - name: setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+        cache: poetry
+    - name: install dependencies
+      run: poetry install
     - name: Check if pyproject.toml or poetry.lock has been changed
       id: changed-files-poetry
       uses: tj-actions/changed-files@v35
