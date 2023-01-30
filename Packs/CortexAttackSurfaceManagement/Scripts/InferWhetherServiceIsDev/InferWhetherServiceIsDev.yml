@@ -12,10 +12,6 @@ commonfields:
 dockerimage: demisto/python3:3.10.9.46032
 enabled: true
 name: InferWhetherServiceIsDev
-outputs:
-- contextPath: ASM - Dev Check
-  description: whether there is an indication within either `asm_tags` or `active_classifications` that the described system is used for development
-  type: boolean
 runas: DBotWeakRole
 runonce: false
 script: ''
