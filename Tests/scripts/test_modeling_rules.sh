@@ -16,7 +16,7 @@ for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   MODELING_RULE_TEST_FILE_PATTERN="$CURRENT_DIR/Packs/$modeling_rule/*_testdata.json"
   echo "Pattern: $MODELING_RULE_TEST_FILE_PATTERN"
   # If it is nightly, run `test modeling rules` only on modeling rules that have `_testdata.json` file.
-  if [ -z "$NIGHTLY" ] || [ -e "$MODELING_RULE_TEST_FILE_PATTERN" ]; then
+  if [ -z "$NIGHTLY" ] || [ -e $MODELING_RULE_TEST_FILE_PATTERN ]; then
     if [[ -n "$MODELING_RULES_TO_TEST" ]]; then
         MODELING_RULES_TO_TEST="$MODELING_RULES_TO_TEST Packs/$modeling_rule"
     else
