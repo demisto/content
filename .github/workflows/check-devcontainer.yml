@@ -16,6 +16,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - name: install poetry
       run: pipx install poetry
     - name: setup python
@@ -39,13 +41,11 @@ jobs:
         echo $(poetry show | grep demisto-sdk) > .devcontainer/demisto-sdk-version.txt
     - name: commit file
       if: steps.changed-files-poetry.outputs.any_changed == 'true'
-      uses: EndBug/add-and-commit@v9
+      uses: stefanzweifel/git-auto-commit-action@v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        add: .devcontainer/demisto-sdk-version.txt
-        message: "Update demisto-sdk version in devcontainer"
-
+        commit_message: Update demisto-sdk version in devcontainer
     - name: Run demisto-sdk in devcontainer
       uses: devcontainers/ci@v0.2
       with:    
