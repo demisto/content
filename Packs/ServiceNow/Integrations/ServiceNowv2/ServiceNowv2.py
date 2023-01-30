@@ -2456,7 +2456,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
-                'closeReason': converts_state_close_reason(ticket.get("state"))
+                'closeReason': converts_state_close_reason(ticket.get("state"), params.get('server_close_custom_state', None))
             },
             'ContentsFormat': EntryFormat.JSON
         })
@@ -2465,7 +2465,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     return [ticket] + entries
 
 
-def converts_state_close_reason(ticket_state: Optional[str]):
+def converts_state_close_reason(ticket_state: Optional[str], server_close_custom_state: Optional[str]):
     """
     determine the XSOAR closeReason based on the Service Now ticket state.
     Args:
@@ -2473,9 +2473,17 @@ def converts_state_close_reason(ticket_state: Optional[str]):
     Returns:
         The XSOAR state
     """
-    if ticket_state in ['6', '7']:
+    if server_close_custom_state and ticket_state:
+        server_close_custom_state_dict = dict(item.split("=") for item in server_close_custom_state.split(","))
+        if ticket_state in server_close_custom_state_dict.keys():
+            if custom_state_label := server_close_custom_state_dict.get('ticket_state'):
+                return custom_state_label
+            else:
+                return 'Other'
+    elif ticket_state in ['6', '7']:
         return 'Resolved'
-    return 'Other'
+    else:
+        return 'Other'
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:

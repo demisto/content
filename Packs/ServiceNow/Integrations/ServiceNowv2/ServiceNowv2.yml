@@ -144,6 +144,12 @@ configuration:
   - None
   - closed
   - resolved
+- additionalinfo: Define how to close the mirrored tickets in XSOAR with a custom state. Enter here the custom closure state codes and their labels (Example “10=Design,11=Development,12=Testing”) to override the default closure method. If the closure codes does not exist, the default code will be used instead.
+  defaultvalue: ''
+  display: Mirrored XSOAR Ticket custom close state code
+  name: server_close_custom_state
+  required: false
+  type: 0
 - additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
   display: Mirrored ServiceNow Ticket closure method
