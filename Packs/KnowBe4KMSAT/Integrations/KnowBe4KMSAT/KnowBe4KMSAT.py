@@ -901,13 +901,6 @@ def kmsat_training_enrollments_list_command(
     else:
         data = client.kmsat_training_enrollments(params)
 
-    # Adds meta to the result set for paging
-    metadata = {
-        "paging_end": paging_end,
-        "filtered_items_in_page": filtered_items_in_page,
-        "unfiltered_count": unfiltered_count
-    }
-
     markdown = tableToMarkdown(
         "Training Enrollments",
         data,
@@ -923,23 +916,50 @@ def kmsat_training_enrollments_list_command(
             "status",
             "time_spent",
             "policy_acknowledged",
-        ],
-        headerTransform=None,
-        removeNull=False,
-        metadata=f"{metadata}",
+        ]
     )
+
+    # Adds meta to the result set for paging
+    metadata = {
+        "paging_end": paging_end,
+        "filtered_items_in_page": filtered_items_in_page,
+        "unfiltered_count": unfiltered_count
+    }
+
+    meta_markdown = tableToMarkdown(
+        "Training Enrollments Meta",
+        metadata,
+        [
+            "paging_end",
+            "filtered_items_in_page",
+            "unfiltered_count",
+        ],
+    )
+
     if data is None:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_training_enrollments_list_command`.",
             res=data,
         )
-    return CommandResults(
-        outputs_prefix="KMSAT.TrainingEnrollments",
-        outputs_key_field="enrollment_id",
-        raw_response=data,
-        outputs=data,
-        readable_output=markdown,
-    )
+
+    command_results = [
+        CommandResults(
+            outputs_prefix="KMSAT.TrainingEnrollments",
+            outputs_key_field="enrollment_id",
+            raw_response=data,
+            outputs=data,
+            readable_output=markdown,
+        ),
+        CommandResults(
+            outputs_prefix="KMSAT.TrainingEnrollments",
+            outputs_key_field="",
+            raw_response=metadata,
+            outputs=metadata,
+            readable_output=meta_markdown,
+        )
+    ]
+
+    return_results(command_results)
 
 
 def kmsat_user_events_list_command(

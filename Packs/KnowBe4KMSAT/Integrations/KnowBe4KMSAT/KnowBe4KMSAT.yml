@@ -694,6 +694,15 @@ script:
         - contextPath: KMSAT.TrainingEnrollments.policy_acknowledged
           description: Training Enrollments Policy Acknowledged
           type: Boolean
+        - contextPath: KMSAT.TrainingEnrollments.paging_end
+          description: Training Enrollments Meta Page End
+          type: Boolean
+        - contextPath: KMSAT.TrainingEnrollments.filtered_items_in_page
+          description: Training Enrollments Meta Page End
+          type: Boolean
+        - contextPath: KMSAT.TrainingEnrollments.unfiltered_count
+          description: Training Enrollments Meta Page End
+          type: Boolean
       description: Returns all Training Enrollments
     - name: kmsat-user-events-list
       arguments:
