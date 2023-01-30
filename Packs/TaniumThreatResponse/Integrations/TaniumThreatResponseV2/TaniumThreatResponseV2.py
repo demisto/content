@@ -1310,7 +1310,7 @@ def get_events_by_connection(client, data_args) -> Tuple[str, dict, Union[list, 
         params['g1'] = g1
         params.update(filter_dict)
 
-    if client.api_version == "4.x":     # todo: check this part with the api docs
+    if client.api_version == "4.x":
         params['cid'] = cid
         params['type'] = event_type
 
@@ -1695,6 +1695,10 @@ def get_events_by_process(client, data_args) -> Tuple[str, dict, Union[list, dic
     cid = data_args.get('connection_id')
     ptid = data_args.get('ptid')
     event_type = data_args.get('type').lower()
+    params = {'limit': limit, 'offset': offset}
+    if client.api_version == "4.x":
+        params.update({"cid": cid, "ptid": ptid, "type": event_type})
+
     raw_response = client.do_request('GET',
                                      f'plugin/products/threat-response/api/v1/conns/{cid}/processevents/{ptid}/{event_type}',
                                      params={'limit': limit, 'offset': offset})
@@ -1817,8 +1821,8 @@ def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
     Returns:
         tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
     """
-    limit = arg_to_number(commands_args.get('limit'))
-    offset = arg_to_number(commands_args.get('offset'))
+    limit = arg_to_number(commands_args.get('limit', 50))
+    offset = arg_to_number(commands_args.get('offset', 0))
     hostnames = argToList(arg=commands_args.get('hostname'))
     sort = commands_args.get('sort')
     type = commands_args.get('type')
@@ -2115,8 +2119,8 @@ def main():
         'tanium-tr-list-labels': get_labels,
         'tanium-tr-get-label-by-id': get_label,
 
-        'tanium-tr-list-events-by-connection': get_events_by_connection,    # server error
-        'tanium-tr-get-events-by-process': get_events_by_process,   # server error
+        'tanium-tr-list-events-by-connection': get_events_by_connection,
+        'tanium-tr-get-events-by-process': get_events_by_process,
 
         'tanium-tr-get-process-info': get_process_info,
         'tanium-tr-get-process-children': get_process_children,
@@ -2125,7 +2129,7 @@ def main():
 
         'tanium-tr-event-evidence-list': list_evidence,
         'tanium-tr-event-evidence-get-properties': event_evidence_get_properties,
-        'tanium-tr-get-evidence-by-id': get_evidence_by_id,  # error: not found for existing one
+        'tanium-tr-get-evidence-by-id': get_evidence_by_id,  # todo: error: not found for existing one
         'tanium-tr-create-evidence': create_evidence,
         'tanium-tr-delete-evidence': delete_evidence,
 
