@@ -1,0 +1,1 @@
+!openai-completions prompt="Give me some characteristics of a phishing email"

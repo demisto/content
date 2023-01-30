@@ -9,15 +9,23 @@
 
 **Permissions required per command:**
 
+
 | Commands                  | Permissions    |
-| ------------------------- | -------------- |
-| gw-list-alerts            | Operators      |
+|---------------------------| -------------- |
 | gw-get-alert              | Operators      |
 | gw-es-query               | Operators      |
+| gw-es-wrapper             | Operators      |
+| gw-file-infected          | Operators      |
 | gw-add-malcore-list-entry | Administrators |
+| gw-get-malcore-list-entry | Administrators |
 | gw-del-malcore-list-entry | Administrators |
 | gw-add-dga-list-entry     | Administrators |
+| gw-get-dga-list-entry     | Administrators |
 | gw-del-dga-list-entry     | Administrators |
+| gw-get-ignore-asset-name  | Operators      |
+| gw-get-ignore-kuser-ip    | Operators      |
+| gw-get-ignore-kuser-name  | Operators      |
+| gw-get-ignore-mac-address | Operators      |
 | gw-add-ignore-asset-name  | Operators      |
 | gw-add-ignore-kuser-ip    | Operators      |
 | gw-add-ignore-kuser-name  | Operators      |

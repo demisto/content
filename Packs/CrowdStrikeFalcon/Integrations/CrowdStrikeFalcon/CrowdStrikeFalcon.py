@@ -9,19 +9,16 @@ import json
 from enum import Enum
 from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-
 import requests
 from dateutil.parser import parse
-
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
-
 ''' GLOBALS/PARAMS '''
 
 INTEGRATION_NAME = 'CrowdStrike Falcon'
-CLIENT_ID = demisto.params().get('client_id')
-SECRET = demisto.params().get('secret')
+CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
+SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
     demisto.params()['url']
@@ -40,7 +37,6 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
 # Remove proxy if not set to true in params
 handle_proxy()
 
@@ -220,7 +216,7 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False, json=None, status_code=None):
+                 get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -255,6 +251,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :type status_code: ``int``
         :param: status_code: The request codes to accept as OK.
 
+        :type timeout: ``float``
+        :param: timeout: The timeout for the request.
+
         :return: Returns the http request response json
         :rtype: ``dict``
     """
@@ -272,6 +271,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             headers=headers,
             files=files,
             json=json,
+            timeout=timeout,
         )
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
@@ -319,6 +319,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     get_token_flag=False,
                     status_code=status_code,
                     no_json=no_json,
+                    timeout=timeout,
                 )
             elif safe:
                 return None
@@ -327,6 +328,56 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     except ValueError as exception:
         raise ValueError(
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
+
+
+def create_relationships(cve: dict) -> List:
+    """
+        creates relationships between the cve and each actor from 'actors' field
+        : args: cve contains the cve id and the actors field if it is exists.
+        : return: a list of relationships by type THREAT_ACTOR.
+    """
+    list_with_actors_field = []
+    if not cve.get('actors'):
+        return []
+    for actor in cve.get('actors', {}):
+        list_with_actors_field.append(actor)
+    relationships_list: list[EntityRelationship] = []
+    # need to create entity
+    for entity_b in list_with_actors_field:
+        relationships_list.append(EntityRelationship(entity_a=cve.get('id'),
+                                                     entity_a_type=FeedIndicatorType.CVE,
+                                                     name=EntityRelationship.Relationships.TARGETED_BY,
+                                                     entity_b=entity_b,
+                                                     entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                                                     brand=INTEGRATION_NAME,
+                                                     reverse_name=EntityRelationship.Relationships.TARGETS))
+
+    return relationships_list
+
+
+def create_dbot_Score(cve: dict, reliability: str) -> Common.DBotScore:
+    """
+        Creates DBotScore CVE indicator, for get_cve_command.
+    """
+    return Common.DBotScore(indicator=cve.get('id'),
+                            indicator_type=DBotScoreType.CVE,
+                            integration_name=INTEGRATION_NAME,
+                            score=Common.DBotScore.NONE,
+                            reliability=reliability)
+
+
+def create_publications(cve: dict) -> list:
+    """
+        Creates publications list from CVE, while using get_cve_command.
+    """
+    publications = []
+    if cve.get('references'):
+        for reference in cve.get('references', {}):
+            publications.append(Common.Publications(title='references', link=reference))
+    if cve.get('vendor_advisory'):
+        for vendor_advisory in cve.get('vendor_advisory', {}):
+            publications.append(Common.Publications(title='vendor_advisory', link=vendor_advisory))
+    return publications
 
 
 ''' API FUNCTIONS '''
@@ -1272,6 +1323,7 @@ def search_custom_iocs(
         limit: str = '50',
         sort: Optional[str] = None,
         offset: Optional[str] = None,
+        after: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1281,6 +1333,10 @@ def search_custom_iocs(
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
+    :param after: A pagination token used with the limit parameter to manage pagination of results.
+                  On your first request, don't provide an 'after' token. On subsequent requests, provide
+                  the 'after' token from the previous response to continue from that place in the results.
+                  To access more than 10k indicators, use the 'after' parameter instead of 'offset'.
     """
     filter_list = []
     if types:
@@ -1297,6 +1353,7 @@ def search_custom_iocs(
         'sort': sort,
         'offset': offset,
         'limit': limit,
+        'after': after,
     }
 
     return http_request('GET', '/iocs/combined/indicator/v1', params=params)
@@ -1629,7 +1686,7 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
-def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
+def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float = None) -> dict:
     """
     Upload a list of IOC
     """
@@ -1637,7 +1694,7 @@ def upload_batch_custom_ioc(ioc_batch: List[dict]) -> dict:
         'indicators': ioc_batch
     }
 
-    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
+    return http_request('POST', '/iocs/entities/indicators/v1', json=payload, timeout=timeout)
 
 
 def get_behaviors_by_incident(incident_id: str, params: dict = None) -> dict:
@@ -2254,7 +2311,8 @@ def search_custom_iocs_command(
         limit: str = '50',
         sort: Optional[str] = None,
         offset: Optional[str] = None,
-) -> dict:
+        next_page_token: Optional[str] = None,
+) -> List[dict]:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
     :param values: Comma-separated list of indicator values
@@ -2263,6 +2321,10 @@ def search_custom_iocs_command(
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
+    :param next_page_token: A pagination token used with the limit parameter to manage pagination of results.
+                  On your first request, don't provide an 'after' token. On subsequent requests, provide
+                  the 'after' token from the previous response to continue from that place in the results.
+                  To access more than 10k indicators, use the 'after' parameter instead of 'offset'.
     """
     raw_res = search_custom_iocs(
         types=argToList(types),
@@ -2272,17 +2334,30 @@ def search_custom_iocs_command(
         offset=offset,
         expiration=expiration,
         limit=limit,
+        after=next_page_token,
     )
     iocs = raw_res.get('resources')
+    meta = raw_res.get('meta')
+    if meta:
+        pagination_token = meta['pagination'].get('after')
+    else:
+        pagination_token = None
     if not iocs:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     handle_response_errors(raw_res)
+    entry_objects_list = []
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
-    return create_entry_object(
+    entry_objects_list.append(create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
         hr=tableToMarkdown('Indicators of Compromise', ec, headers=IOC_HEADERS),
-    )
+    ))
+    entry_objects_list.append(create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.NextPageToken': pagination_token},
+        hr=tableToMarkdown('Pagination Info', pagination_token, headers=['Next Page Token']),
+    ))
+    return entry_objects_list
 
 
 def get_custom_ioc_command(
@@ -3552,14 +3627,14 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
 
 
 def upload_batch_custom_ioc_command(
-        multiple_indicators_json: str = None,
+        multiple_indicators_json: str = None, timeout: str = '180',
 ) -> List[dict]:
     """
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
 
     """
     batch_json = safe_load_json(multiple_indicators_json)
-    raw_res = upload_batch_custom_ioc(batch_json)
+    raw_res = upload_batch_custom_ioc(batch_json, timeout=float(timeout))
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     entry_objects_list = []
@@ -3874,7 +3949,173 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
+def build_url_filter(values: list[str] | str | None):
+    return 'cve.id:[\'' + "','".join(argToList(values)) + '\']'
+
+
+def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_id: list[str] | None,
+                                                     cve_severity: list[str] | None, tags: list[str] | None,
+                                                     status: list[str] | None, platform_name: str | None,
+                                                     host_group: list[str] | None, host_type: list[str] | None,
+                                                     last_seen_within: str | None, is_suppressed: str | None, filter_: str,
+                                                     remediation: bool | None, evaluation_logic: bool | None,
+                                                     host_info: bool | None, limit: str | None) -> dict:
+    input_arg_dict = {'aid': aid,
+                      'cve.id': cve_id,
+                      'host_info.tags': tags,
+                      'status': status,
+                      'host_info.groups': host_group,
+                      'last_seen_within': last_seen_within,
+                      'suppression_info.is_suppressed': is_suppressed}
+    input_arg_dict['cve.severity'] = [severity.upper() for severity in cve_severity] if cve_severity else None
+    input_arg_dict['host_info.platform_name'] = platform_name.capitalize() if platform_name else None
+    input_arg_dict['host_info.product_type_desc'] = [host_type_.capitalize() for host_type_ in host_type] if host_type else None
+    remove_nulls_from_dictionary(input_arg_dict)
+    # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR
+    # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
+    url_filter = filter_.replace('+', '%2B')
+    if not any((input_arg_dict, url_filter)):
+        raise DemistoException('Please add a at least one filter argument')
+    for key, arg in input_arg_dict.items():
+        if url_filter:
+            url_filter += '%2B'
+        if isinstance(arg, list):
+            url_filter += f'{key}:[\'' + "','".join(arg) + '\']'
+        else:
+            url_filter += f"{key}:'{arg}'"  # All args should be a list. this is a fallback
+    url_facet = '&facet=cve'
+    for argument, url_value in (
+        ('remediation', remediation),
+        ('evaluation_logic', evaluation_logic),
+        ('host_info', host_info),
+    ):
+        if argToBoolean(url_value):
+            url_facet += f"&facet={argument}"
+    # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
+    suffix_url = f'/spotlight/combined/vulnerabilities/v1?filter={url_filter}{url_facet}&limit={limit}'
+    return http_request('GET', suffix_url)
+
+
+def cs_falcon_spotlight_list_host_by_vulnerability_request(cve_ids: list[str] | None, limit: str) -> dict:
+    url_filter = build_url_filter(cve_ids)
+    params = {'filter': url_filter, 'facet': 'host_info', 'limit': limit}
+    return http_request('GET', '/spotlight/combined/vulnerabilities/v1', params=params)
+
+
+def cve_request(cve_id: list[str] | None) -> dict:
+    url_filter = build_url_filter(cve_id)
+    return http_request('GET', '/spotlight/combined/vulnerabilities/v1',
+                        params={'filter': url_filter, 'facet': 'cve'})
+
+
+def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResults:
+    """
+        Get a list of vulnerability by spotlight
+        : args: filter which include params or filter param.
+        : return: a list of vulnerabilities according to the user.
+    """
+
+    vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(argToList(args.get('aid')),
+                                                                              argToList(args.get('cve_id')),
+                                                                              argToList(args.get('cve_severity')),
+                                                                              argToList(args.get('tags')),
+                                                                              argToList(args.get('status')),
+                                                                              args.get('platform_name'),
+                                                                              argToList(args.get('host_group')),
+                                                                              argToList(args.get('host_type')),
+                                                                              args.get('last_seen_within'),
+                                                                              args.get('is_suppressed'),
+                                                                              args.get('filter', ''),
+                                                                              args.get('display_remediation_info'),
+                                                                              args.get('display_evaluation_logic_info'),
+                                                                              args.get('display_host_info'),
+                                                                              args.get('limit'))
+    headers = ['ID', 'Severity', 'Status', 'Base Score', 'Published Date', 'Impact Score',
+               'Exploitability Score', 'Vector']
+    outputs = []
+    for vulnerability in vulnerability_response.get('resources', {}):
+        outputs.append({'ID': vulnerability.get('cve', {}).get('id'),
+                        'Severity': vulnerability.get('cve', {}).get('severity'),
+                        'Status': vulnerability.get('status'),
+                        'Base Score': vulnerability.get('cve', {}).get('base_score'),
+                        'Published Date': vulnerability.get('cve', {}).get('published_date'),
+                        'Impact Score': vulnerability.get('cve', {}).get('impact_score'),
+                        'Exploitability Score': vulnerability.get('cve', {}).get('exploitability_score'),
+                        'Vector': vulnerability.get('cve', {}).get('vector')
+                        })
+    human_readable = tableToMarkdown('List Vulnerabilities', outputs, removeNull=True, headers=headers)
+    return CommandResults(raw_response=vulnerability_response,
+                          readable_output=human_readable, outputs=vulnerability_response.get('resources'),
+                          outputs_prefix="CrowdStrike.Vulnerability", outputs_key_field="id")
+
+
+def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> CommandResults:
+    """
+        Get a list of vulnerability by spotlight
+        : args: filter which include params or filter param.
+        : return: a list of vulnerabilities according to the user.
+    """
+    cve_ids = args.get('cve_ids')
+    limit = args.get('limit', '50')
+    vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(cve_ids, limit)
+    headers = ['CVE ID', 'hostname', 'os Version', 'Product Type Desc',
+               'Local IP', 'ou', 'Machine Domain', 'Site Name',
+               'CVE Exploitability Score', 'CVE Vector']
+    outputs = []
+    for vulnerability in vulnerability_response.get('resources', {}):
+        outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
+                        'hostname': vulnerability.get('host_info', {}).get('hostname'),
+                        'os Version': vulnerability.get('host_info', {}).get('os_version'),
+                        'Product Type Desc': vulnerability.get('host_info', {}).get('product_type_desc'),
+                        'Local IP': vulnerability.get('host_info', {}).get('local_ip'),
+                        'ou': vulnerability.get('host_info', {}).get('ou'),
+                        'Machine Domain': vulnerability.get('host_info', {}).get('machine_domain'),
+                        'Site Name': vulnerability.get('host_info', {}).get('site_name')})
+    human_readable = tableToMarkdown('List Vulnerabilities For Host', outputs, removeNull=True, headers=headers)
+    return CommandResults(raw_response=vulnerability_response,
+                          readable_output=human_readable, outputs=vulnerability_response.get('resources'),
+                          outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
+
+
+def get_cve_command(args: dict) -> list[CommandResults]:
+    """
+        Get a list of vulnerability by spotlight
+        : args: filter which include params or filter param.
+        : return: a list of cve indicators according to the user.
+    """
+    if not args.get('cve_id'):
+        raise DemistoException('Please add a filter argument "cve_id".')
+    command_results_list = []
+    http_response = cve_request(args.get('cve_id'))
+    raw_cve = [res_element.get('cve') for res_element in http_response.get('resources', [])]
+    for cve in raw_cve:
+        relationships_list = create_relationships(cve)
+        cve_dbot_score = create_dbot_Score(cve=cve, reliability=args.get('Reliability', 'A+ - 3rd party enrichment'))
+        cve_indicator = Common.CVE(id=cve.get('id'),
+                                   cvss='',
+                                   published=cve.get('published_date'),
+                                   modified='',
+                                   description=cve.get('description'),
+                                   cvss_score=cve.get('base_score'),
+                                   cvss_vector=cve.get('vector'),
+                                   dbot_score=cve_dbot_score,
+                                   publications=create_publications(cve),
+                                   relationships=relationships_list)
+        cve_human_readable = {'ID': cve.get('id'),
+                              'Description': cve.get('description'),
+                              'Published Date': cve.get('published_date'),
+                              'Base Score': cve.get('base_score')}
+        human_readable = tableToMarkdown('CrowdStrike Falcon CVE', cve_human_readable,
+                                         headers=['ID', 'Description', 'Published Date', 'Base Score'])
+        command_results_list.append(CommandResults(raw_response=cve,
+                                                   readable_output=human_readable,
+                                                   relationships=relationships_list,
+                                                   indicator=cve_indicator))
+    return command_results_list
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
+
 
 LOG('Command being called is {}'.format(demisto.command()))
 
@@ -4021,13 +4262,10 @@ def main():
             host_ids = argToList(args.get('host_ids'))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
                                                         execute_run_batch_admin_cmd_with_timer))
-
         elif command == 'cs-falcon-rtr-retrieve-file':
             return_results(rtr_polling_retrieve_file_command(args))
-
         elif command == 'cs-falcon-get-detections-for-incident':
             return_results(get_detection_for_incident_command(args.get('incident_id')))
-
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(args))
         elif demisto.command() == 'get-modified-remote-data':
@@ -4036,6 +4274,12 @@ def main():
             return_results(update_remote_system_command(args))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
+        elif command == 'cs-falcon-spotlight-search-vulnerability':
+            return_results(cs_falcon_spotlight_search_vulnerability_command(args))
+        elif command == 'cs-falcon-spotlight-list-host-by-vulnerability':
+            return_results(cs_falcon_spotlight_list_host_by_vulnerability_command(args))
+        elif command == 'cve':
+            return_results(get_cve_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

@@ -17,6 +17,7 @@ configuration:
   type: 13
   section: Connect
 - display: Service account private key file contents (JSON).
+  additionalinfo: See the Help tab for details on creating a Service Account file.
   hidden: false
   name: service_account_json
   required: true
@@ -827,7 +828,7 @@ script:
     description: Acknowledge previously pulled message or messages.
     execution: false
     name: gcp-pubsub-topic-ack-messages
-  dockerimage: demisto/googleapi-python3:1.0.0.36486
+  dockerimage: demisto/googleapi-python3:1.0.0.41311
   feed: false
   isfetch: true
   longRunning: false

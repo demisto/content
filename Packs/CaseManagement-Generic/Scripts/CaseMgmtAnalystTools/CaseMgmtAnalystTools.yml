@@ -5,7 +5,7 @@ comment: |-
 commonfields:
   id: CaseMgmtAnalystTools
   version: -1
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.9.42476
 enabled: true
 name: CaseMgmtAnalystTools
 runas: DBotWeakRole

@@ -62,7 +62,7 @@ This integration was integrated and tested majorly with G Suite Basic edition.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | user_service_account_json | User's Service Account JSON | True |
-| admin_email | Admin Email | False |
+| admin_email | An admin email is required for the Test validation to run, if not configured, then each command can receive an admin_email argument as optional | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
@@ -76,6 +76,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Takes an action that affects a mobile device. For example, remotely wiping a device.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.mobile.action`
 
 #### Base Command
 
@@ -107,6 +109,10 @@ There is no context output for this command.
 ***
 Removes a mobile device. Note that this does not break the device's sync, it simply removes it from the list of devices connected to the domain. If the device still has a valid login/authentication, it will be added back on it's next successful sync.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user.readonly`
+`https://www.googleapis.com/auth/admin.directory.user `
+`https://www.googleapis.com/auth/cloud-platform `
 
 #### Base Command
 
@@ -137,6 +143,9 @@ There is no context output for this command.
 ***
 Adds an alias.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user.alias`
+`https://www.googleapis.com/auth/admin.directory.user `
 
 #### Base Command
 
@@ -186,6 +195,8 @@ Adds an alias.
 ***
 Creates a user.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
@@ -296,6 +307,8 @@ Creates a user.
 ***
 Creates a group with a group name and its description.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.group`
 
 #### Base Command
 
@@ -358,6 +371,9 @@ Creates a group with a group name and its description.
 ***
 Retrieves a paginated list of all role assignments.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly`
+`https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
@@ -436,6 +452,8 @@ Retrieves a paginated list of all role assignments.
 ***
 Creates a role assignment.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
@@ -496,6 +514,8 @@ Creates a role assignment.
 ***
 Creates a new role.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
@@ -566,6 +586,8 @@ admin_email=admin@domain.com
 ***
 Delete all access tokens issued by a user for an application.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user.security`
 
 #### Base Command
 
@@ -596,6 +618,9 @@ There is no context output for this command.
 ***
 Lists the transfers for a customer by source user, destination user, or status.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.datatransfer`
+`https://www.googleapis.com/auth/admin.datatransfer.readonly`
 
 #### Base Command
 
@@ -714,6 +739,8 @@ Lists the transfers for a customer by source user, destination user, or status.
 Creates a custom user schema to add custom fields to user profiles.
 Note: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.userschema`
 
 #### Base Command
 
@@ -799,6 +826,8 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 Updates a custom user schema.
 Note: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.userschema`
 
 #### Base Command
 
@@ -887,6 +916,8 @@ Note: If all three applications_raw_json, applications_raw_json_entry_id and app
 the higher precedence will be in order of applications_raw_json, applications_raw_json_entry_id, 
 and application_id respectively.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.datatransfer`
 
 #### Base Command
 
@@ -966,6 +997,8 @@ and application_id respectively.
 ***
 Updates a user.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
@@ -1177,6 +1210,8 @@ Updates a user.
 ***
 Deletes a user.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
@@ -1199,3 +1234,620 @@ There is no context output for this command.
 #### Human Readable Output
 
 >User with user key user.test@domain.io deleted successfully.
+
+### gsuite-group-get
+***
+Retreive a group's details given a group key.
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.group`
+
+#### Base Command
+
+`gsuite-group-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group | One of the following: group email address, group alias, or the unique group ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.Group.kind | String | The type of the API resource. | 
+| GSuite.Group.id | String | The unique ID of a group. | 
+| GSuite.Group.etag | String | ETag of the resource. | 
+| GSuite.Group.email | String | The group's email address. | 
+| GSuite.Group.name | String | The group's display name. | 
+| GSuite.Group.directMembersCount | String | The number of users that are direct members of the group. | 
+| GSuite.Group.description | String | An extended description to help users determine the purpose of a group. | 
+| GSuite.Group.adminCreated | Boolean | Value is true if this group was created by an administrator rather than a user. | 
+| GSuite.Group.aliases | String | List of a group's alias email addresses. | 
+| GSuite.Group.nonEditableAliases | String | List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains. | 
+
+#### Command example
+```!gsuite-group-get group=test-group@demistodev.com```
+#### Context Example
+```json
+{
+    "GSuite": {
+        "Group": {
+            "adminCreated": true,
+            "description": "Test Group",
+            "directMembersCount": "1",
+            "email": "test-group@demistodev.com",
+            "etag": "example_etag",
+            "id": "example_id",
+            "kind": "admin#directory#group",
+            "name": "Test Group",
+            "nonEditableAliases": [
+                "test-group@demistodev.com.test-google-a.com"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Found group named "Atlassian Test Group" .
+>|Id|Email|Description|Admin Created|
+>|---|---|---|---|
+>| example_id | test-group@demistodev.com | Test Group | true |
+
+
+### gsuite-user-get
+***
+Retrieve a user's details given a user key
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
+
+#### Base Command
+
+`gsuite-user-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | One of the following: user email address, alias email address, or the unique user ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.User.id | String | The unique ID for the user. | 
+| GSuite.User.primaryEmail | String | The user's primary email address. | 
+| GSuite.User.firstName | String | The user's first name. | 
+| GSuite.User.lastName | String | The user's last name. | 
+| GSuite.User.customerId | String | The unique ID for the customer's G Suite account. | 
+| GSuite.User.gender | String | Gender. | 
+| GSuite.User.suspended | Boolean | Indicates if the user is suspended. | 
+| GSuite.User.notesValue | String | Contents of notes. | 
+| GSuite.User.notesContentType | String | Content type of notes. | 
+| GSuite.User.isAdmin | Boolean | Indicates a user with super administrator privileges. | 
+| GSuite.User.creationTime | Date | The time the user's account was created. | 
+| GSuite.User.phones.value | String | A human-readable phone number. It may be in any telephone number format. | 
+| GSuite.User.phones.type | String | The type of phone number. | 
+| GSuite.User.phones.primary | Boolean | Indicates if this is the user's primary phone number. | 
+| GSuite.User.phones.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.addresses.type | String | The address type. | 
+| GSuite.User.addresses.customType | String | If the address type is custom, this property contains the custom value. | 
+| GSuite.User.addresses.sourceIsStructured | Boolean | Indicates if the user-supplied address was formatted. Formatted addresses are not currently supported. | 
+| GSuite.User.addresses.formatted | String | A full and unstructured postal address. This is not synced with the structured address fields. | 
+| GSuite.User.addresses.poBox | String | The post office box, if present. | 
+| GSuite.User.addresses.locality | String | The town or city of the address. | 
+| GSuite.User.addresses.countryCode | String | The country code. Uses the ISO 3166-1 standard. | 
+| GSuite.User.addresses.country | String | Country. | 
+| GSuite.User.addresses.postalCode | String | The ZIP or postal code. | 
+| GSuite.User.addresses.region | String | The abbreviated province or state. | 
+| GSuite.User.addresses.streetAddress | String | The street address. | 
+| GSuite.User.addresses.extendedAddress | String | For extended addresses, such as an  address that includes a sub-region. | 
+| GSuite.User.addresses.primary | Boolean | If this is the user's primary address. | 
+| GSuite.User.emails.address | String | The user's secondary email. | 
+| GSuite.User.emails.type | String | The secondary email type. | 
+| GSuite.User.emails.customType | String | If the value of type is custom, this property contains the custom type string. | 
+| GSuite.User.emails.primary | Boolean | Indicates if this is the user's primary email. Only one entry can be marked as primary. | 
+| GSuite.User.ipWhitelisted | Boolean | If true, the user's IP address is added to allow list. | 
+| GSuite.User.recoveryEmail | String | Recovery email of the user. | 
+| GSuite.User.isDelegatedAdmin | Boolean | Indicates if the user is a delegated administrator. | 
+| GSuite.User.recoveryPhone | String | Recovery phone of the user. | 
+| GSuite.User.orgUnitPath | String | The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash \(/\). | 
+| GSuite.User.isMailboxSetup | Boolean | Indicates if the user's Google mailbox is created. | 
+| GSuite.User.kind | Boolean | The type of the API resource. | 
+| GSuite.User.etag | Boolean | ETag of the resource. | 
+| GSuite.User.hashFunction | String | Stores the hash format of the password property. | 
+| GSuite.User.archived | Boolean | Indicates if the user is archived. | 
+| GSuite.User.fullName | String | The user's full name formed by concatenating the first and last name values. | 
+| GSuite.User.lastLoginTime | Date | The last time the user logged into the user's account. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04\+01:00. | 
+| GSuite.User.deletionTime | Date | The time the user's account was deleted. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04\+01:00. | 
+| GSuite.User.agreedToTerms | Boolean | This property is true if the user has completed an initial login and accepted the Terms of Service agreement. | 
+| GSuite.User.suspensionReason | String | Has the reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true. | 
+| GSuite.User.changePasswordAtNextLogin | Boolean | Indicates if the user is forced to change their password at next login. This setting doesn't apply when the user signs in via a third-party identity provider. | 
+| GSuite.User.ims.type | Boolean | Type of the user's Instant Messenger \(IM\) account. | 
+| GSuite.User.ims.customType | String | If the IM type is custom, this property holds the custom type string. | 
+| GSuite.User.ims.protocol | String | An IM protocol identifies the IM network. The value can be a custom network or the standard network. | 
+| GSuite.User.ims.customProtocol | String | If the protocol value is custom_protocol, this property holds the custom protocol's string. | 
+| GSuite.User.ims.im | String | The user's IM network ID. | 
+| GSuite.User.ims.primary | Boolean | If this is the user's primary IM. Only one entry in the IM list can have a value of true. | 
+| GSuite.User.externalIds.value | String | The value of the external ID. | 
+| GSuite.User.externalIds.type | String | The type of the external ID. | 
+| GSuite.User.externalIds.customType | String | If the external ID type is custom, this property holds the custom type. | 
+| GSuite.User.relations.value | String | The name of the person the user is related to. | 
+| GSuite.User.relations.type | String | The type of relation. | 
+| GSuite.User.relations.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.organizations.name | String | The name of the organization. | 
+| GSuite.User.organizations.title | String | The user's title within the organization, for example 'member' or 'engineer'. | 
+| GSuite.User.organizations.primary | Boolean | Indicates if this is the user's primary organization. A user may only have one primary organization. | 
+| GSuite.User.organizations.type | String | The type of organization. | 
+| GSuite.User.organizations.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.organizations.department | String | Specifies the department within the organization, such as 'sales' or 'engineering'. | 
+| GSuite.User.organizations.symbol | String | Text string symbol of the organization. For example, the text symbol for Google is GOOG. | 
+| GSuite.User.organizations.location | String | The physical location of the organization. This does not need to be a fully qualified address. | 
+| GSuite.User.organizations.description | String | The description of the organization. | 
+| GSuite.User.organizations.domain | String | The domain the organization belongs to. | 
+| GSuite.User.organizations.costCenter | String | The cost center of the user's organization. | 
+| GSuite.User.organizations.fullTimeEquivalent | String | The full-time equivalent millipercent within the organization \(100000 = 100%\). | 
+| GSuite.User.languages.languageCode | String | Language Code. Should be used for storing Google III LanguageCode string representation for language. Illegal values cause SchemaException. | 
+| GSuite.User.languages.customLanguage | String | Other language. A user can provide their own language name if there is no corresponding Google III language code. If this is set, LanguageCode can't be set. | 
+| GSuite.User.posixAccounts.username | String | The username of the account. | 
+| GSuite.User.posixAccounts.uid | Number | The POSIX compliant user ID. | 
+| GSuite.User.posixAccounts.gid | Number | The default group ID. | 
+| GSuite.User.posixAccounts.homeDirectory | String | The path to the home directory for this account. | 
+| GSuite.User.posixAccounts.shell | String | The path to the login shell for this account. | 
+| GSuite.User.posixAccounts.gecos | String | The GECOS \(user information\) for this account. | 
+| GSuite.User.posixAccounts.systemId | String | System identifier for which account Username or Uid apply to. | 
+| GSuite.User.posixAccounts.primary | Boolean | If this is user's primary account within the SystemId. | 
+| GSuite.User.posixAccounts.accountId | String | A POSIX account field identifier. | 
+| GSuite.User.posixAccounts.operatingSystemType | String | The operating system type for this account. | 
+| GSuite.User.sshPublicKeys.key | String | An SSH public key. | 
+| GSuite.User.sshPublicKeys.expirationTimeUsec | String | An expiration time in microseconds since epoch. | 
+| GSuite.User.sshPublicKeys.fingerprint | String | A SHA-256 fingerprint of the SSH public key. | 
+| GSuite.User.aliases | Unknown | List of the user's alias email addresses. | 
+| GSuite.User.nonEditableAliases | Unknown | List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain. | 
+| GSuite.User.websites.value | String | The URL of the website. | 
+| GSuite.User.websites.primary | Boolean | If this is user's primary website or not. | 
+| GSuite.User.websites.type | String | The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type. | 
+| GSuite.User.websites.customType | String | The custom type. Only used if the type is custom. | 
+| GSuite.User.locations.type | String | The location type. | 
+| GSuite.User.locations.customType | String | If the location type is custom, this property contains the custom value. | 
+| GSuite.User.locations.area | String | Textual location. This is most useful for display purposes to concisely describe the location. For example, "Mountain View, CA", "Near Seattle". | 
+| GSuite.User.locations.buildingId | String | Building identifier. | 
+| GSuite.User.locations.floorName | String | Floor name/number. | 
+| GSuite.User.locations.floorSection | String | Floor section. More specific location within the floor. For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values. | 
+| GSuite.User.locations.deskCode | String | Most specific textual code of individual desk location. | 
+| GSuite.User.keywords.type | String | Each entry can have a type which indicates standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value. | 
+| GSuite.User.keywords.customType | String | Custom Type. | 
+| GSuite.User.keywords.value | String | Keyword. | 
+| GSuite.User.isEnrolledIn2Sv | Boolean | Is enrolled in 2-step verification. | 
+| GSuite.User.isEnforcedIn2Sv | Boolean | Is 2-step verification enforced. | 
+| GSuite.User.includeInGlobalAddressList | Boolean | Indicates if the user's profile is visible in the G Suite global address list when the contact sharing feature is enabled for the domain. | 
+| GSuite.User.thumbnailPhotoUrl | String | Photo Url of the user. | 
+| GSuite.User.thumbnailPhotoEtag | String | ETag of the user's photo. | 
+| GSuite.User.customSchemas | Unknown | Custom fields of the user. | 
+
+#### Command example
+```!gsuite-user-get user=adminemail@domain.com```
+#### Context Example
+```json
+{
+    "GSuite": {
+        "User": {
+            "agreedToTerms": true,
+            "archived": false,
+            "changePasswordAtNextLogin": false,
+            "creationTime": "2016-05-18T10:45:01.000Z",
+            "customerId": "example_customer_id",
+            "emails": [
+                {
+                    "address": "adminemail@domain.com",
+                    "primary": true
+                },
+                {
+                    "address": "adminemail@domain.com.test-google-a.com"
+                }
+            ],
+            "etag": "example_etag",
+            "firstName": "Example_Name",
+            "fullName": "Example_Full_Name",
+            "id": "example_id",
+            "includeInGlobalAddressList": true,
+            "ipWhitelisted": false,
+            "isAdmin": true,
+            "isDelegatedAdmin": false,
+            "isEnforcedIn2Sv": false,
+            "isEnrolledIn2Sv": false,
+            "isMailboxSetup": true,
+            "kind": "admin#directory#user",
+            "languages": [
+                {
+                    "languageCode": "en",
+                    "preference": "preferred"
+                }
+            ],
+            "lastLoginTime": "2022-12-18T09:14:24.000Z",
+            "lastName": "Example_LastName",
+            "nonEditableAliases": [
+                "adminemail@domain.com.test-google-a.com"
+            ],
+            "orgUnitPath": "/",
+            "organizations": [
+                {
+                    "department": "Developers",
+                    "primary": true
+                }
+            ],
+            "phones": [
+                {
+                    "type": "home",
+                    "value": "77777777"
+                }
+            ],
+            "primaryEmail": "adminemail@domain.com",
+            "recoveryEmail": "recovery_email@domain.com",
+            "recoveryPhone": "+123456789",
+            "suspended": false,
+            "thumbnailPhotoEtag": "example_etag",
+            "thumbnailPhotoUrl": "example_photo_url"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Retrieved details for user adminemail@domain.com
+>|Id|Customer Id|Primary Email|First Name|Last Name|Archived|Suspended|Org Unit Path|Is Admin|Creation Time|Phone Details|Secondary Email Details|Ip Whitelisted|Recovery Email|Recovery Phone|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 103020731686044834269 | C02f0zfqw | adminemail@domain.com | Tomer | Malache | false | false | / | true | 2016-05-18T10:45:01.000Z | Value: 77777777<br/>Type: home | Address: adminemail@domain.com<br/>Primary: True | false | tmalache@paloaltonetworks.com | +972545429435 |
+
+
+### google-mobiledevice-list
+***
+Retrieves a paginated list that includes company-owned mobile devices.
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.mobile.readonly`
+
+#### Base Command
+
+`gsuite-mobiledevice-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
+| projection | Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL. Possible values are: BASIC, FULL. | Optional | 
+| query | Search string using the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators. | Optional | 
+| order_by | Device property to use for sorting results. Default is STATUS. Possible values are: DEVICE_ID, EMAIL, LAST_SYNC, MODEL, NAME, OS, STATUS, TYPE. | Optional | 
+| sort_order | Whether to return results in ascending or descending order. Must be used with the order_by parameter. Default is ASCENDING. Possible values are: ASCENDING, DESCENDING. | Optional | 
+| limit | The maximum number of records to return from the collection. The default value is 50. | Optional | 
+| page_token | The token of the page. | Optional | 
+| page_size | The number of requested results per page. The default value is 50. Max allowed value is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.MobileDevices.PageToken.NextPageToken | String | The token of the next page. | 
+| GSuite.MobileDevices.MobileListObjects | Object | A list of Mobile Device objects. | 
+| GSuite.MobileDevices.MobileListObjects.kind | String | The type of the API resource. | 
+| GSuite.MobileDevices.MobileListObjects.etag | String | ETag of the resource. | 
+| GSuite.MobileDevices.MobileListObjects.resourceId | String | The unique ID the API service uses to identify the mobile device. | 
+| GSuite.MobileDevices.MobileListObjects.deviceId | String | The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier. | 
+| GSuite.MobileDevices.MobileListObjects.name | Object | A list of the owner's usernames. | 
+| GSuite.MobileDevices.MobileListObjects.email | Object | A list of the owner's email addresses. | 
+| GSuite.MobileDevices.MobileListObjects.model | String | The mobile device's model name. | 
+| GSuite.MobileDevices.MobileListObjects.os | String | The mobile device's operating system. | 
+| GSuite.MobileDevices.MobileListObjects.type | String | The type of mobile device. | 
+| GSuite.MobileDevices.MobileListObjects.status | String | The device's status. | 
+| GSuite.MobileDevices.MobileListObjects.hardwareId | String | The IMEI/MEID unique identifier for Android hardware. | 
+| GSuite.MobileDevices.MobileListObjects.firstSync | Date | The date and time the device was initially synchronized with the policy settings in the Admin console. | 
+| GSuite.MobileDevices.MobileListObjects.lastSync | Date | The date and time the device was last synchronized with the policy settings in the Admin console. | 
+| GSuite.MobileDevices.MobileListObjects.userAgent | String | Gives information about the device such as os version. | 
+| GSuite.MobileDevices.MobileListObjects.serialNumber | String | The device's serial number. | 
+| GSuite.MobileDevices.MobileListObjects.imei | String | The device's IMEI number. | 
+| GSuite.MobileDevices.MobileListObjects.meid | String | The device's MEID number. | 
+| GSuite.MobileDevices.MobileListObjects.wifiMacAddress | String | The device's MAC address on Wi-Fi networks. | 
+| GSuite.MobileDevices.MobileListObjects.networkOperator | String | Mobile Device mobile or network operator. | 
+| GSuite.MobileDevices.MobileListObjects.defaultLanguage | String | The default locale used on the device. | 
+| GSuite.MobileDevices.MobileListObjects.managedAccountIsOnOwnerProfile | Boolean | Boolean indicating if this account is on owner/primary profile or not. | 
+| GSuite.MobileDevices.MobileListObjects.deviceCompromisedStatus | String | The compromised device status. | 
+| GSuite.MobileDevices.MobileListObjects.buildNumber | String | The device's operating system build number. | 
+| GSuite.MobileDevices.MobileListObjects.kernelVersion | String | The device's kernel version. | 
+| GSuite.MobileDevices.MobileListObjects.basebandVersion | String | The device's baseband version. | 
+| GSuite.MobileDevices.MobileListObjects.unknownSourcesStatus | Boolean | Unknown sources enabled or disabled on device | 
+| GSuite.MobileDevices.MobileListObjects.adbStatus | Boolean | Adb \(USB debugging\) enabled or disabled on device. | 
+| GSuite.MobileDevices.MobileListObjects.developerOptionsStatus | Boolean | Developer options enabled or disabled on device. | 
+| GSuite.MobileDevices.MobileListObjects.otherAccountsInfo | Object | A list of accounts added on device. | 
+| GSuite.MobileDevices.MobileListObjects.supportsWorkProfile | Boolean | Work profile supported on device. | 
+| GSuite.MobileDevices.MobileListObjects.manufacturer | String | Mobile Device manufacturer. | 
+| GSuite.MobileDevices.MobileListObjects.releaseVersion | String | Mobile Device release version version. | 
+| GSuite.MobileDevices.MobileListObjects.securityPatchLevel | Date | Mobile Device Security patch level. | 
+| GSuite.MobileDevices.MobileListObjects.brand | String | Mobile Device Brand. | 
+| GSuite.MobileDevices.MobileListObjects.bootloaderVersion | String | Mobile Device Bootloader version. | 
+| GSuite.MobileDevices.MobileListObjects.hardware | String | Mobile Device Hardware. | 
+| GSuite.MobileDevices.MobileListObjects.encryptionStatus | String | Mobile Device Encryption Status. | 
+| GSuite.MobileDevices.MobileListObjects.devicePasswordStatus | String | Device Password Status | 
+| GSuite.MobileDevices.MobileListObjects.privilege | String | DM Agent Permission. | 
+| GSuite.MobileDevices.MobileListObjects.applications.packageName | String | The application's package name. | 
+| GSuite.MobileDevices.MobileListObjects.applications.displayName | String | The application's display name. | 
+| GSuite.MobileDevices.MobileListObjects.applications.versionName | String | The application's version name. | 
+| GSuite.MobileDevices.MobileListObjects.applications.versionCode | String | The application's version code. | 
+| GSuite.MobileDevices.MobileListObjects.applications.permission | Object | The list of permissions of this application. | 
+
+#### Command example
+```!gsuite-mobiledevice-list customer_id=my_customer limit=2 admin_email=adminemail@domain.com```
+#### Context Example
+```json
+{
+    "GSuite": {
+        "MobileDevices": {
+            "MobileListObjects": [
+                {
+                    "adbStatus": false,
+                    "basebandVersion": "example_baseband_version",
+                    "bootloaderVersion": "G960FXXU2BRJ3",
+                    "brand": "samsung",
+                    "buildNumber": "example_build_number",
+                    "defaultLanguage": "English",
+                    "developerOptionsStatus": false,
+                    "deviceCompromisedStatus": "No compromise detected",
+                    "deviceId": "example_device_id",
+                    "devicePasswordStatus": "On",
+                    "email": [
+                        "example@example.com",
+                        "example@example.com"
+                    ],
+                    "encryptionStatus": "Encrypted",
+                    "etag": "example_etag",
+                    "firstSync": "2019-06-05T20:39:47.195Z",
+                    "hardware": "samsungexynos9810",
+                    "hardwareId": "357164099163035",
+                    "imei": "357164099163035",
+                    "kernelVersion": "4.9.59-14479316-QB20051937",
+                    "kind": "admin#directory#mobiledevice",
+                    "lastSync": "2019-06-06T04:53:44.556Z",
+                    "managedAccountIsOnOwnerProfile": true,
+                    "manufacturer": "samsung",
+                    "meid": "",
+                    "model": "SM-G960F",
+                    "name": [
+                        "example_name"
+                    ],
+                    "networkOperator": "",
+                    "os": "Android 8.0.0",
+                    "privilege": "Device administrator",
+                    "releaseVersion": "8.0.0",
+                    "resourceId": "example_resource_id",
+                    "securityPatchLevel": "1538377200000",
+                    "serialNumber": "example_serial_number",
+                    "status": "APPROVED",
+                    "supportsWorkProfile": true,
+                    "type": "ANDROID",
+                    "unknownSourcesStatus": true,
+                    "userAgent": "Google Apps Device Policy 12.14.01",
+                    "wifiMacAddress": ""
+                },
+                {
+                    "adbStatus": false,
+                    "basebandVersion": "example_baseband_version",
+                    "bootloaderVersion": "",
+                    "brand": "",
+                    "buildNumber": "",
+                    "defaultLanguage": "",
+                    "developerOptionsStatus": false,
+                    "deviceCompromisedStatus": "Undetected",
+                    "deviceId": "example_device_id",
+                    "devicePasswordStatus": "On",
+                    "email": [
+                        "example@example.com",
+                        "example@example.com"
+                    ],
+                    "encryptionStatus": "",
+                    "etag": "example_etag",
+                    "firstSync": "2018-11-17T16:43:09.118Z",
+                    "hardware": "",
+                    "hardwareId": "",
+                    "imei": "",
+                    "kernelVersion": "",
+                    "kind": "admin#directory#mobiledevice",
+                    "lastSync": "2018-11-18T13:58:09.109Z",
+                    "managedAccountIsOnOwnerProfile": false,
+                    "manufacturer": "",
+                    "meid": "",
+                    "model": "iPhone 11 Pro",
+                    "name": [
+                        "example_name"
+                    ],
+                    "networkOperator": "",
+                    "os": "iOS 15.4.1",
+                    "privilege": "Undetected",
+                    "releaseVersion": "",
+                    "resourceId": "example_resource_id",
+                    "securityPatchLevel": "0",
+                    "serialNumber": "example_serial_number",
+                    "status": "APPROVED",
+                    "supportsWorkProfile": false,
+                    "type": "IOS_SYNC",
+                    "unknownSourcesStatus": false,
+                    "userAgent": "",
+                    "wifiMacAddress": ""
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Workspace Admin - Mobile Devices List
+>2 results found
+>|Model Name|OS|Resource Id|Serial Number|Status|Type|User Names|
+>|---|---|---|---|---|---|---|
+>| SM-G960F | Android 8.0.0" | example_resource_id | example_serial_number | APPROVED | ANDROID | example_name |
+>| iPhone10,6 | iOS 15.4.1 | example_resource_id | example_serial_number | APPROVED | IOS_SYNC | example_name |
+
+
+### gsuite-chromeosdevice-list
+***
+Retrieves a paginated list of company-owned ChromeOS devices.
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly`
+
+#### Base Command
+
+`gsuite-chromeosdevice-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
+| projection | Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user). Possible values are: BASIC, FULL. | Optional | 
+| query | Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators. | Optional | 
+| order_by | Device property to use for sorting results. Possible values are: ANNOTATED_LOCATION, ANNOTATED_USER, LAST_SYNC, NOTES, SERIAL_NUMBER, STATUS. | Optional | 
+| sort_order | Whether to return results in ascending or descending order. Must be used with the order_by parameter. Possible values are: ASCENDING, DESCENDING. | Optional | 
+| org_unit_path | The full path of the organizational unit (without the leading /) or its unique ID. | Optional | 
+| include_child_org_units | Whether to return devices from all child organizational units. If this is set to true, 'org_unit_path' must be provided. Possible values are: yes, no. | Optional | 
+| limit | The maximum number of records to return from the collection. The default value is 50. | Optional | 
+| page | The page number. | Optional | 
+| page_size | The number of requested results per page. The default value is 50. Max allowed value is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.ChromeOSDevices.PageToken.NextPageToken | String | The token of the next page. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects | List | A list of Chrome OS Device objects. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceId | String | The unique ID of the Chrome device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.serialNumber | String | The Chrome device serial number entered when the device was enabled. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.status | String | Status of the device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastSync | String | The date and time the device was last synchronized with the policy settings in the Admin console. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.supportEndDate | String | The final date the device will be supported. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedUser | String | The user of the device as noted by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedLocation | String | The address or location of the device as noted by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.notes | String | Notes about this device added by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.model | String | The device's model information. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.meid | String | The Mobile Equipment Identifier \(MEID\) or the International Mobile Equipment Identity \(IMEI\) for the 3G mobile card in a ChromeOS device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.orderNumber | String | The device's order number. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.willAutoRenew | Boolean | Determines if the device will auto renew its support after the support end date. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osVersion | String | The Chrome device's operating system version. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.platformVersion | String | The Chrome device's platform version. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.firmwareVersion | String | The Chrome device's firmware version. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.macAddress | String | The device's wireless MAC address. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.bootMode | String | The boot mode for the device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastEnrollmentTime | String | The date and time the device was last enrolled. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.kind | String | The type of resource. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers | List | A list of recent device users, in descending order, by last login time. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.type | String | The type of the user. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.email | String | The user's email address. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges | List | A list of active time ranges. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.activeTime | Integer | Duration of usage in milliseconds. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.date | Integer | Date of usage. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress | String | The device's MAC address on the ethernet network interface. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedAssetId | String | The asset identifier as noted by an administrator or specified during enrollment. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.etag | String | ETag of the resource. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports | List | Reports of disk space and other info about mounted/connected volumes. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo | List | Disk volumes. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.volumeId | String | Volume id. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageTotal | String | Total disk space \[in bytes\]. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageFree | String | Free disk space \[in bytes\]. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamTotal | String | Total RAM on the device in bytes. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports | List | Reports of CPU utilization and temperature. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.reportTime | String | Date and time the report was received. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuUtilizationPercentageInfo | List | The CPU utilization percentage. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo | List | A list of CPU temperature samples. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.temperature | Integer | Temperature in Celsius degrees. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.label | String | CPU label. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo | List | Information regarding CPU specs in the device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.model | String | The CPU model name. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.architecture | String | The CPU architecture. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.maxClockSpeedKhz | Integer | The max CPU clock speed in kHz. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus | List | Information for the Logical CPUs. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.maxScalingFrequencyKhz | Integer | Maximum frequency the CPU is allowed to run at, by policy. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.currentScalingFrequencyKhz | Integer | Current frequency the CPU is running at. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.idleDuration | String | Idle time since last boot. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates | List | C-States indicate the power consumption state of the CPU. For more information look at documentation published by the CPU maker. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.displayName | String | Name of the state. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.sessionDuration | String | Time spent in the state since the last reboot. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles | List | A list of device files to download. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.name | String | File name. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.type | String | File type. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.downloadUrl | String | File download URL. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports | List | Reports of amounts of available RAM memory. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.reportTime | String | Date and time the report was received. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.systemRamFreeInfo | List | Report of free RAM memory. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork | List | Contains last known network. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.ipAddress | String | The IP address. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.wanIpAddress | String | The WAN IP address. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.autoUpdateExpiration | String | The timestamp after which the device will stop receiving Chrome updates or support. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress0 | String | MAC address used by the Chromebook's internal ethernet port, and for onboard network \(ethernet\) interface. The format is twelve \(12\) hexadecimal digits without any delimiter \(uppercase letters\). This is only relevant for some devices. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.dockMacAddress | String | Built-in MAC address for the docking station that the device connected to. Factory sets Media access control address \(MAC address\) assigned for use by a dock. It is reserved specifically for MAC pass through device policy. The format is twelve \(12\) hexadecimal digits without any delimiter \(uppercase letters\). This is only relevant for some devices. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.manufactureDate | String | The date the device was manufactured in yyyy-mm-dd format. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitPath | String | The full parent path with the organizational unit's name associated with the device. Path names are case insensitive. If the parent organizational unit is the top-level organization, it is represented as a forward slash, /. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo | Object | Trusted Platform Module \(TPM\). | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.family | String | TPM family, using the TPM 2.0 style encoding. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.specLevel | String | TPM specification level. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.manufacturer | String | TPM manufacturer code. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.tpmModel | String | TPM model number. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.firmwareVersion | String | TPM firmware version. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.vendorSpecific | String | Vendor-specific information such as Vendor ID. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles | List | A list of screenshot files to download. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.name | String | File name. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.type | String | File type. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.downloadUrl | String | File download URL. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitId | String | The unique ID of the organizational unit. orgUnitPath is the human readable version of orgUnitId. While orgUnitPath may change by renaming an organizational unit within the path, orgUnitId is unchangeable for one organizational unit. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus | Object | The status of the OS updates for the device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.state | String | The update state of an OS update. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetOsVersion | String | New platform version of the OS image being downloaded and applied. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetKioskAppVersion | String | New required platform version from the pending updated kiosk app. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateTime | String | Date and time of the last successful OS update. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateCheckTime | String | Date and time of the last update check. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.rebootTime | String | Date and time of the last reboot. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.firstEnrollmentTime | String | Date and time for the first time the device was enrolled. | 
+
+#### Command example
+```!gsuite-chromeosdevice-list customer_id=my_customer limit=2 admin_email=adminemail@domain.com```
+
+
+### gsuite-chromeosdevice-action
+***
+Executes an action that affects a ChromeOS Device. This includes de-provisioning, disabling, and re-enabling devices.
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.chromeos`
+
+#### Base Command
+
+`gsuite-chromeosdevice-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
+| resource_id | The unique ID of the device. | Required | 
+| action | The action to be performed on the ChromeOS device. Possible values are: deprovision, disable, reenable, pre_provisioned_disable, pre_provisioned_reenable. | Required | 
+| deprovision_reason | Reason for deprovision. This field is required only when the action used is deprovision. Possible values are: different_model_replacement, retiring_device, same_model_replacement, upgrade_transfer. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gsuite-chromeosdevice-action resource_id=RESOURCE_ID  action=admin_account_wipe customer_id=my_customer admin_email=admin@domain.io```
+
+#### Human Readable Output
+> ChromeOS device with resource id - RESOURCE_ID updated.

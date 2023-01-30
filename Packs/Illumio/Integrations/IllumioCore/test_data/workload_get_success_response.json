@@ -1,0 +1,100 @@
+{
+  "href": "/orgs/1/workloads/dummy",
+  "caps": [
+    "write"
+  ],
+  "created_at": "2020-10-22T02:33:51.816Z",
+  "updated_at": "2022-02-07T16:02:00.966Z",
+  "created_by": {
+    "href": "/orgs/1/agents/71444"
+  },
+  "updated_by": {
+    "href": "/users/30"
+  },
+  "hostname": "perf-workload-71444",
+  "public_ip": "0.0.0.0",
+  "interfaces": [
+    {
+      "name": "eth0",
+      "address": "ffff::fff:f:f:ffff",
+      "cidr_block": 64,
+      "network": {
+        "href": "/orgs/1/networks/04ac9819-d438-42b6-b892-2968e32ca255"
+      },
+      "network_detection_mode": "single_private_brn",
+      "loopback": false
+    },
+    {
+      "name": "eth0",
+      "address": "10.0.0.0",
+      "cidr_block": 8,
+      "default_gateway_address": "10.0.0.1",
+      "network": {
+        "href": "/orgs/1/networks/6736f2b5-b8a4-4db0-8df2-42508f815c1f"
+      },
+      "network_detection_mode": "single_private_brn",
+      "loopback": false
+    }
+  ],
+  "os_id": "ubuntu-x86_64-xenial",
+  "os_detail": "4.4.0-97-generic #120-Ubuntu SMP Tue Sep 19 17:28:18 UTC 2017 (Ubuntu 16.04.1 LTS)",
+  "online": false,
+  "deleted": false,
+  "ignored_interface_names": [],
+  "containers_inherit_host_policy": false,
+  "blocked_connection_action": "drop",
+  "labels": [],
+  "services": {
+    "uptime_seconds": 715788,
+    "open_service_ports": [
+      {
+        "port": 161,
+        "protocol": 6,
+        "address": "0.0.0.0",
+        "user": "root",
+        "process_name": "snmpd"
+      },
+      {
+        "port": 25,
+        "protocol": 6,
+        "address": "0.0.0.0",
+        "user": "root",
+        "process_name": "postfix"
+      }
+    ]
+  },
+  "agent": {
+    "href": "/orgs/1/agents/71444",
+    "config": {
+      "mode": "illuminated",
+      "log_traffic": false,
+      "security_policy_update_mode": "adaptive",
+      "visibility_level": "flow_summary"
+    },
+    "secure_connect": {
+      "matching_issuer_name": ""
+    },
+    "status": {
+      "status": "active",
+      "last_heartbeat_on": "2020-10-22T02:33:52.767Z",
+      "uptime_seconds": 0,
+      "agent_version": "20.2.0",
+      "managed_since": "2020-10-22T02:33:51.844Z",
+      "fw_config_current": false,
+      "firewall_rule_count": 0,
+      "agent_health_errors": {
+        "errors": [],
+        "warnings": []
+      },
+      "agent_health": [],
+      "security_policy_sync_state": "syncing"
+    },
+    "unpair_allowed": true,
+    "type": "Host"
+  },
+  "ven": {
+    "href": "/orgs/1/vens/f2fcd61c-7a22-437b-89f1-92634fa62376"
+  },
+  "enforcement_mode": "visibility_only",
+  "visibility_level": "flow_summary"
+}

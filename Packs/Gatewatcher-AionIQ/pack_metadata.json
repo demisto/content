@@ -1,8 +1,8 @@
 {
     "name": "Gatewatcher AionIQ",
-    "description": "GATEWATCHER is a European leader in advanced Threats detection, protecting critical networks of large Entreprises and Governement organisations since 2015.",
+    "description": "This pack provide integration with Gatewatcher NDR solution : AIonIQ",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.1",
     "author": "Gatewatcher",
     "url": "https://www.gatewatcher.com/",
     "email": "integration@gatewatcher.com",
@@ -17,6 +17,8 @@
         "marketplacev2"
     ],
     "githubUser": [
-        "FabienMht"
+        "FabienMht",
+        "CesarGW",
+        "ThibaultReboul"
     ]
 }

@@ -104,7 +104,7 @@ script:
     - contextPath: Qualys.Report.EXPIRATION_DATETIME
       description: Report expiration datetime.
   - arguments:
-    - description: Show only a scan with a certain scan referenc ecode.
+    - description: Show only a scan with a certain scan reference code.
       name: scan_ref
     - description: Show only one or more scan states.
       name: state
@@ -196,7 +196,7 @@ script:
     - contextPath: Qualys.Scan.ASSET_GROUP_TITLE
       description: Target Asset Group Title.
     - contextPath: Qualys.Scan.DEFAULT_FLAG
-      description: Scan Deafualt Flag.
+      description: Scan Default Flag.
     - contextPath: Qualys.Scan.USER_LOGIN
       description: The user that created the scan.
   - arguments:
@@ -296,7 +296,7 @@ script:
     - contextPath: Qualys.SCAP.Scan.AssetGroupTitle
       description: Target Asset Group Title.
     - contextPath: Qualys.SCAP.Scan.DeafualtFlag
-      description: Scan Deafualt Flag.
+      description: Scan Default Flag.
     - contextPath: Qualys.SCAP.Scan.UserLogin
       description: The user that created the scan.
   - arguments:
@@ -522,9 +522,9 @@ script:
       predefined:
       - any
       - all
-    - description: (Optional when use_tags=1) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+    - description: (Optional when use_tags=1) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_include
-    - description: (Optional when use_tags=1) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+    - description: (Optional when use_tags=1) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_exclude
     - auto: PREDEFINED
       description: (Optional) Specify 1 to display asset tags associated with each host in the XML output.
@@ -652,9 +652,9 @@ script:
       predefined:
       - id
       - name
-    - description: (Optional when use_tags=1) Specify a tag set to include. Excluded hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+    - description: (Optional when use_tags=1) Specify a tag set to include. Excluded hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_include
-    - description: (Optional when use_tags=1) Specify a tag set to exclude. Excluded hosts that match these tags will be ignored. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+    - description: (Optional when use_tags=1) Specify a tag set to exclude. Excluded hosts that match these tags will be ignored. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_exclude
     - description: Specify a positive numeric value to limit the amount of results in the requested list
       name: limit
@@ -719,7 +719,7 @@ script:
     - contextPath: Qualys.Report.SCHEDULE.START_MINUTE
       description: Start minute of the scheduled report.
     - contextPath: Qualys.Report.SCHEDULE.DAILY.@frequency_days
-      description: Frequency of the schduled report.
+      description: Frequency of the scheduled report.
     - contextPath: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE
       description: Timezone of the scheduled report.
     - contextPath: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS
@@ -1139,18 +1139,18 @@ script:
       predefined:
       - id
       - name
-    - description: Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+    - description: Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_include
-    - description: Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+    - description: Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_exclude
     - auto: PREDEFINED
-      description: Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. valid only when target_from=tags is specified.
+      description: Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected. valid only when target_from=tags is specified.
       name: use_ip_nt_range_tags_include
       predefined:
       - '0'
       - '1'
     - auto: PREDEFINED
-      description: Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.  valid only when target_from=tags is specified.
+      description: Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.  valid only when target_from=tags is specified.
       name: use_ip_nt_range_tags_exclude
       predefined:
       - '0'
@@ -1325,9 +1325,9 @@ script:
       predefined:
       - id
       - name
-    - description: Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+    - description: Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_include
-    - description: Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+    - description: Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
       name: tag_set_exclude
     - auto: PREDEFINED
       description: Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tags. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
@@ -1451,7 +1451,7 @@ script:
     - description: User-defined notes (up to 1024 characters).
       name: comment
       required: true
-    - description: 'The IP addresses to be added to the excluded IPs list. Enter a comma separated list of IPv4 singletons or ranges. For example: 10.10.10.13,10.10.10.25-10.10.10.29'
+    - description: 'The IP addresses to be added to the excluded IPs list. Enter a comma-separated list of IPv4 singletons or ranges. For example: 10.10.10.13,10.10.10.25-10.10.10.29'
       name: ips
     - description: (Optional when action=add) The number of days the IPs being added to the excluded IPs list will be considered valid for exclusion. When the expiration is reached, the IPs are removed from the list and made available again for scanning. When unspecified, the IPs being added have no expiration and will remain on the list until removed by a user.
       name: expiry_days
@@ -1629,7 +1629,7 @@ script:
       name: report_title
     - description: (Valid for CSV format report only). Specify hide_header=1 to omit the header information from the report. By default this information is included.
       name: hide_header
-    - description: pecify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users > Distribution Groups and select Info for a group in the list.
+    - description: Specify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users > Distribution Groups and select Info for a group in the list.
       name: recipient_group_id
     - description: '(Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—>Security Options).'
       name: pdf_password
@@ -1669,7 +1669,7 @@ script:
       name: report_title
     - description: (Valid for CSV format report only). Specify hide_header=1 to omit the header information from the report. By default this information is included.
       name: hide_header
-    - description: pecify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users > Distribution Groups and select Info for a group in the list.
+    - description: Specify users who will receive the email notification when the report is complete (i.e. supply a distribution group ID). Where do I find this ID? Log in to your Qualys account, go to Users > Distribution Groups and select Info for a group in the list.
       name: recipient_group_id
     - description: '(Optional; Required for secure PDF distribution) The password to be used for encryption. Requirements: - the password must have a minimum of 8 characters (ascii), and a maximum of 32 characters - the password must contain alpha and numeric characters - the password cannot match the password for the user’s Qualys account. - the password must follow the password security guidelines defined for your subscription (log in and go to Subscription Setup—>Security Options).'
       name: pdf_password
@@ -2117,6 +2117,48 @@ script:
       predefined:
       - '0'
       - '1'
+    - auto: PREDEFINED
+      description: (Optional) Specify "assets" (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify "tags" when your scan target will include asset tags.
+      name: target_from
+      predefined:
+      - assets
+      - tags
+    - auto: PREDEFINED
+      description: (Optional) Select "any" (the default) to include hosts that match at least one of the selected tags. Select "all" to include hosts that match all of the selected tags.
+      name: tag_include_selector
+      predefined:
+      - all
+      - any
+    - auto: PREDEFINED
+      description: (Optional) Select "any" (the default) to exclude hosts that match at least one of the selected tags. Select "all" to exclude hosts that match all of the selected tags.
+      name: tag_exclude_selector
+      predefined:
+      - all
+      - any
+    - auto: PREDEFINED
+      description: (Optional) Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names.
+      name: tag_set_by
+      predefined:
+      - id
+      - name
+    - auto: PREDEFINED
+      description: (Optional) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
+      name: tag_set_include
+    - auto: PREDEFINED
+      description: (Optional) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing a tag names or IDs. Multiple entries are comma separated.
+      name: tag_set_exclude
+    - auto: PREDEFINED
+      description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
+      name: use_ip_nt_range_tags_include
+      predefined:
+      - "0"
+      - "1"
+    - auto: PREDEFINED
+      description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
+      name: use_ip_nt_range_tags_exclude
+      predefined:
+      - "0"
+      - "1"
     description: Create a scan schedule in the user’s account.
     execution: true
     name: qualys-schedule-scan-create
@@ -2221,13 +2263,6 @@ script:
       predefined:
       - '0'
       - '1'
-    - auto: PREDEFINED
-      defaultValue: assets
-      description: Specify “assets” (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify “tags” when your scan target will include asset tags.
-      name: target_from
-      predefined:
-      - assets
-      - tags
     - description: Specifies the name of the Scanner Appliance for the map, when the map target has private use internal IPs. Using Express Lite, Internal Scanning must be enabled in your account.
       name: iscanner_name
     - description: Filter IPs/ranges in “ip” parameter (valid when the networks feature is enabled).
@@ -2236,6 +2271,48 @@ script:
       name: option_id
     - description: End a scan after some number of hours. A valid value is from 0 to 119.
       name: end_after
+    - description: (Optional) Specify "assets" (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify "tags" when your scan target will include asset tags.
+      name: target_from
+      auto: PREDEFINED
+      predefined:
+      - assets
+      - tags
+    - auto: PREDEFINED
+      description: (Optional) Select "any" (the default) to include hosts that match at least one of the selected tags. Select "all" to include hosts that match all of the selected tags.
+      name: tag_include_selector
+      predefined:
+      - all
+      - any
+    - auto: PREDEFINED
+      description: (Optional) Select "any" (the default) to exclude hosts that match at least one of the selected tags. Select "all" to exclude hosts that match all of the selected tags.
+      name: tag_exclude_selector
+      predefined:
+      - all
+      - any
+    - auto: PREDEFINED
+      description: (Optional) Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names.
+      name: tag_set_by
+      predefined:
+      - id
+      - name
+    - auto: PREDEFINED
+      description: (Optional) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
+      name: tag_set_include
+    - auto: PREDEFINED
+      description: (Optional) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag names or IDs. Multiple entries are comma separated.
+      name: tag_set_exclude
+    - auto: PREDEFINED
+      description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
+      name: use_ip_nt_range_tags_include
+      predefined:
+      - "0"
+      - "1"
+    - auto: PREDEFINED
+      description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in the tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
+      name: use_ip_nt_range_tags_exclude
+      predefined:
+      - "0"
+      - "1"
     description: Updates a scan schedule in the user’s account.
     execution: true
     name: qualys-schedule-scan-update
@@ -2462,7 +2539,130 @@ script:
       required: true
     name: qualys-update-unix-record
     description: Update Unix records for authenticated scans of hosts running on Unix
-  dockerimage: demisto/python3:3.10.8.37233
+  - arguments:
+    - description: Criteria field to search by predefined types.
+      name: criteria
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - parent
+      - provider
+      - ruleType
+      - name
+      - id
+      - criticalityScore
+    - description: "Operator assigned to the search criteria.\nAcceptable values are:\nparent - EQUALS, NOT EQUALS, IN\nprovider - EQUALS, NOT EQUALS, IN\nruleType - EQUALS, NOT EQUALS, IN\nname - CONTAINS, EQUALS, NOT EQUALS\nid - EQUALS, NOT EQUALS, IN, GREATER, LESSER\ncriticalityScore - EQUALS, NOT EQUALS, GREATER, LESSER"
+      name: operator
+      required: true
+    - description: Content to search.
+      name: search_data
+      required: true
+    - description: The total number of items to return (Automatic Pagination). The default is 100.
+      name: limit
+    description: List asset tags based on a search criteria.
+    name: qualys-asset-tag-list
+    outputs:
+    - contextPath: Qualys.AssetTags.id
+      description: Parent asset tag ID.
+      type: Number
+    - contextPath: Qualys.AssetTags.name
+      description: Parent asset tag name.
+      type: String
+    - contextPath: Qualys.AssetTags.criticality_score
+      description: Criticality score assigned to the asset tag.
+      type: Number
+    - contextPath: Qualys.AssetTags.chlid_id
+      description: Child asset tags ID.
+      type: Number
+    - contextPath: Qualys.AssetTags.chlid_id.child_name
+      description: Child asset tags name.
+      type: String
+    - contextPath: Qualys.AssetTags.tag_name.rule_type
+      description: Created tag rule type.
+      type: String
+    - contextPath: Qualys.AssetTags.tag_name.rule_text
+      description: Created tag rule text.
+      type: String
+  - arguments:
+    - description: Name of the created tag.
+      name: name
+      required: true
+    - description: Names of the created child tags.
+      name: child_name
+      isArray: true
+    - description: "Type of rule to dynamically tagging host.\nThe Rule Type argument determines the type of the Rule Text argument that is acceptable."
+      name: rule_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - INSTALLED_SOFTWARE
+      - NETWORK_RANGE
+      - NAME_CONTAINS
+      - OPEN_PORTS
+      - VULN_EXIST
+      - STATIC
+    - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*"
+      name: rule_text
+    - description: Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest).
+      name: criticality_score
+    description: "Create a new asset tag. \nThe changes caused by this procedure do not take effect immediately. The procedure could take several hours, depending (among other things) on the the amount of assets in the system."
+    name: qualys-asset-tag-create
+    outputs:
+    - contextPath: Qualys.AssetTags.id
+      description: Parent asset tag ID.
+      type: String
+    - contextPath: Qualys.AssetTags.name
+      description: Parent asset tag name.
+      type: String
+    - contextPath: Qualys.AssetTags.criticality_score
+      description: Criticality score assigned to the asset tag.
+      type: Number
+    - contextPath: Qualys.AssetTags.chlid_id
+      description: Child asset tags ID.
+      type: Number
+    - contextPath: Qualys.AssetTags.chlid_id.child_name
+      description: Child asset tags name.
+      type: String
+    - contextPath: Qualys.AssetTags.tag_name.rule_type
+      description: Created tag rule type.
+      type: String
+    - contextPath: Qualys.AssetTags.tag_name.rule_text
+      description: Created tag rule text.
+      type: String
+  - arguments:
+    - description: ID of the tag to update.
+      name: id
+      required: true
+    - description: Name of the created tag.
+      name: name
+      required: true
+    - description: "Type of rule to dynamically tagging host.\nThe Rule Type argument determines the type of the Rule Text argument that is acceptable."
+      name: rule_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - INSTALLED_SOFTWARE
+      - NETWORK_RANGE
+      - NAME_CONTAINS
+      - OPEN_PORTS
+      - VULN_EXIST
+      - STATIC
+    - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*"
+      name: rule_text
+    - description: Comma-separated list of child tag ID's to remove.
+      name: child_to_remove
+    - description: Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest).
+      name: criticality_score
+    description: "Update an existing asset tag. \nThe changes caused by this procedure do not take effect immediately. The procedure could take several hours, depending (among other things) on the the amount of assets in the system."
+    name: qualys-asset-tag-update
+  - arguments:
+    - description: ID of the tag to delete.
+      name: id
+      required: true
+    description: Delete an existing asset tag.
+    name: qualys-asset-tag-delete
+
+  dockerimage: demisto/python3:3.10.9.40422
   runonce: false
   script: ''
   subtype: python3

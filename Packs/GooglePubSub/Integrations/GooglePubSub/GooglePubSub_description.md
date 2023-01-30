@@ -11,4 +11,4 @@ please see *Getting a Service Account With a Role* below.
 7) Click **CONTINUE** and then click **CREATE KEY**.
 8) Select **JSON** and click **CREATE**.
  The .json file downloads.
-9) Enter the file contents to the Service Account box in the integration.
+9) Enter the file contents in the **Service account private key file contents (JSON)** integration settings parameter.

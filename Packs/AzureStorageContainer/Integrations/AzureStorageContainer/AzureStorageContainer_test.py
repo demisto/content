@@ -90,6 +90,38 @@ def test_azure_storage_create_container_command(requests_mock):
         create_container_command(client, {'container_name': invalid_container_name})
 
 
+def test_azure_storage_create_blob_command_content_length_header(mocker):
+    """
+    Given:
+     - User has provided valid credentials.
+
+    When:
+     - azure-storage-container-blob-create called.
+
+    Then:
+     - Ensure the content length header is being sent with the correct file size.
+    """
+    from AzureStorageContainer import Client, create_blob_command
+
+    def mock_file(_id):
+        return {
+            'path': 'test_data/blob.txt',
+            'name': 'blob.txt',
+        }
+
+    client = Client(
+        server_url=BASE_URL, verify=False, proxy=False,
+        account_sas_token=SAS_TOKEN, storage_account_name=ACCOUNT_NAME, api_version=API_VERSION
+    )
+
+    mocker.patch.object(demisto, 'getFilePath', side_effect=mock_file)
+    http_mocker = mocker.patch.object(client.ms_client, 'http_request', return_value='worked')
+
+    create_blob_command(client, {'container_name': 'container-test', 'file_entry_id': '1'})
+
+    assert http_mocker.call_args.kwargs.get('headers', {}) == {'x-ms-blob-type': 'BlockBlob', 'Content-Length': '5'}
+
+
 def test_azure_storage_get_container_properties_command(requests_mock):
     """
     Scenario: Retrieve properties for the specified Container.

@@ -29,7 +29,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: false
   commands:
   - name: arkime-connection-list
@@ -212,7 +212,7 @@ script:
     arguments:
     - name: ids
       description: The list of IDs to return.
-      required: true
+      required: false
       isArray: true
     - name: expression
       description: The search expression string.
@@ -688,7 +688,7 @@ script:
       description: The total number of sessions in the graph.
     - type: Number
       contextPath: Arkime.SpiGraph.graph.network.packetsTotal
-      description: The total number of network packets.  
+      description: The total number of network packets.
     - type: Number
       contextPath: Arkime.SpiGraph.graph.network.bytesTotal
       description: The total number of network bytes.

@@ -17,7 +17,7 @@ This integration was integrated and tested with [Security & Compliance Center](h
 
 ## Permissions in the Security & Compliance Center
 
-### Delegated Authentication
+### Authentication
 
 To access the Security & Compliance Center, the user who is configuring the account which will be used in O365 S&C, 
 needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the 
@@ -26,47 +26,64 @@ Organization Management role group). The Role Management role allows users to vi
 
 1. Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
 
-1. From the side menu, click **Permissions**.
+2. From the side menu, click **Permissions**.
 
    ![side-menu](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-side-menu.png)
 
-2. Search for and select the **Data Investigator** role.
+3. Search for and select the **Data Investigator** role.
 
-3. Click **Edit role group**. 
+4. Click **Edit role group**. 
 
    ![roles-edit-1](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-edit-1.png)
 
-4. Click **Choose Members** and click **Edit**. Add the user you intend to be used in the integration:
+5. Click **Choose Members** and click **Edit**. Add the user you intend to be used in the integration:
 
    ![roles-edit-2](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-edit-2.png)
-5. Click **Add**.
+6. Click **Add**.
    ![roles-edit-3](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-edit-3.png)
-6. Choose which members to add from the displayed list and click **Add**.
-7. Click **Done**.
+7. Choose which members to add from the displayed list and click **Add**.
+8. Click **Done**.
 
 The username and password for the user which you intend to use for the investigation will need to be added to the *UPN/Email* and *Delegated Password* fields of the integration instance configuration.
 
-Certificate Based Authentication supports only certain cmdlets which do not require delegated access. The commands which require delegated access are:
-- ***o365-sc-start-search***
-- ***o365-sc-new-search-action***
-- ***o365-sc-get-search-action***
+### Enabling Client Side Basic Authentication
 
 Please note: The use of Username and Password is not indicative of the use of basic authentication. The PowerShell session uses modern authentication as noted [here](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#connect-to-security--compliance-powershell-without-a-login-prompt-unattended-scripts).
->The following example also connects without a login prompt, but the credentials are stored locally, so this method is not secure. Consider using this method only for brief testing purposes.
 
-Because the session which the integration uses is containerized, the notification provided by Microsoft is not applicable in this use-case.
+1. Create a Group in Active Directory called “Enable Client Basic Auth” and add the user you will use for the integration to the group.
+2. Create a Policy in the Microsoft Endpoint Manager for - [This can be found here](https://endpoint.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_Workflows/SecurityBaselineSummaryMenu/~/profiles/summaryName/Windows%20365%20Security%20Baseline/templateType~/10/latestTemplateId/cef15778-c3b9-4d53-a00a-042929f0aad0/latestTemplateName/Windows%20365%20Security%20Baseline/intentCount/1/publishedDateTime/10%2F21%2F2021/version/November%202021/templatesJson/%5B%7B%22id%22%3A%22cef15778-c3b9-4d53-a00a-042929f0aad0%22%2C%22templateType%22%3A10%2C%22displayName%22%3A%22Windows%20365%20Security%20Baseline%22%2C%22description%22%3A%22Windows%20365%20settings%20as%20recommended%20by%20Microsoft%22%2C%22versionInfo%22%3A%22November%202021%22%2C%22platformType%22%3A6%2C%22platformName%22%3A%22Windows%2010%20and%20later%22%2C%22isDeprecated%22%3Afalse%2C%22intentCount%22%3A1%2C%22publishedDateTime%22%3A%222021-10-21T00%3A00%3A00.000Z%22%2C%22publishedDateTimeString%22%3A%2210%2F21%2F2021%22%2C%22templateSubtype%22%3A0%2C%22sourceType%22%3A%22dcv1%22%7D%5D/baseId//type/dcv1)
+3. Search for "Basic" and you will see the Remote Management dropdown. Under this option, please enable "Client basic authentication"
+    ![cba-role-1](../../doc_imgs/cba-role-1.png)
+4. Add the "Enable Client Basic Auth" group to the policy
+    ![cba-role-2](../../doc_imgs/cba-role-2.png)
+5. In the Instance Configuration, click the Test button. This will likely return an error with a correlation ID. 
+6. Copy this ID and search for the correlation in the [Risky Sign-Ins portal found here](https://portal.azure.com/#view/Microsoft_AAD_IAM/RiskySignInsBlade).
+7. Since we generated this alert, we can confirm that the sign-in is safe. by clicking the option found below.
+   ![cba-role-3](../../doc_imgs/cba-role-3.png)
+8. Finally return to the Instance Configuration and click the Test button to confirm the integration works.
 
-### Creating a Certificate
+*Please Note:* Microsoft requires that this connection be made from a secure connection. Disabling certificate verification is not supported at this time.
 
-If you are using a linux environment (macOS included), you can run the script [provided here](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/create_o365_security_and_compliance_cert.sh) to create the certificates.
+### MFA Enabled Service Accounts
+It is mandatory to disable MFA for the service account which is using the integration in order for the authentication succeed.
 
-If you are using Powershell, please use the script [found here](https://github.com/SharePoint/PnP-Partner-Pack/blob/master/scripts/Create-SelfSignedCertificate.ps1).
+When MFA is enabled, it is possible to be unable to confirm a sign in as safe. If there is a conditional access policy in place which will trigger a users account to require an MFA sign in, these policies should exempt the user which is used by the integration. This does _not_ require MFA to be disabled.
 
-### Configuring an App in Azure
+The common settings available OOTB from Microsoft can be excluded in the following menu.
+![sec-comp-risky](../../doc_imgs/SecAndCompRiskyUser.png)
 
-Please refer to the documentation [found here](https://learn.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2?view=exchange-ps#set-up-app-only-authentication) to set up the app required for this integration.
 
-## Configure SecurityAndCompliance on Cortex XSOAR
+### Known ConnectionUri and AzureADAuthorizedEndpointURI Endpoints
+| Environment                        | ConnectionUri                                                         | AzureADAuthorizationEndpointUri   |
+|------------------------------------|-----------------------------------------------------------------------|-----------------------------------|
+| Microsoft 365 or Microsoft 365 GCC | https://ps.compliance.protection.outlook.com/powershell-liveid/       | https://login.microsoftonline.com |
+| Microsoft 365 GCC High             | https://ps.compliance.protection.office365.us/powershell-liveid/      | https://login.microsoftonline.us  |
+| Microsoft 365 DoD                  | https://l5.ps.compliance.protection.office365.us/powershell-liveid/   | https://login.microsoftonline.us  |
+| Office 365 operated by 21Vianet    | https://ps.compliance.protection.partner.outlook.cn/powershell-liveid | https://login.chinacloudapi.cn    |
+
+[More information can be found here.](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#step-2-connect-and-authenticate)
+
+## Configure SecurityAndComplianceV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 
@@ -74,18 +91,7 @@ Please refer to the documentation [found here](https://learn.microsoft.com/en-us
 
 3. Authentication / Authorization methods:
 
-   1. Certificate Based Authentication:
-
-         1. Click **Add instance** to create and configure a new integration instance.
-
-| **Parameter**        | **Description**                        | **Required** |
-|----------------------|----------------------------------------|--------------|
-| certificate          | A pfx certificate encoded in Base64.   | False        |
-| certificate_password | Password used to sign the certificate. | False        |
-
-         2. Click **Test** to validate the URLs, token, and connection.
-
-   2. Delegated Authentication:
+   1. Authentication:
 
       1. Click **Add instance** to create and configure a new integration instance.
 

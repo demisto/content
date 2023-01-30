@@ -1,4 +1,7 @@
 category: Messaging
+sectionOrder:
+- Connect
+- Collect
 fromversion: 5.0.0
 commonfields:
   id: Gmail Single User
@@ -10,72 +13,107 @@ configuration:
   type: 0
   defaultvalue:
   additionalinfo:
+  section: Connect
 - display: Send as
   name: send_as
   required: false
   type: 0
   defaultvalue:
   additionalinfo: Allows you to specify the e-mail address from which to send e-mails from.
+  section: Connect
+  advanced: true
+- display: "Client ID"
+  name: credentials
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: "Client Secret"
 - display: "Client ID"
   name: client_id
   required: false
   type: 0
   defaultvalue:
   additionalinfo: "Required. Not relevant for deprecated GSuite Apps setup - see Help section"
+  hidden: true
+  section: Connect
+  advanced: true
+
 - display: "Client Secret"
   name: client_secret
   required: false
   type: 4
   defaultvalue:
   additionalinfo: "Required. Not relevant for deprecated GSuite Apps setup - see Help section"
+  hidden: true
+  section: Connect
 - display: "Auth Redirect URI"
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
   defaultvalue: https://oproxy.demisto.ninja/authcode
   additionalinfo: "Requited. Not relevant for deprecated GSuite Apps setup - see Help section"
+- display: ''
+  name: auth_code_creds
+  required: false
+  type: 9
+  displaypassword: "Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)"
+  hiddenusername: true
+  section: Connect
 - display: "Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)"
   name: code
   required: false
   type: 4
+  hidden: true
   defaultvalue:
   additionalinfo:
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: First fetch timestamp, in days.
   name: fetch_time
   required: false
   type: 0
   defaultvalue: 1 days
   additionalinfo:
+  section: Collect
 - defaultvalue:
   display: Events query (e.g., "from:example@demisto.com")
   additionalinfo:
   name: query
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   required: false
   type: 0
-  defaultvalue: "50"
   additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). Default is 50.
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   additionalinfo:
+  section: Connect
+  advanced: true
 - name: proxy
   display: Use system proxy settings
   required: false
   type: 8
   additionalinfo:
+  section: Connect
+  advanced: true
 description: Gmail API using OAuth 2.0.
 display: Gmail Single User
 name: Gmail Single User
@@ -101,9 +139,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subject of the email to be sent. Should be the same as the subject
-        of the email you are replying to in order for the reply to be a part of the
-        same conversation.
+      description: Subject of the email to be sent. Should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation.
       isArray: false
       name: subject
       required: true
@@ -121,8 +157,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of War Room entries that contain
-        the files that need to be attached to the email.
+      description: A comma-separated list of IDs of War Room entries that contain the files that need to be attached to the email.
       isArray: true
       name: attachIDs
       required: false
@@ -188,8 +223,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of additional headers in the format: headerName=headerValue.
-      For example: "headerName1=headerValue1,headerName2=headerValue2".'
+      description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
       required: false
@@ -408,7 +442,7 @@ script:
     description: Retrieves attachments from a sent Gmail message.
     execution: false
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.37530
+  dockerimage: demisto/google-api-py3:1.0.0.43438
   isfetch: true
   longRunning: false
   longRunningPort: false

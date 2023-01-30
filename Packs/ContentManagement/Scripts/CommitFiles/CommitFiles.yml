@@ -6,6 +6,14 @@ args:
 - description: The branch name to commit.
   name: branch
   required: true
+- auto: PREDEFINED
+  description: Which version control integration to use.
+  name: git_integration
+  required: false
+  predefined:
+  - Gitlab
+  - GitHub
+  - Bitbucket
 - description: The name of the pack.
   name: pack
   required: true
@@ -23,7 +31,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/xsoar-tools:1.0.0.36076
+dockerimage: demisto/xsoar-tools:1.0.0.40869
 enabled: true
 name: CommitFiles
 outputs:

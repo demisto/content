@@ -878,7 +878,7 @@ def test_access_token(requests_mock):
 @pytest.mark.parametrize('indicator_type, indicator_value, expected_result', [
     ('domains', 'google.com', True),
     ('domains', 'google.com, facebook.com', True),
-    ('urls', 'https://www.facebook.com', True),
+    ('urls', 'https://www.facebook.com/path', True),
     ('ip', '1.1.1.1', True),
     ('sha256', '532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25', True),  # its a test value of SHA256
     ('intrusion_action', 'would_block', True),

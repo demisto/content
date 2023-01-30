@@ -15,7 +15,7 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 BASE_URL = demisto.params().get('url')
 if BASE_URL and BASE_URL[-1] != '/':
     BASE_URL += '/'
-API_KEY = demisto.params().get('apikey')
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure')
 # How many time before the first fetch to retrieve incidents
 FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours',
@@ -238,21 +238,27 @@ def get_emails_context(event):
     """
     emails_context = []
     for email in event.get('emails', []):
+        email_obj = {
+            'sender': email.get('sender', {}).get('email'),
+            'recipient': email.get('recipient', {}).get('email'),
+            'subject': email.get('subject'),
+            'message_id': email.get('messageId'),
+            'body': email.get('body'),
+            'body_type': email.get('bodyType'),
+            'headers': email.get('headers'),
+            'urls': email.get('urls'),
+            'sender_vap': email.get('sender', {}).get('vap'),
+            'recipient_vap': email.get('recipient', {}).get('vap'),
+            'attachments': email.get('attachments'),
+        }
+        message_delivery_time = email.get('messageDeliveryTime', {})
+        if message_delivery_time and isinstance(message_delivery_time, dict):
+            email_obj['message_delivery_time'] = message_delivery_time.get('millis')
+        elif message_delivery_time and isinstance(message_delivery_time, str):
+            email_obj['message_delivery_time'] = message_delivery_time
         emails_context.append(
-            assign_params(**{
-                'sender': email.get('sender', {}).get('email'),
-                'recipient': email.get('recipient', {}).get('email'),
-                'subject': email.get('subject'),
-                'message_id': email.get('messageId'),
-                'message_delivery_time': email.get('messageDeliveryTime', {}).get('millis'),
-                'body': email.get('body'),
-                'body_type': email.get('bodyType'),
-                'headers': email.get('headers'),
-                'urls': email.get('urls'),
-                'sender_vap': email.get('sender', {}).get('vap'),
-                'recipient_vap': email.get('recipient', {}).get('vap'),
-                'attachments': email.get('attachments'),
-            }))
+            assign_params(**email_obj)
+        )
 
     return emails_context
 

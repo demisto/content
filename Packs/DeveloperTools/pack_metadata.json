@@ -2,7 +2,7 @@
     "name": "Developer Tools",
     "description": "Basic tools for content development.",
     "support": "xsoar",
-    "currentVersion": "1.2.27",
+    "currentVersion": "1.2.31",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -32,10 +32,6 @@
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
-        },
-        "D2": {
-            "mandatory": true,
-            "display_name": "D2 (Deprecated)"
         }
     },
     "marketplaces": [
@@ -46,7 +42,6 @@
         "DemistoRESTAPI",
         "CommonScripts",
         "GenericSQL",
-        "CommonTypes",
-        "D2"
+        "CommonTypes"
     ]
 }

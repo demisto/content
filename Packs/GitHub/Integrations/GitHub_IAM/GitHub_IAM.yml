@@ -1,4 +1,7 @@
 category: Identity and Access Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: GitHub IAM
   version: -1
@@ -7,54 +10,77 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
+- name: creds_token
+  required: false
+  type: 9
+  displaypassword: Token
+  hiddenusername: true
+  section: Connect
 - display: Token
   name: token
-  required: true
   type: 4
+  hidden: true
+  section: Connect
+  advanced: true
 - display: Organization name
   name: org
   required: true
   type: 0
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow creating users
   name: create-user-enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow updating users
   name: update-user-enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable-user-enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Automatically create user if not found in update and enable commands
   name: create-if-not-exists
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
+  section: Connect
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
-description: Integrate with GitHub services to perform Identity Lifecycle Management
-  operations.
+  section: Connect
+description: Integrate with GitHub services to perform Identity Lifecycle Management operations.
 display: GitHub IAM
 name: GitHub IAM
 script:
@@ -109,8 +135,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile
-      argument.
+    description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
     outputs:
@@ -229,11 +254,10 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields
-      within the application. Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.9.45313
   feed: false
   isfetch: false
   longRunning: false
