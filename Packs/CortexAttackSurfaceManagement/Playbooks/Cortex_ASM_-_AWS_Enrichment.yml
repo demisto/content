@@ -51,6 +51,7 @@ tasks:
       - "4"
       - "5"
       - "9"
+      - "22"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -182,7 +183,6 @@ tasks:
       "yes":
       - "6"
       - "15"
-      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -198,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1190,
-          "y": 515
+          "x": 980,
+          "y": 505
         }
       }
     note: false
@@ -747,10 +747,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 5623c9a3-451f-4229-83bf-c4e3a53773b7
+    taskid: e61fd250-f9dd-469e-80de-02eb6bf5a779
     type: regular
     task:
-      id: 5623c9a3-451f-4229-83bf-c4e3a53773b7
+      id: e61fd250-f9dd-469e-80de-02eb6bf5a779
       version: -1
       name: Set tags grid field
       description: |-
@@ -847,8 +847,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1980
+          "x": 460,
+          "y": 1830
         }
       }
     note: false
@@ -891,6 +891,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 92f9163b-841b-4f5c-8326-d72b2adc86d8
+    type: condition
+    task:
+      id: 92f9163b-841b-4f5c-8326-d72b2adc86d8
+      version: -1
+      name: Are there EC2 tags?
+      description: Determines if there is EC2 tag information to set the tags fields.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWS.EC2.Instances.Tags
+                accessor: Key
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -899,7 +944,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1995,
+        "height": 1845,
         "width": 2340,
         "x": -330,
         "y": 50
@@ -919,3 +964,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
