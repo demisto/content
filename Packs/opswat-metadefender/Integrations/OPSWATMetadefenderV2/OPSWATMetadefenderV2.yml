@@ -48,7 +48,7 @@ script:
     - name: fileId
       required: true
       default: true
-      description: Entry id of a file in Demisto
+      description: Entry id of a file
     outputs:
     - contextPath: OPSWAT.FileName
       description: OPSWAT file name to scan

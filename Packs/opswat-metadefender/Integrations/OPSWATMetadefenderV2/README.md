@@ -33,7 +33,7 @@ Scan file in OPSWAT
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fileId | Entry id of a file in Demisto. | Required | 
+| fileId | Entry id of a file. | Required | 
 
 
 #### Context Output
