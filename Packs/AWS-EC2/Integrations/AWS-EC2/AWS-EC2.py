@@ -1531,19 +1531,19 @@ def create_ip_permissions_dict(args):
     if args.get('IpRangesCidrIp') is not None:
         IpRanges = [{
             'CidrIp': args.get('IpRangesCidrIp'),
-            'Description': args.get('IpRangesDesc', "")
+            'Description': args.get('IpRangesDesc', "") or args.get('IpRangesDescription', "")
         }]
         IpPermissions_dict.update({'IpRanges': IpRanges})  # type: ignore
     if args.get('Ipv6RangesCidrIp') is not None:
         Ipv6Ranges = [{
             'CidrIp': args.get('Ipv6RangesCidrIp'),
-            'Description': args.get('Ipv6RangesDesc', "")
+            'Description': args.get('Ipv6RangesDesc', "") or args.get('Ipv6RangesDescription', "")
         }]
         IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})  # type: ignore
     if args.get('PrefixListId') is not None:
         PrefixListIds = [{
             'PrefixListId': args.get('PrefixListId'),
-            'Description': args.get('PrefixListIdDesc', "")
+            'Description': args.get('PrefixListIdDesc', "") or args.get('PrefixListIdDescription', "")
         }]
         IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
     return IpPermissions_dict
@@ -1620,6 +1620,7 @@ def revoke_security_group_egress_command(args, aws_client):
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
         if 'UnknownIpPermissions' in response:
             return_error("Security Group egress rule not found.")
+        demisto.info(f"the response is: {response}")
         return_results("The Security Group egress rule was revoked")
     else:
         demisto.debug(response.message)
