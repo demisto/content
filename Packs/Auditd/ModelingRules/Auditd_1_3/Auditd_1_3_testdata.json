@@ -5,7 +5,7 @@
             "vendor": "unix",
             "product": "auditd",
             "dataset": "unix_auditd_raw",
-            "event_data": {"_raw_log": "<13>Nov 24 12:20:01 somehost123 audispd: node=czstlls086.prg-dc.dhl.com type=LOGIN msg=audit(1675002429.814:57688940): pid=26435 uid=0 old auid=7632 new auid=0 old ses=337905 new ses=357883"},
+            "event_data": {"_raw_log": "<13>Dec 30 10:02:55 somehost123 audispd: node=czstlls086.prg-dc.dhl.com type=LOGIN msg=audit(1675072975.814:57688940): pid=26435 uid=0 old auid=7632 new auid=0 old ses=337905 new ses=357883"},
             "expected_values": {
                 "xdm.source.user.identifier": "0",
                 "xdm.event.outcome": null,
