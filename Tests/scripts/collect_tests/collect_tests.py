@@ -638,8 +638,7 @@ class TestCollector(ABC):
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
-                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
-                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
+                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
                 if self.marketplace not in content_item_marketplaces:
