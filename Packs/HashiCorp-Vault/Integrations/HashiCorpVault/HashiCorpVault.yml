@@ -278,7 +278,7 @@ script:
       description: Specific folder to fetch secrets from, e.g., "secret-folder/".
        (Supported only for engine type KV2.)
     - name: aws_roles_list
-      description: A comma delimited list of roles names to generate credentials for. If not mentioned,
+      description: A comma-delimited list of roles names to generate credentials for. If not mentioned,
           we will generate credentials for all roles in the path.
     - name: aws_method
       auto: PREDEFINED
