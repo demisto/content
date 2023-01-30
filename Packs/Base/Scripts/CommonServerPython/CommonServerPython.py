@@ -7595,6 +7595,21 @@ pascalRegex = re.compile('([A-Z]?[a-z]+)')
 # ############################## REGEX FORMATTING end ###############################
 
 
+def is_filename_valid(filename):
+    """
+    Checking if the file name contains invalid characters.
+
+    :param filename: The file name
+    :type filename: ``str``
+
+    :return: True if valid otherwise False.
+    :rtype: ``bool``
+    """
+    if not re.match(r"^[^~)('\\!*<>:;,?\"*|/]+$", filename):
+        return False
+    return True
+
+
 def underscoreToCamelCase(s, upper_camel=True):
     """
        Convert an underscore separated string to camel case
@@ -10872,6 +10887,30 @@ def is_scheduled_command_retry():
     calling_context = demisto.callingContext.get('context', {})
     sm = get_schedule_metadata(context=calling_context)
     return True if sm.get('is_polling', False) else False
+
+
+def replace_spaces_in_credential(credential):
+    """
+    This function is used in case of credential from type: 9 is in the wrong format
+    of one line with spaces instead of multiple lines.
+
+    :type credential: ``str`` or ``None``
+    :param credential: the credential to replace spaces in.
+
+    :return: the credential with spaces replaced with new lines if the credential is in the correct format,
+             otherwise the credential will be returned as is.
+    :rtype: ``str`` or ``None``
+    """
+    if not credential:
+        return credential
+
+    match_begin = re.search("-----BEGIN(.*?)-----", credential)
+    match_end = re.search("-----END(.*?)-----", credential)
+
+    if match_begin and match_end:
+        return re.sub("(?<={0})(.*?)(?={1})".format(match_begin.group(0), match_end.group(0)),
+                      lambda match: match.group(0).replace(' ', '\n'), credential)
+    return credential
 
 
 ###########################################
