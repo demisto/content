@@ -137,7 +137,12 @@ def main():
         external_active_classifications: List[str] = argToList(args.get("active_classifications", []))
         is_dev_external = is_dev_according_to_classifications(external_active_classifications)
 
-        demisto.executeCommand("setAlert", {"asmdevcheck": is_dev_internal or is_dev_external})
+        dev_or_not = is_dev_internal or is_dev_external
+        demisto.executeCommand("setAlert", {"asmdevcheck": dev_or_not})
+        if dev_or_not:
+            return_results(CommandResults(readable_output='the service is development'))
+        else:
+            return_results(CommandResults(readable_output='the service is not development'))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute InferWhetherServiceIsDev. Error: {str(ex)}")
