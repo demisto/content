@@ -162,7 +162,7 @@ def test_service_search_exits_if_invalid_args(requests_mock):
     with pytest.raises(SystemExit) as excinfo:
         service_search_command(
             client=client,
-            args={'service_id': '04d60ddf-8d28-494c-8186-8cd514e5b9cb', 'search': 'ips:191.168.1.1'}
+            args={'service_id': '04d60ddf-8d28-494c-8186-8cd514e5b9cb', 'search': 'ips:192.168.1.1'}
         )
     assert excinfo.value.code == 0
 

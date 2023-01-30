@@ -9,7 +9,6 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'runzero'
 PRODUCT = 'runzero'
 DEFAULT_LIMIT = "1000"
@@ -47,7 +46,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             if 'Forbidden' in str(e):
-                return 'Authorization Error: make sure API Key is correctly set'
+                raise DemistoException('Authorization Error: make sure API Key is correctly set')
             else:
                 raise e
         return api_token_res.get('access_token', '')
@@ -89,7 +88,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+def test_module(client: Client, first_fetch_time: int) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -98,26 +97,18 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
 
     Args:
         client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
         first_fetch_time (int): The first fetch time as configured in the integration params.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
-    try:
-        fetch_events(
-            client=client,
-            max_results=1,
-            last_run={},
-            first_fetch_time=first_fetch_time
-        )
-
-    except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+    fetch_events(
+        client=client,
+        max_results=1,
+        last_run={},
+        first_fetch_time=first_fetch_time
+    )
 
     return 'ok'
 
@@ -231,24 +222,17 @@ def main() -> None:
     }
     base_url = urljoin(params.get('url'), '/api/v1.0')
     verify_certificate = not params.get('insecure', False)
-    first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    if first_fetch_time:
-        try:
-            first_fetch_epoch_time = arg_to_number(first_fetch_time.timestamp())
-        except Exception as e:
-            demisto.debug(f'Error in parsing First fetch time. {e}')
-            first_fetch_epoch_time = None
-
-    assert isinstance(first_fetch_epoch_time, int)
-
-    proxy = params.get('proxy', False)
-    demisto.debug(f'Command being called is {command}')
-
     try:
+        first_fetch_time = arg_to_datetime(
+            arg=params.get('first_fetch', '3 days'),
+            arg_name='First fetch time',
+            required=True
+        )
+        first_fetch_epoch_time: int = arg_to_number(first_fetch_time.timestamp(), required=True)  # type: ignore
+
+        proxy = params.get('proxy', False)
+        demisto.debug(f'Command being called is {command}')
+
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -257,7 +241,7 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            result = test_module(client, params, first_fetch_epoch_time)
+            result = test_module(client, first_fetch_epoch_time)
             return_results(result)
 
         elif command in ('runzero-get-events', 'fetch-events'):

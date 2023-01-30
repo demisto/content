@@ -1,5 +1,9 @@
 import json
 import io
+import pytest
+from CommonServerPython import DemistoException
+
+BASE_URL = 'https://console.runzero.com/api/v1.0'
 
 
 def util_load_json(path):
@@ -81,6 +85,16 @@ def get_actual_events():
     ]
 
 
+def get_client():
+    from RunZeroEventCollector import Client
+    return Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        data={},
+    )
+
+
 def test_sort_events_by_ids():
     from RunZeroEventCollector import sort_events
     mock_response = util_load_json('test_data/system_event_logs.json')
@@ -103,7 +117,7 @@ def test_get_events_command(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from RunZeroEventCollector import Client, get_events_command
+    from RunZeroEventCollector import get_events_command
     mock_response = util_load_json('test_data/system_event_logs.json')
     requests_mock.post(
         'https://console.runzero.com/api/v1.0/account/api/token',
@@ -113,12 +127,7 @@ def test_get_events_command(requests_mock):
         'https://console.runzero.com/api/v1.0/account/events.json?search=created_at:>1673719953',
         json=mock_response)
 
-    client = Client(
-        base_url='https://console.runzero.com/api/v1.0',
-        verify=False,
-        proxy=False,
-        data={}
-    )
+    client = get_client()
 
     events, commandResult = get_events_command(
         client=client,
@@ -143,7 +152,7 @@ def test_fetch_events(requests_mock):
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from RunZeroEventCollector import Client, fetch_events
+    from RunZeroEventCollector import fetch_events
 
     mock_response = util_load_json('test_data/system_event_logs.json')
 
@@ -155,12 +164,7 @@ def test_fetch_events(requests_mock):
         'https://console.runzero.com/api/v1.0/account/events.json?search=created_at:>1673719953',
         json=mock_response)
 
-    client = Client(
-        base_url='https://console.runzero.com/api/v1.0',
-        verify=False,
-        proxy=False,
-        data={}
-    )
+    client = get_client()
 
     last_run = {
         'last_fetch': 1673719953
@@ -181,3 +185,45 @@ def test_parse_event():
     my_json = util_load_json('test_data/system_event_logs.json')
     parsed_event = add_time_to_event(my_json[0])
     assert parsed_event == get_actual_events()[0]
+
+
+def test_fetch_system_event_logs(requests_mock):
+    client = get_client()
+    expected_res = util_load_json('test_data/system_event_logs.json')[0]
+    requests_mock.post(
+        'https://console.runzero.com/api/v1.0/account/api/token',
+        json={'access_token': 'access_token'})
+    requests_mock.get(
+        'https://console.runzero.com/api/v1.0/account/events.json',
+        json=expected_res)
+
+    actual_response = client.fetch_system_event_logs('search_query')
+    assert actual_response == expected_res
+
+
+def test_get_api_token(requests_mock):
+    client = get_client()
+    requests_mock.post(
+        'https://console.runzero.com/api/v1.0/account/api/token',
+        exc=Exception('Forbidden'))
+
+    with pytest.raises(DemistoException) as e:
+        client.get_api_token()
+    assert e.value.message == 'Authorization Error: make sure API Key is correctly set'
+
+
+def test_test_module(requests_mock):
+    from RunZeroEventCollector import test_module
+    client = get_client()
+    expected_res = util_load_json('test_data/system_event_logs.json')
+
+    requests_mock.post(
+        'https://console.runzero.com/api/v1.0/account/api/token',
+        json={'access_token': 'access_token'})
+
+    requests_mock.get(
+        'https://console.runzero.com/api/v1.0/account/events.json',
+        json=expected_res)
+
+    raw = test_module(client, 1)
+    assert raw == 'ok'
