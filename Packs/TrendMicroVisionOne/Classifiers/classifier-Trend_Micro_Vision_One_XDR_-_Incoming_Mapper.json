@@ -47,8 +47,7 @@
                         "root": "detail.impactScope",
                         "transformers": []
                     },
-                    "simple": "",
-                    "cliName": "detecteduser"
+                    "simple": ""
                 },
                 "Hostnames": {
                     "complex": {
@@ -78,8 +77,7 @@
                         "root": "detail.impactScope",
                         "transformers": []
                     },
-                    "simple": "",
-                    "cliName": "hostnames"
+                    "simple": ""
                 },
                 "Technique ID": {
                     "complex": {
@@ -88,18 +86,15 @@
                         "root": "detail.matchedRules.matchedFilters",
                         "transformers": []
                     },
-                    "simple": "",
-                    "cliName": "techniqueid"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Account Count": {
                     "complex": null,
-                    "simple": "impactScope.accountCount",
-                    "cliName": "trendmicrovisiononexdraccountcount"
+                    "simple": "impactScope.accountCount"
                 },
                 "Trend Micro Vision One XDR Desktop Count": {
                     "complex": null,
-                    "simple": "impactScope.desktopCount",
-                    "cliName": "trendmicrovisiononexdrdesktopcount"
+                    "simple": "impactScope.desktopCount"
                 },
                 "Trend Micro Vision One XDR Detail": {
                     "complex": {
@@ -122,13 +117,11 @@
                             }
                         ]
                     },
-                    "simple": "",
-                    "cliName": "trendmicrovisiononexdrdetail"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Email Address Count": {
                     "complex": null,
-                    "simple": "impactScope.emailAddressCount",
-                    "cliName": "trendmicrovisiononexdremailaddresscount"
+                    "simple": "impactScope.emailAddressCount"
                 },
                 "Trend Micro Vision One XDR Impact Scope": {
                     "complex": {
@@ -251,8 +244,7 @@
                             }
                         ]
                     },
-                    "simple": "",
-                    "cliName": "trendmicrovisiononexdrimpactscope"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Impacted Entities": {
                     "complex": {
@@ -401,8 +393,7 @@
                             }
                         ]
                     },
-                    "simple": "",
-                    "cliName": "trendmicrovisiononexdrimpactedentities"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Impacted Entities JSON": {
                     "complex": {
@@ -411,8 +402,7 @@
                         "root": "detail",
                         "transformers": []
                     },
-                    "simple": "",
-                    "cliName": "trendmicrovisiononexdrimpactedentitiesjson"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Indicators": {
                     "complex": {
@@ -541,8 +531,7 @@
                             }
                         ]
                     },
-                    "simple": "",
-                    "cliName": "trendmicrovisiononexdrindicators"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Indicators JSON": {
                     "complex": {
@@ -551,13 +540,11 @@
                         "root": "detail",
                         "transformers": []
                     },
-                    "simple": "",
-                    "cliName": "trendmicrovisiononexdrindicatorsjson"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Investigation Status": {
                     "complex": null,
-                    "simple": "investigationStatus",
-                    "cliName": "trendmicrovisiononexdrinvestigationstatus"
+                    "simple": "investigationStatus"
                 },
                 "Trend Micro Vision One XDR Matched Rules JSON": {
                     "complex": {
@@ -566,28 +553,23 @@
                         "root": "detail",
                         "transformers": []
                     },
-                    "simple": "",
-                    "cliName": "trendmicrovisiononexdrmatchedrulesjson"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Priority Score": {
                     "complex": null,
-                    "simple": "priorityScore",
-                    "cliName": "trendmicrovisiononexdrpriorityscore"
+                    "simple": "priorityScore"
                 },
                 "Trend Micro Vision One XDR Server Count": {
                     "complex": null,
-                    "simple": "impactScope.serverCount",
-                    "cliName": "trendmicrovisiononexdrservercount"
+                    "simple": "impactScope.serverCount"
                 },
                 "Trend Micro Vision One XDR Workbench ID": {
                     "complex": null,
-                    "simple": "workbenchId",
-                    "cliName": "trendmicrovisiononexdrworkbenchid"
+                    "simple": "workbenchId"
                 },
                 "Trend Micro Vision One XDR Workbench Link": {
                     "complex": null,
-                    "simple": "workbenchLink",
-                    "cliName": "trendmicrovisiononexdrworkbenchlink"
+                    "simple": "workbenchLink"
                 },
                 "severity": {
                     "complex": null,
