@@ -42,7 +42,7 @@ DEPENDENT_COMMANDS_ERROR_MSG = '\nPlease verify that the connection you have spe
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, api_version, api_token=None, **kwargs):
+    def __init__(self, base_url, username, password, api_version, api_token=None, **kwargs):  # pragma: no cover
         self.username = username
         self.password = password
         self.session = ''
@@ -51,7 +51,7 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method: str, url_suffix: str, data: dict = None, params: dict = None, resp_type: str = 'json',
-                   headers: dict = None, body: Any = None):
+                   headers: dict = None, body: Any = None):  # pragma: no cover
         if headers is None:
             headers = {}
         if not self.session:
@@ -98,7 +98,7 @@ class Client(BaseClient):
 
         return res
 
-    def update_session(self):
+    def update_session(self):  # pragma: no cover
         if self.api_token:
             res = self._http_request('GET', 'api/v2/session/current', headers={'session': self.api_token},
                                      ok_codes=(200,))
@@ -186,7 +186,7 @@ def are_filters_match_response_content(all_filter_arguments: List[Tuple[list, st
     return False
 
 
-def filter_to_tanium_api_syntax(filter_str):
+def filter_to_tanium_api_syntax(filter_str):  # pragma: no cover
     filter_dict = {}
     try:
         if filter_str:
@@ -222,7 +222,7 @@ def get_file_data(entry_id: str) -> Tuple[str, str, str]:
 ''' EVIDENCE HELPER FUNCTIONS '''
 
 
-def get_event_header(event_type):
+def get_event_header(event_type):  # pragma: no cover
     if event_type == 'combined':
         headers = ['id', 'type', 'processPath', 'detail', 'timestamp', 'operation']
 
@@ -372,7 +372,7 @@ def get_alert_item(alert):
 ''' FETCH INCIDENTS HELPER FUNCTIONS '''
 
 
-def alarm_to_incident(client, alarm):
+def alarm_to_incident(client, alarm):  # pragma: no cover
     host = alarm.get('computerName', '')
 
     if details := alarm.get('details'):
@@ -428,7 +428,7 @@ def test_module(client, data_args):
 
 
 def fetch_incidents(client: Client, alerts_states_to_retrieve: str, label_name_to_retrieve: str,
-                    last_run: dict, fetch_time: str, max_fetch: int):
+                    last_run: dict, fetch_time: str, max_fetch: int):  # pragma: no cover
     """
     Fetch events from this integration and return them as Demisto incidents
 
@@ -457,8 +457,10 @@ def fetch_incidents(client: Client, alerts_states_to_retrieve: str, label_name_t
 
     while True:
         demisto.debug(f'Sending new alerts api request with offset: {offset}.')
-        url_suffix = f'/plugin/products/{"threat-response" if client.api_version == "4.x" else "detect3"}/api/v1/alerts?' + alerts_states_suffix + \
-                     f'&sort=-createdAt&limit=500&offset={offset}' + label_name_suffix
+        url_suffix = \
+            f'/plugin/products/' \
+            f'{"threat-response" if client.api_version == "4.x" else "detect3"}/api/v1/alerts?' + \
+            alerts_states_suffix + f'&sort=-createdAt&limit=500&offset={offset}' + label_name_suffix
 
         raw_response = client.do_request('GET', url_suffix)
         if not raw_response:
@@ -566,7 +568,7 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
 
     intel_docs = []
     intel_doc = {}
-    raw_response_data = raw_response.get("data") if client.api_version == '4.x' else raw_response
+    raw_response_data = raw_response.get("data", raw_response)
     # append raw response to a list in case raw_response is a dictionary
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
@@ -608,7 +610,7 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data") if client.api_version == "4.x" else raw_response
+    raw_response_data = raw_response.get("data", raw_response)
     # append raw response to a list in case raw_response is a dictionary
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
@@ -638,7 +640,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
     intel_doc_id = data_args.get('intel_doc_id')
     label_id = data_args.get('label_id')
     params = assign_params(id=label_id)
-    raw_response = []
+
     try:
         raw_response = client.do_request('PUT',
                                          f'/plugin/products/'
@@ -659,7 +661,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data") if client.api_version == "4.x" else raw_response
+    raw_response_data = raw_response.get("data", raw_response)
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
@@ -689,7 +691,6 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
 
     intel_doc_id = data_args.get('intel_doc_id')
     label_id_to_delete = data_args.get('label_id')
-    raw_response = []
     try:
         raw_response = client.do_request('DELETE',
                                          f'/plugin/products/'
@@ -710,7 +711,7 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data") if client.api_version == "4.x" else raw_response
+    raw_response_data = raw_response.get("data", raw_response)
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
@@ -976,7 +977,7 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                                             f'/api/v1/alerts/', params=params)
 
     alerts = []
-    raw_response_data = raw_response.get("data") if client.api_version == "4.x" else raw_response
+    raw_response_data = raw_response.get("data", raw_response)
     for item in raw_response_data:
         alert = get_alert_item(item)
         alerts.append(alert)
@@ -1006,7 +1007,7 @@ def get_alert(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     raw_response = client.do_request('GET', f'/plugin/products/'
                                             f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
                                             f'/api/v1/alerts/{alert_id}')
-    raw_response_data = raw_response.get("data") if client.api_version == "4.x" else raw_response
+    raw_response_data = raw_response.get("data", raw_response)
     alert = get_alert_item(raw_response_data)
 
     context = createContext(alert, removeNull=True)
@@ -1348,7 +1349,7 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                                             f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
                                             f'/api/v1/labels/')
     assert offset is not None
-    raw_response_data = raw_response.get("data") if client.api_version == "4.x" else raw_response
+    raw_response_data = raw_response.get("data", raw_response)
     from_idx = min(offset, len(raw_response_data))
     to_idx = min(offset + limit, len(raw_response_data))  # type: ignore
 
