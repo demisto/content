@@ -37,13 +37,19 @@ args:
 - description: Related or duplicate objects. (More of a nice to have because not sure how to track this).
   isArray: true
   name: asm_related
+- description: Matched remediation path rule (if there is a match).
+  isArray: true
+  name: asm_remediation_path_rule
 comment: Generate an ASM Alert Summary report.
 commonfields:
-  id: GenerateASMReport
+  id: 92ec9c9c-5d99-4f3e-8896-faafc822d7df
   version: -1
-dockerimage: demisto/python3:3.10.9.46032
+dockerimage: demisto/python3:3.10.8.37233
 enabled: true
+engineinfo: {}
+mainengineinfo: {}
 name: GenerateASMReport
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -51,6 +57,3 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.5.0
-tests:
-- No tests (auto formatted)
