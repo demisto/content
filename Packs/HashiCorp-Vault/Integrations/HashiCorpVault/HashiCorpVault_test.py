@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 
 from HashiCorpVault import *
-
+import demistomock as demisto
 
 class MockHttpResponse:
     def __init__(self, json_data, status_code):
@@ -31,12 +31,14 @@ def test_send_request(mocker):
 @patch('HashiCorpVault.send_request', mock)
 def test_get_aws_secrets(mocker):
     mocker.patch('HashiCorpVault.SERVER_URL', return_value='test')
+    mocker.patch('CommonServerPython.get_integration_context',
+                 return_value={'configs': [{'path': 'aws', 'version': '2', 'type': 'AWS', 'ttl': '2200'}]})
     get_aws_secrets('test', False, None, None)
     assert mock.call_args.args[0] == 'test/roles'
     get_aws_secrets('test', False, None, None)
     assert mock.call_args.args[0] == 'test/roles/1'
     # test aws_roles_list
-    assert get_aws_secrets('test', False, ['2'], None) == []
+    assert get_aws_secrets('test', False, ['1'], None) == [{'name': '1', 'password': 'test@@@test', 'user': 'test'}]
 
 
 def test_get_headers():
