@@ -429,5 +429,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "The Microsoft Graph Protection Layout"
+    "description": "The Microsoft Graph Protection Layout",
+    "marketplaces": ["xsoar"]
 }

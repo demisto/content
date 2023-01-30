@@ -1,3 +1,5 @@
+Netskope Event Collector integration.
+
 ## Configure Netskope Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -12,7 +14,7 @@
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Max events per fetch | The maximum amount of events to retrieve \(up to 10000 events\). | False |
+    | Max Fetch | The maximum amount of events to retrieve \(up to 10000 events\). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
