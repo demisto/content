@@ -22,3 +22,6 @@ args:
   description: Address (e.g., `1600 Pennsylvania ave, DC`)
 scripttarget: 0
 fromversion: 5.0.0
+marketplaces:
+  - xsoar
+  - marketplacev2

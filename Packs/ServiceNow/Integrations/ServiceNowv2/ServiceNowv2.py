@@ -2446,34 +2446,35 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'EntryContext': comments_context
             })
 
-    if ticket.get('closed_at'):
-        if params.get('close_incident'):
-            demisto.debug(f'ticket is closed: {ticket}')
-            entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
-                    'closeReason': converts_state_close_reason(ticket.get("state"))
-                },
-                'ContentsFormat': EntryFormat.JSON
-            })
+    # Handle closing ticket/incident in XSOAR
+    close_incident = params.get('close_incident')
+    if ticket.get('closed_at') and close_incident == 'closed' \
+            or ticket.get('resolved_at') and close_incident == 'resolved':
+        demisto.debug(f'ticket is closed: {ticket}')
+        entries.append({
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                'closeReason': converts_state_close_reason(ticket.get("state"))
+            },
+            'ContentsFormat': EntryFormat.JSON
+        })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
 
 
-def converts_state_close_reason(ticket_state: str):
+def converts_state_close_reason(ticket_state: Optional[str]):
     """
-    converts between XSOAR and service now state.
+    determine the XSOAR closeReason based on the Service Now ticket state.
     Args:
-        ticket_state: Service now state
+        ticket_state: Service now ticket state
     Returns:
         The XSOAR state
     """
     if ticket_state in ['6', '7']:
         return 'Resolved'
-
     return 'Other'
 
 
