@@ -660,9 +660,6 @@ script:
     execution: false
     name: prisma-sase-config-job-list
     outputs:
-    - contextPath: PrismaSase.ConfigJob
-      description: Configuration job details.
-      type: String
     - contextPath: PrismaSase.ConfigJob.description
       description: Configuration job description.
       type: String
