@@ -189,12 +189,26 @@ def test_no_date_mail():
     assert context_gmail.get('Date') == 'Mon, 21 Dec 2020 12:11:57 -0800'
 
 
-def test_generate_auth_link():
+def test_generate_auth_link_oob():
     client = Client()
-    link, challange = client.generate_auth_link()
+    link = client.generate_auth_link()
     assert link.startswith('https://accounts.google.com/o/oauth2/v2/auth?')
-    assert challange in link
+    assert 'code_challenge=' in link
     assert 'code_challenge_method=S256' in link
+
+
+def test_generate_auth_link_web(mocker):
+    mocker.patch('GmailSingleUser.CLIENT_SECRET', 'test')
+    mocker.patch('GmailSingleUser.CLIENT_ID', 'test_id')
+    mocker.patch('GmailSingleUser.REDIRECT_URI', 'http://localhost:9001')
+    client = Client()
+    link = client.generate_auth_link()
+    assert link.startswith('https://accounts.google.com/o/oauth2/v2/auth?')
+    assert 'code_challenge=' not in link
+    assert 'code_challenge_method=S256' not in link
+    assert 'access_type=offline' in link
+    assert 'redirect_uri=http' in link
+    assert 'client_id=test_id' in link
 
 
 SEND_EMAIL_ARGS = [

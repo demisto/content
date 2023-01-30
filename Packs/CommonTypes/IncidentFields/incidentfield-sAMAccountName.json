@@ -1,9 +1,10 @@
 {
-    "associatedToAll": false,
+    "associatedToAll": true,
     "associatedTypes": [
         "Access",
         "Brute Force",
-        "Vectra Account"
+        "Vectra Account",
+        "Malware Investigation and Response"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -29,7 +30,7 @@
     "selectValues": [],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
+    "systemAssociatedTypes": ["Malware Investigation and Response"],
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,

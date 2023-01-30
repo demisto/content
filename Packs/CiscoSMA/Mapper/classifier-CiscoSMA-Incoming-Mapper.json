@@ -1,0 +1,95 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "CiscoSMA - Incoming Mapper",
+    "mapping": {
+        "Cisco SMA Spam Quarantine": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CiscoSMA Attachments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Email Body HTML": {
+                    "complex": {
+                        "filters": [],
+                        "root": "messageBody",
+                        "transformers": []
+                    }
+                },
+                "Email From": {
+                    "complex": {
+                        "filters": [],
+                        "root": "fromAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Email Message ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mid",
+                        "transformers": []
+                    }
+                },
+                "Email Subject": {
+                    "complex": {
+                        "filters": [],
+                        "root": "subject",
+                        "transformers": []
+                    }
+                },
+                "Email To": {
+                    "complex": {
+                        "filters": [],
+                        "root": "toAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {}
+        }
+    },
+    "name": "CiscoSMA - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

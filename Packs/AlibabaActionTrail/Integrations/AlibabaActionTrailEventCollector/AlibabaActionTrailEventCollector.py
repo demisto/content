@@ -179,7 +179,7 @@ def main():
     demisto_params['headers'] = headers
 
     request = IntegrationHTTPRequest(**demisto_params)
-    request.params = AlibabaParams.parse_obj(params)
+    request.params = AlibabaParams.parse_obj(params)  # type: ignore
 
     options = IntegrationOptions.parse_obj(demisto_params)
 
@@ -199,7 +199,8 @@ def main():
 
             if command == 'fetch-events':
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.setLastRun(AlibabaGetEvents.get_last_run(events))
+                if events:
+                    demisto.setLastRun(AlibabaGetEvents.get_last_run(events))
 
             elif command == 'alibaba-get-events':
                 command_results = CommandResults(

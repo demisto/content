@@ -61,11 +61,29 @@ tasks:
           root: SourceIPGeo
           transformers:
           - operator: uniq
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ':'
       src_coords:
         complex:
           root: PreviousSourceIPGeo
           transformers:
           - operator: uniq
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ':'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -3489,5 +3507,6 @@ outputs:
   description: Endpoint domain name
   type: string
 fromversion: 5.0.0
+toversion: 5.9.9
 tests:
 - Impossible Traveler - Test

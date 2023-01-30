@@ -1,9 +1,10 @@
 import requests
+import urllib3
 
 import demistomock as demisto
 from CommonServerPython import *
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 if not demisto.getParam('proxy'):
     del os.environ['HTTP_PROXY']
@@ -81,14 +82,25 @@ SAMPLE_ANALYSIS_HEADERS_MAP = {
 }
 
 
-def req(method, path, params={'api_key': API_KEY}):
+def req(method, path, params={'api_key': API_KEY}, body=None):
     """
     Send the request to ThreatGrid and return the JSON response
     """
-    r = requests.request(method, URL + path, params=params, verify=VALIDATE_CERT)
-    if r.status_code != requests.codes.ok:
-        return_error('Error in API call to Threat Grid service %s - %s' % (path, r.text))
-    return r
+    if body is not None:
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        r = requests.request(method, URL + path, headers=headers, params=params, data=body, verify=VALIDATE_CERT)
+        if r.status_code != (requests.codes['created'] or requests.codes['ok']):
+            return_error('Error in API call to Threat Grid service %s - %s' % (path, r.text))
+        return r
+
+    else:
+        r = requests.request(method, URL + path, params=params, verify=VALIDATE_CERT)
+        if r.status_code != requests.codes.ok:
+            return_error('Error in API call to Threat Grid service %s - %s' % (path, r.text))
+        return r
 
 
 def handle_filters():
@@ -272,7 +284,9 @@ def get_html_report_by_id():
     Download the html report for a sample given the id
     """
     sample_id = demisto.getArg('id')
+
     r = req('GET', SUB_API + 'samples/' + sample_id + '/report.html')
+
     ec = {'ThreatGrid.Sample.Id': sample_id}
     demisto.results([
         {
@@ -281,7 +295,7 @@ def get_html_report_by_id():
             'HumanReadable': '### ThreatGrid Sample Run HTML Report -\n'
                              + 'Your sample run HTML report download request has been completed successfully for '
                              + sample_id,
-            'Contents': r.content,
+            'Contents': r.text,
             'ContentsFormat': formats['html']
         },
         fileResult(sample_id + '-report.html', r.content, file_type=entryTypes['entryInfoFile'])
@@ -921,6 +935,50 @@ def search_urls():
     })
 
 
+def submit_urls(args):
+    """
+    Submit urls for analysis
+    """
+    params = {
+        'api_key': API_KEY,
+        'url': args.get('url')
+    }
+    markdown = ''
+    r = req('POST', SUB_API + 'samples', params=params)
+    res = r.json()['data']
+    markdown += tableToMarkdown('Threat Grid - URL Submission', res)
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Threatgrid.SearchResult',
+        outputs_key_field='Info',
+        outputs=res
+    )
+    return results
+
+
+def advanced_search(args):
+    """
+    Search Submissions, URLs, Samples with with query
+    """
+    final_results = []
+    body = args.get('query')
+    r = req('POST', USER_API + 'search', body=body)
+    markdown = ''
+    if r.json()['data']['sample']:
+        for record in r.json().get('data', {}).get('sample'):
+            final_results.append(record)
+        markdown += tableToMarkdown('Threat Grid submission results', final_results)
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='Threatgrid.SearchResult',
+            outputs_key_field='Info',
+            outputs=final_results
+        )
+        return results
+    else:
+        return (CommandResults(readable_output='No results found'))
+
+
 def search_samples():
     """
     Search samples with the given filters
@@ -1009,12 +1067,14 @@ def feeds_helper(name):
     requested_feed = name_conversion[name] if name in name_conversion else name
     url = SUB_API + 'iocs/feeds/' + requested_feed
     r = req('GET', url, params=handle_filters())
+    content = json.loads(r.content.decode('utf-8')) if isinstance(r.content, bytes) else r.content,
+
     demisto.results([
         {
             'Type': entryTypes['note'],
             'EntryContext': {},
             'HumanReadable': 'Your feeds ' + name + ' file download request has been completed successfully',
-            'Contents': r.content,
+            'Contents': content,
             'ContentsFormat': formats['json']
         },
         fileResult(url, r.content)
@@ -1092,6 +1152,7 @@ def get_analysis_process():
 
 
 def main():
+    args = demisto.args()
     if demisto.command() == 'test-module':
         req('GET', USER_API + 'session/whoami')
         demisto.results('ok')
@@ -1139,6 +1200,10 @@ def main():
         search_ips()
     elif demisto.command() == 'threat-grid-search-urls':
         search_urls()
+    elif demisto.command() == 'threat-grid-advanced-search':
+        return_results(advanced_search(args))
+    elif demisto.command() == 'threat-grid-submit-urls':
+        return_results(submit_urls(args))
     elif demisto.command() == 'threat-grid-search-submissions':
         search_submissions()
     elif demisto.command() == 'threat-grid-get-specific-feed':

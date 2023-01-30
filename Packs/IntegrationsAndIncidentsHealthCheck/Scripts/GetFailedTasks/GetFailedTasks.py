@@ -3,6 +3,43 @@ from typing import Any
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+BRAND = "Demisto REST API"
+
+
+def get_rest_api_instance_to_use():
+    """
+        This function checks if there are more than one instance of demisto rest api.
+
+        Returns:
+            Demisto Rest Api instance to use
+    """
+    all_instances = demisto.getModules()
+    number_of_rest_api_instances = 0
+    rest_api_instance_to_use = None
+    for instance_name in all_instances:
+        if all_instances[instance_name]['brand'] == BRAND and all_instances[instance_name]['state'] == 'active':
+            rest_api_instance_to_use = instance_name
+            number_of_rest_api_instances += 1
+        if number_of_rest_api_instances > 1:
+            return_error("GetFailedTasks: This script can only run with a single instance of the Demisto REST API. "
+                         "Specify the instance name in the 'rest_api_instance' argument.")
+    return rest_api_instance_to_use
+
+
+def get_tenant_name():
+    """
+        Gets the tenant name from the server url.
+
+        Returns:
+         tenant name.
+    """
+    server_url = demisto.executeCommand("GetServerURL", {})[0].get('Contents')
+    tenant_name = ''
+    if '/acc_' in server_url:
+        tenant_name = server_url.split('acc_')[-1]
+
+    return tenant_name
+
 
 def get_failed_tasks_output(tasks: list, incident: dict):
     """
@@ -54,10 +91,12 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
         Returns:
             List of the tasks given from the response.
     """
+    uri = f'investigation/{str(incident["id"])}/workplan/tasks'
+
     response = demisto.executeCommand(
         "demisto-api-post",
         {
-            "uri": f'investigation/{str(incident["id"])}/workplan/tasks',
+            "uri": uri,
             "body": {
                 "states": ["Error"],
                 "types": ["regular", "condition", "collection"],
@@ -116,9 +155,19 @@ def get_incident_data(incident: dict, rest_api_instance: str = None):
         Returns:
             tuple of context outputs and total amount of related error entries
     """
-
-    tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance) if rest_api_instance \
-        else get_incident_tasks_using_internal_request(incident)
+    if rest_api_instance:
+        tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
+    else:
+        try:
+            tasks = get_incident_tasks_using_internal_request(incident)
+        except ValueError:
+            # using rest api call if using_internal_request fails on the following error:
+            # ValueError: dial tcp connect: connection refused
+            rest_api_instance = get_rest_api_instance_to_use()
+            if not rest_api_instance:
+                raise DemistoException('Could not find which Rest API instance to use, '
+                                       'Please specify the rest_api_instance argument.')
+            tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
 
     task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident)
     if task_outputs:

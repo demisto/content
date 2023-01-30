@@ -177,28 +177,28 @@ tasks:
     - incidentfield: Entity ID
       output:
         simple: ${XMCyber.Entity.id}
-    - incidentfield: Entity Name
+    - incidentfield: Entity name
       output:
         simple: ${XMCyber.Entity.name}
-    - incidentfield: Is Entity Critical Asset
+    - incidentfield: Entity is a critical asset
       output:
         simple: ${XMCyber.Entity.isAsset}
     - incidentfield: Affected Entities
       output:
         simple: ${XMCyber.Entity.affectedEntities}
-    - incidentfield: Average Complexity
+    - incidentfield: XM Cyber avg. complexity score
       output:
         simple: ${XMCyber.Entity.averageComplexity}
     - incidentfield: Critical Assets At Risk
       output:
         simple: ${XMCyber.Entity.criticalAssetsAtRisk}
-    - incidentfield: Average Complexity Level
+    - incidentfield: XM Cyber avg. complexity level
       output:
         simple: ${XMCyber.Entity.averageComplexityLevel}
-    - incidentfield: Entity Type
+    - incidentfield: Entity type
       output:
         simple: ${XMCyber.Entity.type}
-    - incidentfield: Entity Report
+    - incidentfield: Entity report
       output:
         simple: ${XMCyber.Entity.report}
     - incidentfield: Compromising Techniques
@@ -481,7 +481,7 @@ outputs:
   description: OS of the device corresponding to the IP
   type: string
 - contextPath: XMCyber.Entity.isAsset
-  description: Is Entity a Critical Asset
+  description: Entity is a critical asset
   type: boolean
 - contextPath: XMCyber.Entity.affectedEntities
   description: Number of unique entities at risk from this entity

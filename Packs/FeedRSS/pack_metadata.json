@@ -8,10 +8,11 @@
     "email": "",
     "created": "2020-10-21T11:42:09Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Utilities"
     ],
     "tags": [
-        "TIM"
+    "Getting Started",
+    "Threat Intelligence Management"
     ],
     "useCases": [],
     "keywords": [],

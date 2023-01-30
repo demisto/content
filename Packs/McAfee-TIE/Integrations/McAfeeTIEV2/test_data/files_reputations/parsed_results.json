@@ -1,0 +1,336 @@
+{
+    "parsed_results": [
+        {
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": {
+                "1": {
+                    "createDate": 1508286242,
+                    "providerId": 1,
+                    "trustLevel": 1,
+                    "attributes": {
+                        "2120340": "2139162632",
+                        "2101908": "1508256272",
+                        "2102421": "152"
+                    }
+                },
+                "3": {
+                    "createDate": 1508286242,
+                    "providerId": 3,
+                    "trustLevel": 0,
+                    "attributes": {
+                        "2101652": "340",
+                        "2123156": "0",
+                        "2098277": "0",
+                        "2102165": "1508286242",
+                        "2114965": "0",
+                        "2111893": "167425",
+                        "2139285": "216172782113784288"
+                    }
+                },
+                "2022": {
+                    "createDate": 1508186242,
+                    "providerId": 2022,
+                    "trustLevel": 15,
+                    "attributes": {
+                        "2120340": "2139162632",
+                        "2101908": "1508256272",
+                        "2102421": "152",
+                        "2120455": "2139162632",
+                        "1235678": "1508256272",
+                        "8789008": "152"
+                    }
+                }
+            },
+            "HumanReadable": "### McAfee TIE Hash Reputations For f2c7bb8acc97f92e987a2d4087d021b1:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2017-10-18 00:24:02 | Global Threat Intelligence (GTI) | 1 | 1 | KNOWN_MALICIOUS |\n| 2017-10-18 00:24:02 | Enterprise reputation | 3 | 0 | NOT_SET |\n| 2017-10-16 20:37:22 | 2022 | 2022 | 15 | MOST_LIKELY_MALICIOUS |\n",
+            "EntryContext": {
+                "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+                    {
+                        "Hashes": [
+                            {
+                                "type": "MD5",
+                                "value": "f2c7bb8acc97f92e987a2d4087d021b1"
+                            }
+                        ],
+                        "MD5": "f2c7bb8acc97f92e987a2d4087d021b1",
+                        "Malicious": {
+                            "Vendor": "",
+                            "Description": "Trust level is 1"
+                        }
+                    }
+                ],
+                "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                    {
+                        "Indicator": "f2c7bb8acc97f92e987a2d4087d021b1",
+                        "Type": "file",
+                        "Vendor": "",
+                        "Score": 3,
+                        "Reliability": "C - Fairly reliable"
+                    }
+                ],
+                "McAfee.TIE.FilesReputations": {
+                    "Reputations": {
+                        "Hash": "f2c7bb8acc97f92e987a2d4087d021b1",
+                        "GTI": {
+                            "Create_Date": "2017-10-18 00:24:02",
+                            "Provider": "Global Threat Intelligence (GTI)",
+                            "Trust_Level": 1,
+                            "Original_Response": "2139162632",
+                            "First_Contact": "2017-10-17 16:04:32",
+                            "Prevalence": "152",
+                            "Provider_ID": 1
+                        },
+                        "Enterprise": {
+                            "Create_Date": "2017-10-18 00:24:02",
+                            "Provider": "Enterprise reputation",
+                            "Trust_Level": 0,
+                            "Prevalence": "340",
+                            "Is_Prevalent": "0",
+                            "2098277": "0",
+                            "First_Contact": "2017-10-18 00:24:02",
+                            "File_Name_Count": "0",
+                            "Enterprise_Size": "167425",
+                            "Server_Version": "3.0.0.480",
+                            "Provider_ID": 3
+                        },
+                        "2022": {
+                            "Create_Date": "2017-10-16 20:37:22",
+                            "Provider": "2022",
+                            "Trust_Level": 15,
+                            "2120340": "2139162632",
+                            "2101908": "1508256272",
+                            "2102421": "152",
+                            "2120455": "2139162632",
+                            "1235678": "1508256272",
+                            "8789008": "152",
+                            "Provider_ID": 2022
+                        }
+                    }
+                }
+            },
+            "IndicatorTimeline": [],
+            "IgnoreAutoExtract": false,
+            "Note": false,
+            "Relationships": []
+        },
+        {
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": {
+                "3": {
+                    "createDate": 1508081600,
+                    "providerId": 3,
+                    "trustLevel": 70,
+                    "attributes": {
+                        "2101652": "4336",
+                        "2123156": "0",
+                        "2098277": "0",
+                        "2102165": "1508081600",
+                        "2114965": "2",
+                        "2112148": "30",
+                        "2112404": "99",
+                        "2112660": "70",
+                        "2111893": "167426",
+                        "2112916": "30",
+                        "2113172": "85",
+                        "2113428": "70",
+                        "2139285": "216172782113784288",
+                        "2113685": "76",
+                        "2113942": "1508091600",
+                        "2138520": "(2, 100, 50, 100, 75.0)",
+                        "2138264": "(5, 100, 50, 100, 75.0)"
+                    }
+                },
+                "1": {
+                    "createDate": 1508081600,
+                    "providerId": 1,
+                    "trustLevel": 99,
+                    "attributes": {
+                        "2120340": "2139160704",
+                        "2101908": "1508071300",
+                        "2102421": "150"
+                    }
+                },
+                "5": {
+                    "createDate": 1661232605,
+                    "providerId": 5,
+                    "trustLevel": 30,
+                    "attributes": {
+                        "4194962": "4",
+                        "4195218": "1",
+                        "4195474": "3",
+                        "4195730": "-1",
+                        "4197784": "Encoded structure"
+                    }
+                }
+            },
+            "HumanReadable": "### McAfee TIE Hash Reputations For 7eb0139d2175739b3ccb0d1110067820be6abd29:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2017-10-15 15:33:20 | Enterprise reputation | 3 | 70 | MIGHT_BE_TRUSTED |\n| 2017-10-15 15:33:20 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |\n| 2022-08-23 05:30:05 | Advanced Threat Defense (ATD) | 5 | 30 | MIGHT_BE_MALICIOUS |\n",
+            "EntryContext": {
+                "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+                    {
+                        "Hashes": [
+                            {
+                                "type": "SHA1",
+                                "value": "7eb0139d2175739b3ccb0d1110067820be6abd29"
+                            }
+                        ],
+                        "SHA1": "7eb0139d2175739b3ccb0d1110067820be6abd29"
+                    }
+                ],
+                "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                    {
+                        "Indicator": "7eb0139d2175739b3ccb0d1110067820be6abd29",
+                        "Type": "file",
+                        "Vendor": "",
+                        "Score": 2,
+                        "Reliability": "C - Fairly reliable"
+                    }
+                ],
+                "McAfee.TIE.FilesReputations": {
+                    "Reputations": {
+                        "Hash": "7eb0139d2175739b3ccb0d1110067820be6abd29",
+                        "Enterprise": {
+                            "Create_Date": "2017-10-15 15:33:20",
+                            "Provider": "Enterprise reputation",
+                            "Trust_Level": 70,
+                            "Prevalence": "4336",
+                            "Is_Prevalent": "0",
+                            "2098277": "0",
+                            "First_Contact": "2017-10-15 15:33:20",
+                            "File_Name_Count": "2",
+                            "Min_Local_Rep": "30",
+                            "Max_Local_Rep": "99",
+                            "Avg_Local_Rep": "70",
+                            "Enterprise_Size": "167426",
+                            "Parent_Min_Local_Rep": "30",
+                            "Parent_Max_Local_Rep": "85",
+                            "Parent_Avg_Local_Rep": "70",
+                            "Server_Version": "3.0.0.480",
+                            "Detection_Count": "76",
+                            "Last_Detection_Time": "2017-10-15 18:20:00",
+                            "Child_File_Reps": "(2, 100, 50, 100, 75.0)",
+                            "Parent_File_Reps": "(5, 100, 50, 100, 75.0)",
+                            "Provider_ID": 3
+                        },
+                        "GTI": {
+                            "Create_Date": "2017-10-15 15:33:20",
+                            "Provider": "Global Threat Intelligence (GTI)",
+                            "Trust_Level": 99,
+                            "Original_Response": "2139160704",
+                            "First_Contact": "2017-10-15 12:41:40",
+                            "Prevalence": "150",
+                            "Provider_ID": 1
+                        },
+                        "ATD": {
+                            "Create_Date": "2022-08-23 05:30:05",
+                            "Provider": "Advanced Threat Defense (ATD)",
+                            "Trust_Level": 30,
+                            "GAM_Score": "4",
+                            "AV_Engine_Score": "1",
+                            "Sandbox_Score": "3",
+                            "Verdict": "-1",
+                            "Behaviors": "Encoded structure",
+                            "Provider_ID": 5
+                        }
+                    }
+                }
+            },
+            "IndicatorTimeline": [],
+            "IgnoreAutoExtract": false,
+            "Note": false,
+            "Relationships": []
+        },
+        {
+            "Type": 1,
+            "ContentsFormat": "json",
+            "Contents": {
+                "3": {
+                    "createDate": 1661352605,
+                    "providerId": 3,
+                    "trustLevel": 15,
+                    "attributes": {
+                        "2101652": "0",
+                        "2123156": "0",
+                        "2098277": "0",
+                        "2102165": "1661352605",
+                        "2114965": "0",
+                        "2111893": "167428",
+                        "2139285": "216172782113784288"
+                    }
+                },
+                "5": {
+                    "createDate": 1661232605,
+                    "providerId": 5,
+                    "trustLevel": 30,
+                    "attributes": {
+                        "4194962": "5",
+                        "4195218": "-1",
+                        "4195474": "0",
+                        "4195730": "2",
+                        "4197784": "Encoded structure"
+                    }
+                }
+            },
+            "HumanReadable": "### McAfee TIE Hash Reputations For 142e1d688ef0568370c37187fd9f2351d7ddeda574f8bfa9b0fa4ef42db85aa2:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2022-08-24 14:50:05 | Enterprise reputation | 3 | 15 | MOST_LIKELY_MALICIOUS |\n| 2022-08-23 05:30:05 | Advanced Threat Defense (ATD) | 5 | 30 | MIGHT_BE_MALICIOUS |\n",
+            "EntryContext": {
+                "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+                    {
+                        "Hashes": [
+                            {
+                                "type": "SHA256",
+                                "value": "142e1d688ef0568370c37187fd9f2351d7ddeda574f8bfa9b0fa4ef42db85aa2"
+                            }
+                        ],
+                        "SHA256": "142e1d688ef0568370c37187fd9f2351d7ddeda574f8bfa9b0fa4ef42db85aa2",
+                        "Malicious": {
+                            "Vendor": "",
+                            "Description": "Trust level is 15"
+                        }
+                    }
+                ],
+                "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                    {
+                        "Indicator": "142e1d688ef0568370c37187fd9f2351d7ddeda574f8bfa9b0fa4ef42db85aa2",
+                        "Type": "file",
+                        "Vendor": "",
+                        "Score": 3,
+                        "Reliability": "C - Fairly reliable"
+                    }
+                ],
+                "McAfee.TIE.FilesReputations": {
+                    "Reputations": {
+                        "Hash": "142e1d688ef0568370c37187fd9f2351d7ddeda574f8bfa9b0fa4ef42db85aa2",
+                        "Enterprise": {
+                            "Create_Date": "2022-08-24 14:50:05",
+                            "Provider": "Enterprise reputation",
+                            "Trust_Level": 15,
+                            "Prevalence": "0",
+                            "Is_Prevalent": "0",
+                            "2098277": "0",
+                            "First_Contact": "2022-08-24 14:50:05",
+                            "File_Name_Count": "0",
+                            "Enterprise_Size": "167428",
+                            "Server_Version": "3.0.0.480",
+                            "Provider_ID": 3
+                        },
+                        "ATD": {
+                            "Create_Date": "2022-08-23 05:30:05",
+                            "Provider": "Advanced Threat Defense (ATD)",
+                            "Trust_Level": 30,
+                            "GAM_Score": "5",
+                            "AV_Engine_Score": "-1",
+                            "Sandbox_Score": "0",
+                            "Verdict": "2",
+                            "Behaviors": "Encoded structure",
+                            "Provider_ID": 5
+                        }
+                    }
+                }
+            },
+            "IndicatorTimeline": [],
+            "IgnoreAutoExtract": false,
+            "Note": false,
+            "Relationships": []
+        }
+    ]
+}

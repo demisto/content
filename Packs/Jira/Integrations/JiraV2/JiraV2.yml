@@ -171,6 +171,12 @@ script:
     - contextPath: Ticket.Summary
       description: The ticket summary.
       type: Unknown
+    - contextPath: Ticket.Description
+      description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.Labels
+      description: The ticket's project labels.
+      type: String
     - contextPath: Ticket.Status
       description: The ticket status.
       type: Unknown
@@ -832,7 +838,7 @@ script:
       for debugging.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.33879
+  dockerimage: demisto/oauthlib:1.0.0.44977
   feed: false
   isfetch: true
   ismappable: true

@@ -1,6 +1,7 @@
 {
     "name": "Deprecated Content (Deprecated)",
     "description": "Deprecated. No available replacement.",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.6.15",
     "author": "Cortex XSOAR",

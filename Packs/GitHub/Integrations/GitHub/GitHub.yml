@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: GitHub
   version: -1
@@ -7,6 +10,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - defaultvalue: Issue
   display: Select an Issue or Pull requests to Fetch
   hidden: false
@@ -16,60 +20,80 @@ configuration:
   - Pull_requests
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - defaultvalue: https://api.github.com
   display: Server URL
   name: url
   required: false
   type: 0
   additionalinfo: The REST API URL
+  section: Connect
 - displaypassword: API Token
   name: api_token
   required: false
   type: 9
   hiddenusername: true
+  section: Connect
 - display: Credentials
   name: credentials
   required: false
   type: 9
+  section: Connect
 - display: 'Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues'
   name: user
   required: false
   type: 0
+  section: Connect
 - display: The name of the requested repository
   name: repository
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - defaultvalue: '3'
   display: First fetch interval (in days)
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: GitHub app integration ID
   name: integration_id
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: GitHub app installation ID
   name: installation_id
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: API Token
   name: token
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 description: Integration to GitHub API
 display: GitHub
 name: GitHub
@@ -3936,7 +3960,82 @@ script:
     description: Deletes a comment.
     execution: false
     name: GitHub-delete-comment
-  dockerimage: demisto/pyjwt3:1.0.0.27257
+  - arguments:
+    - default: false
+      description: The number of PR/Issue to assign users to
+      isArray: false
+      name: pull_request_number
+      required: true
+      secret: false
+    - default: false
+      description: Users to assign, can be a list of users
+      isArray: true
+      name: assignee
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds up to 10 assignees to an issue/PR. Users already assigned to an issue are not replaced.
+    execution: false
+    name: GitHub-add-assignee
+    outputs:
+    - contextPath: GitHub.Assignees.assignees
+      description: Assignees to the issue
+      type: String
+    - contextPath: GitHub.Assignees.assignees.login
+      description: Login of assigned user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.gists_url
+      description: Gists URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.following_url
+      description: Following URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.followers_url
+      description: Followers URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.subscriptions_url
+      description: Subscriptions URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.received_events_url
+      description: Received events URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.events_url
+      description: Events URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.avatar_url
+      description: Avatar URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.url
+      description: URL for user for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.starred_url
+      description: Starred URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.organizations_url
+      description: Organizations URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.repos_url
+      description: Repos URL for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.gravatar_id
+      description: Gravatar_id for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.site_admin
+      description: Is user site admin
+      type: String
+    - contextPath: GitHub.Assignees.assignees.node_id
+      description: Node ID for user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.type
+      description: Type of user
+      type: String
+    - contextPath: GitHub.Assignees.assignees.id
+      description: User ID
+      type: String
+    - contextPath: GitHub.Assignees.assignees.html_url
+      description: HTML URL for user
+      type: String
+  dockerimage: demisto/pyjwt3:1.0.0.45830
   feed: false
   isfetch: true
   longRunning: false

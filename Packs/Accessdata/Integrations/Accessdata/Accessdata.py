@@ -8,10 +8,11 @@ from CommonServerUserPython import *
 import os
 import json
 import requests
+from urllib3 import disable_warnings
 from requests.exceptions import HTTPError
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+disable_warnings()
 
 
 ''' CONSTANTS '''
@@ -64,6 +65,7 @@ class Client:
     Client will implement the service API, should not contain Demisto logic.
     Should do requests and return data
     # """
+
     def __init__(self, base_url=None, verify=None, proxy=None, token=None):
         self.base_url = base_url
         self.verify = verify

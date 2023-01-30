@@ -1,13 +1,15 @@
 {
-    "name": "Strip Accent Marks From String",
-    "description": "Strip accent marks (diacritics) from a given string",
+    "name": "Strip Accent Marks From String (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Gavriel Filippov",
     "url": "",
     "email": "",
     "created": "2021-06-22T16:24:24Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -17,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

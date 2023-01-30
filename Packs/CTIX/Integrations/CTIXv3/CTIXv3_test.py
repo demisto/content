@@ -26,10 +26,19 @@ from CTIXv3 import (
     get_indicator_observations_command,
     get_conversion_feed_source_command,
     get_lookup_threat_data_command,
+    domain,
+    url,
+    ip,
+    file,
+    get_all_notes,
+    get_note_details,
+    create_note,
+    update_note,
+    delete_note,
+    make_request
 )
 
 """CONSTANTS"""
-
 BASE_URL = "http://test.com/"
 ACCESS_ID = "access_id"
 SECRET_KEY = "secret_key"
@@ -604,7 +613,7 @@ def test_search_for_tag_command(requests_mock):
 
     response = search_for_tag_command(client, args)
 
-    assert response.outputs == mock_response['results']
+    assert response.outputs == mock_response["results"]
     assert response.outputs_prefix == "CTIX.SearchTag"
 
     assert isinstance(response.raw_response, list)
@@ -680,7 +689,7 @@ def test_get_indicator_relations_command(requests_mock):
 
     response = get_indicator_relations_command(client, args)
 
-    assert response.outputs == mock_response['results']
+    assert response.outputs == mock_response["results"]
     assert response.outputs_prefix == "CTIX.IndicatorRelations"
 
     assert isinstance(response.raw_response, list)
@@ -705,7 +714,7 @@ def test_get_indicator_observations_command(requests_mock):
 
     response = get_indicator_observations_command(client, args)
 
-    assert response.outputs == mock_response['results']
+    assert response.outputs == mock_response["results"]
     assert response.outputs_prefix == "CTIX.IndicatorObservations"
 
     assert isinstance(response.raw_response, list)
@@ -728,7 +737,7 @@ def test_get_conversion_feed_source_command(requests_mock):
 
     response = get_conversion_feed_source_command(client, args)
 
-    assert response.outputs[0] == mock_response['results'][0]
+    assert response.outputs[0] == mock_response["results"][0]
     assert response.outputs_prefix == "CTIX.ConversionFeedSource"
 
     assert isinstance(response.raw_response, list)
@@ -761,3 +770,379 @@ def test_get_lookup_threat_data_command(requests_mock):
 
     assert isinstance(response[0].raw_response, dict)
     assert len(response[0].raw_response) == 37
+
+
+def test_domain(requests_mock):
+    mock_response = util_load_json("test_data/domain.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "domain": "google.com",
+        "page": 1,
+        "page_size": 1,
+        "object_type": "indicator",
+        "object_names": "foo,bar",
+    }
+
+    response = domain(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
+
+
+def test_url(requests_mock):
+    mock_response = util_load_json("test_data/url.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "url": "https://example.com/",
+        "page": 1,
+        "page_size": 1,
+        "object_type": "indicator",
+        "object_names": "foo,bar",
+    }
+
+    response = url(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
+
+
+def test_ip(requests_mock):
+    mock_response = util_load_json("test_data/ip.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "ip": "1.2.3.4",
+        "page": 1,
+        "page_size": 1,
+        "object_type": "indicator",
+        "object_names": "foo,bar",
+    }
+
+    response = ip(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
+
+
+def test_file(requests_mock):
+    mock_response = util_load_json("test_data/file.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "file": "a6a91e61a729bb4c12cc3db3eb9ea746",
+        "page": 1,
+        "page_size": 1,
+        "object_type": "indicator",
+        "object_names": "foo,bar",
+    }
+
+    response = file(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
+
+
+def test_get_all_notes(requests_mock):
+    mock_response = util_load_json("test_data/get_all_notes.json")
+    requests_mock.get(f"{BASE_URL}ingestion/notes/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "page": 1,
+        "page_size": 10,
+    }
+
+    response = get_all_notes(client, args)
+
+    assert response.outputs == mock_response["results"]
+    assert response.outputs_prefix == "CTIX.Note"
+
+    assert isinstance(response.raw_response, list)
+    assert len(response.raw_response[0]) == 11
+
+
+def test_get_note_details(requests_mock):
+    mock_response = util_load_json("test_data/get_note_details.json")
+    id = "b1800a11-7fa5-423e-93bf-f8ef8d3890a4"
+    requests_mock.get(f"{BASE_URL}ingestion/notes/{id}/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "id": id
+    }
+
+    response = get_note_details(client, args)
+
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "CTIX.Note"
+
+    assert isinstance(response.raw_response, dict)
+    assert len(response.raw_response) == 11
+
+
+def test_create_note(requests_mock):
+    mock_response = util_load_json("test_data/create_note.json")
+    requests_mock.post(f"{BASE_URL}ingestion/notes/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "text": "this note will have this text",
+        "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+        "object_type": "indicator"
+    }
+
+    response = create_note(client, args)
+
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "CTIX.Note"
+
+    assert isinstance(response.raw_response, dict)
+    assert len(response.raw_response) == 11
+
+
+def test_update_note(requests_mock):
+    mock_response = util_load_json("test_data/update_note.json")
+    id = "04bb5f2c-78a6-4e84-82ae-011666733998"
+    requests_mock.put(f"{BASE_URL}ingestion/notes/{id}/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "id": id,
+        "text": "this is the new text",
+        "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+        "object_type": "indicator"
+    }
+
+    response = update_note(client, args)
+
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "CTIX.Note"
+
+    assert isinstance(response.raw_response, dict)
+    assert len(response.raw_response) == 11
+
+
+def test_delete_note(requests_mock):
+    mock_response = util_load_json("test_data/delete_note.json")
+    id = "04bb5f2c-78a6-4e84-82ae-011666733998"
+    requests_mock.delete(f"{BASE_URL}ingestion/notes/{id}/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "id": id
+    }
+
+    response = delete_note(client, args)
+
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "CTIX.Note"
+
+    assert isinstance(response.raw_response, dict)
+    assert len(response.raw_response) == 1
+
+
+def test_make_request_get(requests_mock):
+    mock_response = util_load_json("test_data/make_request_get.json")
+    requests_mock.get(f"{BASE_URL}ingestion/notes/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "type": "GET",
+        "endpoint": "ingestion/notes/",
+        "page": 2,
+        "page_size": 10,
+    }
+
+    response = make_request(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.Request.GET.ingestion/notes/"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 11
+
+
+def test_make_request_post(requests_mock):
+    mock_response = util_load_json("test_data/make_request_post.json")
+    requests_mock.post(f"{BASE_URL}ingestion/notes/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "type": "POST",
+        "endpoint": "ingestion/notes/",
+        "body": """{
+            \"text\": \"this is the old text\",
+            \"type\": \"threatdata\",
+            \"meta_data\": {
+                \"component\": \"threatdata\",
+                \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\",
+                \"type\": \"indicator\"
+            },
+            \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\"
+        }"""
+    }
+
+    response = make_request(client, args)
+
+    assert response[0].outputs == mock_response
+    assert response[0].outputs_prefix == "CTIX.Request.POST.ingestion/notes/"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 11
+
+
+def test_make_request_put(requests_mock):
+    mock_response = util_load_json("test_data/make_request_put.json")
+    requests_mock.put(f"{BASE_URL}ingestion/notes/40c57c4a-1b5d-4cb4-bd89-d146c0d30ed4/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "type": "PUT",
+        "endpoint": "ingestion/notes/40c57c4a-1b5d-4cb4-bd89-d146c0d30ed4/",
+        "body": """{
+            \"text\": \"this is the new text\",
+            \"type\": \"threatdata\",
+            \"meta_data\": {
+                \"component\": \"threatdata\",
+                \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\",
+                \"type\": \"indicator\"
+            },
+            \"object_id\": \"ba82b524-15b3-4071-8008-e58754f8d134\"
+        }"""
+    }
+
+    response = make_request(client, args)
+
+    assert response[0].outputs == mock_response
+    assert response[0].outputs_prefix == "CTIX.Request.PUT.ingestion/notes/40c57c4a-1b5d-4cb4-bd89-d146c0d30ed4/"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 11
+
+
+def test_make_request_delete(requests_mock):
+    mock_response = util_load_json("test_data/make_request_delete.json")
+    requests_mock.delete(f"{BASE_URL}ingestion/notes/40c57c4a-1b5d-4cb4-bd89-d146c0d30ed4/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "type": "DELETE",
+        "endpoint": "ingestion/notes/40c57c4a-1b5d-4cb4-bd89-d146c0d30ed4/",
+    }
+
+    response = make_request(client, args)
+
+    assert response[0].outputs == mock_response
+    assert response[0].outputs_prefix == "CTIX.Request.DELETE.ingestion/notes/40c57c4a-1b5d-4cb4-bd89-d146c0d30ed4/"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 1

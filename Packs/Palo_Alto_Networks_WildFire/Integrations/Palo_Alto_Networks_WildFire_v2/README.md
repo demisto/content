@@ -24,6 +24,7 @@ Use the Palo Alto Networks Wildfire integration to automatically identify unknow
     | --- | --- | --- |
     | Server base URL (e.g., https://192.168.0.1/publicapi) |  | True |
     | API Key |  | True |
+    | API Key Source | API Key product name | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -315,7 +316,7 @@ Retrieves results for a file hash using WildFire.
 | md5 | MD5 hash to check. | Optional | 
 | sha256 | SHA256 hash to check. | Optional | 
 | hash | Deprecated. Use the sha256 argument instead. | Optional | 
-| format | The type of structured report (XML or PDF) to request. Possible values are: xml, pdf. Default is pdf. | Optional | 
+| format | The type of structured report (MAEC, XML or PDF) to request. Possible values are: maec, xml, pdf. Default is pdf. | Optional | 
 | verbose | Receive extended information from WildFire. Possible values are: true, false. Default is false. | Optional | 
 | url | Retrieves results for a URL using WildFire. The report format is in JSON. | Optional | 
 | extended_data | If set to “true”, the report will return extended data which includes the additional outputs. Possible values are: true, false. | Optional |
@@ -389,6 +390,7 @@ Retrieves results for a file hash using WildFire.
 | WildFire.Report.Summary.Details | string | The details summary of the report | 
 | WildFire.Report.Summary.Behavior | string | The behavior summary of the report | 
 | WildFire.Report.ELF.ShellCommands | string | The shell commands | 
+| WildFire.Report.maec_report | string | MAEC report output | 
 
 #### Command Example
 ```!wildfire-report url=https://www.demisto.com```
@@ -629,6 +631,7 @@ Get web artifacts for a URL webpage. An empty tgz will be returned, no matter wh
 | --- | --- | --- |
 | url | URL of the webpage. | Required | 
 | types | Whether to download as screenshots or as downloadable files. If not specified, both will be downloaded. Possible values are: download_files, screenshot. | Optional | 
+| screenshot_inline | Whether to extract screenshot image from tgz to warroom. Only applies to types=screenshot. Possible values are: true, false. | Optional |
 
 
 #### Context Output

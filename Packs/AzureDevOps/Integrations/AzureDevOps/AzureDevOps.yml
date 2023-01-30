@@ -1005,7 +1005,7 @@ script:
     - contextPath: AzureDevOps.Branch.name
       description: The name of the branch.
       type: String
-  dockerimage: demisto/crypto:1.0.0.34720
+  dockerimage: demisto/crypto:1.0.0.45575
   isremotesyncout: true
   ismappable: true
   feed: false

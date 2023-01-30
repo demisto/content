@@ -5,9 +5,10 @@ from CommonServerUserPython import *
 from datetime import datetime, timedelta
 from typing import Union
 import traceback
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 FILTER_DICT = {'Contains': '1',
                'Excludes': '2',

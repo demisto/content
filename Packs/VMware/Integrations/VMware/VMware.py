@@ -6,10 +6,39 @@ import demistomock as demisto  # noqa: F401
 import pyVim.task
 import dateparser  # type: ignore
 from CommonServerPython import *  # noqa: F401
-from cStringIO import StringIO
+from io import StringIO
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl  # type: ignore
 from vmware.vapi.vsphere.client import create_vsphere_client
+
+
+REDIRECT_STD_OUT = argToBoolean(demisto.params().get('redirect_std_out', 'false'))
+real_demisto_info = demisto.info
+real_demisto_debug = demisto.debug
+
+
+def use_demisto_debug(msg):  # pragma: no cover
+    if REDIRECT_STD_OUT:
+        temp = sys.stdout
+        sys.stdout = sys.__stdout__
+        real_demisto_debug(msg)
+        sys.stdout = temp
+    else:
+        real_demisto_debug(msg)
+
+
+def use_demisto_info(msg):  # pragma: no cover
+    if REDIRECT_STD_OUT:
+        temp = sys.stdout
+        sys.stdout = sys.__stdout__
+        real_demisto_info(msg)
+        sys.stdout = temp
+    else:
+        real_demisto_info(msg)
+
+
+demisto.info = use_demisto_info  # type: ignore
+demisto.debug = use_demisto_debug  # type: ignore
 
 
 def parse_params(params):
@@ -565,7 +594,7 @@ def list_vms_by_tag(vsphere_client, args):
     if not relevant_tag:
         raise Exception("The tag {} was not found".format(args.get('tag')))
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
-    vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
+    vms = [vm for vm in vms if vm.type == 'VirtualMachine']
     vms_details = []
     # This filter isn't needed if vms are empty, when you send an empty vms list - it returns all vms
     if vms:
@@ -807,8 +836,8 @@ def test_module(si):
 
 
 def main():  # pragma: no cover
-    sout = sys.stdout
-    sys.stdout = StringIO()
+    if REDIRECT_STD_OUT:
+        sys.stdout = StringIO()
     res = []
     si = None
     try:
@@ -865,7 +894,7 @@ def main():  # pragma: no cover
         res.append({  # type: ignore
             "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
-    sys.stdout = sout
+    sys.stdout = sys.__stdout__
     demisto.results(res)
 
 

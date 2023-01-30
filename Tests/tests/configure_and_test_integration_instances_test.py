@@ -1,9 +1,9 @@
+import os
 import pytest
 from unittest.mock import mock_open
-
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
-    options_handler, XSIAMBuild, get_turned_non_hidden_packs, update_integration_lists, \
-    get_packs_with_higher_min_version
+    options_handler, CloudBuild, get_turned_non_hidden_packs, update_integration_lists, \
+    get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -33,7 +33,8 @@ def create_build_object_with_mock(mocker, build_object_type):
             '--pack_ids_to_install', "$ARTIFACTS_FOLDER/content_packs_to_install.txt",
             '-g', "$GIT_SHA1", '--ami_env', "$1", '-n', 'false', '--branch', "$CI_COMMIT_BRANCH",
             '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--build_object_type', build_object_type,
-            '--xsiam_machine', "qa2-test-111111", '--xsiam_servers_path', '$XSIAM_SERVERS_PATH']
+            '--cloud_machine', "qa2-test-111111", '--cloud_servers_path', '$XSIAM_SERVERS_PATH',
+            '--marketplace_name', 'marketplacev2']
     options = options_handler(args=args)
     json_data = {
         'tests': [],
@@ -86,7 +87,7 @@ def test_configure_old_and_new_integrations(mocker):
     assert not set(old_modules_instances).intersection(new_modules_instances)
 
 
-@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (XSIAMBuild, 'XSIAM')])
+@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (CloudBuild, 'XSIAM')])
 def test_create_build(mocker, expected_class, build_object_type):
     """
     Given:
@@ -94,7 +95,7 @@ def test_create_build(mocker, expected_class, build_object_type):
     When:
         - Running 'configure_an_test_integration_instances' script and creating Build object
     Then:
-        - Assert there the rigth Build object created: XSIAMBuild or XSOARBuild.
+        - Assert there the rigth Build object created: CloudBuild or XSOARBuild.
     """
     build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)
@@ -172,6 +173,28 @@ def test_update_integration_lists(mocker, new_integrations_names, turned_non_hid
     assert the_expected_result(returned_results[0], returned_results[1])
 
 
+def test_pack_names_to_integration_names_no_integrations_folder(tmp_path):
+    """
+    Given:
+        - Pack without integrations dir.
+    When:
+        - Transforming pack names to integration names when installing integrations.
+    Then:
+        - Assert no exceptions are raised.
+        - Assert no integrations are found.
+    """
+    packs_path = tmp_path / 'Packs'
+    packs_path.mkdir()
+    pack_path = packs_path / 'PackName'
+    pack_path.mkdir()
+    current_path = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        assert packs_names_to_integrations_names(['PackName']) == []
+    finally:
+        os.chdir(current_path)
+
+
 def test_get_packs_with_higher_min_version(mocker):
     """
     Given:
@@ -186,3 +209,47 @@ def test_get_packs_with_higher_min_version(mocker):
 
     packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, 'content', '6.5.0')
     assert packs_with_higher_min_version == {'TestPack'}
+
+
+CHANGED_MARKETPLACE_PACKS = [
+    ("""
+     "dependencies": {},
+     "marketplaces": [
+-         "xsoar"
++         "xsoar",
++        "marketplacev2"
+     ]
+ }""", 'XSOAR', set()),
+    ("""
+     "dependencies": {},
+     "marketplaces": [
+-         "xsoar"
++         "xsoar",
++        "marketplacev2"
+     ]
+ }""", 'XSIAM', {'pack_name'}),
+    ("""
+     "dependencies": {},
+     "marketplaces": [
+-        "marketplacev2"
++        "marketplacev2",
++        "xsoar"
+     ]
+ }""", 'XSOAR', {'pack_name'}),
+]
+
+
+@pytest.mark.parametrize('diff, build_type, the_expected_result', CHANGED_MARKETPLACE_PACKS)
+def test_first_added_to_marketplace(mocker, diff, build_type, the_expected_result):
+    """
+    Given:
+        - A pack_metadata.json content returned from the git diff.
+    When:
+        - Running 'get_turned_non_hidden_packs' method.
+    Then:
+        - Assert the expected result is returned.
+    """
+    build = create_build_object_with_mock(mocker, build_type)
+    mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
+    first_added_to_marketplace = filter_new_to_marketplace_packs(build, {'pack_name'})
+    assert the_expected_result == first_added_to_marketplace

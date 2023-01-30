@@ -8,22 +8,10 @@
     "email": "support@xmatters.com",
     "created": "2020-10-06T22:06:34Z",
     "categories": [
-        "Messaging",
-        "Utilities",
         "IT Services"
     ],
-    "tags": [
-        "Alerts",
-        "Email",
-        "Incident Handling",
-        "Incident Response",
-        "IT"
-    ],
-    "useCases": [
-        "Default",
-        "Email Communication",
-        "Incident Response"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "email",
         "sms",

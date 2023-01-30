@@ -8,6 +8,7 @@ if [ "$#" -lt "1" ]; then
   [-b, --branch]              The branch name. Default is the current branch.
   [-gb, --bucket]             The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
   [-gb2, --bucket_v2]         The name of the bucket to upload the marketplace v2 packs to. Default is marketplace-v2-dist-dev.
+  [-gb3, --bucket_xpanse]     The name of the bucket to upload the xpanse marketplace packs to. Default is xpanse-dist-dev.
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
@@ -22,6 +23,7 @@ fi
 _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
 _bucket_v2="marketplace-v2-dist-dev"
+_bucket_xpanse="xpanse-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
@@ -53,6 +55,15 @@ while [[ "$#" -gt 0 ]]; do
     echo "Only test buckets are allowed to use. Using marketplace-v2-dist-dev instead."
   else
     _bucket_v2=$2
+  fi
+    shift
+    shift;;
+
+  -gb3|--bucket_xpanse)
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "xpanse-dist" ]; then
+    echo "Only test buckets are allowed to use. Using xpanse-dist-dev instead."
+  else
+    _bucket_xpanse=$2
   fi
     shift
     shift;;
@@ -140,36 +151,11 @@ if [ -n "$_gitlab" ]; then
     --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
     --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
     --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
+    --form "variables[GCS_MARKET_XPANSE_BUCKET]=${_bucket_xpanse}" \
     --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
     --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
     --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
     --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
     "$BUILD_TRIGGER_URL"
 
-else
-
-  trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
-
-  post_data=$(cat <<-EOF
-  {
-    "branch": "${_branch}",
-    "parameters": {
-      "gcs_market_bucket": "${_bucket}",
-      "bucket_upload": "${_bucket_upload}",
-      "force_pack_upload": "${_force}",
-      "packs_to_upload": "${_packs}",
-      "slack_channel": "${_slack_channel}",
-      "storage_base_path": "${_storage_base_path}"
-    }
-  }
-  EOF
-  )
-
-  curl \
-  --header "Accept: application/json" \
-  --header "Content-Type: application/json" \
-  -k \
-  --data "${post_data}" \
-  --request POST ${trigger_build_url} \
-  --user "$_ci_token:"
 fi

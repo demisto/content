@@ -1225,6 +1225,7 @@ Delete a permission.
 | file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
 | user_id | The user's primary email address. | Optional | 
 | permission_id | The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output

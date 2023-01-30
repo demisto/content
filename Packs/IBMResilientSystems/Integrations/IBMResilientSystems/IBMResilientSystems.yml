@@ -892,7 +892,7 @@ script:
     - contextPath: Resilient.IncidentArtifact.ip.destination
       description: Whether the IP address is a destination.
       type: Boolean
-  dockerimage: demisto/resilient:2.0.0.33970
+  dockerimage: demisto/resilient:2.0.0.45701
   feed: false
   isfetch: true
   longRunning: false

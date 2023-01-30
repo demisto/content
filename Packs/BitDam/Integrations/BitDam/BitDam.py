@@ -3,9 +3,9 @@ from CommonServerPython import *
 '''IMPORTS'''
 import requests
 import base64
+import urllib3
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 '''INTEGRATION PARAMS'''
 API_TOKEN = demisto.params().get('apitoken')

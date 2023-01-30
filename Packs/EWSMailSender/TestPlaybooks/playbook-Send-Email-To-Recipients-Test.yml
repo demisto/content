@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d0949410-ccba-40b0-8441-d1b40cbd12c3
+    taskid: e7f82f87-46bc-476d-8525-91c933d09c88
     type: start
     task:
-      id: d0949410-ccba-40b0-8441-d1b40cbd12c3
+      id: e7f82f87-46bc-476d-8525-91c933d09c88
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -26,12 +27,17 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c02acb76-a021-4b8a-8b6b-3fd506922181
+    taskid: 59ebb938-5cba-4c87-8663-ce8ca6f1442d
     type: regular
     task:
-      id: c02acb76-a021-4b8a-8b6b-3fd506922181
+      id: 59ebb938-5cba-4c87-8663-ce8ca6f1442d
       version: -1
       name: Send Mail
       script: EWS Mail Sender|||send-mail
@@ -41,13 +47,8 @@ tasks:
     scriptarguments:
       attachIDs:
         simple: ${inputs.attIDs}
-      attachNames: {}
-      bcc: {}
-      body: {}
       cc:
         simple: ${inputs.cc}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: EWS Mail Sender Test - UT8uFQBBVcJeqAC4t4XvzZ9bBvfLYSk1zST8Fkx7rtHs4SfjvtYzCv1ElFGsX10gNWZlH7XpHGgWv31KI3LbDGBGPLPckyPaZvujMZRa6JloV22SIH0wqvPGYiFcYPm9muVjDyj75R4QTyatXimGcdOcdKwt2Rofv0UFDAKW2W2EU9tKoeGIy5p2DEvKk12qgiCxqNFd4mqCXoR1P9rypsuYlQ3OaIa6hzvoZMrH0qWSqL43wjGbM25d8OhKcoda
       to:
@@ -62,6 +63,11 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -76,18 +82,23 @@ view: |-
   }
 inputs:
 - key: to
-  value: {}
+  value:
+    simple: buildtests@demisto.int
   required: false
   description: ""
+  playbookInputQuery:
 - key: cc
   value: {}
   required: false
   description: ""
+  playbookInputQuery:
 - key: attIDs
   value: {}
   required: false
   description: ""
+  playbookInputQuery:
 outputs: []
 tests:
 - No test
 fromversion: 5.0.0
+description: ''

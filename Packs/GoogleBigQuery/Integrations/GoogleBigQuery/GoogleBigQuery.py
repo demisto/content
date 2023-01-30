@@ -5,14 +5,14 @@ from CommonServerUserPython import *
 
 import os
 import json
-import requests
+import urllib3
 from google.cloud import bigquery
 from datetime import date
 import hashlib
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' GLOBALS/PARAMS '''

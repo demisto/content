@@ -1,0 +1,2 @@
+[INGEST:vendor="Fortinet", product="Fortigate", target_dataset="fortinet_fortigate_raw"]
+alter _time = to_timestamp(divide(to_integer(FTNTFGTeventtime), 1000), "MICROS");

@@ -186,12 +186,6 @@ script:
     - contextPath: Maltiverse.Domain.TLD
       description: Top-level domain of the hostname.
       type: String
-    - contextPath: Maltiverse.Domain.ResolvedIP.IP
-      description: Stores an IP that was resolved by the domain.
-      type: String
-    - contextPath: Maltiverse.Domain.ResolvedIP.Timestamp
-      description: Stores a timestamp when an IP address has been resolved by the domain.
-      type: Date
     - contextPath: Domain.ThreatTypes
       description: A list with the description of the elements in the block list.
       type: Unknown
@@ -395,7 +389,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: false
   longRunning: false

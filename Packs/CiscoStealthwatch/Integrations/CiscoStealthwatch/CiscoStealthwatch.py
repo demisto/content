@@ -1,13 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+import urllib3
 import requests
 import dateparser
 from datetime import datetime
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -20,95 +20,69 @@ class Client(BaseClient):
     def __init__(self, base_url: str, auth: tuple, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, auth=auth, verify=verify, proxy=proxy)
 
-    def list_tenants(self):
+    def prepare_request(self, url_suffix: str, method: str = 'GET', data: dict = {}, json_data: dict = {},
+                        resp_type: str = 'json'):
         cookies = self._get_cookies()
-        return self._http_request(method='GET',
-                                  url_suffix='/sw-reporting/v1/tenants',
-                                  cookies=cookies)
+        headers = {}
+        if token := cookies.get('XSRF-TOKEN'):
+            demisto.debug('Received XSRF-TOKEN cookie from Cisco Secure Network, creating an X-XSRF-TOKEN header.')
+            headers.update({'X-XSRF-TOKEN': token})
+        return self._http_request(method=method, url_suffix=url_suffix, json_data=json_data, data=data, cookies=cookies,
+                                  headers=headers, resp_type=resp_type)
+
+    def list_tenants(self):
+        return self.prepare_request(method='GET', url_suffix='/sw-reporting/v1/tenants')
 
     def get_tenant(self, tenant_id: str):
-        cookies = self._get_cookies()
-        return self._http_request(method='GET',
-                                  url_suffix=f'/sw-reporting/v1/tenants/{tenant_id}',
-                                  cookies=cookies)
+        return self.prepare_request(method='GET', url_suffix=f'/sw-reporting/v1/tenants/{tenant_id}')
 
     def list_tags(self, tenant_id: str):
-        cookies = self._get_cookies()
-        return self._http_request(method='GET',
-                                  url_suffix=f'/sw-reporting/v1/tenants/{tenant_id}'
-                                             f'/internalHosts/tags',
-                                  cookies=cookies)
+        return self.prepare_request(method='GET',
+                                    url_suffix=f'/sw-reporting/v1/tenants/{tenant_id}'
+                                               f'/internalHosts/tags')
 
     def get_tag(self, tenant_id: str, tag_id: str):
-        cookies = self._get_cookies()
         url = f'/smc-configuration/rest/v1/tenants/{tenant_id}/tags/{tag_id}'
-        return self._http_request(method='GET',
-                                  url_suffix=url,
-                                  cookies=cookies)
+        return self.prepare_request(method='GET', url_suffix=url)
 
     def tag_hourly_traffic(self, tenant_id: str, tag_id: str):
-        cookies = self._get_cookies()
         url = f'/sw-reporting/v1/tenants/{tenant_id}/internalHosts/tags/{tag_id}/traffic/hourly'
-        return self._http_request(method='GET',
-                                  url_suffix=url,
-                                  cookies=cookies)
+        return self.prepare_request(method='GET', url_suffix=url)
 
     def get_top_alarms(self, tenant_id: str):
-        cookies = self._get_cookies()
         url = f'/sw-reporting/v1/tenants/{tenant_id}/internalHosts/alarms/topHosts'
-        return self._http_request(method='GET',
-                                  url_suffix=url,
-                                  cookies=cookies)
+        return self.prepare_request(method='GET', url_suffix=url)
 
     def initialize_flow_search(self, tenant_id: str, data) -> dict:
-        cookies = self._get_cookies()
         url = f'/sw-reporting/v2/tenants/{tenant_id}/flows/queries'
-        return self._http_request(method='POST',
-                                  url_suffix=url,
-                                  cookies=cookies,
-                                  json_data=data)
+        return self.prepare_request(method='POST', url_suffix=url, json_data=data)
 
     def check_flow_search_progress(self, tenant_id: str, search_id: str):
-        cookies = self._get_cookies()
         url = f'/sw-reporting/v2/tenants/{tenant_id}/flows/queries/{search_id}'
-        return self._http_request(method='GET',
-                                  url_suffix=url,
-                                  cookies=cookies)
+        return self.prepare_request(method='GET', url_suffix=url)
 
     def get_flow_search_results(self, tenant_id, search_id):
-        cookies = self._get_cookies()
         url = f'/sw-reporting/v2/tenants/{tenant_id}/flows/queries/{search_id}/results'
-        return self._http_request(method='GET',
-                                  url_suffix=url,
-                                  cookies=cookies)
+        return self.prepare_request(method='GET', url_suffix=url)
 
     def initialize_security_events_search(self, tenant_id: str, data) -> dict:
-        cookies = self._get_cookies()
         url = f'/sw-reporting/v1/tenants/{tenant_id}/security-events/queries'
-        return self._http_request(method='POST',
-                                  url_suffix=url,
-                                  cookies=cookies,
-                                  json_data=data)
+        return self.prepare_request(method='POST', url_suffix=url, json_data=data)
 
     def check_security_events_search_progress(self, tenant_id: str, search_id: str):
-        cookies = self._get_cookies()
         url = f'/sw-reporting/v1/tenants/{tenant_id}/security-events/queries/{search_id}'
-        return self._http_request(method='GET',
-                                  url_suffix=url,
-                                  cookies=cookies)
+        return self.prepare_request(method='GET', url_suffix=url)
 
     def get_security_events_search_results(self, tenant_id, search_id):
-        cookies = self._get_cookies()
         url = f'/sw-reporting/v1/tenants/{tenant_id}/security-events/results/{search_id}'
-        return self._http_request(method='GET',
-                                  url_suffix=url,
-                                  cookies=cookies)
+        return self.prepare_request(method='GET', url_suffix=url)
 
     def _get_cookies(self) -> requests.cookies.RequestsCookieJar:
         data = {
             'username': self._auth[0],
             'password': self._auth[1]
         }
+
         response = self._http_request(method='POST',
                                       url_suffix='/token/v2/authenticate',
                                       data=data,

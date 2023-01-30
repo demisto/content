@@ -1,0 +1,49 @@
+[MODEL: dataset="nginx_nginx_raw"]
+filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains "POST" or _raw_log contains "DELETE" or _raw_log contains "CONNECT" or _raw_log contains "OPTIONS" or _raw_log contains "TRACE" or _raw_log contains "PATCH"
+| alter 
+    Source_Ip = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)"),0),
+    requested_line = arrayindex(regextract(_raw_log,"\"[A-Z]+\s(\S+)\sHTTP"),0),
+    User_agent = arrayindex(regextract(_raw_log,"\"\s\"([^\"]+)"),0),
+    bytes_size = arrayindex(regextract(_raw_log,"\d\s(\d+)"),0),
+	httpmethod=arrayindex(regextract(_raw_log,"\"([A-Z]+)\s\S+\sHTTP"),0),
+	statuscode=arrayindex(regextract(_raw_log,"HTTP\/\d+\.\d+\"\s(\d+)\s"),0),
+// extract source_ip
+    sourceipv4 = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)"),0),
+    sourceipv6 = arrayindex(regextract(_raw_log,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
+| alter sourceip = coalesce(sourceipv4,sourceipv6),
+// end extract source_ip
+    Username = arrayindex(regextract(_raw_log,"(\S+)\s\[\d+\/"),0)
+| alter
+    xdm.network.http.url = requested_line,
+    xdm.target.sent_bytes = to_number(bytes_size),
+    xdm.source.ipv4 = source_ip,
+	xdm.network.http.method=httpmethod,
+	xdm.network.http.response_code=statuscode,
+    xdm.source.user.username = Username;
+
+ alter log_level = arrayindex(regextract(_raw_log,"\[(\w+)\]"),0),
+    Tid = arrayindex(regextract(_raw_log,"\#(\d+)"),0),
+    cid = arrayindex(regextract(_raw_log,"\*(\d+)"),0),
+    uri = arrayindex(regextract(_raw_log,"open\(\)\s\"?([^\s]+)"),0),
+    error_message = arrayindex(regextract(_raw_log,"\*\d+\s([^\,]+)"),0),
+// extract client
+    client_address_ipv4 = arrayindex(regextract(_raw_log,"client:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+    client_address_ipv6 = arrayindex(regextract(_raw_log,"client\:\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
+| alter client_address = coalesce(client_address_ipv4, client_address_ipv6),
+// end extract client
+    Server = arrayindex(regextract(_raw_log,"server\:([^\,]+)"),0),
+    Request = arrayindex(regextract(_raw_log,"request\:([^\,]+)"),0),
+    Host = arrayindex(regextract(_raw_log,"host\:\s\"?([^\"?\:]+)"),0),
+    Referrer = arrayindex(regextract(_raw_log,"referrer\:\s([^\s]+) "),0),
+    destination_port = arrayindex(regextract(_raw_log,"host\:\s\"?[^\"?\:]+\:(\d+)"),0)
+| alter
+    // xdm.alert.description = request
+    // xdm.target.user.username = host
+    xdm.alert.severity = log_level,
+    xdm.target.user.identifier = tid,
+    xdm.source.ipv4 = client_address,
+    xdm.alert.description = error_message,
+    xdm.target.user.username = server,
+    xdm.event.description = referrer,
+    xdm.source.user.identifier = uri,
+    xdm.target.resource.value = destination_port;

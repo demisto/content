@@ -1,0 +1,35 @@
+{
+    "AlertRules": [
+        "my-rule1",
+        "my-rule2",
+        "my-rule3"
+    ],
+    "AlertTime": "11/18/2022 11:12:14",
+    "ID": "P-1496074",
+    "Policy": {
+        "ID": "c29d7ea0-3913-4635-85bd-c4e68aab0ba1",
+        "Name": null,
+        "Remediable": false,
+        "Severity": null,
+        "Type": "config"
+    },
+    "Resource": {
+        "Account": "demo-project",
+        "AccountID": "gcp-demo1",
+        "Data": {
+            "tags": {
+                "fingerprint": "42",
+                "items": [
+                    "vm-series-fw"
+                ]
+            }
+        },
+        "ID": "1",
+        "Name": "vm-series-demo"
+    },
+    "RiskDetail": {
+        "Rating": null,
+        "Score": null
+    },
+    "Status": "resolved"
+}

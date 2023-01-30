@@ -51,6 +51,8 @@ def executeCommand(command, args=None):
         return [{'Contents': incidents_str, 'Type': 'not error'}]
     if command == 'CloseInvestigationAsDuplicate':
         EXISTING_INCIDENT_ID = args['duplicateId']
+    if command == 'FormatURL':
+        return [{'Contents': [args['input']], 'Type': 'not error'}]
 
 
 def results(arg):
@@ -218,7 +220,8 @@ def test_html_text(mocker):
     assert duplicated_incidents_found(existing_incident)
 
 
-def test_eliminate_urls_extensions():
+def test_eliminate_urls_extensions(mocker):
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     url = 'https://urldefense.proofpoint.com/v2/url?u=http-3A__fridmancpa.com_&d=DwIGaQ&c=XRWvQHnpdBDRh-yzrHjqLpXuH' \
           'NC_9nanQc6pPG_SpT0&r=sUpl2dZrOIls7oQLXwn74C7qVYSZVCdsK9UIY1nPz30&m=qD-Bndy5WGvuZizr-Jz7YQ5-8xXgRcK3w8NnNzX' \
           'lOsk&s=_NEaEUMVW0JU5b--ODhZKY9csky777X1jtFywaQyN2o&e='

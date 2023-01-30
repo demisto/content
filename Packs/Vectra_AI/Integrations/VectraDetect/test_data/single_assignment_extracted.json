@@ -1,0 +1,18 @@
+{
+    "AssignedBy": "SAML:dummy-user@example.com",
+    "AssignedDate": "2022-10-01T12:34:56.000Z",
+    "AssignedTo": "SAML:dummy-user@example.com",
+    "HostID": 1234,
+    "ID": 25,
+    "IsResolved": true,
+    "OutcomeCategory": "Benign True Positive",
+    "OutcomeTitle": "Vectra Outcome Test True Positive",
+    "ResolvedBy": "dummy@example.com",
+    "ResolvedDate": "2022-10-10T12:34:56.000Z",
+    "TriagedDetections": [
+        2201,
+        2202,
+        2203
+    ],
+    "TriagedAs": "Test-Triage"
+}

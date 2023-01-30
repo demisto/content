@@ -1,0 +1,43 @@
+{
+    "items": [
+        {
+            "id": "be751e8f-4c9a-4059-a734-2ccc624b0735",
+            "name": "cm kascamcksmkcas",
+            "description": "sxscsa",
+            "type": "computer",
+            "endpoints": {
+                "total": 0,
+                "itemsCount": 0,
+                "items": []
+            },
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "createdAt": "2022-09-29T16:17:46.333Z",
+            "updatedAt": "2022-10-01T06:47:05.970Z"
+        },
+        {
+            "id": "44ecd40e-5b8e-40ad-b8eb-27944ffbaf16",
+            "name": "demo-11:45",
+            "description": "dcca",
+            "type": "computer",
+            "endpoints": {
+                "total": 0,
+                "itemsCount": 0,
+                "items": []
+            },
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "createdAt": "2022-10-03T06:15:37.718Z",
+            "updatedAt": "2022-10-03T06:17:18.800Z"
+        }
+    ],
+    "pages": {
+        "current": 1,
+        "size": 2,
+        "total": 9,
+        "items": 17,
+        "maxSize": 1000
+    }
+}

@@ -2,9 +2,9 @@ from SearchIncidentsV2 import *
 import pytest
 
 data_test_check_if_found_incident = [
-    ([], 'failed to get incidents from demisto.\nGot: []'),
-    (None, 'failed to get incidents from demisto.\nGot: None'),
-    ('', 'failed to get incidents from demisto.\nGot: '),
+    ([], 'failed to get incidents from xsoar.\nGot: []'),
+    (None, 'failed to get incidents from xsoar.\nGot: None'),
+    ('', 'failed to get incidents from xsoar.\nGot: '),
     ([{'Contents': {'data': None}}], False),
     ([{'Contents': {'data': 'test'}}], True),
     ([{'Contents': {'test': 'test'}}], "{'test': 'test'}"),
@@ -103,7 +103,19 @@ FILTER_TO_MATCHED_INCIDENTS = [
     ({'type': ['Type-A', 'SomeType-A']}, ['2', '3']),
     ({'type': 'Another'}, []),
     ({'name': 'Phishing'}, ['1']),
-    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2']),
+    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2'])
+]
+
+INCIDENT = [
+    {'CustomFields':
+         {'hostname': 'host_name',  # noqa
+          'initiatedby': 'initiated_by',
+          'targetprocessname': 'target_process_name',
+          'username': 'user_name'},
+
+     'status': 0,
+     'severity': 1,
+     },
 ]
 
 
@@ -144,3 +156,27 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
     assert res == expected_result
     assert execute_mock.call_count == 1
     assert execute_mock.call_args[0][1] == filtered_args
+
+
+@pytest.mark.parametrize('platform, link_type, expected_result', [
+    ('x2', 'alertLink', 'alerts?action:openAlertDetails='),
+    ('xsoar', 'incidentLink', '#/Details/'),
+])
+def test_add_incidents_link(mocker, platform, link_type, expected_result):
+    mocker.patch.object(demisto, 'getLicenseCustomField', return_value='')
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': ''})
+    data = add_incidents_link(EXAMPLE_INCIDENTS_RAW_RESPONSE, platform)
+    assert expected_result in data[0][link_type]
+
+
+def test_transform_to_alert_data():
+    incident = transform_to_alert_data(INCIDENT)[0]
+    assert incident['hostname'] == 'host_name'
+    assert incident['status'] == 'PENDING'
+    assert incident['severity'] == 'LOW'
+
+
+def test_summarize_incidents():
+    assert summarize_incidents({'add_fields_to_summarize_context': 'test'}, [{'id': 'test', 'CustomFields': {}}]) == [
+        {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
+         'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]

@@ -1612,7 +1612,7 @@ tasks:
       - "40"
     scriptarguments:
       endpoint_id:
-        simple: ea303670c76e4ad09600c8b346f7c804
+        simple: f8a2f58846b542579c12090652e79f3d
       file_hash:
         simple: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
       file_path:
@@ -2094,7 +2094,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
