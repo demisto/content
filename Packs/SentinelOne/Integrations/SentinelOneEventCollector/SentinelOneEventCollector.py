@@ -127,13 +127,13 @@ def add_time_key_to_events(events: list[dict[str, Any]] | None):
     """
     for event in events or []:
         if alert_info := event.get('alertInfo'):
-            event["_time"] = alert_info.get("createdAt")
+            event["_time"] = alert_info.get("updatedAt")
             event["eventType"] = 'Alert'
         elif threat_info := event.get('threatInfo'):
-            event["_time"] = threat_info.get("createdAt")
+            event["_time"] = threat_info.get("updatedAt")
             event["eventType"] = 'Threat'
         else:  # Otherwise, it's an activity.
-            event["_time"] = event.get("createdAt")
+            event["_time"] = event.get("updatedAt")
             event["eventType"] = 'Activity'
 
 
