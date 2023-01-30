@@ -249,24 +249,31 @@ def get_scan_result_command():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
 
-try:
-    # Remove proxy if not set to true in params
-    handle_proxy()
+def main():  # pragma: no cover
+    command = demisto.command()
+    demisto.info(f"Command being called is: {command}")
 
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        get_hash_info('66DA1A91E1ED5D59BECFAD85F53C05F9')
-        demisto.results('ok')
-    if demisto.command() == 'opswat-scan-file':
-        scan_file_command()
-    if demisto.command() == 'opswat-hash':
-        get_hash_info_command()
-    if demisto.command() == 'opswat-scan-result':
-        get_scan_result_command()
-except Exception as e:
-    message = f'Unexpected error: {e}'
-    LOG(str(e))
-    LOG.print_log()
-    return_error(message)
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
+
+        if command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            get_hash_info('66DA1A91E1ED5D59BECFAD85F53C05F9')
+            demisto.results('ok')
+        if command == 'opswat-scan-file':
+            scan_file_command()
+        if command == 'opswat-hash':
+            get_hash_info_command()
+        if command == 'opswat-scan-result':
+            get_scan_result_command()
+    except Exception as e:
+        message = f'Unexpected error: {e}'
+        LOG(str(e))
+        LOG.print_log()
+        return_error(message)
+
+
+if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
+    main()
