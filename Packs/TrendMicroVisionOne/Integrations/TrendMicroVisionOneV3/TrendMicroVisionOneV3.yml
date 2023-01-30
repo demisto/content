@@ -841,7 +841,7 @@ script:
       type: string
     description: Updates the status of a workbench alert
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.9.46032
   isFetchSamples: true
   isfetch: true
   runonce: false
