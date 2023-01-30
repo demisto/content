@@ -948,30 +948,30 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:
         CommandResults: outputs and raw response for XSOAR.
 
     """
-    apiVersion = client.get_api_version()
-    containerName = args.get("container_name")
-    signedResource = args.get("signed_resources")
-    signedPermissions = args.get("signed_permissions")
-    validPermissions = "racwdxltmeop"
-    signedIp = args.get("signed_ip")
+    api_version = client.get_api_version()
+    container_name = args.get("container_name")
+    signed_resource = args.get("signed_resources")
+    signed_permissions = args.get("signed_permissions")
+    valid_permissions = "racwdxltmeop"
+    signed_ip = args.get("signed_ip")
     # Check Permissions
-    if check_valid_permission(validPermissions, signedPermissions):
+    if check_valid_permission(valid_permissions, signed_permissions):
         # Set start time
-        signedStart = str((datetime.utcnow() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        accountKey = demisto.params().get("key")
-        timeTaken = int(args.get('expiry_time'))
-        signedExpiry = str((datetime.utcnow() + timedelta(hours=timeTaken)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        urlSuffix = f"{containerName}"
-        canonicalizedResource = f"/blob/{storage_account_name}/{containerName}"
-        url = client.get_base_url() + urlSuffix
-        sasToken = generate_sas_signature(accountKey, canonicalizedResource, signedPermissions, signedStart, signedExpiry, signedResource, apiVersion, signedIp)
-        sas_url = f"{url}?{sasToken}"
+        signed_start = str((datetime.utcnow() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        account_key = demisto.params().get("key")
+        time_taken = int(args.get('expiry_time'))
+        signed_expiry = str((datetime.utcnow() + timedelta(hours=time_taken)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        url_suffix = f"{container_name}"
+        canonicalized_resource = f"/blob/{storage_account_name}/{container_name}"
+        url = client.get_base_url() + url_suffix
+        sas_token = generate_sas_signature(account_key, canonicalized_resource, signed_permissions, signed_start, signed_expiry, signed_resource, api_version, signed_ip)
+        sas_url = f"{url}?{sas_token}"
         res_data = sas_url
-        markdown = tableToMarkdown('Azure storage container SAS url', res_data, headers=[containerName])
+        markdown = tableToMarkdown('Azure storage container SAS url', res_data, headers=[container_name])
         result = CommandResults(
             readable_output=markdown,
             outputs_prefix='AzureStorageContainer.Container',
-            outputs_key_field=containerName,
+            outputs_key_field=container_name,
             outputs=res_data
         )
         return result
