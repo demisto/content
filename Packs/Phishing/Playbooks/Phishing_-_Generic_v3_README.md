@@ -1,4 +1,5 @@
 This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.
+The playbook is also able to detect phishing campaigns. In order to use that functionality, install the Phishing Campaign content pack, and configure the Demisto Lock integration.
 
 Note: 
 - Final remediation tasks are always decided by a human analyst. 
