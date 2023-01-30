@@ -54,7 +54,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        commit_message: Update demisto-sdk version in devcontainer
+        commit_message: Update .devcontainer.json name
     - name: Run demisto-sdk in devcontainer
       uses: devcontainers/ci@v0.2
       with:    
