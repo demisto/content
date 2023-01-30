@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - .devcontainer/**
+      - pyproject.toml
+      - poetry.lock
   push:
     branches:
       - master
@@ -14,6 +16,26 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Check if pyproject.toml or poetry.lock has been changed
+      id: changed-files-poetry
+      uses: tj-actions/changed-files@v35
+      with:
+        files: |
+          pyproject.toml
+          poetry.lock
+    - name: Write version file to .devcontainer
+      if: steps.changed-files-poetry.outputs.any_changed == 'true'
+      run: |
+        echo $(poetry show | grep demisto-sdk) > .devcontainer/demisto-sdk-version.txt
+    - name: commit file
+      if: steps.changed-files-poetry.outputs.any_changed == 'true'
+      uses: EndBug/add-and-commit@v9
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        add: .devcontainer/demisto-sdk-version.txt
+        message: "Update demisto-sdk version in devcontainer"
+
     - name: Run demisto-sdk in devcontainer
       uses: devcontainers/ci@v0.2
       with:    
