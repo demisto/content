@@ -1,7 +1,7 @@
 id: Azure - Enrichment
 version: -1
 name: Azure - Enrichment
-description: Given a IP address this playbook enriches Azure Compute, Microsoft Graph User, and IAM information and outputs Azure Compute, Microsoft Graph User, and IAM information.
+description: Given an IP address, this playbook enriches Azure Compute, Microsoft Graph User, and IAM information and outputs Azure Compute, Microsoft Graph User, and IAM information.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       id: 2125eb2b-347d-4773-8cb3-a5ea8b877dcf
       version: -1
       name: Is Azure Compute v2 enabled and is input value defined?
-      description: Determines if the Azure Compute v2 integration instance is configured and Input values are defined to pull enrichment data.
+      description: Determines if the Azure Compute v2 integration instance is configured and input values are defined to pull enrichment data.
       type: condition
       iscommand: false
       brand: ""
@@ -144,7 +144,7 @@ tasks:
       id: 862b3c6e-070d-44c6-8857-7f37f8bf8d3f
       version: -1
       name: Is there a public IP in Azure?
-      description: Check whether the last command returned information on the Public IP or not.
+      description: Checks whether the last command returned information on the Public IP or not.
       type: condition
       iscommand: false
       brand: ""
@@ -500,7 +500,7 @@ tasks:
       id: c0663b85-a499-4aa0-8359-46c98a177b26
       version: -1
       name: Is the Global Admin role id defined?
-      description: Check whether the last command returned information for Global Admins in Azure.
+      description: Checks whether the last command returned information for Global Admins in Azure.
       type: condition
       iscommand: false
       brand: ""
@@ -612,7 +612,7 @@ tasks:
       id: 085d43b7-26ee-4c06-86c1-620288295670
       version: -1
       name: Lookup user details of Global Admin users
-      description: "Retrieves the properties and relationships for Global Admins. \n\nFor more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).\nPermissions: - User.Read (Delegated) - User.Read.All (Application)"
+      description: "Retrieves the properties and relationships for Global Admins. \n\nFor more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0. \nPermissions: - User.Read (Delegated) - User.Read.All (Application)"
       script: Microsoft Graph User|||msgraph-user-get
       type: regular
       iscommand: true
@@ -738,7 +738,7 @@ outputs:
   description: Azure NIC information.
   type: unknown
 - contextPath: MSGraphIdentity.Role
-  description: Microsoft Graph Role object that contains role ID and user IDs
+  description: Microsoft Graph Role object that contains role ID and user IDs.
   type: unknown
 - contextPath: Account
   description: Microsoft Graph User account objects for found user IDs.
