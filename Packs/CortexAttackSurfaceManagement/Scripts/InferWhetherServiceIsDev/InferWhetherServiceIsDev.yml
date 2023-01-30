@@ -9,7 +9,7 @@ comment: Identify whether the service is a "development" server. Development ser
 commonfields:
   id: InferWhetherServiceIsDev
   version: -1
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.9.46032
 enabled: true
 name: InferWhetherServiceIsDev
 outputs:
