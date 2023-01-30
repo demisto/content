@@ -353,8 +353,7 @@ class TestFetchEvents:
             "max_fetch": max_fetch
         })
         mocker.patch.object(demisto, 'command', return_value='fetch-events')
-        with pytest.raises(Exception):
-            SaasSecurityEventCollector.main()
+        SaasSecurityEventCollector.main()
 
         assert expected_events == set_last_run_mock.call_args.args[0]
 
