@@ -1,5 +1,3 @@
-import os
-
 from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
@@ -190,6 +188,14 @@ class ContentItem(DictFileBased):
             return self['commonfields']['id']
         if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
             return self['layout']['id']
+        if self.path.parent.name == 'CorrelationRules' and self.path.suffix == '.yml':
+            return self['global_rule_id']
+        if self.path.parent.name == 'XSIAMDashboards' and self.path.suffix == '.json':
+            return self['dashboards_data'][0]['global_id']
+        if self.path.parent.name == 'Triggers' and self.path.suffix == '.json':
+            return self['trigger_id']
+        if self.path.parent.parent.name == 'XDRCTemplates' and self.path.suffix == '.json':
+            return self['content_global_id']
         return self['id']
 
     @property
@@ -324,7 +330,3 @@ def hotfix_detect_old_script_yml(path: Path):
 class FilesToCollect(NamedTuple):
     changed_files: tuple[str, ...]
     pack_ids_files_were_removed_from: tuple[str, ...]
-
-
-def has_modeling_rule_test_data(modeling_rule_dir: Path):
-    return any((file.name.endswith('testdata.json') for file in modeling_rule_dir.glob("*")))
