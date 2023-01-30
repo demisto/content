@@ -1,6 +1,6 @@
-id: Detonate File - ThreatGrid
+id: Detonate File - ThreatGrid v2
 version: -1
-name: Detonate File - ThreatGrid
+name: Detonate File - ThreatGrid v2
 starttaskid: "0"
 tasks:
   "0":
