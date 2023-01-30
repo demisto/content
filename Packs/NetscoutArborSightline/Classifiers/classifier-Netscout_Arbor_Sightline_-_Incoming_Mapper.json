@@ -8,7 +8,7 @@
             "internalMapping": {
                 "Netscout Arbor Sightline Alert Type": {
                     "complex": null,
-                    "simple": "attributes.alert_class""
+                    "simple": "attributes.alert_class"
                 },
                 "Classification": {
                     "complex": null,
@@ -36,28 +36,23 @@
                 },
                 "Device Local IP": {
                     "complex": null,
-                    "simple": "attributes.subobject.host_address",
-                    "cliName": "devicelocalip"
+                    "simple": "attributes.subobject.host_address"
                 },
                 "Is Active": {
                     "complex": null,
-                    "simple": "attributes.ongoing",
-                    "cliName": "isactive"
+                    "simple": "attributes.ongoing"
                 },
                 "Start Time": {
                     "complex": null,
-                    "simple": "attributes.start_time",
-                    "cliName": "starttime"
+                    "simple": "attributes.start_time"
                 },
                 "Subtype": {
                     "complex": null,
-                    "simple": "attributes.alert_type",
-                    "cliName": "subtype"
+                    "simple": "attributes.alert_type"
                 },
                 "Traffic Direction": {
                     "complex": null,
-                    "simple": "attributes.subobject.direction",
-                    "cliName": "trafficdirection"
+                    "simple": "attributes.subobject.direction"
                 },
                 "severity": {
                     "complex": null,
