@@ -26,7 +26,7 @@ outputs:
   description: The IPv4 Address.
   type: string
 - contextPath: IP.Private
-  description: Whether the IP address is private or public, according to the ranges defined in the XSOAR list, which is provided in the PrivateIPRangeList argument.
+  description: Whether the IP address is private or public, according to the ranges defined in the XSOAR list, which is provided in the PrivateIPsListName argument.
   type: boolean
 scripttarget: 0
 subtype: python3
