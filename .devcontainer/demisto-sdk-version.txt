@@ -1,0 +1,1 @@
+demisto-sdk 1.9.0 b111a77 "A Python library for the Demisto SDK"
