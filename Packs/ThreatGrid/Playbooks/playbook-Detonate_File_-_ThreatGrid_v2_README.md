@@ -33,4 +33,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Detonate File - ThreatGrid](../doc_files/Detonate_File_-_ThreatGrid.png)
+![Detonate File - ThreatGrid](../doc_files/Detonate_File_-_ThreatGrid_v2.png)
