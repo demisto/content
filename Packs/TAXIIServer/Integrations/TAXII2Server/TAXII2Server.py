@@ -557,7 +557,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     )
 
     total = 0
-    extensions_dict = {}
+    extensions_dict: dict = {}
     for ioc in indicator_searcher:
         found_indicators = ioc.get('iocs') or []
         total = ioc.get('total')
@@ -568,12 +568,13 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                 if manifest_entry:
                     iocs.append(manifest_entry)
             else:
-                stix_ioc, extension_definition = create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
+                stix_ioc, extension_definition, extensions_dict = create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
                 if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in SERVER.types_for_indicator_sdo:
                     stix_ioc = convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
                 if SERVER.has_extension and stix_ioc:
                     iocs.append(stix_ioc)
-                    extensions.append(extension_definition)
+                    if extension_definition:
+                        extensions.append(extension_definition)
                 elif stix_ioc:
                     iocs.append(stix_ioc)
 
@@ -724,10 +725,11 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     Args:
         xsoar_indicator: to create stix object entry from
         xsoar_type: type of indicator in xsoar system
-
+        extensions_dict: dict contains all object types that already have their extension defined
     Returns:
         Stix object entry for given indicator, and extension. Format described here:
         (https://docs.google.com/document/d/1wE2JibMyPap9Lm5-ABjAZ02g098KIxlNQ7lMMFkQq44/edit#heading=h.naoy41lsrgt0)
+        extensions_dict: dict contains all object types that already have their extension defined
     """
     is_sdo = False
     if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
@@ -803,7 +805,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
 
     if is_sdo:
         stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
-    return stix_object, extension_definition
+    return stix_object, extension_definition, extensions_dict
 
 
 def parse_content_range(content_range: str) -> tuple:
