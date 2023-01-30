@@ -652,56 +652,56 @@ script:
         - name: per_page
           description: Per Page Amount
       outputs:
-        - contextPath: KMSAT.TrainingEnrollments.enrollment_id
+        - contextPath: KMSAT.TrainingEnrollments.data.enrollment_id
           description: Training Enrollments Enrollment ID
           type: Number
-        - contextPath: KMSAT.TrainingEnrollments.content_type
+        - contextPath: KMSAT.TrainingEnrollments.data.content_type
           description: Training Enrollments Content Type
           type: String
-        - contextPath: KMSAT.TrainingEnrollments.module_name
+        - contextPath: KMSAT.TrainingEnrollments.data.module_name
           description: Training Enrollments Module Name
           type: String
-        - contextPath: KMSAT.TrainingEnrollments.user.id
+        - contextPath: KMSAT.TrainingEnrollments.data.user.id
           description: Training Enrollments User ID
           type: Number
-        - contextPath: KMSAT.TrainingEnrollments.user.first_name
+        - contextPath: KMSAT.TrainingEnrollments.data.user.first_name
           description: Training Enrollments User First Name
           type: String
-        - contextPath: KMSAT.TrainingEnrollments.user.last_name
+        - contextPath: KMSAT.TrainingEnrollments.data.user.last_name
           description: Training Enrollments Last Name
           type: String
-        - contextPath: KMSAT.TrainingEnrollments.user.email
+        - contextPath: KMSAT.TrainingEnrollments.data.user.email
           description: Training Enrollments User Email
           type: String
-        - contextPath: KMSAT.TrainingEnrollments.campaign_name
+        - contextPath: KMSAT.TrainingEnrollments.data.campaign_name
           description: Training Enrollments Campaign Name
           type: String
-        - contextPath: KMSAT.TrainingEnrollments.enrollment_date
+        - contextPath: KMSAT.TrainingEnrollments.data.enrollment_date
           description: Training Enrollments Enrollment Date
           type: Date
-        - contextPath: KMSAT.TrainingEnrollments.start_date
+        - contextPath: KMSAT.TrainingEnrollments.data.start_date
           description: Training Enrollments Start Date
           type: Date
-        - contextPath: KMSAT.TrainingEnrollments.completion_date
+        - contextPath: KMSAT.TrainingEnrollments.data.completion_date
           description: Training Enrollments Completion Date
           type: Date
-        - contextPath: KMSAT.TrainingEnrollments.status
+        - contextPath: KMSAT.TrainingEnrollments.data.status
           description: Training Enrollments Status
           type: String
-        - contextPath: KMSAT.TrainingEnrollments.time_spent
+        - contextPath: KMSAT.TrainingEnrollments.data.time_spent
           description: Training Enrollments Time Spent
           type: Number
-        - contextPath: KMSAT.TrainingEnrollments.policy_acknowledged
+        - contextPath: KMSAT.TrainingEnrollments.data.policy_acknowledged
           description: Training Enrollments Policy Acknowledged
           type: Boolean
-        - contextPath: KMSAT.TrainingEnrollments.paging_end
+        - contextPath: KMSAT.TrainingEnrollments.meta.paging_end
           description: Training Enrollments Meta Page End
           type: Boolean
-        - contextPath: KMSAT.TrainingEnrollments.filtered_items_in_page
-          description: Training Enrollments Meta Page End
+        - contextPath: KMSAT.TrainingEnrollments.meta.filtered_items_in_page
+          description: Training Enrollments Meta Filtered Items
           type: Boolean
-        - contextPath: KMSAT.TrainingEnrollments.unfiltered_count
-          description: Training Enrollments Meta Page End
+        - contextPath: KMSAT.TrainingEnrollments.meta.items_total
+          description: Training Enrollments Meta Items Total
           type: Boolean
       description: Returns all Training Enrollments
     - name: kmsat-user-events-list

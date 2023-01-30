@@ -885,7 +885,7 @@ def kmsat_training_enrollments_list_command(
     data = []
     filtered_items_in_page = 0
     paging_end = False
-    unfiltered_count = len(response)
+    items_total = len(response)
 
     # Sets paging_end False if the response count is less than the per_page
     if(len(response) < int(params.get('per_page'))):
@@ -897,13 +897,24 @@ def kmsat_training_enrollments_list_command(
             if response[i]['status'] == f"{status}":
                 data.append(response[i])
                 filtered_items_in_page += 1
-                unfiltered_count -= 1
     else:
         data = client.kmsat_training_enrollments(params)
 
+    # Adds meta to the result set for paging
+    metadata = {
+        "paging_end": paging_end,
+        "filtered_items_in_page": filtered_items_in_page,
+        "items_total": items_total
+    }
+
+    d = {
+        "data": data,
+        "meta": metadata
+    }
+
     markdown = tableToMarkdown(
         "Training Enrollments",
-        data,
+        d["data"],
         [
             "enrollment_id",
             "content_type",
@@ -919,47 +930,18 @@ def kmsat_training_enrollments_list_command(
         ]
     )
 
-    # Adds meta to the result set for paging
-    metadata = {
-        "paging_end": paging_end,
-        "filtered_items_in_page": filtered_items_in_page,
-        "unfiltered_count": unfiltered_count
-    }
-
-    meta_markdown = tableToMarkdown(
-        "Training Enrollments Meta",
-        metadata,
-        [
-            "paging_end",
-            "filtered_items_in_page",
-            "unfiltered_count",
-        ],
-    )
-
     if data is None:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_training_enrollments_list_command`.",
             res=data,
         )
-
-    command_results = [
-        CommandResults(
-            outputs_prefix="KMSAT.TrainingEnrollments",
-            outputs_key_field="enrollment_id",
-            raw_response=data,
-            outputs=data,
-            readable_output=markdown,
-        ),
-        CommandResults(
-            outputs_prefix="KMSAT.TrainingEnrollments",
-            outputs_key_field="",
-            raw_response=metadata,
-            outputs=metadata,
-            readable_output=meta_markdown,
-        )
-    ]
-
-    return_results(command_results)
+    return CommandResults(
+        outputs_prefix="KMSAT.TrainingEnrollments",
+        outputs_key_field="enrollment_id",
+        raw_response=d,
+        outputs=d,
+        readable_output=markdown,
+    )
 
 
 def kmsat_user_events_list_command(
