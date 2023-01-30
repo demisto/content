@@ -44,11 +44,22 @@ class TestConf(DictFileBased):
         self.test_id_to_test = {test.playbook_id: test
                                 for test in self.tests}
 
-        self.tests_to_integrations: dict[str, tuple[str, ...]] = {
-            test.playbook_id: test.integrations
-            for test in self.tests
-            if test.integrations
-        }
+        self.tests_to_integrations: dict[str, tuple[str, ...]] = {}
+        for test in self.tests:
+            if integrations := test.integrations:
+                if test.playbook_id not in self.tests_to_integrations:
+                    self.tests_to_integrations[test.playbook_id] = ()
+                self.tests_to_integrations[test.playbook_id] = tuple(
+                    set(
+                        list(self.tests_to_integrations[test.playbook_id]) + list(integrations)
+                    )
+                )
+
+        # self.tests_to_integrations: dict[str, tuple[str, ...]] = {
+        #     test.playbook_id: test.integrations
+        #     for test in self.tests
+        #     if test.integrations
+        # }
         logger.info(f'{self.tests_to_integrations=}')
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
 
