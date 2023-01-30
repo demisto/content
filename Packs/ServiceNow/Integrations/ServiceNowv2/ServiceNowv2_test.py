@@ -1810,18 +1810,25 @@ def test_get_closure_case(params, expected):
     assert get_closure_case(params) == expected
 
 
-@pytest.mark.parametrize('ticket_state, expected_res', [('1', 'Other'),
-                                                        ('7', 'Resolved')])
-def test_converts_state_close_reason(ticket_state, expected_res):
+@pytest.mark.parametrize('ticket_state, server_close_custom_state, expected_res',
+                         [('1', None, 'Other'),
+                          ('7', None, 'Resolved'),
+                          ('6', None, 'Resolved'),
+                          ('10', '10=Test', 'Test'),
+                          ('10', '10=Test,11=Test2', 'Test'),
+                          (None, None, 'Other'),
+                          ])
+def test_converts_state_close_reason(ticket_state, server_close_custom_state, expected_res):
     """
-    Givne:
+    Given:
         - ticket_state: The state for the closed service now ticket
+        - server_close_custom_state: The custom state for the closed service now ticket
     When:
         - closing a ticket on service now
     Then:
         - return the matching XSOAR incident state.
     """
-    assert converts_state_close_reason(ticket_state) == expected_res
+    assert converts_state_close_reason(ticket_state, server_close_custom_state) == expected_res
 
 
 def ticket_fields_mocker(*args, **kwargs):
