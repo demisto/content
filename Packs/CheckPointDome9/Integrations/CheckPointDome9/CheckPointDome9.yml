@@ -12,10 +12,12 @@ configuration:
   display: API key ID
   required: false
   type: 0
+  hidden: true
 - name: api_key_secret
   display: API key secret
   required: false
   type: 0
+  hidden: true
 - name: api_key_id_cred
   type: 9
   required: false

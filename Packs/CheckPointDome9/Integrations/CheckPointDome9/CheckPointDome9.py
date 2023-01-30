@@ -2134,8 +2134,8 @@ def main() -> None:
     api_key_secret_cred = params.get('api_key_secret_cred', {}).get('password')
 
     # get the api key and secret credentials
-    key_id = key_id or api_key_id_cred
-    key_secret = key_secret or api_key_secret_cred
+    key_id = api_key_id_cred or key_id
+    key_secret = api_key_secret_cred or key_secret
 
     # validate the api key and secret credentials
     if not key_id:
