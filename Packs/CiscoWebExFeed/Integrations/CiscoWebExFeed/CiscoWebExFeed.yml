@@ -105,10 +105,10 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: Both
-      description: The indicator type. Can be "IP", "DOMAIN", or "Both".
+      description: The indicator type. Can be "CIDR", "DOMAIN", or "Both".
       name: indicator_type
       predefined:
-      - IP
+      - CIDR
       - DOMAIN
       - Both
     description: Gets indicators from the feed.
