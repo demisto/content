@@ -46,13 +46,13 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Time in seconds to wait before taking a screenshot
+      description: Time in seconds to wait before taking a screenshot.
       isArray: false
       name: wait_time
       required: false
       secret: false
     - default: false
-      description: Maximum time to wait for a page to load (in seconds)
+      description: Maximum time to wait for a page to load (in seconds).
       isArray: false
       name: max_page_load_time
       required: false
@@ -431,7 +431,13 @@ script:
         - 'False'
       required: false
       secret: false
-    deprecated: false
+    - default: false
+      description: Time in seconds to wait before taking a screenshot.
+      isArray: false
+      name: wait_time
+      required: false
+      secret: false
+      deprecated: false
     description: Converts an html file to an image file or a PDF file.
     execution: false
     name: rasterize-html
