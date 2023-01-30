@@ -144,7 +144,7 @@ configuration:
   - None
   - closed
   - resolved
-- additionalinfo: Define how to close the mirrored tickets in XSOAR with a custom state. Enter here the custom closure state codes and their labels (Example “10=Design,11=Development,12=Testing”) to override the default closure method. If the closure codes does not exist, the default code will be used instead.
+- additionalinfo: 'Define how to close the mirrored tickets in XSOAR with a custom state. Enter here the custom closure state codes and their labels (Format: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of close reasons must be configured as a "Server configuration" in XSOAR. Not following this format will result in a server error.'
   defaultvalue: ''
   display: Mirrored XSOAR Ticket custom close state code
   name: server_close_custom_state
