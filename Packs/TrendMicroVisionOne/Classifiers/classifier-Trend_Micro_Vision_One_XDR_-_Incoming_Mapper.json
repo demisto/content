@@ -117,8 +117,7 @@
                             }
                         ]
                     },
-                    "simple": "",
-                    "cliName": "trendmicrovisiononexdrdetail"
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Email Address Count": {
                     "complex": null,
