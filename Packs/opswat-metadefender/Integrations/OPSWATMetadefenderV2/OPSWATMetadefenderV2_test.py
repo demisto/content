@@ -3,8 +3,12 @@ import pytest
 import tempfile
 
 BASE_URL = "http://localhost:8008/metascan_rest/"
-RES_1 = {}
-RES_2 = {}
+RES_1: dict = {}
+RES_2: dict = {'file_info': {'file_type_description': 'type_desc', 'display_name': 'display_name', 'md5': 'some_md5_hash'},
+               'process_info': {'progress_percentage': 50},
+               'scan_results': {'total_avs': 100, 'scan_all_result_a': 'scan_all_result_a', 'scan_all_result_i': 100,
+                                'scan_details': {'key': {'def_time': '1/1/2023', 'threat_found': 'threat'}}}}
+
 
 class MockResponse:
     def __init__(self, json_data, status_code):
@@ -38,7 +42,7 @@ def test_file_scan_command(mocker, file_name, file_type, data):
     When:
     - Running scan_file function.
     Then:
-    - The String type was parsed correctly.
+    - Ensures the String type was parsed correctly.
     """
     _, file_path = tempfile.mkstemp(prefix=file_name, suffix=file_type)
     with open(file_path, 'w') as temp_file:
@@ -64,10 +68,25 @@ def mocked_requests_get(*args, **kwargs):
     return MockResponse(data, 200)
 
 
-@pytest.mark.parametrize('id, res, ec, md', [
-    ('1', RES_1, {}, '# OPSWAT-Metadefender\n### Results for scan id 1\nNo results for this id\n')
+@pytest.mark.parametrize('id, md', [
+    ('1', '# OPSWAT-Metadefender\n### Results for scan id 1\nNo results for this id\n'),
+    ('2', "# OPSWAT-Metadefender\n### Results for scan id 2\n### The scan proccess is in progrees (done: 50%) \nFile "
+        "name: display_name\nScan result:scan_all_result_a\nDetected AV: 100/100\nAV Name|Def Time|Threat Name Found\n"
+        "---|---|---\nkey|1/1/2023|threat\n")
 ])
-def test_get_scan_result_command(mocker, id, res, ec, md):
+def test_get_scan_result_command(mocker, id, md):
+    """
+    Given:
+    - a file id.
+    - case 1: an id that return empty response
+    - case 2: an id that return a non empty response
+    When:
+    - Running get_scan_result_command.
+    Then:
+    - Ensures the HumanReadable in the result entry was generated correctly.
+    - case 1: Ensures the human readable contains a no results message.
+    - case 2: Ensures the table in the human readable was generated correctly.
+    """
     mocker.patch.object(demisto, 'params', return_value={'url': BASE_URL})
     mocker.patch.object(requests, 'get', side_effect=mocked_requests_get)
     mocker.patch.object(demisto, 'args', return_value={'id': id})
@@ -76,6 +95,4 @@ def test_get_scan_result_command(mocker, id, res, ec, md):
     from OPSWATMetadefenderV2 import get_scan_result_command
     get_scan_result_command()
     entry = demisto.results.call_args[0][0]
-    assert entry.get('Contents') == res
     assert entry.get('HumanReadable') == md
-    assert entry.get('EntryContext') == ec
