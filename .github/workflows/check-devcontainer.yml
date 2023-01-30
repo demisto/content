@@ -27,16 +27,13 @@ jobs:
         files: |
           pyproject.toml
           poetry.lock
-    - name: Get hash of poetry.lock
-      if: steps.changed-files-poetry.outputs.any_changed == 'true'
-      run: echo "POETRY_LOCK_HASH=${{ hashFiles('poetry.lock') }}" >> $GITHUB_ENV
     - name: Update .devcontainer.json description
       if: steps.changed-files-poetry.outputs.any_changed == 'true'
       uses: jossef/action-set-json-field@v2.1
       with:
         file: .devcontainer/devcontainer.json
         field: name
-        value: Content (${{ env.POETRY_LOCK_HASH }})
+        value: Content (${{ hashFiles('poetry.lock') }})
 
     - name: commit file
       if: steps.changed-files-poetry.outputs.any_changed == 'true'
