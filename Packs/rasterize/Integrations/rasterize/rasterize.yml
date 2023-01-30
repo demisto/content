@@ -437,7 +437,7 @@ script:
       name: wait_time
       required: false
       secret: false
-      deprecated: false
+    deprecated: false
     description: Converts an html file to an image file or a PDF file.
     execution: false
     name: rasterize-html
