@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-12T13:25:46.735384291+05:30",
-    "name": "EDR Enriched Category Name",
+    "name": "Symantec EDR Enriched Category Name",
     "ownerOnly": false,
     "cliName": "edrenrichedcategoryname",
     "type": "shortText",

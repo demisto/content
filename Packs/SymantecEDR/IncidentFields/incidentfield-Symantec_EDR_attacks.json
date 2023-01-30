@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-11T16:33:26.019959717+05:30",
-    "name": "EDR attacks",
+    "name": "Symantec EDR attacks",
     "ownerOnly": false,
     "cliName": "edrattacks",
     "type": "grid",

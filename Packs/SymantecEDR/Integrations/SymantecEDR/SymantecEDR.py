@@ -148,12 +148,8 @@ class Client(BaseClient):
         """
         Generate Access token
         Returns:
-            Returns the access_token
+            Returns Set access_token
         """
-        payload = {
-            "grant_type": 'client_credentials'
-        }
-
         if last_access_token := get_last_access_token_from_context():
             self.access_token = last_access_token
             demisto.debug(f"Last login access token still active. Return token {last_access_token}")
@@ -163,22 +159,26 @@ class Client(BaseClient):
                     method='POST',
                     url_suffix='/atpapi/oauth2/tokens',
                     auth=(self.client_key, self.secret_key),
-                    data=payload,
+                    data={'grant_type': 'client_credentials'},
                     resp_type='response'
                 )
                 response.raise_for_status()
 
-                new_access_token = response.json().get("access_token", '')
+                new_access_token = response.json().get("access_token")
                 self.access_token = new_access_token
                 timestamp_string = int(time.time() * 1000)
                 demisto.debug(f"login: success, saving access token {new_access_token}\n,"
                               f"Created Timestamp : {timestamp_string}")
+
                 if global_integration_context := demisto.getIntegrationContext():
                     global_integration_context['access_token'] = new_access_token
                     global_integration_context['created_timestamp_access_token'] = timestamp_string
                     demisto.setIntegrationContext(global_integration_context)
                 else:
-                    demisto.setIntegrationContext({'access_token': None, 'created_timestamp_access_token': None})
+                    demisto.setIntegrationContext({
+                        'access_token': new_access_token,
+                        'created_timestamp_access_token': timestamp_string
+                    })
 
             except requests.exceptions.HTTPError as err:
                 status = response.status_code
@@ -191,7 +191,8 @@ class Client(BaseClient):
                     # if it is unknown error - get the message from the error itself
                     raise DemistoException(f'Failed to execute. Error: {str(err)}', res=response)
 
-    def query_request_api(self, method: str, url_suffix: str, params: dict[str, Any] = None, json_data: dict[str, Any] = None):
+    def query_request_api(self, method: str, url_suffix: str, params: dict[str, Any] = None,
+                          json_data: dict[str, Any] = None) -> Dict[str, Any]:
         """
         Call Symantec EDR On-prem POST and GET Request API
         Args:
@@ -208,8 +209,8 @@ class Client(BaseClient):
                 method=method.upper(),
                 url_suffix=url_suffix,
                 headers=self.headers,
-                json_data=json_data if method == 'POST' else {},
-                params=params if method == 'GET' else {},
+                json_data=json_data,
+                params=params,
                 resp_type='response',
                 allow_redirects=False
             )
@@ -264,9 +265,13 @@ class Client(BaseClient):
 
 
 def get_last_access_token_from_context():
-    if token := demisto.getIntegrationContext().get('access_token', None):
-        last_datetime = demisto.getIntegrationContext().get('created_timestamp_access_token', None)
+    if token := demisto.getIntegrationContext().get('access_token'):
+        last_datetime = demisto.getIntegrationContext().get('created_timestamp_access_token')
         now_datetime = int(time.time() * 1000)  # Convert to Millisecond
+
+        if last_datetime is None:
+            raise ValueError('No Value identified for Last Datatime')
+
         time_diff = int(now_datetime - last_datetime)
         demisto.debug(
             f"Last token: {token}, Last datetime: {last_datetime}, now_datetime: {now_datetime}, time_diff: {time_diff}.")
@@ -1870,8 +1875,7 @@ def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> Command
         "Command Issuer Name": raw_response.get('command_issuer_name'),
     }
 
-    result = raw_response.get('status', [])
-    if len(result) >= 1:
+    if result := raw_response.get('status', ()):
         for status in result:
             summary_data['state'] = status.get('state', '')
             summary_data['message'] = status.get('message', '')
@@ -2061,19 +2065,21 @@ def check_sandbox_status(client: Client, args: Dict[str, Any]) -> CommandResults
              result.
     """
     title = "File Sandbox Status"
-    command_id = args.get('command_id')
-    try:
+    if command_id := args.get('command_id'):
         endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
-    except Exception as e:
-        raise DemistoException(f'File not found. Error : {e}')
+        try:
+            response = client.query_request_api(method='GET',
+                                                url_suffix=endpoint,
+                                                params={},
+                                                json_data={})
+        except Exception as e:
+            raise DemistoException(f'Unable to get Sandbox Status. Error {e}')
+    else:
+        raise DemistoException('Command ID missing.')
 
-    response = client.query_request_api(method='GET',
-                                        url_suffix=endpoint,
-                                        params={},
-                                        json_data={})
     # Query Sandbox Command Status
     summary_data = {}
-    sandbox_status = response.get("status", [])[0]
+    sandbox_status = response.get("status", ((),))[0]
     if sandbox_status:
         summary_data = {
             'command_id': command_id,

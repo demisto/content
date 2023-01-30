@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-11T16:33:58.860907227+05:30",
-    "name": "EDR Event Actor",
+    "name": "Symantec EDR Event Actor",
     "ownerOnly": false,
     "cliName": "edreventactor",
     "type": "grid",

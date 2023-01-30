@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-11T16:32:47.927803627+05:30",
-    "name": "EDR Enriched Data",
+    "name": "Symantec EDR Enriched Data",
     "ownerOnly": false,
     "cliName": "edrenricheddata",
     "type": "grid",

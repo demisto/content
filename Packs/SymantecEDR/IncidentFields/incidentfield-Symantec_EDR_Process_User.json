@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-12T14:26:09.016422526+05:30",
-    "name": "EDR Process User",
+    "name": "Symantec EDR Process User",
     "ownerOnly": false,
     "cliName": "edrprocessuser",
     "type": "grid",

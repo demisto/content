@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-05T22:55:14.441517513+05:30",
-    "name": "EDR Detection Type",
+    "name": "Symantec EDR Detection Type",
     "ownerOnly": false,
     "cliName": "edrdetectiontype",
     "type": "shortText",

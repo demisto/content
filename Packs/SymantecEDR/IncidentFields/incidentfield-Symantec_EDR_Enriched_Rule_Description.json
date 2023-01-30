@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-12T13:26:23.490463269+05:30",
-    "name": "EDR Enriched Rule Description",
+    "name": "Symantec EDR Enriched Rule Description",
     "ownerOnly": false,
     "cliName": "edrenrichedruledescription",
     "type": "shortText",
