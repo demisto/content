@@ -8,8 +8,7 @@
             "internalMapping": {
                 "Alert Name": {
                     "complex": null,
-                    "simple": "workbenchName",
-                    "cliName": "alertname"
+                    "simple": "workbenchName"
                 },
                 "Description": {
                     "complex": {
@@ -18,8 +17,7 @@
                         "root": "detail",
                         "transformers": []
                     },
-                    "simple": "",
-                    "cliName": "description"
+                    "simple": ""
                 },
                 "Detected User": {
                     "complex": {
