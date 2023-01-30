@@ -47,6 +47,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
   - [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
   - [Cortex ASM - Decision](#cortex-asm---decision)
+  - [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
 
 ### Cortex ASM - ASM Alert
 Playbook that enriches asset information for ASM alerts and provides means of remediation.
@@ -91,6 +92,9 @@ Playbook that given the IP address checks if SNMP is enabled or not and returns 
 #### Cortex ASM - Decision
 Playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is setup.
 TODO: ADD LINK AFTER INIT PR
+
+#### Cortex ASM - Remediation Path Rules
+Playbook that returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task options from "Cortex ADM - Decision" subplaybook.TODO: ADD LINK AFTER INIT PR
 
 ### Automation Scripts
 This content pack includes the [generateASMReport](#generateasmreport) script: 
