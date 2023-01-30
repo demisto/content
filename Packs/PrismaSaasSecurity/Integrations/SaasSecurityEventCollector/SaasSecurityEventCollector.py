@@ -265,9 +265,10 @@ def main() -> None:  # pragma: no cover
                     client=client, max_fetch=max_fetch, max_iterations=max_iterations
                 )
                 if len(events) == 0 and exception:
-                    raise exception
+                    demisto.info(f'got exception when trying to fetch events: [{exception}]')
             else:
                 events = last_run.get('events')
+                demisto.info(f'fetching the following events from last run: {events}')
             try:
                 demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
                 send_events_to_xsiam(
@@ -277,14 +278,17 @@ def main() -> None:  # pragma: no cover
                 )
                 demisto.setLastRun({})
             except Exception as e:
+                demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
                 demisto.setLastRun({'events': events})
-                raise e
+                demisto.info(f'set the following events into last run: {events}')
         elif command == 'saas-security-get-events':
             return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
         else:
             raise NotImplementedError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
-        raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
+        return_error(
+            f'Failed to execute {command} command. Error in Palo Alto Saas Security Event Collector Integration [{e}].'
+        )
 
 
 ''' ENTRY POINT '''
