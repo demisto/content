@@ -23,8 +23,6 @@ jobs:
       with:
         python-version: "3.10"
         cache: poetry
-    - name: install dependencies
-      run: poetry install
     - name: Check if pyproject.toml or poetry.lock has been changed
       id: changed-files-poetry
       uses: tj-actions/changed-files@v35
@@ -32,6 +30,9 @@ jobs:
         files: |
           pyproject.toml
           poetry.lock
+    - name: install dependencies
+      if: steps.changed-files-poetry.outputs.any_changed == 'true'
+      run: poetry install
     - name: Write version file to .devcontainer
       if: steps.changed-files-poetry.outputs.any_changed == 'true'
       run: |
