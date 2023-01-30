@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Tanium Threat Response v2 test
+  id: Tanium Threat Response v2
   version: -1
 configuration:
 - display: Hostname, IP address, or server URL
@@ -67,8 +67,8 @@ configuration:
   required: false
   type: 19
 description: Use the Tanium Threat Response integration to manage endpoint processes, evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.
-display: Tanium Threat Response v2 test
-name: Tanium Threat Response v2 test
+display: Tanium Threat Response v2
+name: Tanium Threat Response v2
 script:
   commands:
   - arguments:
