@@ -42,7 +42,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: The maximum number of indicators to fetch. If this argument is not specified, will parse the entire file.
+  description: The maximum number of indicators to fetch. If this argument is not
+    specified, will parse the entire file.
   isArray: false
   name: limit
   required: false
@@ -56,26 +57,32 @@ args:
   secret: false
 - default: false
   defaultValue: '1'
-  description: Only for spreadsheet files. The column number in the spreadsheet that contains the indicators. The first column number is 1. If this argument is not specified, will use at the first column.
+  description: Only for spreadsheet files. The column number in the spreadsheet that
+    contains the indicators. The first column number is 1. If this argument is not
+    specified, will use at the first column.
   isArray: false
   name: indicator_column_number
   required: false
   secret: false
 - default: false
-  description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators from. If this argument is not specified, will fetch from the first sheet of the workbook.
+  description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators
+    from. If this argument is not specified, will fetch from the first sheet of the
+    workbook.
   isArray: false
   name: sheet_name
   required: false
   secret: false
 - default: false
-  description: Only for spreadsheet files. The column number in the spreadsheet that contains the indicator types. The first column number is 1.
+  description: Only for spreadsheet files. The column number in the spreadsheet that
+    contains the indicator types. The first column number is 1.
   isArray: false
   name: indicator_type_column_number
   required: false
   secret: false
 - default: false
   defaultValue: '1'
-  description: Only for spreadsheet files. The starting row of the spreadsheet to fetch from. The first row is 1.
+  description: Only for spreadsheet files. The starting row of the spreadsheet to
+    fetch from. The first row is 1.
   isArray: false
   name: starting_row
   required: false
@@ -100,7 +107,5 @@ tags:
 - indicators
 timeout: '0'
 type: python
-dockerimage: demisto/py3-tools:1.0.0.42928
-fromversion: 6.5.0
-tests:
-- No tests (auto formatted)
+dockerimage: demisto/py3-tools:0.0.1.25751
+fromversion: 5.5.0
