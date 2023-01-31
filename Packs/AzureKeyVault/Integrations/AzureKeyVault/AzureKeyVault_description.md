@@ -1,15 +1,15 @@
 
 ### Authorize Cortex XSOAR for Azure Key Vault 
 
-#### Self deployed Authentication
+#### Self-Deployed Authentication
 Follow these steps for a self-deployed configuration:
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Azure app registration article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+1. To use a self-configured Azure application, add a new Azure App Registration in the Azure Portal. To add the registration, see the [Azure app registration article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
 
-2. Make sure the following permissions are granted for the app registration:
-   Azure Service Management - permission user_impersonation of type Delegated,
-   Azure Key Vault - permission user_impersonation of type Delegated.
+2. Make sure the following permissions are granted for the app registration:  
+   - Azure Service Management - permission user_impersonation of type Delegated
+   - Azure Key Vault - permission user_impersonation of type Delegated
 
 
 #### Get client ID and tenant ID values 
@@ -37,11 +37,11 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
 
 - ##### To use User Assigned Managed Identity
-   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
-   2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the **Azure Managed Identities Client ID** field in the instance settings.
+   1. Go to the [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.
    3. Select the **Use Azure Managed Identities** checkbox.
 
-For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
 
 
 ### Get Subscription ID and the Resource Group values
