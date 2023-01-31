@@ -67,7 +67,7 @@ def alert_to_demisto_result(alert):
 
     human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
         'Name': alert.get('name', ''),
-        'IP': alert.get('filters', {'ip', ''})['ip'],
+        'IP': alert.get('filters', {'ip': ''})['ip'],
         'Expires': ec['Shodan']['Alert']['Expires']
     })
 
