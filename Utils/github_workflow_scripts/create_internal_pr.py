@@ -14,7 +14,6 @@ print = timestamped_print
 
 def main():
     """Creates Internal PRs from Merged External PRs
-
     Performs the following operations:
     1. Creates new PR.
         A) Uses body of merged external PR as the body of the new PR.
