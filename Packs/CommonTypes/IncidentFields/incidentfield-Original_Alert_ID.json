@@ -13,7 +13,7 @@
 	"fieldCalcScript": "",
 	"group": 0,
 	"hidden": false,
-	"id": "incident_oringinal_alertid",
+	"id": "incident_oringinalalertid",
 	"isReadOnly": false,
 	"locked": false,
 	"name": "original Alert ID",
