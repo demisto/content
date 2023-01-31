@@ -413,7 +413,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.RN_CONFIG, (), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/ReleaseNotes/2_1_3.json',), (), None),
 
-        # (34) one of the integrations has been changed - expect the test playbook to be collected
+        # (34) see S definition at the top of this file - one of the integration has been changed
         (MockerCases.S, ('myOtherTestPlaybook',), ('myXSOAROnlyPack', 'myXSOAROnlyPack2',), None, None,
          XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
          ('myXSOAROnlyPack',)),
