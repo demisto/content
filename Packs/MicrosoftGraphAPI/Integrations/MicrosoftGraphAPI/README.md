@@ -60,7 +60,7 @@ The integration supports only Application permission type, and does not support 
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | tenant_id | Tenant ID (Required for using self deployed Azure app) | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-| Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
 | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
