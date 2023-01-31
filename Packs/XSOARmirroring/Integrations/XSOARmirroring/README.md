@@ -1,6 +1,7 @@
 Allows mirroring of XSOAR incidents between different Cortex XSOAR tenants.
 
 This integration was integrated and tested with version 6.0 of XSOAR
+Mirrored incidents include the playbook ID. The receiving side will attempt to run a playbook with a matching ID, if one exists locally.
 
 ## Configure XSOAR Mirroring on Cortex XSOAR
 

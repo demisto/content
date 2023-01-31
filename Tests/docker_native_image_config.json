@@ -106,7 +106,8 @@
          "id":"Intezer v2",
          "reason":"Issue: CIAC-5241.",
          "ignored_native_images":[
-            "native:dev"
+            "native:dev",
+            "native:8.1"
          ]
       },
       {
