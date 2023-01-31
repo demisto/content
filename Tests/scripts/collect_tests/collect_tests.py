@@ -767,7 +767,6 @@ class BranchTestCollector(TestCollector):
                 reason = CollectionReason.TEST_PLAYBOOK_CHANGED
 
             case FileType.INTEGRATION:
-                logger.info(f'{self.conf.integrations_to_tests=}, {yml.id_=}')
                 if yml.explicitly_no_tests():
                     suffix = ''
 
