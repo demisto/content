@@ -1,7 +1,7 @@
-id: Test XDR general and file commands Playbook
-version: 7
+id: Test XDR Playbook general commands
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Test XDR general and file commands Playbook
+name: Test XDR Playbook general commands
 starttaskid: "0"
 tasks:
   "0":
@@ -981,231 +981,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 8720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: 922d07c8-93d6-4add-8387-d7ff51d315d2
-    type: condition
-    task:
-      id: 922d07c8-93d6-4add-8387-d7ff51d315d2
-      version: -1
-      name: Verify check action status
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.GetActionStatus.status
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 662.5,
-          "y": 8555
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: 85fa038f-d5bb-462f-81aa-154ca72967da
-    type: condition
-    task:
-      id: 85fa038f-d5bb-462f-81aa-154ca72967da
-      version: -1
-      name: Verify retrieve file
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.Name
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 232.5,
-          "y": 8565
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 9c8265e2-0b30-4eab-8bd1-9bb5e8af91d4
-    type: playbook
-    task:
-      id: 9c8265e2-0b30-4eab-8bd1-9bb5e8af91d4
-      version: -1
-      name: Cortex XDR - Retrieve File Playbook
-      description: |-
-        Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
-        Inputs for this playbook are:
-        - A comma-separated list of endpoint IDs.
-        - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
-      playbookName: Cortex XDR - Retrieve File Playbook
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      endpoint_ids:
-        simple: aeec6a2cc92e46fab3b6f621722e9916
-      windows_file_paths:
-        simple: C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 232.5,
-          "y": 8390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: bcabdbd1-6465-487f-870b-7e3e87b0718b
-    type: playbook
-    task:
-      id: bcabdbd1-6465-487f-870b-7e3e87b0718b
-      version: -1
-      name: Cortex XDR - Check Action Status
-      description: Checks the action status of an action ID. \nEnter the action ID
-        of the action whose status you want to know.
-      playbookName: Cortex XDR - Check Action Status
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      action_id:
-        simple: ${PaloAltoNetworksXDR.RetrievedFiles.action_id}
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 662.5,
-          "y": 8390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 00e636c6-88ea-4495-8229-350c2e4bb5e2
-    type: regular
-    task:
-      id: 00e636c6-88ea-4495-8229-350c2e4bb5e2
-      version: -1
-      name: xdr-retrieve-files
-      description: Retrieves files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints. At least one endpoint ID and one
-        file path are necessary in order to run the command. After running this command,
-        you can use the xdr-action-status-get command with returned action_id, to
-        check the action status.
-      script: '|||xdr-file-retrieve'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
-                iscontext: true
-              right:
-                value:
-                  simple: CONNECTED
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
-                iscontext: true
-              right:
-                value:
-                  simple: AGENT_TYPE_SERVER
-          accessor: endpoint_id
-      windows_file_paths:
-        simple: C:\Users\demisto\Desktop\demisto.txt
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 662.5,
-          "y": 8215
+          "x": 550,
+          "y": 8060
         }
       }
     note: false
@@ -1229,8 +1006,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "27"
-      - "29"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1245,7 +1021,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 8040
+          "y": 7870
         }
       }
     note: false
@@ -1284,7 +1060,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7865
+          "y": 7695
         }
       }
     note: false
@@ -1323,7 +1099,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7690
+          "y": 7520
         }
       }
     note: false
@@ -1362,7 +1138,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7515
+          "y": 7345
         }
       }
     note: false
@@ -1405,7 +1181,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7340
+          "y": 7170
         }
       }
     note: false
@@ -1437,7 +1213,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 7165
+          "y": 6995
         }
       }
     note: false
@@ -1476,7 +1252,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 6990
+          "y": 6820
         }
       }
     note: false
@@ -1509,7 +1285,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 6810
+          "y": 6640
         }
       }
     note: false
@@ -1548,7 +1324,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 6640
+          "y": 6470
         }
       }
     note: false
@@ -1587,50 +1363,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 6465
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: ee58a0c2-58cc-4475-88fc-a248e9d61764
-    type: playbook
-    task:
-      id: ee58a0c2-58cc-4475-88fc-a248e9d61764
-      version: -1
-      name: Cortex XDR - quarantine file
-      playbookName: Cortex XDR - quarantine file
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
-    scriptarguments:
-      endpoint_id:
-        simple: f8a2f58846b542579c12090652e79f3d
-      file_hash:
-        simple: 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
-      file_path:
-        simple: /home/ec2-user/test_file.txt
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 550,
-          "y": 6290
+          "y": 6295
         }
       }
     note: false
@@ -1654,7 +1387,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "40"
+      - "39"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2462,7 +2195,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9585,
+        "height": 8925,
         "width": 922.5,
         "x": 120,
         "y": -800
