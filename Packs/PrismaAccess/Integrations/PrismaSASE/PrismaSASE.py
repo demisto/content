@@ -14,6 +14,8 @@ DEFAULT_LIMIT = 50
 PA_OUTPUT_PREFIX = "PrismaSase."
 CONFIG_URI_PREFIX = "/sse/config/v1/"
 DEFAULT_POLLING_INTERVAL = 30
+DEFAULT_POSITION = 'pre'
+DEFAULT_FOLDER = 'Shared'
 
 SECURITYRULE_FIELDS = {
     "action": "",
@@ -1056,8 +1058,8 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
 
     rule = client.build_security_rule(args)
     query_params = {
-        'folder': encode_string_results(args.get('folder')),
-        'position': encode_string_results(args.get('position'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'position': encode_string_results(args.get('position')) or DEFAULT_POSITION
     }
     tsg_id = args.get('tsg_id')
     demisto.debug(f'sending security rule to the API. Rule: {rule}')
@@ -1087,7 +1089,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
         'name': args.get('name')}
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
 
     if args.get('description'):
@@ -1119,7 +1121,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     object_id = args.get('object_id', '')
     tsg_id = args.get('tsg_id')
@@ -1186,7 +1188,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     if object_id := args.get('object_id'):
@@ -1239,8 +1241,8 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
     tsg_id = args.get('tsg_id')
     overwrite = argToBoolean(args.get('overwrite'))
     query_params = {
-        'folder': encode_string_results(args.get('folder')),
-        'position': encode_string_results(args.get('position'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'position': encode_string_results(args.get('position')) or DEFAULT_POSITION
     }
     original_rule = client.get_security_rule_by_id(query_params=query_params, rule_id=rule_id, tsg_id=tsg_id)
     updated_rule = update_new_rule(rule, original_rule, overwrite=overwrite)
@@ -1284,8 +1286,8 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder')),
-        'position': encode_string_results(args.get('position'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+        'position': encode_string_results(args.get('position')) or DEFAULT_POSITION
     }
     tsg_id = args.get('tsg_id')
 
@@ -1346,7 +1348,7 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     if tag_id := args.get('tag_id'):
@@ -1385,7 +1387,9 @@ def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if comments := args.get('comments'):
         tag['comments'] = comments
 
-    query_params = {'folder': args.get('folder')}
+    query_params = {
+        'folder': args.get('folder') or DEFAULT_FOLDER
+    }
     tsg_id = args.get('tsg_id')
 
     demisto.debug(f'Sending tag to the API. Tag: {tag}')
@@ -1407,7 +1411,7 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder') or DEFAULT_FOLDER)
     }
     # first get the original tag, so user won't need to send all data
     tag_id = args.get('tag_id', '')
@@ -1457,7 +1461,7 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     if group_id := args.get('group_id'):
@@ -1492,7 +1496,7 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
         'name': args.get('name')}
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
 
@@ -1529,7 +1533,7 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     group_id = args.get('group_id', '')
@@ -1610,7 +1614,7 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     if url_category_id := args.get('id'):
@@ -1647,7 +1651,7 @@ def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     }
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
 
@@ -1678,7 +1682,7 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     url_category_id = args.get('id', '')
@@ -1741,7 +1745,7 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     if external_dynamic_list_id := args.get('id'):
@@ -1784,7 +1788,7 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     }
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
 
@@ -1827,7 +1831,7 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     """
 
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     dynamic_list_id = args.get('id', '')
@@ -1916,7 +1920,7 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Command get all built-in url categories
     """
     query_params = {
-        'folder': encode_string_results(args.get('folder'))
+        'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
     }
     tsg_id = args.get('tsg_id')
     raw_response = client.list_url_access_profile(query_params=query_params, tsg_id=tsg_id)  # type: ignore
@@ -2005,7 +2009,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                                       readable_output=f'Something went wrong while trying to push sub process '
                                                       f'with id {job.get("id", "")}job id {job_id}. '
                                                       f'Result: {job_result}')
-    return CommandResults(readable_output=f'Finished pushing job {job_id}', outputs=)
+    return CommandResults(readable_output=f'Finished pushing job {job_id}', outputs=outputs)
 
 
 def main():  # pragma: no cover

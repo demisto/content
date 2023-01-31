@@ -64,7 +64,6 @@ script:
       predefined:
       - pre
       - post
-      required: true
     - default: false
       description: The name of the security rule.
       isArray: false
@@ -255,7 +254,6 @@ script:
       predefined:
       - pre
       - post
-      required: true
     - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
       isArray: false
@@ -405,7 +403,6 @@ script:
       predefined:
       - pre
       - post
-      required: true
     - auto: PREDEFINED
       default: false
       description: Rule action.
