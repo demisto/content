@@ -1,4 +1,4 @@
-name: myIntegration2
+name: myIntegration
 tests:
   - myOtherTestPlaybook
 marketplaces:
@@ -9,7 +9,7 @@ type: python
 
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: myIntegration2
+  id: myIntegration
   version: -1
 configuration:
 - name: credentials
