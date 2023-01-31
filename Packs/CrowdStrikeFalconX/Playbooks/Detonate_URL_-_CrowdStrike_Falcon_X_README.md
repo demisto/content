@@ -1,4 +1,4 @@
-Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+Detonate one or more files using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,8 +7,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalconX
-* CrowdStrike Falcon X
+* CrowdStrikeFalconIntelligenceSandbox
+* CrowdStrike Falcon Intelligence Sandbox
 
 ### Scripts
 This playbook does not use any scripts.

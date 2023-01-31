@@ -1,9 +1,11 @@
 import json
 import pytest
-from stix2 import TAXIICollectionSource
+from stix2 import TAXIICollectionSource, parse
+
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
     RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
-    INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME
+    INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
+    CAMPAIGN, ATTACK_PATTERNS
 
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 NON_ENTERPRISE_COLLECTION_ID = '101010101010101010101010101010101'
@@ -54,7 +56,7 @@ def test_fetch_indicators(mocker, indicator, expected_result):
     mocker.patch.object(json, 'loads', return_value=indicator[0])
     mocker.patch.object(fm, 'create_relationship', wraps=mock_create_relations(create_relationship))
 
-    indicators = client.build_iterator(create_relationships=True, limit=6)
+    indicators = client.build_iterator(create_relationships=True, limit=7)
     assert indicators == expected_result
 
     default_id = NON_ENTERPRISE_COLLECTION_ID
@@ -67,7 +69,7 @@ def test_fetch_indicators(mocker, indicator, expected_result):
     mocker.patch.object(json, 'loads', return_value=indicator[0])
     mocker.patch.object(fm, 'create_relationship', wraps=mock_create_relations(create_relationship))
 
-    indicators = client.build_iterator(create_relationships=True, limit=6)
+    indicators = client.build_iterator(create_relationships=True, limit=7)
     assert indicators == ([], [], {}, {})
 
 
@@ -118,7 +120,8 @@ def test_is_indicator_deprecated_or_revoked(indicator, expected_result):
     ('Tool', TOOL.get('response'), TOOL.get('map_result')),
     ('STIX Tool', STIX_TOOL.get('response'), STIX_TOOL.get('map_result')),
     ('STIX Malware', STIX_MALWARE.get('response'), STIX_MALWARE.get('map_result')),
-    ('STIX Attack Pattern', STIX_ATTACK_PATTERN.get('response'), STIX_ATTACK_PATTERN.get('map_result'))
+    ('STIX Attack Pattern', STIX_ATTACK_PATTERN.get('response'), STIX_ATTACK_PATTERN.get('map_result')),
+    ('Campaign', CAMPAIGN.get('response'), CAMPAIGN.get('map_result')),
 ])
 def test_map_fields_by_type(indicator_type, indicator_json, expected_result):
     from FeedMitreAttackv2 import map_fields_by_type
@@ -199,3 +202,55 @@ def test_create_relationships_invalid():
     item_json = {'source_ref': '',
                  'target_ref': ''}
     assert create_relationship(item_json, {}) is None
+
+
+def test_create_relationship_with_unknown_relationship_name():
+    from FeedMitreAttackv2 import create_relationship
+    item_json = {'source_ref--source_ref': 'source_ref',
+                 'target_ref--target_ref': 'target_ref'}
+    output = create_relationship(RELATIONSHIP_ENTITY, item_json)
+    assert output is not None
+
+
+@pytest.mark.parametrize('attack_id, attack_pattern_obj, expected_result', [
+    ("T1111", {"external_references": [{"external_id": 'T1111'}]}, True),
+    ("T1098", {"external_references": [{"external_id": 'T1111'}]}, False)
+])
+def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj, expected_result):
+    from FeedMitreAttackv2 import filter_attack_pattern_object_by_attack_id
+    output = filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj)
+    assert output == expected_result
+
+
+@pytest.mark.parametrize('description, expected_result', [
+    ('Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.', '2016, February 23'),
+    ('Cisco. (n.d.). Cisco IOS Software Integrity Assurance - Command History. Retrieved October 21, 2020.', ''),
+    ('Citation: Security Affairs Elderwood Sept 2012)', '')
+])
+def test_extract_timestamp_from_description(description, expected_result):
+    from FeedMitreAttackv2 import extract_timestamp_from_description
+    output = extract_timestamp_from_description(description)
+    assert output == expected_result
+
+
+def test_attack_pattern_reputation_command(mocker):
+    """
+    Given:
+        Some attack patterns to retrieve, with and without sub-technique
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Returns the wanted attack patterns
+    """
+    from FeedMitreAttackv2 import attack_pattern_reputation_command
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_pattern': 'Abuse Elevation Control Mechanism, Active Scanning: Wordlist Scanning'}
+    command_results = attack_pattern_reputation_command('', args)
+
+    assert command_results[0].indicator.value == 'Abuse Elevation Control Mechanism'
+    assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'

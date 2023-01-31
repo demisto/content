@@ -1,0 +1,43 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Threat Vault",
+    "mapping": {
+        "Threat Vault Release notes": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Threat Vault by Palo Alto Networks Applications": {
+                    "simple": "data.[0].release_notes.applications.new"
+                },
+                "Threat Vault by Palo Alto Networks Content Version": {
+                    "simple": "data.[0].content_version"
+                },
+                "Threat Vault by Palo Alto Networks Release Version": {
+                    "simple": "data.[0].release_version"
+                },
+                "Threat Vault by Palo Alto Networks Spyware": {
+                    "simple": "data.[0].release_notes.spyware.new"
+                },
+                "Threat Vault by Palo Alto Networks Vulnerability": {
+                    "simple": "data.[0].release_notes.vulnerability.new"
+                },
+                "Threat Vault by Palo Alto Networks data correlation": {
+                    "simple": "data.[0].release_notes.data_correlation.new"
+                },
+                "Threat Vault by Palo Alto Networks decoders": {
+                    "simple": "data.[0].release_notes.decoders.new"
+                },
+                "Threat Vault by Palo Alto Networks file type": {
+                    "simple": "data.[0].release_notes.file_type.new"
+                },
+                "Threat Vault by Palo Alto Networks release notes": {
+                    "simple": "data.[0].release_notes.notes.[0]"
+                }
+            }
+        }
+    },
+    "name": "Threat Vault",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

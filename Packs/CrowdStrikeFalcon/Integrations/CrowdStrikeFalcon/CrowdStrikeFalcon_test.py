@@ -2636,8 +2636,8 @@ def test_search_custom_iocs_command_exists(requests_mock):
     )
     results = search_custom_iocs_command()
     assert '| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | md5 |' \
-           in results["HumanReadable"]
-    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+           in results[0]["HumanReadable"]
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
 def test_search_custom_iocs_command__no_iocs(requests_mock, mocker):
@@ -2700,8 +2700,8 @@ def test_search_custom_iocs_command_filter(requests_mock):
         values=ioc_value,
     )
     assert f'| 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | prevent | high | {ioc_type} |' \
-           f' {ioc_value} |' in results["HumanReadable"]  # noqa: E501
-    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
+           f' {ioc_value} |' in results[0]["HumanReadable"]  # noqa: E501
+    assert results[0]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
 
 
 def test_get_custom_ioc_command_exists(requests_mock):
@@ -4155,3 +4155,139 @@ def test_error_in_get_detections_by_behaviors(mocker):
     res = get_detection_for_incident_command(incident_id='zz')
     assert res.readable_output
     demisto.error.assert_called_once_with('Error occurred when trying to get detections by behaviors: ')
+
+
+ARGS_vulnerability = [
+    (
+        {'display_remediation_info': 'True',
+         'display_evaluation_logic_info': 'True',
+         'display_host_info': 'False',
+         'limit': '1'}, False,
+        None, 'Please add a at least one filter argument'
+    ),
+    (
+        {"cve_severity": "LOW", 'display_remediation_info': 'True',
+         'display_evaluation_logic_info': 'True',
+         'display_host_info': 'False', 'status': "open,closed"},
+        True,  # Valid case
+        {"resources":
+         [
+             {"id": "id1",
+              "cid": "cid1",
+              "aid": "aid1",
+              "created_timestamp": "2021-09-16T15:12:42Z",
+              "updated_timestamp": "2022-10-19T00:54:43Z",
+              "status": "open",
+              "cve": {
+               "id": "cveid1",
+               "base_score": 3.3,
+               "severity": "LOW",
+               "exploit_status": 0,
+               "exprt_rating": "LOW",
+               "remediation_level": "O",
+               "spotlight_published_date": "2021-09-15T18:33:00Z",
+               "description": "secd",
+               "published_date": "2021-09-15T12:15:00Z"}},
+             {"id": "ID2",
+              "cid": "cid2",
+              "aid": "aid2",
+              "created_timestamp": "2022-10-12T22:12:49Z",
+              "updated_timestamp": "2022-10-18T02:54:43Z",
+              "status": "open",
+              "cve": {"id": "idcve4",
+                        "spotlight_published_date": "2022-10-12T14:57:00Z",
+                        "description": "desc3",
+                        "published_date": "2022-10-11T19:15:00Z",
+                        "exploitability_score": 1.8,
+                        "impact_score": 1.4}}
+         ]
+         },
+        '### List Vulnerabilities\n' \
+        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n' \
+        '|---|---|---|---|---|---|---|\n' \
+        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n' \
+        '| idcve4 |  | open |  | 2022-10-11T19:15:00Z | 1.4 | 1.8 |\n'  # args list
+
+    )
+]
+
+
+@pytest.mark.parametrize('args, is_valid, result_key_json, expected_hr', ARGS_vulnerability)
+def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid, result_key_json, expected_hr):
+    """
+    Test cs_falcon_spotlight_search_vulnerability_command,
+        with a the filters:  cve_severity, status
+    Given
+     - There is a vulnerability that are found
+    When
+     - The user is running cs_falcon_spotlight_search_vulnerability_command with an id
+    Then
+     - Return a CrowdStrike Falcon Vulnerability context output
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import cs_falcon_spotlight_search_vulnerability_command
+    from CommonServerPython import DemistoException
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+    if is_valid:
+        outputs = cs_falcon_spotlight_search_vulnerability_command(args)
+        assert outputs.readable_output == expected_hr
+    else:
+        with pytest.raises(DemistoException) as e:
+            cs_falcon_spotlight_search_vulnerability_command(args)
+        assert str(e.value) == expected_hr
+
+
+def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
+    """
+    Test cs_falcon_spotlight_list_host_by_vulnerability_command,
+        with a the filters:  cve_severity, status
+    Given
+     - There is a vulnerability that are found
+    When
+     - The user is running cs_falcon_spotlight_list_host_by_vulnerability_command with an id
+    Then
+     - Return a CrowdStrike Falcon Vulnerability context output
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import cs_falcon_spotlight_list_host_by_vulnerability_command
+
+    result_key_json = {
+        "resources": [
+            {
+                "id": "id1",
+                "cid": "cid1",
+                "aid": "aid1",
+                "created_timestamp": "2022-01-25T22:44:53Z",
+                "updated_timestamp": "2022-10-19T13:56:17Z",
+                "status": "open",
+                "host_info": {
+                    "hostname": "host",
+                    "local_ip": "ip_addr",
+                    "machine_domain": "",
+                    "os_version": "os_ver_example",
+                    "ou": "",
+                    "site_name": "",
+                    "system_manufacturer": "manu_example",
+                    "tags": [],
+                    "platform": "Windows",
+                    "instance_id": "int_id",
+                    "service_provider_account_id": "id1_account",
+                    "service_provider": "id_ser_prov",
+                    "os_build": "1",
+                    "product_type_desc": "Server"
+                },
+                "cve": {
+                    "id": "CVE-2013-3900"
+                }
+            }
+        ]
+    }
+    expected_hr = '### List Vulnerabilities For Host\n'\
+                  '|CVE ID|hostname|os Version|Product Type Desc|Local IP|\n' \
+                  '|---|---|---|---|---|\n' \
+                  '| CVE-2013-3900 | host | os_ver_example | Server | ip_addr |\n'
+    args = {'cve_ids': 'CVE-2013-3900', 'limit': 1}
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+
+    outputs = cs_falcon_spotlight_list_host_by_vulnerability_command(args)
+    assert outputs.readable_output == expected_hr

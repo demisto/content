@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Migrated SplunkPy integration from python 2.7 to python 3.10. Updated splunk-sdk from 1.6.16 to 1.7.2. The integration will now always use the requests handler."}

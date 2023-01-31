@@ -7,16 +7,16 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 2. Search for CyberArk Identity Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                    | **Required** |
-    |------------------------------------------------------------------------------| --- | --- |
-    | Server URL | The CyberArk Identity URL to get the logs from. For example, https://{{tenant}}.my.idaptive.app.       | True |
-    | App ID | The application ID to fetch the logs from.                                | True |
-    | User name | The user that was created in CyberArk for the XSIAM integration. For example, `admin@example.com`.                  | True |
-    | Password | The password for the user that was created in CyberArk for the XSIAM integration.                                                      | True |
-    | First fetch time  | The period to retrieve events for. <br/>Format: &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months. <br/>Default is 3 days. | True |
-    | Maximum number of events per fetch | The maximum number of items to retrieve per request from CyberArk's API. | True |
-    | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
-    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False |
+| **Parameter**                       | **Description**                                                    | **Required** |
+|-------------------------------------| --- | --- |
+| Server URL                          | The CyberArk Identity URL to get the logs from. For example, https://{{tenant}}.my.idaptive.app.       | True |
+| App ID                              | The application ID to fetch the logs from.                                | True |
+| User name                           | The user that was created in CyberArk for the XSIAM integration. For example, `admin@example.com`.                  | True |
+| Password                            | The password for the user that was created in CyberArk for the XSIAM integration.                                                      | True |
+| First fetch time                    | The period to retrieve events for. <br/>Format: &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months. <br/>Default is 3 days. | True |
+| Maximum number of events per fetch  | The maximum number of items to retrieve per request from CyberArk's API. | True |
+| Trust any certificate (not secure)  | When selected, certificates are not checked.  | False |
+| Use system proxy settings           | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

@@ -82,6 +82,7 @@ CTI
 SCC
 IPinfo
 QRadarFullSearch
+Commandline
 ServiceNow
 OAuth
 Qualys
@@ -193,6 +194,8 @@ maxPages
 cs-fx-upload-file
 lookback
 subclass
+paginate
+paginated
 pagination
 XDM
 Fortinet
@@ -212,3 +215,10 @@ vCenter
 ESXi
 MT
 AWS
+MicrosoftAPIModule
+subplaybook
+IAMApiModule
+Salesforce
+Atlassian
+PTR
+Recursively

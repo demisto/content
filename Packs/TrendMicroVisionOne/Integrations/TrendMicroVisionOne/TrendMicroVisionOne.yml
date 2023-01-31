@@ -49,6 +49,20 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
 description: Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
 display: Trend Micro Vision One
 defaultmapperin: Trend Micro Vision One XDR - Incoming Mapper
@@ -437,6 +451,15 @@ script:
     - contextPath: VisionOne.File_Analysis_Status.report_id
       description: ID used to get the report and suspicious object. Empty means no report.
       type: string
+    - contextPath: VisionOne.File_Analysis_Status.DBotScore.Score
+      description: The DBot score.
+      type: number
+    - contextPath: VisionOne.File_Analysis_Status.DBotScore.Vendor
+      description: The Vendor name.
+      type: string
+    - contextPath: VisionOne.File_Analysis_Status.DBotScore.Reliability
+      description: The Reliability level.
+      type: string
   - arguments:
     - description: report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command
       name: report_id
@@ -550,21 +573,110 @@ script:
     - contextPath: VisionOne.Submit_File_to_Sandbox.digest
       description: The hash value of the file
   - arguments:
-    - name: polling
-      default: true
-      description: polling the task for 30 seconds interval.
-      defaultValue: 'true'
-    - name: actionId
+    - name: entry_id
+      description: Entry ID of the file to be submitted.
       required: true
-      description: Action id of the task you would like to check.
+    - name: document_password
+      description: The Base64 encoded password for decrypting the submitted document. sample.
+    - description: The Base64 encoded password for decrypting the submitted archive.
+      name: archive_password
+    outputs:
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.message
+      description: Status message of the file submitted to sandbox.
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.code
+      description: status code of the file submitted to sandbox
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.task_id
+      description: Task ID of the submitted file
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.digest
+      description: The hash value of the file
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.filename
+      description: The name of the file submitted
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.file_path
+      description: The path to the file associated to incident
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.entryId
+      description: The Entry ID for the file
+      type: string
+    name: trendmicro-visionone-submit-file-entry-to-sandbox
+    description: Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see the Trend Micro Vision One Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+  - arguments:
+    - description: polling the task for 30 seconds interval.
+      name: polling
+      default: true
+      defaultValue: 'true'
+    - description: task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output
+      name: task_id
+      required: true
+    outputs:
+    - contextPath: VisionOne.Sandbox_Submission_Polling.message
+      description: Status of the sandbox analysis
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.code
+      description: Response code
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.task_id
+      description: task_id of the task queried
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.taskStatus
+      description: Sandbox analysis status
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.digest
+      description: The hash values of file analyzed
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.analysis_completion_time
+      description: Sample analysis completed time.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.risk_level
+      description: Risk Level of the analyzed file.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.description
+      description: Scan result description for NotAnalyzed.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.detection_name_list
+      description: Detection name of this sample, if applicable.
+      type: unknown
+    - contextPath: VisionOne.Sandbox_Submission_Polling.threat_type_list
+      description: Threat type of this sample.
+      type: unknown
+    - contextPath: VisionOne.Sandbox_Submission_Polling.file_type
+      description: File type of this sample.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.report_id
+      description: ID used to get the report and suspicious object. Empty means no report.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.Score
+      description: The DBot score.
+      type: number
+    - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.Vendor
+      description: The Vendor name.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.DBotScore.Reliability
+      description: The Reliability level.
+      type: string
+    description: Runs a polling command to retrieve the status of a sandbox analysis submission
+    name: trendmicro-visionone-run-sandbox-submission-polling
+    polling: true
+  - arguments:
+    - description: polling the task for 30 seconds interval.
+      name: polling
+      default: true
+      defaultValue: 'true'
+    - description: Action id of the task you would like to check.
+      name: actionId
+      required: true
     outputs:
     - contextPath: VisionOne.Task_Status.actionId
       description: Action ID of the task queried.
     - contextPath: VisionOne.Task_Status.taskStatus
       description: Status of the task.
+    description: Command gives the status of the running task based on the action id.
     name: trendmicro-visionone-check-task-status
     polling: true
-    description: Command gives the status of the running task based on the action id.
   - arguments:
     - description: ID of the workbench you would like to attach the note to.
       name: workbench_id
@@ -583,7 +695,7 @@ script:
       description: The response code from the command
       type: string
     - contextPath: VisionOne.Add_Note.Response_Msg
-      description: The response message from the commandß
+      description: The response message from the command
       type: string
     description: Attaches a note to a workbench alert
     name: trendmicro-visionone-add-note
@@ -608,11 +720,11 @@ script:
       description: The response code from the command
       type: string
     - contextPath: VisionOne.Update_Status.Response_Msg
-      description: The response message from the commandß
+      description: The response message from the command
       type: string
     description: Updates the status of a workbench alert
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.44472
   isFetchSamples: true
   isfetch: true
   runonce: false

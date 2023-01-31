@@ -12,11 +12,6 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Hosts that were detected as infected during the manual hunting.
-  key: ManualHunting.DetectedHosts
-  playbookInputQuery:
-  required: false
-  value: {}
 - description: The IP of the endpoint to isolate.
   key: Endpoint_ip
   playbookInputQuery:
@@ -352,3 +347,4 @@ view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n
 tests:
 - Isolate and unisolate endpoint - test
 fromversion: 5.5.0
+toversion: 6.7.9

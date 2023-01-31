@@ -29,12 +29,12 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| DBotScore | Array of all indicators associated with the incident.  | DBotScore.None | Optional |
+| DBotScore | Array of all indicators associated with the incident.  | DBotScore | Optional |
 | CriticalUsers | CSV of usernames of critical users. | admin,administrator | Optional |
 | CriticalEndpoints | CSV of hostnames of critical endpoints. | admin | Optional |
 | CriticalGroups | CSV of DN names of critical AD groups. | admins,administrators | Optional |
-| Account | User accounts to check against the critical lists. | Account.None | Optional |
-| Endpoint | Endpoints to check against the CriticalEndpoints list. | Endpoint.None | Optional |
+| Account | User accounts to check against the critical lists. | Account | Optional |
+| Endpoint | Endpoints to check against the CriticalEndpoints list. | Endpoint | Optional |
 | EmailAuthenticityCheck | Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined. | Email.AuthenticityCheck | Optional |
 | MicrosoftHeadersSeverityCheck | The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers. | ${MicrosoftHeadersSeverityCheck} | Optional |
 

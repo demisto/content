@@ -20,7 +20,7 @@ This integration was integrated and tested with Splunk v7.2.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | host | The host name to the server, including the scheme (x.x.x.x). | True |
-| authentication | The username used for authentication. To use Splunk token authentication, enter the text: `_token` in the **Username** field and your token value in the **Password** field. To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens). | True |
+| authentication | The username used for authentication. To use Splunk token authentication, enter the text: `_token` in the **Username** field and your token value in the **Password** field. To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens). There is a known authentication error when using basic authentication behind a load balanced Splunk instance (https://github.com/splunk/splunk-sdk-python/issues/219). To avoid this error use a Splunk token instead. | True |
 | port | The port affiliated with the server. | True |
 | fetchQuery | The events query to be fetched. | False |
 | fetch_limit | The limit of incidents to fetch. The maximum is 200. (It is recommended to fetch less than 50). | False |
@@ -236,7 +236,7 @@ Use the following naming convention: (demisto_fields_{type}).
 The following features are not supported in non-ES (Enterprise Security) Splunk.
 - Incident Mirroring
 - Enrichment.
-- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar.html) for information.
+- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.
 
 
 ## Commands
@@ -268,7 +268,7 @@ There is no context output for this command.
 
 ### Search for events
 ***
-Searches Splunk for events.
+Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
 
 
 ##### Base Command
@@ -289,14 +289,16 @@ Searches Splunk for events.
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
 | sid | The job sid. | Optional |
+| fast_mode | Determines whether to retrieve the results in fast mode | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Splunk.Result | Unknown | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | 
-| Splunk.JobStatus | String | The search status. | 
-
+| Splunk.JobStatus.SID | String | ID of the job. | 
+| Splunk.JobStatus.Status | String | Status of the job. | 
+| Splunk.JobStatus.TotalResults | String | The number of events that were returned by the job. | 
 
 ##### Command Example
 ```!splunk-search query="* | head 3" earliest_time="-1000d"```

@@ -1,20 +1,20 @@
 id: Indicators reputation-.json Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Indicators-reputation-Test
 description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 622e397c-e70c-42ff-8b78-827ff7e978ec
+    taskid: 96dfc405-6764-4647-882b-ff224743acc8
     type: start
     task:
-      id: 622e397c-e70c-42ff-8b78-827ff7e978ec
+      id: 96dfc405-6764-4647-882b-ff224743acc8
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -36,15 +36,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5add7e73-94c6-4072-893b-50e8f8049184
+    taskid: 070cde1a-68e5-482f-8f1f-3f246e281721
     type: title
     task:
-      id: 5add7e73-94c6-4072-893b-50e8f8049184
+      id: 070cde1a-68e5-482f-8f1f-3f246e281721
       version: -1
       name: FIle
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "67"
@@ -54,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10320
+          "y": 8590
         }
       }
     note: false
@@ -66,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2a500784-de93-4618-8f6e-a33bf31b2aa4
+    taskid: a98837d5-6033-4310-8f08-4727b0ef2be5
     type: regular
     task:
-      id: 2a500784-de93-4618-8f6e-a33bf31b2aa4
+      id: a98837d5-6033-4310-8f08-4727b0ef2be5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -79,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "34"
     scriptarguments:
       all:
         simple: "yes"
@@ -101,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 79b6bc74-a835-4cb9-8ab0-06b17c3dd7eb
+    taskid: 18358820-4fb9-452b-8c89-02afb5ca1f9d
     type: regular
     task:
-      id: 79b6bc74-a835-4cb9-8ab0-06b17c3dd7eb
+      id: 18358820-4fb9-452b-8c89-02afb5ca1f9d
       version: -1
       name: Set valid emails
       description: Sets a value into the context with the given context key
@@ -119,15 +120,14 @@ tasks:
       key:
         simple: valid_emails
       value:
-        simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com",
-          "woo@demisto.com", "this.is@email.format", "test[@]test.com", "1c69fb81.bd826.0eff[@]mx.google.com"'
+        simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com", "woo@demisto.com", "this.is@email.format", "test[@]test.com", "1c69fb81.bd826.0eff[@]mx.google.com"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 5995
         }
       }
     note: false
@@ -139,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 7f4a3a1d-1473-466f-89c3-9fd67069f39e
+    taskid: 3425a00e-0339-4479-8940-99b5acb4efb4
     type: regular
     task:
-      id: 7f4a3a1d-1473-466f-89c3-9fd67069f39e
+      id: 3425a00e-0339-4479-8940-99b5acb4efb4
       version: -1
       name: Print valid emails
       description: Prints text to war room (Markdown supported)
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 6170
         }
       }
     note: false
@@ -175,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 8c48687a-49e6-431d-83a8-e3b8dbb371e2
+    taskid: 4a7c9a41-d9da-4736-8ba9-d1b98fb0191d
     type: condition
     task:
-      id: 8c48687a-49e6-431d-83a8-e3b8dbb371e2
+      id: 4a7c9a41-d9da-4736-8ba9-d1b98fb0191d
       version: -1
       name: check auto extract emails
       type: condition
@@ -252,7 +252,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 6345
         }
       }
     note: false
@@ -264,10 +264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 23fb94f6-b629-491a-8b6e-00cfa92524f0
+    taskid: 2d16bc6f-918b-4ce0-8416-cfdd592a056b
     type: regular
     task:
-      id: 23fb94f6-b629-491a-8b6e-00cfa92524f0
+      id: 2d16bc6f-918b-4ce0-8416-cfdd592a056b
       version: -1
       name: set invalid emails
       description: Sets a value into the context with the given context key
@@ -282,17 +282,14 @@ tasks:
       key:
         simple: invalid_emails
       value:
-        simple: '"go.microsoft.com", "#@%^%#$@#$@#.com" "@example.com", "Joe Smith
-          <email@example.com>", "email.example.com", "email@example@example.com",
-          ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#.com" "[@]test.com",
-          "email[@]test[@]example.com"'
+        simple: '"go.microsoft.com", "#@%^%#$@#$@#.com" "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#.com" "[@]test.com", "email[@]test[@]example.com"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 6520
         }
       }
     note: false
@@ -304,10 +301,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b106cbf2-d8d8-41f4-8552-8d45778d57f6
+    taskid: 67f4f93e-523b-4440-895d-98f19419d953
     type: regular
     task:
-      id: b106cbf2-d8d8-41f4-8552-8d45778d57f6
+      id: 67f4f93e-523b-4440-895d-98f19419d953
       version: -1
       name: Print invalid emails
       description: Prints text to war room (Markdown supported)
@@ -328,7 +325,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 6695
         }
       }
     note: false
@@ -340,10 +337,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: e1d827ba-d0eb-426f-8c7c-ddea49ce13d7
+    taskid: 332a5b59-2c3d-4df1-8b9b-718fdbe33075
     type: condition
     task:
-      id: e1d827ba-d0eb-426f-8c7c-ddea49ce13d7
+      id: 332a5b59-2c3d-4df1-8b9b-718fdbe33075
       version: -1
       name: check non extraction of invalid emails
       type: condition
@@ -351,7 +348,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "18"
+      - "76"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -449,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 6870
         }
       }
     note: false
@@ -461,15 +458,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7d05e9d6-f241-4b0c-8eb1-5dc123e04499
+    taskid: ecd05f7f-409a-4ff8-85f8-0b08c66db8de
     type: title
     task:
-      id: 7d05e9d6-f241-4b0c-8eb1-5dc123e04499
+      id: ecd05f7f-409a-4ff8-85f8-0b08c66db8de
       version: -1
       name: Email
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -479,42 +477,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 8d5d4a86-059e-43d4-8dd1-c88cc3923321
-    type: regular
-    task:
-      id: 8d5d4a86-059e-43d4-8dd1-c88cc3923321
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1565
+          "y": 5850
         }
       }
     note: false
@@ -526,15 +489,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: fcf93986-a3ab-4937-84b0-5a1043a4f350
+    taskid: f0252bd0-94b9-4910-888f-d169a830c676
     type: title
     task:
-      id: fcf93986-a3ab-4937-84b0-5a1043a4f350
+      id: f0252bd0-94b9-4910-888f-d169a830c676
       version: -1
       name: Domain
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -544,7 +508,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1740
+          "y": 7220
         }
       }
     note: false
@@ -556,10 +520,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0fef1405-a497-4cdb-864d-666b821c3c4b
+    taskid: 7292f7a0-2157-437d-8f7e-97ea4e6b8300
     type: regular
     task:
-      id: 0fef1405-a497-4cdb-864d-666b821c3c4b
+      id: 7292f7a0-2157-437d-8f7e-97ea4e6b8300
       version: -1
       name: Set vaild domains
       description: Sets a value into the context with the given context key
@@ -574,17 +538,14 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com",
-          "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/",
-          "test.com", "www.xn--t1e2s3t4.com", "subtest.test.com", "ötest.com", "www.teöst.com",
-          "testing[.]com",  "見.香港"'
+        simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "test.com", "www.xn--t1e2s3t4.com", "subtest.test.com", "ötest.com", "www.teöst.com", "testing[.]com",  "見.香港"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 7365
         }
       }
     note: false
@@ -596,10 +557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 620817cd-296d-411a-8a9f-b51ca5632975
+    taskid: c9fb4107-ce49-409a-879b-c3a594353c5a
     type: regular
     task:
-      id: 620817cd-296d-411a-8a9f-b51ca5632975
+      id: c9fb4107-ce49-409a-879b-c3a594353c5a
       version: -1
       name: Print valid domains
       description: Prints text to war room (Markdown supported)
@@ -622,7 +583,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 7540
         }
       }
     note: false
@@ -634,10 +595,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: ecf4c7f5-05ad-4eac-8cc5-ae06e05e41d5
+    taskid: 87dff01f-dd26-411f-8244-c35c8d66432a
     type: condition
     task:
-      id: ecf4c7f5-05ad-4eac-8cc5-ae06e05e41d5
+      id: 87dff01f-dd26-411f-8244-c35c8d66432a
       version: -1
       name: check auto extract domains
       type: condition
@@ -751,7 +712,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 7715
         }
       }
     note: false
@@ -763,10 +724,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b81a5568-0d73-4279-8331-db25d11ccdd5
+    taskid: 73d73645-f778-48df-820f-3510c185fd0c
     type: regular
     task:
-      id: b81a5568-0d73-4279-8331-db25d11ccdd5
+      id: 73d73645-f778-48df-820f-3510c185fd0c
       version: -1
       name: Set invalid domains
       description: Sets a value into the context with the given context key
@@ -788,7 +749,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 7890
         }
       }
     note: false
@@ -800,10 +761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 1268714a-1baa-4b33-8754-544bd3d5e87a
+    taskid: 18416ec6-7bb5-4699-8c36-8c94b7e7c4bb
     type: regular
     task:
-      id: 1268714a-1baa-4b33-8754-544bd3d5e87a
+      id: 18416ec6-7bb5-4699-8c36-8c94b7e7c4bb
       version: -1
       name: Print invalid domains
       description: Prints text to war room (Markdown supported)
@@ -824,7 +785,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2585
+          "y": 8065
         }
       }
     note: false
@@ -836,10 +797,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8295d1c2-c594-4c92-8c15-8199a5d8abba
+    taskid: f80cb10d-8067-4ed3-8e95-504ff350966d
     type: condition
     task:
-      id: 8295d1c2-c594-4c92-8c15-8199a5d8abba
+      id: f80cb10d-8067-4ed3-8e95-504ff350966d
       version: -1
       name: check non extraction of invalid domains
       type: condition
@@ -847,7 +808,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "26"
+      - "77"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -897,485 +858,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: e9f9f3c8-4480-4fd4-80e8-b78f2066b157
-    type: regular
-    task:
-      id: e9f9f3c8-4480-4fd4-80e8-b78f2066b157
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2935
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 443bf3d3-8f9a-4109-8c17-24bfd7df6e78
-    type: title
-    task:
-      id: 443bf3d3-8f9a-4109-8c17-24bfd7df6e78
-      version: -1
-      name: URL
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 67fb6fdf-d7dc-4093-8de0-a66756b49159
-    type: regular
-    task:
-      id: 67fb6fdf-d7dc-4093-8de0-a66756b49159
-      version: -1
-      name: Set valid URLs
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      key:
-        simple: valid_urls
-      value:
-        simple: '"http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I",
-          "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG", "https://Test.com/this-that"
-          "http://_23_11.redacted.com./#redactedredactedredacted", "http://www.mock.com?gbdfs","http://test.com#fragment3","http://test.com#fragment3/","(http://www.foo.bar/taz?())",
-          "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3",
-          "(http://www.foo.bar/taz?())","http://öevil.tld/","http://öevil.tld:5000","http://öevil.tld/anypath",
-          "www.evilö.tld/evil.aspx","https://www.evöl.tld/","https://www.evöl.tld/anypath",
-          "hxxps://www.xn--e1v2i3l4.tld","www.evil.tld:443/path/to/resource.html",
-          "https://www.evil.tld:443/path/to/resource.html","1.2.3.4/path", "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path",
-          "ftp://foo.bar/resource","ftp://foo.bar/"'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3255
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 0e38096d-b488-4a7a-8326-48310a824a73
-    type: regular
-    task:
-      id: 0e38096d-b488-4a7a-8326-48310a824a73
-      version: -1
-      name: Print valid URLs
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      value:
-        simple: ${valid_urls}
-    reputationcalc: 2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: c4692c8f-1662-4617-80ad-9b45dce578fb
-    type: condition
-    task:
-      id: c4692c8f-1662-4617-80ad-9b45dce578fb
-      version: -1
-      name: Check auto-extract
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://öevil.tld/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://öevil.tld:5000
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://öevil.tld/anypath
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: www.evilö.tld/evil.aspx
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://www.evöl.tld/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://www.evöl.tld/anypath
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: www.evil.tld:443/path/to/resource.html
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://www.evil.tld:443/path/to/resource.html
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: 1.2.3.4/path
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: google.com/path
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: ftp://foo.bar/resource
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: ftp://foo.bar/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: www.ru.wikipedia.org/wiki/елизавета_i
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: www.golang.org/pkg/regexp/syntax/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://www.mock.com?gbdfs
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://www.mock.com?e=p6wglg
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://test.com#fragment3
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://test.com#fragment3/
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://_23_11.redacted.com./#redactedredactedredacted
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: https://test.com/this-that
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 1b0ccc32-0131-4555-8c11-f943d40845bc
-    type: regular
-    task:
-      id: 1b0ccc32-0131-4555-8c11-f943d40845bc
-      version: -1
-      name: Set invalid URLs
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      key:
-        simple: invalid_urls
-      value:
-        simple: '"http://3628126748", "http://.www.foo.bar/",, "http:// shouldfail.com",
-          "http://foo.bar/foo(bar)baz quux","http://www.foo.bar/baz?x=3())"'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: a3d3711e-be6e-4b9c-8dfe-34b60aa610db
-    type: regular
-    task:
-      id: a3d3711e-be6e-4b9c-8dfe-34b60aa610db
-      version: -1
-      name: Print invalid URLs
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      value:
-        simple: ${invalid_urls}
-    reputationcalc: 2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3955
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 480e22c0-f8b8-46ad-8b72-3d88ed94ccff
-    type: condition
-    task:
-      id: 480e22c0-f8b8-46ad-8b72-3d88ed94ccff
-      version: -1
-      name: Check non extraction of invalid URLs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "41"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://3628126748
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://.www.foo.bar/
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http:// shouldfail.com
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://foo.bar/foo(bar)baz quux
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4130
+          "y": 8240
         }
       }
     note: false
@@ -1387,10 +870,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: e772244d-d0d8-470f-8319-1d4ef7999596
+    taskid: 733dcce0-91a3-46cf-889f-fae38bf7d55e
     type: title
     task:
-      id: e772244d-d0d8-470f-8319-1d4ef7999596
+      id: 733dcce0-91a3-46cf-889f-fae38bf7d55e
       version: -1
       name: IP
       description: IP
@@ -1406,7 +889,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4480
+          "y": 370
         }
       }
     note: false
@@ -1418,10 +901,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: ff0c2765-79b4-4a85-8d44-c6cd978f7c70
+    taskid: 39da1d19-b0d8-4805-8e57-c4772a375e2d
     type: regular
     task:
-      id: ff0c2765-79b4-4a85-8d44-c6cd978f7c70
+      id: 39da1d19-b0d8-4805-8e57-c4772a375e2d
       version: -1
       name: Set valid IPs
       description: Sets a value into the context with the given context key
@@ -1443,7 +926,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4625
+          "y": 515
         }
       }
     note: false
@@ -1455,10 +938,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 3438b5e8-a65a-43aa-8184-2c0fbeb8ffc1
+    taskid: 9a195e6d-b208-47b3-85ae-7181b409ac10
     type: regular
     task:
-      id: 3438b5e8-a65a-43aa-8184-2c0fbeb8ffc1
+      id: 9a195e6d-b208-47b3-85ae-7181b409ac10
       version: -1
       name: Print valid IPs
       description: Prints text to war room (Markdown supported)
@@ -1479,7 +962,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4800
+          "y": 690
         }
       }
     note: false
@@ -1491,10 +974,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: d61ccbfb-eff8-4680-8b66-88afe72d6176
+    taskid: ce8e0ba3-d0ec-4225-861c-9949ae35c070
     type: condition
     task:
-      id: d61ccbfb-eff8-4680-8b66-88afe72d6176
+      id: ce8e0ba3-d0ec-4225-861c-9949ae35c070
       version: -1
       name: Check auto-extract
       type: condition
@@ -1544,7 +1027,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4975
+          "y": 865
         }
       }
     note: false
@@ -1556,10 +1039,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f2ac5daa-910d-42ca-8de6-c609da4470c9
+    taskid: 7f298ea3-fffd-4abd-8900-760ffd9ae289
     type: regular
     task:
-      id: f2ac5daa-910d-42ca-8de6-c609da4470c9
+      id: 7f298ea3-fffd-4abd-8900-760ffd9ae289
       version: -1
       name: Set invalid IPs
       description: Sets a value into the context with the given context key
@@ -1574,15 +1057,14 @@ tasks:
       key:
         simple: invalid_ips
       value:
-        simple: '"000.0000.00.00", "912.456.123.123", "2.2.1.", "256.1.1.1", "1.1.1.256",
-          "00.0.0.0", "1111.1.1.1", "1[.1[.]"'
+        simple: '"000.0000.00.00", "912.456.123.123", "2.2.1.", "256.1.1.1", "1.1.1.256", "00.0.0.0", "1111.1.1.1", "1[.1[.]"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5150
+          "y": 1040
         }
       }
     note: false
@@ -1594,10 +1076,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 12a804a4-9253-46b5-8aa1-edfd634f967e
+    taskid: 697dc944-3768-43da-8c68-8eea8a01781f
     type: regular
     task:
-      id: 12a804a4-9253-46b5-8aa1-edfd634f967e
+      id: 697dc944-3768-43da-8c68-8eea8a01781f
       version: -1
       name: Print invalid IPs
       description: Prints text to war room (Markdown supported)
@@ -1618,7 +1100,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5325
+          "y": 1215
         }
       }
     note: false
@@ -1630,10 +1112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: fe37adf3-5288-4c4e-8c08-b02a424b1f42
+    taskid: c5111433-8df8-471e-88d4-b74734648431
     type: condition
     task:
-      id: fe37adf3-5288-4c4e-8c08-b02a424b1f42
+      id: c5111433-8df8-471e-88d4-b74734648431
       version: -1
       name: Check non extraction of invalid IPs
       type: condition
@@ -1715,42 +1197,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: f84d33fb-e1fe-4721-89d0-8868f89e5d10
-    type: regular
-    task:
-      id: f84d33fb-e1fe-4721-89d0-8868f89e5d10
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4305
+          "y": 1390
         }
       }
     note: false
@@ -1762,15 +1209,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: c0a7e52a-6390-4ad5-86fb-ed6959d7561e
+    taskid: 98a30a73-139c-4fa0-8b1c-4e05e3d53331
     type: title
     task:
-      id: c0a7e52a-6390-4ad5-86fb-ed6959d7561e
+      id: 98a30a73-139c-4fa0-8b1c-4e05e3d53331
       version: -1
       name: IPv4 CIDR
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1780,7 +1228,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5850
+          "y": 1740
         }
       }
     note: false
@@ -1792,10 +1240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: eebd8ee3-0e68-4a04-8673-7da453f5800c
+    taskid: 5ace44db-309a-450f-86de-576b0d850c64
     type: regular
     task:
-      id: eebd8ee3-0e68-4a04-8673-7da453f5800c
+      id: 5ace44db-309a-450f-86de-576b0d850c64
       version: -1
       name: Set valid IPv4s CIDR
       description: Sets a value into the context with the given context key
@@ -1817,7 +1265,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5995
+          "y": 1885
         }
       }
     note: false
@@ -1829,10 +1277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: df6e9786-c606-4de6-80ad-c37ce74a152f
+    taskid: f9fe1895-27dd-40db-859a-1fcb5c41792f
     type: regular
     task:
-      id: df6e9786-c606-4de6-80ad-c37ce74a152f
+      id: f9fe1895-27dd-40db-859a-1fcb5c41792f
       version: -1
       name: Print valid IPv4s CIDR
       description: Prints text to war room (Markdown supported)
@@ -1853,7 +1301,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6170
+          "y": 2060
         }
       }
     note: false
@@ -1865,10 +1313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 0bd35c13-37ac-471a-8c00-c59916140b1b
+    taskid: ca0d49e5-693d-4a8b-8655-98603a1e30fe
     type: condition
     task:
-      id: 0bd35c13-37ac-471a-8c00-c59916140b1b
+      id: ca0d49e5-693d-4a8b-8655-98603a1e30fe
       version: -1
       name: Check auto-extract
       type: condition
@@ -1918,7 +1366,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6345
+          "y": 2235
         }
       }
     note: false
@@ -1930,10 +1378,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 7590d1b2-c261-4e39-8253-0b300f0284b7
+    taskid: 9ee61910-c20e-4c80-8b3a-8c21f12c2ca3
     type: regular
     task:
-      id: 7590d1b2-c261-4e39-8253-0b300f0284b7
+      id: 9ee61910-c20e-4c80-8b3a-8c21f12c2ca3
       version: -1
       name: Set invalid IPv4s CIDR
       description: Sets a value into the context with the given context key
@@ -1955,7 +1403,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6520
+          "y": 2410
         }
       }
     note: false
@@ -1967,10 +1415,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: c9293846-8e7c-460b-876d-bd14ef2fc8bf
+    taskid: 3e71b37b-30d6-43f2-8649-1d9e75e8b371
     type: regular
     task:
-      id: c9293846-8e7c-460b-876d-bd14ef2fc8bf
+      id: 3e71b37b-30d6-43f2-8649-1d9e75e8b371
       version: -1
       name: Print invalid IPv4s CIDR
       description: Prints text to war room (Markdown supported)
@@ -1991,7 +1439,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6695
+          "y": 2585
         }
       }
     note: false
@@ -2003,10 +1451,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: d6044240-935f-4643-84cc-165ec0c63b37
+    taskid: aefea302-c4b0-4f6e-8df9-6e8761525174
     type: condition
     task:
-      id: d6044240-935f-4643-84cc-165ec0c63b37
+      id: aefea302-c4b0-4f6e-8df9-6e8761525174
       version: -1
       name: Check non extraction of invalid IPv4s CIDR
       type: condition
@@ -2014,7 +1462,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "64"
+      - "79"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2048,7 +1496,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6870
+          "y": 2760
         }
       }
     note: false
@@ -2060,15 +1508,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 746d40ad-7c34-4cda-8881-36ee4c10e7b9
+    taskid: 900c2a46-beff-46ae-8550-1efa20d0e163
     type: title
     task:
-      id: 746d40ad-7c34-4cda-8881-36ee4c10e7b9
+      id: 900c2a46-beff-46ae-8550-1efa20d0e163
       version: -1
       name: IPv6
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -2078,7 +1527,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7220
+          "y": 3110
         }
       }
     note: false
@@ -2090,10 +1539,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: ed6f0bd0-89ad-4149-8507-5287e48a911c
+    taskid: 27deaed2-2f1c-47d3-833b-1dfd2d8492f7
     type: regular
     task:
-      id: ed6f0bd0-89ad-4149-8507-5287e48a911c
+      id: 27deaed2-2f1c-47d3-833b-1dfd2d8492f7
       version: -1
       name: Print valid IPv6s
       description: Prints text to war room (Markdown supported)
@@ -2114,7 +1563,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7540
+          "y": 3430
         }
       }
     note: false
@@ -2126,10 +1575,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 53f34816-d47c-4701-85db-4175e3fb18db
+    taskid: a0dfd7c3-048b-43c6-84eb-849d7b8a9f2e
     type: condition
     task:
-      id: 53f34816-d47c-4701-85db-4175e3fb18db
+      id: a0dfd7c3-048b-43c6-84eb-849d7b8a9f2e
       version: -1
       name: Check auto-extract
       type: condition
@@ -2179,7 +1628,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7715
+          "y": 3605
         }
       }
     note: false
@@ -2191,10 +1640,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 34c71c2b-2428-4a9e-84e7-90e145c29540
+    taskid: 7c5b9672-aca4-4a47-8030-1cf0e9606a05
     type: regular
     task:
-      id: 34c71c2b-2428-4a9e-84e7-90e145c29540
+      id: 7c5b9672-aca4-4a47-8030-1cf0e9606a05
       version: -1
       name: Set invalid IPv6s
       description: Sets a value into the context with the given context key
@@ -2209,15 +1658,14 @@ tasks:
       key:
         simple: invalid_ipv6s
       value:
-        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::",
-          "tag::event"'
+        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::", "tag::event"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7890
+          "y": 3780
         }
       }
     note: false
@@ -2229,10 +1677,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 143ca6e6-257b-4f5c-84c5-1514ba5d9744
+    taskid: 3708700f-c36c-4a45-8fa3-b6948155f410
     type: regular
     task:
-      id: 143ca6e6-257b-4f5c-84c5-1514ba5d9744
+      id: 3708700f-c36c-4a45-8fa3-b6948155f410
       version: -1
       name: Print invalid IPv6s
       description: Prints text to war room (Markdown supported)
@@ -2253,7 +1701,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8065
+          "y": 3955
         }
       }
     note: false
@@ -2265,10 +1713,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 9baeb466-1ec2-4dd3-8d24-13ccda3896d8
+    taskid: 5efb173d-a83a-481e-884b-9ef70beb23f2
     type: condition
     task:
-      id: 9baeb466-1ec2-4dd3-8d24-13ccda3896d8
+      id: 5efb173d-a83a-481e-884b-9ef70beb23f2
       version: -1
       name: Check non extraction of invalid IPv6s
       type: condition
@@ -2276,7 +1724,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "63"
+      - "80"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2310,7 +1758,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8240
+          "y": 4130
         }
       }
     note: false
@@ -2322,15 +1770,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 7f0bdc5f-ad2d-4693-8636-46e69f2083de
+    taskid: 1ff54077-6b53-4865-84d2-0d4419703bd3
     type: title
     task:
-      id: 7f0bdc5f-ad2d-4693-8636-46e69f2083de
+      id: 1ff54077-6b53-4865-84d2-0d4419703bd3
       version: -1
       name: IPV6 CIDR
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -2340,7 +1789,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8690
+          "y": 4480
         }
       }
     note: false
@@ -2352,10 +1801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: c712b9c5-a317-4df4-81b1-94d22c679955
+    taskid: c6f873c2-dc4e-4bfa-8dd9-2d59874d6d3e
     type: regular
     task:
-      id: c712b9c5-a317-4df4-81b1-94d22c679955
+      id: c6f873c2-dc4e-4bfa-8dd9-2d59874d6d3e
       version: -1
       name: Set valid IPv6s CIDR
       description: Sets a value into the context with the given context key
@@ -2377,7 +1826,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8875
+          "y": 4625
         }
       }
     note: false
@@ -2389,10 +1838,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: d328d3e9-c653-4981-82d0-b9cde979e279
+    taskid: 82036e29-4e27-46e8-82b9-6adca631ba76
     type: regular
     task:
-      id: d328d3e9-c653-4981-82d0-b9cde979e279
+      id: 82036e29-4e27-46e8-82b9-6adca631ba76
       version: -1
       name: Print valid IPv6s CIDR
       description: Prints text to war room (Markdown supported)
@@ -2413,7 +1862,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9070
+          "y": 4800
         }
       }
     note: false
@@ -2425,10 +1874,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: d1379c05-91be-48d1-8038-f9484e40971d
+    taskid: abcfd3e6-df3f-428e-88b4-f01a087dace5
     type: condition
     task:
-      id: d1379c05-91be-48d1-8038-f9484e40971d
+      id: abcfd3e6-df3f-428e-88b4-f01a087dace5
       version: -1
       name: Check auto-extract
       type: condition
@@ -2454,7 +1903,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9285
+          "y": 4975
         }
       }
     note: false
@@ -2466,10 +1915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 839bf22b-7250-4ee6-8c5f-82fc00c49393
+    taskid: 6bef679d-11ed-470a-8f49-4b7812456377
     type: regular
     task:
-      id: 839bf22b-7250-4ee6-8c5f-82fc00c49393
+      id: 6bef679d-11ed-470a-8f49-4b7812456377
       version: -1
       name: Set invalid IPv6s CIDR
       description: Sets a value into the context with the given context key
@@ -2491,7 +1940,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9520
+          "y": 5150
         }
       }
     note: false
@@ -2503,10 +1952,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: ce10f404-d138-46e2-802a-2a9daaaaa014
+    taskid: 5aeae99d-0b9d-4f37-8bd3-d98d7606e60a
     type: regular
     task:
-      id: ce10f404-d138-46e2-802a-2a9daaaaa014
+      id: 5aeae99d-0b9d-4f37-8bd3-d98d7606e60a
       version: -1
       name: Print invalid IPv6s CIDR
       description: Prints text to war room (Markdown supported)
@@ -2527,7 +1976,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9720
+          "y": 5325
         }
       }
     note: false
@@ -2539,10 +1988,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: bdf7bfdf-91f1-4ca0-8d57-2cd46a8017b2
+    taskid: 8ab198f2-f084-4a13-84b6-c862f606f503
     type: condition
     task:
-      id: bdf7bfdf-91f1-4ca0-8d57-2cd46a8017b2
+      id: 8ab198f2-f084-4a13-84b6-c862f606f503
       version: -1
       name: Check non extraction of invalid IPv6s CIDR
       type: condition
@@ -2550,7 +1999,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "66"
+      - "81"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2568,77 +2017,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
-    taskid: b28681ae-19fc-42d3-80c5-1daaf1743564
-    type: regular
-    task:
-      id: b28681ae-19fc-42d3-80c5-1daaf1743564
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "56"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 8470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
-    taskid: 8282d465-8240-4dc4-8fb8-e7d30b71ba57
-    type: regular
-    task:
-      id: 8282d465-8240-4dc4-8fb8-e7d30b71ba57
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "49"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 7045
+          "y": 5500
         }
       }
     note: false
@@ -2650,10 +2029,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: a052b142-72b6-493a-8be3-ce26d5fd0e8d
+    taskid: 6ff3ca89-844c-4efb-84cd-7e09df034a28
     type: regular
     task:
-      id: a052b142-72b6-493a-8be3-ce26d5fd0e8d
+      id: 6ff3ca89-844c-4efb-84cd-7e09df034a28
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2673,42 +2052,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5675
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: 8b34db9e-f9c0-4794-8905-cfdb7ddc2adc
-    type: regular
-    task:
-      id: 8b34db9e-f9c0-4794-8905-cfdb7ddc2adc
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10120
+          "y": 1565
         }
       }
     note: false
@@ -2720,10 +2064,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 50d96adc-e31c-4fc2-8b7a-2a48adeab474
+    taskid: 6e5e1a02-d0ca-47fa-8e95-9be54319fbd6
     type: regular
     task:
-      id: 50d96adc-e31c-4fc2-8b7a-2a48adeab474
+      id: 6e5e1a02-d0ca-47fa-8e95-9be54319fbd6
       version: -1
       name: Set valid File
       description: Sets a value into the context with the given context key
@@ -2745,7 +2089,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10460
+          "y": 8735
         }
       }
     note: false
@@ -2757,10 +2101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 14a21011-3784-4255-8a06-c4418ac38ff1
+    taskid: 96b89b7d-f0b2-49bd-8554-04483adaef93
     type: regular
     task:
-      id: 14a21011-3784-4255-8a06-c4418ac38ff1
+      id: 96b89b7d-f0b2-49bd-8554-04483adaef93
       version: -1
       name: Print valid File
       description: Prints text to war room (Markdown supported)
@@ -2781,7 +2125,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10640
+          "y": 8910
         }
       }
     note: false
@@ -2793,10 +2137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 398d847c-1585-4072-8cfa-e9dfa4a6fa5b
+    taskid: a53e87c6-6e09-4f7c-88d7-c422699a764d
     type: condition
     task:
-      id: 398d847c-1585-4072-8cfa-e9dfa4a6fa5b
+      id: a53e87c6-6e09-4f7c-88d7-c422699a764d
       version: -1
       name: Check auto-extract
       type: condition
@@ -2822,7 +2166,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10825
+          "y": 9085
         }
       }
     note: false
@@ -2834,10 +2178,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: da43d8a1-a606-4860-8262-956b6ec90ec6
+    taskid: 8b897f52-c859-43ca-8838-cb34d536c256
     type: regular
     task:
-      id: da43d8a1-a606-4860-8262-956b6ec90ec6
+      id: 8b897f52-c859-43ca-8838-cb34d536c256
       version: -1
       name: Untitled Task
       description: Delete field from context
@@ -2857,7 +2201,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10990
+          "y": 9260
         }
       }
     note: false
@@ -2869,10 +2213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 5cccbcc6-b7a6-4d15-86b4-bd7b7739c43a
+    taskid: ca25f73a-32c4-427c-802f-abbbcade11d7
     type: regular
     task:
-      id: 5cccbcc6-b7a6-4d15-86b4-bd7b7739c43a
+      id: ca25f73a-32c4-427c-802f-abbbcade11d7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2892,7 +2236,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 11155
+          "y": 9435
         }
       }
     note: false
@@ -2904,22 +2248,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 755fe052-cf4f-4bbe-8a9d-39bdfa1365c8
+    taskid: 0a7fed81-d4b9-404b-88e7-6fe4cda3e0b2
     type: title
     task:
-      id: 755fe052-cf4f-4bbe-8a9d-39bdfa1365c8
+      id: 0a7fed81-d4b9-404b-88e7-6fe4cda3e0b2
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 11320
+          "y": 9610
         }
       }
     note: false
@@ -2931,10 +2276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 00c3e313-4fc5-456f-8b2a-bde4f9426c13
+    taskid: 1be70c24-f050-4a59-8c5b-e32480196d09
     type: regular
     task:
-      id: 00c3e313-4fc5-456f-8b2a-bde4f9426c13
+      id: 1be70c24-f050-4a59-8c5b-e32480196d09
       version: -1
       name: Set valid IPv6s
       description: Sets a value into the context with the given context key
@@ -2949,15 +2294,189 @@ tasks:
       key:
         simple: valid_ipv6s
       value:
-        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8::ff00:42:8329",
-          "1a:2b::4c:5:6:7:8", "1a:2b::4c:5abc"'
+        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8::ff00:42:8329", "1a:2b::4c:5:6:7:8", "1a:2b::4c:5abc"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7360
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: d3c01fea-098b-4daa-88d7-8a8fa26c1366
+    type: regular
+    task:
+      id: d3c01fea-098b-4daa-88d7-8a8fa26c1366
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: e2981510-057b-4bb2-84c1-6748976471ea
+    type: regular
+    task:
+      id: e2981510-057b-4bb2-84c1-6748976471ea
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 7c5ead2c-97e7-4ae4-80e2-268d225da85b
+    type: regular
+    task:
+      id: 7c5ead2c-97e7-4ae4-80e2-268d225da85b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 38932b93-798d-4fcc-8854-0efe76cc0ae5
+    type: regular
+    task:
+      id: 38932b93-798d-4fcc-8854-0efe76cc0ae5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 10dfc819-2fc1-48f3-88ac-19ae3da38170
+    type: regular
+    task:
+      id: 10dfc819-2fc1-48f3-88ac-19ae3da38170
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5675
         }
       }
     note: false
@@ -2969,13 +2488,10 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "15_18_yes": 0.9,
-      "30_31_yes": 0.84
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11335,
+        "height": 9625,
         "width": 380,
         "x": 50,
         "y": 50
