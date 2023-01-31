@@ -1,11 +1,11 @@
 {
-    "id": "incident_edreventprocess",
+    "id": "incident_symantecedreventprocess",
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-12T14:16:26.626982202+05:30",
     "name": "Symantec EDR Event Process",
     "ownerOnly": false,
-    "cliName": "edreventprocess",
+    "cliName": "symantecedreventprocess",
     "type": "grid",
     "closeForm": true,
     "editForm": false,

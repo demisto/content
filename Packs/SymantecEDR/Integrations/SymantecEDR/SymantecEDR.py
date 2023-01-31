@@ -466,7 +466,7 @@ def parse_connection_sub_object(data: dict[str, Any]) -> dict:
     return extract_raw_data(data, [], prefix='connection')
 
 
-def convert_list_to_str(data: list) -> str:
+def convert_list_to_str(data: Optional[list] = None) -> str:
     seperator = ','
     return seperator.join(map(str, data)) if isinstance(data, list) else ''
 
@@ -513,7 +513,7 @@ def parse_event_object_data(data: dict[str, Any]) -> dict:
     return result
 
 
-def domain_instance_readable_output(results: list[dict], title: str):
+def domain_instance_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to XSOAR Readable output for entities Domains instance
     Args:
@@ -540,7 +540,7 @@ def domain_instance_readable_output(results: list[dict], title: str):
     return markdown, summary_data
 
 
-def system_activity_readable_output(results: list[dict], title: str):
+def system_activity_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to User Readable output for System Activity resources
     Args:
@@ -607,7 +607,7 @@ def endpoint_instance_readable_output(results: list[dict], title: str) -> str:
     return markdown
 
 
-def incident_readable_output(results: list[dict], title: Optional[str] = None):
+def incident_readable_output(results: list[dict], title: Optional[str] = None) -> tuple[str, list]:
     """
     Convert to User Readable output for Incident resources
     Args:
@@ -649,7 +649,7 @@ def incident_readable_output(results: list[dict], title: Optional[str] = None):
     return markdown, summary_data
 
 
-def audit_event_readable_output(results: list[dict], title: str):
+def audit_event_readable_output(results: list[dict], title: str) -> tuple[str, list]:
     """
     Convert to User Readable output for Audit Event
     Args:
@@ -689,7 +689,7 @@ def audit_event_readable_output(results: list[dict], title: str):
     return markdown, context_data
 
 
-def incident_event_readable_output(results: list[dict], title: Optional[str] = None):
+def incident_event_readable_output(results: list[dict], title: Optional[str] = None) -> tuple[str, list]:
     """
     Convert to User Readable output for Event for Incident resources
     Args:
@@ -730,7 +730,7 @@ def incident_event_readable_output(results: list[dict], title: Optional[str] = N
     return markdown, context_data
 
 
-def incident_comment_readable_output(results: list[dict], title: str, incident_id: str):
+def incident_comment_readable_output(results: list[dict], title: str, incident_id: str) -> tuple[str, list]:
     """
     Convert to XSOAR Readable output for incident comment
     Args:

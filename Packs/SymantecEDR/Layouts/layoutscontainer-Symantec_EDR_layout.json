@@ -9,7 +9,7 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "1vduzkpmlh-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
@@ -84,6 +84,15 @@
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "e92b52b0-a863-11e9-aeb8-c3448b5d692d",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -111,7 +120,7 @@
                         "type": "notes",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -129,167 +138,29 @@
                         "type": "team",
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "1vduzkpmlh-c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "occurred",
-                                "height": 22,
-                                "id": "e92b52b0-a863-11e9-aeb8-c3448b5d692d",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "dbotmodified",
-                                "height": 22,
-                                "id": "99cbd860-a864-11e9-aeb8-c3448b5d692d",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "dbotcreated",
-                                "height": 22,
-                                "id": "930bf0a0-a864-11e9-aeb8-c3448b5d692d",
-                                "index": 2,
-                                "listId": "1vduzkpmlh-c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "dbotclosed",
-                                "height": 22,
-                                "id": "a1a67ef0-a864-11e9-aeb8-c3448b5d692d",
-                                "index": 3,
-                                "listId": "c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "remediationsla",
-                                "height": 22,
-                                "id": "6cd9de10-9bee-11e9-9a3f-8b4b2158e260",
-                                "index": 4,
-                                "listId": "24257a20-98b1-11e9-97d7-ed26ef9e46c8",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "detectionsla",
-                                "height": 22,
-                                "id": "6b72acf0-9bee-11e9-9a3f-8b4b2158e260",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "dbotduedate",
-                                "height": 22,
-                                "id": "551d6320-a7d6-11e9-8433-9f52f2917950",
-                                "index": 6,
-                                "listId": "c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Timeline Information",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "1vduzkpmlh-e462ffc0-a864-11e9-aeb8-c3448b5d692d",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "dbotclosed",
-                                "height": 22,
-                                "id": "427bf020-a866-11e9-aeb8-c3448b5d692d",
-                                "index": 0,
-                                "listId": "e462ffc0-a864-11e9-aeb8-c3448b5d692d",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "edrincidentstate",
-                                "height": 22,
-                                "id": "e23f9350-9f2f-11ed-a47f-5fb484fa7cb5",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "comment",
-                                "height": 22,
-                                "id": "04557330-9ffb-11ed-b78f-59e522afc468",
-                                "index": 2,
-                                "listId": "1vduzkpmlh-e462ffc0-a864-11e9-aeb8-c3448b5d692d",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "lastupdatetime",
-                                "height": 22,
-                                "id": "65720050-9f30-11ed-a47f-5fb484fa7cb5",
-                                "index": 4,
-                                "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Closing Information",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "edrdetectiontype",
+                                "fieldId": "externalid",
+                                "height": 22,
+                                "id": "e848acd0-a161-11ed-8782-a99a4744710c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "symantecedrdetectiontype",
                                 "height": 22,
                                 "id": "2f51a280-9ff0-11ed-9b79-5b7edcede297",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -298,7 +169,7 @@
                                 "fieldId": "edrincidentid",
                                 "height": 22,
                                 "id": "9ce8dfa0-9f2f-11ed-a47f-5fb484fa7cb5",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -313,18 +184,29 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "logsourcename",
+                                "height": 22,
+                                "id": "6d8ae860-9f30-11ed-a47f-5fb484fa7cb5",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "uuid",
                                 "height": 22,
                                 "id": "ed1bba10-9f2f-11ed-a47f-5fb484fa7cb5",
                                 "index": 4,
+                                "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "logsourcename",
+                                "fieldId": "sourcepriority",
                                 "height": 22,
-                                "id": "6d8ae860-9f30-11ed-a47f-5fb484fa7cb5",
+                                "id": "9f987870-a162-11ed-8782-a99a4744710c",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -335,17 +217,30 @@
                                 "fieldId": "edrincidentcreatetime",
                                 "height": 22,
                                 "id": "5876a310-9f30-11ed-a47f-5fb484fa7cb5",
-                                "index": 5,
+                                "index": 6,
                                 "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcestatus",
+                                "height": 22,
+                                "id": "c4e125f0-a162-11ed-8782-a99a4744710c",
+                                "index": 7,
+                                "listId": "1vduzkpmlh-2e285610-9f32-11ed-a47f-5fb484fa7cb5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "edrruleid",
+                                "fieldId": "symantecedrruleid",
                                 "height": 22,
                                 "id": "392df340-9f31-11ed-a47f-5fb484fa7cb5",
                                 "index": 0,
+                                "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -375,6 +270,26 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "sourcecreatetime",
+                                "height": 22,
+                                "id": "8cf27400-a162-11ed-8782-a99a4744710c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "lastupdatetime",
+                                "height": 22,
+                                "id": "65720050-9f30-11ed-a47f-5fb484fa7cb5",
+                                "index": 5,
+                                "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "sectionItemType": "field",
+                                "startCol": 2
                             }
                         ],
                         "maxW": 3,
@@ -387,22 +302,6 @@
                         "y": 0
                     },
                     {
-                        "h": 2,
-                        "i": "1vduzkpmlh-7b6e6640-9f31-11ed-a47f-5fb484fa7cb5",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Malicious or Suspicious Indicators",
-                        "query": "reputation:Bad or reputation:Suspicious",
-                        "queryType": "input",
-                        "static": false,
-                        "type": "indicators",
-                        "w": 2,
-                        "x": 0,
-                        "y": 6
-                    },
-                    {
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
@@ -410,10 +309,10 @@
                         "items": [
                             {
                                 "endCol": 4,
-                                "fieldId": "edrincidentcomments",
+                                "fieldId": "symantecedrincidentcomments",
                                 "height": 106,
                                 "id": "00c2c8e0-9f32-11ed-a47f-5fb484fa7cb5",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -425,7 +324,7 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 4
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -434,20 +333,31 @@
                         "i": "1vduzkpmlh-2e285610-9f32-11ed-a47f-5fb484fa7cb5",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "edrprioritylevel",
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "closingreason",
                                 "height": 22,
-                                "id": "d1508db0-9f2f-11ed-a47f-5fb484fa7cb5",
-                                "index": 1,
+                                "id": "13cdc4c0-a163-11ed-8782-a99a4744710c",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-2e285610-9f32-11ed-a47f-5fb484fa7cb5",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "edrrecommendedaction",
+                                "fieldId": "edrprioritylevel",
+                                "height": 22,
+                                "id": "d1508db0-9f2f-11ed-a47f-5fb484fa7cb5",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "symantecedrrecommendedaction",
                                 "height": 44,
                                 "id": "4b8dd180-9f32-11ed-a47f-5fb484fa7cb5",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -466,61 +376,9 @@
                         "moved": false,
                         "name": "Incident Resolution",
                         "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2
-                    },
-                    {
-                        "columns": [
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "occurred",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "description",
-                                "width": 300
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "markedBy",
-                                "width": 150
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "tags",
-                                "width": 400
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": false,
-                                "key": "id",
-                                "width": 100
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": false,
-                                "key": "fetched",
-                                "width": 200
-                            }
-                        ],
-                        "h": 2,
-                        "i": "1vduzkpmlh-42921130-9ffb-11ed-b78f-59e522afc468",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Evidence",
-                        "static": false,
-                        "type": "evidence",
                         "w": 2,
                         "x": 0,
-                        "y": 8
+                        "y": 3
                     },
                     {
                         "h": 2,
@@ -534,7 +392,48 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-87cf1de0-a165-11ed-8782-a99a4744710c",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "symantecedrattacks",
+                                "height": 106,
+                                "id": "b57843c0-a165-11ed-8782-a99a4744710c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "EDR Events Attacks",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "h": 2,
+                        "i": "1vduzkpmlh-f235c660-a166-11ed-8782-a99a4744710c",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Malicious or Suspicious Indicators",
+                        "query": "reputation:Bad or reputation:Suspicious",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -552,7 +451,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "edrincidentevents",
+                                "fieldId": "symantecedrincidentevents",
                                 "height": 106,
                                 "id": "701863f0-9ed6-11ed-81e1-7d842ade900c",
                                 "index": 0,
@@ -577,7 +476,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "edreventactor",
+                                "fieldId": "symantecedreventactor",
                                 "height": 106,
                                 "id": "31c29e60-9f33-11ed-a47f-5fb484fa7cb5",
                                 "index": 0,
@@ -590,45 +489,19 @@
                         "moved": false,
                         "name": "Event Actor",
                         "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 14
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 3,
-                        "hideItemTitleOnlyOne": false,
-                        "hideName": false,
-                        "i": "1vduzkpmlh-swtuqptgvs-3604e0b0-cc9a-11e9-afca-8792f3871db0",
-                        "items": [
-                            {
-                                "endCol": 4,
-                                "fieldId": "edrattacks",
-                                "height": 106,
-                                "id": "27f52880-9f33-11ed-a47f-5fb484fa7cb5",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "EDR Attacks",
-                        "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 8
+                        "y": 12
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-swtuqptgvs-4309fd80-453a-11eb-bfbf-0d0f7ea2cc09",
                         "items": [
                             {
-                                "endCol": 4,
-                                "fieldId": "edrenricheddata",
+                                "endCol": 6,
+                                "fieldId": "symantecedrenricheddata",
                                 "height": 106,
                                 "id": "d90184d0-9f32-11ed-a47f-5fb484fa7cb5",
                                 "index": 0,
@@ -643,7 +516,7 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 5
+                        "y": 3
                     },
                     {
                         "displayType": "ROW",
@@ -654,7 +527,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "edreventactorfile",
+                                "fieldId": "symantecedreventactorfile",
                                 "height": 106,
                                 "id": "a318e6a0-9f33-11ed-a47f-5fb484fa7cb5",
                                 "index": 0,
@@ -668,9 +541,9 @@
                         "moved": false,
                         "name": "Event Actor File",
                         "static": false,
-                        "w": 3,
+                        "w": 2,
                         "x": 0,
-                        "y": 3
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -680,7 +553,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "edreventactoruser",
+                                "fieldId": "symantecedreventactoruser",
                                 "height": 106,
                                 "id": "a6033550-9f33-11ed-a47f-5fb484fa7cb5",
                                 "index": 0,
@@ -695,7 +568,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 3
                     },
                     {
                         "displayType": "ROW",
@@ -705,8 +578,8 @@
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "edreventprocess",
+                                "endCol": 4,
+                                "fieldId": "symantecedreventprocess",
                                 "height": 106,
                                 "id": "b3d591a0-9f33-11ed-a47f-5fb484fa7cb5",
                                 "index": 0,
@@ -720,9 +593,9 @@
                         "moved": false,
                         "name": "Event Process",
                         "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 7
+                        "w": 2,
+                        "x": 0,
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
@@ -733,7 +606,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "edrprocessuser",
+                                "fieldId": "symantecedrprocessuser",
                                 "height": 106,
                                 "id": "83393c10-9f36-11ed-a47f-5fb484fa7cb5",
                                 "index": 0,
@@ -749,7 +622,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -759,7 +632,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "edrprocessfile",
+                                "fieldId": "symantecedrprocessfile",
                                 "height": 106,
                                 "id": "e65405f0-9f36-11ed-a47f-5fb484fa7cb5",
                                 "index": 0,
@@ -772,9 +645,9 @@
                         "moved": false,
                         "name": "Process File",
                         "static": false,
-                        "w": 3,
+                        "w": 2,
                         "x": 0,
-                        "y": 12
+                        "y": 7
                     }
                 ],
                 "type": "custom"

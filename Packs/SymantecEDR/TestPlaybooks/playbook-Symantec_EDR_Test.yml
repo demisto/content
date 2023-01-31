@@ -334,7 +334,7 @@ view: |-
 inputs:
 - key: incident
   value:
-    simple: ${incident.edrincidentid}
+    simple: ${incident.externalid}
   required: false
   description: ""
   playbookInputQuery:

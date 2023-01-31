@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: SymantecEDRStage
+  id: SymantecEDR
   version: -1
 configuration:
 - additionalinfo: Symantec EDR (On Prem) Appliance URL
@@ -77,7 +77,7 @@ configuration:
   type: 13
 description: Symantec EDR (On Prem) endpoints help to detect threats in your network by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s). EDR on-premise capabilities allow incident responders to quickly search, identify, and contain all impacted endpoints while investigating threats using a choice of on-premises.
 display: Symantec Endpoint Detection and Response (EDR) - On Prem
-name: SymantecEDRStage
+name: SymantecEDR
 script:
   commands:
   - arguments:
@@ -1800,7 +1800,7 @@ script:
     execution: false
     name: file
     polling: true
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.9.46032
   feed: false
   isfetch: true
   longRunning: false

@@ -2,342 +2,223 @@
     "description": "Incoming Mapper for Symantec EDR",
     "feed": false,
     "id": "Symantec EDR - Incoming Mapper",
-	"mapping": {
-		"Symantec EDR Incident": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Description": {
-					"simple": "incident.description"
-				},
-				"Device Local IP": {
-					"complex": {
-						"accessor": "device_ip",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Device Name": {
-					"complex": {
-						"accessor": "device_name",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Source Create time": {
-					"simple": "incident.incident_created"
-				},
-				"Source Priority": {
-					"simple": "incident.priority"
-				},
-				"Event ID": {
-					"complex": {
-						"accessor": "type_id",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"First Seen": {
-					"simple": "incident.first_seen"
-				},
-				"Last Seen": {
-					"simple": "incident.last_seen"
-				},
-				"Last Update Time": {
-					"simple": "incident.last_updated"
-				},
-				"Log Source Name": {
-					"simple": "incident.log_name"
-				},
-				"Priority level": {
-					"simple": "incident.priority"
-				},
-				"Process SHA256": {
-					"complex": {
-						"accessor": "sha2",
-						"filters": [],
-						"root": "events.event_actor.file",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Rule Name": {
-					"simple": "incident.rule_name"
-				},
-				"Source Status": {
-					"simple": "incident.incident_state"
-				},
-				"UUID": {
-					"simple": "incident.incident_uuid"
-				},
-				"Closing Reason": {
-					"simple": "incident.resolution"
-				},
-				"External ID": {
-					"simple": "incident.incident_id"
-				},
-				"Symantec EDR Detection Type": {
-					"complex": {
-						"accessor": "detection_type",
-						"filters": [],
-						"root": "incident",
-						"transformers": []
-					}
-				},
-				"Symantec EDR Enriched Category ID": {
-					"complex": {
-						"accessor": "category_id",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Enriched Category Name": {
-					"complex": {
-						"accessor": "category_name",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Enriched Data": {
-					"complex": {
-						"accessor": "enriched_data",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Enriched Rule Description": {
-					"complex": {
-						"accessor": "rule_description",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Enriched Rule Name": {
-					"complex": {
-						"accessor": "rule_name",
-						"filters": [],
-						"root": "events.enriched_data",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Event Actor": {
-					"complex": {
-						"filters": [],
-						"root": "events.event_actor",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Event Actor File": {
-					"complex": {
-						"accessor": "file",
-						"filters": [],
-						"root": "events.event_actor",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Event Actor User": {
-					"complex": {
-						"accessor": "user",
-						"filters": [],
-						"root": "events.event_actor",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Event Process": {
-					"complex": {
-						"accessor": "process",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Incident Comments": {
-					"complex": {
-						"filters": [],
-						"root": "comments",
-						"transformers": []
-					}
-				},
-				"Symantec EDR Incident Events": {
-					"complex": {
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Monitor Source": {
-					"complex": {
-						"accessor": "monitor_source",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Priority level": {
-					"complex": {
-						"accessor": "priority",
-						"filters": [],
-						"root": "incident",
-						"transformers": []
-					}
-				},
-				"Symantec EDR Process File": {
-					"complex": {
-						"accessor": "file",
-						"filters": [],
-						"root": "events.process",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Process User": {
-					"complex": {
-						"accessor": "user",
-						"filters": [],
-						"root": "events.process",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Symantec EDR Recommended Action": {
-					"complex": {
-						"accessor": "recommended_action",
-						"filters": [],
-						"root": "incident",
-						"transformers": []
-					}
-				},
-				"Symantec EDR Rule ID": {
-					"complex": {
-						"accessor": "atp_rule_id",
-						"filters": [],
-						"root": "incident",
-						"transformers": []
-					}
-				},
-				"Symantec EDR attacks": {
-					"complex": {
-						"accessor": "attacks",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Description": {
-					"complex": {
-						"accessor": "description",
-						"filters": [],
-						"root": "incident",
-						"transformers": []
-					}
-				},
-				"Device Local IP": {
-					"complex": {
-						"accessor": "device_ip",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				},
-				"Device Name": {
-					"complex": {
-						"accessor": "device_name",
-						"filters": [],
-						"root": "events",
-						"transformers": [
-							{
-								"operator": "uniq"
-							}
-						]
-					}
-				}
-			}
-		}
-	},
+    "mapping": {
+        "Symantec EDR Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "simple": "incident.description"
+                },
+                "Source Create time": {
+                    "simple": "incident.incident_created"
+                },
+                "Source Priority": {
+                    "simple": "incident.priority"
+                },
+                "First Seen": {
+                    "simple": "incident.first_seen"
+                },
+                "Last Seen": {
+                    "simple": "incident.last_seen"
+                },
+                "Last Update Time": {
+                    "simple": "incident.last_updated"
+                },
+                "Log Source Name": {
+                    "simple": "incident.log_name"
+                },
+                "Rule Name": {
+                    "simple": "incident.rule_name"
+                },
+                "Source Status": {
+                    "simple": "incident.incident_state"
+                },
+                "UUID": {
+                    "simple": "incident.incident_uuid"
+                },
+                "Closing Reason": {
+                    "simple": "incident.resolution"
+                },
+                "External ID": {
+                    "simple": "incident.incident_id"
+                },
+                "Symantec EDR Detection Type": {
+                    "complex": {
+                        "accessor": "detection_type",
+                        "filters": [],
+                        "root": "incident",
+                        "transformers": []
+                    }
+                },
+                "Symantec EDR Enriched Data": {
+                    "complex": {
+                        "accessor": "enriched_data",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Symantec EDR Event Actor": {
+                    "complex": {
+                        "filters": [],
+                        "root": "events.event_actor",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Symantec EDR Event Actor File": {
+                    "complex": {
+                        "accessor": "file",
+                        "filters": [],
+                        "root": "events.event_actor",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Symantec EDR Event Actor User": {
+                    "complex": {
+                        "accessor": "user",
+                        "filters": [],
+                        "root": "events.event_actor",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Symantec EDR Event Process": {
+                    "complex": {
+                        "accessor": "process",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Symantec EDR Incident Comments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "comments",
+                        "transformers": []
+                    }
+                },
+                "Symantec EDR Incident Events": {
+                    "complex": {
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Symantec EDR Process File": {
+                    "complex": {
+                        "accessor": "file",
+                        "filters": [],
+                        "root": "events.process",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Symantec EDR Process User": {
+                    "complex": {
+                        "accessor": "user",
+                        "filters": [],
+                        "root": "events.process",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Symantec EDR Recommended Action": {
+                    "complex": {
+                        "accessor": "recommended_action",
+                        "filters": [],
+                        "root": "incident",
+                        "transformers": []
+                    }
+                },
+                "Symantec EDR Rule ID": {
+                    "complex": {
+                        "accessor": "atp_rule_id",
+                        "filters": [],
+                        "root": "incident",
+                        "transformers": []
+                    }
+                },
+                "Symantec EDR attacks": {
+                    "complex": {
+                        "accessor": "attacks",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+                    "complex": {
+                        "accessor": "description",
+                        "filters": [],
+                        "root": "incident",
+                        "transformers": []
+                    }
+                },
+                "Device Local IP": {
+                    "complex": {
+                        "accessor": "device_ip",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Device Name": {
+                    "complex": {
+                        "accessor": "device_name",
+                        "filters": [],
+                        "root": "events",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
     "name": "Symantec EDR - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,

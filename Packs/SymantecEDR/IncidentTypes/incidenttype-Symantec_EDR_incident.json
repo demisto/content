@@ -10,6 +10,7 @@
     "id": "Symantec EDR Incident",
     "locked": false,
     "name": "Symantec EDR Incident",
+    "playbookId": "Symantec EDR Incident Playbook",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

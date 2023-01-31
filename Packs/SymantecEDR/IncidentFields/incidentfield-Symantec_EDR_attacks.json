@@ -1,11 +1,11 @@
 {
-    "id": "incident_edrattacks",
+    "id": "incident_symantecedrattacks",
     "version": -1,
     "fromVersion": "6.8.0",
     "modified": "2023-01-11T16:33:26.019959717+05:30",
     "name": "Symantec EDR attacks",
     "ownerOnly": false,
-    "cliName": "edrattacks",
+    "cliName": "symantecedrattacks",
     "type": "grid",
     "closeForm": true,
     "editForm": false,
