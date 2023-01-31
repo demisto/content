@@ -36,7 +36,7 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 20. | Optional | 
+| limit | The maximum number of results to return. Default is 30. | Optional | 
 | indicator_type | The indicator type. Possible values are: CIDR, DOMAIN, Both. Default is Both. | Optional | 
 
 

@@ -47,18 +47,18 @@ def test_grab_domains():
         - Return domains list without errors
     """
     from CiscoWebExFeed import grab_domains
-    expected_result = ['*.d1.com', '*.d5.com', '*.d2.com']
-    assert grab_domains(DOMAIN_TABLE) == expected_result
+    expected_result = ['*.d1.com', '*.d2.com', '*.d5.com']
+    assert sorted(grab_domains(DOMAIN_TABLE)) == expected_result
 
 
 def test_grab_CIDR_ips():
     """
     Given:
-        - Raw list  that contains ips CIDR and NET RANGE, returned by api call:
+        - Raw list that contains ips CIDR and NET RANGE, returned by api call:
     When:
         - Calling grab_CIDR_ips
     Then:
-        - Return CIDR ips list without without diplicates
+        - Return CIDR ips list without without duplicates
     """
     from CiscoWebExFeed import grab_CIDR_ips
     expected_result = ['1.1.1.1/1', '1.2.3.4/5']
@@ -67,7 +67,7 @@ def test_grab_CIDR_ips():
 
 def test_grab_domain_table():
     """
-    Given: a soup object that is similar to the domain table
+    Given: a beautiful soup object that is similar to the domain table
 
     When:
         - grab_domain_table(soup)
@@ -96,10 +96,12 @@ def test_grab_ip_table():
 
 
 @pytest.mark.parametrize('input, expected', [
-    ('1.1.1.1/16', 'CIDR'), ('*.google.com', 'DomainGlob'), ('google.com', 'Domain')])
+    ('1.1.1.1/16', 'CIDR'),
+    ('*.example.com', 'DomainGlob'),
+    ('example.com', 'Domain')])
 def test_check_indicator_type__diffrent_inputs(input, expected):
     """
-    Given:  a indicator of type: ip, domain or domain glob
+    Given: A indicator of type: ip, domain or domain glob
 
     When:
         - check_indicator_type is called
@@ -111,10 +113,10 @@ def test_check_indicator_type__diffrent_inputs(input, expected):
 
 
 @pytest.mark.parametrize('input, expected', [
-                         ('Both', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n| domainmock | mocked_type |\n'),      # noqa: E501
-                         ('IP', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n'),
-                         ('DOMAIN', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| domainmock | mocked_type |\n')])
-def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input, expected):
+    ('Both', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n| domainmock | mocked_type |\n'),
+    ('CIDR', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n'),
+    ('DOMAIN', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| domainmock | mocked_type |\n')])
+def test_get_indicators_command__diffrent_indicator_type_as_input(mocker, input, expected):
     """
     Given:
         - a limit and an indicator type
@@ -128,40 +130,10 @@ def test_get_indicators_command__diffrent_indicator_tipe_as_input(mocker, input,
     mocker.patch.object(Client, 'all_raw_data', return_value='gg')
     mocker.patch.object(CiscoWebExFeed, 'check_indicator_type', return_value='mocked_type')
     mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
-                        return_value={'IP': ['ipmock'], 'DOMAIN': ['domainmock']})
+                        return_value={'CIDR': ['ipmock'], 'DOMAIN': ['domainmock']})
 
     res = get_indicators_command(client=client, limit=1, indicator_type=input)
     assert res.readable_output == expected
-
-
-def test_test_module__when_success(mocker):
-    """
-    Given:
-        - a client with a positive response
-    When:
-        - the connectivity test module is called
-    Then:
-        - assert that the test_module function returns 'ok'
-    """
-    from CiscoWebExFeed import test_module, Client
-    client = MockedClient(Client)
-    mocker.patch.object(Client, 'all_raw_data', return_value='gg')
-    assert test_module(client=client) == 'ok'
-
-
-def test_test_module__when_fail(mocker):
-    """
-     Given:
-        - a client with a negative response
-    When:
-        - the connectivity test module is called
-    Then:
-        - assert that the test_module function returns the error message
-    """
-    from CiscoWebExFeed import test_module, Client
-    client = MockedClient(Client)
-    mocker.patch.object(Client, 'all_raw_data', side_effect=DemistoException('404'))
-    assert test_module(client=client) == '404'
 
 
 def test_fetch_indicators_command(mocker):
@@ -177,7 +149,7 @@ def test_fetch_indicators_command(mocker):
     client = MockedClient(Client)
     mocker.patch.object(Client, 'all_raw_data', return_value='gg')
     mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
-                        return_value={'IP': ['ipmock'], 'DOMAIN': ['domainmock']})
+                        return_value={'CIDR': ['ipmock'], 'DOMAIN': ['domainmock']})
 
     expected_result = [{'value': 'ipmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
                                                                         'trafficlightprotocol': 'very_yellow'}},

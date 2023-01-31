@@ -46,6 +46,7 @@ configuration:
   required: false
   type: 15
   section: Collect
+  advanced: true
 - defaultvalue: indicatorType
   display: ""
   name: feedExpirationPolicy
@@ -57,12 +58,14 @@ configuration:
   required: false
   type: 17
   section: Collect
+  advanced: true
 - defaultvalue: "20160"
   display: ""
   name: feedExpirationInterval
   required: false
   type: 1
   section: Collect
+  advanced: true
 - defaultvalue: "30"
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -82,6 +85,8 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -94,18 +99,18 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use the Cisco WebEx Feed integration to fetch indicators from WeBex.
+description: Use the Cisco WebEx Feed integration to fetch indicators from WebEx.
 display: Cisco WebEx Feed
 name: Cisco WebEx Feed
 script:
   commands:
   - arguments:
-    - defaultValue: "20"
+    - defaultValue: "30"
       description: The maximum number of results to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: Both
-      description: The indicator type. Can be "CIDR", "DOMAIN", or "Both".
+      description: The indicator type.
       name: indicator_type
       predefined:
       - CIDR

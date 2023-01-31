@@ -33,9 +33,8 @@ def grab_domains(data: list) -> List:
         return a list of all the domains only
     """
     domainList: List = []
-    for lines in data:
-        if len(lines) < 2:
-            continue
+    # skip the last line as it is not a domain
+    for lines in data[:-1]:
         domains = lines[1].split(' ')
         cleanDomain = " ".join(re.findall(DOMAIN_REGEX, domains[0]))
 
@@ -43,12 +42,11 @@ def grab_domains(data: list) -> List:
         cleanDomain = cleanDomain.strip()
         if '\t\t\t' in cleanDomain:  # multiple domains in one line
             multiple_domains_lst = cleanDomain.split('\t\t\t')
-            for domain in multiple_domains_lst:
-                domainList.append(domain)
-        elif len(cleanDomain) > 0:
+            domainList += multiple_domains_lst
+        elif cleanDomain:
             domainList.append(cleanDomain)
-    # Dedup List
-    finel_domainList = list(dict.fromkeys(domainList))
+    # remove duplicates and convert it back to a list fot the slicing to work
+    finel_domainList = list(set(domainList))
     return finel_domainList
 
 
@@ -73,8 +71,8 @@ def grab_CIDR_ips(data: list) -> List:
     for line in data[0]:
         values = line.split(' (CIDR)')
         CIDR_ip_list.append(values[0])
-    # Dedup List
-    finel_CIDR_ip_list = list(dict.fromkeys(CIDR_ip_list))
+    # remove duplicates and convert it back to a list fot the slicing to work
+    finel_CIDR_ip_list = list(set(CIDR_ip_list))
     return finel_CIDR_ip_list
 
 
