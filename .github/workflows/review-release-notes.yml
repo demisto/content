@@ -29,16 +29,6 @@ jobs:
       - name: Review Release Notes
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
-          echo "Release notes found in PR: ${release_notes}"
-          release_notes_to_review=$(Utils/github_workflow_scripts/get_xsoar_supported_release_notes.py "$release_notes" --delimiter ${{ env.CHANGED_FILES_DELIMITER }})
+          echo "Release notes found in PR: ${release_notes}. Starting docs review..."
 
-          # Check if there are any release notes
-          if [ $? -eq 0 ] && [ -n "$release_notes_to_review" ]; then
-
-            echo "Release notes requiring review: $release_notes_to_review"
-            
-            echo "Starting docs review..."
-            Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes_to_review" --delimiter ${{ env.CHANGED_FILES_DELIMITER }}
-          else
-            echo "No need to run doc review on ${release_notes} since they are not XSOAR-supported. Exiting..."
-          fi
+          Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes" --delimiter ${{ env.CHANGED_FILES_DELIMITER }}
