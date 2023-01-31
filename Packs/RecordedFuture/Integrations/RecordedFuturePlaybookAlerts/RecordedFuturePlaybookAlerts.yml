@@ -45,6 +45,11 @@ configuration:
     - All Available
     - Domain Abuse
     - Vulnerability
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: "50"
+  required: false
+  type: 0
 - display: 'Playbook Alerts: Fetched Statuses'
   name: pa_statuses
   required: false
@@ -87,6 +92,13 @@ script:
             - log
             - domain_abuse-whois
             - domain_abuse-dns
+      outputs: 
+        - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
+          description: Unique id of the playbook alert in Recorded Future
+          type: string
+        - contextPath: RecordedFuture.PlaybookAlerts.category
+          description: Unique type of playbook_alert Recorded Future
+          type: string
     - name: recordedfuture-playbook-alerts-update
       description: Update the status of one or multiple Playbook alerts
       arguments: 
@@ -101,6 +113,19 @@ script:
             - in-progress
             - dismissed
             - resolved
+      outputs:
+        - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
+          description: Unique id of the playbook alert in Recorded Future
+          type: string
+        - contextPath: RecordedFuture.PlaybookAlerts.current_status
+          description: Current status of playbook alert in Recorded Future 
+          type: string
+        - contextPath: RecordedFuture.PlaybookAlerts.title
+          description: Title of the playbook alert in Recorded Future
+          type: string
+        - contextPath: RecordedFuture.PlaybookAlerts.status_message
+          description: Message describing the outcome of the update
+          type: string
 
     - name: recordedfuture-playbook-alerts-search
       description: Search playbook alerts based on filters

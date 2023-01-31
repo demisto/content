@@ -157,7 +157,7 @@ class Actions:
         for _key,_val in response.items():
             if _key == 'demisto_last_run':
                 demisto.setLastRun(_val)
-            else:
+            if _key == 'incidents':
                 for incident in _val:
                     attachments = list()
                     incident_json = json.loads(incident.get("rawJSON"))
@@ -177,6 +177,7 @@ class Actions:
                             }
                             attachments.append(attachment)
                         incident['attachment'] = attachments
+                
                 demisto.incidents(_val)
             
         #######################################################
