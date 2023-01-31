@@ -392,7 +392,9 @@ def alarm_to_incident(client, alarm):  # pragma: no cover
                                      f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
                                      f'/api/v1/intels/{intel_doc_id}/labels')
 
-        for label in intel_doc_labels_resp:
+        labels_list = intel_doc_labels_resp.get('data', intel_doc_labels_resp) \
+            if type(intel_doc_labels_resp) is dict else intel_doc_labels_resp
+        for label in labels_list:
             intel_doc_labels.append(label['name'])
         alarm['labels'] = intel_doc_labels
 
@@ -463,12 +465,13 @@ def fetch_incidents(client: Client, alerts_states_to_retrieve: str, label_name_t
             alerts_states_suffix + f'&sort=-createdAt&limit=500&offset={offset}' + label_name_suffix
 
         raw_response = client.do_request('GET', url_suffix)
-        if not raw_response:
+        raw_response_data = raw_response.get('data', raw_response) if type(raw_response) is dict else raw_response
+        if not raw_response_data:
             demisto.debug('Stop fetch loop, no incidents in raw response.')
             break
 
         # convert the data/events to demisto incidents
-        for alarm in raw_response:
+        for alarm in raw_response_data:
             incident = alarm_to_incident(client, alarm)
             temp_date = parse(incident.get('starttime'))
             new_id = incident.get('alertid')
@@ -534,7 +537,8 @@ def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[lis
     # A more readable format for the human readable section.
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response.get('data', raw_response)
+                                       if type(raw_response) is dict else raw_response)
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -576,7 +580,7 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
         if intel_doc:
             intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
         intel_docs.append(intel_doc)
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response_data)
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -616,7 +620,7 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response_data)
     context = createContext({'IntelDocID': id_, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
     headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
@@ -666,7 +670,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
         intel_docs_labels.append(intel_doc_label)
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response_data)
     context = createContext({'IntelDocID': intel_doc_id, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
     headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
@@ -719,7 +723,7 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
 
     # This API call returns the latest labels associated to the given intel-doc ID.
     # This gives us the ability to update the context on deletion.
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response_data)
     context = createContext({'IntelDocID': intel_doc_id, 'LabelsList': context_data}, removeNull=True)
     outputs = {'Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)': context}
     headers = ['ID', 'Name', 'Description', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
@@ -760,7 +764,8 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
 
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response.get("data", raw_response)
+                                       if type(raw_response) is dict else raw_response)
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -828,7 +833,8 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
 
-    context_data = format_context_data(raw_response)
+    context_data = format_context_data(raw_response.get("data", raw_response)
+                                       if type(raw_response) is dict else raw_response)
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -1040,16 +1046,17 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         'state': state.lower()
     }
     if client.api_version == "4.x":
-        url_suffix = '/plugin/products/threat-response/api/v1/alerts'
+        url_suffix = '/plugin/products/threat-response/api/v1/alerts/'
         if len(alert_ids) == 1:
-            url_suffix = f'{url_suffix}/{alert_ids[0]}'
+            url_suffix = urljoin(url_suffix, str(alert_ids[0]))
         else:
             body['id'] = alert_ids
     else:
         url_suffix = '/plugin/products/detect3/api/v1/alerts/'
         body['id'] = alert_ids
-    client.do_request('PUT', url_suffix, params=body) if client.api_version == '4.x'\
-        else client.do_request('PUT', url_suffix, data=body)
+    # client.do_request('PUT', url_suffix, params=body) if client.api_version == '4.x'\
+    #     else client.do_request('PUT', url_suffix, data=body)
+    client.do_request('PUT', url_suffix, data=body)
 
     return f'Alert state updated to {state}.', {}, {}
 
