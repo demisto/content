@@ -615,6 +615,7 @@ class TestCollector(ABC):
         Returns:
             CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
         """
+        # Not validating marketplace with function so xsoar & marketplacev2 supported packs will be installed if needed.
         if self.marketplace != MarketplaceVersions.MarketplaceV2:
             logger.info(f'Not collecting pack {pack_id} for XSIAM component {changed_file_path} because '
                         f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
@@ -687,6 +688,8 @@ class TestCollector(ABC):
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
+                # However only xsiam component files will be collected anyway in
+                # _collect_xsiam_and_modeling_pack function.
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
