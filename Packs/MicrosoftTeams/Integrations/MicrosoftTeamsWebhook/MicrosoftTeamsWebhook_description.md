@@ -30,4 +30,3 @@ For example, create a list containing a dictionary where the **Key** is the Team
 ​
 You can then pass the list into the *team_webhook* argument, and use the GetField transformer with the value of the Team   (i.e., ReadyTeamOne) to retrieve the webhook URL that will be used to override the default from the integration instance, and send the message.
 ​
-For more information, see the [integration documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams)
