@@ -400,6 +400,10 @@ script:
         - name: pst_id
           required: true
           description: PST ID
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
       outputs:
         - contextPath: KMSAT.PhishingSecurityPST.recipient_id
           description: Phishing Security Recipient ID
@@ -461,6 +465,15 @@ script:
         - contextPath: KMSAT.PhishingSecurityPST.os
           description: Phishing Security OS
           type: String
+        - contextPath: KMSAT.PhishingSecurityPST.meta.paging_end
+          description: Phishing Security Meta Page End
+          type: Boolean
+        - contextPath: KMSAT.PhishingSecurityPST.meta.filtered_items_in_page
+          description: Phishing Security Meta Filtered Items
+          type: Number
+        - contextPath: KMSAT.PhishingSecurityPST.meta.items_total
+          description: Phishing Security Meta Items Total
+          type: Number
       description: Returns a Specific Failed Recipient's Results.
     - name: kmsat-phishing-campaigns-security-tests-list
       arguments:
@@ -699,10 +712,10 @@ script:
           type: Boolean
         - contextPath: KMSAT.TrainingEnrollments.meta.filtered_items_in_page
           description: Training Enrollments Meta Filtered Items
-          type: Boolean
+          type: Number
         - contextPath: KMSAT.TrainingEnrollments.meta.items_total
           description: Training Enrollments Meta Items Total
-          type: Boolean
+          type: Number
       description: Returns all Training Enrollments
     - name: kmsat-user-events-list
       arguments:

@@ -704,7 +704,16 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     """
 
     pst_id = remove_empty_elements(args.get("pst_id"))
-    response = client.kmsat_phishing_security_tests_recipients(pst_id, None)
+    params = get_pagination(args)
+    response = client.kmsat_phishing_security_tests_recipients(pst_id, params)
+
+    filtered_items_in_page = 0
+    paging_end = False
+    items_total = len(response)
+
+    # Sets paging_end False if the response count is less than the per_page
+    if(len(response) < int(params.get('per_page'))):
+        paging_end = True
 
     data = []
     for i in range(len(response)):
@@ -717,10 +726,23 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
 
         if any([clicked_at, replied_at, attachment_opened_at, macro_enabled_at, data_entered_at, qr_code_scanned]):
             data.append(response[i])
+            filtered_items_in_page += 1
+
+    # Adds meta to the result set for paging
+    metadata = {
+        "paging_end": paging_end,
+        "filtered_items_in_page": filtered_items_in_page,
+        "items_total": items_total
+    }
+
+    d = {
+        "data": data,
+        "meta": metadata
+    }
 
     markdown = tableToMarkdown(
         "Phishing Security Tests Recipients",
-        data,
+        d["data"],
         [
             "recipient_id",
             "pst_id",
@@ -752,8 +774,8 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
     return CommandResults(
         outputs_prefix="KMSAT.PhishingSecurityPST",
         outputs_key_field="recipient_id",
-        raw_response=data,
-        outputs=data,
+        raw_response=d,
+        outputs=d,
         readable_output=markdown,
     )
 
