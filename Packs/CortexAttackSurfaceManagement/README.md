@@ -111,3 +111,7 @@ This automation helps check if SNMP is enabled or not and gets the running versi
 #### InferWhetherServiceIsDev
 This automation identifies whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
 ![InferWhetherServiceIsDev](https://raw.githubusercontent.com/demisto/content/86a032fa314e62793b5d4e344e189600f02153b8/Packs/CortexAttackSurfaceManagement/doc_files/InferWhetherServiceIsDev.png)
+
+#### RemediationPathRuleEvaluation
+This automation attempts to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
+TODO: ADD LINK AFTER INIT PR
