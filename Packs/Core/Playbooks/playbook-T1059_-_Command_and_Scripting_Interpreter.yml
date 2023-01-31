@@ -396,9 +396,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
       - "55"
+      "yes":
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -858,8 +858,6 @@ tasks:
         simple: "False"
       FileRemediation:
         simple: Quarantine
-      IAMUserDomain:
-        simple: ''
       IP:
         complex:
           root: ExtractedIndicators
@@ -946,8 +944,7 @@ tasks:
             - operator: uniq
         FileRemediation:
           simple: Quarantine
-        IAMUserDomain:
-          simple: ''
+        IAMUserDomain: {}
         UserContainment:
           simple: "False"
         Username:
@@ -1115,8 +1112,7 @@ tasks:
         FileRemediation:
           complex:
             root: inputs.FileRemediation
-        IAMUserDomain:
-          simple: ''
+        IAMUserDomain: {}
         UserContainment:
           simple: "False"
       exitCondition: ""
@@ -1176,12 +1172,12 @@ tasks:
     continueonerrortype: ""
   "55":
     id: "55"
-    taskid: 8bb37ed5-591e-4cd0-89a5-c0e285682ac3
+    taskid: c16a3995-ec20-430a-84f3-1a71844b1316
     type: regular
     task:
-      id: 8bb37ed5-591e-4cd0-89a5-c0e285682ac3
+      id: c16a3995-ec20-430a-84f3-1a71844b1316
       version: -1
-      name: Get command-line prevalence
+      name: Get CMD prevalence
       description: Get the prevalence of a process_command_line, identified by process_command_line.
       script: Cortex Core - IR|||core-get-cmd-analytics-prevalence
       type: regular
@@ -1200,8 +1196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 970
+          "x": 720,
+          "y": 910
         }
       }
     note: false
@@ -1218,16 +1214,16 @@ tasks:
     task:
       id: 0102cdcc-b833-47d4-860e-60ce26596881
       version: -1
-      name: Found command-line to be prevalent?
-      description: Check if Command-line is prevalent and if false continue with auto containment, else proceeds to manual review
+      name: Found CMD to be prevalent?
+      description: Check if command is prevalent or not
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
-      "yes":
       - "16"
+      "yes":
+      - "44"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1247,8 +1243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 1150
+          "x": 720,
+          "y": 1090
         }
       }
     note: false
@@ -1266,8 +1262,6 @@ view: |-
       "28_34_#default#": 0.51,
       "28_43_yes": 0.43,
       "34_29_#default#": 0.25,
-      "39_16_#default#": 0.46,
-      "39_55_yes": 0.55,
       "48_27_yes": 0.62,
       "48_49_#default#": 0.47
     },

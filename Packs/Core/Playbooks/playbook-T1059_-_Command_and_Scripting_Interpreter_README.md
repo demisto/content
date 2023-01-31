@@ -38,24 +38,24 @@ It then continues with the following eradication actions:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Containment Plan
 * Recovery Plan
-* Command-Line Analysis
-* Endpoint Investigation Plan
 * Eradication Plan
 * Handle False Positive Alerts
+* Containment Plan
+* Endpoint Investigation Plan
+* Command-Line Analysis
 
 ### Integrations
-* CortexCoreIR
 * Cortex Core - IR
+* CortexCoreIR
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* core-get-dynamic-analysis
-* closeInvestigation
 * core-get-cmd-analytics-prevalence
+* closeInvestigation
+* core-get-dynamic-analysis
 
 ## Playbook Inputs
 ---
