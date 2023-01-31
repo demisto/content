@@ -1,0 +1,109 @@
+category: Network Security
+commonfields:
+  id: Stamus
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Stamus Central Server
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '200'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+description: '[Get alerts from Stamus Central Server and build incidents. Then get related artifacts, events and host-id informations]'
+display: 'Stamus'
+name: Stamus
+script:
+  commands:
+  - arguments:
+    - name: key
+      default: false
+      description: '[Indicator of Compromise key]'
+      isArray: false
+      required: true
+      secret: false
+    - name: value
+      default: false
+      description: '[Indicator of Compromise value]'
+      isArray: false
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Get events with IOC key/value filter]'
+    execution: false
+    name: stamus-get-by-ioc
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - arguments:
+    - default: false
+      description: '[IP to get host-id informations]'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Get host-id informations]'
+    execution: false
+    name: stamus-get-host-id
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - arguments:
+    - default: false
+      description: '[Stamus ID used to get related]'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    execution: false
+    name: stamus-get-events
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.9.46807
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
