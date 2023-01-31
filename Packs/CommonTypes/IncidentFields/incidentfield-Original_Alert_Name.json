@@ -3,7 +3,7 @@
 	"associatedTypes": [],
 	"breachScript": "",
 	"caseInsensitive": true,
-	"cliName": "originalalertname",
+	"cliName": "incident_originalalertname",
 	"closeForm": false,
 	"columns": null,
 	"content": true,
