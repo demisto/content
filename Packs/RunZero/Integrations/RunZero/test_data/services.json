@@ -481,7 +481,7 @@
         "service_data": {
             "mdns.addrs": "192.168.1.91\tfe80::250:56ff:fe89:b0e1",
             "mdns.hostname": "RHEL85",
-            "mdns.replies": "91.1.168.192.in-addr.arpa.=PTR,RHEL85.local.\tPCP pmcd on RHEL85.localdomain._pmcd._tcp.local.=SRV,RHEL85.local.:44321\tRHEL85.local.=A,192.168.1.91\tRHEL85.local.=AAAA,fe80::250:56ff:fe89:b0e1\t_pmcd._tcp.local.=PTR,PCP pmcd on RHEL85.localdomain._pmcd._tcp.local.",
+            "mdns.replies": "1.1.1.1.in-addr.arpa.=PTR,RHEL85.local.\tPCP pmcd on RHEL85.localdomain._pmcd._tcp.local.=SRV,RHEL85.local.:44321\tRHEL85.local.=A,192.168.1.91\tRHEL85.local.=AAAA,fe80::250:56ff:fe89:b0e1\t_pmcd._tcp.local.=PTR,PCP pmcd on RHEL85.localdomain._pmcd._tcp.local.",
             "mdns.services": "pmcd/tcp",
             "protocol": "mdns",
             "ts": "1672008085"
