@@ -370,9 +370,6 @@ script:
     name: prisma-sase-candidate-config-push
     polling: true
     outputs:
-    - contextPath: PrismaSase.CandidateConfig
-      description: Configuration job information.
-      type: String
     - contextPath: PrismaSase.CandidateConfig.job_id
       description: Configuration job ID.
       type: String

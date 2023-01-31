@@ -52,6 +52,7 @@ class Client(BaseClient):
        client_secret (str): client secret.
        verify (bool): specifies whether to verify the SSL certificate or not.
        proxy (bool): specifies if to use XSOAR proxy settings.
+       tsg_id: The default target Prisma SASE tenant ID
     """
 
     def __init__(self, base_url: str, client_id: str,
@@ -946,8 +947,6 @@ def build_recurring_according_to_params(args: dict) -> dict:
         Frequency object
     """
     frequency = args.get('frequency') or 'five_minute'
-    # if not frequency:
-    #     raise DemistoException('Please provide the frequency argument when using IP, URL or Domain types')
     frequency_object: dict = {frequency: {}}
     if frequency in ('daily', 'weekly', 'monthly'):
         frequency_hour = args.get('frequency_hour')
@@ -1047,12 +1046,8 @@ def test_module(client: Client) -> CommandResults:
 
 
 def create_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new security rule
-    Args:
-        client: Client object with request
-        args: demisto.args()
-    Returns:
-        Outputs.
+    """
+    Command to create new security rule
     """
 
     rule = client.build_security_rule(args)
@@ -1115,13 +1110,8 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def edit_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update address object
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to update address object
     """
 
     query_params = {
@@ -1171,13 +1161,8 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def delete_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete address object
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to delete address object
     """
     tsg_id = args.get('tsg_id')
     address_id = args.get('object_id')
@@ -1192,13 +1177,8 @@ def delete_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def list_address_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get all address objects
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to get all address objects
     """
 
     query_params = {
@@ -1229,13 +1209,8 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete the specified security rule
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to delete the specified security rule
     """
 
     rule_id = args.get('rule_id')
@@ -1252,13 +1227,8 @@ def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update an existing security rule
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to update an existing security rule
     """
     rule = client.build_security_rule(args)
     rule_id = args.get('rule_id', '')
@@ -1285,12 +1255,7 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def push_candidate_config_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Command to Trigger a configuration push for the identified Folder/Devices
-    Args:
-        client: Client object with request
-        args: demisto.args()
 
-    Returns:
-        Outputs.
     """
     folders = argToList(args.get('folders'))  # type: ignore
     tsg_id = args.get('tsg_id')
@@ -1310,13 +1275,8 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def list_security_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to Get all security rules
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to Get all security rules
     """
 
     query_params = {
@@ -1350,12 +1310,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any]) -> Command
 
 def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Command to list config jobs from Prisma Access
-    Args:
-        client: Client object with request
-        args: demisto.args()
 
-    Returns:
-        Outputs.
     """
 
     query_params = {}
@@ -1382,14 +1337,9 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to list all tags
-        Args:
-            client: Client object with request
-            args: demisto.args()
-
-        Returns:
-            Outputs.
-        """
+    """
+    Command to list all tags
+    """
 
     query_params = {
         'folder': encode_string_results(args.get('folder'))
@@ -1417,13 +1367,8 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new tag
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to create new tag
     """
 
     tag = {
@@ -1453,13 +1398,8 @@ def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update an existing tag
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to update an existing tag
     """
 
     query_params = {
@@ -1490,13 +1430,8 @@ def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete the specified tagG
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to delete the specified tagG
     """
 
     tag_id = args.get('tag_id')
@@ -1513,13 +1448,8 @@ def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get address groups
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to get address groups
     """
 
     query_params = {
@@ -1550,13 +1480,8 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def create_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new address group
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to create new address group
     """
 
     address_group = {
@@ -1595,13 +1520,8 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def update_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update an existing address group
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to update an existing address group
     """
 
     query_params = {
@@ -1664,13 +1584,8 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def delete_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete address group
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to delete address group
     """
     group_id = args.get('group_id')
     tsg_id = args.get('tsg_id')
@@ -1686,13 +1601,8 @@ def delete_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get all custom url categories
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to get all custom url categories
     """
 
     query_params = {
@@ -1723,13 +1633,8 @@ def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> Co
 
 
 def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new custom url category
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to create new custom url category
     """
 
     custom_url_category = {
@@ -1764,13 +1669,8 @@ def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update an existing custom url category
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to update an existing custom url category
     """
 
     query_params = {
@@ -1815,13 +1715,8 @@ def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to delete custom url category
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to delete custom url category
     """
     url_category_id = args.get('id')
     tsg_id = args.get('tsg_id')
@@ -1837,13 +1732,8 @@ def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to get all external dynamic lists
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to get all external dynamic lists
     """
 
     query_params = {
@@ -1879,13 +1769,8 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to create new external dynamic list
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to create new external dynamic list
     """
 
     dynamic_list_type = args.get('type', '')
@@ -1933,13 +1818,8 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
 
 def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command to update an existing external dynamic list
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command to update an existing external dynamic list
     """
 
     query_params = {
@@ -2012,12 +1892,7 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
 def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Command to delete external dynamic list
-    Args:
-        client: Client object with request
-        args: demisto.args()
 
-    Returns:
-        Outputs.
     """
     dynamic_list_id = args.get('id')
     tsg_id = args.get('tsg_id')
@@ -2033,13 +1908,8 @@ def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
 
 def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Command get all built-in url categories
-    Args:
-        client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
+    """
+    Command get all built-in url categories
     """
     query_params = {
         'folder': encode_string_results(args.get('folder'))
@@ -2071,14 +1941,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     of that upload (referred here as the 'results' function).
     The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
     the next 'results' function, until the polling is complete.
-    Args:
-        client:
-        args: the arguments required to the command being called, under cmd
-
-    Returns:
-
     """
-    ScheduledCommand.raise_error_if_not_supported()
     polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
     tsg_id = args.get('tsg_id')
     if folders := argToList(args.get('folders')):
@@ -2108,8 +1971,11 @@ def run_push_jobs_polling_command(client: Client, args: dict):
 
         # From testing (as this is not documented) the status returns only as OK if the job succeeded
         if res.get('result_str') != 'OK':
-            raise DemistoException(f'Something went wrong while trying to push job id {job_id}. '
-                                   f'Result: {res.get("result_str")}')
+            return CommandResults(entry_type=EntryType.ERROR,
+                                  outputs={'id': job_id},
+                                  outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
+                                  readable_output=f'Something went wrong while trying to push job id {job_id}. '
+                                                  f'Result: {res.get("result_str")}')
 
         # Parent is the first push. After finishing, sub processes created for each folder.
         args['parent_finished'] = True
@@ -2124,9 +1990,12 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                                                        args=args,
                                                        next_run_in_seconds=polling_interval))
             if job.get('result_str') != 'OK':
-                raise DemistoException(f'Something went wrong while trying to push job id {job_id}. '
-                                       f'Result: {job.get("result_str")}')
-    return CommandResults(readable_output=f'Finished pushing job {job_id}')
+                return CommandResults(entry_type=EntryType.ERROR,
+                                      outputs={'id': job_id},
+                                      outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
+                                      readable_output=f'Something went wrong while trying to push job id {job_id}. '
+                                                      f'Result: {job.get("result_str")}')
+    return CommandResults(readable_output=f'Finished pushing job {job_id}', outputs={'id': job_id})
 
 
 def main():  # pragma: no cover
