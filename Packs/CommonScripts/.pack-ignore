@@ -82,24 +82,6 @@ ignore=SC105
 [file:LoadJSONFileToContext.yml]
 ignore=SC105
 
-[file:ExportContextToJSONFile.yml]
-ignore=SC105
-
-[file:MarkAsEvidenceByTag.yml]
-ignore=SC105
-
-[file:LoadJSONFileToContext.yml]
-ignore=SC105
-
-[file:ExportContextToJSONFile.yml]
-ignore=SC105
-
-[file:MarkAsEvidenceByTag.yml]
-ignore=SC105
-
-[file:LoadJSONFileToContext.yml]
-ignore=SC105
-
 [file:1_10_42.md]
 ignore=RN114,RN113
 
@@ -119,6 +101,9 @@ ignore=RN114
 ignore=RN114
 
 [file:1_10_45.md]
+ignore=RN114
+
+[file:1_11_18.md]
 ignore=RN114
 
 [file:DBotUpdateLogoURLPhishing.yml]
