@@ -492,12 +492,13 @@ test-upload-flow:
     UTILS: 'Utils/'
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - changes:
+      changes:
         - $TESTS/*
         - $Utils/*
   stage: unittests-and-validations
   allow_failure: true
   script:
+    - echo "CI_PIPELINE_SOURCE = $CI_PIPELINE_SOURCE"
     - section_start "Create Testing Branch"
     - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
     - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
