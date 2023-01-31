@@ -103,14 +103,6 @@
          ]
       },
       {
-         "id":"PDFUnlocker",
-         "reason":"Issue: CIAC-5247.",
-         "ignored_native_images":[
-            "native:dev",
-            "native:8.1"
-         ]
-      },
-      {
          "id":"FindEmailCampaign",
          "reason":"Issue: CIAC-5249 - pylint error.",
          "ignored_native_images":[
