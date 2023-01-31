@@ -10,13 +10,13 @@ In order to connect to the Azure Firewall, follow these steps:
    2. Copy and save the Application (client) ID.
 4. In the *Client ID* parameter, enter your registered app Application (client) ID.
 
-### Self deployed Authentication
+### Self-Deployed Authentication
 
-In order to authenticate using the self deployed method, you have to provide the following parameters:
+To authenticate using the self-deployed method, provide the following parameters:
 
 - Token - Tenant ID
 - Key - Client Secret
-   - Alternatively, instead of providing the Client Secret, you can authenticate using certificate credentials by providing:
+   - Alternatively, instead of providing the Client Secret you can authenticate using certificate credentials by providing:
       - Certificate Thumbprint - The certificate thumbprint as appears when registering the certificate to the app.
       - Private Key - The private key of the registered certificate.  
 
@@ -34,11 +34,11 @@ Follow one of these steps for authentication based on Azure Managed Identities:
 
 For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
 
-## Get Subscription ID and the Resource Group values
+## Get Subscription ID and the Resource Group Values
 
 1. In the Azure portal, select **Resource groups**.
 2. Select your resource group name.
-3. Copy the Subscription ID and enter it in the *Subscription ID* parameter.
+3. Copy the subscription ID and enter it in the *Subscription ID* parameter.
 4. Copy your resource group name and enter it in the *Resource Group Name* parameter.
 
 ### Testing authentication and connectivity
