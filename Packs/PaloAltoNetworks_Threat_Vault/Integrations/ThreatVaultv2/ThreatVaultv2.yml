@@ -1232,7 +1232,7 @@ script:
     - contextPath: ThreatVault.SpywareC2.status
       description: The status of the threat (e.g., inactive, active, or released).
       type: String
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.46440
   isfetch: true
   longRunning: false
   longRunningPort: false
