@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
 
-    def create_teams_message(self, message: str, title: str, serverurls: str) -> Dict[str, Any]:
+    def create_teams_message(self, message: str, title: str, serverurls: str) -> dict:
         """
         Creates the Teams message using the messageCard format, and returns the card
 
@@ -77,7 +77,7 @@ def test_module(client: Client, serverurls: str) -> str:
     return 'ok'
 
 
-def send_teams_message_command(client: Client, message: str, title: str, serverurls: str) -> CommandResults:
+def send_teams_message_command(client: Client, message: str, title: str, serverurls: str) -> CommandResults:    # ignore: type
     """
     send_teams_message command: Sends the Teams Message to the provided webhook.
 
@@ -92,12 +92,9 @@ def send_teams_message_command(client: Client, message: str, title: str, serveru
         which contains the readable_output indicating the message was sent.
     """
 
-    try:
-        message = client.create_teams_message(message, title, serverurls)
-        client.send_teams_message(message)
-        return CommandResults(readable_output='message sent successfully')
-    except DemistoException as e:
-        return_error(f'Error: {e}')
+    messagecard = client.create_teams_message(message, title, serverurls)
+    client.send_teams_message(messagecard)
+    return CommandResults(readable_output='message sent successfully')
 
 
 def main() -> None:
