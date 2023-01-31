@@ -1,9 +1,9 @@
 name: Review Release Notes
 on: pull_request
-if: github.repository == 'demisto/content'
 jobs:
   release_notes_review:
     runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
