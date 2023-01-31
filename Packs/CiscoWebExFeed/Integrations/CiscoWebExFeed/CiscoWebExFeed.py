@@ -12,6 +12,7 @@ CIDR = 'CIDR'
 DOMAIN = 'DOMAIN'
 INTEGRATION_NAME = 'WebEx'
 BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
+DOMAIN_REGEX = r"([\^]*[\*\.]*[a-z0-9+\-]+\.+.*)*"
 
 
 def grab_domain_table(html_section: element.Tag) -> List:
@@ -36,7 +37,7 @@ def grab_domains(data: list) -> List:
         if len(lines) < 2:
             continue
         domains = lines[1].split(' ')
-        cleanDomain = " ".join(re.findall(r"([\^]*[\*\.]*[a-z0-9+\-]+\.+.*)*", domains[0]))
+        cleanDomain = " ".join(re.findall(DOMAIN_REGEX, domains[0]))
 
         # Strip Whitespace lines to remove blank values
         cleanDomain = cleanDomain.strip()
@@ -66,7 +67,8 @@ def grab_ip_table(html_section: element.Tag) -> List:
 
 def grab_CIDR_ips(data: list) -> List:
     """ From list of lists that contain all rows of the IP webex table,
-    return a list with only CIDR ip addresses"""
+        return a list with only CIDR ip addresses
+    """
     CIDR_ip_list: List = []
     for line in data[0]:
         values = line.split(' (CIDR)')
@@ -158,10 +160,10 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
     # parse the data from an html page to a list of dicts with ips and domains
     clean_res = parse_indicators_from_response(res)
 
-    if not requested_indicator_type == 'Both':
+    if requested_indicator_type != 'Both':
         indicators = clean_res.get(requested_indicator_type)[:limit]  # type: ignore
     else:
-        indicators = clean_res.get(IP)[:limit] + clean_res.get(DOMAIN)[:limit]  # type: ignore
+        indicators = clean_res.get(CIDR)[:limit] + clean_res.get(DOMAIN)[:limit]  # type: ignore
     final_indicators_lst = []
     for value in indicators:
         type_ = check_indicator_type(value)
@@ -193,7 +195,7 @@ def fetch_indicators_command(client: Client, tags: tuple = None, tlp_color: str 
     clean_res = parse_indicators_from_response(res)
     results = []
     indicator_mapping_fields = {'tags': tags, 'trafficlightprotocol': tlp_color}
-    for indicator in clean_res.get(IP) + clean_res.get(DOMAIN):   # type: ignore
+    for indicator in clean_res.get(CIDR) + clean_res.get(DOMAIN):   # type: ignore
         results.append({
             'value': indicator,
             'type': check_indicator_type(indicator),
