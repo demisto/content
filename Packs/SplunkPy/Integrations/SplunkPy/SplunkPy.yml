@@ -112,35 +112,35 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: If selected, closing a Notable Event in Splunk with a status of "Closed" will close the corresponding fetched incident in Cortex XSOAR.
+- additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
-  display: Mirror closed Cortex XSOAR Incidents (Incoming Mirroring)
+  display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
   name: close_incident
   required: false
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: If selected, Notables with a status that is marked as "End Status" in Splunk will also be mirrored on closure.
+- display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
+  name: close_extra_labels
+  required: false
+  type: 0
+  section: Collect
+  additionalinfo: "A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident (Example: Resolved,False-Positive)."
+- additionalinfo: When selected, Splunk Notable Events with a status that is marked as "End Status" will close the Cortex XSOAR incident.
   defaultvalue: 'false'
-  display: Add Splunk statuses marked as "End Status" to mirroring (Incoming Mirroring)
+  display: Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)
   name: close_end_status_statuses
   required: false
   type: 8
   section: Collect
   advanced: true
-- display: Additional Splunk status labels to mirror (Incoming Mirroring)
-  name: close_extra_labels
-  required: false
-  type: 0
-  section: Collect
-  additionalinfo: "A comma-separated list of status labels to add to mirroring (Example: Resolved,False-Positive)."
-- display: Mirror Closed Splunk Notable Events (Outgoing Mirroring)
+- display: Close Mirrored Splunk Notable Events (Outgoing Mirroring)
   name: close_notable
   required: false
   type: 8
   section: Collect
   advanced: true
-  additionalinfo: If selected, closing a fetched incident of a Splunk Notable in Cortex XSOAR will close the corresponding Notable Event in Splunk.
+  additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
   defaultvalue: 'false'
 - display: Trust any certificate (not secure)
   name: unsecure
