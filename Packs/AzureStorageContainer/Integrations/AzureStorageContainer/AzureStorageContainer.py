@@ -1,11 +1,6 @@
-import base64
 import hashlib
 import hmac
 import shutil
-import urllib
-from datetime import date, datetime, timedelta, timezone
-from hashlib import sha256
-from time import time
 from typing import Callable
 from urllib import parse
 
@@ -864,7 +859,8 @@ def set_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 # generate signature helper function
-def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str, expiry: str, sr: str, api_version: str, sip: str = '') -> str:
+def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str, expiry: str, sr: str, api_version: str,
+                           sip: str = '') -> str:
     """
     Generate sas token for Container
 
@@ -881,20 +877,20 @@ def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str,
     if sip is None:
         sip = ''
     string_to_sign = (sp + "\n" +
-                  signedstart + "\n"
-                  + expiry + "\n"
-                  + cr + "\n"
-                  + "" + "\n"
-                  + sip + "\n"
-                  + "https" + "\n"
-                  + api_version + "\n"
-                  + sr + "\n"
-                  + "" + "\n"
-                  + "" + "\n"
-                  + "" + "\n"
-                  + "" + "\n"
-                  + "" + "\n"
-                  + "").encode('UTF-8')
+                      signedstart + "\n"
+                      + expiry + "\n"
+                      + cr + "\n"
+                      + "" + "\n"
+                      + sip + "\n"
+                      + "https" + "\n"
+                      + api_version + "\n"
+                      + sr + "\n"
+                      + "" + "\n"
+                      + "" + "\n"
+                      + "" + "\n"
+                      + "" + "\n"
+                      + "" + "\n"
+                      + "").encode('UTF-8')
     signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), string_to_sign, hashlib.sha256)
     sig = base64.b64encode(signed_hmac_sha256.digest())
 
@@ -908,7 +904,7 @@ def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str,
         'sr': sr,
         'sig': sig
     }
-  
+
     sas_token = urllib.parse.urlencode(token)
     return sas_token
 
@@ -964,7 +960,8 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:
         url_suffix = f"{container_name}"
         canonicalized_resource = f"/blob/{storage_account_name}/{container_name}"
         url = client.get_base_url() + url_suffix
-        sas_token = generate_sas_signature(account_key, canonicalized_resource, signed_permissions, signed_start, signed_expiry, signed_resource, api_version, signed_ip)
+        sas_token = generate_sas_signature(account_key, canonicalized_resource, signed_permissions, signed_start,
+                                           signed_expiry, signed_resource, api_version, signed_ip)
         sas_url = f"{url}?{sas_token}"
         res_data = sas_url
         markdown = tableToMarkdown('Azure storage container SAS url', res_data, headers=[container_name])
@@ -977,6 +974,7 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:
         return result
     else:
         return_error(f"Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\' ")
+
 
 def test_module(client: Client) -> None:
     """
