@@ -2704,7 +2704,8 @@
         },
         {
             "integrations": "CiscoWebExFeed",
-            "playbookID": "Test_Cisco_WebEx_Feed"
+            "playbookID": "Test_Cisco_WebEx_Feed",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "IP Enrichment - Generic v2 - Test",
