@@ -31,7 +31,7 @@ commonfields:
   version: -1
 enabled: false
 name: edlmetrics
-script: >
+script: |-
   register_module_line('edlmetrics', 'start', __line__())
 
   import requests
