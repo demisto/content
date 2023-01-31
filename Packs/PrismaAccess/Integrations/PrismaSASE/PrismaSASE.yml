@@ -373,11 +373,8 @@ script:
     - contextPath: PrismaSase.CandidateConfig.job_id
       description: Configuration job ID.
       type: String
-    - contextPath: PrismaSase.CandidateConfig.message
-      description: Configuration job message.
-      type: String
-    - contextPath: PrismaSase.CandidateConfig.success
-      description: Whether the configuration job was successful.
+    - contextPath: PrismaSase.CandidateConfig.result
+      description: The configuration push result.
       type: Boolean
   - arguments:
     - default: false

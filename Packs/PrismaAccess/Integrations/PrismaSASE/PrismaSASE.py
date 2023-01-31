@@ -1964,6 +1964,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
             readable_output=f'Waiting for all data to push for job id {job_id}')
 
     job_id = args.get('job_id', '')
+    outputs: dict = {'job_id': job_id, 'result': 'OK'}
     if not argToBoolean(args.get('parent_finished')):
         res = client.get_config_job_by_id(job_id=job_id, tsg_id=tsg_id).get('data', [{}])[0]
         if res.get('result_str') == 'PEND':
@@ -1974,12 +1975,14 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                                                    next_run_in_seconds=polling_interval))
 
         # From testing (as this is not documented) the status returns only as OK if the job succeeded
-        if res.get('result_str') != 'OK':
+        job_result = res.get('result_str')
+        if job_result != 'OK':
+            outputs['result'] = job_result
             return CommandResults(entry_type=EntryType.ERROR,
-                                  outputs={'id': job_id},
+                                  outputs=outputs,
                                   outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
                                   readable_output=f'Something went wrong while trying to push job id {job_id}. '
-                                                  f'Result: {res.get("result_str")}')
+                                                  f'Result: {job_result}')
 
         # Parent is the first push. After finishing, sub processes created for each folder.
         args['parent_finished'] = True
@@ -1993,13 +1996,16 @@ def run_push_jobs_polling_command(client: Client, args: dict):
                     scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
                                                        args=args,
                                                        next_run_in_seconds=polling_interval))
-            if job.get('result_str') != 'OK':
+            job_result = job.get('result_str')
+            if job_result != 'OK':
+                outputs['result'] = job_result
                 return CommandResults(entry_type=EntryType.ERROR,
-                                      outputs={'id': job_id},
+                                      outputs=outputs,
                                       outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
-                                      readable_output=f'Something went wrong while trying to push job id {job_id}. '
-                                                      f'Result: {job.get("result_str")}')
-    return CommandResults(readable_output=f'Finished pushing job {job_id}', outputs={'id': job_id})
+                                      readable_output=f'Something went wrong while trying to push sub process '
+                                                      f'with id {job.get("id", "")}job id {job_id}. '
+                                                      f'Result: {job_result}')
+    return CommandResults(readable_output=f'Finished pushing job {job_id}', outputs=)
 
 
 def main():  # pragma: no cover
