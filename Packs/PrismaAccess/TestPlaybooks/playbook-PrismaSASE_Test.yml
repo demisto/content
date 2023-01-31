@@ -1,6 +1,6 @@
-id: TEST_Prisma_Sase
+id: PrismaSASE Test
 version: -1
-name: TEST_Prisma_Sase
+name: PrismaSASE Test
 starttaskid: "0"
 tasks:
   "0":
