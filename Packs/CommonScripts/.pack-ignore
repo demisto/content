@@ -73,11 +73,14 @@ ignore=BA119
 [file:HideFieldsOnNewIncident.yml]
 ignore=SC105
 
-[file:DBotPredictURLPhishing.yml]
-ignore=SC106
+[file:ExportContextToJSONFile.yml]
+ignore=SC105
 
-[file:DBotUpdateLogoURLPhishing.yml]
-ignore=SC106
+[file:MarkAsEvidenceByTag.yml]
+ignore=SC105
+
+[file:LoadJSONFileToContext.yml]
+ignore=SC105
 
 [file:1_10_42.md]
 ignore=RN114,RN113
@@ -149,3 +152,4 @@ BetweenHours
 CommonScripts
 UTC
 mailto
+CaseManagement-Generic
