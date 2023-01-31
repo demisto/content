@@ -1,6 +1,6 @@
 name: Review Release Notes
 on: pull_request
-
+if: github.repository == 'demisto/content'
 jobs:
   release_notes_review:
     runs-on: ubuntu-latest
