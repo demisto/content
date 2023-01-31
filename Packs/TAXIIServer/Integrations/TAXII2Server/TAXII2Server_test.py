@@ -438,6 +438,9 @@ def test_taxii21_objects(mocker, taxii2_server_v21, demisto_iocs_file, res_file,
                                    f'objects/?match[type]={query_type}&limit=2&next=1', headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
+        a = response.json['objects'][0]
+        b = objects['objects'][0]
+        s = a == b
         assert response.json == objects
 
 
