@@ -12,4 +12,5 @@ xdm.target.port=to_integer(dstPort),
 xdm.network.dns.is_response=to_boolean(if(ResponseRequest="R",1,0)),
 xdm.network.ip_protocol= if(protocol="ICMP", XDM_CONST.IP_PROTOCOL_ICMP, protocol="TCP", XDM_CONST.IP_PROTOCOL_TCP, protocol="UDP", XDM_CONST.IP_PROTOCOL_UDP, to_string(protocol)),
 xdm.session_context_id=Context,
-xdm.target.ipv4="";
+xdm.target.ipv4="",
+xdm.target.agent.identifier = "";
