@@ -17,10 +17,11 @@ outputs:
   type: string
 script: '-'
 subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.9.45313
 system: false
 tags:
 - Utility
+- incident-action-button
 timeout: '0'
 type: python
 fromversion: 5.0.0

@@ -1587,3 +1587,6 @@ fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+marketplaces:
+  - xsoar
+  - marketplacev2
