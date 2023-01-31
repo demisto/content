@@ -12,19 +12,21 @@ Supported Integrations:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Okta - User Investigation
 * Cortex XDR - Get entity alerts by MITRE tactics
 * SIEM - Search for Failed logins
+* Okta - User Investigation
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
+* MathUtil
 * CountArraySize
+* Set
 
 ### Commands
-* pan-os-query-logs
 * pan-os-get-logs
+* pan-os-query-logs
 
 ## Playbook Inputs
 ---
@@ -65,6 +67,7 @@ This playbook does not use any integrations.
 | AzureFailedLogonLogs | The result of the Azure Log Analytics search. | unknown |
 | QRadar.Search.Result | The result of the QRadar search  | unknown |
 | Splunk.Result | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | unknown |
+| NumOfFailedLogon | Number of failed login. | unknown |
 
 ## Playbook Image
 ---
