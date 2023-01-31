@@ -480,7 +480,7 @@ xsoar_ng_server_ga:
   allow_failure: true
 
 
-test_upload_flow:
+test-upload-flow:
   tags:
     - gke
   extends:
