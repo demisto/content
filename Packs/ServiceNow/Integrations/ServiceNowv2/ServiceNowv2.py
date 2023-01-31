@@ -2488,8 +2488,7 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
                 demisto.debug(f'incident is closed using custom state. State Code: {ticket_state}, Label: {custom_state_label}')
                 return custom_state_label
             else:
-                raise DemistoException('An error occurred while trying to close an XSOAR incident using custom state. Please make sure that \
-                                       "Mirrored XSOAR Ticket custom close state code" parameter is set correctly.')
+                return 'Other'
     elif ticket_state in ['6', '7']:
         return 'Resolved'
     else:
