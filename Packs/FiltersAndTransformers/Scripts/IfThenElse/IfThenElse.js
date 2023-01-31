@@ -12,22 +12,13 @@ function convertValue(args, type, value) {
     return value === undefined ? null : value;
 }
 
-function getValueA(args, condition, options, lhs) {
-    for (var name of ["equals", "value", "lhs", "rhs"]) { // descending order by length
+function getValue(args, condition, options, lhs, getValueArray) {
+    for (var name of getValueArray) { // descending order by length
         if (lhs ? condition.startsWith(name) : condition.endsWith(name)) {
             return [name, convertValue(args, options[`input_data_type:${name}`], args[name])];
         }
     }
     throw `Invalid condition: ${condition}`;
-}
-
-function getValueB(args, second_conditionB, optionsB, lhsB) {
-    for (var name of ["equals", "value","lhsB", "rhsB"]) { // descending order by length
-        if (lhsB ? conditionB.startsWith(name) : conditionB.endsWith(name)) {
-            return [name, convertValue(args, options[`input_data_type:${name}`], args[name])];
-        }
-    }
-    throw `Invalid conditionB: ${conditionB}`;
 }
 
 function makeOptions(option_names) {
@@ -142,11 +133,13 @@ const conditionB = args.conditionB ? args.conditionB.trim() : 'value==equals';
 const conditionInBetween = args.conditionInBetween ? args.conditionInBetween.trim() : 'and';
 const options = makeOptions(args.options);
 const optionsB = makeOptions(args.optionsB);
-const [lhs_name, lhs] = getValueA(args, condition, options, true);
-const [rhs_name, rhs] = getValueA(args, condition, options, false);
-const [lhsB_name, lhsB] = getValueB(args, conditionB, optionsB, true);
-const [rhsB_name, rhsB] = getValueB(args, conditionB, optionsB, false);
+const getValueArrayA = ["equals", "value", "lhs", "rhs"];
+const [lhs_name, lhs] = getValue(args, condition, options, true, getValueArrayA);
+const [rhs_name, rhs] = getValue(args, condition, options, false, getValueArrayA);
 const operator = getOperator(lhs_name, rhs_name, condition);
+const getValueArrayB = ["equals", "value","lhsB", "rhsB"];
+const [lhsB_name, lhsB] = getValue(args, conditionB, optionsB, true, getValueArrayB);
+const [rhsB_name, rhsB] = getValue(args, conditionB, optionsB, false, getValueArrayB);
 const operator2 = getOperator(lhsB_name, rhsB_name, conditionB);
 
 var resultA = evaluate(operator, lhs, rhs, options);
