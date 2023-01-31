@@ -1,6 +1,6 @@
 {
     "name": "Fetch Indicators From File",
-    "description": "Deprecated. Use from CommonScripts instead.",
+    "description": "Fetches indicators from a file.",
     "support": "xsoar",
     "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",

@@ -258,7 +258,7 @@ def fetch_indicators_from_file(args):
     return human_readable, domain_context, indicator_list
 
 
-def main():  # pragma: no cover
+def main():
     try:
         return_outputs(*fetch_indicators_from_file(demisto.args()))
     except Exception as ex:
@@ -266,5 +266,5 @@ def main():  # pragma: no cover
                      error=traceback.format_exc())
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
