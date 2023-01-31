@@ -60,6 +60,8 @@ The transformer concatenates prefix and suffix which supports DT expressions to 
 jdoe@paloaltonetworks.com
 ```
 
+---
+
 ### Build an email address by adding a user ID to the domain
 
 #### Parameters
@@ -85,3 +87,144 @@ jdoe@paloaltonetworks.com
 ```
 jdoe@paloaltonetworks.com
 ```
+
+---
+
+### Change the variable start and end marker to the windows command shell style such as %name%.
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | %userid%@| |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | %,% | |
+| keep_symbol_to_null | | |
+
+#### Context Data
+```
+{
+  "userid": "jdoe"
+}
+```
+
+#### Output
+```
+jdoe@paloaltonetworks.com
+```
+
+---
+
+### Change the variable start and end marker to the UNIX shell style such as $name.
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | $userid@| |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | $ | |
+| keep_symbol_to_null | | |
+
+#### Context Data
+```
+{
+  "userid": "jdoe"
+}
+```
+
+#### Output
+```
+jdoe@paloaltonetworks.com
+```
+
+---
+
+### Keep variable names if they are missing in the context.
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | ${userid}@| |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | true | |
+
+#### Context Data
+```
+{
+}
+```
+
+#### Output
+```
+${userid}@paloaltonetworks.com
+```
+
+---
+
+### Use DTs to build variables.
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | paloaltonetworks.com | |
+| prefix | ${userid=val.toUpperCase()}@ | |
+| suffix | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
+
+#### Context Data
+```
+{
+  "userid": "jdoe"
+}
+```
+
+#### Output
+```
+JDOE@paloaltonetworks.com
+```
+
+---
+
+### Use nested DTs to build variables.
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | John Doe | |
+| prefix | Hello, | |
+| suffix | . ${message-${messageID}} | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
+
+#### Context Data
+```
+{
+  "message-1": "This is a test message.",
+  "messageID": 1
+}
+```
+
+#### Output
+```
+Hello, John Doe. This is a test message.
+```
+
