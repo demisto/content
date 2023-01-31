@@ -454,7 +454,7 @@ script:
       - contextPath: InfoFile.Type
         description: The type of the image/pdf file
         type: string
-  dockerimage: demisto/chromium:1.0.0.41558
+  dockerimage: demisto/chromium:1.0.0.44669
   feed: false
   isfetch: false
   longRunning: false

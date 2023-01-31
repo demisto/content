@@ -1,0 +1,390 @@
+id: Phishing - Search Related Incidents (Defender 365)
+version: -1
+name: Phishing - Search Related Incidents (Defender 365)
+description: |-
+  This playbook should only be used as a sub-playbook inside the "Phishing - Handle Microsoft 365 Defender Results" playbook.
+  It searches through existing Cortex XSOAR incidents based on retrieved email message IDs and returns data only for emails that are not found in existing incidents.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5f221152-6e19-43e3-8b95-fd9023230d0b
+    type: start
+    task:
+      id: 5f221152-6e19-43e3-8b95-fd9023230d0b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4a46dcb1-cf9c-451a-8a5a-f58218a84908
+    type: regular
+    task:
+      id: 4a46dcb1-cf9c-451a-8a5a-f58218a84908
+      version: -1
+      name: Get related incidents using prepared query
+      description: |-
+        Gets a list of incident objects and the associated incident outputs that
+        match the specified query and filters. The results are returned in a structured data file.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: GetIncidentsByQuery
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      outputFormat:
+        simple: json
+      populateFields:
+        simple: reportedemailmessageid,reporteremailaddress
+      query:
+        simple: reportedemailmessageid:${IncidentsQuery}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 123b8c76-cf91-43e8-809d-af9cb9f64978
+    type: regular
+    task:
+      id: 123b8c76-cf91-43e8-809d-af9cb9f64978
+      version: -1
+      name: Read the results (file)
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: GetIncidentsByQuery.Filename
+                iscontext: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 65998436-285c-46b8-8f08-7d8768ac7bfa
+    type: regular
+    task:
+      id: 65998436-285c-46b8-8f08-7d8768ac7bfa
+      version: -1
+      name: Load results data as json
+      description: Loads a JSON from a string input, and returns a JSON object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      input:
+        complex:
+          root: FileData
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 07ccd448-c951-4858-84f3-95c6d7eae61c
+    type: regular
+    task:
+      id: 07ccd448-c951-4858-84f3-95c6d7eae61c
+      version: -1
+      name: Incidents search - prepare query
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: IncidentsQuery
+      value:
+        complex:
+          root: inputs.RetrievedEmails
+          accessor: InternetMessageId
+          transformers:
+          - operator: uniq
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '*'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' or '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (
+              suffix:
+                value:
+                  simple: )
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 08c21864-5192-40fd-8256-3100d6e94407
+    type: title
+    task:
+      id: 08c21864-5192-40fd-8256-3100d6e94407
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5f38004d-8185-4495-8c34-3e131bd99dd7
+    type: regular
+    task:
+      id: 5f38004d-8185-4495-8c34-3e131bd99dd7
+      version: -1
+      name: Extract emails without an incident (EmailFilesRetrieval)
+      description: This task will go over the "RetrievedEmails" playbook input and will filter out emails that already have an existing incident in Cortex XSOAR.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: EmailFilesRetrieval
+      value:
+        complex:
+          root: inputs.RetrievedEmails
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.RetrievedEmails.InternetMessageId
+                iscontext: true
+              right:
+                value:
+                  simple: JsonObject.reportedemailmessageid
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 47277205-1ed6-42d3-82cc-1a047a158057
+    type: regular
+    task:
+      id: 47277205-1ed6-42d3-82cc-1a047a158057
+      version: -1
+      name: Remove duplicate emails from results (based on Message-ID)
+      description: |
+        This task will go over the "EmailFilesRetrieval" key which was set in the previous task and will remove duplicates based on the InternetMessageId property.
+
+        Eventually, for each email it will return these fields:
+
+        - Subject --> The new incident name.
+        - InternetMessageId --> The new incident "Reported Email Message ID".
+        - RecipientEmailAddress --> The new incident email attachment which will be investigated.
+
+        These values will be used later in the parent playbook in order to retrieve the original EML files (if it was configured in the relevant playbook input).
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: EmailFilesRetrieval
+      value:
+        simple: '${.=unique(val.EmailFilesRetrieval); function unique(x){let exist = false; let res = []; for(let i=0; i<x.length; i++){exist = false; if (res.length == 0){res.push({InternetMessageId: x[i].InternetMessageId, Subject: x[i].Subject, RecipientEmailAddress: x[i].RecipientEmailAddress})} else {for(let j=0; j<res.length; j++){if(x[i].InternetMessageId == res[j].InternetMessageId){exist = true; break;} }if(exist == false){res.push({InternetMessageId: x[i].InternetMessageId, Subject: x[i].Subject, RecipientEmailAddress: x[i].RecipientEmailAddress})}}}; return res;}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1325,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: RetrievedEmails
+  value: {}
+  required: false
+  description: Emails retrieved by the "Microsoft 365 Defender - Threat Hunting Generic" playbook.
+  playbookInputQuery:
+outputs:
+- contextPath: EmailFilesRetrieval.Subject
+  description: The subject of the emails to be retrieved.
+  type: string
+- contextPath: EmailFilesRetrieval.InternetMessageId
+  description: The Message-ID of the emails to be retrieved.
+  type: string
+- contextPath: EmailFilesRetrieval.RecipientEmailAddress
+  description: The recipient email address of the emails to be retrieved.
+  type: string
+- contextPath: EmailFilesRetrieval
+  description: An object containing the subject, internet message ID, and recipient email address of the emails to be retrieved.
+  type: string
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

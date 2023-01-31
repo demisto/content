@@ -1,4 +1,4 @@
-[MODEL: dataset = proofpoint_trap_raw]
+[MODEL: dataset = proofpoint_threat_response_raw]
 //| alter XDM.Email.event_timestamp = updated_at
 alter xdm.event.id = to_string(id),
     xdm.alert.category = json_extract_scalar(events, "$.category"),

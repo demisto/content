@@ -10,7 +10,7 @@ comment: Present or parse CPU usage stats.
 commonfields:
   id: HealthCheckCPU
   version: -1
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.9.42476
 enabled: true
 name: HealthCheckCPU
 runas: DBotWeakRole

@@ -546,6 +546,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
         outputs = []
         for images_list in images_matrix:
             if horizontal:
+                # this line takes a ton of memory and doesnt release all of it
                 imgs_comb = np.hstack([np.asarray(image.resize(min_shape)) for image in images_list])
             else:
                 imgs_comb = np.vstack([np.asarray(image.resize(min_shape)) for image in images_list])
