@@ -111,7 +111,7 @@ timeout_decorator = "^0.5.0"
 ujson = "^5.1.0"
 yamlordereddictloader = "^0.4.0"
 parinx = {git = "https://github.com/npsolve/parinx.git", rev = "6493798ceba8089345d970f71be4a896eb6b081d"}
-python-gitlab = "^3.0.0"
+python-gitlab = "^3.13.0"
 PyGithub = "^1.54.1"
 ansible-runner = "^2.2.0"
 paramiko = "^2.11.0"
