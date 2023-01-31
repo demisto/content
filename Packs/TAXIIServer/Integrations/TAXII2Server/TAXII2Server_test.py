@@ -387,7 +387,7 @@ def test_taxii20_objects(mocker, taxii2_server_v20):
 def test_taxii20_indicators_objects(mocker, taxii2_server_v20):
     """
         Given
-            TAXII Server v2.0, collection_id, content-range, types_for_indicator_sdo which includes the item types from the collection.
+            TAXII Server v2.0, collection_id, content-range, types_for_indicator_sdo with all types included.
         When
             Calling get objects api request for given collection
         Then
