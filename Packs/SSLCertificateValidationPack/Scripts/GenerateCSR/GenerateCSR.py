@@ -6,10 +6,6 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 
-def hex_string_human_readable(bytes):
-    return ["{:02X}".format(x) for x in bytes]
-
-
 def main():
     # Generate a key
     key = rsa.generate_private_key(
@@ -26,18 +22,31 @@ def main():
     state = demisto.getArg('state')
     locality = demisto.getArg('locality')
 
-    # Generate a CSR
+    cert_attributes = [x509.NameAttribute(x509.OID_COMMON_NAME, cn)]
+
+    # Generate the CSR
     builder = x509.CertificateSigningRequestBuilder()
 
-    builder = builder.subject_name(x509.Name([
-        x509.NameAttribute(x509.OID_COMMON_NAME, cn),
-        x509.NameAttribute(x509.OID_ORGANIZATION_NAME, organization),
-        x509.NameAttribute(x509.OID_ORGANIZATIONAL_UNIT_NAME, organizational_unit),
-        x509.NameAttribute(x509.OID_COUNTRY_NAME, country),
-        x509.NameAttribute(x509.OID_STATE_OR_PROVINCE_NAME, state),
-        x509.NameAttribute(x509.OID_LOCALITY_NAME, locality),
-        x509.NameAttribute(x509.OID_EMAIL_ADDRESS, email)
-    ]))
+    # Build CSR Attributes for CertificateSigningRequestBuilder Object
+    if email:
+        cert_attributes.append(x509.NameAttribute(x509.OID_EMAIL_ADDRESS, email))
+
+    if organization:
+        cert_attributes.append(x509.NameAttribute(x509.OID_ORGANIZATION_NAME, organization))
+
+    if organizational_unit:
+        cert_attributes.append(x509.NameAttribute(x509.OID_ORGANIZATIONAL_UNIT_NAME, organizational_unit))
+
+    if country:
+        cert_attributes.append(x509.NameAttribute(x509.OID_COUNTRY_NAME, country))
+
+    if state:
+        cert_attributes.append(x509.NameAttribute(x509.OID_STATE_OR_PROVINCE_NAME, state))
+
+    if locality:
+        cert_attributes.append(x509.NameAttribute(x509.OID_LOCALITY_NAME, locality))
+
+    builder = builder.subject_name(x509.Name(cert_attributes))
 
     builder = builder.add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=False)
 

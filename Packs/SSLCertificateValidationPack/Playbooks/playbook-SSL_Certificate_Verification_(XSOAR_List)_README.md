@@ -10,10 +10,10 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* SetGridField
-* SSLVerifierV2_GenerateEmailBody
 * SSLVerifierV2_ParseOutput
+* SSLVerifierV2_GenerateEmailBody
 * SSLVerifierV2
+* SetGridField
 
 ### Commands
 * send-mail
