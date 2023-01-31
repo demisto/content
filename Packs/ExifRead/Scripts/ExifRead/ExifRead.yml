@@ -23,7 +23,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-dockerimage: demisto/py3-tools:1.0.0.45904
-fromversion: 6.5.0
+dockerimage: demisto/py3-tools:1.0.0.45198
+fromversion: 5.0.0
 tests:
-- ExifReadTest
+  - ExifReadTest

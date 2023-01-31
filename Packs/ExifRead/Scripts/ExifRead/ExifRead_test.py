@@ -42,10 +42,10 @@ class TestExifRead:
 
     def test_main_csv(self, mocker):
         from ExifRead import main
-        with open("./test_data/example_result.json") as f:
+        with open("./TestData/example_result.json") as f:
             expected = json.load(f)
 
-        self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/image"))
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/image"))
         main()
         result = self.get_demisto_results()
         assert expected == result
