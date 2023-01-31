@@ -2640,13 +2640,13 @@ class Pack(object):
         if self._pack_name != GCPConfig.BASE_PACK:
             # add base as a mandatory pack dependency, by design for all packs
             first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-            all_levels_dependencies.append(GCPConfig.BASE_PACK)
-            logging.debug(f'(2) {first_level_dependencies=}')
+            all_levels_dependencies_dict.update(BASE_PACK_DEPENDENCY_DICT)
+            logging.debug(f'(1) {first_level_dependencies=}')
+            logging.debug(f'(1) {all_levels_dependencies_dict=}')
 
         # update the calculated dependencies with the hardcoded dependencies
         first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
         logging.debug(f'(3) {first_level_dependencies=}')
-        logging.debug(f'(4) {all_levels_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
