@@ -614,11 +614,10 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_data = client.get_field_value_list(304, {"depth": 1})
+        field_data = client.get_field_value_list(304, 1)
         assert VALUE_LIST_FIELD_DATA == field_data
 
-    @pytest.mark.parametrize('args, expected_response', [({'depth': 0}, RES_DEPTH_0), ({'depth': 1}, RES_DEPTH_1),
-                                                         ({'depth': 2}, RES_DEPTH_2)])
+    @pytest.mark.parametrize('args, expected_response', [(0, RES_DEPTH_0), (1, RES_DEPTH_1), (2, RES_DEPTH_2)])
     def test_get_field_value_list_nested_response(self, requests_mock, args, expected_response):
         cache = demisto.getIntegrationContext()
         cache['fieldValueList'] = {}
@@ -651,7 +650,7 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
 
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"], {"depth": 1})
+        field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"], 1)
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [473]}
 
@@ -738,8 +737,7 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "Source",
                                                       {'FieldId': '16172', 'IsRequired': False, 'Name':
-                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight',
-                                                      {"depth": 1})
+                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight', 1)
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [471]}
 

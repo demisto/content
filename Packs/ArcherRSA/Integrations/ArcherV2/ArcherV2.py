@@ -400,7 +400,7 @@ class Client(BaseClient):
 
         return level_data
 
-    def get_record(self, app_id, record_id, args):
+    def get_record(self, app_id, record_id, depth):
         res = self.do_request('GET', f'{API_ENDPOINT}/core/content/{record_id}')
 
         if not isinstance(res, dict):
@@ -426,7 +426,7 @@ class Client(BaseClient):
                     field_value = field.get('IpAddressBytes')
                 # when field type is Values List
                 elif field_type == 4 and field.get('Value') and field['Value'].get('ValuesListIds'):
-                    list_data = self.get_field_value_list(_id, args)
+                    list_data = self.get_field_value_list(_id, depth)
                     list_ids = field['Value']['ValuesListIds']
                     list_ids = list(filter(lambda x: x['Id'] in list_ids, list_data['ValuesList']))
                     field_value = list(map(lambda x: x['Name'], list_ids))
@@ -574,7 +574,7 @@ class Client(BaseClient):
             for grandchild in child.get('Children', []):
                 self.get_field_value_list_helper(grandchild, values_list, depth, child['Data']['Name'])
 
-    def get_field_value_list(self, field_id, args):
+    def get_field_value_list(self, field_id, depth=0):
         cache = get_integration_context()
 
         if cache['fieldValueList'].get(field_id):
@@ -595,7 +595,6 @@ class Client(BaseClient):
             values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
                 values_list: List[Dict[str, Any]] = []
-                depth = arg_to_number(args.get('depth', '0'))
                 for value in values_list_res['RequestedObject'].get('Children', ()):
                     self.get_field_value_list_helper(value, values_list, depth)
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
@@ -668,7 +667,7 @@ def extract_from_xml(xml, path):
     return xml
 
 
-def generate_field_contents(client, fields_values, level_fields, args):
+def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
         demisto.debug(f"fields values are: {fields_values}")
         fields_values = re.sub(r'\\(?!")', r'\\\\', fields_values)
@@ -689,7 +688,7 @@ def generate_field_contents(client, fields_values, level_fields, args):
 
         if field_data:
             field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name],
-                                                          args)
+                                                          depth)
 
             field_content[_id] = {'Type': field_data['Type'],
                                   field_key: field_value,
@@ -697,13 +696,13 @@ def generate_field_contents(client, fields_values, level_fields, args):
     return field_content
 
 
-def generate_field_value(client, field_name, field_data, field_val, args):
+def generate_field_value(client, field_name, field_data, field_val, depth):
     field_type = field_data['Type']
 
     # when field type is Values List, call get_field_value_list method to get the value ID
     # for example: {"Type":["Switch"], fieldname:[value1, value2]}
     if field_type == 4:
-        field_data = client.get_field_value_list(field_data['FieldId'], args)
+        field_data = client.get_field_value_list(field_data['FieldId'], depth)
         list_ids = []
         if not isinstance(field_val, list):
             field_val = [field_val]
@@ -896,7 +895,8 @@ def get_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('contentId')
     app_id = args.get('applicationId')
 
-    record, res, errors = client.get_record(app_id, record_id, args)
+    depth = arg_to_number(args.get('depth', '0'))
+    record, res, errors = client.get_record(app_id, record_id, depth)
     if errors:
         return_error(errors)
 
@@ -913,8 +913,8 @@ def create_record_command(client: Client, args: Dict[str, str]):
     fields_values = args.get('fieldsToValues')
     level_id = args.get('levelId')
     level_data = client.get_level_by_app_id(app_id, level_id)
-
-    field_contents = generate_field_contents(client, fields_values, level_data['mapping'], args)
+    depth = arg_to_number(args.get('depth', '0'))
+    field_contents = generate_field_contents(client, fields_values, level_data['mapping'], depth)
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
@@ -945,8 +945,8 @@ def update_record_command(client: Client, args: Dict[str, str]):
     fields_values = args.get('fieldsToValues')
     level_id = args.get('levelId')
     level_data = client.get_level_by_app_id(app_id, level_id)
-
-    field_contents = generate_field_contents(client, fields_values, level_data['mapping'], args)
+    depth = arg_to_number(args.get('depth', '0'))
+    field_contents = generate_field_contents(client, fields_values, level_data['mapping'], depth)
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
     res = client.do_request('Put', f'{API_ENDPOINT}/core/content', data=body)
@@ -997,7 +997,8 @@ def reset_cache_command(client: Client, args: Dict[str, str]):
 
 def get_value_list_command(client: Client, args: Dict[str, str]):
     field_id = args.get('fieldID')
-    field_data = client.get_field_value_list(field_id, args)
+    depth = arg_to_number(args.get('depth', '0'))
+    field_data = client.get_field_value_list(field_id, depth)
 
     markdown = tableToMarkdown(f'Value list for field {field_id}', field_data['ValuesList'])
 
@@ -1142,8 +1143,9 @@ def search_records_command(client: Client, args: Dict[str, str]):
 
     if full_data:
         records_full = []
+        depth = arg_to_number(args.get('depth', '0'))
         for rec in records:
-            record_item, _, errors = client.get_record(app_id, rec['Id'], args)
+            record_item, _, errors = client.get_record(app_id, rec['Id'], depth)
             if not errors:
                 records_full.append(record_item)
         records = records_full
