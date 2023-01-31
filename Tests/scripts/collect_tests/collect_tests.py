@@ -173,7 +173,6 @@ class CollectionResult:
                 self.packs_to_upload = {pack}
                 logger.info(f'collected {pack=} only to upload, {reason} ({reason_description}, {version_range=})')
 
-        logger.info(f'MODELING RULE TO TEST IS: {modeling_rule_to_test}')
         if modeling_rule_to_test:
             self.modeling_rules_to_test = {modeling_rule_to_test}
             logger.info(f'collected {modeling_rule_to_test=}, {reason} ({reason_description}, {version_range=})')
@@ -557,12 +556,11 @@ class TestCollector(ABC):
         Returns:
             CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
         """
-        logger.info(f"DDDD: collecting modeling rule for {changed_file_path}")
         if self.marketplace != MarketplaceVersions.MarketplaceV2:
             logger.info(f'Not collecting pack {pack_id} for Modeling Rule {changed_file_path} because '
                         f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
                         f'marketplace is {self.marketplace}')
-            raise NothingToCollectException(changed_file_path, 'packs for XSIAM components are only collected for XSIAM')
+            raise NothingToCollectException(changed_file_path, 'packs for Modeling Rules are only collected for XSIAM')
 
         pack = PACK_MANAGER.get_pack_metadata(pack_id)
 
@@ -617,7 +615,6 @@ class TestCollector(ABC):
         Returns:
             CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
         """
-        logger.info(f"DDDD: collecting xsiam component for {changed_file_path}")
         if self.marketplace != MarketplaceVersions.MarketplaceV2:
             logger.info(f'Not collecting pack {pack_id} for XSIAM component {changed_file_path} because '
                         f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
@@ -913,13 +910,11 @@ class BranchTestCollector(TestCollector):
 
         pack_id = find_pack_folder(path).name
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
-        logger.info(f"DDDD The file type is {file_type.value}")
 
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             content_item_range = content_item.version_range if content_item else None
 
             if file_type in MODELING_RULE_COMPONENT_FILES:
-                logger.info(f"DDDD The file type is a modeling rule")
                 # mark pack for installation and mark the modeling rule for dynamic testing
                 return self._collect_pack_for_modeling_rule(
                     pack_id=pack_id, reason_description=reason_description,
@@ -927,7 +922,6 @@ class BranchTestCollector(TestCollector):
                 )
 
             if file_type in XSIAM_COMPONENT_FILES:
-                logger.info(f"DDDD The file type is an xsiam component")
                 # if the file is an xsiam component and is not a modeling rule
                 return self._collect_pack_for_xsiam_component(
                     pack_id=pack_id, reason_description=reason_description,
@@ -1288,7 +1282,7 @@ def output(result: Optional[CollectionResult]):
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
-    logger.info(f'collected {len(modeling_rules_to_test_str)} modeling rules to test:\n{modeling_rules_to_test_str}')
+    logger.info(f'collected {len(modeling_rules_to_test)} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
     PATHS.output_tests_file.write_text(test_str)

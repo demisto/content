@@ -61,7 +61,6 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.WIDGET,
     FileType.DASHBOARD,
     FileType.REPORT,
-    FileType.REPORT,
     FileType.PARSING_RULE,
     FileType.MODELING_RULE,
     FileType.MODELING_RULE_TEST_DATA,
