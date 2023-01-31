@@ -5,35 +5,41 @@ from CommonServerPython import *  # noqa: F401
 
 
 def create_html_table(headers, certList, listType):
-    counter = 0
     tableBody = ""
 
-    tableBody += "<p style=\"text-align: center;\"><span style=\"color: "
+    tableBody += "\t\t<p>\n\t\t\t<span"
 
     # Table header setup
-    if listType == "expiring":
-        tableBody += "#ff0000;\"><strong>Certificates expiring in 90 days or less</strong></span></p>" + '\n\n'
+    if listType == "expired":
+        tableBody += ">\n\t\t\t\t<h1>EXPIRED CERTIFICATES</h1>\n\t\t\t</span>\n\t\t</p>\n"
+    elif listType == "expiring":
+        tableBody += ">\n\t\t\t\t<h2>Certificates expiring in 90 days or less</h2>\n\t\t\t</span>\n\t\t</p>\n"
     elif listType == "warning":
-        tableBody += "#ff9900;\"><strong>Certificates expiring between 91 and 180 days from today</strong></span></p>" + '\n\n'
+        tableBody += " style=\"color: #ff9900;\">\n\t\t\t\t<strong>Certificates expiring between 91 and 180 days" \
+            + " from today</strong>\n\t\t\t</span>\n\t\t</p>\n"
     elif listType == "good":
-        tableBody += "#339966;\"><strong>Certificates expiring more than 180 days from today</strong></span></p>" + '\n\n'
+        tableBody += " style=\"color: #339966;\">\n\t\t\t\t<strong>Certificates expiring more than 180 days from today</strong>" \
+            + "\n\t\t\t</span>\n\t\t</p>\n"
 
     # Setup table
-    tableBody += "<table style=\"border-collapse: collapse; width: 100%;\" border=\"1\"><tbody>"
+    tableBody += "\t\t<table style=\"border-collapse: collapse; width: 100%;\" border=\"1\">\n\t\t\t<tbody>"
 
     # Setup table row headers
-    tableBody += "<tr><td style=\"width: 33.3333%; text-align: center;\"><strong>Site/Domain/IP</strong></td>"
+    tableBody += "\n\t\t\t\t<tr><td style=\"width: 33.3333%; text-align: center;\"><strong>Site/Domain/IP</strong></td>"
     tableBody += "<td style=\"width: 33.3333%; text-align: center;\"><strong>Expiration Date</strong></td>"
-    tableBody += "<td style=\"width: 33.3333%; text-align: center;\"><strong>Days to Expiration</strong></td></tr>"
+    if listType != "expired":
+        tableBody += "<td style=\"width: 33.3333%; text-align: center;\"><strong>Days to Expiration</strong></td></tr>\n"
+    else:
+        tableBody += "<td style=\"width: 33.3333%; text-align: center;\"><strong>Days Expired</strong></td></tr>\n"
 
     # Parse table rows from certList
     for cert in certList:
-        tableBody += "<tr><td style=\"text-align: center;\">" + certList[str(counter)]["Site"]
-        tableBody += "</td><td style=\"text-align: center;\">" + certList[str(counter)]["ExpirationDate"]
-        tableBody += "</td><td style=\"text-align: center;\">" + certList[str(counter)]["TimeToExpiration"] + "</td></tr>"
-        counter += 1
+        tableBody += "\t\t\t\t<tr>\n\t\t\t\t\t<td style=\"text-align: center;\">" + cert['Domain']
+        tableBody += "</td>\n\t\t\t\t\t<td style=\"text-align: center;\">" + cert['ExpirationDate']
+        tableBody += "</td>\n\t\t\t\t\t<td style=\"text-align: center;\">" + str(cert['TimeToExpiration']) + " days</td>" \
+            + "\n\t\t\t\t</tr>\n"
 
-    tableBody += "</tbody></table>"
+    tableBody += "\t\t\t</tbody>\n\t\t</table>\n"
 
     return tableBody
 
@@ -44,17 +50,23 @@ def main():
     good = demisto.get(demisto.context(), "SSLReport.Good")
     warning = demisto.get(demisto.context(), "SSLReport.Warning")
     expiring = demisto.get(demisto.context(), "SSLReport.Expiring")
+    expired = demisto.get(demisto.context(), "SSLReport.Expired")
 
     # Setup email header
-    emailHTMLBody += "<html><body><p style=\"text-align:center\"><strong>SSL Certificate Report for " \
-        + datetime.today().strftime('%Y/%m/%d') + '</strong></p>\n\n'
+    emailHTMLBody += "<html>\n\t<head>\n\t\t<style>\n\t\t\tp {\n\t\t\t\ttext-align: center;\n\t\t\t}" \
+        + "\n\t\t\th1 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #ff0000;\n\t\t\t}" \
+        + "\n\t\t\th2 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #ff0000;\n\t\t\t}" \
+        + "\n\t\t\th3 {\n\t\t\t\ttext-align: center;\n\t\t\t\tcolor: #000000;\n\t\t\t\tfont-weight: bold;\n\t\t\t\t" \
+        + "font-size: 1.5em;\n\t\t\t\ttext-decoration: underline;\n\t\t\t}</style></head>\n\t<body>\n\t\t<h3>\n" \
+        + "\t\t\tSSL Certificate Report for " + datetime.today().strftime('%Y/%m/%d') + '\n\t\t</h3>\n'
 
     # Setup tables
+    emailHTMLBody += create_html_table(headers, expired, "expired")
     emailHTMLBody += create_html_table(headers, expiring, "expiring")
     emailHTMLBody += create_html_table(headers, warning, "warning")
     emailHTMLBody += create_html_table(headers, good, "good")
 
-    emailHTMLBody += "</body></html>"
+    emailHTMLBody += "\t</body>\n</html>"
 
     demisto.setContext("SSLReport.HTML", emailHTMLBody)
 

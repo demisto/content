@@ -1,0 +1,63 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+
+
+def hex_string_human_readable(bytes):
+    return ["{:02X}".format(x) for x in bytes]
+
+
+def main():
+    # Generate a key
+    key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+        backend=default_backend()
+    )
+
+    cn = demisto.getArg('cn')
+    email = demisto.getArg('email')
+    organization = demisto.getArg('org')
+    organizational_unit = demisto.getArg('orgUnit')
+    country = demisto.getArg('country')
+    state = demisto.getArg('state')
+    locality = demisto.getArg('locality')
+
+    # Generate a CSR
+    builder = x509.CertificateSigningRequestBuilder()
+
+    builder = builder.subject_name(x509.Name([
+        x509.NameAttribute(x509.OID_COMMON_NAME, cn),
+        x509.NameAttribute(x509.OID_ORGANIZATION_NAME, organization),
+        x509.NameAttribute(x509.OID_ORGANIZATIONAL_UNIT_NAME, organizational_unit),
+        x509.NameAttribute(x509.OID_COUNTRY_NAME, country),
+        x509.NameAttribute(x509.OID_STATE_OR_PROVINCE_NAME, state),
+        x509.NameAttribute(x509.OID_LOCALITY_NAME, locality),
+        x509.NameAttribute(x509.OID_EMAIL_ADDRESS, email)
+    ]))
+
+    builder = builder.add_extension(x509.BasicConstraints(ca=False, path_length=None), critical=False)
+
+    csr = builder.sign(key, hashes.SHA256(), default_backend())
+
+    pem_req = csr.public_bytes(serialization.Encoding.PEM)
+
+    pem_text = pem_req.decode('utf8')
+
+    results = [
+        fileResult(
+            filename="request.csr",
+            data=pem_text
+        )
+    ]
+
+    return_results(results)
+
+
+''' ENTRY POINT '''
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

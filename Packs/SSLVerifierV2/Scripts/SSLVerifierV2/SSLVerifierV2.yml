@@ -13,7 +13,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/ansible-runner:1.0.0.46481
 enabled: true
 name: SSLVerifierV2
 outputs:

@@ -4,9 +4,11 @@ from datetime import datetime
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
 
 
-def results_return(command: str, item: dict):
+def results_return(command: str, item: list):
     results = CommandResults(
         outputs_prefix=f'SSLVerifierV2.{command}',
         outputs_key_field='',
@@ -15,20 +17,46 @@ def results_return(command: str, item: dict):
     return_results(results)
 
 
-def get_cert_info(hostname: str, port: str) -> dict:
+def get_cert_info(hostname: str, port: str) -> list:
+    varExcept = ""
     data = {}
     ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_OPTIONAL
     s = ctx.wrap_socket(socket.socket(), server_hostname=hostname)
-    s.connect((hostname, int(port)))
-    cert: Any = s.getpeercert()
-    expiration_obj = datetime.strptime(str(cert['notAfter']), '%b %d %H:%M:%S %Y %Z')
-    converteddate = datetime.strftime(expiration_obj, '%Y-%m-%dT%H:%M:%S.%fZ')
-    now_obj = datetime.now()
-    dateresults_obj = expiration_obj - now_obj
-    days = int(dateresults_obj.days)
-    data['ExpirationDate'] = converteddate
-    data['Site'] = hostname
-    data['TimeToExpiration'] = f'{days} days'
+
+    try:
+        s.connect((hostname, int(port)))
+    except Exception as e:
+        varExcept = e.verify_message
+    finally:
+        # Expired/Self-Signed/Unable-to-get-local-issuer errors
+        if varExcept == "certificate has expired" or varExcept == "self signed certificate" or \
+                varExcept == "unable to get local issuer certificate":
+            pem_cert = ssl.get_server_certificate((hostname, int(port)))
+            cert_bytes = str.encode(pem_cert)
+            cert = x509.load_pem_x509_certificate(cert_bytes, default_backend())
+            expiration_obj = datetime.strptime(str(cert.not_valid_after), '%Y-%m-%d %H:%M:%S')
+            expiration_date = datetime.strftime(expiration_obj, '%Y/%m/%d - %H:%M:%S')
+            now_obj = datetime.now()
+            dateresults_obj = expiration_obj - now_obj
+            days = int(dateresults_obj.days)
+            data['Domain'] = hostname
+            data['ExpirationDate'] = expiration_date
+            data['TimeToExpiration'] = str(days)
+        elif varExcept == "":
+            cert: Any = s.getpeercert()
+            expiration_obj = datetime.strptime(str(cert['notAfter']), '%b %d %H:%M:%S %Y %Z')
+            converteddate = datetime.strftime(expiration_obj, '%Y/%m/%d - %H:%M:%S')
+            now_obj = datetime.now()
+            dateresults_obj = expiration_obj - now_obj
+            days = int(dateresults_obj.days)
+            data['Domain'] = hostname
+            data['ExpirationDate'] = converteddate
+            data['TimeToExpiration'] = str(days)
+        # Unhandled Exception
+        else:
+            return_error("Unhandled exception for hostname: " + hostname + ".\n\nRaw Error Message: " + varExcept)
     return data
 
 

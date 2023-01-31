@@ -23,9 +23,9 @@ def create_md_table(headers, certList):
 
     # Fill in tabular data
     for cert in certList:
-        md += "|" + certList[counter]["Site"]
+        md += "|" + certList[counter]["Domain"]
         md += "|" + certList[counter]["ExpirationDate"]
-        md += "|" + certList[counter]["TimeToExpiration"]
+        md += "|" + str(certList[counter]["TimeToExpiration"]) + " days"
         counter += 1
         md += "|\n"
 
@@ -39,35 +39,37 @@ def main():
 
     SSLVerifier_json = demisto.get(demisto.context(), keyName)
 
-    good = {}
-    warning = {}
-    expiring = {}
+    good = []
+    warning = []
+    expiring = []
+    expired = []
 
-    goodctr = 0
-    warnctr = 0
-    expctr = 0
-
-    interestingKeys = ("Site", "ExpirationDate", "TimeToExpiration")
+    interestingKeys = ("Domain", "ExpirationDate", "TimeToExpiration")
 
     for cert in SSLVerifier_json["Certificate"]:
-        intTimeToExp = [int(i) for i in cert["TimeToExpiration"].split() if i.isdigit()][0]
-        if intTimeToExp <= 90:
-            expiring.update({expctr: include_keys(cert, interestingKeys)})
-            expctr += 1
-        elif intTimeToExp > 90 and intTimeToExp <= 180:
-            warning.update({warnctr: include_keys(cert, interestingKeys)})
-            warnctr += 1
-        elif intTimeToExp > 180:
-            good.update({goodctr: include_keys(cert, interestingKeys)})
-            goodctr += 1
+        expTime = int(cert["TimeToExpiration"])
+        if expTime <= 90 and expTime > 0:
+            expiring.append(include_keys(cert, interestingKeys))
+        elif expTime > 90 and expTime <= 180:
+            warning.append(include_keys(cert, interestingKeys))
+        elif expTime > 180:
+            good.append(include_keys(cert, interestingKeys))
+        elif expTime <= 0:
+            expired.append(include_keys(cert, interestingKeys))
 
-    # Update Context and create markdown table for good, warning, and expiring certificates
+    # Update Context and create markdown table for good, warning, expiring, and expired certificates
+
+    if (statusCode == "expired" or statusCode == "all"):
+        tblExpired = create_md_table(("Site", "Expiration Date", "Days Expired"), expired)
+        md += "# {{color:red}}(** EXPIRED SSL CERTIFICATES **) #\n\n" + tblExpired
+        demisto.setContext("SSLReport.Expired", expired)
+        demisto.setContext("SSLReport.ExpiredTable", tblExpired)
 
     if (statusCode == "expiring" or statusCode == "all"):
-        tblExp = create_md_table(("Site", "Expiration Date", "Days to Expiration"), expiring)
-        md += "### {{color:red}}(** SSL Certificates expiring in 90 days or less **) ###\n\n" + tblExp
+        tblExpiring = create_md_table(("Site", "Expiration Date", "Days to Expiration"), expiring)
+        md += "### {{color:red}}(** SSL Certificates expiring in 90 days or less **) ###\n\n" + tblExpiring
         demisto.setContext("SSLReport.Expiring", expiring)
-        demisto.setContext("SSLReport.ExpTable", tblExp)
+        demisto.setContext("SSLReport.ExpiringTable", tblExpiring)
 
     if (statusCode == "warning" or statusCode == "all"):
         tblWarn = create_md_table(("Site", "Expiration Date", "Days to Expiration"), warning)
