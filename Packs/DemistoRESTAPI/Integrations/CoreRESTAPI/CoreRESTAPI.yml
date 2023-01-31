@@ -57,6 +57,7 @@ script:
       description: Body of HTTP POST
     description: send HTTP POST request
     execution: true
+    hidden: true
   - name: demisto-api-get
     arguments:
     - name: uri
@@ -64,6 +65,7 @@ script:
       default: true
       description: Request URI (i.e. /user)
     description: send HTTP GET requests
+    hidden: true
   - name: demisto-api-put
     arguments:
     - name: uri
@@ -74,6 +76,7 @@ script:
       description: Request body
     description: send HTTP PUT request
     execution: true
+    hidden: true
   - name: demisto-api-delete
     arguments:
     - name: uri
@@ -82,6 +85,7 @@ script:
       description: Request URI (i.e. /user)
     description: send HTTP DELETE request
     execution: true
+    hidden: true
   - name: demisto-api-download
     arguments:
     - name: uri
@@ -92,6 +96,7 @@ script:
     - name: description
       description: Description of file entry
     description: Download files from Demisto server
+    hidden: true
   - name: demisto-api-multipart
     arguments:
     - name: uri
@@ -103,6 +108,7 @@ script:
     - name: body
       description: Request body
     description: Send HTTP Multipart request to upload files to Demisto server
+    hidden: true
   - name: demisto-delete-incidents
     arguments:
     - name: ids
@@ -117,6 +123,7 @@ script:
       defaultValue: id,name,type,severity,status
     description: Delete Demisto incidents
     execution: true
+    hidden: true
   - name: demisto-api-install-packs
     arguments:
     - name: packs_to_install
@@ -150,6 +157,7 @@ script:
         - 'true'
         - 'false'
     description: Upload packs to Demisto server from url or the marketplace.
+    hidden: true
   - name: core-api-post
     arguments:
       - name: uri
