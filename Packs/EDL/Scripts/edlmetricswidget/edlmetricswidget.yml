@@ -27,12 +27,12 @@ args:
   secret: false
 comment: Schedule a daily job to run this widget script in a playbook to track EDL size over time
 commonfields:
-  id: EDLMetricWidget
+  id: edlmetrics
   version: -1
 enabled: false
-name: EDLMetricWidget
+name: edlmetrics
 script: >
-  register_module_line('EDLMetricWidget', 'start', __line__())
+  register_module_line('edlmetrics', 'start', __line__())
 
   import requests
 
@@ -151,8 +151,7 @@ script: >
 
   if __name__ in ('__main__', '__builtin__', 'builtins'):
       main()
-
-  register_module_line('EDLMetricWidget', 'end', __line__())
+  register_module_line('edlmetrics', 'end', __line__())
 system: false
 tags:
 - widget
