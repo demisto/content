@@ -49,7 +49,7 @@ def load_and_parse_yaml_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def main():  # pragma: no cover
+def main():
     try:
         return_results(load_and_parse_yaml_command(demisto.args()))
     except Exception as e:
