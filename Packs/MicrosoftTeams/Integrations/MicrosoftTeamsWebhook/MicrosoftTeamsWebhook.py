@@ -77,7 +77,7 @@ def test_module(client: Client, serverurls: str) -> str:
     return 'ok'
 
 
-def send_teams_message_command(client: Client, message: str, title: str, serverurls: str) -> CommandResults:    # ignore: type
+def send_teams_message_command(client: Client, message: str, title: str, serverurls: str) -> CommandResults:
     """
     send_teams_message command: Sends the Teams Message to the provided webhook.
 
