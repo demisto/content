@@ -22,7 +22,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "c425740f-908d-477b-8ef4-7c65020bf299",
+    "layout": "SentinelOne Incident Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
