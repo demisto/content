@@ -72,6 +72,23 @@ class Client(BaseClient):
             params=params,
         )
 
+    def kmsat_groups_list(self, params: dict):
+        """ Returns groups
+
+        Args:
+            params (dict): Params for groups risk score history
+
+        Returns:
+            dict: HTTP Response
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/groups",
+            resp_type="json",
+            ok_codes=(200,),
+            params=params,
+        )
+
     def kmsat_groups_risk_score_history(self, group_id: int, params: dict):
         """ Returns groups risk score history
 
@@ -347,10 +364,6 @@ def get_pagination(args: dict):
     return params
 
 
-def get_metadata(args: dict):
-    return []
-
-
 """ COMMAND FUNCTIONS """
 
 
@@ -422,6 +435,37 @@ def kmsat_account_risk_score_history_list_command(
     return CommandResults(
         outputs_prefix="KMSAT.AccountRiskScoreHistory",
         outputs_key_field="",
+        raw_response=response,
+        outputs=response,
+        readable_output=markdown,
+    )
+
+
+def kmsat_groups_list_command(client: Client, args: dict) -> CommandResults:
+    params = get_pagination(args)
+    response = client.kmsat_groups_list(params)
+
+    markdown = tableToMarkdown(
+        "Groups ",
+        response,
+        [
+            "id",
+            "name",
+            "group_type",
+            "provisioning_guid",
+            "member_count",
+            "current_risk_score",
+            "status"
+        ]
+    )
+    if response is None:
+        raise DemistoException(
+            "Translation failed: the response from server did not include `kmsat_groups_list_command`.",
+            res=response,
+        )
+    return CommandResults(
+        outputs_prefix="KMSAT.Groups",
+        outputs_key_field="id",
         raw_response=response,
         outputs=response,
         readable_output=markdown,
@@ -1193,6 +1237,7 @@ def main() -> None:
         reportingCommands = {
             "kmsat-account-info-list": kmsat_account_info_list_command,
             "kmsat-account-risk-score-history-list": kmsat_account_risk_score_history_list_command,
+            "kmsat-groups-list": kmsat_groups_list_command,
             "kmsat-groups-risk-score-history-list": kmsat_groups_risk_score_history_list_command,
             "kmsat-groups-members-list": kmsat_groups_members_list_command,
             "kmsat-users-risk-score-history-list": kmsat_users_risk_score_history_list_command,

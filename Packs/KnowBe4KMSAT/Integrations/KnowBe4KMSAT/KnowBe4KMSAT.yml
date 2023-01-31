@@ -91,6 +91,35 @@ script:
           description: Account Risk Score History Date
           type: Date
       description: Returns KMSAT Account Risk Score History.
+    - name: kmsat-groups-list
+      arguments:
+        - name: page
+          description: Page Number
+        - name: per_page
+          description: Per Page Amount
+      outputs:
+        - contextPath: KMSAT.Groups.id
+          description: Groups ID
+          type: Number
+        - contextPath: KMSAT.Groups.name
+          description: Groups Name
+          type: String
+        - contextPath: KMSAT.Groups.group_type
+          description: Groups Type
+          type: String
+        - contextPath: KMSAT.Groups.provisioning_guid
+          description: Groups Provisioning GUID
+          type: String
+        - contextPath: KMSAT.Groups.member_count
+          description: Groups Member Count
+          type: Number
+        - contextPath: KMSAT.Groups.current_risk_score
+          description: Groups Risk Score
+          type: Number
+        - contextPath: KMSAT.Groups.status
+          description: Groups Status
+          type: String
+      description: Returns KMSAT Group Specific Risk Score History.
     - name: kmsat-groups-risk-score-history-list
       arguments:
         - name: group_id
