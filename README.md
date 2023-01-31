@@ -7,7 +7,7 @@
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=master&repo=60525392&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&location=WestEurope)
 
 
-If you already have VS Code and Docker installed, you can click the badge above or [here](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=git@github.com:demisto/content.git) to get started. Clicking these links makes VS Code install the `Remote-Containers` extension (if needed), clone the source code into a container volume, and spin up a development container with all recommended settings.
+If you already have VS Code and Docker installed, you can click the badge above or [here](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=git@github.com:demisto/content.git) to get started. Clicking these links opens VS Code, installs the `Remote-Containers` extension (if not installed), clones the source code into a container volume, and spins up a development container, configured with all recommended settings.
 
 # Cortex XSOAR Platform - Content Repository
 #### Demisto is now Cortex XSOAR.
