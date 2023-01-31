@@ -596,7 +596,7 @@ class Client(BaseClient):
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
                 values_list: List[Dict[str, Any]] = []
                 depth = arg_to_number(args.get('depth', '0'))
-                for value in values_list_res['RequestedObject'].get('Children'):
+                for value in values_list_res['RequestedObject'].get('Children', ()):
                     self.get_field_value_list_helper(value, values_list, depth)
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
 

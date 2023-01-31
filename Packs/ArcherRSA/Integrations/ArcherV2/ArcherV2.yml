@@ -255,6 +255,12 @@ script:
     - contextPath: Archer.ApplicationField.ValuesList.Name
       description: The field value name.
       type: String
+    - contextPath: Archer.ApplicationField.ValuesList.Parent
+      description: The field value parent.
+      type: String
+    - contextPath: Archer.ApplicationField.ValuesList.Depth
+      description: The field value depth.
+      type: Number
   - arguments:
     - description: The entry ID of the file in Cortex XSOAR context.
       name: entryId
