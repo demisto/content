@@ -1,4 +1,4 @@
-\ Development container for Content. Poetry hash $POETRY_LOCK_HASH
+\\ Development container for Content. Poetry hash "$POETRY_LOCK_HASH"
 {
 	"name": "XSOAR Content",
 	"build": {
