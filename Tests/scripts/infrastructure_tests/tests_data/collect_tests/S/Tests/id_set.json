@@ -14,8 +14,8 @@
     {
       "myIntegration2": {
         "name": "myIntegration2",
-        "file_path": "Packs/myXSOAROnlyPack2/Integrations/myIntegration/myIntegration2.yml",
-        "pack": "myXSOAROnlyPack",
+        "file_path": "Packs/myXSOAROnlyPack2/Integrations/myIntegration2/myIntegration2.yml",
+        "pack": "myXSOAROnlyPack2",
         "tests": [
           "myOtherTestPlaybook"
         ]
