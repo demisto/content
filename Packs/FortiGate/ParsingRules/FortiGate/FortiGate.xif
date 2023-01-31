@@ -1,2 +1,15 @@
 [INGEST:vendor="Fortinet", product="Fortigate", target_dataset="fortinet_fortigate_raw"]
-alter _time = to_timestamp(divide(to_integer(FTNTFGTeventtime), 1000), "MICROS");
+alter 
+    tmp_picktime_field = coalesce(FTNTFGTeventtime, FortinetFortiGateeventtime)
+| alter
+    tmp_remove_milli_secs = to_integer(replex(tmp_picktime_field, "\d{9}$", ""))
+| alter
+    tmp_timestamp_convert = to_string(to_timestamp(tmp_remove_milli_secs))
+| alter
+    tmp_adjusted_timestamp = replex(tmp_timestamp_convert, "\+\d+", ""),
+    tmp_find_zone = coalesce(FTNTFGTtz, FortinetFortiGatetz)
+| alter 
+    tmp_timestamp_zone = arraystring(arraycreate(tmp_adjusted_timestamp, tmp_find_zone), " ")
+| alter
+    _time = parse_timestamp("%Y-%m-%d %H:%M:%S %z", tmp_timestamp_zone)
+| fields -tmp_picktime_field, tmp_remove_milli_secs, tmp_timestamp_convert, tmp_adjusted_timestamp, tmp_find_zone, tmp_timestamp_zone;
