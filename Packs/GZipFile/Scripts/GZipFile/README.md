@@ -20,7 +20,7 @@ GZip a file and upload to war room
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| GZipFile.GZippedFile | The zipped file | string |
+| GZip.GZippedFiles | List of gzipped files | string |
 | File.Name | The full file name \(including file extension\). | String |
 | File.EntryID | The ID for locating the file in the War Room. | String |
 | File.Size | The size of the file in bytes. | Number |

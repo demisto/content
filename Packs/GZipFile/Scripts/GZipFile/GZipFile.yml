@@ -5,17 +5,27 @@ args:
   required: true
 comment: GZip a file and upload to war room
 commonfields:
-  id: GZipFile
+  id: aec720ba-1af4-490d-8c6d-38b25031441c
   version: -1
 contentitemexportablefields:
   contentitemfields:
+    definitionid: ""
     fromServerVersion: ""
-dockerimage: demisto/py3-tools:1.0.0.45904
+    itemVersion: ""
+    packID: 5dbdd762-6296-4d08-8f41-c0dc08f9d40d
+    packName: GZipFile Contribution Pack
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/py3-tools:0.0.1.30715
 enabled: true
+engineinfo: {}
+mainengineinfo: {}
 name: GZipFile
 outputs:
-- contextPath: GZipFile.GZippedFile
-  description: The zipped file
+- contextPath: GZip.GZippedFiles
+  description: List of gzipped files
   type: string
 - contextPath: File.Name
   description: The full file name (including file extension).
@@ -47,6 +57,7 @@ outputs:
 - contextPath: File.Type
   description: The file type, as determined by libmagic (same as displayed in file entries).
   type: String
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -56,6 +67,3 @@ tags:
 - Utility
 - file
 type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
