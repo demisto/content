@@ -92,9 +92,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: 'Should the integration mirror the playbook ID field to the remote
-    system? Note: Mirroring the playbook ID means that the remote system must be running
-    the same playbook as the source system.'
+  additionalinfo: 'Should the integration mirror the playbook ID field to the remote system? Note: Mirroring the playbook ID means that the remote system must be running the same playbook as the source system.'
 script:
   script: ''
   type: python
@@ -146,7 +144,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.46032
   isfetch: true
   runonce: false
   subtype: python3
