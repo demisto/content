@@ -71,7 +71,7 @@ def test_module(client: Client, serverurls: str) -> str:
         message = "Successful test message from Cortex XSOAR"
         title = "Cortex XSOAR Notification"
         test_message = client.create_teams_message(message, title, serverurls)
-        res = client.send_teams_message(test_message)
+        client.send_teams_message(test_message)
     except DemistoException as e:
         return f'Error: {e}'
     return 'ok'
@@ -94,7 +94,7 @@ def send_teams_message_command(client: Client, message: str, title: str, serveru
 
     try:
         message = client.create_teams_message(message, title, serverurls)
-        res = client.send_teams_message(message)
+        client.send_teams_message(message)
         return CommandResults(readable_output='message sent successfully')
     except DemistoException as e:
         return_error(f'Error: {e}')
