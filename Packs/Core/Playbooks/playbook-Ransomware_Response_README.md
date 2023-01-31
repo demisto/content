@@ -63,15 +63,15 @@ Finally, the recovery phase is executed. If the analysts decides to continue wit
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Containment Plan
+* Recovery Plan
 * Account Enrichment - Generic v2.1
+* Ransomware Enrich and Contain
+* Handle False Positive Alerts
 * Endpoint Investigation Plan
 * Enrichment for Verdict
-* Recovery Plan
-* Ransomware Enrich and Contain
 * Eradication Plan
 * Ransomware Advanced Analysis
-* Containment Plan
-* Handle False Positive Alerts
 
 ### Integrations
 This playbook does not use any integrations.
