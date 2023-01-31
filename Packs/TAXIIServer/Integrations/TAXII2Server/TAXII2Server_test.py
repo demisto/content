@@ -381,17 +381,17 @@ def test_taxii20_objects(mocker, taxii2_server_v20):
         assert response.status_code == 200
         assert response.content_type == 'application/vnd.oasis.stix+json; version=2.0'
         assert response.json == objects
-        assert response.headers.get('Content-Range') == 'items 0-2/5'
+        assert response.headers.get('Content-Range') == 'items 0-3/5'
 
 
 def test_taxii20_indicators_objects(mocker, taxii2_server_v20):
     """
         Given
-            TAXII Server v2.0, collection_id, content-range, types_for_indicator_sdo
+            TAXII Server v2.0, collection_id, content-range, types_for_indicator_sdo which includes the item types from the collection.
         When
             Calling get objects api request for given collection
         Then
-            Validate that right objects are returned.
+            Validate that right objects are returned and no extensions are returned.
     """
     iocs = util_load_json('test_data/ip_iocs.json')
     objects = util_load_json('test_data/objects20-indicators.json')
@@ -440,7 +440,7 @@ def test_taxii21_objects(mocker, taxii2_server_v21, demisto_iocs_file, res_file,
         assert response.content_type == 'application/taxii+json;version=2.1'
         a = response.json['objects'][0]
         b = objects['objects'][0]
-        s = a == b
+        assert a == b
         assert response.json == objects
 
 
