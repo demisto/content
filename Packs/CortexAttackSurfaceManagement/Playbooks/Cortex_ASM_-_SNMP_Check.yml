@@ -328,10 +328,10 @@ outputs:
 - contextPath: ScanResult
   description: The result of the scan (if done).
 - contextPath: ScanDone
-  description: Whether a scan was actually performed (based on subtypes).
+  description: Whether a scan was actually performed (based on sub-types).
   type: unknown
 - contextPath: SnmpDetection
-  description: This returns if SNMP port is responsive
+  description: This returns if SNMP port is responsive.
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
