@@ -224,7 +224,6 @@ class Build(ABC):
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
         """
-
         Fetches the test list from the filter. (Parses lines, all test written in the  filter.txt file)
 
         :param tests_to_run_path: Path to location of test filter.
