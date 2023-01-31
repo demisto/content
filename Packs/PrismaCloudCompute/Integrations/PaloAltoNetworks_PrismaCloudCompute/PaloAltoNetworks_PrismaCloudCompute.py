@@ -1612,6 +1612,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
+    demisto.info('test')
 
     # If checked to verify and given a certificate, save the certificate as a temp file
     # and set the path to the requests client
