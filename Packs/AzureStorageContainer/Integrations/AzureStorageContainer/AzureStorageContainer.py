@@ -2,7 +2,7 @@ import hashlib
 import hmac
 import shutil
 from typing import Callable
-from urllib import parse
+from urllib import parse  # noqa: F401
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401

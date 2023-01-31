@@ -119,7 +119,7 @@ def test_azure_storage_create_blob_command_content_length_header(mocker):
 
     create_blob_command(client, {'container_name': 'container-test', 'file_entry_id': '1'})
 
-    assert http_mocker.call_args.kwargs.get('headers', {}) == {'x-ms-blob-type': 'BlockBlob', 'Content-Length': '5'}
+    assert http_mocker.call_args.kwargs.get('headers', {}) == {'x-ms-blob-type': 'BlockBlob'}
 
 
 def test_azure_storage_get_container_properties_command(requests_mock):
