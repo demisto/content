@@ -33,7 +33,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - GCP IAM
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
-  - has an active "DevelopmentEnvironment" classification from processing of public data
+  - Has an active "DevelopmentEnvironment" classification from processing of public data
   
 ### Playbooks
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
@@ -96,7 +96,7 @@ This automation helps generate an ASM alert summary report with important inform
 ![GenerateASMReport](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
 
 #### SnmpDetection
-This automation helps check if SNMP is enabled or not and gets the running version on the remote server.
+This automation checka if SNMP is enabled or not and gets the running version on the remote server.
 ![SnmpDetection](https://raw.githubusercontent.com/demisto/content/bf435b470c2ed192b2d6c65c98ce488012d51636/Packs/CortexAttackSurfaceManagement/doc_files/SnmpDetection.png)
 
 #### InferWhetherServiceIsDev
