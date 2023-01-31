@@ -24,25 +24,30 @@ configuration:
   name: default_target_mailbox
   required: true
   type: 0
-- additionalinfo: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing.
-  defaultvalue: Inbox
+- additionalinfo: If this parameter is given, the commands will run with the UPN mailbox instead of the default target mailbox.
+  display: UPN Address
+  name: upn_mailbox
+  required: false
+  type: 0
+- defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents
   name: folder
   required: true
   type: 0
-- defaultvalue: Impersonation
+  additionalinfo: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing.
+- defaultvalue: 'Impersonation'
   display: Access Type
   name: access_type
+  required: false
+  type: 15
   options:
   - Impersonation
   - Delegate
-  required: false
-  type: 15
-- defaultvalue: 'false'
-  display: Public Folder
+- display: Public Folder
   name: is_public_folder
   required: false
   type: 8
+  defaultvalue: 'false'
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -51,16 +56,16 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 10 minutes
+- defaultvalue: '10 minutes'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '50'
-  display: Max incidents per fetch (up to 50)
+- display: Max incidents per fetch (up to 50)
   name: max_fetch
   required: false
   type: 0
+  defaultvalue: '50'
 - display: Mark fetched emails as read
   name: mark_as_read
   required: false
@@ -74,11 +79,11 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  defaultvalue: 'false'
 - display: Run as a separate process (protects against memory depletion)
   name: separate_process
   required: false
@@ -1170,7 +1175,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.42364
+  dockerimage: demisto/py3ews:1.0.0.45234
   feed: false
   isfetch: true
   longRunning: false

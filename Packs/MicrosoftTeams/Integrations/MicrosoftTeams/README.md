@@ -270,6 +270,10 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 5. Click **Set up** and configure the new app.
 
 
+## Known Limitations
+---
+In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

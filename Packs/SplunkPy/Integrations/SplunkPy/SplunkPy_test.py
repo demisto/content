@@ -1245,7 +1245,7 @@ def test_build_search_human_readable(mocker):
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
                         'comma', 'separated', 'Single,Header,with,Commas', 'new_header_1', 'new_header_2']
 
-    splunk.build_search_human_readable(args, results)
+    splunk.build_search_human_readable(args, results, sid='123456')
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
 
@@ -1268,12 +1268,12 @@ def test_build_search_human_readable_multi_table_in_query(mocker):
         {'header_1': 'val_1', 'header_2': 'val_2', 'header_3': 'val_3', 'header_4': 'val_4'},
     ]
     expected_headers_hr = "|header_1|header_2|header_3|header_4|\n|---|---|---|---|"
-    hr = splunk.build_search_human_readable(args, results)
+    hr = splunk.build_search_human_readable(args, results, sid='123456')
     assert expected_headers_hr in hr
 
 
-@pytest.mark.parametrize('polling', [False, True])
-def test_build_search_kwargs(polling):
+@pytest.mark.parametrize('polling, fast_mode', [(False, True), (True, True)])
+def test_build_search_kwargs(polling, fast_mode):
     """
     Given:
         The splunk-search command args.
@@ -1286,7 +1286,7 @@ def test_build_search_kwargs(polling):
 
     """
     args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app',
-            'polling': polling}
+            'fast_mode': fast_mode, 'polling': polling}
     kwargs_normalsearch = splunk.build_search_kwargs(args, polling)
     for field in args:
         if field == 'polling':
@@ -1295,6 +1295,8 @@ def test_build_search_kwargs(polling):
                 assert kwargs_normalsearch['exec_mode'] == 'normal'
             else:
                 assert kwargs_normalsearch['exec_mode'] == 'blocking'
+        elif field == 'fast_mode' and fast_mode:
+            assert kwargs_normalsearch['adhoc_search_level'] == 'fast'
         else:
             assert field in kwargs_normalsearch
 
@@ -1317,7 +1319,7 @@ def test_splunk_search_command(mocker, polling, status):
 
     mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
                                                        'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'polling': polling})
+                                                       'fast_mode': 'false', 'polling': polling})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     search_result = splunk.splunk_search_command(Service(status))
 
@@ -1326,7 +1328,8 @@ def test_splunk_search_command(mocker, polling, status):
         assert search_result.scheduled_command._args['sid'] == '123456'
     else:
         assert search_result.outputs['Splunk.Result'] == []
-        assert search_result.readable_output == '### Splunk Search results for query: query\n**No entries.**\n'
+        assert search_result.readable_output == '### Splunk Search results for query:\n' \
+                                                'sid: 123456\n**No entries.**\n'
 
 
 @pytest.mark.parametrize(

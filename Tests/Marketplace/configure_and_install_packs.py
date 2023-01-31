@@ -4,7 +4,7 @@ import traceback
 
 from demisto_sdk.commands.common.tools import get_json, str2bool
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
-    XSOARBuild, XSOARServer, XSIAMBuild, XSIAMServer, Build, get_packs_with_higher_min_version
+    XSOARBuild, XSOARServer, CloudBuild, CloudServer, Build, get_packs_with_higher_min_version
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket, \
     search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
@@ -25,12 +25,12 @@ def options_handler():
     parser.add_argument('--service_account', help="Path to gcloud service account", required=True)
     parser.add_argument('-e', '--extract_path', help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip '
                                                      f'to', required=True)
-    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--xsiam_servers_path', help='Path to the secret xsiam server metadata file.')
+    parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
+    parser.add_argument('--cloud_servers_path', help='Path to the secret cloud server metadata file.')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         type=str2bool, default=False, required=True)
-    parser.add_argument('--xsiam_servers_api_keys', help='Path to the file with XSIAM Servers api keys.')
+    parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
     options = parser.parse_args()
     # disable-secrets-detection-end
 
@@ -153,20 +153,20 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
         build_number(str): number of the current build flow
     """
     logging.info('Retrieving the credentials for Cortex XSIAM server')
-    xsiam_machine = options.xsiam_machine
-    api_key, server_numeric_version, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(
-        xsiam_machine,
-        options.xsiam_servers_path,
-        options.xsiam_servers_api_keys)
+    cloud_machine = options.cloud_machine
+    api_key, server_numeric_version, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(
+        cloud_machine,
+        options.cloud_servers_path,
+        options.cloud_servers_api_keys)
     # Configure the Server
-    server = XSIAMServer(api_key, server_numeric_version, base_url, xdr_auth_id, xsiam_machine)
-    XSIAMBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
+    server = CloudServer(api_key, server_numeric_version, base_url, xdr_auth_id, cloud_machine)
+    CloudBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
     # extract pack_ids from the content_packs_to_install.txt
     pack_ids = Build.fetch_pack_ids_to_install(options.pack_ids_to_install)
     # Acquire the server's host and install new uploaded content packs
     install_packs_from_content_packs_to_install_path([server], pack_ids, server.name)
-    logging.success(f'Finished installing all content packs in {xsiam_machine}')
+    logging.success(f'Finished installing all content packs in {cloud_machine}')
 
 
 def main():
@@ -176,7 +176,7 @@ def main():
         branch_name: str = options.branch
         build_number: str = options.build_number
 
-        if options.ami_env in ["XSIAM Master", "XSIAM 1.2"]:
+        if options.ami_env == "XSIAM":
             xsiam_configure_and_install_flow(options, branch_name, build_number)
         elif options.override_all_packs:
             xsoar_configure_and_install_all_packs(options, branch_name, build_number)

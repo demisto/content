@@ -24,11 +24,12 @@ configuration:
 - display: The organization used in app-only authentication.
   name: organization
   type: 0
-  required: true
+  required: false
 - display: The application ID from the Azure portal
   name: app_id
   type: 0
-  required: true
+  required: false
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"

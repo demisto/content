@@ -1,18 +1,24 @@
 category: Forensics & Malware Analysis
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: WildFire-v2
   version: -1
+defaultEnabled: true
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
   display: Server base URL (e.g., https://192.168.0.1/publicapi)
   name: server
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key
   name: credentials
   required: false
   type: 9
   hiddenusername: true
+  section: Connect
 - additionalinfo: Source of WildFire API Key - other = NGFW, WildFire API - pcc = Prisma Cloud Compute - prismaaccessapi = Prisma Access - xsoartim = XSOAR TIM API Key
   defaultvalue: other
   display: API Key Type
@@ -24,6 +30,8 @@ configuration:
   - other
   required: false
   type: 15
+  section: Connect
+  advanced: true
 - display: Source Reliability
   name: integrationReliability
   required: true
@@ -38,29 +46,40 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Return warning entry for unsupported file types
   name: suppress_file_type_error
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: API Key (Deprecated)
   name: token
   required: false
   type: 4
   hidden: true
+  section: Connect
+  advanced: true
 - display: Create relationships
   defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of enrichment.
   name: create_relationships
   required: false
   type: 8
+  section: Collect
+  advanced: true
 description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
@@ -1386,7 +1405,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.9.45313
   feed: false
   isfetch: false
   longRunning: false
