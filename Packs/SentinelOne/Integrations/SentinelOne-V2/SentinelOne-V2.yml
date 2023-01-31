@@ -2141,6 +2141,9 @@ script:
       name: exclusion_type
     description: Remove an item from the SentinelOne exclusion list
     name: sentinelone-remove-item-from-whitelist
+  - arguments: []
+    description: Returns the list of fields for an incident type.
+    name: get-mapping-fields
   - arguments:
     - description: The ticket ID.
       name: id
@@ -2155,9 +2158,12 @@ script:
     - description: Retrieve entries that were created after lastUpdate.
       name: last_update
       required: false
-    description: get modified ids for s1
+    description: Gets the list of incidents that were modified since the last update
+      time. Note that this method is here for debugging purposes. The get-modified-remote-data
+      command is used as part of a Mirroring feature, which is available from version
+      6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.46032
   isfetch: true
   ismappable: true
   isremotesyncin: true

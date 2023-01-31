@@ -1,18 +1,7 @@
 {
     "id": "SentinelOne Incident",
-    "version": 4,
-    "cacheVersn": 0,
-    "modified": "2023-01-11T10:38:19.735250471+05:30",
-    "packID": "",
-    "packName": "SentinelOne",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
+    "version": -1,
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "SentinelOne Incident",
     "prevName": "SentinelOne Incident",
@@ -33,10 +22,11 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "",
+    "layout": "c425740f-908d-477b-8ef4-7c65020bf299",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "5.0.0"
 }

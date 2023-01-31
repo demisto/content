@@ -1,59 +1,92 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
-	"description": "",
+	"description": "SentinelOne Incoming Mapper",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "2f08194c-bba2-493e-8e49-320fe9d99393",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
+	"id": "SentinelOne Incoming Mapper",
 	"mapping": {
 		"SentinelOne Incident": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"SentinelOne Threat Analyst Verdict": {
+					"simple": "threatInfo.analystVerdictDescription"
+				},
+				"SentinelOne Threat ID": {
+					"simple": "id"
+				},
+				"SentinelOne Threat Status": {
+					"simple": "threatInfo.incidentStatusDescription"
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "mirror_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agent ID": {
+					"simple": "agentRealtimeInfo.agentId"
+				},
+				"Classification": {
+					"simple": "threatInfo.classification"
+				},
+				"Device External IP": {
+					"simple": "agentDetectionInfo.externalIp"
+				},
+				"Device Local IP": {
+					"simple": "agentDetectionInfo.agentIpV4"
+				},
+				"Device Name": {
+					"simple": "agentRealtimeInfo.agentComputerName"
+				},
 				"Device OS Name": {
 					"simple": "agentDetectionInfo.agentOsName"
 				},
-				"Event ID": {
-					"simple": "id"
+				"Device Username": {
+					"simple": "agentDetectionInfo.agentLastLoggedInUserName"
 				},
-				"Verdict": {
-					"simple": "threatInfo.analystVerdict"
+				"Domain Name": {
+					"simple": "agentRealtimeInfo.agentDomain"
 				},
-                "dbotMirrorDirection": {
-                	"simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                	"simple": "incident_id"
-                },
-                "dbotMirrorInstance": {
-                	"simple": "mirror_instance"
-                },
-                "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
-                }
+				"External Confidence": {
+					"simple": "threatInfo.confidenceLevel"
+				},
+				"External Status": {
+					"simple": "threatInfo.mitigationStatusDescription"
+				},
+				"File MD5": {
+					"simple": "threatInfo.md5"
+				},
+				"File Path": {
+					"simple": "threatInfo.filePath"
+				},
+				"File SHA1": {
+					"simple": "threatInfo.sha1"
+				},
+				"File SHA256": {
+					"simple": "threatInfo.sha256"
+				},
+				"File Size": {
+					"simple": "threatInfo.fileSize"
+				},
+				"OS Type": {
+					"simple": "agentRealtimeInfo.agentOsType"
+				},
+				"Threat Name": {
+					"simple": "threatInfo.threatName"
+				}
 			}
 		}
 	},
-	"name": "SentinelOne incoming Mapper",
-	"nameRaw": "SentinelOne incoming Mapper",
-	"packID": "",
-	"packName": "SentinelOne",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
+	"name": "SentinelOne Incoming Mapper",
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }
