@@ -158,30 +158,4 @@ if [ -n "$_gitlab" ]; then
     --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
     "$BUILD_TRIGGER_URL"
 
-else
-
-  trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
-
-  post_data=$(cat <<-EOF
-  {
-    "branch": "${_branch}",
-    "parameters": {
-      "gcs_market_bucket": "${_bucket}",
-      "bucket_upload": "${_bucket_upload}",
-      "force_pack_upload": "${_force}",
-      "packs_to_upload": "${_packs}",
-      "slack_channel": "${_slack_channel}",
-      "storage_base_path": "${_storage_base_path}"
-    }
-  }
-  EOF
-  )
-
-  curl \
-  --header "Accept: application/json" \
-  --header "Content-Type: application/json" \
-  -k \
-  --data "${post_data}" \
-  --request POST ${trigger_build_url} \
-  --user "$_ci_token:"
 fi

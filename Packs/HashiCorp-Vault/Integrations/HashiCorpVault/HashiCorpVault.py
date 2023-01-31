@@ -607,7 +607,11 @@ def fetch_credentials():  # pragma: no cover
             credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
         elif engine['type'] == 'AWS':
-            credentials += get_aws_secrets(engine['path'], engine['ttl'], concat_username_to_cred_name)
+            aws_roles_list = []
+            if engine.get('aws_roles_list'):
+                aws_roles_list = engine.get('aws_roles_list').split(',')
+            credentials += get_aws_secrets(engine['path'], concat_username_to_cred_name,
+                                           aws_roles_list, engine.get('aws_method'))
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
@@ -716,7 +720,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: 
     return secrets
 
 
-def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
+def get_aws_secrets(engine_path, concat_username_to_cred_name, aws_roles_list, aws_method):
     secrets = []
     roles_list_url = engine_path + '/roles'
     demisto.debug('roles_list_url: {}'.format(roles_list_url))
@@ -725,22 +729,19 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     if not res or 'data' not in res:
         return []
     for role in res['data'].get('keys', []):
-        integration_context = get_integration_context()
-        now = datetime.now()
-        if f'{role}_ttl' in integration_context:
-            last = datetime.fromtimestamp(integration_context[f'{role}_ttl'])
-            diff = (now - last).seconds
-            if diff <= int(ttl) - AWS_TOKEN_OVERLAP_TIME:
-                continue
-        integration_context[f'{role}_ttl'] = now.timestamp()
-        set_integration_context(integration_context)
+        if aws_roles_list and role not in aws_roles_list:
+            continue
         role_url = urljoin(engine_path, urljoin('/roles/', role))
         demisto.debug('role_url: {}'.format(role_url))
         role_data = send_request(role_url, 'get')
         if not role_data or 'data' not in role_data:
             return []
         credential_type = role_data['data'].get('credential_type')
-
+        if aws_method:
+            if aws_method == 'POST':
+                credential_type = 'sts'
+            else:
+                credential_type = 'iam_user'
         if credential_type != 'iam_user':
             method = 'POST'
             credential_type = 'sts'
@@ -752,7 +753,6 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
         body = {}
         if 'role_arns' in role_data['data']:
             body['role_arns'] = role_data['data'].get('role_arns', [])
-            body['ttl'] = ttl + 's'
         aws_credentials = send_request(generate_credentials_url, method, body=body)
         if not aws_credentials or 'data' not in aws_credentials:
             return []
