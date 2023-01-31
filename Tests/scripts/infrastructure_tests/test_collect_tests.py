@@ -554,7 +554,7 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     mocker.patch('Tests.scripts.collect_tests.collect_tests.find_type', return_value=file_type)
 
     # packs of xsiam component files aren't expected to be collected when collecting for an XSOAR marketplace build
-    expected_packs = ('myPack',) if file_type not in MODELING_RULE_COMPONENT_FILES.union(XSIAM_COMPONENT_FILES) else ()
+    expected_packs = ('myPack',) if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES) else ()
 
     # noinspection PyTypeChecker
     _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,

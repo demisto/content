@@ -885,6 +885,26 @@ class BranchTestCollector(TestCollector):
                 allow_incompatible_marketplace=override_support_level_compatibility,
             )
 
+
+    def _collect_xsiam_and_modeling_pack(self,
+                                         file_type: Optional[FileType],
+                                         pack_id: str, reason_description: str,
+                                         path: Path,
+                                         content_item_range: Optional[VersionRange]) -> Optional[CollectionResult]:
+        if file_type in MODELING_RULE_COMPONENT_FILES:
+            # mark pack for installation and mark the modeling rule for dynamic testing
+            return self._collect_pack_for_modeling_rule(
+                pack_id=pack_id, reason_description=reason_description,
+                changed_file_path=path, content_item_range=content_item_range
+            )
+
+        # if the file is an xsiam component and is not a modeling rule
+        return self._collect_pack_for_xsiam_component(
+            pack_id=pack_id, reason_description=reason_description,
+            changed_file_path=path, content_item_range=content_item_range
+        )
+
+
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         self._validate_path(path)
 
@@ -903,7 +923,7 @@ class BranchTestCollector(TestCollector):
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
         except IncompatibleMarketplaceException:
-            if (file_type not in MODELING_RULE_COMPONENT_FILES) and (file_type not in XSIAM_COMPONENT_FILES):
+            if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
@@ -914,18 +934,10 @@ class BranchTestCollector(TestCollector):
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             content_item_range = content_item.version_range if content_item else None
 
-            if file_type in MODELING_RULE_COMPONENT_FILES:
-                # mark pack for installation and mark the modeling rule for dynamic testing
-                return self._collect_pack_for_modeling_rule(
-                    pack_id=pack_id, reason_description=reason_description,
-                    changed_file_path=path, content_item_range=content_item_range
-                )
-
-            if file_type in XSIAM_COMPONENT_FILES:
-                # if the file is an xsiam component and is not a modeling rule
-                return self._collect_pack_for_xsiam_component(
-                    pack_id=pack_id, reason_description=reason_description,
-                    changed_file_path=path, content_item_range=content_item_range
+            if file_type in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
+                return self._collect_xsiam_and_modeling_pack(
+                    file_type=file_type, pack_id=pack_id, reason_description=reason_description,
+                    path=path, content_item_range=content_item_range
                 )
 
             else:
