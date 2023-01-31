@@ -11,8 +11,8 @@ def test_arr_to_csv_command__array_of_two_values():
             the function will return the string as is (which is a valid csv format)
     """
     arr = ["mock", "mocker"]
-    command_result = arr_to_csv_command(arr)
-    assert command_result.readable_output == "mock,mocker"
+    result = arr_to_csv_command(arr)
+    assert result == "mock,mocker"
 
 
 def test_arr_to_csv_command__array_of_one_value():
@@ -25,8 +25,8 @@ def test_arr_to_csv_command__array_of_one_value():
             validate the result is valid csv
     """
     arr = ["mock"]
-    command_result = arr_to_csv_command(arr)
-    assert command_result.readable_output == "mock"
+    result = arr_to_csv_command(arr)
+    assert result == "mock"
 
 
 def test_arr_to_csv_command__empty_array():
@@ -39,5 +39,5 @@ def test_arr_to_csv_command__empty_array():
             The result is an empty string (which is a valid csv format)
     """
     arr = ""
-    command_result = arr_to_csv_command(arr)
-    assert command_result.readable_output == ''
+    result = arr_to_csv_command(arr)
+    assert result == ''

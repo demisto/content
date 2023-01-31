@@ -236,7 +236,7 @@ Use the following naming convention: (demisto_fields_{type}).
 The following features are not supported in non-ES (Enterprise Security) Splunk.
 - Incident Mirroring
 - Enrichment.
-- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar.html) for information.
+- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.
 
 
 ## Commands
@@ -296,8 +296,9 @@ Searches Splunk for events. For human readable output, the table command is supp
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Splunk.Result | Unknown | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | 
-| Splunk.JobStatus | String | The search status. | 
-
+| Splunk.JobStatus.SID | String | ID of the job. | 
+| Splunk.JobStatus.Status | String | Status of the job. | 
+| Splunk.JobStatus.TotalResults | String | The number of events that were returned by the job. | 
 
 ##### Command Example
 ```!splunk-search query="* | head 3" earliest_time="-1000d"```
