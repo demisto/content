@@ -485,14 +485,16 @@ test-upload-flow:
     - gke
   extends:
     - .default-job-settings
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-      changes:
-        - "Tests/*"
-        - "Utils/*"
   variables:
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+    TESTS: 'Tests/'
+    UTILS: 'Utils/'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - changes:
+        - $TESTS/*
+        - $Utils/*
   stage: unittests-and-validations
   allow_failure: true
   script:
