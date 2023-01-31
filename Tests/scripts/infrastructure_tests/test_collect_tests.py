@@ -42,6 +42,9 @@ Test Collection Unit-Test cases
 - `Q` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json,
       and a folder named Samples (should be ignored).
 - `MR1` has a pack with a modeling rule.
+- `S` has 2 packs with support level == xsoar, each pack has its own integration and both of these integrations have
+      "myOtherTestPlaybook" TPB that is not skipped in conf.json. The conf.json contains 2 records with the same
+      playbook ID "myOtherTestPlaybook".
 """
 
 
@@ -100,6 +103,7 @@ class MockerCases:
     P = CollectTestsMocker(TEST_DATA / 'P')
     Q = CollectTestsMocker(TEST_DATA / 'Q')
     R = CollectTestsMocker(TEST_DATA / 'R')
+    S = CollectTestsMocker(TEST_DATA / 'S')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
@@ -409,6 +413,10 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.RN_CONFIG, (), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/ReleaseNotes/2_1_3.json',), (), None),
 
+        # (34) see S definition at the top of this file - one of the integration has been changed
+        (MockerCases.S, ('myOtherTestPlaybook',), ('myXSOAROnlyPack', 'myXSOAROnlyPack2',), None, None,
+         XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
+         ('myXSOAROnlyPack',)),
     )
 )
 def test_branch(
