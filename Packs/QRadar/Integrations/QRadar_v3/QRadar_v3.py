@@ -3616,6 +3616,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     remote_args = GetModifiedRemoteDataArgs(args)
     highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
+    user_query = params.get('query', '')
     fetch_mode = params.get('fetch_mode', '')
     range_ = f'items=0-{limit - 1}'
     last_update_time = ctx.get(LAST_MIRROR_KEY, 0)
@@ -3623,8 +3624,9 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
     # if this call fails, raise an error and stop command execution
+    user_query = update_user_query(user_query)
     offenses = client.offenses_list(range_=range_,
-                                    filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
+                                    filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}{user_query}',
                                     sort='+last_persisted_time',
                                     fields='id,start_time,event_count,last_persisted_time')
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}

@@ -1,11 +1,3 @@
-[known_words]
-InsightIDR
-URLDomain
-FileType
-geolocations
-URIs
-URI
-
 [file:InsightIDR-TestPlaybook.yml]
 ignore=auto-test
 

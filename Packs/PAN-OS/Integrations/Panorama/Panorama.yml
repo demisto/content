@@ -3601,21 +3601,9 @@ script:
       name: reporttype
     - description: The report name.
       name: reportname
-    - defaultValue: 'config'
+    - defaultValue: keygen,config,commit,op,report,log,import,export,user-id,version
       description: The request type, for example export, import, log, config.
       name: type
-      predefined:
-      - 'keygen'
-      - 'config'
-      - 'commit'
-      - 'op'
-      - 'report'
-      - 'log'
-      - 'import'
-      - 'export'
-      - 'user-id'
-      - 'version'
-      auto: PREDEFINED
     - description: The time the PCAP was received on the firewall. Used for threat PCAPs.
       name: search-time
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance. This argument will work only with op type commands.
@@ -9346,7 +9334,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.45668
+  dockerimage: demisto/pan-os-python:1.0.0.44853
   feed: false
   isfetch: true
   longRunning: false

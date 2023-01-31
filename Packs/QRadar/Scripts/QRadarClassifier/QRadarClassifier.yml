@@ -32,5 +32,3 @@ important:
 - contextPath: Classifier/Description
   description: Classifier Description
 fromversion: 5.0.0
-marketplaces:
-- xsoar

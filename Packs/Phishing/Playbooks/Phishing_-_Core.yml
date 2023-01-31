@@ -2,7 +2,12 @@ id: Phishing - Core
 version: -1
 name: Phishing - Core
 description: |-
-  Deprecated. Use Phishing - Core v2 instead.
+  Provides a basic response to phishing incidents. Playbook features:
+  - Calculates reputation for all indicators
+  - Extracts indicators from email attachments
+  - Calculates severity for the incident based on indicator reputation
+  - Updates reporting user about investigation status
+  - Allows manual remediation of the incident
 starttaskid: "0"
 tasks:
   "0":
@@ -356,8 +361,140 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
       severity:
         simple: low
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -389,8 +526,140 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
       severity:
         simple: medium
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -422,8 +691,140 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
       severity:
         simple: high
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -919,5 +1320,4 @@ inputs:
 outputs: []
 fromversion: 5.0.0
 tests:
-- No tests (deprecated)
-deprecated: true
+- Phishing - Core - Test - Incident Starter

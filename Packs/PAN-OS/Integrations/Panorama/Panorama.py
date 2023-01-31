@@ -1171,8 +1171,7 @@ def panorama_push_to_device_group_command(args: dict):
                 'push_job_id': job_id,
                 'polling': argToBoolean(args.get('polling', False)),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-                'description': description,
-                'device-group': DEVICE_GROUP
+                'description': description
             }
 
         return PollResult(
@@ -1925,11 +1924,6 @@ def panorama_edit_address_group_command(args: dict):
             addresses = list(set(element_to_add + address_group_list))
         else:
             addresses = [item for item in address_group_list if item not in element_to_remove]
-            if not addresses:
-                raise DemistoException(
-                    f'cannot remove {address_group_list} addresses from address group {address_group_name}, '
-                    f'address-group {address_group_name} must have at least one address in its configuration'
-                )
         addresses_param = add_argument_list(addresses, 'member', False)
         addresses_path = f"{XPATH_OBJECTS}address-group/entry[@name=\'{address_group_name}\']/static"
 
