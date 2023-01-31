@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Xpanse Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "xpansecategory",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_xpansecategory",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Xpanse Category",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}
