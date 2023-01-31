@@ -606,35 +606,35 @@ def test_run_push_jobs_polling_command_last_poll(mocker, args):
     assert not result.scheduled_command
 
 
-def test_modify_address():
-    from PrismaSASE import modify_address
+def test_address_to_xsoar_format():
+    from PrismaSASE import address_to_xsoar_format
     address_object = json.loads(load_mock_response('address-object.json'))
-    modify_address(address_object)
+    address_to_xsoar_format(address_object)
     assert address_object['type'] == 'ip_netmask'
     assert address_object['address_value'] == '1.1.1.1/24'
     assert 'ip_netmask' not in address_object
 
 
-def test_modify_group_address_static_address():
-    from PrismaSASE import modify_group_address
+def test_address_group_to_xsoar_format_static_address():
+    from PrismaSASE import address_group_to_xsoar_format
     address_group = json.loads(load_mock_response('static-address-group.json'))
-    modify_group_address(address_group)
+    address_group_to_xsoar_format(address_group)
     assert address_group['addresses'] == ['test2']
     assert 'static' not in address_group
 
 
-def test_modify_group_address():
-    from PrismaSASE import modify_group_address
+def test_address_group_to_xsoar_format():
+    from PrismaSASE import address_group_to_xsoar_format
     address_group = json.loads(load_mock_response('dynamic-address-group.json'))
-    modify_group_address(address_group)
+    address_group_to_xsoar_format(address_group)
     assert address_group['dynamic_filter'] == "Microsoft 365 and Hamuzim"
     assert 'dynamic' not in address_group
 
 
-def test_modify_external_dynamic_list():
-    from PrismaSASE import modify_external_dynamic_list
+def test_external_dynamic_list_to_xsoar_format():
+    from PrismaSASE import external_dynamic_list_to_xsoar_format
     dynamic_list = json.loads(load_mock_response('external-dynamic-list.json'))
-    modify_external_dynamic_list(dynamic_list)
+    external_dynamic_list_to_xsoar_format(dynamic_list)
     assert dynamic_list['type'] == 'ip'
     assert dynamic_list['source'] == 'https://www.test.com'
     assert dynamic_list['frequency'] == {'five_minute': {}}

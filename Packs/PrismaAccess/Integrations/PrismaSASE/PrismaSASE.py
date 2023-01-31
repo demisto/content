@@ -795,7 +795,7 @@ class Client(BaseClient):
 """HELPER FUNCTIONS"""
 
 
-def modify_address(outputs):
+def address_to_xsoar_format(outputs):
     """Modify an address object or list of address objects to XSOAR format
     Args:
         outputs: address objects
@@ -810,7 +810,7 @@ def modify_address(outputs):
                 output.pop(address_type)
 
 
-def modify_group_address(outputs):
+def address_group_to_xsoar_format(outputs):
     """Modify an address group or list of address groups to XSOAR format
     Args:
         outputs: address groups
@@ -826,7 +826,7 @@ def modify_group_address(outputs):
             output.pop('dynamic')
 
 
-def modify_external_dynamic_list(outputs):
+def external_dynamic_list_to_xsoar_format(outputs):
     """Modify an external dynamic list or list of external dynamic lists to XSOAR format
     Args:
         outputs: external dynamic list
@@ -842,8 +842,12 @@ def modify_external_dynamic_list(outputs):
             output['source'] = 'predefined'
             continue
         dynamic_list_type_object = output.get('type', {})
-        # The object should contain exactly one key, and the key indicates the type of the dynamic list.
-        dynamic_list_type = list(dynamic_list_type_object.keys())[0]
+        try:
+            # The object should contain exactly one key, and the key indicates the type of the dynamic list.
+            dynamic_list_type = list(dynamic_list_type_object.keys())[0]
+        except IndexError:
+            raise DemistoException(f'Could not parse the type of the Dynamic list. '
+                                   f'Type is missing. Dynamic list as returned by the API: {output}')
         output['description'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('description')
         output['source'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('url')
         output['frequency'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring')
@@ -1098,7 +1102,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
                                                 tsg_id=args.get('tsg_id'))  # type: ignore
 
     outputs = raw_response.copy()
-    modify_address(outputs)
+    address_to_xsoar_format(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
@@ -1149,7 +1153,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any]) -> Command
                                               tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.copy()
-    modify_address(outputs)
+    address_to_xsoar_format(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
@@ -1196,7 +1200,7 @@ def list_address_objects_command(client: Client, args: Dict[str, Any]) -> Comman
         outputs = raw_response.copy()
         outputs = outputs.get('data', [])
 
-    modify_address(outputs)
+    address_to_xsoar_format(outputs)
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
@@ -1466,7 +1470,7 @@ def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs = raw_response.copy()
         outputs = outputs.get('data', [])
 
-    modify_group_address(outputs)
+    address_group_to_xsoar_format(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
@@ -1508,7 +1512,7 @@ def create_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
                                                tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.copy()
-    modify_group_address(outputs)
+    address_group_to_xsoar_format(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
@@ -1572,7 +1576,7 @@ def update_address_group_command(client: Client, args: Dict[str, Any]) -> Comman
                                                tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.copy()
-    modify_group_address(outputs)
+    address_group_to_xsoar_format(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
@@ -1753,7 +1757,7 @@ def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> 
         outputs = raw_response.copy()
         outputs = outputs.get('data', [])
 
-    modify_external_dynamic_list(outputs)
+    external_dynamic_list_to_xsoar_format(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
@@ -1802,7 +1806,7 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
                                                        tsg_id=tsg_id)  # type: ignore
 
     outputs = raw_response.copy()
-    modify_external_dynamic_list(outputs)
+    external_dynamic_list_to_xsoar_format(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
@@ -1875,7 +1879,7 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
                                                        dynamic_list_id=dynamic_list_id,
                                                        tsg_id=tsg_id)  # type: ignore
     outputs = raw_response.copy()
-    modify_external_dynamic_list(outputs)
+    external_dynamic_list_to_xsoar_format(outputs)
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
