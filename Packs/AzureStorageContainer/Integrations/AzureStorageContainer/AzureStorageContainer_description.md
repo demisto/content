@@ -1,8 +1,8 @@
 To configure an instance of the integration in Cortex XSOAR, you need to supply your Storage Account Name and credentials.
 
 Credentials are one of the following:
-1. Storage Account SAS Token. 
-2. Azure Managed Identities client id (relevant only if XSOAR installed on Azure VM).
+- Storage Account SAS Token. 
+- Azure Managed Identities client ID (relevant only if Cortex XSOAR is installed on Azure VM).
    
 When you configure the integration instance, enter the Storage Account name in the Storage Account field, and the credentials details in the relevant field.
 
@@ -41,8 +41,8 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
 
 - ##### To use User Assigned Managed Identity
-   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
-   2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the **Azure Managed Identities Client ID** field in the instance settings.
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.
    3. Select the **Use Azure Managed Identities** checkbox.
 
-For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
