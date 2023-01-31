@@ -1,0 +1,69 @@
+args:
+- description: CSV list of entry ids for the gzipped files to unzip.
+  isArray: true
+  name: entryID
+  required: true
+comment: Unzip a gz file and upload to war room
+commonfields:
+  id: fde640d5-ddbf-4116-8575-93e5ba03f161
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: e4eff2d5-988e-4785-8d6c-8adf9ce5c10d
+    packName: UnzipGZFile Contribution Pack
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/py3-tools:0.0.1.30715
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: UnzipGZFile
+outputs:
+- contextPath: UnzipGZFile.UnzippedGZFiles
+  description: List of unzipped gz files
+  type: string
+- contextPath: File.Name
+  description: The full file name (including file extension).
+  type: String
+- contextPath: File.EntryID
+  description: The ID for locating the file in the War Room.
+  type: String
+- contextPath: File.Size
+  description: The size of the file in bytes.
+  type: Number
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The ssdeep hash of the file (same as displayed in file entries).
+  type: String
+- contextPath: File.Extension
+  description: 'The file extension, for example: ''xls''.'
+  type: String
+- contextPath: File.Type
+  description: The file type, as determined by libmagic (same as displayed in file entries).
+  type: String
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+- file
+type: python
