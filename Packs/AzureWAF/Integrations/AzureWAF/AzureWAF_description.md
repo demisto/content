@@ -40,11 +40,11 @@ At end of the process, you will see a message that you logged in successfully.
 Follow one of these steps for authentication based on Azure Managed Identities:
 
 - ##### To use System Assigned Managed Identity
-   - Select *Azure Managed Identities* in *Authentication Type* drop-down list and leave the **Azure Managed Identities Client ID** field empty.
+   - In the **Authentication Type** drop-down list, select **Azure Managed Identities** and leave the **Azure Managed Identities Client ID** field empty.
 
 - ##### To use User Assigned Managed Identity
-   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
-   2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the ***Azure Managed Identities client id*** filed in the instance configuration.
-   3. Select *Azure Managed Identities* in **Authentication Type** drop-down list.
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities client id** field in the instance configuration.
+   3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
 
-For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
