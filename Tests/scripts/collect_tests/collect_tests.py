@@ -722,7 +722,7 @@ class BranchTestCollector(TestCollector):
                 if pack_to_collect := self._collect_pack(pack_id=pack_id,
                                                          reason=CollectionReason.FILES_REMOVED_FROM_PACK,
                                                          reason_description='',
-                                                         allow_incompatible_marketplace=True):
+                                                         ):
                     collected.append(pack_to_collect)
             except NothingToCollectException as e:
                 logger.info(e.message)
