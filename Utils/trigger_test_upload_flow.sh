@@ -12,7 +12,6 @@ if [ "$#" -lt "1" ]; then
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
-  [-g, --gitlab]              Flag indicating to trigger the flow in GitLab.
   [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like upload-flow/builds/branch_name/build_number/content.
   [-dz, --create_dependencies_zip] Upload packs with dependencies zip
   [-o, --override_all_packs]  Whether to override all packs, and not just modified packs.
@@ -87,9 +86,6 @@ while [[ "$#" -gt 0 ]]; do
   -o|--override-all-packs) _override_all_packs=true
     shift;;
 
-  -g|--gitlab) _gitlab=true
-    shift;;
-
   -dz|--create_dependencies_zip) _create_dependencies_zip=true
     shift;;
 
@@ -135,6 +131,7 @@ if [ -z "$_override_all_packs" ]; then
 else
   _override_all_packs=true
 fi
+
 if [ -z "$_create_dependencies_zip" ]; then
   _create_dependencies_zip=false
 fi
