@@ -876,7 +876,7 @@ def generate_sas_signature(account_key: str, cr: str, sp: str, signedstart: str,
     """
     if sip is None:
         sip = ''
-    string_to_sign = (sp + "\n" +
+    string_to_sign = (sp + "\n" +  # noqa: W504
                       signedstart + "\n"
                       + expiry + "\n"
                       + cr + "\n"
@@ -932,7 +932,7 @@ def check_valid_permission(valid_permissions: str, input_permissions: str) -> bo
     return True
 
 
-def generate_sas_token_command(client: Client, args: dict) -> CommandResults:
+def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  # type: ignore
     """
     Generate sas url for Container.
 
@@ -951,17 +951,17 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:
     valid_permissions = "racwdxltmeop"
     signed_ip = args.get("signed_ip")
     # Check Permissions
-    if check_valid_permission(valid_permissions, signed_permissions):
+    if check_valid_permission(valid_permissions, signed_permissions):  # type: ignore
         # Set start time
         signed_start = str((datetime.utcnow() - timedelta(minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
         account_key = demisto.params().get("key")
-        time_taken = int(args.get('expiry_time'))
+        time_taken = int(args.get('expiry_time'))  # type: ignore
         signed_expiry = str((datetime.utcnow() + timedelta(hours=time_taken)).strftime("%Y-%m-%dT%H:%M:%SZ"))
         url_suffix = f"{container_name}"
         canonicalized_resource = f"/blob/{storage_account_name}/{container_name}"
         url = client.get_base_url() + url_suffix
-        sas_token = generate_sas_signature(account_key, canonicalized_resource, signed_permissions, signed_start,
-                                           signed_expiry, signed_resource, api_version, signed_ip)
+        sas_token = generate_sas_signature(account_key, canonicalized_resource, signed_permissions, signed_start,  # type: ignore # noqa
+                                           signed_expiry, signed_resource, api_version, signed_ip)  # type: ignore
         sas_url = f"{url}?{sas_token}"
         res_data = sas_url
         markdown = tableToMarkdown('Azure storage container SAS url', res_data, headers=[container_name])
@@ -973,7 +973,7 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:
         )
         return result
     else:
-        return_error(f"Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\' ")
+        return_error("Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\'")
 
 
 def test_module(client: Client) -> None:
@@ -1019,7 +1019,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
                                 api_version)
 
