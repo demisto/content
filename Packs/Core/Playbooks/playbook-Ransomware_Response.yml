@@ -1082,17 +1082,6 @@ tasks:
             value:
               simple: unTrusted
           ignorecase: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Core.AnalyticsPrevalence.Hash
-                accessor: value
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
     view: |-
       {
         "position": {
