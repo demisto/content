@@ -31,4 +31,4 @@ jobs:
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Release notes found in PR: ${release_notes}. Starting docs review..."
 
-          Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes" --delimiter ${{ env.CHANGED_FILES_DELIMITER }}
+          Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
