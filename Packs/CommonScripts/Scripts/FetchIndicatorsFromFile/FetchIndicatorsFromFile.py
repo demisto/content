@@ -194,7 +194,7 @@ def detect_type(indicator):
         # the suffix_list_urls=None is used to not make http calls using the extraction - avoiding SSL errors
         if tldextract.TLDExtract(cache_dir='https://raw.githubusercontent.com/publicsuffix'
                                            '/list/master/public_suffix_list.dat',
-                                 suffix_list_urls=None).__call__(indicator).suffix:
+                                 suffix_list_urls=()).__call__(indicator).suffix:
             if '*' in indicator:
                 return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain
@@ -258,7 +258,7 @@ def fetch_indicators_from_file(args):
     return human_readable, domain_context, indicator_list
 
 
-def main():  # pragma: no cover
+def main():
     try:
         return_outputs(*fetch_indicators_from_file(demisto.args()))
     except Exception as ex:
@@ -266,5 +266,5 @@ def main():  # pragma: no cover
                      error=traceback.format_exc())
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

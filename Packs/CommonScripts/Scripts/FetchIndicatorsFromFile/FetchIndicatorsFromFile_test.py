@@ -1,3 +1,4 @@
+import pytest
 
 CSV_TEST_RESULTS_1 = [
     {'type': 'File', 'value': '4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0'},
@@ -31,6 +32,29 @@ TEXT_TEST_RESULT_1 = [
 TEXT_TEST_RESULT_2 = [
     {'type': 'File', 'value': 'google.com'},
     {'type': 'File', 'value': 'www.google.com/path'},
+]
+
+TEST_INDICATOR_TYPE = [
+    ("", True, "default", "text",  # args
+     None,  # indicator_type
+     None  # result
+     ),
+    ("", True, None, "csv",  # args
+     None,  # indicator_type
+     None  # result
+     ),
+    ("", True, "default", "csv",  # args
+     None,  # indicator_type
+     "default"  # result
+     ),
+    ("", True, None, "csv",  # args
+     None,  # indicator_type
+     None  # result
+     ),
+    ("", True, None, "csv",  # args
+     'file',  # indicator_type
+     'file'  # result
+     )
 ]
 
 
@@ -110,3 +134,12 @@ def test_detect_type():
     assert 'DomainGlob' == detect_type('*.demisto.com')
     assert 'IPv6CIDR' == detect_type('2001:db8:85a3:8d3:1319:8a2e:370:7348/32')
     assert None is detect_type('not_an_indicator')
+
+
+@pytest.mark.parametrize('indicator_value, auto_detect, default_type, file_type,indicator_type, expected_result',
+                         TEST_INDICATOR_TYPE)
+def test_get_indicator_type(mocker, indicator_value, auto_detect, default_type, file_type, indicator_type, expected_result):
+    from FetchIndicatorsFromFile import get_indicator_type
+    mocker.patch('FetchIndicatorsFromFile.detect_type', return_value=indicator_type)
+    result = get_indicator_type(indicator_value, auto_detect, default_type, file_type)
+    assert expected_result == result
