@@ -9,9 +9,9 @@ Use the Cisco WebEx Feed integration to fetch indicators from WeBex.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     |  |  | False |
     |  |  | False |
     | Feed Fetch Interval |  | False |
@@ -37,7 +37,7 @@ Gets indicators from the feed.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of results to return. Default is 20. | Optional | 
-| indicator_type | The indicator type. Can be "CIDR", "DOMAIN", or "Both". Possible values are: CIDR, DOMAIN, Both. Default is Both. | Optional | 
+| indicator_type | The indicator type. Possible values are: CIDR, DOMAIN, Both. Default is Both. | Optional | 
 
 
 #### Context Output
