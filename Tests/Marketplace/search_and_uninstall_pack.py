@@ -36,6 +36,8 @@ def get_all_installed_packs(client: demisto_client):
                 f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
             if 'Base' in installed_packs_ids:
                 installed_packs_ids.remove('Base')
+            if 'DemistoRESTAPI' in installed_packs_ids:
+                installed_packs_ids.remove('DemistoRESTAPI')
             return installed_packs_ids
         else:
             result_object = ast.literal_eval(response_data)
@@ -135,6 +137,49 @@ def reset_base_pack_version(client: demisto_client):
         return False
 
 
+def reset_DemistoRESTAPI_pack_version(client: demisto_client):
+    """
+    Resets DemistoRESTAPI REST API pack version to prod version.
+
+    Args:
+        client (demisto_client): The client to connect to.
+
+
+    """
+    host = client.api_client.configuration.host.replace('https://api-', 'https://')  # disable-secrets-detection
+    try:
+        # make the search request
+        response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                            path='/contentpacks/marketplace/DemistoRESTAPI',
+                                                                            method='GET',
+                                                                            accept='application/json',
+                                                                            _request_timeout=None)
+        if 200 <= status_code < 300:
+            result_object = ast.literal_eval(response_data)
+
+            if result_object and result_object.get('currentVersion'):
+                logging.debug('Found DemistoRESTAPI pack in bucket!')
+
+                pack_data = {
+                    'id': result_object.get('id'),
+                    'version': result_object.get('currentVersion')
+                }
+                # install latest version of DemistoRESTAPI pack
+                logging.info(f'updating DemistoRESTAPI pack to version {result_object.get("currentVersion")}')
+                return install_packs(client, host, [pack_data], False)
+
+            else:
+                raise Exception('Did not find DemistoRESTAPI pack')
+        else:
+            result_object = ast.literal_eval(response_data)
+            msg = result_object.get('message', '')
+            err_msg = f'Search request for DemistoRESTAPI pack, failed with status code ' \
+                      f'{status_code}\n{msg}'
+            raise Exception(err_msg)
+    except Exception:
+        logging.exception('Search request DemistoRESTAPI pack has failed.')
+        return False
+
 def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 30):
     """
     Query if there are still installed packs, as it might take time to complete.
@@ -148,7 +193,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 3
     retry = 0
     try:
         installed_packs = get_all_installed_packs(client)
-        while len(installed_packs) > 1:
+        while len(installed_packs) > 2:
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
@@ -199,7 +244,7 @@ def main():
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
 
-    success = reset_base_pack_version(client) and uninstall_all_packs(client,
+    success = reset_base_pack_version(client) and reset_DemistoRESTAPI_pack_version and uninstall_all_packs(client,
                                                                       host) and wait_for_uninstallation_to_complete(
         client)
     if not success:

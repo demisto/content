@@ -9,6 +9,12 @@ MOCK_BASE_SEARCH_RESULTS = """{
     "id": "Base",
     "currentVersion": "1.0.2"
 }"""
+
+MOCK_DemistoRESTAPI_SEARCH_RESULTS = """{
+    "id": "DemistoRESTAPI",
+    "currentVersion": "1.0.7"
+}"""
+
 MOCK_PACKS_INSTALLATED_RESULT = """[
     {
         "id": "HelloWorld",
@@ -27,14 +33,22 @@ MOCK_PACKS_INSTALLATED_RESULT = """[
         "currentVersion": "1.0.0",
         "name": "Base",
         "installed": "2020-04-06T14:54:09.755811+03:00"
+    },
+    {
+        "id": "DemistoRESTAPI",
+        "currentVersion": "1.0.0",
+        "name": "DemistoRESTAPI",
+        "installed": "2020-04-06T14:54:09.755811+03:00"
     }
 ]"""
-MOCK_PACKS_ID_TO_UNINSTALL = ['HelloWorld', 'TestPack', 'Base']
+MOCK_PACKS_ID_TO_UNINSTALL = ['HelloWorld', 'TestPack', 'Base', 'DemistoRESTAPI']
 
 
 def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
     if path == '/contentpacks/marketplace/Base':
         return MOCK_BASE_SEARCH_RESULTS, 200, None
+    elif path == '/contentpacks/marketplace/DemistoRESTAPI':
+        return MOCK_DemistoRESTAPI_SEARCH_RESULTS, 200, None
     elif path == '/contentpacks/metadata/installed':
         return MOCK_PACKS_INSTALLATED_RESULT, 200, None
     elif path == '/contentpacks/installed/delete':
@@ -75,6 +89,7 @@ def test_get_installed_packs(mocker):
     assert 'HelloWorld' in installed_packs
     assert 'TestPack' in installed_packs
     assert 'Base' not in installed_packs
+    assert 'DemistoRESTAPI' not in installed_packs
 
 
 def test_uninstall_all_packs(mocker):
