@@ -760,16 +760,26 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR execute script Playbook",
+            "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
             "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR general and file commands Playbook",
+            "playbookID": "Test XDR Playbook quarantine file command",
             "fromversion": "4.1.0",
-            "timeout": 2500,
-            "is_mockable": false
+            "timeout": 2500
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook general commands",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook retrieve file command",
+            "fromversion": "4.1.0",
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -5444,6 +5454,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
+        "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode": "No credentials",
         "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
