@@ -139,7 +139,31 @@ def test_detect_type():
 @pytest.mark.parametrize('indicator_value, auto_detect, default_type, file_type,indicator_type, expected_result',
                          TEST_INDICATOR_TYPE)
 def test_get_indicator_type(mocker, indicator_value, auto_detect, default_type, file_type, indicator_type, expected_result):
+    """
+    Given:
+        - indicator_value, auto_detect, default_type, file_type
+    When:
+        - get_indicator_type function is executed
+    Then:
+        - Return indicator_type
+    """
     from FetchIndicatorsFromFile import get_indicator_type
     mocker.patch('FetchIndicatorsFromFile.detect_type', return_value=indicator_type)
     result = get_indicator_type(indicator_value, auto_detect, default_type, file_type)
     assert expected_result == result
+
+
+def test_main(mocker):
+    """
+    Given:
+        - All return values from helper functions are valid
+    When:
+        - main function is executed
+    Then:
+        - Return results to War-Room
+    """
+    from FetchIndicatorsFromFile import main
+    import demistomock as demisto
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch('FetchIndicatorsFromFile.fetch_indicators_from_file', return_value=("", {}, []))
+    main()
