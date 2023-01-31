@@ -15,23 +15,24 @@
 
 ## Commands
 
-| Commands                                        | Description                                                            |
-| ----------------------------------------------- | ---------------------------------------------------------------------- |
-| kmsat-account-info-list                         | Command displays the account information.                              |
-| kmsat-account-risk-score-history                | Command lists the accounts risk score history.                         |
-| kmsat-groups-risk-score-history                 | Command lists the groups risk score history.                           |
-| kmsat-groups-members                            | Command lists the groups members.                                      |
-| kmsat-users-risk-score-history                  | Command lists the risk score history for user.                         |
-| kmsat-phishing-security-tests                   | Command lists the phishing security tests.                             |
-| kmsat-phishing-security-tests-recipients        | Command lists the phishing security tests with recipients data.        |
-| kmsat-phishing-security-tests-failed-recipients | Command lists the phishing security tests with failed recipients data. |
-| kmsat-phishing-campaign-security-tests          | Command lists campaigns security tests.                                |
-| kmsat-training-campaigns                        | Command lists training campaigns.                                      |
-| kmsat-training-enrollments                      | Command lists training enrollments.                                    |
-| kmsat-user-events-list                          | Command lists the user events.                                         |
-| kmsat-user-event-types-list                     | Command lists the user event types.                                    |
-| kmsat-user-event-create                         | Command creates a user event.                                          |
-| kmsat-user-event-delete                         | Command deletes a user event.                                          |
+| Commands                                             | Description                                                            |
+| ---------------------------------------------------- | ---------------------------------------------------------------------- |
+| kmsat-account-info-list                              | Command displays the account information.                              |
+| kmsat-account-risk-score-history-list                | Command lists the accounts risk score history.                         |
+| kmsat-groups-list                                    | Command lists all the groups.                                          |
+| kmsat-groups-risk-score-history-list                 | Command lists the groups risk score history.                           |
+| kmsat-groups-members-list                            | Command lists the groups members.                                      |
+| kmsat-users-risk-score-history-list                  | Command lists the risk score history for user.                         |
+| kmsat-phishing-security-tests-list                   | Command lists the phishing security tests.                             |
+| kmsat-phishing-security-tests-recipients-list        | Command lists the phishing security tests with recipients data.        |
+| kmsat-phishing-security-tests-failed-recipients-list | Command lists the phishing security tests with failed recipients data. |
+| kmsat-phishing-campaign-security-tests-list          | Command lists campaigns security tests.                                |
+| kmsat-training-campaigns-list                        | Command lists training campaigns.                                      |
+| kmsat-training-enrollments-list                      | Command lists training enrollments.                                    |
+| kmsat-user-events-list                               | Command lists the user events.                                         |
+| kmsat-user-event-types-list                          | Command lists the user event types.                                    |
+| kmsat-user-event-create                              | Command creates a user event.                                          |
+| kmsat-user-event-delete                              | Command deletes a user event.                                          |
 
 
 ### kmsat-account-info-list
@@ -96,7 +97,7 @@
 | KMSAT.AccountRiskScoreHistory.date       | Date     | Account Risk Score History Date        |
 
 #### Command Example
-```!kmsat-account-risk-score-history page=1 per_page=25```
+```!kmsat-account-risk-score-history-list  page=1 per_page=25```
 
 #### Context Example
 ```json
@@ -107,6 +108,48 @@
 }
 
 ```
+
+### kmsat-groups-list
+
+### kmsat-account-risk-score-history
+
+| **Argument Name** | **Description** | **Required** |
+| ----------------- | --------------- | ------------ |
+| page              | Page Number     | No           |
+| per_page          | Per Page Amount | No           |
+
+
+#### Context Output
+
+| **Path**                        | **Type** | **Description**           |
+| ------------------------------- | -------- | ------------------------- |
+| KMSAT.Groups.id                 | Number   | Groups ID                 |
+| KMSAT.Groups.name               | String   | Groups Name               |
+| KMSAT.Groups.group_type         | String   | Groups Type               |
+| KMSAT.Groups.provisioning_guid  | String   | Groups Provisioning GUID  |
+| KMSAT.Groups.member_count       | Number   | Groups Member Count       |
+| KMSAT.Groups.current_risk_score | Number   | Groups Current Risk Score |
+| KMSAT.Groups.status             | String   | Groups Status             |
+
+
+#### Command Example
+```!kmsat-groups-list page=1 per_page=25```
+
+#### Context Example
+```json
+
+{
+  "id": 3142,
+  "name": "Customer Service",
+  "group_type": "console_group",
+  "provisioning_guid": "abc12345-6789-abc-1234-456789abc123",
+  "member_count": 42,
+  "current_risk_score": 45.742,
+  "status": "active"
+}
+
+```
+
 
 ### kmsat-groups-risk-score-history
 
@@ -124,7 +167,7 @@
 | KMSAT.GroupRiskHistory.date            | Date     | Groups Risk Score History Date        |
 
 #### Command Example
-```!kmsat-groups-risk-score-history page=1 per_page=25```
+```!kmsat-groups-risk-score-history-list page=1 per_page=25```
 
 #### Context Example
 ```json
@@ -182,7 +225,7 @@
 | KMSAT.GroupsMembers.custom_date_2          | Date     | Groups Member Custom Date 2          |
 
 #### Command Example
-```!kmsat-groups-members group_id=1 page=1 per_page=25```
+```!kmsat-groups-members-list  group_id=1 page=1 per_page=25```
 
 #### Context Example
 ```json
@@ -246,7 +289,7 @@
 | KMSAT.UsersRiskHistory.date       | Date     | Users Risk Score History Date        |
 
 #### Command Example
-```!kmsat-users-risk-score-history user_id=1 page=1 per_page=25```
+```!kmsat-users-risk-score-history-list  user_id=1 page=1 per_page=25```
 
 #### Context Example
 ```json
@@ -298,7 +341,7 @@
 
 
 #### Command Example
-```!kmsat-phishing-security-tests page=1 per_page=25```
+```!kmsat-phishing-security-tests-list  page=1 per_page=25```
 
 #### Context Example
 ```json
@@ -382,7 +425,7 @@
 | KMSAT.PhishingSecurityPST.os                   | String   | Phishing Security OS                   |
 
 #### Command Example
-```!kmsat-phishing-security-tests-recipients pst_id=1 page=1 per_page=25```
+```!kmsat-phishing-security-tests-recipients-list  pst_id=1 page=1 per_page=25```
 
 #### Context Example
 ```json
@@ -455,7 +498,7 @@
 | KMSAT.PhishingSecurityPST.os                   | String   | Phishing Security OS                   |
 
 #### Command Example
-```!kmsat-phishing-security-tests-failed-recipients pst_id=1```
+```!kmsat-phishing-security-tests-failed-recipients-list  pst_id=1```
 
 #### Context Example
 ```json
@@ -538,7 +581,7 @@
 
 
 #### Command Example
-```!kmsat-phishing-campaign-security-tests campaign_id=1 page=1 per_page=25```
+```!kmsat-phishing-campaign-security-tests-list  campaign_id=1 page=1 per_page=25```
 
 #### Context Example
 ```json
@@ -630,7 +673,7 @@
 
 
 #### Command Example
-```!kmsat-training-campaigns campaign_id=1 page=1 per_page=25```
+```!kmsat-training-campaigns-list  campaign_id=1 page=1 per_page=25```
 
 #### Context Example
 ```json
@@ -712,7 +755,7 @@
 
 
 #### Command Example
-```!kmsat-training-enrollments status="Completed" page=1 per_page=25```
+```!kmsat-training-enrollments-list  status="Completed" page=1 per_page=25```
 
 #### Context Example
 ```json
