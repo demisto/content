@@ -1763,6 +1763,7 @@ Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
 | submission_value | The submission value. Possible values are a valid URL or a file ID that was uploaded to the War Room to detonate. | Required | 
 | premium_sandbox | Whether the premium sandbox should be used for detonation. Possible values are: false, true. Default is false. | Optional | 
 | detail | A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI. | Optional | 
+| import_indicators | If you want to initiate an import job for observables discovered during detonation, set this value to true. Default value is true. | Optional | 
 
 
 #### Context Output
