@@ -932,7 +932,7 @@ def check_valid_permission(valid_permissions: str, input_permissions: str) -> bo
     return True
 
 
-def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  # type: ignore
+def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  # type: ignore # pragma: no cover
     """
     Generate sas url for Container.
 
@@ -999,7 +999,7 @@ def test_module(client: Client) -> None:
     return_results('ok')
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     Main function
     """
