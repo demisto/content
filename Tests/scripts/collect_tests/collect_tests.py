@@ -885,7 +885,6 @@ class BranchTestCollector(TestCollector):
                 allow_incompatible_marketplace=override_support_level_compatibility,
             )
 
-
     def _collect_xsiam_and_modeling_pack(self,
                                          file_type: Optional[FileType],
                                          pack_id: str, reason_description: str,
@@ -903,7 +902,6 @@ class BranchTestCollector(TestCollector):
             pack_id=pack_id, reason_description=reason_description,
             changed_file_path=path, content_item_range=content_item_range
         )
-
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         self._validate_path(path)
