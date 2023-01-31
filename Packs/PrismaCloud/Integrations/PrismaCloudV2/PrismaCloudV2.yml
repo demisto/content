@@ -43,26 +43,26 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. When increasing this value, make sure to increase it up to a multiplier of 3 each time, to avoid duplicate incidents.
+- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time.
   defaultvalue: 20
   display: 'Advanced: Time in minutes to look back when fetching incidents'
   name: look_back
   required: false
   type: 0
   section: Collect
-- display: Fetch only incidents matching this rule name
-  name: rule_name
+- display: Fetch only incidents matching these rule names
+  name: rule_names
   required: false
   type: 0
-- display: Fetch only incidents matching this policy name
-  name: policy_name
+- display: Fetch only incidents matching these policy names
+  name: policy_names
   required: false
   type: 0
-- display: Fetch only incidents with this severity
-  name: policy_severity
+- display: Fetch only incidents with these severities
+  name: policy_severities
   required: false
   type: 0
-- display: Fetch only incidents matching this filters
+- display: Fetch only incidents matching these filters
   name: filters
   type: 0
   required: false
@@ -1052,7 +1052,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists scanned files that contain errors. In order to use this command, Code Security module needs to be enabled and accessible from the UI.
+    description: Lists scanned files that contain errors. In order to use this command, "Code Security" module needs to be enabled and accessible in Prisma Cloud UI.
     execution: false
     name: prisma-cloud-error-file-list
     outputs:

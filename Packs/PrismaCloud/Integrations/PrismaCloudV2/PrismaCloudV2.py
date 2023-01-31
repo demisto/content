@@ -13,6 +13,8 @@ FETCH_LOOK_BACK_TIME = 20
 ''' CONSTANTS '''
 
 HEADERS = {'Content-Type': 'application/json; charset=UTF-8', 'Accept': 'application/json; charset=UTF-8'}
+REQUEST_CSPM_AUTH_HEADER = 'x-redlock-auth'  # Prisma Cloud Security Posture Management
+REQUEST_CCS_AUTH_HEADER = 'authorization'  # Prisma Cloud Code Security
 RESPONSE_STATUS_HEADER = 'x-redlock-status'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -85,21 +87,27 @@ class Client(BaseClient):
         except ValueError as exception:
             raise DemistoException('Could not parse API response.', exception=exception)
 
-        self._headers['x-redlock-auth'] = token
+        self._headers[REQUEST_CSPM_AUTH_HEADER] = token
 
-    def alert_dismiss_request(self, dismissal_note: str, time_range: Dict[str, Any], alert_ids: List[str] = None,
-                              policy_ids: List[str] = None, dismissal_time_range: Dict[str, Any] = None,
-                              filters: List[str] = None):
-        data = remove_empty_values_from_dict({'alerts': alert_ids,
-                                              'policies': policy_ids,
-                                              'dismissalNote': dismissal_note,
-                                              'dismissalTimeRange': dismissal_time_range,
-                                              'filter': {
-                                                  'timeRange': time_range,
-                                                  'filters': handle_filters(filters),
-                                              }})
+    def alert_filter_list_request(self):
+        response = self._http_request('GET', 'filter/alert/suggest')
 
-        self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
+        return response
+
+    def alert_search_request(self, time_range: Dict[str, Any], filters: List[str], limit: int = None, detailed: str = None,
+                             page_token: str = None, sort_by: List[str] = None):
+        params = assign_params(detailed=detailed)
+        data = remove_empty_values_from_dict({'limit': limit,
+                                              'filters': handle_filters(filters),
+                                              'timeRange': time_range,
+                                              'sortBy': sort_by,
+                                              'pageToken': page_token
+                                              })
+        demisto.info(f'Executing Prisma Cloud alert search with payload: {data}')
+
+        response = self._http_request('POST', 'v2/alert', params=params, json_data=data)
+
+        return response
 
     def alert_get_details_request(self, alert_id: str, detailed: str = None):
         params = assign_params(detailed=detailed)
@@ -124,23 +132,19 @@ class Client(BaseClient):
             response[url_field] = url
         return response
 
-    def alert_filter_list_request(self):
-        response = self._http_request('GET', 'filter/alert/suggest')
-
-        return response
-
-    def remediation_command_list_request(self, time_range: Dict[str, Any], alert_ids: List[str] = None,
-                                         policy_id: str = None):
+    def alert_dismiss_request(self, dismissal_note: str, time_range: Dict[str, Any], alert_ids: List[str] = None,
+                              policy_ids: List[str] = None, dismissal_time_range: Dict[str, Any] = None,
+                              filters: List[str] = None):
         data = remove_empty_values_from_dict({'alerts': alert_ids,
-                                              'filter': {'timeRange': time_range},  # all other filters are ignored by API
-                                              'policies': [policy_id]})
+                                              'policies': policy_ids,
+                                              'dismissalNote': dismissal_note,
+                                              'dismissalTimeRange': dismissal_time_range,
+                                              'filter': {
+                                                  'timeRange': time_range,
+                                                  'filters': handle_filters(filters),
+                                              }})
 
-        response = self._http_request('POST', 'alert/remediation', json_data=data)
-
-        return response
-
-    def alert_remediate_request(self, alert_id: str):
-        self._http_request('PATCH', f'alert/remediation/{alert_id}', resp_type='response')
+        self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
 
     def alert_reopen_request(self, time_range: Dict[str, Any], alert_ids: List[str] = None, policy_ids: List[str] = None,
                              filters: List[str] = None):
@@ -154,20 +158,18 @@ class Client(BaseClient):
 
         self._http_request('POST', 'alert/reopen', json_data=data, resp_type='response')
 
-    def alert_search_request(self, time_range: Dict[str, Any], filters: List[str], limit: int = None, detailed: str = None,
-                             page_token: str = None, sort_by: str = None):
-        params = assign_params(detailed=detailed)
-        data = remove_empty_values_from_dict({'limit': limit,
-                                              'filters': handle_filters(filters),
-                                              'timeRange': time_range,
-                                              'sortBy': sort_by,
-                                              'pageToken': page_token
-                                              })
-        demisto.info(f'Executing Prisma Cloud alert search with payload: {data}')
+    def remediation_command_list_request(self, time_range: Dict[str, Any], alert_ids: List[str] = None,
+                                         policy_id: str = None):
+        data = remove_empty_values_from_dict({'alerts': alert_ids,
+                                              'filter': {'timeRange': time_range},  # all other filters are ignored by API
+                                              'policies': [policy_id]})
 
-        response = self._http_request('POST', 'v2/alert', params=params, json_data=data)
+        response = self._http_request('POST', 'alert/remediation', json_data=data)
 
         return response
+
+    def alert_remediate_request(self, alert_id: str):
+        self._http_request('PATCH', f'alert/remediation/{alert_id}', resp_type='response')
 
     def config_search_request(self, time_range: Dict[str, Any], query: str, limit: int = None, search_id: str = None,
                               sort_direction: str = None, sort_field: str = None):
@@ -203,51 +205,10 @@ class Client(BaseClient):
 
         return response
 
-    def trigger_scan_request(self):
-        headers = self._headers
-        headers['authorization'] = headers.pop('x-redlock-auth')
-
-        response = self._http_request('POST', 'code/api/v1/scans/integrations', headers=headers)
-
-        return response
-
     def resource_get_request(self, rrn: str):
         data = remove_empty_values_from_dict({'rrn': rrn})
 
         response = self._http_request('POST', 'resource', json_data=data)
-
-        return response
-
-    def error_file_list_request(self, repository: str, source_types: List[str], cicd_run_id: float = None,
-                                authors: List[str] = None, branch: str = None, categories: List[str] = None,
-                                code_status: str = None, file_types: List[str] = None, repository_id: str = None,
-                                search_options: List[str] = None, search_text: str = None, search_title: str = None,
-                                severities: List[str] = None, tags: List[str] = None, statuses: List[str] = None):
-        data = remove_empty_values_from_dict({'CICDRunId': cicd_run_id,
-                                              'authors': authors,
-                                              'branch': branch,
-                                              'categories': categories,
-                                              'codeStatus': [code_status],
-                                              'fileTypes': file_types,
-                                              'repository': repository,
-                                              'repositoryId': repository_id,
-                                              'severities': severities,
-                                              'sourceTypes': source_types,
-                                              'tags': handle_tags(tags),
-                                              'types': statuses
-                                              })
-        if search_title:
-            data['search'] = {'options': search_options,
-                              'text': search_text,
-                              'title': search_title}
-        elif search_options or search_text:
-            data['search'] = {'options': search_options,
-                              'text': search_text}
-
-        headers = self._headers
-        headers['authorization'] = headers.pop('x-redlock-auth')
-
-        response = self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
 
         return response
 
@@ -291,6 +252,49 @@ class Client(BaseClient):
                                               'pageToken': next_token})
 
         response = self._http_request('POST', 'api/v1/permission/page', json_data=data)
+
+        return response
+
+    # Prisma Cloud Code Security module requests
+
+    def trigger_scan_request(self):
+        headers = self._headers
+        headers[REQUEST_CCS_AUTH_HEADER] = headers.pop(REQUEST_CSPM_AUTH_HEADER)
+
+        response = self._http_request('POST', 'code/api/v1/scans/integrations', headers=headers)
+
+        return response
+
+    def error_file_list_request(self, repository: str, source_types: List[str], cicd_run_id: float = None,
+                                authors: List[str] = None, branch: str = None, categories: List[str] = None,
+                                code_status: str = None, file_types: List[str] = None, repository_id: str = None,
+                                search_options: List[str] = None, search_text: str = None, search_title: str = None,
+                                severities: List[str] = None, tags: List[str] = None, statuses: List[str] = None):
+        data = remove_empty_values_from_dict({'CICDRunId': cicd_run_id,
+                                              'authors': authors,
+                                              'branch': branch,
+                                              'categories': categories,
+                                              'codeStatus': [code_status],
+                                              'fileTypes': file_types,
+                                              'repository': repository,
+                                              'repositoryId': repository_id,
+                                              'severities': severities,
+                                              'sourceTypes': source_types,
+                                              'tags': handle_tags(tags),
+                                              'types': statuses
+                                              })
+        if search_title:
+            data['search'] = {'options': search_options,
+                              'text': search_text,
+                              'title': search_title}
+        elif search_options or search_text:
+            data['search'] = {'options': search_options,
+                              'text': search_text}
+
+        headers = self._headers
+        headers[REQUEST_CCS_AUTH_HEADER] = headers.pop(REQUEST_CSPM_AUTH_HEADER)
+
+        response = self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
 
         return response
 
@@ -462,23 +466,24 @@ def calculate_offset(page_size: int, page_number: int) -> Tuple[int, int]:
 
 def get_filters(params: Dict[str, Any]) -> List[str]:
     filters = argToList(params.get('filters'))
+    filters.append('alert.status=open')
 
-    if rule_name := params.get('rule_name'):
+    for rule_name in argToList(params.get('rule_names')):
         filters.append(f'alertRule.name={rule_name}')
-    if policy_severity := params.get('policy_severity'):
+    for policy_severity in argToList(params.get('policy_severities')):
         filters.append(f'policy.severity={policy_severity}')
-    if policy_name := params.get('policy_name'):
+    for policy_name in argToList(params.get('policy_names')):
         filters.append(f'policy.name={policy_name}')
 
     return filters
 
 
-def translate_severity(alert):
+def translate_severity(alert: Dict[str, Any]):
     """
     Translate alert severity to demisto
     Might take risk grade into account in the future
     """
-    severity = demisto.get(alert, 'policy.severity')
+    severity = alert.get('policy', {}).get('severity')
     if severity == 'high':
         return 3
     if severity == 'medium':
@@ -505,7 +510,7 @@ def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, l
     cleaned_cache = {}
 
     next_fetch_epoch = add_look_back(updated_last_run_time, look_back * 3)  # in case look_back needs to be increased
-    # can be increased by up to a multiplier of 3 each time, to avoid duplicate incidents
+    # to avoid duplicate incidents, make sure that when increasing this value, to increase it up to a multiplier of 3 each time
 
     for fetched_id, alert_time in fetched_ids.items():
         if alert_time > next_fetch_epoch:  # keep if it is later
@@ -531,7 +536,8 @@ def add_look_back(last_run_epoch_time: int, look_back_minutes: int):
     return last_run_epoch_time - look_back_epoch
 
 
-def fetch_request(client, fetched_ids: Dict[str, int], filters, limit, now, time_range) -> Tuple[List, Dict[str, int], int]:
+def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str], limit: int, now: int,
+                  time_range: Dict[str, Any]) -> Tuple[List, Dict[str, int], int]:
     response = client.alert_search_request(time_range=time_range,
                                            filters=filters,
                                            detailed='true',
@@ -558,7 +564,7 @@ def fetch_request(client, fetched_ids: Dict[str, int], filters, limit, now, time
     return incidents, fetched_ids, updated_last_run_time
 
 
-def filter_alerts(fetched_ids: Dict[str, int], response_items: List, limit: int):
+def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, Any]], limit: int):
     incidents = []
 
     for alert in response_items:
@@ -576,9 +582,9 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List, limit: int)
     return incidents
 
 
-def alert_to_incident_context(alert):
+def alert_to_incident_context(alert: Dict[str, Any]):
     incident_context = {
-        'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
+        'name': alert.get('policy', {}).get('name', 'No policy') + ' - ' + alert.get('id'),
         'occurred': timestamp_to_datestring(alert.get('alertTime'), DATE_FORMAT),
         'severity': translate_severity(alert),
         'rawJSON': json.dumps(alert)
@@ -591,31 +597,80 @@ def alert_to_incident_context(alert):
 ''' COMMAND FUNCTIONS '''
 
 
-def alert_dismiss_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    alert_ids = argToList(args.get('alert_ids'))
-    policy_ids = argToList(args.get('policy_ids'))
-    if not alert_ids and not policy_ids:
-        raise DemistoException('You must provide either "alert_ids" or "policy_ids" for dismissing alerts.')
+def alert_filter_list_command(client: Client) -> CommandResults:
+    response = client.alert_filter_list_request()
+    readable_response = [{'filterName': filter_name,
+                          'options': filter_values.get('options'),
+                          'staticFilter': filter_values.get('staticFilter')}
+                         for filter_name, filter_values in response.items()]
 
-    dismissal_note = args.get('dismissal_note')
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.AlertFilters',
+        outputs_key_field='filterName',
+        readable_output=tableToMarkdown('Filter Options:',
+                                        readable_response,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs=readable_response,
+        raw_response=readable_response
+    )
+    return command_results
+
+
+def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     filters = argToList(args.get('filters'))
-
-    snooze_value = arg_to_number(args.get('snooze_value'))
-    snooze_unit = args.get('snooze_unit')
-    dismissal_time_filter = handle_time_filter(unit_value=snooze_unit, amount_value=snooze_value) \
-        if snooze_value and snooze_unit else None
-    time_filter = handle_time_filter(base_case=dismissal_time_filter or TIME_FILTER_BASE_CASE,
+    detailed = args.get('detailed', 'true')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    next_token = args.get('next_token')
+    time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
                                      unit_value=args.get('time_range_unit'),
                                      amount_value=arg_to_number(args.get('time_range_value')),
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
 
-    client.alert_dismiss_request(dismissal_note, time_filter, alert_ids, policy_ids, dismissal_time_filter, filters)
+    response = client.alert_search_request(time_filter, filters, limit, detailed, next_token)
+    response_items = response.get('items', [])
+    next_page_token = response.get('nextPageToken')
+    for response_item in response_items:
+        change_timestamp_to_datestring_in_dict(response_item)
 
+    readable_responses = deepcopy(response_items)
+    nested_headers = {'id': 'Alert ID',
+                      'policy.policyId': 'Policy ID',
+                      'policy.policyType': 'Policy Type',
+                      'policy.systemDefault': 'Is Policy System Default',
+                      'policy.remediable': 'Is Policy Remediable',
+                      'policy.name': 'Policy Name',
+                      'policy.deleted': 'Is Policy Deleted',
+                      'policy.recommendation': 'Policy Recommendation',
+                      'policy.description': 'Policy Description',
+                      'policy.severity': 'Policy Severity',
+                      'policy.remediation.description': 'Policy Remediation Description',
+                      'policy.remediation.cliScriptTemplate': 'Policy Remediation CLI Script',
+                      'resource.resourceType': 'Resource Type',
+                      'resource.name': 'Resource Name',
+                      'resource.account': 'Resource Account',
+                      'resource.cloudType': 'Resource Cloud Type',
+                      'resource.rrn': 'Resource RRN',
+                      }
+    for readable_response in readable_responses:
+        extract_nested_values(readable_response, nested_headers)
+
+    headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated'] \
+        + list(nested_headers.values())[1:]
+    output = {
+        'PrismaCloud.Alert(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
+        'PrismaCloud.Alert.Results(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
+    }
     command_results = CommandResults(
-        readable_output=(f'### Alerts snoozed successfully.\nSnooze note: {dismissal_note}.'
-                         if dismissal_time_filter
-                         else f'### Alerts dismissed successfully.\nDismissal note: {dismissal_note}.')
+        readable_output=tableToMarkdown('Alerts Details:',
+                                        readable_responses,
+                                        headers=headers,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
+        + f'### Next Page Token:\n{next_page_token}',
+        outputs=output,
+        raw_response=response_items
     )
     return command_results
 
@@ -669,22 +724,52 @@ def alert_get_details_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def alert_filter_list_command(client: Client) -> CommandResults:
-    response = client.alert_filter_list_request()
-    readable_response = [{'filterName': filter_name,
-                          'options': filter_values.get('options'),
-                          'staticFilter': filter_values.get('staticFilter')}
-                         for filter_name, filter_values in response.items()]
+def alert_dismiss_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    alert_ids = argToList(args.get('alert_ids'))
+    policy_ids = argToList(args.get('policy_ids'))
+    if not alert_ids and not policy_ids:
+        raise DemistoException('You must provide either "alert_ids" or "policy_ids" for dismissing alerts.')
+
+    dismissal_note = args.get('dismissal_note')
+    filters = argToList(args.get('filters'))
+
+    snooze_value = arg_to_number(args.get('snooze_value'))
+    snooze_unit = args.get('snooze_unit')
+    dismissal_time_filter = handle_time_filter(unit_value=snooze_unit, amount_value=snooze_value) \
+        if snooze_value and snooze_unit else None
+    time_filter = handle_time_filter(base_case=dismissal_time_filter or TIME_FILTER_BASE_CASE,
+                                     unit_value=args.get('time_range_unit'),
+                                     amount_value=arg_to_number(args.get('time_range_value')),
+                                     time_from=args.get('time_range_date_from'),
+                                     time_to=args.get('time_range_date_to'))
+
+    client.alert_dismiss_request(dismissal_note, time_filter, alert_ids, policy_ids, dismissal_time_filter, filters)
 
     command_results = CommandResults(
-        outputs_prefix='PrismaCloud.AlertFilters',
-        outputs_key_field='filterName',
-        readable_output=tableToMarkdown('Filter Options:',
-                                        readable_response,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace),
-        outputs=readable_response,
-        raw_response=readable_response
+        readable_output=(f'### Alerts snoozed successfully.\nSnooze note: {dismissal_note}.'
+                         if dismissal_time_filter
+                         else f'### Alerts dismissed successfully.\nDismissal note: {dismissal_note}.')
+    )
+    return command_results
+
+
+def alert_reopen_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    alert_ids = argToList(args.get('alert_ids'))
+    policy_ids = argToList(args.get('policy_ids'))
+    if not alert_ids and not policy_ids:
+        raise DemistoException('You must provide either "alert_ids" or "policy_ids" for re-opening alerts.')
+
+    filters = argToList(args.get('filters'))
+    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE,
+                                     unit_value=args.get('time_range_unit'),
+                                     amount_value=arg_to_number(args.get('time_range_value')),
+                                     time_from=args.get('time_range_date_from'),
+                                     time_to=args.get('time_range_date_to'))
+
+    client.alert_reopen_request(time_filter, alert_ids, policy_ids, filters)
+
+    command_results = CommandResults(
+        readable_output='### Alerts re-opened successfully.'
     )
     return command_results
 
@@ -751,85 +836,6 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     command_results = CommandResults(
         readable_output=f'Alert {alert_id} remediated successfully.',
-    )
-    return command_results
-
-
-def alert_reopen_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    alert_ids = argToList(args.get('alert_ids'))
-    policy_ids = argToList(args.get('policy_ids'))
-    if not alert_ids and not policy_ids:
-        raise DemistoException('You must provide either "alert_ids" or "policy_ids" for re-opening alerts.')
-
-    filters = argToList(args.get('filters'))
-    time_filter = handle_time_filter(base_case=TIME_FILTER_BASE_CASE,
-                                     unit_value=args.get('time_range_unit'),
-                                     amount_value=arg_to_number(args.get('time_range_value')),
-                                     time_from=args.get('time_range_date_from'),
-                                     time_to=args.get('time_range_date_to'))
-
-    client.alert_reopen_request(time_filter, alert_ids, policy_ids, filters)
-
-    command_results = CommandResults(
-        readable_output='### Alerts re-opened successfully.'
-    )
-    return command_results
-
-
-def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    filters = argToList(args.get('filters'))
-    detailed = args.get('detailed', 'true')
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    next_token = args.get('next_token')
-    time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
-                                     unit_value=args.get('time_range_unit'),
-                                     amount_value=arg_to_number(args.get('time_range_value')),
-                                     time_from=args.get('time_range_date_from'),
-                                     time_to=args.get('time_range_date_to'))
-
-    response = client.alert_search_request(time_filter, filters, limit, detailed, next_token)
-    response_items = response.get('items', [])
-    next_page_token = response.get('nextPageToken')
-    for response_item in response_items:
-        change_timestamp_to_datestring_in_dict(response_item)
-
-    readable_responses = deepcopy(response_items)
-    nested_headers = {'id': 'Alert ID',
-                      'policy.policyId': 'Policy ID',
-                      'policy.policyType': 'Policy Type',
-                      'policy.systemDefault': 'Is Policy System Default',
-                      'policy.remediable': 'Is Policy Remediable',
-                      'policy.name': 'Policy Name',
-                      'policy.deleted': 'Is Policy Deleted',
-                      'policy.recommendation': 'Policy Recommendation',
-                      'policy.description': 'Policy Description',
-                      'policy.severity': 'Policy Severity',
-                      'policy.remediation.description': 'Policy Remediation Description',
-                      'policy.remediation.cliScriptTemplate': 'Policy Remediation CLI Script',
-                      'resource.resourceType': 'Resource Type',
-                      'resource.name': 'Resource Name',
-                      'resource.account': 'Resource Account',
-                      'resource.cloudType': 'Resource Cloud Type',
-                      'resource.rrn': 'Resource RRN',
-                      }
-    for readable_response in readable_responses:
-        extract_nested_values(readable_response, nested_headers)
-
-    headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated'] \
-        + list(nested_headers.values())[1:]
-    output = {
-        'PrismaCloud.Alert(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
-        'PrismaCloud.Alert.Results(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
-    }
-    command_results = CommandResults(
-        readable_output=tableToMarkdown('Alerts Details:',
-                                        readable_responses,
-                                        headers=headers,
-                                        removeNull=True,
-                                        headerTransform=pascalToSpace)
-        + f'### Next Page Token:\n{next_page_token}',
-        outputs=output,
-        raw_response=response_items
     )
     return command_results
 
@@ -1191,7 +1197,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
     last_run_time = last_run.get('time')
     now = convert_date_to_unix('now')
     first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
-    look_back = arg_to_number(params.get('look_back', FETCH_LOOK_BACK_TIME))
+    look_back = arg_to_number(params.get('look_back', FETCH_LOOK_BACK_TIME)) or FETCH_LOOK_BACK_TIME
     time_range = calculate_fetch_time_range(now, first_fetch, look_back, last_run_time)
 
     fetched_ids = last_run.get('fetched_ids', {})
@@ -1226,7 +1232,7 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    url = format_url(params.get('url'))
+    url = format_url(str(params.get('url')))
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -1240,24 +1246,29 @@ def main() -> None:
         urllib3.disable_warnings()
         client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password)
         commands_without_args = {
-            'prisma-cloud-alert-filter-list': alert_filter_list_command,  # redlock-list-alert-filters
+            'prisma-cloud-alert-filter-list': alert_filter_list_command,
+
             'prisma-cloud-trigger-scan': trigger_scan_command,
         }
         commands_with_args = {
-            'prisma-cloud-alert-dismiss': alert_dismiss_command,  # redlock-dismiss-alerts
-            'prisma-cloud-alert-get-details': alert_get_details_command,  # redlock-get-alert-details
-            'prisma-cloud-remediation-command-list': remediation_command_list_command,  # redlock-get-remediation-details
+            'prisma-cloud-alert-search': alert_search_command,
+            'prisma-cloud-alert-get-details': alert_get_details_command,
+            'prisma-cloud-alert-dismiss': alert_dismiss_command,
+            'prisma-cloud-alert-reopen': alert_reopen_command,
+            'prisma-cloud-remediation-command-list': remediation_command_list_command,
             'prisma-cloud-alert-remediate': alert_remediate_command,
-            'prisma-cloud-alert-reopen': alert_reopen_command,  # redlock-reopen-alerts
-            'prisma-cloud-alert-search': alert_search_command,  # redlock-search-alerts
-            'prisma-cloud-config-search': config_search_command,  # redlock-get-rql-response, redlock-search-config
-            'prisma-cloud-event-search': event_search_command,  # redlock-search-event
-            'prisma-cloud-network-search': network_search_command,  # redlock-search-network
-            'prisma-cloud-error-file-list': error_file_list_command,  # similar to redlock-get-scan-results (deprecated)
+
+            'prisma-cloud-config-search': config_search_command,
+            'prisma-cloud-event-search': event_search_command,
+            'prisma-cloud-network-search': network_search_command,
+
+            'prisma-cloud-error-file-list': error_file_list_command,
+
             'prisma-cloud-resource-get': resource_get_command,
             'prisma-cloud-account-list': account_list_command,
             'prisma-cloud-account-status-get': account_status_get_command,
             'prisma-cloud-account-owner-list': account_owner_list_command,
+
             'prisma-cloud-host-finding-list': host_finding_list_command,
             'prisma-cloud-permission-list': permission_list_command,
         }
@@ -1282,7 +1293,7 @@ def main() -> None:
     except Exception as e:
         error_msg = str(e)
         if hasattr(e, 'res'):
-            error_msg += get_response_status_header(e.res)
+            error_msg += get_response_status_header(e.res)  # type: ignore[attr-defined]
         return_error(error_msg, error=e)
 
 
