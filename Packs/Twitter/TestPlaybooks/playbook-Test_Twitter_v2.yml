@@ -42,10 +42,10 @@ tasks:
       version: -1
       name: twitter-tweet-search
       description: This command will search for tweets posted over the past week and return all information available
-      script: Twitterv2|||twitter-tweet-search
+      script: Twitter v2|||twitter-tweet-search
       type: regular
       iscommand: true
-      brand: Twitterv2
+      brand: Twitter v2
     nexttasks:
       '#none#':
       - "6"
@@ -87,7 +87,7 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: Twitterv2
+      brand: Twitter v2
     nexttasks:
       '#none#':
       - "1"
@@ -119,10 +119,10 @@ tasks:
       version: -1
       name: twitter-user-get
       description: 'Lookup users by name to display information about them.Search multiple users simultaneously by separating them by commas. Ex: ''name=''user1,user2,user3'''
-      script: Twitterv2|||twitter-user-get
+      script: Twitter v2|||twitter-user-get
       type: regular
       iscommand: true
-      brand: Twitterv2
+      brand: Twitter v2
     nexttasks:
       '#none#':
       - "5"
@@ -162,7 +162,7 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: Twitterv2
+      brand: Twitter v2
     nexttasks:
       '#none#':
       - "3"

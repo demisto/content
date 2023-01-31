@@ -60,7 +60,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: This command will search for Tweets posted over the past week and return all information available.
+    description: This command will search for Tweets from the last 7 days and return all information available.
     execution: false
     name: twitter-tweet-search
     outputs:
