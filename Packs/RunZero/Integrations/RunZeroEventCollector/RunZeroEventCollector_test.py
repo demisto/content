@@ -2,6 +2,7 @@ import json
 import io
 import pytest
 from CommonServerPython import DemistoException
+import demistomock as demisto  # noqa: F401
 
 BASE_URL = 'https://console.runzero.com/api/v1.0'
 
@@ -213,6 +214,19 @@ def test_get_api_token(requests_mock):
     assert e.value.message == 'Authorization Error: make sure API Key is correctly set'
 
 
+def test_http_request(requests_mock):
+    client = get_client()
+    expected_res = util_load_json('test_data/system_event_logs.json')[0]
+    requests_mock.post(
+        'https://console.runzero.com/api/v1.0/account/api/token',
+        json={'api_token': 'api_token'})
+    requests_mock.get(
+        'https://console.runzero.com/api/v1.0/account/events.json',
+        json=expected_res)
+    actual_response = client.http_request('GET', '/account/events.json', {})
+    assert actual_response == expected_res
+
+
 def test_test_module(requests_mock):
     from RunZeroEventCollector import test_module
     client = get_client()
@@ -228,3 +242,33 @@ def test_test_module(requests_mock):
 
     raw = test_module(client, 1)
     assert raw == 'ok'
+
+
+def test_main(mocker):
+    """
+    Given:
+        - All return values from helper functions are valid
+    When:
+        - main function test-module is executed
+    Then:
+        - Return ok result to War-Room
+    """
+    from RunZeroEventCollector import main
+
+    mocker.patch.object(
+        demisto, 'params', return_value={
+            'client_id': '',
+            'url': '',
+            'client_secret': {'password': 'test_api'},
+        }
+    )
+    mocker.patch('RunZeroEventCollector.Client.get_api_token', return_value={'access_token': 'access_token'})
+    mocker.patch('RunZeroEventCollector.Client.http_request', return_value=util_load_json('test_data/system_event_logs.json'))
+    mocker.patch.object(
+        demisto, 'command',
+        return_value='test-module'
+    )
+    mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto.results.call_count == 1
+    assert demisto.results.call_args[0][0] == 'ok'
