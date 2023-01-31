@@ -1282,7 +1282,8 @@ def output(result: Optional[CollectionResult]):
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
-    logger.info(f'collected {len(modeling_rules_to_test_str.split("\n"))} modeling rules to test:\n{modeling_rules_to_test_str}')
+    num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
+    logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
     PATHS.output_tests_file.write_text(test_str)
