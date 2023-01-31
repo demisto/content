@@ -103,14 +103,6 @@
          ]
       },
       {
-         "id":"Intezer v2",
-         "reason":"Issue: CIAC-5241.",
-         "ignored_native_images":[
-            "native:dev",
-            "native:8.1"
-         ]
-      },
-      {
          "id":"PDFUnlocker",
          "reason":"Issue: CIAC-5247.",
          "ignored_native_images":[
