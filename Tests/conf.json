@@ -21,7 +21,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Twitterv2",
+            "integrations": "Twitter v2",
             "playbookID": "playbook-Test_Twitter_v2",
             "instance_names": "Twitter v2"
         },

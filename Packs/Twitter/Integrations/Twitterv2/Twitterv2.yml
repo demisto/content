@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Twitterv2
+  id: Twitter v2
   version: -1
 configuration:
 - defaultvalue: https://api.twitter.com
@@ -24,7 +24,7 @@ configuration:
   type: 8
 description: Twitter integration provides access to searching recent Tweets (in last 7 days) and user information using the Twitter v2 API.
 display: 'Twitter v2'
-name: Twitterv2
+name: Twitter v2
 script:
   commands:
   - arguments:
