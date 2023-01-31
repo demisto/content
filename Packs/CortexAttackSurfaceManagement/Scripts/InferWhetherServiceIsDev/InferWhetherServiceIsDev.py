@@ -125,8 +125,12 @@ def main():
                 ["RdpServer", "SelfSignedCertificate"]
 
     Returns:
-        bool: whether there is an indication within either `asm_tags` or
-            `active_classifications` that the described system is used for development
+        No return value.
+        Two side effects:
+        1. Update the "alert" context with a boolean value named `asmdevcheck`
+           that is True if there is a consistent indicator of dev-ness in the arguments,
+           and is False otherwise
+        2. Update the warroom with a statement of whether the service is dev
     """
     try:
         args = demisto.args()
