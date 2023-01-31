@@ -13,7 +13,7 @@ Azure network security groups are used to filter network traffic to and from Azu
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Authentication Type | Type of authentication - could be Authorization Code flow \(recommended\), Device Code Flow or Azure Managed Identities. | True |
+    | Authentication Type | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
     | Tenant ID (for user-auth mode) |  | False |
     | Client Secret (for user-auth mode) |  | False |
     | Application redirect URI (for user-auth mode) |  | False |
