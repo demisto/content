@@ -42,8 +42,8 @@ Test Collection Unit-Test cases
 - `Q` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json,
       and a folder named Samples (should be ignored).
 - `MR1` has a pack with a modeling rule.
-- `S` has 2 packs with support level == xsoar, each pack has its own integration and both of these integrations have 
-      "myOtherTestPlaybook" TPB that is not skipped in conf.json. The conf.json contains 2 records with the same 
+- `S` has 2 packs with support level == xsoar, each pack has its own integration and both of these integrations have
+      "myOtherTestPlaybook" TPB that is not skipped in conf.json. The conf.json contains 2 records with the same
       playbook ID "myOtherTestPlaybook".
 """
 
