@@ -16,6 +16,7 @@ CONFIG_URI_PREFIX = "/sse/config/v1/"
 DEFAULT_POLLING_INTERVAL = 30
 DEFAULT_POSITION = 'pre'
 DEFAULT_FOLDER = 'Shared'
+FREQUENCY_HOUR_REGEX = '[01][0-9]|2[0-3]'
 
 SECURITYRULE_FIELDS = {
     "action": "",
@@ -259,7 +260,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}config-versions/candidate:push'
-        body = {"folders": folders}
+        body = {'folders': folders}
         if description:
             body['description'] = description
 
@@ -959,6 +960,8 @@ def build_recurring_according_to_params(args: dict) -> dict:
         if not frequency_hour:
             raise DemistoException('Please provide the frequency_hour argument when using daily, '
                                    'weekly or monthly frequency')
+        if not re.match(FREQUENCY_HOUR_REGEX, frequency_hour):
+            raise DemistoException('frequency_hour argument should be 00,01,02...-23 only')
         frequency_object[frequency]['at'] = frequency_hour
         if frequency == 'weekly':
             day_of_week = args.get('day_of_week')
@@ -970,6 +973,8 @@ def build_recurring_according_to_params(args: dict) -> dict:
             day_of_month = args.get('day_of_month')
             if not day_of_month:
                 raise DemistoException('Please provide the day_of_month argument when using monthly frequency')
+            if day_of_month < 1 or day_of_month > 31:
+                raise DemistoException('day_of_month argument must be between 1 and 31')
             frequency_object[frequency]['day_of_month'] = day_of_month
 
     return frequency_object
