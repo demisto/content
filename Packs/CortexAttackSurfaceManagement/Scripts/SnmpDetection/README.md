@@ -11,7 +11,7 @@ Checks to see if SNMP is enabled on the IP address provided.
 ## Used In
 ---
 This script is used in the following playbooks and scripts.
-* Cortex ASM - SNMP Check
+Cortex ASM - SNMP Check
 
 ## Inputs
 ---
@@ -26,4 +26,4 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| SnmpDetection | Checks if SNMP version is enabled and gets the versions running | Unknown |
+| SnmpDetection | Displays if SNMP version is enabled and gets the versions running. | Unknown |
