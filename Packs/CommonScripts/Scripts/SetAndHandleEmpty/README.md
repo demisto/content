@@ -1,8 +1,6 @@
 Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
 This automation runs using the default Limited User role, unless you explicitly change the permissions.
-For more information, see the section about permissions here:
-https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 
 ## Script Data
 ---

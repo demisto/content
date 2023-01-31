@@ -2,8 +2,6 @@ Gets a list of incident objects and the associated incident outputs that
 match the specified query and filters. The results are returned in a structured data file.
 
 This automation runs using the default Limited User role, unless you explicitly change the permissions.
-For more information, see the section about permissions here:
-https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/playbooks/automations.html
 
 ## Script Data
 ---

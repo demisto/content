@@ -16,8 +16,7 @@ args:
 comment: "Randomly assigns the active incidents to on call analysts (requires shift\
   \ management).\nThis automation works with the other out-of-office automations to\
   \ ensure only available analysts are assigned to the active incidents.\n\nThis automation\
-  \ runs using the default Limited User role, unless you explicitly change the permissions.\n\
-  For more information, see the section about permissions here:\nhttps://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html"
+  \ runs using the default Limited User role, unless you explicitly change the permissions.\n\"
 commonfields:
   id: AssignToNextShiftOOO
   version: -1

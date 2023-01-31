@@ -5,8 +5,6 @@ If you wish to extend this period, navigate to Settings->Advanced->Lists and add
 
 The script is a part of the Email Communication pack.
 
-For more information about the preprocessing rules, please refer to https://xsoar.pan.dev/docs/incidents/incident-pre-processing. 
-
 ## Script Data
 ---
 
