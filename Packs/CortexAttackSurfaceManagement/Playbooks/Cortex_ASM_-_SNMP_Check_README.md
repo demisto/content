@@ -29,8 +29,8 @@ This playbook does not use any commands.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | ScanResult | The result of the scan \(if done\). | unknown |
-| ScanDone | Whether a scan was actually performed \(based on subtypes\). | unknown |
-| SnmpDetection | This returns if SNMP port is responsive | unknown |
+| ScanDone | Whether a scan was actually performed \(based on sub-types\). | unknown |
+| SnmpDetection | This returns if SNMP port is responsive. | unknown |
 
 ## Playbook Image
 ---
