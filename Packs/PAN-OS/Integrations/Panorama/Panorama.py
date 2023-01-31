@@ -11630,12 +11630,17 @@ def pan_os_list_templates_command(args):
     )
 
 
-def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None):
+def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, disabled: bool = None,
+                    tags: list[str] = None, nat_type: str = None, query: str = None):
     _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
-    if name:
-        _xpath = f"{_xpath}/rules/entry[@name='{name}']"
-    if element:
-        _xpath = f"{_xpath}/{element}"
+    if query:
+        _xpath = f"{_xpath}/rules/entry[{query}]"
+    else:
+        if name:
+            _xpath = f"{_xpath}/rules/entry[@name='{name}']"
+
+        if element:
+            _xpath = f"{_xpath}/{element}"
     return _xpath
 
 
