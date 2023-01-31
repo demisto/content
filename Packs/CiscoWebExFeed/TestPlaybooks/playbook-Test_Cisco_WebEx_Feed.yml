@@ -1,174 +1,161 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-      - all
-description: Test the connectivity of the CisciWebExFeed integratin
 id: Test_Cisco_WebEx_Feed
-inputs: []
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
 name: Test_Cisco_WebEx_Feed
-outputs: []
+description: Test the connectivity of the CisciWebExFeed integratin
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 97eaa029-7a23-46e2-8c7d-fccdeb30b0c6
+    type: start
+    task:
+      id: 97eaa029-7a23-46e2-8c7d-fccdeb30b0c6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       "#none#":
         - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 256a92c3-20bd-4a10-89af-4f8b09c9a2a6
-      iscommand: false
-      name: ""
-      version: -1
-      description: ""
-    taskid: 256a92c3-20bd-4a10-89af-4f8b09c9a2a6
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
-  "1":
-    continueonerror: true
-    id: "1"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 35b2c450-8b98-4bb3-849e-9b78a0671981
+    type: regular
+    task:
+      id: 35b2c450-8b98-4bb3-849e-9b78a0671981
+      version: -1
+      name: Pull Indicators from WebEx web page
+      description: Gets indicators from the feed.
+      script: "|||webex-get-indicators"
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       "#none#":
         - "2"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      indicator_type: {}
-      limit: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Gets indicators from the feed.
-      id: 44aba361-9e95-4ce7-88f5-022dab6dbf06
-      iscommand: true
-      name: Pull Indicators from WebEx web page
-      script: "|||webex-get-indicators"
-      type: regular
-      version: -1
-    taskid: 44aba361-9e95-4ce7-88f5-022dab6dbf06
-    timertriggers: []
-    type: regular
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
-  "2":
-    continueonerror: true
-    id: "2"
-    ignoreworker: false
-    nexttasks:
-      "#default#":
-        - "4"
-      "yes":
-        - "3"
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 946fd544-7f43-4c6c-8364-00cb2e22f937
+    type: condition
+    task:
+      id: 946fd544-7f43-4c6c-8364-00cb2e22f937
+      version: -1
+      name: Is There a Web page Error?
+      description:
+        Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+        - "4"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
-      id: 94d7bd4a-d82c-4f56-8708-8621232c1a70
-      iscommand: false
-      name: Is There a Web page Error?
-      script: isError
-      type: condition
-      version: -1
-    taskid: 94d7bd4a-d82c-4f56-8708-8621232c1a70
-    timertriggers: []
-    type: condition
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 370
         }
       }
-  "3":
-    id: "3"
-    ignoreworker: false
-    nexttasks:
-      "#none#":
-        - "6"
     note: false
-    quietmode: 0
-    scriptarguments:
-      append: {}
-      key:
-        simple: WebEx.status
-      stringify: {}
-      value:
-        simple: error
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: ec1aa9de-f91d-42b2-83ec-108187d9a443
-      iscommand: false
-      name: Set WebEx Status to Error
-      script: Set
-      type: regular
-      version: -1
-    taskid: ec1aa9de-f91d-42b2-83ec-108187d9a443
     timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: df71f9fc-d34e-42f2-8bb2-6edc4097fb31
+    type: regular
+    task:
+      id: df71f9fc-d34e-42f2-8bb2-6edc4097fb31
+      version: -1
+      name: Set WebEx Status Ok
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       "#none#":
         - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
-      append: {}
       key:
         simple: WebEx.status
-      stringify: {}
       value:
         simple: ok
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 1c8f30c5-60cc-4213-83ee-5d75fef3407f
-      iscommand: false
-      name: Set WebEx Status Ok
-      script: Set
-      type: regular
-      version: -1
-    taskid: 1c8f30c5-60cc-4213-83ee-5d75fef3407f
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
     timertriggers: []
-    type: regular
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 481b7d02-291f-4f05-876a-a1d2bfab16b3
+    type: title
+    task:
+      id: 481b7d02-291f-4f05-876a-a1d2bfab16b3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -176,76 +163,27 @@ tasks:
           "y": 720
         }
       }
-  "5":
-    id: "5"
-    ignoreworker: false
     note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 711e1fc9-d860-4eb6-8c5b-b6b7c23c3b83
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-      description: ""
-    taskid: 711e1fc9-d860-4eb6-8c5b-b6b7c23c3b83
     timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-  "6":
-    id: "6"
     ignoreworker: false
-    nexttasks:
-      "#none#":
-        - "5"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      details:
-        simple: "WebEx Feed Integration could not pull IPs or Domains from WebEx web page (https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network). "
-      name:
-        simple: WebEx Feed Web Page Error
-    separatecontext: false
     skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.create.inc
-      id: cfcd2359-5e45-43f4-80ec-b69a60f59a51
-      iscommand: true
-      name: Create an Incident
-      script: Builtin|||createNewIncident
-      type: regular
-      version: -1
-    taskid: cfcd2359-5e45-43f4-80ec-b69a60f59a51
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-version: -1
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "2_4_no": 0.8
+    },
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 810,
+        "height": 735,
+        "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
+inputs: []
+outputs: []
 fromversion: 6.0.0
