@@ -134,16 +134,12 @@ configuration:
   name: custom_fields
   required: false
   type: 12
-- additionalinfo: Define how to close the mirrored tickets in XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
-  defaultvalue: 'None'
-  display: Mirrored XSOAR Ticket closure method
+- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
-  type: 15
-  options:
-  - None
-  - closed
-  - resolved
+  type: 8
 - additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
   display: Mirrored ServiceNow Ticket closure method
@@ -1848,23 +1844,25 @@ script:
       isArray: false
       name: use_display_value
       predefined:
-      - 'true'
-      - 'false'
+        - 'true'
+        - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
-      - incident
-      - problem
-      - change_request
-      - sc_request
-      - sc_task
-      - sc_req_item
-      - sn_si_incident
-    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions" for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
+        - incident
+        - problem
+        - change_request
+        - sc_request
+        - sc_task
+        - sc_req_item
+        - sn_si_incident
+    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions"
+      for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
     name: servicenow-get-ticket-notes
     outputs:
     - contextPath: ServiceNow.Ticket.ID
@@ -2152,7 +2150,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
   ismappable: true
   isremotesyncin: true

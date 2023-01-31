@@ -1245,7 +1245,7 @@ def test_build_search_human_readable(mocker):
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
                         'comma', 'separated', 'Single,Header,with,Commas', 'new_header_1', 'new_header_2']
 
-    splunk.build_search_human_readable(args, results, sid='123456')
+    splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
 
@@ -1268,7 +1268,7 @@ def test_build_search_human_readable_multi_table_in_query(mocker):
         {'header_1': 'val_1', 'header_2': 'val_2', 'header_3': 'val_3', 'header_4': 'val_4'},
     ]
     expected_headers_hr = "|header_1|header_2|header_3|header_4|\n|---|---|---|---|"
-    hr = splunk.build_search_human_readable(args, results, sid='123456')
+    hr = splunk.build_search_human_readable(args, results)
     assert expected_headers_hr in hr
 
 
@@ -1328,8 +1328,7 @@ def test_splunk_search_command(mocker, polling, status):
         assert search_result.scheduled_command._args['sid'] == '123456'
     else:
         assert search_result.outputs['Splunk.Result'] == []
-        assert search_result.readable_output == '### Splunk Search results for query:\n' \
-                                                'sid: 123456\n**No entries.**\n'
+        assert search_result.readable_output == '### Splunk Search results for query: query\n**No entries.**\n'
 
 
 @pytest.mark.parametrize(

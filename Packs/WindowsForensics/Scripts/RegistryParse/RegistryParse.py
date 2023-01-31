@@ -27,8 +27,6 @@ REGISTRY_SUB_FOLDER = {
     'Users': 'SID'
 }
 
-MAX_HR_RESULTS = 50
-
 
 def parse_reg_value(value):
     value = value.strip('"')
@@ -67,7 +65,7 @@ def get_registry(entry_id):
 
 
 def get_sub_keys(reg, key, folder_output_key):
-    all_folders = {k for k in reg if k.lower().startswith(key.lower())}
+    all_folders = {k for k in reg if k.startswith(key)}
     users = []
     records = []
     for folder in all_folders:
@@ -109,13 +107,13 @@ def get_reg_results(reg, type_to_keys):
             records += users_records
             type_records.update(users_type_records)
         elif _type == 'Services':
+
             services_records, services_type_records = get_reg_services(reg)
             records += services_records
             type_records.update(services_type_records)
         elif _type == 'LastLoggedOnUser':
             key = REGISTRY_TYPE_TO_KEY['LastLoggedOnUser'][0]
-            logged_on_user_values = [v for (k, v) in reg.items() if k.lower() == key.lower()]
-            values = {} if len(logged_on_user_values) == 0 else logged_on_user_values[0]
+            values = reg.get(key, {})
             registry_value = values.get('"LastLoggedOnUser"')
             if registry_value:
                 registry_value = parse_reg_value(registry_value)
@@ -129,7 +127,7 @@ def get_reg_results(reg, type_to_keys):
         else:
             all_keys = []  # type: ignore[var-annotated]
             for key in keys:
-                all_keys += [k for k in reg if k.lower().startswith(key.lower())]
+                all_keys += [k for k in reg if k.startswith(key)]
             for key in all_keys:
                 registry_keys_values = reg.get(key)
                 dict_key = _type if _type != CUSTOM_REG_TYPE else key
@@ -173,9 +171,7 @@ def main():
 
     records, type_records = get_reg_results(reg, registry_types_to_keys)
 
-    hr_max_results = arg_to_number(args.get('hrMaxResults')) or MAX_HR_RESULTS
-
-    hr = tableToMarkdown("Registry Results", records[:hr_max_results])
+    hr = tableToMarkdown("Registry Results", records[:50])
     return_outputs(hr, {"RegistryForensicDataRaw": records, 'RegistryForensicData': type_records}, records)
 
 

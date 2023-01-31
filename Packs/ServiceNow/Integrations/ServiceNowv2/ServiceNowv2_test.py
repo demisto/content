@@ -615,7 +615,7 @@ class TestFetchIncidentsWithLookBack:
         ]
     )
     def test_fetch_incidents_with_look_back_greater_than_zero(
-            self, mocker, start_incidents, phase2_incident, phase3_incident, look_back
+        self, mocker, start_incidents, phase2_incident, phase3_incident, look_back
     ):
         """
         Given
@@ -778,7 +778,7 @@ class TestFetchIncidentsWithLookBack:
         ]
     )
     def test_fetch_incidents_with_look_back_equals_zero(
-            self, mocker, incidents, phase2_incident, phase3_incident
+        self, mocker, incidents, phase2_incident, phase3_incident
     ):
         """
         Given
@@ -907,10 +907,10 @@ def test_file_tags_names_are_the_same_main_flow(mocker):
     )
     mocker.patch.object(ServiceNowv2, 'get_server_url', return_value='test')
     with pytest.raises(
-            Exception,
-            match=re.escape(
-                'File Entry Tag To ServiceNow and File Entry Tag From ServiceNow cannot be the same name [ServiceNow].'
-            )
+        Exception,
+        match=re.escape(
+            'File Entry Tag To ServiceNow and File Entry Tag From ServiceNow cannot be the same name [ServiceNow].'
+        )
     ):
         main()
 
@@ -1253,7 +1253,6 @@ def test_assigned_to_field_no_user():
     Then
         - Check that assign_to value is empty
     """
-
     class Client:
         def get(self, table, value):
             return {'results': {}}
@@ -1274,7 +1273,6 @@ def test_assigned_to_field_user_exists():
     Then
         - Check that assign_to value is filled with the right email
     """
-
     class Client:
         def get(self, table, value):
             return USER_RESPONSE
@@ -1309,7 +1307,7 @@ def test_get_remote_data_closing_incident(mocker):
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
 
     args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {'close_incident': 'closed'}
+    params = {'close_incident': True}
     mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
@@ -1731,7 +1729,7 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     client.get_ticket_attachment_entries(ticket_id='id')
 
     # Validate Results are as expected:
-    assert requests_get_mocker.call_args.kwargs.get('auth') is None, \
+    assert requests_get_mocker.call_args.kwargs.get('auth') is None,\
         "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
     assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
            f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
@@ -1832,21 +1830,6 @@ def ticket_fields_mocker(*args, **kwargs):
               'work_start': '0001-01-01T00:00:00Z'}
     assert fields == args[0]
     return fields
-
-
-@pytest.mark.parametrize('file_name , expected',
-                         [('123.png', 'image/png'),
-                          ('123.gif', 'image/gif'),
-                          ('123.jpeg', 'image/jpeg'),
-                          ('123.pdf', 'application/pdf'),
-                          ('123', '*/*')])
-def test_upload_file_types(file_name, expected):
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
-                    cr_server_url='cr_server_url', username='username',
-                    password='password', verify=False, fetch_time='fetch_time',
-                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    get_attachments=False, incident_name='description', ticket_type='incident')
-    assert client.get_content_type(file_name) == expected
 
 
 @pytest.mark.parametrize('ticket_type, ticket_state, close_custom_state, result_close_state, update_call_count',

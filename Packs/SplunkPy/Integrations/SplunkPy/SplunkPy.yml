@@ -308,21 +308,15 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
+    description: Searches Splunk for events.
     name: splunk-search
     polling: true
     outputs:
     - contextPath: Splunk.Result
       description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
       type: Unknown
-    - contextPath: Splunk.JobStatus.SID
-      description: ID of the job.
-      type: String
-    - contextPath: Splunk.JobStatus.Status
-      description: Status of the job.
-      type: String
-    - contextPath: Splunk.JobStatus.TotalResults
-      description: The number of events that were returned by the job.
+    - contextPath: Splunk.JobStatus
+      description: The search status.
       type: String
   - arguments:
     - description: Splunk index in which to push data. Run the splunk-get-indexes command to get all indexes.

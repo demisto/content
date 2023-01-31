@@ -268,7 +268,7 @@ There is no context output for this command.
 
 ### Search for events
 ***
-Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
+Searches Splunk for events.
 
 
 ##### Base Command
@@ -296,9 +296,8 @@ Searches Splunk for events. For human readable output, the table command is supp
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Splunk.Result | Unknown | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | 
-| Splunk.JobStatus.SID | String | ID of the job. | 
-| Splunk.JobStatus.Status | String | Status of the job. | 
-| Splunk.JobStatus.TotalResults | String | The number of events that were returned by the job. | 
+| Splunk.JobStatus | String | The search status. | 
+
 
 ##### Command Example
 ```!splunk-search query="* | head 3" earliest_time="-1000d"```
