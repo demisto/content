@@ -367,6 +367,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Case Details",
@@ -377,6 +378,7 @@
 					{
 						"h": 2,
 						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Notes",
@@ -389,6 +391,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Work Plan",
@@ -402,6 +405,7 @@
 						"h": 2,
 						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Linked Incidents",
@@ -414,6 +418,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Child Incidents",
@@ -426,6 +431,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Evidence",
@@ -439,6 +445,7 @@
 						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Team Members",
@@ -451,6 +458,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Indicators",
@@ -512,6 +520,7 @@
 								"startCol": 1
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Timeline Information",
@@ -553,6 +562,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Closing Information",
@@ -576,6 +586,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"name": "Investigation Data",
@@ -733,6 +744,7 @@
 								"startCol": 1
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -816,6 +828,7 @@
 								"startCol": 1
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -842,6 +855,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -870,6 +884,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -939,6 +954,7 @@
 						"h": 2,
 						"i": "caseinfoid-gyt4oyoflh-caseinfoid-gyt4oyoflh-3f12c770-7c08-11eb-be8b-1b6b5950a0fc",
 						"items": [],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -947,9 +963,9 @@
 						"queryType": "input",
 						"static": false,
 						"type": "indicators",
-						"w": 2,
+						"w": 3,
 						"x": 0,
-						"y": 10
+						"y": 6
 					},
 					{
 						"displayType": "CARD",
@@ -968,6 +984,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -995,6 +1012,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -1003,48 +1021,6 @@
 						"w": 1,
 						"x": 1,
 						"y": 4
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"hideItemTitleOnlyOne": true,
-						"i": "caseinfoid-8575cc90-94d8-11ed-a678-c5e41553944a",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "incident_attachment",
-								"height": 53,
-								"id": "8567c2d1-94d8-11ed-a678-c5e41553944a",
-								"index": 0,
-								"isVisible": true,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Attachments",
-						"static": false,
-						"type": "",
-						"w": 1,
-						"x": 0,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-52ce3070-9d5c-11ed-8f36-ab5d128aea6b",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "New Section",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 6
 					}
 				],
 				"type": "custom"
@@ -1077,7 +1053,7 @@
 		]
 	},
 	"edit": null,
-	"fromServerVersion": "",
+	"fromServerVersion": "0.0.0",
 	"group": "incident",
 	"id": "b094831f-4dc5-495c-8b9e-9be7b0c2723b",
 	"indicatorsDetails": null,
@@ -1091,6 +1067,6 @@
 	"quickView": null,
 	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
+	"toServerVersion": "99.99.99",
 	"version": -1
 }
