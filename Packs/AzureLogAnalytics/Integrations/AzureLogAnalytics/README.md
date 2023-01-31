@@ -77,7 +77,7 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-| Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
 | self_deployed | Use a self-deployed Azure application. | False |
 | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
 | redirect_uri | Application redirect URI \(for self-deployed mode\) | False |
