@@ -8,14 +8,14 @@ from traceback import format_exc
 # disable insecure warnings
 urllib3.disable_warnings()
 
-IP = 'IP'
+CIDR = 'CIDR'
 DOMAIN = 'DOMAIN'
 INTEGRATION_NAME = 'WebEx'
 BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
 
 
 def grab_domain_table(html_section: element.Tag) -> List:
-    """ Gets the domain table from the html section"""
+    """ Gets the domain table from the given html section"""
     table = html_section.find('table', attrs={'class': 'li'})
     table_body = table.find('tbody')
     rows = table_body.find_all('tr')
@@ -28,7 +28,9 @@ def grab_domain_table(html_section: element.Tag) -> List:
 
 
 def grab_domains(data: list) -> List:
-    """ From WebExDomain Table get only domain names with wildcards"""
+    """ From a given list of lists, that each contains a row from the webex table, text and domains,
+        return a list of all the domains only
+    """
     domainList: List = []
     for lines in data:
         if len(lines) < 2:
@@ -50,7 +52,9 @@ def grab_domains(data: list) -> List:
 
 
 def grab_ip_table(html_section: element.Tag) -> List:
-    """ Gets the IP table from the html section and returns a list of lists"""
+    """ Gets the IP table as an html, parses it and 
+    returns a list of lists each one contains a row from the table
+    """
     rows = html_section.find_all('ul')
     data = []
     for row in rows:
@@ -61,7 +65,8 @@ def grab_ip_table(html_section: element.Tag) -> List:
 
 
 def grab_CIDR_ips(data: list) -> List:
-    """ From list of lists that contain all ips from webex table, get only CIDR ip addresses"""
+    """ From list of lists that contain all rows of the IP webex table,
+    return a list with only CIDR ip addresses"""
     CIDR_ip_list: List = []
     for line in data[0]:
         values = line.split(' (CIDR)')
@@ -72,7 +77,10 @@ def grab_CIDR_ips(data: list) -> List:
 
 
 def parse_indicators_from_response(response: requests.Response) -> Dict[str, List[str]]:
-    """ Parses the indicators from the raw html response from WebEx website"""
+    """ Recives an html page from the WebEx website that contains a IP table and a DOMAIN table.
+    Parses the page, and returns a dict with two keys: DOMAIN and CIDR(ip ranges),
+    while the value is a list of the related indicators.
+    """
     soup = BeautifulSoup(response.text, "html.parser")
 
     # Get the IP and Domain Sections from the html
@@ -87,7 +95,7 @@ def parse_indicators_from_response(response: requests.Response) -> Dict[str, Lis
     ipTable = grab_ip_table(ipsSection)
     all_IPs_lst = grab_CIDR_ips(ipTable)
 
-    all_info_dict = {IP: all_IPs_lst, DOMAIN: all_domains_lst}
+    all_info_dict = {CIDR: all_IPs_lst, DOMAIN: all_domains_lst}
     return all_info_dict
 
 
@@ -211,18 +219,15 @@ def main():
         )
 
         if command == 'test-module':
-            results: CommandResults | str = test_module(client=client)
+            return_results(test_module(client=client))
         elif command == 'fetch-indicators':
             res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color)
             for iter_ in batch(res, batch_size=2000):
                 demisto.createIndicators(iter_)
-                return
         elif command == 'webex-get-indicators':
-            results = get_indicators_command(client=client, **args)
+            return_results(get_indicators_command(client=client, **args))
         else:
-            return_error('Unrecognized command: ' + demisto.command())
-        return_results(results)
-
+            raise NotImplementedError(f'command {command} is not implemented.')
     except DemistoException as e:
         # For any other integration command exception, return an error
         demisto.error(format_exc())
