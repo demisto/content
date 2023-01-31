@@ -110,7 +110,8 @@ configuration:
     to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to
     XSOAR and Splunk).'
   display: Incident Mirroring Direction
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_direction
   options:
   - None
@@ -123,7 +124,8 @@ configuration:
     XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
-  hidden: false
+  hidden:
+    - marketplacev2
   name: close_incident
   required: false
   type: 8
@@ -131,7 +133,8 @@ configuration:
     Splunk.
   defaultvalue: 'false'
   display: Close Mirrored Splunk Notable Event
-  hidden: false
+  hidden:
+    - marketplacev2
   name: close_notable
   required: false
   type: 8

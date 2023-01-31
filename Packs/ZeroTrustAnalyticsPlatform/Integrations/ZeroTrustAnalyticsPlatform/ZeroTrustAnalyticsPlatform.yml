@@ -45,6 +45,8 @@ configuration:
   - Both
   required: false
   type: 15
+  hidden:
+    - marketplacev2
 - display: Comment entry tag
   additionalinfo: Adding this tag to a Note will sync as a comment in ZTAP
   defaultvalue: comment

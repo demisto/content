@@ -112,6 +112,8 @@ configuration:
   required: false
   type: 15
   section: Collect
+  hidden:
+    - marketplacev2
 - additionalinfo: When selected, closing the Splunk notable event is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -120,6 +122,8 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  hidden:
+    - marketplacev2
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Splunk.
   defaultvalue: 'false'
   display: Close Mirrored Splunk Notable Event
@@ -128,6 +132,8 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  hidden:
+    - marketplacev2
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false

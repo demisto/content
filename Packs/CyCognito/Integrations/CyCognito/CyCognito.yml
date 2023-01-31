@@ -18,7 +18,8 @@ configuration:
     both directions.
   display: Incident Mirroring Direction
   defaultvalue: Incoming and Outgoing
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_direction
   options:
   - None

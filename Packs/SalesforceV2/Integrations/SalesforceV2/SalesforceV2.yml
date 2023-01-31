@@ -71,24 +71,32 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+  hidden:
+    - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in SalesForce.
   defaultvalue: comments
   display: Comment Entry Tag
   name: comment_tag
   required: false
   type: 0
+  hidden:
+    - marketplacev2
 - additionalinfo: When selected, closing the Salesforce ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
   type: 8
+  hidden:
+    - marketplacev2
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in SalesForce.
   defaultvalue: 'false'
   display: Close Mirrored Salesforce case
   name: close_case
   required: false
   type: 8
+  hidden:
+    - marketplacev2
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval

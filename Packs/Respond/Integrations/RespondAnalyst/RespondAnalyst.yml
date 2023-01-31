@@ -13,6 +13,8 @@ configuration:
   - Both
   required: false
   type: 15
+  hidden:
+    - marketplacev2
 - additionalinfo: https://<Respond Analyst Server> (either hostname or IP address)
   display: Base Url
   name: base_url
