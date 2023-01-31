@@ -499,7 +499,7 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
         Then
             Validate that right objects are returned.
     """
-    iocs = util_load_json('test_data/file_iocs.json')
+    iocs = util_load_json('test_data/file_iocs_filter_test.json')
     objects = util_load_json(f'test_data/{res_file}.json')
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch('TAXII2Server.SERVER.fields_to_present', fields)
