@@ -168,3 +168,6 @@ view: |-
   }
 tests:
 - No tests
+marketplaces:
+  - xsoar
+  - marketplacev2

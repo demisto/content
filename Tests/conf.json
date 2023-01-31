@@ -760,16 +760,26 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR execute script Playbook",
+            "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
             "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR general and file commands Playbook",
+            "playbookID": "Test XDR Playbook quarantine file command",
             "fromversion": "4.1.0",
-            "timeout": 2500,
-            "is_mockable": false
+            "timeout": 2500
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook general commands",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook retrieve file command",
+            "fromversion": "4.1.0",
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -5104,7 +5114,8 @@
         },
         {
             "integrations": "McAfee ePO v2",
-            "playbookID": "McAfee ePO v2 Test"
+            "playbookID": "McAfee ePO v2 Test",
+            "memory_threshold": 100
         },
         {
             "playbookID": "Dedup - Generic v3",
@@ -5201,6 +5212,10 @@
         {
             "integrations": "Cortex Attack Surface Management",
             "playbookID": "CortexAttackSurfaceManagement_Test"
+        },
+        {
+            "integrations": "Cortex Xpanse",
+            "playbookID": "CortexXpanse_Test"
         },
         {
             "integrations": "checkpointdome9",
@@ -5433,6 +5448,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
+        "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode": "No credentials",
         "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
@@ -5444,8 +5460,16 @@
         "GCS Bucket Policy (ACL) - Test": "No instance",
         "playbook-AzureDataExplorer-Test": "No Instance",
         "OTRS Test": "No Instance",
+        "Microsoft Graph Groups - Test dev": "No Working Instance",
+        "Microsoft Graph Groups - Test prod": "No Working Instance",
+        "Microsoft Graph Groups - Test": "No Working Instance",
+        "Azure Kubernetes Services - Test": "No Working Instance",
+        "playbook-AzureDevOps-Test": "No Working Instance",
+        "test playbook - Google Cloud Functions": "No Working Instance",
+        "playbook-GCP-IAM_Test": "No Working Instance",
         "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
+        "CortexXpanse_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
