@@ -2666,7 +2666,7 @@ class Pack(object):
 
         self._user_metadata[Metadata.DEPENDENCIES] = first_level_dependencies
         self._first_level_dependencies = first_level_dependencies
-        self._all_levels_dependencies = all_levels_dependencies
+        self._all_levels_dependencies = all_levels_dependencies_dict
         self._displayed_images_dependent_on_packs = displayed_images_dependent_on_packs
 
     def prepare_for_index_upload(self):
