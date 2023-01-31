@@ -19,8 +19,8 @@ There are two different authentication methods for self-deployed configuration:
 - [Client Credentials flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-webapp?view=o365-worldwide)
 - [Authorization Code flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-nativeapp?view=o365-worldwide)
 ### Authentication Using the Authorization Code Flow
-**Note**: When using the Authorization Code Flow, please make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
+**Note**: When using the Authorization Code Flow, make sure the user you authenticate with has the required role permissions. See [this](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/initiate-autoir-investigation?view=o365-worldwide#permissions) as an example.
+1. To use a self-configured Azure application, add a new Azure App Registration in the Azure Portal. To add the registration, see this [Microsoft article](https://docs.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-web?view=o365-worldwide#create-an-app) steps 1-8.
 2. In the **ID** field, enter your Client/Application ID. 
 3. In the **Key** field, enter your Client Secret.
 4. In the **Token** field, enter your Tenant ID .
@@ -38,8 +38,8 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
 
 - ##### To use User Assigned Managed Identity
-   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**
-   2. Select your User Assigned Managed Identity -> copy the Client ID -> put it in the **Azure Managed Identities Client ID** field in the instance settings.
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.
    3. Select the **Use Azure Managed Identities** checkbox.
 
-For information about Azure Managed Identities see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview)
