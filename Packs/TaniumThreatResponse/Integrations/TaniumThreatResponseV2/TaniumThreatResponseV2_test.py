@@ -14,7 +14,7 @@ def util_load_json(path):
 
 
 def mock_client():
-    client = TaniumThreatResponseV2.Client(base_url=BASE_URL, password='TEST', username='TEST', api_version="4.x")
+    client = TaniumThreatResponseV2.Client(base_url=BASE_URL, password='TEST', username='TEST', api_version="3.x")
     return client
 
 

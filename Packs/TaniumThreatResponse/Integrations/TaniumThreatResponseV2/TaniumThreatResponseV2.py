@@ -568,7 +568,7 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
 
     intel_docs = []
     intel_doc = {}
-    raw_response_data = raw_response.get("data", raw_response)
+    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
     # append raw response to a list in case raw_response is a dictionary
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
@@ -610,7 +610,7 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, di
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data", raw_response)
+    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
     # append raw response to a list in case raw_response is a dictionary
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
@@ -661,7 +661,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Un
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data", raw_response)
+    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
@@ -711,7 +711,7 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict,
 
     intel_docs_labels = []
     intel_doc_label = {}
-    raw_response_data = raw_response.get("data", raw_response)
+    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
     tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
     for item in tmp_list:
         intel_doc_label = get_intel_doc_label_item(item)
@@ -977,7 +977,7 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                                             f'/api/v1/alerts/', params=params)
 
     alerts = []
-    raw_response_data = raw_response.get("data", raw_response)
+    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
     for item in raw_response_data:
         alert = get_alert_item(item)
         alerts.append(alert)
@@ -1031,19 +1031,25 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         :rtype: ``tuple``
 
     """
-    alert_ids = int(data_args.get('alert_ids'))
+    # alert_ids = int(data_args.get('alert_ids'))
+    # alert_ids = argToList(data_args.get('alert_ids'))
+    alert_ids = [int(alert) for alert in argToList(data_args.get('alert_ids'))]
     state = data_args.get('state')
 
     body = {
         'state': state.lower()
     }
     if client.api_version == "4.x":
-        url_suffix = f'/plugin/products/threat-response/api/v1/alerts/{alert_ids}'
+        url_suffix = '/plugin/products/threat-response/api/v1/alerts'
+        if len(alert_ids) == 1:
+            url_suffix = f'{url_suffix}/{alert_ids[0]}'
+        else:
+            body['id'] = alert_ids
     else:
         url_suffix = '/plugin/products/detect3/api/v1/alerts/'
         body['id'] = alert_ids
-
-    client.do_request('PUT', url_suffix, data=body)
+    client.do_request('PUT', url_suffix, params=body) if client.api_version == '4.x'\
+        else client.do_request('PUT', url_suffix, data=body)
 
     return f'Alert state updated to {state}.', {}, {}
 
@@ -1349,7 +1355,7 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                                             f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
                                             f'/api/v1/labels/')
     assert offset is not None
-    raw_response_data = raw_response.get("data", raw_response)
+    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
     from_idx = min(offset, len(raw_response_data))
     to_idx = min(offset + limit, len(raw_response_data))  # type: ignore
 
@@ -2105,7 +2111,7 @@ def main():
 
         'tanium-tr-list-alerts': get_alerts,
         'tanium-tr-get-alert-by-id': get_alert,
-        'tanium-tr-alert-update-state': alert_update_state,
+        'tanium-tr-alert-update-state': alert_update_state,     # when multiple it does not work
 
         'tanium-tr-create-snapshot': create_snapshot,
         'tanium-tr-delete-snapshot': delete_snapshot,
