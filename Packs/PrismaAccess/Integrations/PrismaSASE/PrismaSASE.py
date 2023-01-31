@@ -260,7 +260,7 @@ class Client(BaseClient):
             Outputs.
         """
         uri = f'{CONFIG_URI_PREFIX}config-versions/candidate:push'
-        body = {'folders': folders}
+        body: Dict[str, Any] = {'folders': folders}
         if description:
             body['description'] = description
 
@@ -927,18 +927,18 @@ def validate_url_is_type_compatible(args: dict,
     """
     dynamic_list_type = args.get('type') or original_dynamic_list_type
     if dynamic_list_type in ('ip', 'domain', 'url'):
-        url = args.get('source_url')
+        url = args.get('source_url', '')
         if not url:
             if type_changed:
                 raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
 
     elif dynamic_list_type == 'predefined_url':
-        url = args.get('predefined_url_list')
+        url = args.get('predefined_url_list', '')
         if not url:
             if type_changed:
                 raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
     else:  # dynamic_list_type == 'predefined_ip':
-        url = args.get('predefined_ip_list')
+        url = args.get('predefined_ip_list', '')
         if not url:
             if type_changed:
                 raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
@@ -973,7 +973,7 @@ def build_recurring_according_to_params(args: dict) -> dict:
             day_of_month = args.get('day_of_month')
             if not day_of_month:
                 raise DemistoException('Please provide the day_of_month argument when using monthly frequency')
-            if day_of_month < 1 or day_of_month > 31:
+            if arg_to_number(day_of_month) < 1 or arg_to_number(day_of_month) > 31:
                 raise DemistoException('day_of_month argument must be between 1 and 31')
             frequency_object[frequency]['day_of_month'] = day_of_month
 
@@ -1963,7 +1963,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
         # remove folders, not needed for the rest
         args['folders'] = []
         # The result from the push returns a job id
-        job_id = res.get('job_id')
+        job_id = res.get('job_id', '')
         args['job_id'] = job_id
         # The push job creates sub processes once done. at this point, the parent job hasn't finished.
         args['parent_finished'] = False
