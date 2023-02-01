@@ -3192,7 +3192,7 @@ script:
       type: Number
     arguments: []
     description: Provides information about the tenant.
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.9.46032
   isfetch: true
   runonce: false
   script: ''
@@ -3202,8 +3202,10 @@ script:
   isremotesyncout: true
   type: python
 tests:
-- Test XDR general and file commands Playbook
-- Test XDR execute script Playbook
+- Test XDR Playbook execute script commands
+- Test XDR Playbook quarantine file command
+- Test XDR Playbook general commands
+- Test XDR Playbook retrieve file command
 defaultmapperin: Cortex XDR - IR-mapper
 defaultclassifier: Cortex XDR Incident Handler - Classifier
 defaultmapperout: Cortex XDR - IR-out-mapper
