@@ -41,7 +41,7 @@ def enable_disable_user_account_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -97,7 +97,7 @@ def force_signout_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -130,7 +130,7 @@ def force_password_reset_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -163,7 +163,7 @@ def add_remove_blocklist_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location.",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -221,7 +221,7 @@ def quarantine_delete_email_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -285,7 +285,7 @@ def isolate_restore_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
             "body": {
@@ -344,7 +344,7 @@ def terminate_process_mock_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -481,7 +481,7 @@ def mock_file_status_response(*args, **kwargs):
         "error": {},
         "createdDateTime": "2021-05-07T03:07:40Z",
         "lastActionDateTime": "2021-05-07T03:08:40Z",
-        "resourceLocation": "https://api.xdr.trendmicro.com/v3.0/sandbox/analysisResults/012e4eac-9bd9-4e89-95db-77e02f75a6f3",
+        "resourceLocation": "https://apimock-dev.trendmicro.com/v3.0/sandbox/analysisResults/012e4eac-9bd9-4e89-95db-77e02f75a6f3",
         "isCached": True,
         "digest": {},
         "arguments": "LS10ZXN0IA==",
@@ -572,7 +572,7 @@ def mock_collect_file_response(*args, **kwargs):
             "headers": [
                 {
                     "name": "Operation-Location",
-                    "value": "https://api.xdr.trendmicro.com/v3.0/xdr/response/tasks/00000001",
+                    "value": "https://apimock-dev.trendmicro.com/v3.0/xdr/response/tasks/00000001",
                 }
             ],
         }
@@ -667,7 +667,7 @@ def test_download_analysis_report(mocker):
         mock_download_analysis_report_response,
     )
     args = {"submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
-    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     result = download_analysis_report(client, args)
     assert isinstance(result[1].outputs["code"], int)
     assert result[1].outputs["message"] == "Please select download to start download"
@@ -698,7 +698,7 @@ def test_download_analysis_package(mocker):
         mock_download_investigation_package_response,
     )
     args = {"submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
-    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     result = download_investigation_package(client, args)
     assert isinstance(result[1].outputs["code"], int)
     assert result[1].outputs["message"] == "Please select download to start download"
@@ -855,7 +855,7 @@ def mock_sandbox_submission_polling_response(*args, **kwargs):
         "error": {"code": "", "message": ""},
         "createdDateTime": "2021-05-07T03:07:40Z",
         "lastActionDateTime": "2021-05-07T03:08:40Z",
-        "resourceLocation": "https://api.xdr.trendmicro.com/v3.0/sandbox/analysisResults/012e4eac-9bd9-4e89-95db-77e02f75a6f3",
+        "resourceLocation": "https://apimock-dev.trendmicro.com/v3.0/sandbox/analysisResults/012e4eac-9bd9-4e89-95db-77e02f75a6f3",
         "isCached": "true",
         "digest": {
             "md5": "4ac174730d4143a119037d9fda81c7a9",
@@ -1002,7 +1002,7 @@ def add_note_mock_response(*args, **kwargs):
 # Test case for add note
 def test_add_note(mocker):
     mocker.patch("TrendMicroVisionOneV3.requests.post", add_note_mock_response)
-    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    client = Client("https://apimock-dev.trendmicro.com", api_key, proxy, verify)
     args = {"workbench_id": "WB-14-20190709-00003", "content": "This is a new note."}
     result = add_note(client, args)
     assert result.outputs["message"] == "success"
