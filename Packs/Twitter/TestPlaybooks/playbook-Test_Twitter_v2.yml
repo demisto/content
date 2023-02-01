@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b5a17a8b-58a2-4e93-8027-ab237127374c
+    taskid: cd0fc8b3-30f0-4c72-8bf1-728e3c33949d
     type: start
     task:
-      id: b5a17a8b-58a2-4e93-8027-ab237127374c
+      id: cd0fc8b3-30f0-4c72-8bf1-728e3c33949d
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 176f1900-63d0-424e-87e8-db6f775500ee
+    taskid: d1af7840-9e6b-4936-8352-41eceda7d4a7
     type: regular
     task:
-      id: 176f1900-63d0-424e-87e8-db6f775500ee
+      id: d1af7840-9e6b-4936-8352-41eceda7d4a7
       version: -1
       name: twitter-tweet-search
       description: This command will search for tweets posted over the past week and return all information available
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2a1f185a-fa23-468f-8fd2-ae4b1cf8a273
+    taskid: 178a5676-5961-4c4e-8b3a-529581b1256b
     type: regular
     task:
-      id: 2a1f185a-fa23-468f-8fd2-ae4b1cf8a273
+      id: 178a5676-5961-4c4e-8b3a-529581b1256b
       version: -1
       name: Delete Context
       description: |-
@@ -112,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0d757901-9f73-45bf-8902-b5d80bcd70f8
+    taskid: da7728d9-953a-428e-8a83-58df5e49adbe
     type: regular
     task:
-      id: 0d757901-9f73-45bf-8902-b5d80bcd70f8
+      id: da7728d9-953a-428e-8a83-58df5e49adbe
       version: -1
       name: twitter-user-get
       description: 'Lookup users by name to display information about them.Search multiple users simultaneously by separating them by commas. Ex: ''name=''user1,user2,user3'''
@@ -147,10 +147,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a944cae6-67d4-4fdb-8e1d-31791138bc19
+    taskid: b7fe0496-2b2d-4e9e-81b7-7706c1308589
     type: regular
     task:
-      id: a944cae6-67d4-4fdb-8e1d-31791138bc19
+      id: b7fe0496-2b2d-4e9e-81b7-7706c1308589
       version: -1
       name: Delete Context
       description: |-
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9b6e401c-a63d-4763-8197-bba85fae6772
+    taskid: 439c2cc1-675d-4107-8e1d-7c6f5fb92f2a
     type: condition
     task:
-      id: 9b6e401c-a63d-4763-8197-bba85fae6772
+      id: 439c2cc1-675d-4107-8e1d-7c6f5fb92f2a
       version: -1
       name: Verify response
       type: condition
@@ -225,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 1952fcfc-e5a1-425f-8b0e-ddb6ec60b0e9
+    taskid: 4eb9e015-444e-4bc4-8b4d-318a41e9e478
     type: condition
     task:
-      id: 1952fcfc-e5a1-425f-8b0e-ddb6ec60b0e9
+      id: 4eb9e015-444e-4bc4-8b4d-318a41e9e478
       version: -1
       name: Verify response
       type: condition
@@ -244,8 +244,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Twitter.Tweet.id
+              simple: Twitter.Tweet.TweetList.id
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -263,10 +265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7e16bb3a-1a28-4780-85a6-24b2983c1067
+    taskid: 95bbbc7a-6b62-49d9-8530-b56927b119b5
     type: title
     task:
-      id: 7e16bb3a-1a28-4780-85a6-24b2983c1067
+      id: 95bbbc7a-6b62-49d9-8530-b56927b119b5
       version: -1
       name: Done
       type: title
