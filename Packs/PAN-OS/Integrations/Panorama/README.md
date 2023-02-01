@@ -3029,6 +3029,10 @@ Returns a list of predefined Security Rules.
 | device-group | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag | Tag for which to filter the rules. | Optional | 
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
+| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules. | Optional | 
+| disabled | Whether to retrieve the disabled rules or not. If not mentioned will retrieve all the rules. | Optional | 
+| action | The action of the rules to retrieve. If not mentioned will retrieve all the rules. | Optional | 
+| query | Free query to retrieve rules. If not mentioned will retrieve all the rules. | Optional |
 
 
 #### Context Output
@@ -3047,6 +3051,7 @@ Returns a list of predefined Security Rules.
 | Panorama.SecurityRule.Source | String | Source address. | 
 | Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). | 
 | Panorama.SecurityRules.Tags | String | Rule tags. | 
+| Panorama.SecurityRules.Disabled | String | Whether the rule is disabled. | 
 
 
 #### Command Example
@@ -3065,7 +3070,8 @@ Returns a list of predefined Security Rules.
                 "Name": "demisto-7b6dc6e6",
                 "Service": "any",
                 "Source": "any",
-                "To": "any"
+                "To": "any",
+                "Disabled": "yes"
             },
             {
                 "Action": "drop",
@@ -3075,7 +3081,8 @@ Returns a list of predefined Security Rules.
                 "Name": "demisto-125e5985",
                 "Service": "any",
                 "Source": "any",
-                "To": "any"
+                "To": "any",
+                "Disabled": "yes"
             },
             {
                 "Action": {
@@ -3120,7 +3127,8 @@ Returns a list of predefined Security Rules.
                     "@admin": "api",
                     "@dirtyId": "2986",
                     "@time": "2020/10/13 05:00:06"
-                }
+                },
+                "Disabled": "yes"
             }
         ]
     }
@@ -3130,11 +3138,11 @@ Returns a list of predefined Security Rules.
 #### Human Readable Output
 
 >### Security Rules:
->|Name|Action|From|To|Service|
->|---|---|---|---|---|
->| demisto-7b6dc6e6 | drop | any | any | any |
->| demisto-125e5985 | drop | any | any | any |
->| demisto-9c9ed15a | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: drop | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any |
+>|Name|Action|From|To|Service|Disabled|
+>|---|---|---|---|---|---|
+>| demisto-7b6dc6e6 | drop | any | any | any | yes |
+>| demisto-125e5985 | drop | any | any | any | yes |
+>| demisto-9c9ed15a | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: drop | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any | @admin: api<br/>@dirtyId: 2986<br/>@time: 2020/10/13 05:00:06<br/>#text: any | yes |
 
 
 ### pan-os-query-logs
@@ -7678,6 +7686,10 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 | device-group | The device group in which the NAT rules are part of. | Optional | 
 | pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 | show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| disabled | Whether to retrieve the disabled rules or not. If not mentioned will retrieve all the NAT rules. | Optional | 
+| nat_type | The type of the NAT rules to retrieve. If not mentioned will retrieve all the NAT rules. | Optional | 
+| tags | The tags of the NAT rules to retrieve. If not mentioned will retrieve all the NAT rules. | Optional | 
+| query | Free query to retrieve NAT rule. If not mentioned will retrieve all the NAT rules. | Optional | 
 | limit | The maximum number of rules to retrieve, Will be used by default if page argument was not provided. Default is 50. | Optional | 
 | page_size | The page at which to start listing NAT rules. Must be a positive number. Default is 50. | Optional | 
 | page | The page at which to start listing nat-rules, must be a positive number. | Optional | 
@@ -7700,6 +7712,7 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 | Panorama.Nat.SourceTranslation | Unknown | The source translation of the rule. | 
 | Panorama.Nat.DestinationTranslation | Unknown | The destination translation of the rule. | 
 | Panorama.Nat.DynamicDestinationTranslation | Unknown | The dynamic destination translation of the rule. | 
+| Panorama.Nat.Disabled | String | Whether the rule is disabled. | 
 
 #### Command example
 ```!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true```
@@ -7729,7 +7742,8 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
                     "2.2.2.2",
                     "3.3.3.3"
                 ],
-                "Tags": "test tag"
+                "Tags": "test tag",
+                "Disabled": "yes"
             },
             {
                 "Description": "blabla",
@@ -7749,7 +7763,8 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
                     }
                 },
                 "SourceZone": "3.3.3.3",
-                "Tags": null
+                "Tags": null,
+                "Disabled": "yes"
             }
         ]
     }
@@ -7759,10 +7774,10 @@ Returns a list of NAT rules of either a Panorama/firewall instance.
 #### Human Readable Output
 
 >### Nat Policy Rules:
->| Name   |Tags|Source Zone|Destination Zone|Source Address|Destination Address|Destination Interface|Service|Description|
+>| Name   |Tags|Source Zone|Destination Zone|Source Address|Destination Address|Destination Interface|Service|Description|Disabled|
 --------|---|---|---|---|---|---|---|---|---|
->| test-2 | test tag | 2.2.2.2,<br/>3.3.3.3 | 2.2.2.2 | 5.5.5.5 | test123 | any | any | a test rule |
->| test-1 |  | 3.3.3.3 | 2.2.2.2 | 3.3.3.3 | 1.1.1.1 | a2 | any | blabla |
+>| test-2 | test tag | 2.2.2.2,<br/>3.3.3.3 | 2.2.2.2 | 5.5.5.5 | test123 | any | any | a test rule | yes |
+>| test-1 |  | 3.3.3.3 | 2.2.2.2 | 3.3.3.3 | 1.1.1.1 | a2 | any | blabla | yes |
 
 
 ### pan-os-create-nat-rule
@@ -8279,6 +8294,10 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 | device-group | The device-group that the pbf-rules are part of. | Optional | 
 | pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
 | show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| disabled | Whether to retrieve the disabled rules or not. If not mentioned will retrieve all the PBF rules. | Optional | 
+| action | The action of the PBF rules to retrieve. If not mentioned will retrieve all the PBF rules. | Optional | 
+| tags | The tags of the PBF rules to retrieve. If not mentioned will retrieve all the PBF rules. | Optional | 
+| query | Free query to retrieve PBF rule. If not mentioned will retrieve all the PBF rules. | Optional | 
 | limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
 | page_size | The size of pbf-rules to return. Default is 50. | Optional | 
 | page | The page at which to start listing pbf-rules. Must be a positive number. | Optional | 
@@ -8300,6 +8319,7 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 | Panorama.PBF.Target | Unknown | The target of the PBF rule. | 
 | Panorama.PBF.Application | Unknown | The applications of the PBF rule. | 
 | Panorama.PBF.Service | Unknown | The services of the PBF rule. | 
+| Panorama.PBF.Disabled | String | Whether the rule is disabled. | 
 
 #### Command example
 ```!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test```
@@ -8338,6 +8358,7 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
             "SourceInterface": null,
             "SourceUser": "pre-logon",
             "SourceZone": "1.1.1.1",
+            "Disabled": "yes",
             "Tags": [
                 "test tag",
                 "dag_test_tag"
@@ -8353,9 +8374,9 @@ Returns a list of pbf-rules of either a Panorama/firewall instance.
 #### Human Readable Output
 
 >### Policy Based Forwarding Rules:
->|Action|Description|Destination Address|Name|Source Address|Source User|Source Zone|Tags|
+>|Action|Description|Destination Address|Name|Source Address|Source User|Source Zone|Tags|Disabled|
 >|---|---|---|---|---|---|---|---|
->| forward | this is a test description | 1.1.1.1 | test | 1.1.1.1 | pre-logon | 1.1.1.1 | test tag,<br/>dag_test_tag |
+>| forward | this is a test description | 1.1.1.1 | test | 1.1.1.1 | pre-logon | 1.1.1.1 | test tag,<br/>dag_test_tag | no |
 
 ### pan-os-create-pbf-rule
 ***
@@ -8413,7 +8434,7 @@ Edits a redistribution-profile in a virtual-router.
 | rulename | The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
 | device-group | The device-group that the PBF rule is in. | Optional | 
 | pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf. | Required | 
+| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf, disabled. | Required | 
 | element_value | The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
 
 
