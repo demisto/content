@@ -35,6 +35,26 @@ HTML_IP_SECTION = '''<div class="panel-collapse collapse" id="id_135011">
 </div>'''
 
 
+FETCH_INDICATORS_INPUT_1 = {'CIDR': ['ipmock'], 'DOMAIN': ['domainmock']}
+FETCH_INDICATORS_UOTPUT_1 = [{'value': 'ipmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                              'trafficlightprotocol': 'very_yellow'}},
+                             {'value': 'domainmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                                  'trafficlightprotocol': 'very_yellow'}}]
+
+FETCH_INDICATORS_INPUT_2 = {'CIDR': ['ipmock1', 'ipmock2'], 'DOMAIN': ['domainmock1', 'domainmock2']}
+FETCH_INDICATORS_UOTPUT_2 = [{'value': 'ipmock1', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                               'trafficlightprotocol': 'very_yellow'}},
+                             {'value': 'ipmock2', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                               'trafficlightprotocol': 'very_yellow'}},
+                             {'value': 'domainmock1', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                                   'trafficlightprotocol': 'very_yellow'}},
+                             {'value': 'domainmock2', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                                   'trafficlightprotocol': 'very_yellow'}}]
+
+
+FETCH_INDICATORS_INPUT_3 = {'CIDR': ['ipmock1', 'ipmock2']}
+
+
 def test_grab_domains():
     """
     Given:
@@ -135,11 +155,9 @@ def test_get_indicators_command__diffrent_indicator_type_as_input(mocker, input,
     assert res.readable_output == expected
 
 
-@pytest.mark.parametrize('input, expected', [({'CIDR': ['ipmock'], 'DOMAIN': ['domainmock']}, [{'value': 'ipmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
-                                                                                                                                                'trafficlightprotocol': 'very_yellow'}},
-                                                                                               {'value': 'domainmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
-                                                                                                                                                    'trafficlightprotocol': 'very_yellow'}}])])
-def test_fetch_indicators_command__different_inputs(mocker, input, expected):
+@pytest.mark.parametrize('input, expected', [(FETCH_INDICATORS_INPUT_1, FETCH_INDICATORS_UOTPUT_1),
+                                             (FETCH_INDICATORS_INPUT_2, FETCH_INDICATORS_UOTPUT_2)])
+def test_fetch_indicators_command__different_sizes_of_inputs(mocker, input, expected):
     """
     Given:
         -  tags and tlp_color
@@ -154,5 +172,6 @@ def test_fetch_indicators_command__different_inputs(mocker, input, expected):
     mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
                         return_value=input)
     expected_result = expected
-
     assert fetch_indicators_command(client=client, tags=("very_good", "very_bad"), tlp_color="very_yellow") == expected_result
+
+
