@@ -1,7 +1,7 @@
 commonfields:
   id: Active Directory Query v2
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Active Directory Query v2
