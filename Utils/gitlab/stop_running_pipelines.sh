@@ -19,16 +19,9 @@ fi
 
 
 if [[ -z "$2" ]]; then
-  GITLAB_CANCEL_TOKEN=$2
+  CI_PIPELINE_ID=$2
 else
-  echo "No commit branch. Aborting."
-  exit 1
-fi
-
-if [[ -z "$3" ]]; then
-  CI_PIPELINE_ID=$3
-else
-  echo "No commit branch. Aborting."
+  echo "No pipeline number. Aborting."
   exit 1
 fi
 
