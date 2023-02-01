@@ -238,7 +238,7 @@ def test_module(client: Client, first_fetch_time: str) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
                     first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str], drop_playbookid: bool = False) -> Tuple[Dict[str, str], List[dict]]:
+                    mirror_tag: List[str], drop_playbook_id: bool = False) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -265,9 +265,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     :param mirror_direction:
         Mirror direction for the fetched incidents
 
-    :type drop_playbookid: `bool`
-    :param drop_playbookid:
-        If the playbookid is being mirrored or not.
+    :type drop_playbook_id: `bool`
+    :param drop_playbook_id:
+        When set to true, mirrored incidents will have a blank playbookId value,
+         causing the receiving machine to run the default playbook of the incident type.
 
     :type mirror_tag: ``List[str]``
     :param mirror_tag:
@@ -283,9 +284,6 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     """
 
     last_fetch = last_run.get('last_fetch')
-    # Drop playbookId field if configured.
-    if drop_playbookid and 'playbookId' in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT:
-        FIELDS_TO_COPY_FROM_REMOTE_INCIDENT.remove('playbookId')
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
@@ -318,8 +316,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
         incident_result['dbotMirrorId'] = incident['id']
 
+        if drop_playbook_id:
+            fields = filter(lambda field: field != 'playbookId', FIELDS_TO_COPY_FROM_REMOTE_INCIDENT)
+        else:
+            fields = FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
+
         for key, value in incident.items():
-            if key in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT:
+            if key in fields:
                 incident_result[key] = value
 
         incident_result['rawJSON'] = json.dumps(incident)
@@ -797,7 +800,8 @@ def main() -> None:
                     first_fetch_time=first_fetch_time,
                     query=query,
                     mirror_direction=demisto.params().get('mirror_direction'),
-                    mirror_tag=list(mirror_tags)
+                    mirror_tag=list(mirror_tags),
+                    drop_playbook_id=demisto.params().get('drop_playbook_id')
                 )
 
             return_results(test_module(client, first_fetch_time))
@@ -810,7 +814,8 @@ def main() -> None:
                 first_fetch_time=first_fetch_time,
                 query=query,
                 mirror_direction=demisto.params().get('mirror_direction'),
-                mirror_tag=list(mirror_tags)
+                mirror_tag=list(mirror_tags),
+                drop_playbook_id=demisto.params().get('drop_playbook_id')
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

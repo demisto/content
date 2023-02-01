@@ -88,11 +88,13 @@ configuration:
   type: 8
   required: false
 - display: Drop Playbook ID
-  name: drop_playbookId
+  name: drop_playbook_id
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: 'Should the integration mirror the playbook ID field to the remote system? Note: Mirroring the playbook ID means that the remote system must be running the same playbook as the source system.'
+  additionalinfo: 'A parameter integration that removes the playbookId field from incoming incidents.
+   Note: when set to false (default), the instance will attempt to run a playbook according to the incoming ID.
+    When set to true, the instance will run the default playbook for the incident type (if configured locally).'
 script:
   script: ''
   type: python
