@@ -13,5 +13,5 @@ _Your API key carries all your privileges, so keep it secure and don’t share i
 
 
 **Note:**
-Support and maintenance for this integration are provided by the **[Cyfirma](https://www.cyfirma.com)**. \
+Support and maintenance for this integration is provided by **[Cyfirma](https://www.cyfirma.com)**. 
 Please contact us for more details on this email **_contact@cyfirma.com_**.

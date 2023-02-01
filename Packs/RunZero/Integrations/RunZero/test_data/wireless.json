@@ -1,0 +1,29 @@
+[
+    {
+      "id": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+      "created_at": 1576300370,
+      "last_seen": 1576300370,
+      "organization_id": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+      "site_id": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+      "last_agent_id": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+      "last_task_id": "e77602e0-3fb8-4734-aef9-fbc6fdcb0fa8",
+      "essid": "Free WiFi",
+      "bssid": "11:22:33:44:55:66",
+      "type": "infrastructure",
+      "authentication": "wpa2-psk",
+      "encryption": "aes",
+      "signal": 99,
+      "channels": "11, 158+1",
+      "interface": "wlan0",
+      "vendor": "Ubiquiti Networks",
+      "family": "223344",
+      "data": {
+        "additionalProp1": "string",
+        "additionalProp2": "string",
+        "additionalProp3": "string"
+      },
+      "org_name": "Test Labs",
+      "site_name": "Primary",
+      "agent_name": "LAPTOP-F4P1R6"
+    }
+]
