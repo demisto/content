@@ -23,4 +23,5 @@ xdm.target.agent.identifier = "",
 xdm.observer.content_version = "",
 xdm.target.host.device_id = "",
 xdm.network.dns.dns_resource_record.type = answerType,
-xdm.network.dns.dns_resource_record.value = answerValue;
+xdm.network.dns.dns_resource_record.value = answerValue,
+xdm.network.dns.dns_resource_record.name = "";
