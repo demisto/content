@@ -712,7 +712,7 @@ def generate_login_url(client: MicrosoftClient) -> CommandResults:
         and client.redirect_uri, 'Please make sure you entered the Authorization configuration correctly.'
 
     login_url = f'https://login.microsoftonline.com/{client.tenant_id}/oauth2/v2.0/authorize?' \
-                f'response_type=code&scope=offline_access%20{client.scope}' \
+                f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}' \
                 f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}'
 
     result_msg = f"""### Authorization instructions
