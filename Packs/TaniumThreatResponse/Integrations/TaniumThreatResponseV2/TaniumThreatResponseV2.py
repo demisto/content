@@ -1055,7 +1055,7 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         url_suffix = '/plugin/products/detect3/api/v1/alerts/'
         body['id'] = alert_ids
     # client.do_request('PUT', url_suffix, params=body) if client.api_version == '4.x'\
-    #     else client.do_request('PUT', url_suffix, data=body)
+    #     else client.do_request('PUT', url_suffix, data=body)      # todo: check whats right?
     client.do_request('PUT', url_suffix, data=body)
 
     return f'Alert state updated to {state}.', {}, {}
