@@ -92,7 +92,7 @@ script:
       description: Active Users on Prisma Access
     description: Query currently active users.
     deprecated: true
-  dockerimage: demisto/netmiko:1.0.0.40619
+  dockerimage: demisto/netmiko:1.0.0.46467
   runonce: false
   subtype: python3
 fromversion: 5.0.0
