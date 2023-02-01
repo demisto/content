@@ -138,17 +138,17 @@ def test_fetch_incidents(mocker):
     assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(milliseconds=1)
 
 
-@pytest.mark.parametrize('drop_playbook_id', [False, True])
-def test_fetch_incidents_mirroring_or_dropping_playbook_id(mocker, drop_playbook_id: bool):
+@pytest.mark.parametrize('mirror_playbook_id', (True, False))
+def test_fetch_incidents_mirror_playbook_id(mocker, mirror_playbook_id: bool):
     """
     Given:
-        - List of incident.
+        - a list of incidents.
 
     When:
-        - Running the fetch_incidents and getting this incident, with the *implicit* default `drop_playbook_id = False`.
+        - Running the fetch_incidents and getting this incident, with the *implicit* default `mirror_playbook_id = True`.
 
     Then:
-        - Ensure the incident result does not contain playbookId field when `drop_playbook_id` is True.
+        - Ensure the incident result does not contain playbookId field if and only if `mirror_playbook_id` is False.
     """
     mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS_MIRRORING_PLAYBOOK_ID)
 
@@ -157,10 +157,10 @@ def test_fetch_incidents_mirroring_or_dropping_playbook_id(mocker, drop_playbook
 
     next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
                                                  query='', mirror_direction='None', mirror_tag=[],
-                                                 drop_playbook_id=drop_playbook_id)
+                                                 mirror_playbook_id=mirror_playbook_id)
 
     assert len(incidents_result) == 1
-    assert ("playbookId" in incidents_result[0]) == (not drop_playbook_id)
+    assert ("playbookId" in incidents_result[0]) is mirror_playbook_id
 
 
 def test_update_remote_system(mocker):

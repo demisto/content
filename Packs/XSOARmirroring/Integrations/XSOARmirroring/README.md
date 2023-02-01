@@ -2,7 +2,7 @@ Allows mirroring of XSOAR incidents between different Cortex XSOAR tenants.
 
 This integration was integrated and tested with version 6.0 of XSOAR
 Mirrored incidents include the playbook ID. The receiving side will attempt to run a playbook with a matching ID, if one exists locally.
-The 'Drop Playbook ID' parameter must be selected when you want the source side to run according to its default playbook.
+To have the machine run the default playbook for the mirrored incident, set the `Drop Playbook ID` to `true`. Otherwise (default), the machine will attempt to run a playbook whose id matches the `playbookId` field in the mirrored incident.
 
 ## Configure XSOAR Mirroring on Cortex XSOAR
 

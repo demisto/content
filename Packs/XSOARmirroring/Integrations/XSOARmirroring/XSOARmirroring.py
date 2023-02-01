@@ -238,7 +238,7 @@ def test_module(client: Client, first_fetch_time: str) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
                     first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str], drop_playbook_id: bool = False) -> Tuple[Dict[str, str], List[dict]]:
+                    mirror_tag: List[str], mirror_playbook_id: bool = False) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -265,9 +265,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     :param mirror_direction:
         Mirror direction for the fetched incidents
 
-    :type drop_playbook_id: `bool`
-    :param drop_playbook_id:
-        When set to true, mirrored incidents will have a blank playbookId value,
+    :type mirror_playbook_id: `bool`
+    :param mirror_playbook_id:
+        When set to false, mirrored incidents will have a blank playbookId value,
          causing the receiving machine to run the default playbook of the incident type.
 
     :type mirror_tag: ``List[str]``
@@ -316,10 +316,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
         incident_result['dbotMirrorId'] = incident['id']
 
-        if drop_playbook_id:
-            fields = list(filter(lambda field: field != 'playbookId', FIELDS_TO_COPY_FROM_REMOTE_INCIDENT))
-        else:
+        if mirror_playbook_id:
             fields = FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
+        else:
+            fields = [field for field in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
+                      if field != 'playbookId']
 
         for key, value in incident.items():
             if key in fields:
@@ -801,7 +802,7 @@ def main() -> None:
                     query=query,
                     mirror_direction=demisto.params().get('mirror_direction'),
                     mirror_tag=list(mirror_tags),
-                    drop_playbook_id=demisto.params().get('drop_playbook_id')
+                    mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
                 )
 
             return_results(test_module(client, first_fetch_time))
@@ -815,7 +816,7 @@ def main() -> None:
                 query=query,
                 mirror_direction=demisto.params().get('mirror_direction'),
                 mirror_tag=list(mirror_tags),
-                drop_playbook_id=demisto.params().get('drop_playbook_id')
+                mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
