@@ -1189,8 +1189,8 @@ tasks:
     scriptarguments:
       process_command_line:
         complex:
-          root: alert
-          accessor: targetprocesscmd
+          root: commandline
+          accessor: decoded
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1215,7 +1215,7 @@ tasks:
       id: 0102cdcc-b833-47d4-860e-60ce26596881
       version: -1
       name: Found CMD to be prevalent?
-      description: Check if command is prevalent or not
+      description: Check if command line is prevalent or not
       type: condition
       iscommand: false
       brand: ""
