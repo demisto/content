@@ -21,4 +21,4 @@ Schedule a daily job to run this widget script in a playbook to track EDL size o
 
 ## Outputs
 ---
-There are no outputs for this script.
+There are no outputs for this script
