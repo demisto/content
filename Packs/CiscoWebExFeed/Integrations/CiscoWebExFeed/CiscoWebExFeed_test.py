@@ -169,7 +169,7 @@ def test_fetch_indicators_command__different_sizes_of_inputs(mocker, input, expe
     Then:
         - the function should return the expectetd result with the correct tags and tlp_color
     """
-    from CiscoWebexFeed import fetch_indicators_command, Client
+    from CiscoWebExFeed import fetch_indicators_command, Client
     client = MockedClient(Client)
     mocker.patch.object(Client, 'all_raw_data', return_value='gg')
     mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
