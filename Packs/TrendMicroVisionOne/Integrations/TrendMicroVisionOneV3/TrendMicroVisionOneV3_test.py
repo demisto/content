@@ -647,11 +647,11 @@ def test_get_forensic_file_information(mocker):
 
 # Mock response for Download analysis results
 def mock_download_analysis_report_response(*args, **kwargs):
-    return_value = {
-        "code": 200,
-        "submissionId": "8559a7ce-2b85-451b-8742-4b943ad76a22",
-        "message": "Please select download to start download",
-    }
+    class Response:
+        content = ""
+        status_code = 200
+
+    return_value = Response()
     return return_value
 
 
@@ -663,7 +663,7 @@ def test_download_analysis_report(mocker):
     file analysis status.
     """
     mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request",
+        "requests.get",
         mock_download_analysis_report_response,
     )
     args = {"submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
@@ -678,11 +678,11 @@ def test_download_analysis_report(mocker):
 
 # Mock response for download investigation package
 def mock_download_investigation_package_response(*args, **kwargs):
-    return_value = {
-        "code": 200,
-        "submissionId": "8559a7ce-2b85-451b-8742-4b943ad76a22",
-        "message": "Please select download to start download",
-    }
+    class Response:
+        content = ""
+        status_code = 200
+
+    return_value = Response()
     return return_value
 
 
@@ -694,7 +694,7 @@ def test_download_analysis_package(mocker):
     by get file analysis status.
     """
     mocker.patch(
-        "TrendMicroVisionOneV3.Client.http_request",
+        "requests.get",
         mock_download_investigation_package_response,
     )
     args = {"submission_id": "8559a7ce-2b85-451b-8742-4b943ad76a22"}
@@ -991,18 +991,17 @@ def test_get_endpoint_information(mocker):
 
 # Mock function for add note.
 def add_note_mock_response(*args, **kwargs):
-    return_value = {
-        "code": 201,
-        "note_id": 1,
-        "message": "success",
-        "Workbench_Id": "WB-14-20190709-00003",
-    }
+    class Response:
+        headers = {}
+        status_code = 200
+
+    return_value = Response()
     return return_value
 
 
 # Test case for add note
 def test_add_note(mocker):
-    mocker.patch("TrendMicroVisionOneV3.Client.http_request", add_note_mock_response)
+    mocker.patch("TrendMicroVisionOneV3.requests.post", add_note_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     args = {"workbench_id": "WB-14-20190709-00003", "content": "This is a new note."}
     result = add_note(client, args)
