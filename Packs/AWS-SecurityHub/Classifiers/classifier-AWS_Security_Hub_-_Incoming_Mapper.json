@@ -119,7 +119,10 @@
                 },
                 "severity": {
                     "simple": "Severity.Label"
-                }
+                },
+                "AWS Security Hub Provider Updated At": {
+					"simple": "UpdatedAt"
+				}
             }
         },
         "dbot_classification_incident_type_all": {
