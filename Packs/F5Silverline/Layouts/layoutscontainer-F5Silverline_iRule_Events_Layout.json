@@ -525,5 +525,6 @@
 	"id": "F5 Silverline iRule Events Layout",
 	"name": "F5 Silverline iRule Events Layout",
 	"system": false,
-	"version": -1
+	"version": -1,
+ "marketplaces": ["xsoar"]
 }
