@@ -36,10 +36,10 @@ This integration was integrated and tested with Splunk v7.2.
     | Event Type Field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field. | False |
     | Use CIM Schemas for Mapping | If selected, when creating a mapper using the \`Select Schema\` feature \(supported from Cortex XSOAR V6.0\), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information. | False |
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
-    | Mirror closed Cortex XSOAR Incidents (Incoming Mirroring) | If selected, closing a Notable Event in Splunk with a status of "Closed" will close the corresponding fetched incident in Cortex XSOAR. | False |
-    | Add Splunk statuses marked as "End Status" to mirroring (Incoming Mirroring) | If selected, Notables with a status that is marked as "End Status" in Splunk will also be mirrored on closure. | False |
-    | Additional Splunk status labels to mirror (Incoming Mirroring) | A comma-separated list of status labels to add to mirroring \(Example: Resolved,False-Positive\). | False |
-    | Mirror Closed Splunk Notable Events (Outgoing Mirroring) | If selected, closing a fetched incident of a Splunk Notable in Cortex XSOAR will close the corresponding Notable Event in Splunk. | False |
+    | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident. | False |
+    | Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
+    | Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring) | When selected, Splunk Notable Events with a status that is marked as "End Status" will close the Cortex XSOAR incident. | False |
+    | Close Mirrored Splunk Notable Events (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | The app context of the namespace |  | False |
@@ -154,22 +154,22 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
  - For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
  
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk notables.
-To setup the mirroring follow these instructions:
+To set up mirroring:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for SplunkPy and select your integration instance.
 3. Enable **Fetches incidents**.
-4. You can go to the *Fetch events query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
+4. You can go to the *Fetch notable events ES enrichment query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
 4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-    - Incoming - Any changes in Splunk notables (notable's status, status_label, urgency, comments, and owner) will be reflected in XSOAR incidents.
-    - Outgoing - Any changes in XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
-    - Incoming And Outgoing - Changes in XSOAR incidents and Splunk notables will be reflected in both directions.
+    - Incoming - Any changes in Splunk notables (notable's status, status_label, urgency, comments, and owner) will be reflected in Cortex XSOAR incidents.
+    - Outgoing - Any changes in Cortex XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
+    - Incoming And Outgoing - Changes in Cortex XSOAR incidents and Splunk notables will be reflected in both directions.
     - None - Turns off incident mirroring.
-5. Optional: Check the *Mirror closed XSOAR Incidents (Incoming Mirroring)* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on the Splunk side.
-   By default, only Notables closed with a "Closed" label will be mirrored. You can enable the *Add Splunk "End Status" statuses to mirroring (Incoming Mirroring)* option to add statuses marked as "End Status" in Splunk, and specify specific statuses (comma-separated) in the *Additional Splunk status labels to mirror (Incoming Mirroring)*, to add additional statuses to the mirroring process.
+5. Optional: Check the *Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on the Splunk side.
+   By default, only Notables closed with a "Closed" label will be mirrored. You can specify specific statuses (comma-separated) in the *Additional Splunk status labels to close on mirror (Incoming Mirroring)*, and enable the *Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)* option to add statuses marked as "End Status" in Splunk, and to add additional statuses to the mirroring process.
 6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
-7. Fill in the **timezone** integration parameter with the timezone the Splunk Server is using.
+7. Fill in the **timezone** integration parameter with the timezone the Splunk server is using.
 Newly fetched incidents will be mirrored in the chosen direction.
-Note: This will not effect existing incidents.
+**Note: This will not affect existing incidents.**
 
 ### Existing users
 **NOTE: The enrichment and mirroring mechanisms use a new default fetch query.** 
