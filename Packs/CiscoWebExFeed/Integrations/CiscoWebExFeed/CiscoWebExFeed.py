@@ -133,7 +133,7 @@ class Client(BaseClient):
             raise e
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:     # pragma: no cover
     """Tests connectivity with the client.
     Args:
         client: Client object.
