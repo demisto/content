@@ -7,7 +7,7 @@ args:
   - 3 - Low
   description: Incident severity
 - name: assignee
-  description: Incident assigne name (e.g John Smith)
+  description: Incident assignee name (e.g John Smith)
 - name: description
   required: true
   description: Incident description
@@ -32,7 +32,6 @@ enabled: true
 script: '-'
 scripttarget: 0
 tags:
-- servicenow
 - servicenow v2
 type: python
 subtype: python3

@@ -12,7 +12,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Incident assigne name (e.g John Smith)
+  description: Incident assignee name (e.g John Smith)
   isArray: false
   name: assignee
   required: false
@@ -41,7 +41,6 @@ outputs:
   type: string
 script: '-'
 tags:
-- servicenow
 - servicenow v2
 system: false
 timeout: '0'
