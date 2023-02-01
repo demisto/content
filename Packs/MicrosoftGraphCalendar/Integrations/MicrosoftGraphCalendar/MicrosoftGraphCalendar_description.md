@@ -1,14 +1,14 @@
 # Authentication
-## Authentication based on Azure Active Directory applications
+You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
+## Authentication Based on Azure Active Directory Applications
 
 Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
 
-There are three application authentication methods available:
+There are two application authentication methods available:
 
  * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
  * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)  
- * Authentication Based on Azure Managed Identities
-
+ 
 **Note:** Depending on the authentication method you use, the integration parameters might change.
 
 To allow access to O365 Outlook Calendar, an administrator has to approve the Cortex XSOAR app using an admin consent flow, by clicking this [link](https://oproxy.demisto.ninja/ms-graph-calendar).
