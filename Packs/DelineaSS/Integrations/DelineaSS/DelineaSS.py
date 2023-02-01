@@ -518,13 +518,13 @@ def fetch_credentials_command(client, secretids):
     else:
         if credentials_name:
             try:
-                credentials= [get_credentials(credentials_name)]
+                credentials: str = [get_credentials(client,credentials_name)]
             except Exception as e:
-                demisto.debug(f"Could not fetch credentials: {creds_name}. Error: {e}")
+                demisto.debug(f"Could not fetch credentials: {credentials_name}. Error: {e}")
                 credentials = []
         else:
             for secret_id in secretsid:
-                obj =get_credentials(secret_id)
+                obj = get_credentials(client,secret_id)
                 credentials.append(obj)
 
     demisto.credentials(credentials)
