@@ -71,11 +71,12 @@ class Client(BaseClient):
                         ',protected,public_metrics,url,username,verified,withheld'}
         if return_pinned_tweets == 'true':
             query_params['expansions'] = 'pinned_tweet_id'
+            query_params['tweet.fields'] = 'id,text,attachments,conversation_id,created_at,public_metrics'
         try:
             response = self._http_request(method="GET", url_suffix='/users/by',
                                           headers=self._headers, params=query_params,
                                           ok_codes=[200])
-            result = create_context_data_get_user(response)
+            result = create_context_data_get_user(response, return_pinned_tweets)
         except Exception as e:
             raise e
         return response, result
@@ -96,35 +97,50 @@ def create_context_data_search_tweets(response: dict) -> tuple[List[dict], str]:
                 dict: context data.
                 str: next token.
     """
-    if response:
-        data = response.get('data', {})
-        include = response.get('includes', {})
-        include_media = include.get('media')
-        include_users = include.get('users')
-        for item_in_data in data:
-            author_id = item_in_data.get('author_id')
-            attachments = item_in_data.get('attachments', {})
-            item_in_data.pop('author_id', None)
-            item_in_data.pop('attachments', None)
-            if attachments:
-                media_keys = attachments.get('media_keys')
-                for item_in_include_media in include_media:
-                    media_key = item_in_include_media.get('media_key')
-                    for item_in_media_keys in media_keys:
-                        if item_in_media_keys == media_key:
-                            item_in_include_media.pop('public_metrics', None)
-                            item_in_data['media'] = item_in_include_media
-            for item_in_include_user in include_users:
-                id = item_in_include_user.get('id')
-                if id == author_id:
-                    item_in_data['author'] = item_in_include_user
-        next_token = response.get('meta', {}).get('next_token')
-        response.pop('includes', None)
-        response.pop('meta', None)
-    return data, next_token
+    include = response.get('includes', {})
+    data = response.get('data', [])
+    users = include.get('users', [])
+    media = include.get('media', [])
+    next_token = response.get('meta', {}).get('next_token')
+    list_dict_response = []
+    for data_item in data:
+        author_id = data_item.get('author_id')
+        for user in users:
+            id = user.get('id')
+            if author_id == id:
+                dict_to_append = {
+                    'id': data_item.get('id', None),
+                    'text': data_item.get('text', None),
+                    'conversation_id': data_item.get('conversation_id', None),
+                    'created_at': data_item.get('created_at', ''),
+                    'edit_history_tweet_ids': data_item.get('edit_history_tweet_ids', None),
+                    'author': {'id': user.get('id', None),
+                               'description': user.get('description', None),
+                               'name': user.get('name', None),
+                               'verified': user.get('verified', None),
+                               'username': user.get('username', None),
+                               'created_at': user.get('created_at', None)},
+                    'public_metrics': data_item.get('public_metrics', {}),
+                    'media': []
+                }
+                attachments = data_item.get('attachments', {})
+                if attachments:
+                    media_to_append = []
+                    media_keys = attachments.get('media_keys', [])
+                    for media_key in media_keys:
+                        for media_item in media:
+                            media_key_attachments = media_item.get('media_key')
+                            if media_key == media_key_attachments:
+                                media_to_append.append({'url': media_item.get('url', None),
+                                                        'media_key': media_item.get('media_key', None),
+                                                        'alt_text': media_item.get('alt_text', None),
+                                                        'type': media_item.get('type', None)})
+                    dict_to_append['media'] = media_to_append
+                list_dict_response.append(remove_empty_elements(dict_to_append))
+    return list_dict_response, next_token
 
 
-def create_context_data_get_user(response: dict) -> list[dict]:
+def create_context_data_get_user(response: dict, pinned_tweets: str) -> list[dict]:
     """ Gets raw response form Twitter API and extracts the relevent data.
         The data matched by pinned_tweet_id == includes.tweets.id
             Args:
@@ -132,28 +148,39 @@ def create_context_data_get_user(response: dict) -> list[dict]:
             Returns:
                 dict: context data.
     """
-    if response:
-        data: list[dict] = response.get('data', {})
-        include = response.get('includes', {})
-        for item_in_data in data:
-            entities = item_in_data.get('entities', {})
-            url = entities.get('url', {}).get('urls', {})
-            if entities and url:
-                for url_detail in url:
-                    url_detail.pop('start', None)
-                    url_detail.pop('end', None)
-                item_in_data['entities'] = url
-            pinned_tweet_id = item_in_data.get('pinned_tweet_id')
-            if pinned_tweet_id:
-                if include:
-                    include_tweets = include.get('tweets')
-                    for item_in_include_tweets in include_tweets:
-                        id = item_in_include_tweets.get('id')
-                        if pinned_tweet_id == id:
-                            item_in_data['Pinned_Tweets'] = item_in_include_tweets
-        response.pop('includes', None)
-        response.pop('meta', None)
-    return data
+    include = response.get('includes', {})
+    data = response.get('data', {})
+    tweets = include.get('tweets')
+    list_dict_response = []
+    for data_item in data:
+        pinned_tweet_id = data_item.get('pinned_tweet_id')
+        dict_to_append = {'name': data_item.get('name', None),
+                          'username': data_item.get('username', None),
+                          'created_at': data_item.get('created_at', None),
+                          'description': data_item.get('description', None),
+                          'id': data_item.get('id', None),
+                          'location': data_item.get('location', None),
+                          'pinned_tweet_id': data_item.get('pinned_tweet_id', None),
+                          'profile_image_url': data_item.get('profile_image_url', None),
+                          'protected': data_item.get('protected', None),
+                          'url': data_item.get('url', None),
+                          'verified': data_item.get('verified', None),
+                          'withheld': data_item.get('withheld', None),
+                          'public_metrics': data_item.get('public_metrics', {}),
+                          'entities': [{'url': item.get('url', None),
+                                        'expanded_url': item.get('expanded_url', None),
+                                        'display_url': item.get('display_url', None)}
+                                       for item in data_item.get('entities', {}).get('url', {}).get('urls', {})]}
+        if tweets and pinned_tweet_id and pinned_tweets:
+            for tweet in tweets:
+                tweet_id = tweet.get('id')
+                if pinned_tweet_id == tweet_id:
+                    dict_to_append['pinned_Tweets'] = {'id': data_item.get('id', None),
+                                                       'text': data_item.get('id', None),
+                                                       'conversation_id': data_item.get('id', None),
+                                                       'edit_history_tweet_ids': data_item.get('id', None)}
+        list_dict_response.append(remove_empty_elements(dict_to_append))
+    return list_dict_response
 
 
 ''' COMMAND FUNCTIONS '''
@@ -199,7 +226,36 @@ def date_to_iso_format(date: str) -> str:
     return date
 
 
-def create_human_readable(dict_list: list[dict]) -> list[dict]:
+def create_human_readable_search(dict_list: list[dict]) -> list[dict]:
+    """Gets list of dictionaries with a dictionaries inside for example [{key1: {key2: value}}, {key1: {key2: value}}]
+    and changes it to a list of dictionaries without any dictionaries inside
+    for example [{key1.key2: value}, {key1.key2: value}].
+    Args:
+        dict_list: list[dict] -  A list of dictionaries.
+    Returns:
+        A header string.
+    """
+    list_dict_response: list = []
+    for dict_value in dict_list:
+        list_dict_response.append(
+            {
+                "Tweet ID": dict_value.get("id", {}),
+                "Text": dict_value.get("text", ""),
+                "Created At": dict_value.get("created_at", {}),
+                "Author Name": dict_value.get("author", {}).get("name"),
+                "Author Username": dict_value.get("author", {}).get("username"),
+                "Likes Count": dict_value.get("public_metrics", {}).get("like_count"),
+                "Attachments URL": [
+                    item.get("url", "") for item in dict_value.get("media", [])
+                ]
+                if dict_value.get("media", [])
+                else dict_value.get("media", []),
+            }
+        )
+    return list_dict_response
+
+
+def create_human_readable_user(dict_list: list[dict]) -> list[dict]:
     """ Gets list of dictionaries with a dictionaries inside for example [{key1: {key2: value}}, {key1: {key2: value}}]
         and changes it to a list of dictionaries without any dictionaries inside
         for example [{key1.key2: value}, {key1.key2: value}].
@@ -210,68 +266,16 @@ def create_human_readable(dict_list: list[dict]) -> list[dict]:
     """
     list_dict_response: list = []
     for dict_value in dict_list:
-        dict_to_append = {}
-        for key, value in dict_value.items():
-            if isinstance(value, dict):
-                dict_to_append.update({f'{key}.{k}': v for k, v in value.items()})
-            else:
-                dict_to_append[key] = value
-        list_dict_response.append(dict_to_append)
+        list_dict_response.append({
+            'Name': dict_value.get('name'),
+            'User name': dict_value.get('username'),
+            'Created At': dict_value.get('created_at'),
+            'Description': dict_value.get('description'),
+            'Followers Count': dict_value.get('public_metrics', {}).get('followers_count'),
+            'Tweet Count': dict_value.get('public_metrics', {}).get('tweet_count'),
+            'Verified': dict_value.get('verified'),
+        })
     return list_dict_response
-
-
-def header_transform_tweet_search(header: str) -> str:
-    """ Gets header and transform it to another header according to tweet_search command.
-        Args:
-            header: str -  A header string.
-        Returns:
-            A header string.
-    """
-    if header == 'id':
-        return 'Tweet ID'
-    if header == 'text':
-        return 'Text'
-    if header == 'created_at':
-        return 'Created At'
-    if header == 'author.name':
-        return 'Author Name'
-    if header == 'author.username':
-        return 'Author Username'
-    if header == 'public_metrics.like_count':
-        return 'Likes Count'
-    if header == 'next_token':
-        return 'Next Token'
-    if header == 'media.url':
-        return 'Attachments URL'
-    else:
-        return stringEscapeMD(header, True, True)
-    return ""
-
-
-def header_transform_get_user(header: str) -> str:
-    """ Gets header and transform it to another header according to get_user command.
-        Args:
-            header: str -  A header string.
-        Returns:
-            A header string.
-    """
-    if header == 'name':
-        return 'Name'
-    if header == 'username':
-        return 'User name'
-    if header == 'created_at':
-        return 'Created At'
-    if header == 'description':
-        return 'Description'
-    if header == 'public_metrics.followers_count':
-        return 'Followers Count'
-    if header == 'public_metrics.tweet_count':
-        return 'Tweet Count'
-    if header == 'verified':
-        return 'verified'
-    else:
-        return stringEscapeMD(header, True, True)
-    return ""
 
 
 def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -282,7 +286,7 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> Comman
         Returns:
             A CommandResult object with Tweets data according to to the reqested.
     """
-    headers = ['id', 'text', 'created_at', 'author.name', 'author.username', 'public_metrics.like_count', 'media.url']
+    headers = ['Tweet ID', 'Text', 'Created At', 'Author Name', 'Author Username', 'Likes Count', 'Attachments URL']
     query = argToList(args.get('query'))
     start_time = date_to_iso_format(args.get('start_time', '')) if args.get('start_time', None) else None
     end_time = date_to_iso_format(args.get('end_time', '')) if args.get('end_time', None) else None
@@ -291,17 +295,16 @@ def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> Comman
         raise ValueError('Twitter: Limit should be a value between 10 and 100')
     next_token = args.get('next_token', None)
     raw_response, result, next_token = client.tweet_search(query, start_time, end_time, limit, next_token)
-    dict_to_tableToMarkdown = create_human_readable(result)
+    dict_to_tableToMarkdown = create_human_readable_search(result)
     human_readable = tableToMarkdown("Tweets search results:", dict_to_tableToMarkdown,
-                                     headers=headers, removeNull=False, headerTransform=header_transform_tweet_search)
+                                     headers=headers, removeNull=False)
     if next_token:
         outputs = {
             'Twitter.Tweet(val.next_token)': {'next_token': next_token},
             'Twitter.Tweet.TweetList(val.id === obj.id)': result
         }
         readable_output_next_token = tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
-                                                     headers=['next_token'], removeNull=False,
-                                                     headerTransform=header_transform_tweet_search)
+                                                     headers=['next_token'], removeNull=False)
         return CommandResults(
             outputs=outputs,
             readable_output=human_readable + readable_output_next_token,
@@ -331,15 +334,14 @@ def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
         Returns:
             A CommandResult object with users data according to to the reqested.
     """
-    headers = ['name', 'username', 'created_at', 'description', 'public_metrics.followers_count',
-               'public_metrics.tweet_count', 'verified']
+    headers = ['Name', 'User name', 'Created At', 'Description', 'Followers Count',
+               'Tweet Count', 'Verified']
     user_name = argToList(args.get('user_name'))
     return_pinned_tweets = args.get('return_pinned_tweets', 'false')
     raw_response, result = client.twitter_user_get(user_name, return_pinned_tweets)
-    dict_to_tableToMarkdown = create_human_readable(result)
-    human_readable = tableToMarkdown("twitter user get results:", dict_to_tableToMarkdown,
-                                     headers=headers, removeNull=False,
-                                     headerTransform=header_transform_get_user)
+    dict_to_tableToMarkdown = create_human_readable_user(result)
+    human_readable = tableToMarkdown("Twitter user get results:", dict_to_tableToMarkdown,
+                                     headers=headers, removeNull=False)
     return CommandResults(
         outputs_prefix='Twitter.User',
         outputs_key_field='id',

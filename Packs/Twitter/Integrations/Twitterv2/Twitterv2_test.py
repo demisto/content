@@ -108,19 +108,38 @@ def test_date_to_iso_format(date, expected_result):
     assert result == expected_result
 
 
-@pytest.mark.parametrize('human_readable, expected_human_readable', [
-                         (test_data['input_user_get_response'], test_data['result_create_human_readable'])])
-def test_create_human_readable(human_readable, expected_human_readable):
+@pytest.mark.parametrize('response, expected_result', [
+                         (test_data['search_tweets_response'], test_data['expected_output_create_context_search'])])
+def test_create_context_data_search_tweets(response, expected_result):
     """
-    Tests create_human_readable
+    Tests create_context_data_search_tweets
     Given:
         - list of nested dictionaries
     When:
-        - calling create_human_readable
+        - calling create_context_data_search_tweets
     Then:
-        - return a list of non nest dictionaries
+        - return a list dictionaries according to the required context format
     """
-    from Twitterv2 import create_human_readable
+    from Twitterv2 import create_context_data_search_tweets
 
-    result = create_human_readable(human_readable)
-    assert result == expected_human_readable
+    result, next_token = create_context_data_search_tweets(response)
+    assert result == expected_result
+    assert next_token == 'some_token'
+
+
+@pytest.mark.parametrize('response, expected_result', [
+                         (test_data['user_get_response'], test_data['result_user_get_response'])])
+def test_create_context_data_get_user(response, expected_result):
+    """
+    Tests create_context_data_get_user
+    Given:
+        - list of nested dictionaries
+    When:
+        - calling create_context_data_get_user
+    Then:
+        - return a list dictionaries according to the required context format
+    """
+    from Twitterv2 import create_context_data_get_user
+
+    result = create_context_data_get_user(response, 'true')
+    assert result == expected_result
