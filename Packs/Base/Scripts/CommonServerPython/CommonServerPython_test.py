@@ -8545,7 +8545,7 @@ def test_collect_execution_metrics():
 
     expected_command_results = {'APIExecutionMetrics': [{'APICallsCount': 1, 'Type': 'Successful'}],
                                 'Contents': 'Metrics reported successfully.',
-                                'ContentsFormat': 'json',
+                                'ContentsFormat': 'text',
                                 'EntryContext': {},
                                 'HumanReadable': None,
                                 'IgnoreAutoExtract': False,
