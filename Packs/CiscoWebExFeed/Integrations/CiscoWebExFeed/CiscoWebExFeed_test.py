@@ -131,11 +131,11 @@ def test_check_indicator_type__diffrent_inputs(input, expected):
     assert check_indicator_type(input) == expected
 
 
-@pytest.mark.parametrize('input, expected', [
-    ('Both', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n| domainmock | mocked_type |\n'),
-    ('CIDR', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock | mocked_type |\n'),
-    ('DOMAIN', '### Indicators from WebEx:\n|value|type|\n|---|---|\n| domainmock | mocked_type |\n')])
-def test_get_indicators_command__diffrent_indicator_type_as_input(mocker, input, expected):
+@pytest.mark.parametrize('input, limit, expected', [
+    ('Both', 1, '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock1 | mocked_type |\n| domainmock1 | mocked_type |\n'),
+    ('CIDR', 2, '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock1 | mocked_type |\n| ipmock2 | mocked_type |\n'),
+    ('DOMAIN', 5, '### Indicators from WebEx:\n|value|type|\n|---|---|\n| domainmock1 | mocked_type |\n| domainmock2 | mocked_type |\n')])
+def test_get_indicators_command__diffrent_indicator_type_and_limit_as_input(mocker, input, expected, limit):
     """
     Given:
         - a limit and an indicator type
@@ -149,9 +149,9 @@ def test_get_indicators_command__diffrent_indicator_type_as_input(mocker, input,
     mocker.patch.object(Client, 'all_raw_data', return_value='gg')
     mocker.patch.object(CiscoWebExFeed, 'check_indicator_type', return_value='mocked_type')
     mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
-                        return_value={'CIDR': ['ipmock'], 'DOMAIN': ['domainmock']})
+                        return_value={'CIDR': ['ipmock1', 'ipmock2'], 'DOMAIN': ['domainmock1', 'domainmock2']})
 
-    res = get_indicators_command(client=client, limit=1, indicator_type=input)
+    res = get_indicators_command(client=client, limit=limit, indicator_type=input)
     assert res.readable_output == expected
 
 
@@ -173,5 +173,3 @@ def test_fetch_indicators_command__different_sizes_of_inputs(mocker, input, expe
                         return_value=input)
     expected_result = expected
     assert fetch_indicators_command(client=client, tags=("very_good", "very_bad"), tlp_color="very_yellow") == expected_result
-
-
