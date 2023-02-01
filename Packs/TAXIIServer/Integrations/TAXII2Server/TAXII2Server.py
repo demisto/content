@@ -92,6 +92,14 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
                   FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry)
 }
 
+HASH_TYPE_TO_STIX_HASH_TYPE = {
+    'md5': 'MD5',
+    'sha1': 'SHA-1',
+    'sha256': 'SHA-256',
+    'sha512': 'SHA-512',
+}
+
+
 ''' TAXII2 Server '''
 
 
@@ -688,8 +696,8 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
 
     pattern = ''
     if object_type == 'file':
-        hash_type = get_hash_type(indicator_value)
-        pattern = f"[file:hash.'{hash_type}' = '{indicator_pattern_value}']"
+        hash_type = HASH_TYPE_TO_STIX_HASH_TYPE.get(get_hash_type(indicator_value), 'Unknown')
+        pattern = f"[file:hashes.'{hash_type}' = '{indicator_pattern_value}']"
     else:
         pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
 
