@@ -317,7 +317,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         incident_result['dbotMirrorId'] = incident['id']
 
         if drop_playbook_id:
-            fields = filter(lambda field: field != 'playbookId', FIELDS_TO_COPY_FROM_REMOTE_INCIDENT)
+            fields = list(filter(lambda field: field != 'playbookId', FIELDS_TO_COPY_FROM_REMOTE_INCIDENT))
         else:
             fields = FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
 
