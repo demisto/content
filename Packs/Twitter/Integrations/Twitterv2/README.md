@@ -64,7 +64,7 @@ This command will search for Tweets posted over the past week and return all inf
 | Twitter.Tweet.TweetList.media.url | String | A direct URL to the media file on Twitter. | 
 | Twitter.Tweet.TweetList.media.media_key | String | Unique identifier of the expanded media content. | 
 | Twitter.Tweet.TweetList.media.alt_text | String | A description of an image to enable and support accessibility. Can be up to 1000 characters long. | 
-| Twitter.Tweet.next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
+| Twitter.Tweet.NextToken.next_token | String | A value that encodes the next 'page' of results that can be requested, via the next_token request parameter. | 
 
 #### Command example
 ```!twitter-tweet-search query="twitter" limit="10"```

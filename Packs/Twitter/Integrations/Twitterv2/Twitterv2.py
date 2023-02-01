@@ -200,7 +200,6 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
     client.tweet_search('Twitter', None, None, 10, None)
     message = 'ok'
     return message
@@ -219,13 +218,11 @@ def date_to_iso_format(date: str) -> str:
 
 
 def create_human_readable_search(dict_list: list[dict]) -> list[dict]:
-    """Gets list of dictionaries with a dictionaries inside for example [{key1: {key2: value}}, {key1: {key2: value}}]
-    and changes it to a list of dictionaries without any dictionaries inside
-    for example [{key1.key2: value}, {key1.key2: value}].
+    """Gets list of dictionaries and creates a human readable from it.
     Args:
         dict_list: list[dict] -  A list of dictionaries.
     Returns:
-        A header string.
+        human readable: list[dict].
     """
     list_dict_response: list = []
     for dict_value in dict_list:
@@ -247,75 +244,40 @@ def create_human_readable_search(dict_list: list[dict]) -> list[dict]:
     return list_dict_response
 
 
-def create_human_readable_user(dict_list: list[dict]) -> list[dict]:
-    """ Gets list of dictionaries with a dictionaries inside for example [{key1: {key2: value}}, {key1: {key2: value}}]
-        and changes it to a list of dictionaries without any dictionaries inside
-        for example [{key1.key2: value}, {key1.key2: value}].
-        Args:
-            dict_list: list[dict] -  A list of dictionaries.
-        Returns:
-            A header string.
-    """
-    list_dict_response: list = []
-    for dict_value in dict_list:
-        list_dict_response.append({
-            'Name': dict_value.get('name'),
-            'User name': dict_value.get('username'),
-            'Created At': dict_value.get('created_at'),
-            'Description': dict_value.get('description'),
-            'Followers Count': dict_value.get('public_metrics', {}).get('followers_count'),
-            'Tweet Count': dict_value.get('public_metrics', {}).get('tweet_count'),
-            'Verified': dict_value.get('verified'),
-        })
-    return list_dict_response
-
-
-def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def twitter_tweet_search_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """ Gets args and client and returns CommandResults of Tweets according to the reqested search.
         Args:
             client: client -  A Twitter client.
             args: Dict - The function arguments.
         Returns:
-            A CommandResult object with Tweets data according to to the reqested.
+            A CommandResult object with Tweets data according to to the reqest.
     """
     headers = ['Tweet ID', 'Text', 'Created At', 'Author Name', 'Author Username', 'Likes Count', 'Attachments URL']
     query = argToList(args.get('query'))
     start_time = date_to_iso_format(args.get('start_time', '')) if args.get('start_time', None) else None
     end_time = date_to_iso_format(args.get('end_time', '')) if args.get('end_time', None) else None
     limit = arg_to_number(args.get('limit', 50))
-    if limit and (limit > 100 or limit < 10):
-        raise ValueError('Twitter: Limit should be a value between 10 and 100')
     next_token = args.get('next_token', None)
     raw_response, result, next_token = client.tweet_search(query, start_time, end_time, limit, next_token)
     dict_to_tableToMarkdown = create_human_readable_search(result)
     human_readable = tableToMarkdown("Tweets search results:", dict_to_tableToMarkdown,
                                      headers=headers, removeNull=False)
+    command_results = []
     if next_token:
-        outputs = {
-            'Twitter.Tweet(val.next_token)': {'next_token': next_token},
-            'Twitter.Tweet.TweetList(val.id === obj.id)': result
-        }
         readable_output_next_token = tableToMarkdown("Tweet Next Token:", {'next_token': next_token},
                                                      headers=['next_token'], removeNull=False)
-        return CommandResults(
-            outputs=outputs,
-            readable_output=human_readable + readable_output_next_token,
-            raw_response=raw_response
-        )
-    elif result:
-        return CommandResults(
-            outputs_prefix='Twitter.Tweet.TweetList',
-            outputs_key_field='id',
-            outputs=result,
-            readable_output=human_readable,
-            raw_response=raw_response)
-    else:
-        return CommandResults(
-            outputs_prefix='Twitter.Tweet.TweetList',
-            outputs_key_field='id',
-            readable_output=human_readable,
-            raw_response=raw_response
-        )
+        command_results.append(CommandResults(
+            outputs={'Twitter.Tweet.NextToken(val.next_token)': {'next_token': next_token}},
+            readable_output=readable_output_next_token,
+        ))
+    command_results.append(CommandResults(
+        outputs_prefix='Twitter.Tweet.TweetList',
+        outputs_key_field='id',
+        outputs=result,
+        readable_output=human_readable,
+        raw_response=raw_response))
+
+    return command_results
 
 
 def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -324,15 +286,25 @@ def twitter_user_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
             client: client -  A Twitter client.
             args: Dict - The function arguments.
         Returns:
-            A CommandResult object with users data according to to the reqested.
+            A CommandResult object with users' data according to to the reqest.
     """
     headers = ['Name', 'User name', 'Created At', 'Description', 'Followers Count',
                'Tweet Count', 'Verified']
     user_name = argToList(args.get('user_name'))
     return_pinned_tweets = args.get('return_pinned_tweets', 'false')
     raw_response, result = client.twitter_user_get(user_name, return_pinned_tweets)
-    dict_to_tableToMarkdown = create_human_readable_user(result)
-    human_readable = tableToMarkdown("Twitter user get results:", dict_to_tableToMarkdown,
+    list_dict_to_tableToMarkdown: list = []
+    for dict_value in result:
+        list_dict_to_tableToMarkdown.append({
+            'Name': dict_value.get('name'),
+            'User name': dict_value.get('username'),
+            'Created At': dict_value.get('created_at'),
+            'Description': dict_value.get('description'),
+            'Followers Count': dict_value.get('public_metrics', {}).get('followers_count'),
+            'Tweet Count': dict_value.get('public_metrics', {}).get('tweet_count'),
+            'Verified': dict_value.get('verified'),
+        })
+    human_readable = tableToMarkdown("Twitter user get results:", list_dict_to_tableToMarkdown,
                                      headers=headers, removeNull=False)
     return CommandResults(
         outputs_prefix='Twitter.User',
