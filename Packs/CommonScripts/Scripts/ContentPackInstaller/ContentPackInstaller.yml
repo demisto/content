@@ -53,4 +53,4 @@ type: python
 dockerimage: demisto/xsoar-tools:1.0.0.45779
 tests:
 - ContentPackInstaller_Test
-fromversion: 6.5.0
+fromversion: 6.0.0
