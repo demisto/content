@@ -111,14 +111,6 @@
        "cefSeverity": {
         "type": "string",
         "is_array": false
-      },
-       "FortinetFortiGateeventtime": {
-        "type": "string",
-        "is_array": false
-      },
-       "FortinetFortiGatetz": {
-        "type": "string",
-        "is_array": false
       }  
     }
   }
