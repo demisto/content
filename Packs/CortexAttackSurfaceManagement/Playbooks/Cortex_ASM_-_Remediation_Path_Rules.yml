@@ -120,17 +120,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: bcb3e568-6c5b-4fcd-8fb3-a208152d05a6
+    taskid: 9d3d0c7b-7131-4557-85b8-e32f167c1c38
     type: regular
     task:
-      id: bcb3e568-6c5b-4fcd-8fb3-a208152d05a6
+      id: 9d3d0c7b-7131-4557-85b8-e32f167c1c38
       version: -1
       name: Evaluate remediation path rules
+      description: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this takes each remediation path rule and looks at the rule criteria too see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
       scriptName: RemediationPathRuleEvaluation
       type: regular
       iscommand: false
       brand: ""
-      description: "For a given alert and remediation path rules that are defined for that alert's attack surface rule, this takes each remediation path rule and looks at the rule criteria too see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule."
     nexttasks:
       '#none#':
       - "22"
@@ -212,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a3759691-ca5a-4776-82e7-7738934f97fd
+    taskid: 59707f87-7c81-4617-89fc-cc923d071cbb
     type: condition
     task:
-      id: a3759691-ca5a-4776-82e7-7738934f97fd
+      id: 59707f87-7c81-4617-89fc-cc923d071cbb
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -256,7 +256,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AWS,GCP
+              simple: AWS,GCP,Azure
       - - operator: isNotEmpty
           left:
             value:
@@ -999,6 +999,6 @@ outputs:
 - contextPath: RPR_Timestamp
   description: Timestamp of when the remediation path rule action was determined.
   type: string
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
