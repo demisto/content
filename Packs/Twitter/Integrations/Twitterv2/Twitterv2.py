@@ -201,16 +201,8 @@ def test_module(client: Client) -> str:
     """
 
     message: str = ''
-    try:
-        query_params = {'query': 'Twitter'}
-        client._http_request(method="GET", url_suffix='/tweets/search/recent',
-                             headers=client._headers, params=query_params, ok_codes=[200])
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+    client.tweet_search('Twitter', None, None, 10, None)
+    message = 'ok'
     return message
 
 
