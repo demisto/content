@@ -5,6 +5,9 @@ set -e
 
 # set local vars
 CONTENT_PIPELINES_API_URL=https://code.pan.run/api/v4/projects/2596/pipelines # disable-secrets-detection
+echo $1
+echo $2
+echo $3
 
 if [[ -z "$1" ]]; then
   CI_COMMIT_BRANCH=$1
