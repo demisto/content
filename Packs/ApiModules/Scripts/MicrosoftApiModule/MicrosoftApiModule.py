@@ -702,3 +702,24 @@ class NotFoundError(Exception):
 
     def __init__(self, message):
         self.message = message
+
+
+def generate_login_url(client: MicrosoftClient) -> CommandResults:
+
+    assert client.tenant_id \
+        and client.scope \
+        and client.client_id \
+        and client.redirect_uri, 'Please make sure you entered the Authorization configuration correctly.'
+
+    login_url = f'https://login.microsoftonline.com/{client.tenant_id}/oauth2/v2.0/authorize?' \
+                f'response_type=code&scope=offline_access%20{client.scope}' \
+                f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}'
+
+    result_msg = f"""### Authorization instructions
+1. Click on the [login URL]({login_url}) to sigh in and grant Cortex XSOAR permissions for your Azure Service Management.
+You are automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+    """
+    return CommandResults(readable_output=result_msg)
