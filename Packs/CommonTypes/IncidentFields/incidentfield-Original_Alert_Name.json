@@ -34,14 +34,14 @@
 	"validationRegex": "",
 	"version": -1,
 	"fromVersion": "5.0.0",
-    "Aliases": [
-        {
-            "cliName": "alertname",
-            "type": "shortText",
-            "name": "Alert Name"
-        }
+	"Aliases": [
+		{
+			"cliName": "alertname",
+			"type": "shortText",
+			"name": "Alert Name"
+		}
 	],
-    "marketplaces": [
+	"marketplaces": [
 		"marketplacev2"
-    ]	
+	]	
 }
