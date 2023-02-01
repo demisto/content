@@ -148,7 +148,7 @@ class CoreClient(BaseClient):
         self.timeout = timeout
 
     def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
-                        resolve_comment=None, unassign_user=None):
+                        resolve_comment=None, unassign_user=None, add_comment=None):
         update_data = {}
 
         if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
@@ -170,6 +170,9 @@ class CoreClient(BaseClient):
 
         if resolve_comment:
             update_data['resolve_comment'] = resolve_comment
+
+        if add_comment:
+            update_data['comment'] = {'comment_action': 'add', 'value': add_comment}
 
         request_data = {
             'incident_id': incident_id,
@@ -2337,6 +2340,7 @@ def update_incident_command(client, args):
     severity = args.get('manual_severity')
     unassign_user = args.get('unassign_user') == 'true'
     resolve_comment = args.get('resolve_comment')
+    add_comment = args.get('add_comment')
 
     client.update_incident(
         incident_id=incident_id,
@@ -2345,7 +2349,8 @@ def update_incident_command(client, args):
         unassign_user=unassign_user,
         status=status,
         severity=severity,
-        resolve_comment=resolve_comment
+        resolve_comment=resolve_comment,
+        add_comment=add_comment,
     )
 
     return f'Incident {incident_id} has been updated', None, None
