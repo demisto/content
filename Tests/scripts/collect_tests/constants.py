@@ -17,19 +17,6 @@ SANITY_TEST_TO_PACK: dict[str, str] = {
     'Sanity Test - Playbook with mocked integration': 'HelloWorld',
 }
 
-DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
-    'FormattingPerformance - Test',
-    'reputations.json Test',
-    'URL extraction test',
-    'Domain extraction test',
-    'Email extraction test',
-    'File extraction test',
-    'IPv4 extraction test',
-    'IPv4 CIDR extraction test',
-    'IPv6 CIDR extraction test',
-    'IPv6 extraction test'
-)
-
 ALWAYS_INSTALLED_PACKS_XSOAR = (
     'Base',
     'DeveloperTools',

@@ -69,6 +69,7 @@ class TestConf(DictFileBased):
         }
 
         self.non_api_tests = [test.playbook_id for test in self.tests if not test.has_api]
+        self.reputation_tests = set(self['reputation_tests'])
 
     def _calculate_integration_to_tests(self) -> dict[str, list[str]]:
         result = defaultdict(list)
