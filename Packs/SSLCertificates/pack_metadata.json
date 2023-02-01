@@ -1,0 +1,21 @@
+{
+    "name": "SSL Certificates",
+    "description": "SSL Certificate Content Pack for validating SSL Certificate statuses and automatically generating CSRs to renew expiring/expired certificates. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Josh Levine",
+    "url": "",
+    "email": "",
+    "created": "2023-02-01T14:22:49Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "TerminalFin"
+    ]
+}
