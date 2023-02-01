@@ -801,7 +801,7 @@ def main() -> None:
                     query=query,
                     mirror_direction=demisto.params().get('mirror_direction'),
                     mirror_tag=list(mirror_tags),
-                    drop_playbook_id=demisto.params().get('drop_playbook_id')
+                    drop_playbook_id=demisto.params().get('drop_playbook_id'),
                 )
 
             return_results(test_module(client, first_fetch_time))
