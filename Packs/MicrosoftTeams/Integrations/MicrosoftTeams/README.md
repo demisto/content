@@ -210,12 +210,14 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
-4. For the following permissions, search for,  select the checkbox and click **Add permissions**.
+4. For the following permissions, search for, select the checkbox and click **Add permissions**.
   - User.Read.All
   - Group.ReadWrite.All
   - Calls.Initiate.All
   - Calls.InitiateGroupCall.All
   - OnlineMeetings.ReadWrite.All
+  - ChannelMember.ReadWrite.All
+  - Channel.Create
 
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
@@ -238,17 +240,19 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
     ##### Required Application Permissions:
       1. User.Read.All
       2. Group.ReadWrite.All
-      3. Calls.Initiate.All
-      4. Calls.InitiateGroupCall.All
-      5. OnlineMeetings.ReadWrite.All
-      6. ChannelMember.ReadWrite.All
+      3. OnlineMeetings.ReadWrite.All
+      4. ChannelMember.ReadWrite.All
+      5. Channel.Create
 
     ##### Required Delegated Permissions:
       1. ChannelMessage.Send
       2. Chat.ReadWrite
       3. ChatMessage.Send
       4. Group.ReadWrite.All
-      5. ChannelSettings.ReadWrite.All
+      5. Channel.Create
+      6. ChannelSettings.ReadWrite.All
+      7. ChatMember.ReadWrite
+      8. Chat.ReadWrite
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 7. Click **Expose an API and add Application ID URI (id only)  
@@ -338,10 +342,12 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 ## Known Limitations
 ---
 - In some cases, you might encounter a problem, where no communication is created between Teams and the messaging endpoint, when adding a bot to the team. You can workaround this problem by adding any member to the team the bot was added to. It's supposed to trigger a communication and solve the issue.
-- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the Client Credentials flow due to a limitation in Microsoft's permissions system. In addition, the [microsoft-teams-chat-create](https://learn.microsoft.com/en-us/graph/api/chat-post?view=graph-rest-1.0&tabs=http) and [microsoft-teams-message-send-to-chat](https://learn.microsoft.com/en-us/graph/api/chat-post-messages?view=graph-rest-1.0&tabs=http) commands are only supported when using the Authorization Code flow.
-  To work around these limitations, you can configure two instances of the integration, each with a different Authentication Type. TODO - with different bots
+- The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/api/application-post-calls?view=graph-rest-1.0&tabs=http) command is only supported when using the `Client Credentials flow` due to a limitation in Microsoft's permissions system. 
+- In addition, the chat commands are only supported when using the `Authorization Code flow`.
 - Posting a message or adaptive card to a private/shared channel is currently not supported in the *send-notification* command. Thus, also the *mirror_investigation* command does not support private/shared channels. For more information, see the [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
-- TODO - See Microsoft documentation to [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams)
+- In case of multiple chats/users sharing the same name, the first one will be taken.
+- See Microsoft documentation to [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams)
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -557,6 +563,7 @@ See also [Channel feature comparison](https://learn.microsoft.com/en-us/Microsof
 ##### Required Permissions
 
 `Group.ReadWrite.All`
+`Channel.Create`
 
 ##### Input
 
@@ -804,9 +811,156 @@ Send a new chat message in the specified chat.
 |-----------------------------------------------|--------------------------|--------------------------------------|--------------|-----------------|---------------|-----------|------------|--------------------------|
 | 19:1c771fdc14dc4b05b3a9184414bc8948@thread.v2 | 2023-01-08T07:55:50.222Z | 359d2c3c-162b-414c-b2eq-386461e5l050 | message      | Hello World     | 1673864550222 | itayadmin | normal     | 2023-01-08T07:55:50.222Z |
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.ChatList.id | String | The chat's unique identifier. | 
+| MicrosoftTeams.ChatList.topic | String | Subject or topic for the chat. Only available for group chats. | 
+| MicrosoftTeams.ChatList.createdDateTime | String | Date and time at which the chat was created. | 
+| MicrosoftTeams.ChatList.lastUpdatedDateTime | String | Date and time at which the chat was renamed or list of members were last changed. | 
+| MicrosoftTeams.ChatList.chatType | String | Specifies the type of chat. | 
+| MicrosoftTeams.ChatList.webUrl | String | The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed. | 
+| MicrosoftTeams.ChatList.tenantId | String | The identifier of the tenant in which the chat was created. | 
+| MicrosoftTeams.ChatList.viewpoint | String | Represents caller-specific information about the chat, such as last message read date and time. | 
+| MicrosoftTeams.ChatList.onlineMeetingInfo | String | Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty. | 
+
+#### Context Output
 
 
+### microsoft-teams-chat-member-list
+***
+Retrieves a list of members from a chat.
 
+
+#### Base Command
+
+`microsoft-teams-chat-member-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | Represents the identity of the chat - chat_name/chat_id/member only in case of "oneOnOne" chat_type. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.ChatMember.Chat.displayName | String | The display name of the members. | 
+| MicrosoftTeams.ChatMember.Chat.email | String | The email of the members. | 
+| MicrosoftTeams.ChatMember.Chat.id | String | The id of the members. | 
+| MicrosoftTeams.ChatMember.Chat.roles | String | The roles of the members. | 
+| MicrosoftTeams.ChatMember.Chat.tenantId | String | The tenantId of the members. | 
+| MicrosoftTeams.ChatMember.Chat.userId | String | The userId of the members. | 
+| MicrosoftTeams.ChatMember.Chat.visibleHistoryStartDateTime | String | The timestamp denoting how far back a conversation's history is shared with the conversation member. | 
+
+### microsoft-teams-chat-message-list
+***
+Retrieves the list of messages in a chat.
+
+
+#### Base Command
+
+`microsoft-teams-chat-message-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | Represents the identity of the chat - chat_name/chat_id/member only in case of "oneOnOne" chat_type. | Required | 
+| limit | The number of results to retrieve. Default value is 50. Default is 50. | Optional | 
+| order_by | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.ChatMessage.id | String | Unique ID of the message. | 
+| MicrosoftTeams.ChatMessage.replyToId | String | ID of the parent chat message or root chat message of the thread. | 
+| MicrosoftTeams.ChatMessage.etag | String | Version number of the chat message. | 
+| MicrosoftTeams.ChatMessage.messageType | String | The type of chat message. | 
+| MicrosoftTeams.ChatMessage.createdDateTime | String | Timestamp of when the chat message was created. | 
+| MicrosoftTeams.ChatMessage.lastModifiedDateTime | String | Timestamp when the chat message is created \(initial setting\) or modified, including when a reaction is added or removed. | 
+| MicrosoftTeams.ChatMessage.lastEditedDateTime | String | Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null. | 
+| MicrosoftTeams.ChatMessage.deletedDateTime | String | Timestamp at which the chat message was deleted, or null if not deleted. | 
+| MicrosoftTeams.ChatMessage.subject | String | The subject of the chat message, in plaintext. | 
+| MicrosoftTeams.ChatMessage.summary | String | Summary text of the chat message that could be used for push notifications and summary views or fall back views. | 
+| MicrosoftTeams.ChatMessage.chatId | String | If the message was sent in a chat, represents the identity of the chat. | 
+| MicrosoftTeams.ChatMessage.importance | String | The importance of the chat message. | 
+| MicrosoftTeams.ChatMessage.locale | String | Locale of the chat message set by the client. | 
+| MicrosoftTeams.ChatMessage.webUrl | String | Link to the message in Microsoft Teams. | 
+| MicrosoftTeams.ChatMessage.channelIdentity | String | If the message was sent in a channel, represents identity of the channel. | 
+| MicrosoftTeams.ChatMessage.policyViolation | String | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application. | 
+| MicrosoftTeams.ChatMessage.eventDetail | String | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. | 
+| MicrosoftTeams.ChatMessage.from | String | Details of the sender of the chat message. | 
+| MicrosoftTeams.ChatMessage.body | String | Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body. | 
+| MicrosoftTeams.ChatMessage.attachments | String | References to attached objects like files, tabs, meetings etc. | 
+| MicrosoftTeams.ChatMessage.mentions | String | List of entities mentioned in the chat message. | 
+| MicrosoftTeams.ChatMessage.reactions | String | Reactions for this chat message \(for example, Like\). | 
+
+### microsoft-teams-chat-update
+***
+Updates the title of the chat. This can only be set for a group chat.
+
+
+#### Base Command
+
+`microsoft-teams-chat-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | Represents the identity of the chat - chat_id/chat_name (in case of same chat name will take the first). | Required | 
+| title | The title of the chat. Maximum length is 250 characters. Use of ':' is not allowed. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+### microsoft-teams-chat-add-user
+***
+Adds a member (user) to a chat.
+
+
+#### Base Command
+
+`microsoft-teams-chat-add-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | Represents the identity of the chat - chat_name/chat_id/member only in case of "oneOnOne" chat_type. | Required | 
+| member | Display name/mail/UPN of user that should be added to the chat. Can be an array. | Required | 
+| share_history | Whether to share the whole history of the chat. Default is "true". Possible values are: true, false. Default is True. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+##### Command Example
+```!microsoft-teams-chat-add-user chat="DemistoChat" member="Megan Bowen, Jane Doe"```
+
+##### Human Readable Output
+The Users "Megan Bowen, Jane Doe" has been added to chat "DemistoChat" successfully.
+
+### microsoft-teams-chat-list
+***
+Retrieves the list of chats that the user is part of. If 'chat' is given - retrieves single chat  # TODO
+
+
+#### Base Command
+
+`microsoft-teams-chat-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | Represents the identity of the chat - chat_name/chat_id/member only in case of "oneOnOne" chat_type. | Optional | 
+| filter | Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http . | Optional | 
+| expand | Expands the results to include members or lastMessagePreview properties. Possible values are: members, lastMessagePreview. | Optional | 
+| limit | The number of results to retrieve. Default value is 50. Default is 50. | Optional | 
 
 
 ### microsoft-teams-auth-test

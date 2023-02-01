@@ -112,7 +112,7 @@ configuration:
   name: longRunningPort
   required: false
   type: 0
-  section: Connect
+  section: Collect
   advanced: true
 - display: Incident type
   name: incidentType
@@ -186,7 +186,7 @@ script:
     description: Tests the connectivity to MicrosoftTeams.
     name: microsoft-teams-auth-test
   - arguments:
-    - description: The name of the channel.
+    - description: The name of the channel. The name must be unique.
       name: channel_name
       required: true
     - description: The description of the channel.
@@ -226,7 +226,7 @@ script:
     - description: The display name of the member to add to the channel.
       name: member
       required: true
-    - description: Whether to add the member with the owner role. The default value is 'false'.
+    - description: Whether to add the member with the owner role.  Default is 'false'.
       name: owner # todo maybe change to |is_owner
       auto: PREDEFINED
       predefined:
@@ -240,12 +240,12 @@ script:
     - description: The name of the channel.
       name: channel_name
       required: true
-    - description: The description of the channel.
-      name: description
     - description: The team in which to create the channel.
       name: team
       required: true
-    - description: The type of the channel. The possible values are standard, private, shared. The default value is standard.
+    - description: The description of the channel.
+      name: description
+    - description: The type of the channel. The possible values are standard, private, shared. Default is 'standard'.
       name: membership_type
       required: false
       isArray: false
@@ -314,28 +314,28 @@ script:
     - description: The name of the channel's team.
       name: team
       required: true
-    description: Retrieve a list of members from a channel.
+    description: Retrieves a list of members from a channel.
     name: microsoft-teams-channel-user-list
     outputs:
-    - contextPath: MicrosoftTeams.Channel.ChannelName.Members.displayName
+    - contextPath: MicrosoftTeams.ChannelMembers.ChannelName.displayName
       description: The display name of the members.
       type: String
-    - contextPath: MicrosoftTeams.Channel.ChannelName.Members.email
+    - contextPath: MicrosoftTeams.ChannelMembers.ChannelName.email
       description: The email of the members.
       type: String
-    - contextPath: MicrosoftTeams.Channel.ChannelName.Members.id
+    - contextPath: MicrosoftTeams.ChannelMembers.ChannelName.id
       description: The id of the members.
       type: String
-    - contextPath: MicrosoftTeams.Channel.ChannelName.Members.roles
+    - contextPath: MicrosoftTeams.ChannelMembers.ChannelName.roles
       description: The roles of the members.
       type: String
-    - contextPath: MicrosoftTeams.Channel.ChannelName.Members.tenantId
+    - contextPath: MicrosoftTeams.ChannelMembers.ChannelName.tenantId
       description: The tenantId of the members.
       type: String
-    - contextPath: MicrosoftTeams.Channel.ChannelName.Members.userId
+    - contextPath: MicrosoftTeams.ChannelMembers.ChannelName.userId
       description: The userId of the members.
       type: String
-    - contextPath: MicrosoftTeams.Channel.ChannelName.Members.visibleHistoryStartDateTime
+    - contextPath: MicrosoftTeams.ChannelMembers.ChannelName.visibleHistoryStartDateTime
       description: The timestamp denoting how far back a conversation's history is shared with the conversation member.
       type: String
   - arguments:
@@ -356,117 +356,314 @@ script:
       name: chat_name
       required: false
       isArray: false
-    description: Create a new chat object. Only one one-on-one chat can exist between two members. If a one-on-one chat already exists, this operation will return the existing chat and not create a new one.
+    description: Creates a new chat. Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, the existing chat will be returned.
     name: microsoft-teams-chat-create
     outputs:
-    - contextPath: MicrosoftTeams.Chat.Info.id
+    - contextPath: MicrosoftTeams.ChatInfo.id
       description: The chat's unique identifier.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Info.topic
+    - contextPath: MicrosoftTeams.ChatInfo.topic
       description: Subject or topic for the chat. Only available for group chats.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Info.createdDateTime
+    - contextPath: MicrosoftTeams.ChatInfo.createdDateTime
       description: Date and time at which the chat was created.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Info.lastUpdatedDateTime
+    - contextPath: MicrosoftTeams.ChatInfo.lastUpdatedDateTime
       description: Date and time at which the chat was renamed or list of members were last changed.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Info.chatType
+    - contextPath: MicrosoftTeams.ChatInfo.chatType
       description: Specifies the type of chat.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Info.webUrl
+    - contextPath: MicrosoftTeams.ChatInfo.webUrl
       description: The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Info.tenantId
+    - contextPath: MicrosoftTeams.ChatInfo.tenantId
       description: The identifier of the tenant in which the chat was created.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Info.viewpoint
-      description: Represents caller-specific information about the chat.
+    - contextPath: MicrosoftTeams.ChatInfo.viewpoint
+      description: Represents caller-specific information about the chat, such as last message read date and time.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Info.onlineMeetingInfo
+    - contextPath: MicrosoftTeams.ChatInfo.onlineMeetingInfo
       description: Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty.
       type: String
   - arguments:
-    - description: Represents the identity of the chat - chat_name/chat_id/member only in case of "oneOnOne" chat_type.
+    - description: The chat ID / group chat name (topic) / Member (Display name/mail/UPN) # TODO
       name: chat
       required: true
     - description: The content of the chat message.
       name: content
       required: true
+    - description: The message content type - Plaintext/HTML.
+      name: content_type
+      auto: PREDEFINED
+      predefined:
+        - 'text'
+        - 'html'
+      defaultValue: 'text'
+      required: false
     - description: The type of chat message.
       name: message_type
       required: false
       isArray: false
       defaultValue: 'message'
-    description: Send a new chat message in the specified chat.
+    description: Sends a new chat message in the specified chat.
     name: microsoft-teams-message-send-to-chat
     outputs:
-    - contextPath: MicrosoftTeams.Chat.Message.id
+    - contextPath: MicrosoftTeams.ChatMessage.id
       description: Unique ID of the message.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.replyToId
+    - contextPath: MicrosoftTeams.ChatMessage.replyToId
       description: ID of the parent chat message or root chat message of the thread.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.etag
+    - contextPath: MicrosoftTeams.ChatMessage.etag
       description: Version number of the chat message.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.messageType
+    - contextPath: MicrosoftTeams.ChatMessage.messageType
       description: The type of chat message.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.createdDateTime
+    - contextPath: MicrosoftTeams.ChatMessage.createdDateTime
       description: Timestamp of when the chat message was created.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.lastModifiedDateTime
+    - contextPath: MicrosoftTeams.ChatMessage.lastModifiedDateTime
       description: Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.lastEditedDateTime
+    - contextPath: MicrosoftTeams.ChatMessage.lastEditedDateTime
       description: Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.deletedDateTime
+    - contextPath: MicrosoftTeams.ChatMessage.deletedDateTime
       description: Timestamp at which the chat message was deleted, or null if not deleted.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.subject
+    - contextPath: MicrosoftTeams.ChatMessage.subject
       description: The subject of the chat message, in plaintext.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.summary
+    - contextPath: MicrosoftTeams.ChatMessage.summary
       description: Summary text of the chat message that could be used for push notifications and summary views or fall back views.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.chatId
+    - contextPath: MicrosoftTeams.ChatMessage.chatId
       description: If the message was sent in a chat, represents the identity of the chat.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.importance
+    - contextPath: MicrosoftTeams.ChatMessage.importance
       description: The importance of the chat message.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.locale
+    - contextPath: MicrosoftTeams.ChatMessage.locale
       description: Locale of the chat message set by the client.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.webUrl
+    - contextPath: MicrosoftTeams.ChatMessage.webUrl
       description: Link to the message in Microsoft Teams.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.channelIdentity
+    - contextPath: MicrosoftTeams.ChatMessage.channelIdentity
       description: If the message was sent in a channel, represents identity of the channel.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.policyViolation
+    - contextPath: MicrosoftTeams.ChatMessage.policyViolation
       description: Defines the properties of a policy violation set by a data loss prevention (DLP) application.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.eventDetail
+    - contextPath: MicrosoftTeams.ChatMessage.eventDetail
       description: If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.from
+    - contextPath: MicrosoftTeams.ChatMessage.from
       description: Details of the sender of the chat message.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.body
+    - contextPath: MicrosoftTeams.ChatMessage.body
       description: Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.attachments
+    - contextPath: MicrosoftTeams.ChatMessage.attachments
       description: References to attached objects like files, tabs, meetings etc.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.mentions
+    - contextPath: MicrosoftTeams.ChatMessage.mentions
       description: List of entities mentioned in the chat message.
       type: String
-    - contextPath: MicrosoftTeams.Chat.Message.reactions
+    - contextPath: MicrosoftTeams.ChatMessage.reactions
       description: Reactions for this chat message (for example, Like).
       type: String
+  - arguments:
+      - description: The chat ID / group chat name (topic)
+        name: chat
+        required: true
+      - description: Display name/mail/UPN of user that should be added to the chat. Can be an array.
+        name: member
+        required: true
+        isArray: true
+      - description: Whether to share the whole history of the chat. Default is "true".
+        name: share_history
+        isArray: false
+        auto: PREDEFINED
+        predefined:
+        - 'true'
+        - 'false'
+        required: false
+        defaultValue: true
+    description: Adds a member (user) to a group chat.
+    name: microsoft-teams-chat-add-user
+  - arguments:
+      - description: The chat ID / group chat name (topic) / Member (Display name/mail/UPN) # TODO
+        name: chat
+        required: true
+    description: Retrieves a list of members from a chat.
+    name: microsoft-teams-chat-member-list
+    outputs:
+    - contextPath: MicrosoftTeams.ChatMember.Chat.displayName
+      description: The display name of the members.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMember.Chat.email
+      description: The email of the members.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMember.Chat.id
+      description: The id of the members.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMember.Chat.roles
+      description: The roles of the members.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMember.Chat.tenantId
+      description: The tenantId of the members.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMember.Chat.userId
+      description: The userId of the members.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMember.Chat.visibleHistoryStartDateTime
+      description: The timestamp denoting how far back a conversation's history is shared with the conversation member.
+      type: String
+  - arguments:
+      - description: The chat ID / group chat name (topic) / Member (Display name/mail/UPN) # TODO
+        name: chat
+        required: true
+      - description: The number of results to retrieve. Default value is 50.
+        name: limit
+        required: false
+        defaultValue: 50
+      - description: Orders results by lastModifiedDateTime (default) or createdDateTime in descending order.
+        name: order_by
+        auto: PREDEFINED
+        predefined:
+          - 'lastModifiedDateTime'
+          - 'createdDateTime'
+        required: false
+        defaultValue: 'lastModifiedDateTime'
+    description: Retrieves a list of messages in a chat.
+    name: microsoft-teams-chat-message-list
+    outputs:
+    - contextPath: MicrosoftTeams.ChatMessage.id
+      description: Unique ID of the message.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.replyToId
+      description: ID of the parent chat message or root chat message of the thread.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.etag
+      description: Version number of the chat message.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.messageType
+      description: The type of chat message.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.createdDateTime
+      description: Timestamp of when the chat message was created.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.lastModifiedDateTime
+      description: Timestamp when the chat message is created (initial setting) or modified, including when a reaction is added or removed.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.lastEditedDateTime
+      description: Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.deletedDateTime
+      description: Timestamp at which the chat message was deleted, or null if not deleted.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.subject
+      description: The subject of the chat message, in plaintext.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.summary
+      description: Summary text of the chat message that could be used for push notifications and summary views or fall back views.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.chatId
+      description: If the message was sent in a chat, represents the identity of the chat.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.importance
+      description: The importance of the chat message.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.locale
+      description: Locale of the chat message set by the client.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.webUrl
+      description: Link to the message in Microsoft Teams.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.channelIdentity
+      description: If the message was sent in a channel, represents identity of the channel.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.policyViolation
+      description: Defines the properties of a policy violation set by a data loss prevention (DLP) application.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.eventDetail
+      description: If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.from
+      description: Details of the sender of the chat message.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.body
+      description: Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.attachments
+      description: References to attached objects like files, tabs, meetings etc.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.mentions
+      description: List of entities mentioned in the chat message.
+      type: String
+    - contextPath: MicrosoftTeams.ChatMessage.reactions
+      description: Reactions for this chat message (for example, Like).
+      type: String
+  - arguments:
+      - description: The chat ID / group chat name (topic) / Member (Display name/mail/UPN) # TODO
+        name: chat
+        required: false
+      - description: "Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http "
+        name: filter
+        required: false
+      - description: Expands the results to include members or lastMessagePreview properties.
+        name: expand
+        auto: PREDEFINED
+        predefined:
+          - 'members'
+          - 'lastMessagePreview'
+        required: false
+      - description: The number of results to retrieve. Default value is 50.
+        name: limit
+        required: false
+        defaultValue: 50
+    description: Retrieves a list of chats that the user is part of. If 'chat' is specified - retrieves this chat only.
+    name: microsoft-teams-chat-list
+    outputs:
+    - contextPath: MicrosoftTeams.ChatList.id
+      description: The chat's unique identifier.
+      type: String
+    - contextPath: MicrosoftTeams.ChatList.topic
+      description: Subject or topic for the chat. Only available for group chats.
+      type: String
+    - contextPath: MicrosoftTeams.ChatList.createdDateTime
+      description: Date and time at which the chat was created.
+      type: String
+    - contextPath: MicrosoftTeams.ChatList.lastUpdatedDateTime
+      description: Date and time at which the chat was renamed or list of members were last changed.
+      type: String
+    - contextPath: MicrosoftTeams.ChatList.chatType
+      description: Specifies the type of chat.
+      type: String
+    - contextPath: MicrosoftTeams.ChatList.webUrl
+      description: The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed.
+      type: String
+    - contextPath: MicrosoftTeams.ChatList.tenantId
+      description: The identifier of the tenant in which the chat was created.
+      type: String
+    - contextPath: MicrosoftTeams.ChatList.viewpoint
+      description: Represents caller-specific information about the chat, such as last message read date and time.
+      type: String
+    - contextPath: MicrosoftTeams.ChatList.onlineMeetingInfo
+      description: Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty.
+      type: String
+  - arguments:
+      - description: The chat ID / group chat name (topic)
+        name: chat
+        required: true
+      - description: The new chat name. Maximum length is 250 characters. Use of ':' is not allowed.
+        name: chat_name
+        required: true
+    description: Updates the chat name. It can only be set for group chats.
+    name: microsoft-teams-chat-update
   dockerimage: demisto/teams:1.0.0.43500
   feed: false
   isfetch: false

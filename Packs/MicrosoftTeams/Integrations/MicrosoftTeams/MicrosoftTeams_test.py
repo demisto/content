@@ -112,6 +112,8 @@ integration_context: dict = {
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 AUTHORIZATION_CODE_FLOW = 'Authorization Code'
+ONEONONE_CHAT_ID = "19%3A09ddc990-3821-4ceb-8019-24d39998f93e_48d31887-5fad-4d73-a9f5-3c356e68a038%40unq.gbl.spaces"
+GROUP_CHAT_ID = "19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2"
 
 
 @pytest.fixture(autouse=True)
@@ -1694,79 +1696,8 @@ def test_create_channel_command_errors(mocker, args, expected_error):
     assert str(e.value) == expected_error
 
 
-expected_hr_create_chat = ('### The chat "Group chat title" was created successfully\n'
-                           '|Chat id|Chat name|Created DateTime|Last Updated Date Time|webUrl|tenantId|\n'
-                           '|---|---|---|---|---|---|\n'
-                           '| 19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2 | Group chat title | '
-                           '2023-01-01T12:27:08.95Z | 2023-01-01T12:27:08.95Z | '
-                           '[https://teams.microsoft.com/l/chat/19%3Ae19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2'
-                           '/0?tenantId=pbae9ao6-01ql-249o-5me3-4738p3e1m941](https://teams.microsoft.com/l/chat/'
-                           '19%3Ae19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2/'
-                           '0?tenantId=pbae9ao6-01ql-249o-5me3-4738p3e1m941) '
-                           '| pbae9ao6-01ql-249o-5me3-4738p3e1m941 |\n')
-
-
-def test_chat_create_command(mocker):
-    """
-    Given:
-      - The command arguments to create group chat
-    When:
-      - Executing the 'microsoft-teams-chat-create' command.
-    Then:
-        - Verify human-readable output
-        - Verify entry context output
-    """
-    from MicrosoftTeams import chat_create_command
-    mocker.patch.object(demisto, 'args', return_value={"chat_type": "group", "chat_name": "Group chat title",
-                                                       "member": "testuser1@example.com"})
-
-    api_response = load_test_data('./test_data/chat_responses.json').get('create_group_chat')
-    return_results = mocker.patch('MicrosoftTeams.return_results')
-
-    mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'user1', 'userType': "Member"}])
-    mocker.patch('MicrosoftTeams.create_chat', return_value=api_response)
-
-    chat_create_command()
-
-    results_hr = return_results.call_args[0][0].readable_output
-    results_outputs = return_results.call_args[0][0].outputs
-    assert results_hr == expected_hr_create_chat
-    api_response.pop('@odata.context', '')
-    assert results_outputs == api_response
-
-
-@pytest.mark.parametrize('chat_type, users, expected_request_json, chat_response', [
-    ("group", [("8b081ef6-4792-4def-b2c9-c363a1bf41d5", "Member"), ("82af01c5-f7cc-4a2e-a728-3a5df21afd9d", "Guest")],
-     "group_request_json", "create_group_chat"),
-    ("oneOnOne", [("8b081ef6-4792-4def-b2c9-c363a1bf41d5", "Member")], "oneOnOne_request_json", "create_oneOnOne_chat")
-])
-def test_creat_chat(mocker, requests_mock, chat_type, users, expected_request_json, chat_response):
-    """
-    Given:
-      - The function arguments chat_type, users
-    When:
-      - Calling the create_chat function
-    Then:
-      - Ensure expected request body is sent
-    """
-    from MicrosoftTeams import create_chat
-    api_response = load_test_data('./test_data/chat_responses.json')
-    chat_response = api_response.get(chat_response)
-    signed_in_response = api_response.get('signed_in_user')
-    mocker.patch('MicrosoftTeams.get_signed_in_user', return_value=signed_in_response)
-
-    requests_mock.post(
-        'https://graph.microsoft.com/v1.0/chats',
-        json=chat_response
-    )
-    create_chat(chat_type, users,
-                "Group chat title")  # the chat name will not be used in oneOnOne chats (Only available for group chats.)
-
-    assert requests_mock.request_history[0].json() == api_response.get(expected_request_json)
-
-
 expected_hr_user_list = ('### Channel "Test Channel" Members List:\n'
-                         '|userId|email|tenantId|Membership id|User roles|Display Name|Start '
+                         '|User Id|Email|Tenant Id|Membership id|User roles|Display Name|Start '
                          'DateTime|\n'
                          '|---|---|---|---|---|---|---|\n'
                          '| eef9cb36-06de-469b-87cd-70f4cbe32d14 | jdoe@teamsip.onmicrosoft.com | '
@@ -1831,7 +1762,7 @@ membership_id = "ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0
 @pytest.mark.parametrize("channel_type, expected_exception, mock_get_membership_id, expected_error_value", [
     ('private', None, membership_id, None),
     ('shared', None, membership_id, None),
-    ('standard', ValueError, None, 'This operation is allowed only for private or shared channels.'),
+    ('standard', ValueError, None, 'Removing a member is allowed only for private or shared channels.'),
     ('shared', ValueError, '', 'User \"itayadmin\" was not found in channel \"test channel\".')
 ])
 def test_user_remove_from_channel_command(mocker, requests_mock, channel_type, expected_exception,
@@ -1871,22 +1802,227 @@ def test_user_remove_from_channel_command(mocker, requests_mock, channel_type, e
         results_hr = return_results.call_args[0][0]
         assert results_hr == 'The user "itayadmin" has been removed from channel "test channel" successfully.'
 
-#
-# def test_message_send_to_chat_command():
+
+# TODO
+# All the responses based on: https://learn.microsoft.com/en-us/graph/api/
+test_data = load_test_data('./test_data/chat_responses_and_requests.json')
+
+
+def test_chat_create_command(mocker):
+    """
+    Given:
+      - The command arguments to create group chat
+    When:
+      - Executing the 'microsoft-teams-chat-create' command.
+    Then:
+        - Verify human-readable output
+        - Verify entry context output
+    """
+    from MicrosoftTeams import chat_create_command
+    mocker.patch.object(demisto, 'args', return_value={"chat_type": "group", "chat_name": "Group_chat",
+                                                       "member": "testuser1@example.com"})
+
+    api_response = test_data.get('create_group_chat')
+    expected_hr_create_chat = test_data.get('expected_hr_create_chat')
+    return_results = mocker.patch('MicrosoftTeams.return_results')
+
+    mocker.patch('MicrosoftTeams.get_user', return_value=[{'id': 'user1', 'userType': "Member"}])
+    mocker.patch('MicrosoftTeams.create_chat', return_value=api_response)
+
+    chat_create_command()
+
+    results_hr = return_results.call_args[0][0].readable_output
+    results_outputs = return_results.call_args[0][0].outputs
+    assert results_hr == expected_hr_create_chat
+    api_response.pop('@odata.context', '')
+    assert results_outputs == api_response
+
+
+@pytest.mark.parametrize('chat_type, users, expected_request_json, chat_response', [
+    ("group", [("8b081ef6-4792-4def-b2c9-c363a1bf41d5", "Member"), ("82af01c5-f7cc-4a2e-a728-3a5df21afd9d", "Guest")],
+     "group_request_json", "create_group_chat"),
+    ("oneOnOne", [("8b081ef6-4792-4def-b2c9-c363a1bf41d5", "Member")], "oneOnOne_request_json", "create_oneOnOne_chat")
+])
+def test_creat_chat(mocker, requests_mock, chat_type, users, expected_request_json, chat_response):
+    """
+    Given:
+      - The function arguments chat_type, users
+    When:
+      - Calling the create_chat function
+    Then:
+      - Ensure expected request body is sent
+    """
+    from MicrosoftTeams import create_chat
+    signed_in_response = test_data.get('signed_in_user')
+    mocker.patch('MicrosoftTeams.get_signed_in_user', return_value=signed_in_response)
+
+    requests_mock.post(
+        'https://graph.microsoft.com/v1.0/chats',
+        json=chat_response
+    )
+    create_chat(chat_type, users,
+                "Group chat title")  # the chat name will not be used in oneOnOne chats (Only available for group chats.)
+
+    assert requests_mock.request_history[0].json() == test_data.get(expected_request_json)
+
+
+def test_message_send_to_chat_command(mocker, requests_mock):
+    """
+    Given:
+      - The command arguments
+    When:
+      - Executing the 'microsoft-teams-message-send-to-chat' command.
+    Then:
+      - Assert the request url is as expected
+      - Verify human-readable output
+      - Verify entry context output
+    """
+    from MicrosoftTeams import message_send_to_chat_command
+    mocker.patch.object(demisto, 'args', return_value={"content": "Hello World"})
+    return_results = mocker.patch('MicrosoftTeams.return_results')
+
+    mock_response = test_data.get('send_message_chat')
+
+    mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(GROUP_CHAT_ID, 'group'))
+
+    requests_mock.post(
+        f'{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages',
+        json=mock_response
+    )
+    message_send_to_chat_command()
+
+    assert requests_mock.request_history[0].json() == {"body": {"content": "Hello World", "contentType": "text"},
+                                                       "messageType": "message"}
+    results_hr = return_results.call_args[0][0].readable_output
+    results_outputs = return_results.call_args[0][0].outputs
+    assert results_hr == test_data.get('expected_hr_send_message')
+    mock_response.pop('@odata.context', '')
+    assert results_outputs == mock_response
+
+
+def test_chat_member_list_command(mocker, requests_mock):
+    """
+    Given:
+      - The command arguments
+    When:
+      - Executing the 'microsoft-teams-chat-member-list' command.
+    Then:
+      - Assert the request url is as expected
+      - Verify human-readable output
+      - Verify entry context output
+    """
+    from MicrosoftTeams import chat_member_list_command
+    mocker.patch.object(demisto, 'args', return_value={"chat": ONEONONE_CHAT_ID})
+    return_results = mocker.patch('MicrosoftTeams.return_results')
+
+    chat_members = test_data.get('list_members')
+    expected_hr_chat_member_list = test_data.get('expected_hr_chat_member_list')
+    get_chat_members_expected_response = chat_members.get('value', [])
+
+    mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(ONEONONE_CHAT_ID, 'oneOnOne'))
+
+    requests_mock.get(
+        f'{GRAPH_BASE_URL}/v1.0/chats/{ONEONONE_CHAT_ID}/members',
+        json=chat_members
+    )
+    chat_member_list_command()
+
+    results_hr = return_results.call_args[0][0].readable_output
+    results_outputs = return_results.call_args[0][0].outputs
+    assert results_hr == expected_hr_chat_member_list
+    [member.pop('@odata.type', None) for member in get_chat_members_expected_response]
+    assert results_outputs == get_chat_members_expected_response
+
+
+@pytest.mark.parametrize('chat_id, chat_type, expected_exception',
+                         [(GROUP_CHAT_ID, "group", False), (ONEONONE_CHAT_ID, 'oneOnOne', True)])
+def test_chat_update_command(mocker, requests_mock, chat_id, chat_type, expected_exception):
+    """
+    Given:
+      - The command arguments:
+        - GROUP_CHAT_ID, group -> updates the title
+        - ONEONONE_CHAT_ID, oneOnOne -> raise ValueError
+    When:
+      - Executing the 'microsoft-teams-chat-update' command.
+    Then:
+      - Assert the request url is as expected
+      - Verify human-readable output
+    """
+    from MicrosoftTeams import chat_update_command
+    mocker.patch.object(demisto, 'args', return_value={"chat": chat_id, "chat_name": "XsoarChat"})
+    mocker.patch('MicrosoftTeams.get_chat_id_and_type', return_value=(chat_id, chat_type))
+    return_results = mocker.patch('MicrosoftTeams.return_results')
+    mock_response = test_data.get('update_chat')
+    requests_mock.patch(
+        f'{GRAPH_BASE_URL}/v1.0/chats/{chat_id}',
+        json=mock_response
+    )
+
+    if expected_exception:
+        with pytest.raises(ValueError) as e:
+            chat_update_command()
+        assert str(e.value) == "Setting chat name is allowed only on group chats."
+
+    else:
+        chat_update_command()
+        assert requests_mock.request_history[0].method == 'PATCH'
+        assert requests_mock.request_history[0].json() == {'topic': 'XsoarChat'}
+        results_hr = return_results.call_args[0][0]
+        assert results_hr == f"The chat '{chat_id}' name has been successfully changed to 'XsoarChat'."
+
+
+# @pytest.mark.parametrize('chat_id, chat_type, expected_exception, member',
+#                          [(GROUP_CHAT_ID, "group", False, '), (ONEONONE_CHAT_ID, 'oneOnOne', True)])
+# def test_chat_add_user_command(mocker, chat_id, chat_type, ):
 #     """
 #     Given:
-#       -
+#       - The command arguments:
 #     When:
-#       -
+#       - Executing the 'microsoft-teams-chat-add-user' command.
 #     Then:
-#       -
+#       - Assert the request url is as expected
+#       - Verify human-readable output
 #     """
-#     from MicrosoftTeams import message_send_to_chat_command
-#
-#
-# def test_send_message_in_chat():
-#     from MicrosoftTeams import send_message_in_chat
-#
-#
-# def test_get_chat_id():
-#     from MicrosoftTeams import get_chat_id
+#     from MicrosoftTeams import chat_add_user_command
+
+
+# def test_chat_list_command():
+#     """
+#     Given:
+#       - The command arguments:
+#     When:
+#       - Executing the 'microsoft-teams-chat-list' command.
+#     Then:
+#       - Assert the request url is as expected
+#       - Verify human-readable output
+#     """
+#     from MicrosoftTeams import chat_list_command
+#     req = "GET https://graph.microsoft.com/v1.0/users/8b081ef6-4792-4def-b2c9-c363a1bf41d5/chats?$expand=members"
+
+
+# def test_chat_message_list_command():
+#     """
+#     Given:
+#       - The command arguments:
+#     When:
+#       - Executing the 'microsoft-teams-chat-message-list' command.
+#     Then:
+#       - Assert the request url is as expected
+#       - Verify human-readable output
+#     """
+#     from MicrosoftTeams import chat_message_list_command
+#      req = "GET https://graph.microsoft.com/v1.0/chats/19:2da4c29f6d7041eca70b638b43d45437@thread.v2
+#      /messages?$top=2&$orderBy=createdDateTime desc"
+
+
+# def test_get_chat_id_and_type():
+#     """
+#     Given:
+#       - The command arguments:
+#     When:
+#       - Calling the get_chat_id_and_type function
+#     Then:
+#       - Assert the request url is as expected
+#       - Verify human-readable output
+#     """
+#     from MicrosoftTeams import get_chat_id_and_type

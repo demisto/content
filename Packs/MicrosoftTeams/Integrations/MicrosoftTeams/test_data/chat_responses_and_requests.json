@@ -1,0 +1,393 @@
+
+{
+    "signed_in_user":
+        {
+          "businessPhones": [
+               "+1 425 555 0109"
+           ],
+           "displayName": "Adele Vance",
+           "givenName": "Adele",
+           "jobTitle": "Retail Manager",
+           "mail": "AdeleV@contoso.onmicrosoft.com",
+           "mobilePhone": "+1 425 555 0109",
+           "officeLocation": "18/2111",
+           "preferredLanguage": "en-US",
+           "surname": "Vance",
+           "userPrincipalName": "AdeleV@contoso.onmicrosoft.com",
+           "id": "87d349ed-44d7-43e1-9a83-5f2406dee5bd"
+        },
+    "create_oneOnOne_chat":
+        {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats/$entity",
+            "id": "19:82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces",
+            "topic": null,
+            "createdDateTime": "2020-12-04T23:10:28.51Z",
+            "lastUpdatedDateTime": "2020-12-04T23:10:28.51Z",
+            "chatType": "oneOnOne",
+            "webUrl": "https://teams.microsoft.com/l/chat/19%3A82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces/0?tenantId=pbae9ao6-01ql-249o-5me3-4738p3e1m941",
+            "tenantId": "pbae9ao6-01ql-249o-5me3-4738p3e1m941",
+            "viewpoint": null,
+            "onlineMeetingInfo": null
+        },
+    "oneOnOne_request_json":
+            {
+            "chatType": "oneOnOne",
+            "members": [
+                {
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                    "roles": [
+                        "owner"
+                    ],
+                    "user@odata.bind": "https://graph.microsoft.com/v1.0/users('87d349ed-44d7-43e1-9a83-5f2406dee5bd')"
+                },
+                {
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                    "roles": [
+                        "owner"
+                    ],
+                    "user@odata.bind": "https://graph.microsoft.com/v1.0/users('8b081ef6-4792-4def-b2c9-c363a1bf41d5')"
+                }
+            ]
+            },
+    "create_group_chat":
+                {
+                "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats/$entity",
+                "id": "19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2",
+                "topic": "Group chat title",
+                "createdDateTime": "2023-01-01T12:27:08.95Z",
+                "lastUpdatedDateTime": "2023-01-01T12:27:08.95Z",
+                "chatType": "group",
+                "webUrl": "https://teams.microsoft.com/l/chat/19%3Ae19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2/0?tenantId=pbae9ao6-01ql-249o-5me3-4738p3e1m941",
+                "tenantId": "pbae9ao6-01ql-249o-5me3-4738p3e1m941",
+                "viewpoint": null,
+                "onlineMeetingInfo": null
+                },
+                "group_request_json":
+                        {
+                "chatType": "group",
+                "topic": "Group chat title",
+                "members": [
+                    {
+                        "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                        "roles": [
+                            "owner"
+                        ],
+                        "user@odata.bind": "https://graph.microsoft.com/v1.0/users('87d349ed-44d7-43e1-9a83-5f2406dee5bd')"
+                    },
+                    {
+                        "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                        "roles": [
+                            "owner"
+                        ],
+                        "user@odata.bind": "https://graph.microsoft.com/v1.0/users('8b081ef6-4792-4def-b2c9-c363a1bf41d5')"
+                    },
+                    {
+                        "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                        "roles": [
+                            "guest"
+                        ],
+                        "user@odata.bind": "https://graph.microsoft.com/v1.0/users('82af01c5-f7cc-4a2e-a728-3a5df21afd9d')"
+                    }
+                ]
+                },
+    "send_message_chat":
+        {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats('19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2')/messages/$entity",
+            "id": "1616991463150",
+            "replyToId": null,
+            "etag": "1616991463150",
+            "messageType": "message",
+            "createdDateTime": "2021-03-29T04:17:43.15Z",
+            "lastModifiedDateTime": "2021-03-29T04:17:43.15Z",
+            "lastEditedDateTime": null,
+            "deletedDateTime": null,
+            "subject": null,
+            "summary": null,
+            "chatId": "19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2",
+            "importance": "normal",
+            "locale": "en-us",
+            "webUrl": null,
+            "channelIdentity": null,
+            "policyViolation": null,
+            "eventDetail": null,
+            "from": {
+                "application": null,
+                "device": null,
+                "conversation": null,
+                "user": {
+                    "id": "8ea0e38b-efb3-4757-924a-5f94061cf8c2",
+                    "displayName": "Robin Kline",
+                    "userIdentityType": "aadUser"
+                }
+            },
+            "body": {
+                "contentType": "text",
+                "content": "Hello World"
+            },
+            "attachments": [],
+            "mentions": [],
+            "reactions": []
+            },
+
+  "add_member_request": {
+                            "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                            "user@odata.bind": "https://graph.microsoft.com/v1.0/users/8b081ef6-4792-4def-b2c9-c363a1bf41d5",
+                            "visibleHistoryStartDateTime": "2019-04-18T23:51:43.255Z",
+                            "roles": ["owner"]
+                        },
+  "list_messages":
+          {
+              "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats('19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2')/messages",
+              "@odata.count": 2,
+              "@odata.nextLink": "https://graph.microsoft.com/v1.0/chats/19:2da4c29f6d7041eca70b638b43d45437@thread.v2/messages?$top=2&$skiptoken=M2UyZDAwMDAwMDMxMzkzYTMyNjQ2MTM0NjMzMjM5NjYzNjY0MzczMDM0MzE2NTYzNjEzNzMwNjIzNjMzMzg2MjM0MzM2NDM0MzUzNDMzMzc0MDc0Njg3MjY1NjE2NDJlNzYzMjAxZThmYjY4M2Y3ODAxMDAwMDg4NjA5ODdhNzgwMTAwMDB8MTYxNjk2NDUwOTgzMg%3d%3d",
+              "value": [
+                {
+                    "id": "1616964509832",
+                    "replyToId": null,
+                    "etag": "1616964509832",
+                    "messageType": "message",
+                    "createdDateTime": "2021-03-28T20:48:29.832Z",
+                    "lastModifiedDateTime": "2021-03-28T20:48:29.832Z",
+                    "lastEditedDateTime": null,
+                    "deletedDateTime": null,
+                    "subject": null,
+                    "summary": null,
+                    "chatId": "19:2da4c29f6d7041eca70b638b43d45437@thread.v2",
+                    "importance": "normal",
+                    "locale": "en-us",
+                    "webUrl": null,
+                    "channelIdentity": null,
+                    "onBehalfOf": null,
+                    "policyViolation": null,
+                    "eventDetail": null,
+                    "from": {
+                        "application": null,
+                        "device": null,
+                        "user": {
+                            "id": "8ea0e38b-efb3-4757-924a-5f94061cf8c2",
+                            "displayName": "Robin Kline",
+                            "userIdentityType": "aadUser"
+                        }
+                    },
+                    "body": {
+                        "contentType": "text",
+                        "content": "Hello world"
+                    },
+                    "attachments": [],
+                    "mentions": [],
+                    "reactions": []
+                },
+                {
+                    "id": "1615971548136",
+                    "replyToId": null,
+                    "etag": "1615971548136",
+                    "messageType": "message",
+                    "createdDateTime": "2021-03-17T08:59:08.136Z",
+                    "lastModifiedDateTime": "2021-03-17T08:59:08.136Z",
+                    "lastEditedDateTime": null,
+                    "deletedDateTime": null,
+                    "subject": null,
+                    "summary": null,
+                    "chatId": "19:2da4c29f6d7041eca70b638b43d45437@thread.v2",
+                    "importance": "normal",
+                    "locale": "en-us",
+                    "webUrl": null,
+                    "channelIdentity": null,
+                    "onBehalfOf": null,
+                    "policyViolation": null,
+                    "eventDetail": null,
+                    "from": {
+                        "application": null,
+                        "device": null,
+                        "user": {
+                            "id": "8ea0e38b-efb3-4757-924a-5f94061cf8c2",
+                            "displayName": "Robin Kline",
+                            "userIdentityType": "aadUser"
+                        }
+                    },
+                    "body": {
+                        "contentType": "html",
+                        "content": "test_content"
+                    },
+                    "attachments": [],
+                    "mentions": [],
+                    "reactions": []
+                }
+            ]
+        },
+    "list_members":
+                    {
+                        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('48d31887-5fad-4d73-a9f5-3c356e68a038')/chats('19%3A09ddc990-3821-4ceb-8019-24d39998f93e_48d31887-5fad-4d73-a9f5-3c356e68a038%40unq.gbl.spaces')/members",
+                        "@odata.count": 2,
+                        "value": [
+                            {
+                                "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNiMzI0NmY0NC1jMDkxLTQ2MjctOTZjNi0yNWIxOGZhMmM5MTA=",
+                                "roles": [
+                                    "owner"
+                                ],
+                                "displayName": "Ace John",
+                                "visibleHistoryStartDateTime": "0001-01-01T00:00:00Z",
+                                "userId": "b3246f44-c091-4627-96c6-25b18fa2c910",
+                                "email": "ajohn@teamsip.onmicrosoft.com",
+                                "tenantId": "dcd219dd-bc68-4b9b-bf0b-4a33a796be35"
+                            },
+                            {
+                                "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                "id": "MCMjMCMjZGNkMjE5ZGQtYmM2OC00YjliLWJmMGItNGEzM2E3OTZiZTM1IyMxOTowOWRkYzk5MC0zODIxLTRjZWItODAxOS0yNGQzOTk5OGY5M2VfNDhkMzE4ODctNWZhZC00ZDczLWE5ZjUtM2MzNTZlNjhhMDM4QHVucS5nYmwuc3BhY2VzIyM0OGQzMTg4Ny01ZmFkLTRkNzMtYTlmNS0zYzM1NmU2OGEwMzg=",
+                                "roles": [
+                                    "owner"
+                                ],
+                                "displayName": "Megan Bowen",
+                                "visibleHistoryStartDateTime": "2021-11-25T01:56:31.313Z",
+                                "userId": "48d31887-5fad-4d73-a9f5-3c356e68a038",
+                                "email": "MeganB@M365x214355.onmicrosoft.com",
+                                "tenantId": "dcd219dd-bc68-4b9b-bf0b-4a33a796be35"
+                            }
+                        ]
+                    },
+  "list_chats":{
+                  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats(members())",
+                  "@odata.count": 3,
+                  "value": [
+                      {
+                          "id": "19:meeting_MjdhNjM4YzUtYzExZi00OTFkLTkzZTAtNTVlNmZmMDhkNGU2@thread.v2",
+                          "topic": "Meeting chat sample",
+                          "createdDateTime": "2020-12-08T23:53:05.801Z",
+                          "lastUpdatedDateTime": "2020-12-08T23:58:32.511Z",
+                          "chatType": "meeting",
+                          "chatViewpoint": {
+                              "isHidden": false,
+                              "lastMessageReadDateTime": "2021-04-02T08:15:02.091Z"
+                          },
+                          "webUrl": "https://teams.microsoft.com/l/chat/19%3Ameeting_MjdhNjM4YzUtYzExZi00OTFkLTkzZTAtNTVlNmZmMDhkNGU2@thread.v2/0?tenantId=b33cbe9f-8ebe-4f2a-912b-7e2a427f477f",
+                          "members": [
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkM123=",
+                                  "roles": [],
+                                  "displayName": "Tony Stark",
+                                  "userId": "4595d2f2-7b31-446c-84fd-9b795e63114b",
+                                  "email": "starkt@teamsgraph.onmicrosoft.com"
+                              },
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMz6Jk45=",
+                                  "roles": [],
+                                  "displayName": "Peter Parker",
+                                  "userId": "d74fc2ed-cb0e-4288-a219-b5c71abaf2aa",
+                                  "email": "parkerp@teamsgraph.onmicrosoft.com"
+                              },
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJ989kMTQ=",
+                                  "roles": [],
+                                  "displayName": "Nick Fury",
+                                  "userId": "8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca",
+                                  "email": "furyn@teamsgraph.onmicrosoft.com"
+                              }
+                          ]
+                      },
+                      {
+                          "id": "19:561082c0f3f847a58069deb8eb300807@thread.v2",
+                          "topic": "Group chat sample",
+                          "createdDateTime": "2020-12-03T19:41:07.054Z",
+                          "lastUpdatedDateTime": "2020-12-08T23:53:11.012Z",
+                          "chatType": "group",
+                          "chatViewpoint": {
+                              "isHidden": false,
+                              "lastMessageReadDateTime": "0001-01-01T00:00:00Z"
+                          },
+                          "webUrl": "https://teams.microsoft.com/l/chat/19%3A561082c0f3f847a58069deb8eb300807@thread.v2/0?tenantId=b33cbe9f-8ebe-4f2a-912b-7e2a427f477f",
+                          "members": [
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkM123=",
+                                  "roles": [],
+                                  "displayName": "Tony Stark",
+                                  "userId": "4595d2f2-7b31-446c-84fd-9b795e63114b",
+                                  "email": "starkt@teamsgraph.onmicrosoft.com"
+                              },
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM312ftMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkM123=",
+                                  "roles": [],
+                                  "displayName": "Bruce Banner",
+                                  "userId": "48bf9d52-dca7-4a5f-8398-37b95cc7bd83",
+                                  "email": "bannerb@teamsgraph.onmicrosoft.com"
+                              },
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwMi00NWY4LWai3MTetN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkM123=",
+                                  "roles": [],
+                                  "displayName": "TChalla",
+                                  "userId": "9efb1aea-4f83-4673-bdcd-d3f3c7be28c2",
+                                  "email": "tchalla@teamsgraph.onmicrosoft.com"
+                              },
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwamii00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkM123=",
+                                  "roles": [],
+                                  "displayName": "Thor Odinson",
+                                  "userId": "976f4b31-fd01-4e0b-9178-29cc40c14438",
+                                  "email": "odinsont@teamsgraph.onmicrosoft.com"
+                              },
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwMi00NWopiLWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkM123=",
+                                  "roles": [],
+                                  "displayName": "Steve Rogers",
+                                  "userId": "976f4b31-fd01-4e0b-9178-29cc40c14438",
+                                  "email": "rogerss@teamsgraph.onmicrosoft.com"
+                              }
+                          ]
+                      },
+                      {
+                          "id": "19:d74fc2ed-cb0e-4288-a219-b5c71abaf2aa_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces",
+                          "topic": null,
+                          "createdDateTime": "2020-12-04T23:10:28.51Z",
+                          "lastUpdatedDateTime": "2020-12-04T23:10:36.925Z",
+                          "chatType": "oneOnOne",
+                          "chatViewpoint": {
+                              "isHidden": false,
+                              "lastMessageReadDateTime": "2021-06-05T00:31:30.047Z"
+                          },
+                          "webUrl": "https://teams.microsoft.com/l/chat/19%3Ad74fc2ed-cb0e-4288-a219-b5c71abaf2aa_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces/0?tenantId=b33cbe9f-8ebe-4f2a-912b-7e2a427f477f",
+                          "members": [
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJ989kMTQ=",
+                                  "roles": [],
+                                  "displayName": "Nick Fury",
+                                  "userId": "8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca",
+                                  "email": "furyn@teamsgraph.onmicrosoft.com"
+                              },
+                              {
+                                  "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                                  "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMz6Jk45=",
+                                  "roles": [],
+                                  "displayName": "Peter Parker",
+                                  "userId": "d74fc2ed-cb0e-4288-a219-b5c71abaf2aa",
+                                  "email": "parkerp@teamsgraph.onmicrosoft.com"
+                              }
+                          ]
+                      }
+                  ]
+              },
+    "update_chat": {
+                      "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#chats/$entity",
+                      "id": "19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2",
+                      "topic": "XsoarChat",
+                      "createdDateTime": "2020-12-04T23:11:16.175Z",
+                      "lastUpdatedDateTime": "2020-12-04T23:12:19.943Z",
+                      "chatType": "group"
+                  },
+    "expected_hr_create_chat": "### The chat Group_chat was created successfully\n|Chat id|Chat name|Created Date Time|Last Updated Date Time|webUrl|Tenant Id|\n|---|---|---|---|---|---|\n| 19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2 | Group chat title | 2023-01-01T12:27:08.95Z | 2023-01-01T12:27:08.95Z | [https://teams.microsoft.com/l/chat/19%3Ae19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2/0?tenantId=pbae9ao6-01ql-249o-5me3-4738p3e1m941](https://teams.microsoft.com/l/chat/19%3Ae19:1c5b01696d2e4a179c292bc9cf04e63b@thread.v2/0?tenantId=pbae9ao6-01ql-249o-5me3-4738p3e1m941) | pbae9ao6-01ql-249o-5me3-4738p3e1m941 |\n",
+    "expected_hr_send_message": "### Message was sent successfully in the '' chat.\n|Chat Id|Created DateTime|Etag|From user|From user id|From user userIdentityType|Importance|Message Content|Message Type|Message contentType|Message id|lastModified DateTime|\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| 19%3A2da4c29f6d7041eca70b638b43d45437%40thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | Robin Kline | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser | normal | Hello World | message | text | 1616991463150 | 2021-03-29T04:17:43.15Z |\n",
+    "expected_hr_chat_member_list": "### Chat \"19%3A09ddc990-3821-4ceb-8019-24d39998f93e_48d31887-5fad-4d73-a9f5-3c356e68a038%40unq.gbl.spaces\" Members List:\n|User Id|User roles|Name|Email|Tenant Id|\n|---|---|---|---|---|\n| b3246f44-c091-4627-96c6-25b18fa2c910 | owner | Ace John | ajohn@teamsip.onmicrosoft.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |\n| 48d31887-5fad-4d73-a9f5-3c356e68a038 | owner | Megan Bowen | MeganB@M365x214355.onmicrosoft.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |\n"
+
+
+
+
+
+}
