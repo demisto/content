@@ -11,12 +11,12 @@
         "Deception"
     ],
     "tags": [
-        "Zerohack XDR"
+        "Network Security"
     ],
     "created": "2022-11-01T15:00:00Z",
     "useCases": [
-        "Fetching Incidents",
-        "Fetch Sample Incident"
+        "Incident Response",
+        "Network Security"
     ],
     "keywords": [
         "Zerohack",
