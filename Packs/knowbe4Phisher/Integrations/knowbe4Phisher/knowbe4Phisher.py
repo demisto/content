@@ -320,7 +320,7 @@ class Client(BaseClient):
         self.first_fetch_time = first_fetch_time
         self.max_fetch = max_fetch
 
-        if headers is None:
+        if not headers:
             headers = dict()
 
         headers["X-KB4-Integration"] = "Cortex XSOAR PhishER"
