@@ -3445,7 +3445,7 @@ def panorama_list_rules(xpath: str, tag: str = None):
     }
 
     if tag:
-        params["xpath"] = f'{params["xpath"]}[( tag/member = \'{tag}\')]'
+        params["xpath"] = f'{params["xpath"]}[(tag/member = \'{tag}\') and (disabled = \'{demisto.args().get("disabled")}\')]'
 
     result = http_request(
         URL,
@@ -11630,21 +11630,21 @@ def pan_os_list_templates_command(args):
     )
 
 
-def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, disabled: bool = None,
-                    tags: list[str] = None, nat_type: str = None, query: str = None):
+def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None,
+                    disabled: bool = None, tags: list[str] = None, nat_type: str = None, query: str = None):
     _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
     if query:
         _xpath = f"{_xpath}/rules/entry[{query}]"
     else:
         if name:
             _xpath = f"{_xpath}/rules/entry[@name='{name}']"
-
-        if element:
+    if element:
             _xpath = f"{_xpath}/{element}"
     return _xpath
 
 
-def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None):
+def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None,
+                         disabled: str = None, nat_type: str = None, tags: list = None, query: str = None):
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
         raise DemistoException(f'The pre_post argument must be provided for panorama instance')
@@ -11654,7 +11654,7 @@ def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_
         'action': 'get' if show_uncommited else 'show',
         'key': API_KEY,
         # rulebase is for firewall instance.
-        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post)  # type: ignore[arg-type]
+        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post, disabled, nat_type, tags, query)  # type: ignore[arg-type]
     }
 
     return http_request(URL, 'POST', params=params)
@@ -11729,11 +11729,13 @@ def pan_os_list_nat_rules_command(args):
     name = args.get('name')
     pre_post = args.get('pre_post')
     show_uncommitted = argToBoolean(args.get('show_uncommitted', False))
-    disabled = argToBoolean(args.get('disabled', False))
+    disabled = args.get('disabled')
     nat_type = args.get('nat_type')
     tags = argToList(args.get('tags'))
+    query = args.get('query')
 
-    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted)
+    raw_response = get_pan_os_nat_rules(name=name, pre_post=pre_post, show_uncommited=show_uncommitted,
+                                        disabled=disabled, nat_type=nat_type, tags=tags, query=query)
     result = raw_response.get('response', {}).get('result', {})
 
     # the 'entry' key could be a single dict as well.
@@ -12629,7 +12631,7 @@ def pan_os_edit_pbf_rule_command(args):
     un_listable_objects = {
         'action_forward_no_pbf', 'action_forward_discard', 'description', 'negate_source', 'negate_destination',
         'enforce_symmetric_return', 'action_forward_egress_interface', 'action_forward_nexthop_fqdn',
-        'action_forward_nexthop_ip', 'action_forward_no_pbf', 'action_forward_discard'
+        'action_forward_nexthop_ip', 'action_forward_no_pbf', 'action_forward_discard', 'disabled'
     }
 
     if behavior != 'replace' and element_to_change in un_listable_objects:
@@ -12651,7 +12653,8 @@ def pan_os_edit_pbf_rule_command(args):
         'service': ('service', 'service', True),
         'description': ('description', 'description', False),
         'negate_source': ('negate-source', 'negate-source', False),
-        'negate_destination': ('negate-destination', 'negate-destination', False)
+        'negate_destination': ('negate-destination', 'negate-destination', False),
+        'disabled': ('disabled', 'disabled', False)
     }
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
