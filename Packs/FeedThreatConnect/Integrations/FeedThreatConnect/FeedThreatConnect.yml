@@ -24,6 +24,12 @@ configuration:
   name: api_secret_key
   type: 4
   hidden: true
+- defaultvalue: '2000'
+  additionalinfo: The number of indicators to get per fetch.
+  display: Indicators to get per fetch
+  name: fetch_limit
+  required: false
+  type: 0
 - additionalinfo: A comma-separated list of tags to filter by.
   display: Tags to filter results by
   name: tags
@@ -34,23 +40,33 @@ configuration:
   required: false
   type: 0
   additionalinfo: A comma-separated list of owners to fetch indicators from.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. The determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, so only indicators that are
+    new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds
+    are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental feed
+  hidden: true
+  name: feedIncremental
+  required: false
+  type: 8
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  defaultvalue: None
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
+- display: Indicator Reputation
   type: 18
-  hidden: true
+  required: false
+  options:
+    - None
+    - Good
+    - Suspicious
+    - Bad
+  defaultvalue: 'Bad'
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  name: feedReputation
 - additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability
@@ -265,7 +281,7 @@ script:
     description: Gets available indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
   feed: true
   isfetch: false
   longRunning: false

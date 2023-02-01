@@ -383,7 +383,7 @@ def test_opnsense_firmware_upgradestatus(requests_mock):
 def test_opnsense_firmware_update(requests_mock):
     from OPNSense import Client, firmware_update_command
     mock_response = {'status': 'ok', 'msg_uuid': 'f6dbee27-431f-4574-a017-6823e1a9b631'}
-    requests_mock.post("https://opnsense.mockserver.com/api/core/firmware/update/", json=mock_response)
+    requests_mock.post("https://opnsense.mockserver.com/api/core/firmware/update", json=mock_response)
     client = Client(MOCK_PARAMETERS)
     response = firmware_update_command(client)
     assert response[0].outputs_prefix == 'OPNSense.Firmware'
@@ -393,7 +393,7 @@ def test_opnsense_firmware_update(requests_mock):
 def test_opnsense_firmware_upgrade(requests_mock):
     from OPNSense import Client, firmware_upgrade_command
     mock_response = {'status': 'ok', 'msg_uuid': 'a55216fb-0877-4c15-ab77-8afb78f4841b'}
-    requests_mock.post("https://opnsense.mockserver.com/api/core/firmware/upgrade/", json=mock_response)
+    requests_mock.post("https://opnsense.mockserver.com/api/core/firmware/upgrade", json=mock_response)
     client = Client(MOCK_PARAMETERS)
     response = firmware_upgrade_command(client)
     assert response[0].outputs_prefix == 'OPNSense.Firmware'

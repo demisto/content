@@ -283,6 +283,14 @@ script:
     - name: full-superior-dn
       description: Superior DN. For example, OU=computers,DC=domain,DC=com (the specified domain must be the same as the current computer domain).
     description: Modifies the computer organizational unit within a domain.
+  - name: ad-modify-user-ou
+    arguments:
+      - name: user-name
+        required: true
+        description: "The name of the user to modify."
+      - name: full-superior-dn
+        description: Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain).
+    description: Modifies the user organizational unit within a domain.
   - name: ad-get-user
     arguments:
     - name: dn
@@ -796,7 +804,7 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/py3-tools:1.0.0.40085
+  dockerimage: demisto/py3-tools:1.0.0.45904
   runonce: false
   ismappable: true
   isremotesyncout: true

@@ -1,10 +1,11 @@
 commonfields:
   id: McAfee NSM
   version: -1
+deprecated: true
 name: McAfee NSM
-display: McAfee NSM
+display: McAfee NSM (Deprecated)
 category: Network Security
-description: McAfee Network Security Manager
+description: Deprecated. Use McAfee NSM v2 integration instead.
 configuration:
 - display: 'URL (for example: https://192.168.0.1:5000)'
   name: url

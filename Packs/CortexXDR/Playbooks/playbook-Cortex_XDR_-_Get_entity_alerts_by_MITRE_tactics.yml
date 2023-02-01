@@ -1,0 +1,2032 @@
+id: Cortex XDR - Get entity alerts by MITRE tactics
+version: -1
+name: Cortex XDR - Get entity alerts by MITRE tactics
+description: |-
+  This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
+  Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2e7c6fcb-b000-4bd4-8ab8-5c6f537acfa5
+    type: start
+    task:
+      id: 2e7c6fcb-b000-4bd4-8ab8-5c6f537acfa5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3da757cf-6459-42ac-87cf-ef4e020e43ad
+    type: condition
+    task:
+      id: 3da757cf-6459-42ac-87cf-ef4e020e43ad
+      version: -1
+      name: Should hunt for Discovery techniques?
+      description: Whether to hunt for Discovery techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntDiscoveryTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bcf53717-1e45-4306-8344-d0f52b07a6e1
+    type: condition
+    task:
+      id: bcf53717-1e45-4306-8344-d0f52b07a6e1
+      version: -1
+      name: Should hunt for Persistence techniques?
+      description: Whether to hunt for Persistence techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntPersistenceTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5856960b-1e9f-4b4b-8755-5e380d5557ad
+    type: condition
+    task:
+      id: 5856960b-1e9f-4b4b-8755-5e380d5557ad
+      version: -1
+      name: Should hunt for Initial Access techniques?
+      description: Whether to hunt for Initial Access techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntInitialAccessTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ec48b402-f820-4f9e-8945-6c6dfc169f1e
+    type: condition
+    task:
+      id: ec48b402-f820-4f9e-8945-6c6dfc169f1e
+      version: -1
+      name: Should hunt for Privilege Escalation techniques?
+      description: Whether to hunt for Privilege Escalation techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntPrivilegeEscalationTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 42d80a92-e1d2-4c30-8c39-d664ba3668e0
+    type: condition
+    task:
+      id: 42d80a92-e1d2-4c30-8c39-d664ba3668e0
+      version: -1
+      name: Should hunt for Defense Evasion techniques?
+      description: Whether to hunt for Defense Evasion techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntDefenseEvasionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 49c89def-cbd9-4ec9-8197-1642c687f51d
+    type: condition
+    task:
+      id: 49c89def-cbd9-4ec9-8197-1642c687f51d
+      version: -1
+      name: Should hunt for Execution techniques?
+      description: Whether to hunt for Execution techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntExecutionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 283d3e90-3798-4a94-825d-8ebe5234572b
+    type: condition
+    task:
+      id: 283d3e90-3798-4a94-825d-8ebe5234572b
+      version: -1
+      name: Should hunt for Lateral Movement techniques?
+      description: Whether to hunt for Lateral Movement techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntLateralMovementTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6c4bd98c-f2df-4e66-81c3-f95bce31787e
+    type: condition
+    task:
+      id: 6c4bd98c-f2df-4e66-81c3-f95bce31787e
+      version: -1
+      name: Should hunt for Collection techniques?
+      description: Whether to hunt for Collection techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntCollectionTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 60a731f8-4d6b-43b6-825d-a1c12c5cff20
+    type: title
+    task:
+      id: 60a731f8-4d6b-43b6-825d-a1c12c5cff20
+      version: -1
+      name: Persistence
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 440037aa-c32f-4376-8857-1fee67c21e4d
+    type: regular
+    task:
+      id: 440037aa-c32f-4376-8857-1fee67c21e4d
+      version: -1
+      name: Hunt Persistence techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0003"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Persistence
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1100
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Persistence techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Persistence
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ecae67cb-2dd0-4cc4-85b6-39d8d1872678
+    type: title
+    task:
+      id: ecae67cb-2dd0-4cc4-85b6-39d8d1872678
+      version: -1
+      name: Initial Access
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 80c56186-6f82-46e3-81cc-e1f5ca970db2
+    type: title
+    task:
+      id: 80c56186-6f82-46e3-81cc-e1f5ca970db2
+      version: -1
+      name: Execution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b802ec3d-1047-4584-8815-fa53902a49c0
+    type: title
+    task:
+      id: b802ec3d-1047-4584-8815-fa53902a49c0
+      version: -1
+      name: Privilege Escalation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 3d02cd98-8ac1-46d4-8d3b-1e865a6dc674
+    type: title
+    task:
+      id: 3d02cd98-8ac1-46d4-8d3b-1e865a6dc674
+      version: -1
+      name: Defense Evasion
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 867cde89-05a0-42e8-8b82-ffe9b2c928b7
+    type: title
+    task:
+      id: 867cde89-05a0-42e8-8b82-ffe9b2c928b7
+      version: -1
+      name: Discovery
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 3a90ced3-1ab4-49fd-8965-a94da7483689
+    type: title
+    task:
+      id: 3a90ced3-1ab4-49fd-8965-a94da7483689
+      version: -1
+      name: Lateral Movement
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3f6cf6de-b65a-4f9b-86e3-d5b1dbf66a51
+    type: title
+    task:
+      id: 3f6cf6de-b65a-4f9b-86e3-d5b1dbf66a51
+      version: -1
+      name: Collection
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 9d88f8c7-fa4d-4b2f-86b9-a88dc466eb75
+    type: condition
+    task:
+      id: 9d88f8c7-fa4d-4b2f-86b9-a88dc466eb75
+      version: -1
+      name: Should hunt for CnC techniques?
+      description: Whether to hunt for Command and Control techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntCnCTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d40c9049-5927-4e44-8f96-086d435b7ca9
+    type: condition
+    task:
+      id: d40c9049-5927-4e44-8f96-086d435b7ca9
+      version: -1
+      name: Should hunt for Impact techniques?
+      description: Whether to hunt for Impact techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "64"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntImpactTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e34844ec-ffe6-4d48-81d9-3798d60bf6ee
+    type: title
+    task:
+      id: e34844ec-ffe6-4d48-81d9-3798d60bf6ee
+      version: -1
+      name: Command and Control
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f3226c98-20fe-48b6-8292-5575a7337fb1
+    type: title
+    task:
+      id: f3226c98-20fe-48b6-8292-5575a7337fb1
+      version: -1
+      name: Impact
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 7e1ea21c-493d-443d-8f87-88a59bf237d0
+    type: condition
+    task:
+      id: 7e1ea21c-493d-443d-8f87-88a59bf237d0
+      version: -1
+      name: Should hunt for suspicious Reconnaissance techniques?
+      description: Whether to hunt for Reconnaissance techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntReconnaissanceTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: b3c85728-d7d1-4f70-876b-dcd6394d3953
+    type: title
+    task:
+      id: b3c85728-d7d1-4f70-876b-dcd6394d3953
+      version: -1
+      name: Reconnaissance
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: de4fd91a-a7f9-4293-8a6a-7d5de66f46e9
+    type: regular
+    task:
+      id: de4fd91a-a7f9-4293-8a6a-7d5de66f46e9
+      version: -1
+      name: Hunt Reconnaissance techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0043"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+               }
+      extend-context:
+        simple: Reconnaissance
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -320
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Reconnaissance techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Reconnaissance
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 0c938021-0384-4df3-8d3d-53f82bcd58f6
+    type: regular
+    task:
+      id: 0c938021-0384-4df3-8d3d-53f82bcd58f6
+      version: -1
+      name: Hunt Initial Access techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0001"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Initial_Access
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 160
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Initial Access techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Initial Access
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: b3768c4c-2d01-4270-8f4e-15ca232402dc
+    type: regular
+    task:
+      id: b3768c4c-2d01-4270-8f4e-15ca232402dc
+      version: -1
+      name: Hunt Execution techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0002"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Execution
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 630
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Initial Access techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Execution
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 988d760d-3672-41c3-89df-d831f7df2def
+    type: regular
+    task:
+      id: 988d760d-3672-41c3-89df-d831f7df2def
+      version: -1
+      name: Hunt Privilege Escalation techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0004"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Privilege_Escalation
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1570
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Privilege Escalation
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 52f3cdfe-4d58-4279-8367-875e748828a6
+    type: regular
+    task:
+      id: 52f3cdfe-4d58-4279-8367-875e748828a6
+      version: -1
+      name: Hunt Defense Evasion techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0005"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Defense_Evasion
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2050
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Defense_Evasion
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 25ea0a69-89a1-4c30-87db-ea9cff4ebc59
+    type: regular
+    task:
+      id: 25ea0a69-89a1-4c30-87db-ea9cff4ebc59
+      version: -1
+      name: Hunt Discovery techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0007"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Discovery
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3020
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Discovery techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Discovery
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 3fc4a7bb-cf46-448c-8a33-3d15d82a0a2d
+    type: regular
+    task:
+      id: 3fc4a7bb-cf46-448c-8a33-3d15d82a0a2d
+      version: -1
+      name: Hunt Lateral Movement techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0008"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Lateral_Movement
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 3510
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Lateral Movement techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Lateral_Movement
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f9311151-0f3d-441b-89b6-289a8841a277
+    type: regular
+    task:
+      id: f9311151-0f3d-441b-89b6-289a8841a277
+      version: -1
+      name: Hunt Collection techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0009"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Collection
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Lateral Movement techniques - Cortex XDR - Endpoint Investigation
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 3f439bc7-0627-48a5-80e2-ba44096083b8
+    type: regular
+    task:
+      id: 3f439bc7-0627-48a5-80e2-ba44096083b8
+      version: -1
+      name: Hunt Command and Control techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0011"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Command_And_Control
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4460
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Command and Control techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Command and Control
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: efc4d25a-ce92-444f-8dc4-38d383d67b76
+    type: regular
+    task:
+      id: efc4d25a-ce92-444f-8dc4-38d383d67b76
+      version: -1
+      name: Hunt Impact techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0040"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Impact_techniques
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 4940
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Impact techniques - Cortex XDR - Endpoint Investigation
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: d126a4c8-162c-4c28-8d70-449f593d1230
+    type: title
+    task:
+      id: d126a4c8-162c-4c28-8d70-449f593d1230
+      version: -1
+      name: Hunt by MITRE Tactics
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 591149d8-6eba-46cb-874b-bb83eea0c6fe
+    type: title
+    task:
+      id: 591149d8-6eba-46cb-874b-bb83eea0c6fe
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 4dc85afd-df87-481b-8232-acb1e067abad
+    type: condition
+    task:
+      id: 4dc85afd-df87-481b-8232-acb1e067abad
+      version: -1
+      name: Run all Hunting Queries on Mitre Tactics?
+      description: Run all hunting queries on Mitre tactics?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "28"
+      - "16"
+      - "14"
+      - "18"
+      - "19"
+      - "20"
+      - "21"
+      - "22"
+      - "25"
+      - "26"
+      - "17"
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.RunAll
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 70d127c4-ca66-42ba-8a53-6cc8ee476f7d
+    type: regular
+    task:
+      id: 70d127c4-ca66-42ba-8a53-6cc8ee476f7d
+      version: -1
+      name: Count Relevant Alerts
+      description: Count the array size.
+      scriptName: CountArraySize
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      array:
+        complex:
+          root: PaloAltoNetworksXDR.Alert
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Alert.severity
+                iscontext: true
+              right:
+                value:
+                  simple: low
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Alert.severity
+                iscontext: true
+              right:
+                value:
+                  simple: medium
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Alert.severity
+                iscontext: true
+              right:
+                value:
+                  simple: high
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Alert.severity
+                iscontext: true
+              right:
+                value:
+                  simple: critical
+              ignorecase: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 998a5710-4743-48bf-8e31-53ff61230593
+    type: condition
+    task:
+      id: 998a5710-4743-48bf-8e31-53ff61230593
+      version: -1
+      name: Should hunt for Credential Access techniques?
+      description: Whether to hunt for Credential Access techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntCredentialAccessTechniques
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: d84fcb11-cf36-4538-8013-a5448145d330
+    type: title
+    task:
+      id: d84fcb11-cf36-4538-8013-a5448145d330
+      version: -1
+      name: Credential Access
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: a67b85d8-ed7c-45c4-810e-476bca9c31a1
+    type: regular
+    task:
+      id: a67b85d8-ed7c-45c4-810e-476bca9c31a1
+      version: -1
+      name: Hunt Credential Access techniques
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "mitre_tactic_id_and_name",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "TA0006"
+                    },
+                    {
+                      "SEARCH_FIELD": "${inputs.EntityType}",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${inputs.entityID}"
+                    }
+                  ]
+             }
+      extend-context:
+        simple: Defense_Evasion
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2520
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Defense_Evasion
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 4371a3ef-940f-4aaa-8b02-2287c631d511
+    type: condition
+    task:
+      id: 4371a3ef-940f-4aaa-8b02-2287c631d511
+      version: -1
+      name: Has Results?
+      description: Found any alerts?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                accessor: Alert
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "58_26_yes": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6565,
+        "width": 1020,
+        "x": -190,
+        "y": -1070
+      }
+    }
+  }
+inputs:
+- key: HuntReconnaissanceTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
+  playbookInputQuery:
+- key: HuntInitialAccessTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Initial Access techniques.
+  playbookInputQuery:
+- key: HuntExecutionTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Execution techniques.
+  playbookInputQuery:
+- key: HuntPersistenceTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Persistence techniques.
+  playbookInputQuery:
+- key: HuntPrivilegeEscalationTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques.
+  playbookInputQuery:
+- key: HuntDefenseEvasionTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Defense Evasion techniques.
+  playbookInputQuery:
+- key: HuntDiscoveryTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Discovery techniques.
+  playbookInputQuery:
+- key: HuntLateralMovementTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Lateral Movement techniques.
+  playbookInputQuery:
+- key: HuntCollectionTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Collection techniques .
+  playbookInputQuery:
+- key: HuntCnCTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Command and Control techniques.
+  playbookInputQuery:
+- key: HuntImpactTechniques
+  value:
+    simple: "True"
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Impact techniques.
+  playbookInputQuery:
+- key: HuntCredentialAccessTechniques
+  value: {}
+  required: false
+  description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
+  playbookInputQuery:
+- key: timeRange
+  value:
+    simple: 2 hours
+  required: false
+  description: |-
+    A time range to execute the hunting in.
+    The input should be in the following format:
+    * 1 day
+    * 2 minutes
+    * 4 hours
+    * 8 days
+  playbookInputQuery:
+- key: RunAll
+  value: {}
+  required: false
+  description: Whether to run all the sub-tasks for Mitre Tactics.
+  playbookInputQuery:
+- key: EntityType
+  value: {}
+  required: false
+  description: Entity type to search on xdr-get-alerts custom filters.
+  playbookInputQuery:
+- key: entityID
+  value: {}
+  required: false
+  description: Entity value.
+  playbookInputQuery:
+outputs:
+- contextPath: PaloAltoNetworksXDR.Alert
+  description: Alerts found.
+  type: unknown
+- contextPath: ArraySize
+  description: Array size.
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

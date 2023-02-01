@@ -17,7 +17,7 @@ ignore=IN126,IN135
 ignore=IN128,IN145
 
 [file:SecurityAndComplianceV2.yml]
-ignore=IN145
+ignore=IN145,IN124
 
 [file:README.md]
 ignore=RM102,RM106
@@ -31,3 +31,4 @@ ignore=BA101
 
 [known_words]
 sc
+UPN

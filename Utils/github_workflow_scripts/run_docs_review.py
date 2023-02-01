@@ -18,20 +18,23 @@ def pass_files_to_docs_review(files_for_review: List[str]) -> int:
     """
     This function passes each file of the files_for_review list to the demisto-sdk docs reviewer.
     Args:
-        files_for_review: the files that should be reviewed.
+        files_for_review: the files that should be reviewed. Only files that belong to an XSOAR-supported Packs will be reviewed.
 
     Returns: the exit code according to the docs reviewer result.
     """
     exit_code = 0
-    doc_reviewer = DocReviewer(file_paths=files_for_review,
-                               release_notes_only=True,
-                               known_words_file_paths=['Tests/known_words.txt'],
-                               load_known_words_from_pack=True,
-                               no_camel_case=True)
+    doc_reviewer = DocReviewer(
+        file_paths=files_for_review,
+        release_notes_only=True,
+        known_words_file_paths=["Tests/known_words.txt"],
+        load_known_words_from_pack=True,
+        no_camel_case=True,
+        xsoar_only=True,
+    )
 
     result = doc_reviewer.run_doc_review()
     if not result:
-        click.secho('Docs review resulted in failure, the exact logs can be found above.', fg="red")
+        click.secho("Docs review resulted in failure, the exact logs can be found above.", fg="red")
         exit_code = 1
 
     return exit_code
@@ -44,12 +47,19 @@ def parse_changed_files_names() -> argparse.Namespace:
 
     Returns: an argparse.Namespace object which includes the changed files names and the delimiter argument.
     """
-    parser = argparse.ArgumentParser(description='Parse the changed files names.')
-    parser.add_argument('-c', '--changed_files',
-                        help="The files that are passed to docs review (passed as one string).")
-    parser.add_argument('-d', '--delimiter', help="the delimiter that separates the changed files names (determined in"
-                                                  " the call to tj-actions/changed-files in "
-                                                  "review_release_notes script).")
+    parser = argparse.ArgumentParser(description="Parse the changed files names.")
+    parser.add_argument(
+        "-c",
+        "--changed_files",
+        help="The files that are passed to docs review (passed as one string).",
+    )
+    parser.add_argument(
+        "-d",
+        "--delimiter",
+        help="the delimiter that separates the changed files names (determined in"
+        " the call to tj-actions/changed-files in "
+        "review_release_notes script).",
+    )
     args = parser.parse_args()
 
     return args

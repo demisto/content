@@ -21,7 +21,8 @@
     "testInterval": 20,
     "tests": [
         {
-            "playbookID": "IndicatorFormatterFilterTest"
+            "playbookID": "IndicatorFormatterFilterTest",
+            "timeout": 1200
         },
         {
             "integrations": "FeedURLhaus",
@@ -104,6 +105,13 @@
             "fromversion": "6.5.0"
         },
         {
+            "integrations": "McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2",
+            "fromversion": "6.5.0",
+            "memory_threshold": 200,
+            "timeout": 300
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
@@ -128,8 +136,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "GSuiteAdmin",
+            "playbookID": "GSuiteAdmin-MobileDevices-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "AzureWAF",
-            "instance_names":"azure_waf_user_auth_instance",
+            "instance_names": "azure_waf_user_auth_instance",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -184,9 +197,9 @@
             "has_api": false
         },
         {
-            "integrations": "Palo Alto Networks Threat Vault",
-            "playbookID": "PANW Threat Vault - Signature Search - Test",
-            "fromversion": "5.0.0"
+            "integrations": "Palo Alto Networks Threat Vault v2",
+            "playbookID": "PANW Threat Vault v2 - Test",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "Microsoft Endpoint Configuration Manager",
@@ -289,7 +302,7 @@
             "playbookID": "Azure NSG - Test"
         },
         {
-            "integrations": "OpenCTI Feed",
+            "integrations": "OpenCTI Feed 4.X",
             "playbookID": "OpenCTI Feed Test",
             "fromversion": "5.5.0"
         },
@@ -559,7 +572,10 @@
             "instance_names": "ms_azure_compute_self_deployed"
         },
         {
-            "integrations": ["Symantec Data Loss Prevention", "Symantec Data Loss Prevention v2"],
+            "integrations": [
+                "Symantec Data Loss Prevention",
+                "Symantec Data Loss Prevention v2"
+            ],
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
         },
@@ -598,6 +614,7 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
+            "timeout": 600,
             "instance_names": "ms_graph_mail_dev"
         },
         {
@@ -743,7 +760,24 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR Playbook",
+            "playbookID": "Test XDR Playbook execute script commands",
+            "fromversion": "4.1.0",
+            "timeout": 2500
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook quarantine file command",
+            "fromversion": "4.1.0",
+            "timeout": 2500
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook general commands",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook retrieve file command",
             "fromversion": "4.1.0",
             "timeout": 2500
         },
@@ -931,7 +965,7 @@
             "integrations": "ServiceNow v2",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
-            "timeout": 500
+            "timeout": 3000
         },
         {
             "integrations": "ServiceNow CMDB",
@@ -1446,7 +1480,35 @@
             "toversion": "5.0.0"
         },
         {
-            "playbookID": "Indicators reputation-.json Test",
+            "playbookID": "URL extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Domain extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Email extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "File extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IPv4 extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IPv4 CIDR extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IPv6 CIDR extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "IPv6 extraction test",
             "fromversion": "5.5.0"
         },
         {
@@ -2380,6 +2442,13 @@
             "has_api": false
         },
         {
+            "playbookID": "AD v2 - debug-mode - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
+            "fromversion": "5.0.0",
+            "has_api": false
+        },
+        {
             "playbookID": "Docker Hardening Test",
             "fromversion": "5.0.0",
             "runnable_on_docker_only": true
@@ -2752,8 +2821,10 @@
         },
         {
             "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
-            "memory_threshold": 80
+            "playbookID": "AWS - S3 Test Playbook",
+            "memory_threshold": 80,
+            "is_mockable": false
+
         },
         {
             "integrations": "AwsSecretsManager",
@@ -2905,7 +2976,10 @@
         {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
-            "integrations": ["VirusTotal", "Zimperium"],
+            "integrations": [
+                "VirusTotal",
+                "Zimperium"
+            ],
             "instance_names": "virus_total_general"
         },
         {
@@ -3316,7 +3390,10 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": ["Zoom Feed", "Demisto REST API"],
+            "integrations": [
+                "Zoom Feed",
+                "Demisto REST API"
+            ],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
@@ -3557,7 +3634,8 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout" : 600
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -3801,13 +3879,6 @@
             "fromversion": "5.5.0",
             "integrations": [
                 "NetscoutArborSightline"
-            ]
-        },
-        {
-            "playbookID": "test_MsGraphFiles",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Microsoft_Graph_Files"
             ]
         },
         {
@@ -4372,7 +4443,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 100,
+            "memory_threshold": 150,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4381,7 +4452,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 100,
+            "memory_threshold": 130,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -4423,13 +4494,13 @@
             "fromversion": "6.2.0",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
+                "EWSO365",
                 "Demisto REST API",
                 "CreateIncidents",
                 "Rasterize"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
+                "ewso365_dev_team",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
@@ -4453,7 +4524,6 @@
             "toversion": "6.4.9",
             "timeout": 7000,
             "integrations": [
-                "EWS Mail Sender",
                 "Demisto REST API",
                 "EWSO365",
                 "Rasterize",
@@ -4461,9 +4531,8 @@
                 "VirusTotal (API v3)"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02",
                 "virus_total_v3",
-                "ewso365_sec_eng_team"
+                "ewso365_dev_team"
             ],
             "external_playbook_config": {
                 "playbookID": "Phishing - Generic v3",
@@ -4519,23 +4588,14 @@
             ]
         },
         {
-            "playbookID": "playbook-feodoteackerhash_test",
-            "fromversion": "5.5.0",
-            "integrations": [
-                "Feodo Tracker IP Blocklist Feed",
-                "Feodo Tracker Hashes Feed"
-            ],
-            "instance_names": [
-                "feodo_tracker_ip_currently__active",
-                "feodo_tracker_ip_30_days"
-            ]
-        },
-        {
             "playbookID": "playbook-feodotrackeripblock_test",
             "fromversion": "5.5.0",
             "integrations": [
-                "Feodo Tracker IP Blocklist Feed",
-                "Feodo Tracker Hashes Feed"
+                "Feodo Tracker IP Blocklist Feed"
+            ],
+             "instance_names": [
+                "feodo_tracker_ip_currently__active",
+                "feodo_tracker_ip_30_days"
             ]
         },
         {
@@ -4938,7 +4998,6 @@
             "integrations": [
                 "Gmail"
             ]
-            
         },
         {
             "playbookID": "Get Original Email - EWS v2 - test",
@@ -4980,6 +5039,17 @@
             "playbookID": "MalwareBazaar_Test",
             "fromversion": "6.0.0",
             "memory_threshold": 90
+        },
+        {
+            "playbookID": "IAMInitOktaUser - Test",
+            "integrations": [
+                "Okta v2",
+                "EWSO365"
+            ],
+            "instance_names": [
+                "ewso365_dev_team"
+            ],
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "OpsGenieV3",
@@ -5044,7 +5114,8 @@
         },
         {
             "integrations": "McAfee ePO v2",
-            "playbookID": "McAfee ePO v2 Test"
+            "playbookID": "McAfee ePO v2 Test",
+            "memory_threshold": 100
         },
         {
             "playbookID": "Dedup - Generic v3",
@@ -5143,6 +5214,10 @@
             "playbookID": "CortexAttackSurfaceManagement_Test"
         },
         {
+            "integrations": "Cortex Xpanse",
+            "playbookID": "CortexXpanse_Test"
+        },
+        {
             "integrations": "checkpointdome9",
             "playbookID": "Dome9",
             "fromversion": "6.2.0"
@@ -5189,22 +5264,58 @@
             "playbookID": "testplaybook- JoeSecuirtyV2"
         },
         {
+            "integrations": "FortinetFortiwebVM",
+            "playbookID": "playbook-FortiwebVM_V1_Test",
+            "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "FortinetFortiwebVM",
+            "playbookID": "playbook-FortiwebVM_V2_Test",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "Cisco Umbrella Reporting",
             "playbookID": "Cisco Umbrella Reporting Test",
             "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "AMPv2",
+            "playbookID": "AMPv2_Test",
+            "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "XSOAR EDL Checker",
+            "playbookID": "TestXSOAREDLCheckerPlaybook"
+        },
+        {
+            "playbookID": "Threat_Intel_Report_test",
+            "fromversion": "6.5.0",
+            "scripts": [
+                "PublishThreatIntelReport",
+                "UnpublishThreatIntelReport"
+            ]
+        },
+        {            
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "Microsoft SQL Server - MS ODBC Driver",
+            "fromversion": "5.0.0",
+            "has_api": false
+        },
+        {
+            "integrations": "Microsoft Teams via Webhook",
+            "playbookID": "Microsoft Teams Webhook - Test"
         }
     ],
     "skipped_tests": {
-        "Detonate URL - Generic Test": "Issue CRTX-67708",
-        "Test XDR Playbook": "Issue CIAC-4624",
-        "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
-        "Cortex Data Lake Test": "Issue CRTX-67423",
-        "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
-        "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
+        "RegPathReputationBasicLists_test" : "The D2 pack is deprecated",
+        "CirclIntegrationTest": "No instance",
+        "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
+        "playbook-CheckPointSandBlast_Test": "Checkpoint playbook no license",
+        "playbook-BmcITSM-Test": "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
-        "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
@@ -5278,7 +5389,7 @@
         "iDefense_v2_Test": "Issue 40126",
         "Feed iDefense Test": "Issue 34035",
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
-        "McAfee ESM v2 (v11.3) - Test" : "Jira ticket CRTX-65370",
+        "McAfee ESM v2 (v11.3) - Test": "Jira ticket CRTX-65370",
         "McAfee ESM Watchlists - Test v11.3": "Jira ticket CRTX-65370",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
@@ -5316,7 +5427,6 @@
         "AzureADTest": "Issue 40131",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "GSuiteAdmin-Test": "Issue 34784",
         "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
         "test_AssignToNextShiftOOO": "Issue 44198",
@@ -5342,21 +5452,41 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
+        "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode": "No credentials",
+        "Google-KMS-test": "No instance",
+        "hashicorp_test": "No instance",
+        "Google BigQuery Test": "No instance",
+        "GCS Object Operations - Test": "No instance",
+        "GCS Bucket Management - Test": "No instance",
+        "GCS - Test": "No instance",
+        "GCS Object Policy (ACL) - Test": "No instance",
+        "GCS Bucket Policy (ACL) - Test": "No instance",
+        "playbook-AzureDataExplorer-Test": "No Instance",
+        "OTRS Test": "No Instance",
+        "Microsoft Graph Groups - Test dev": "No Working Instance",
+        "Microsoft Graph Groups - Test prod": "No Working Instance",
+        "Microsoft Graph Groups - Test": "No Working Instance",
+        "Azure Kubernetes Services - Test": "No Working Instance",
+        "playbook-AzureDevOps-Test": "No Working Instance",
+        "test playbook - Google Cloud Functions": "No Working Instance",
+        "playbook-GCP-IAM_Test": "No Working Instance",
+        "AlexaV2 Test Playbook": "The service is deprecated on Dec 15, 2022",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
+        "CortexXpanse_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
     },
     "skipped_integrations": {
-        "Lastline v2": "No license",
-        "AbuseIPDB": "License expired",
-        "checkpointdome9": "No license",
+        "Lastline v2": "No instance - No license",
+        "AbuseIPDB": "No instance - License expired",
+        "checkpointdome9": "No instance - No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
         "FortiSIEMV2": "No instance",
         "Azure Firewall": "No instance",
-        "Vertica": "No insance issue 45719",
-        "Ipstack": "Usage limit reached (Issue 38063)",
+        "Vertica": "No instance issue 45719",
+        "Ipstack": "No instance - Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
         "AnsibleAzure": "No instance - issue 40447",
         "AnsibleCiscoIOS": "No instance - issue 40447",
@@ -5381,14 +5511,14 @@
         "Azure Storage Container": "No instance - developed by Qmasters",
         "VMware Workspace ONE UEM (AirWatch MDM)": "No instance - developed by crest",
         "ServiceDeskPlus (On-Premise)": "No instance",
-        "Forcepoint": "instance issues. Issue 28043",
-        "ZeroFox": "Issue 29284",
-        "Symantec Management Center": "Issue 23960",
-        "Fidelis Elevate Network": "Issue 26453",
-        "ArcSight Logger": "Issue 19117",
+        "Forcepoint": "No instance - instance issues. Issue 28043",
+        "ZeroFox": "No instance - Issue 29284",
+        "Symantec Management Center": "No instance - Issue 23960",
+        "Fidelis Elevate Network": "No instance - Issue 26453",
+        "ArcSight Logger": "No instance - Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
-        "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
+        "Prisma Access": "No instance - Instance will be provided soon by Lior and Prasen - Issue 27112",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
@@ -5402,53 +5532,56 @@
         "Cisco CloudLock": "No instance",
         "Vectra v2": "No instance",
         "GoogleCloudSCC": "No instance, outsourced",
-        "FortiGate": "License expired, and not going to get one (issue 14723)",
+        "FortiGate": "No instance - License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
-        "AWS Sagemaker": "License expired, and probably not going to get it",
+        "AWS Sagemaker": "No instance - License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "FireEye ETP": "No instance",
         "Proofpoint TAP v2": "No instance",
         "remedy_sr_beta": "No instance",
-        "fireeye": "Issue 19839",
-        "Remedy On-Demand": "Issue 19835",
-        "Check Point": "Issue 18643",
-        "CheckPointFirewall_v2": "Issue 18643",
+        "fireeye": "No instance - Issue 19839",
+        "Remedy On-Demand": "No instance - Issue 19835",
+        "Check Point": "No instance - Issue 18643",
+        "CheckPointFirewall_v2": "No instance - Issue 18643",
         "CTIX v3": "No instance - developed by partner",
-        "Jask": "Issue 18879",
-        "vmray": "Issue 18752",
-        "SCADAfence CNM": "Issue 18376",
-        "ArcSight ESM v2": "Issue #18328",
-        "AlienVault USM Anywhere": "Issue #18273",
+        "Jask": "No instance - Issue 18879",
+        "vmray": "No instance - Issue 18752",
+        "SCADAfence CNM": "No instance - Issue 18376",
+        "ArcSight ESM v2": "No instance - Issue #18328",
+        "AlienVault USM Anywhere": "No instance - Issue #18273",
         "Dell Secureworks": "No instance",
-        "Service Manager": "Expired license",
-        "carbonblackprotection": "License expired",
-        "icebrg": "Issue 14312",
-        "Freshdesk": "Trial account expired",
-        "Kafka V2": "Can not connect to instance from remote",
-        "KafkaV3": "Can not connect to instance from remote",
-        "Check Point Sandblast": "Issue 15948",
-        "Remedy AR": "getting 'Not Found' in test button",
-        "Salesforce": "Issue 15901",
+        "Service Manager": "No instance - Expired license",
+        "carbonblackprotection": "No instance - License expired",
+        "icebrg": "No instance - Issue 14312",
+        "Freshdesk": "No instance - Trial account expired",
+        "Kafka V2": "No instance - Can not connect to instance from remote",
+        "KafkaV3": "No instance - Can not connect to instance from remote",
+        "Check Point Sandblast": "No instance - Issue 15948",
+        "Remedy AR": "No instance - getting 'Not Found' in test button",
+        "Salesforce": "No instance - Issue 15901",
         "ANYRUN": "No instance",
         "SecneurX Analysis": "No Instance",
-        "Snowflake": "Looks like account expired, needs looking into",
-        "Cisco Spark": "Issue 18940",
-        "Phish.AI": "Issue 17291",
-        "MaxMind GeoIP2": "Issue 18932.",
-        "Exabeam": "Issue 19371",
-        "Ivanti Heat": "Issue 26259",
-        "AWS - Athena - Beta": "Issue 19834",
-        "SNDBOX": "Issue 28826",
-        "Workday": "License expired Issue: 29595",
-        "FireEyeFeed": "License expired Issue: 31838",
-        "Akamai WAF": "Issue 32318",
-        "FraudWatch": "Issue 34299",
+        "Snowflake": "No instance - Looks like account expired, needs looking into",
+        "Cisco Spark": "No instance - Issue 18940",
+        "Phish.AI": "No instance - Issue 17291",
+        "MaxMind GeoIP2": "No instance - Issue 18932.",
+        "Exabeam": "No instance - Issue 19371",
+        "Ivanti Heat": "No instance - Issue 26259",
+        "AWS - Athena - Beta": "No instance - Issue 19834",
+        "SNDBOX": "No instance - Issue 28826",
+        "Workday": "No instance - License expired Issue: 29595",
+        "FireEyeFeed": "No instance - License expired Issue: 31838",
+        "Akamai WAF": "No instance - Issue 32318",
+        "FraudWatch": "No instance - Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
         "CiscoSMA": "No instance - developed by Qmasters",
+        "CiscoAMP": "No instance & Depreceated, replaced by AMPV2",
+        "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
+        "FortinetFortiwebVM": "No instance - developed by Qmasters",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
@@ -5467,11 +5600,9 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
-        "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated"
     },
-    "nightly_integrations": [
-    ],
+    "nightly_integrations": [],
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
@@ -5630,7 +5761,8 @@
         "RSA Archer v2": "cannot connect to proxy",
         "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
-        "Cortex XDR - IR": "internal product, no need to mock"
+        "Cortex XDR - IR": "internal product, no need to mock",
+        "Microsoft Teams via Webhook": "message sent contains random hostname of server"
     },
     "parallel_integrations": [
         "AWS - ACM",
@@ -5699,7 +5831,7 @@
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
-                "pid_threshold": 11
+                "pid_threshold": 18
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150

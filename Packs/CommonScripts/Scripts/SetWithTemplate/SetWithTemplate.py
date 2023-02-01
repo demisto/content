@@ -224,6 +224,7 @@ def main():
         args = assign_params(**demisto.args())
         key = args.get('key')
         template = args.get('template')
+        template_type = args.get('template_type', 'raw')
         append = argToBoolean(args.get('append', False))
         stringify = args.get('stringify', 'noop')
         force = argToBoolean(args.get('force', False))
@@ -239,6 +240,11 @@ def main():
 
         value = ''
         if template:
+            if template_type == 'json':
+                template = json.loads(template)
+            elif template_type != 'raw':
+                raise DemistoException(f'Invalid template type: {template_type}')
+
             context = args.get('context')
             if context:
                 context = json.loads(context) if isinstance(context, str) else context

@@ -366,6 +366,20 @@ class TestFetchStarredIncident:
         assert not incidents
 
 
+def test_get_tenant_info(requests_mock):
+    from CortexXDRIR import get_tenant_info_command, Client
+
+    tenant_info_response = load_test_data('./test_data/get_tenant_info.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/system/get_tenant_info/', json=tenant_info_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1/', headers={}
+    )
+    expected_output = tenant_info_response.get('reply')
+    response = get_tenant_info_command(client)
+    assert response.outputs == expected_output
+
+
 def test_insert_parsed_alert(requests_mock):
     from CortexXDRIR import insert_parsed_alert_command, Client
 

@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Union, Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
 import re
 import copy
@@ -10,6 +10,7 @@ import types
 import urllib3
 from taxii2client import v20, v21
 from taxii2client.common import TokenAuth, _HTTPConnection
+from taxii2client.exceptions import InvalidJSONError
 import tempfile
 
 # disable insecure warnings
@@ -24,8 +25,6 @@ API_USERNAME = "_api_token_key"
 HEADER_USERNAME = "_header:"
 
 ERR_NO_COLL = "No collection is available for this user, please make sure you entered the configuration correctly"
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 # Pattern Regexes - used to extract indicator type and value
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
@@ -175,6 +174,10 @@ COUNTRY_CODES_TO_NAMES = {'AD': 'Andorra', 'AE': 'United Arab Emirates', 'AF': '
                           'ZA': 'South Africa', 'ZM': 'Zambia', 'ZW': 'Zimbabwe'}
 
 
+def reached_limit(limit: int, element_count: int):
+    return element_count >= limit > -1
+
+
 class Taxii2FeedClient:
     def __init__(
             self,
@@ -314,12 +317,18 @@ class Taxii2FeedClient:
             logging.disable(logging.NOTSET)
 
     def set_api_root(self):
-        roots_to_api = {str(api_root.url).split('/')[-2]: api_root
-                        for api_root in self.server.api_roots}  # type: ignore[attr-defined]
+        roots_to_api = {}
+        for api_root in self.server.api_roots:  # type: ignore[attr-defined]
+            # ApiRoots are initialized with wrong _conn because we are not providing auth or cert to Server
+            # closing wrong unused connections
+            api_root_name = str(api_root.url).split('/')[-2]
+            demisto.debug(f'closing api_root._conn for {api_root_name}')
+            api_root._conn.close()
+            roots_to_api[api_root_name] = api_root
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
-                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exists.'
+                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exist. '
                                        f'Available API roots are {list(roots_to_api.keys())}.')
             self.api_root = roots_to_api.get(self.default_api_root)
 
@@ -1001,7 +1010,6 @@ class Taxii2FeedClient:
         :param limit: max amount of indicators to fetch
         :return: Cortex indicators list
         """
-
         if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
             raise DemistoException(
                 "Could not find a collection to fetch from. "
@@ -1013,12 +1021,18 @@ class Taxii2FeedClient:
         page_size = self.get_page_size(limit, limit)
         if page_size <= 0:
             return []
-        envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-        indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+
+        try:
+            envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
+            indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+        except InvalidJSONError as e:
+            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
+            # raised when the response is empty, because {} is parsed into '筽'
+            indicators = []
 
         return indicators
 
-    def load_stix_objects_from_envelope(self, envelopes: Dict[str, Any], limit: int = -1):
+    def load_stix_objects_from_envelope(self, envelopes: types.GeneratorType, limit: int = -1):
 
         parse_stix_2_objects = {
             "indicator": self.parse_indicator,
@@ -1045,118 +1059,65 @@ class Taxii2FeedClient:
             "location": self.parse_location,
             "vulnerability": self.parse_vulnerability
         }
-        indicators = []
 
-        # TAXII 2.0
-        if isinstance(list(envelopes.values())[0], types.GeneratorType):
-            indicators.extend(self.parse_generator_type_envelope(envelopes, parse_stix_2_objects))
-        # TAXII 2.1
-        else:
-            indicators.extend(self.parse_dict_envelope(envelopes, parse_stix_2_objects, limit))
+        indicators, relationships_lst = self.parse_generator_type_envelope(envelopes, parse_stix_2_objects, limit)
+        if relationships_lst:
+            indicators.extend(self.parse_relationships(relationships_lst))
         demisto.debug(
             f"TAXII 2 Feed has extracted {len(indicators)} indicators"
         )
-        if limit > -1:
-            return indicators[:limit]
+
         return indicators
 
-    def parse_generator_type_envelope(self, envelopes: Dict[str, Any],
-                                      parse_objects_func):
+    def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
-        for obj_type, envelope in envelopes.items():
-            for sub_envelope in envelope:
-                stix_objects = sub_envelope.get("objects")
-                if not stix_objects:
-                    # no fetched objects
-                    break
-                # now we have a list of objects, go over each obj, save id with obj, parse the obj
-                if obj_type != "relationship":
-                    for obj in stix_objects:
-                        # we currently don't support extension object
-                        if obj.get('type') == 'extension-definition':
-                            continue
-                        self.id_to_object[obj.get('id')] = obj
-                        result = parse_objects_func[obj_type](obj)
-                        if not result:
-                            continue
-                        indicators.extend(result)
-                        self.update_last_modified_indicator_date(obj.get("modified"))
-                else:
-                    relationships_lst.extend(stix_objects)
-        if relationships_lst:
-            indicators.extend(self.parse_relationships(relationships_lst))
+        for envelope in envelopes:
+            stix_objects = envelope.get("objects")
+            if not stix_objects:
+                # no fetched objects
+                break
 
-        return indicators
+            # now we have a list of objects, go over each obj, save id with obj, parse the obj
+            for obj in stix_objects:
+                obj_type = obj.get('type')
 
-    def parse_dict_envelope(self, envelopes: Dict[str, Any],
-                            parse_objects_func, limit: int = -1):
-        indicators: list = []
-        relationships_list: List[Dict[str, Any]] = []
-        for obj_type, envelope in envelopes.items():
-            cur_limit = limit
-            stix_objects = envelope.get("objects", [])
-            if obj_type != "relationship":
-                for obj in stix_objects:
-                    # we currently don't support extension object
-                    if obj.get('type') == 'extension-definition':
-                        continue
-                    self.id_to_object[obj.get('id')] = obj
-                    result = parse_objects_func[obj_type](obj)
-                    if not result:
-                        continue
+                # we currently don't support extension object
+                if obj_type == 'extension-definition':
+                    continue
+                elif obj_type == 'relationship':
+                    relationships_lst.append(obj)
+                    continue
+
+                self.id_to_object[obj.get('id')] = obj
+                if not parse_objects_func.get(obj_type):
+                    demisto.debug(f'There is no parsing function for object type {obj_type}, '
+                                  f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
+                    continue
+                if result := parse_objects_func[obj_type](obj):
                     indicators.extend(result)
                     self.update_last_modified_indicator_date(obj.get("modified"))
-            else:
-                relationships_list.extend(stix_objects)
 
-            while envelope.get("more", False):
-                page_size = self.get_page_size(limit, cur_limit)
-                envelope = self.collection_to_fetch.get_objects(
-                    limit=page_size, next=envelope.get("next", ""), type=obj_type
-                )
-                if isinstance(envelope, Dict):
-                    stix_objects = envelope.get("objects")
-                    if obj_type != "relationship":
-                        for obj in stix_objects:
-                            self.id_to_object[obj.get('id')] = obj
-                            result = parse_objects_func[obj_type](obj)
-                            if not result:
-                                continue
-                            indicators.extend(result)
-                            self.update_last_modified_indicator_date(obj.get("modified"))
-                    else:
-                        relationships_list.extend(stix_objects)
-                else:
-                    raise DemistoException(
-                        "Error: TAXII 2 client received the following response while requesting "
-                        f"indicators: {str(envelope)}\n\nExpected output is json"
-                    )
+                if reached_limit(limit, len(indicators)):
+                    return indicators, relationships_lst
 
-        if relationships_list:
-            indicators.extend(self.parse_relationships(relationships_list))
-        return indicators
+        return indicators, relationships_lst
 
     def poll_collection(
             self, page_size: int, **kwargs
-    ) -> Dict[str, Union[types.GeneratorType, Dict[str, str]]]:
+    ) -> types.GeneratorType:
         """
         Polls a taxii collection
         :param page_size: size of the request page
         """
-        types_envelopes = {}
         get_objects = self.collection_to_fetch.get_objects
-        if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
+        if 'relationship' not in self.objects_to_fetch and \
+                len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
             self.objects_to_fetch.append('relationship')
-        for obj_type in self.objects_to_fetch:
-            kwargs['type'] = obj_type
-            if isinstance(self.collection_to_fetch, v20.Collection):
-                envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
-            else:
-                envelope = get_objects(limit=page_size, **kwargs)
-            if envelope:
-                types_envelopes[obj_type] = envelope
-        return types_envelopes
+        kwargs['type'] = self.objects_to_fetch
+        if isinstance(self.collection_to_fetch, v20.Collection):
+            return v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """

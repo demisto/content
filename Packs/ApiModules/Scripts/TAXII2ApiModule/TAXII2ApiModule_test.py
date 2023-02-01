@@ -1,4 +1,4 @@
-from taxii2client.exceptions import TAXIIServiceException
+from taxii2client.exceptions import TAXIIServiceException, InvalidJSONError
 
 from CommonServerPython import *
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
@@ -178,6 +178,26 @@ class TestBuildIterator:
         mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
         mocker.patch.object(mock_client, "collection_to_fetch", spec=v21.Collection)
         iocs = mock_client.build_iterator(limit=0)
+        assert iocs == []
+
+    def test_handle_json_error(self, mocker):
+        """
+        Scenario: Call build iterator when the collection raises an InvalidJSONError because the response is "筽"
+
+        Given:
+        - Collection to fetch is of type v21.Collection
+
+        When
+        - Initializing collection to fetch
+
+        Then:
+        - Ensure 0 iocs are returned
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+        mocker.patch.object(mock_client, 'collection_to_fetch', spec=v21.Collection)
+        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=InvalidJSONError('Invalid JSON'))
+
+        iocs = mock_client.build_iterator()
         assert iocs == []
 
 
@@ -458,7 +478,7 @@ class TestFetchingStixObjects:
         expected = []
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
 
-        actual = mock_client.load_stix_objects_from_envelope({"indicator": STIX_ENVELOPE_NO_IOCS}, -1)
+        actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_NO_IOCS, -1)
 
         assert len(actual) == 0
         assert expected == actual
@@ -481,7 +501,7 @@ class TestFetchingStixObjects:
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN',
                                        objects_to_fetch=[])
 
-        actual = mock_client.load_stix_objects_from_envelope({"indicator": STIX_ENVELOPE_17_IOCS_19_OBJS}, -1)
+        actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_17_IOCS_19_OBJS, -1)
 
         assert len(actual) == 17
         assert expected == actual
@@ -495,7 +515,7 @@ class TestFetchingStixObjects:
         - skip is False
 
         When:
-        - extract_indicators_from_envelope_and_parse is called
+        - load_stix_objects_from_envelope is called
 
         Then:
         - Extract and parse the indicators from the envelope with the complex iocs
@@ -505,7 +525,7 @@ class TestFetchingStixObjects:
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN',
                                        objects_to_fetch=[])
 
-        actual = mock_client.load_stix_objects_from_envelope({"indicator": STIX_ENVELOPE_20_IOCS_19_OBJS}, -1)
+        actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
 
         assert len(actual) == 20
         assert actual == expected
@@ -519,7 +539,7 @@ class TestFetchingStixObjects:
         - skip is True
 
         When:
-        - extract_indicators_from_envelope_and_parse is called
+        - load_stix_objects_from_envelope is called
 
         Then:
         - Extract and parse the indicators from the envelope with the complex iocs
@@ -529,7 +549,7 @@ class TestFetchingStixObjects:
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, skip_complex_mode=True,
                                        objects_to_fetch=[])
 
-        actual = mock_client.load_stix_objects_from_envelope({"indicator": STIX_ENVELOPE_20_IOCS_19_OBJS}, -1)
+        actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
 
         assert len(actual) == 14
         assert actual == expected
@@ -550,7 +570,6 @@ class TestFetchingStixObjects:
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
         objects_envelopes = envelopes_v21
-        mock_client.id_to_object = id_to_object
 
         result = mock_client.load_stix_objects_from_envelope(objects_envelopes, -1)
         assert mock_client.id_to_object == id_to_object
@@ -564,29 +583,15 @@ class TestFetchingStixObjects:
         - Envelope with indicators, arranged by object type.
 
         When:
-        - parse_generator_type_envelope is called (skipping condition from load_stix_objects_from_envelope).
+        - load_stix_objects_from_envelope is called.
 
         Then: - Load and parse objects from the envelope according to their object type and ignore
         extension-definition objects.
 
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
-        objects_envelopes = envelopes_v20
-        mock_client.id_to_object = id_to_object
 
-        parse_stix_2_objects = {
-            "indicator": mock_client.parse_indicator,
-            "attack-pattern": mock_client.parse_attack_pattern,
-            "malware": mock_client.parse_malware,
-            "report": mock_client.parse_report,
-            "course-of-action": mock_client.parse_course_of_action,
-            "campaign": mock_client.parse_campaign,
-            "intrusion-set": mock_client.parse_intrusion_set,
-            "tool": mock_client.parse_tool,
-            "threat-actor": mock_client.parse_threat_actor,
-            "infrastructure": mock_client.parse_infrastructure
-        }
-        result = mock_client.parse_generator_type_envelope(objects_envelopes, parse_stix_2_objects)
+        result = mock_client.load_stix_objects_from_envelope(envelopes_v20)
         assert mock_client.id_to_object == id_to_object
         assert result == parsed_objects
 
@@ -1083,3 +1088,21 @@ class TestParsingIndicators:
          - Make sure all the fields are being parsed correctly.
         """
         assert taxii_2_client.parse_location(location_object) == xsoar_expected_response
+
+
+@pytest.mark.parametrize('limit, element_count, return_value',
+                         [(8, 8, True),
+                          (8, 9, True),
+                          (8, 0, False),
+                          (-1, 10, False)])
+def test_reached_limit(limit, element_count, return_value):
+    """
+    Given:
+        - A limit and element count.
+    When:
+        - Enforcing limit on the elements count.
+    Then:
+        - Assert that the element count is not exceeded.
+    """
+    from TAXII2ApiModule import reached_limit
+    assert reached_limit(limit, element_count) == return_value

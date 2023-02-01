@@ -86,7 +86,7 @@ QUERY_ISSUE_RESPONSE = {
                     "self": "https://localhost/rest/api/2/issuetype/10001",
                     "subtask": False
                 },
-                "labels": [],
+                "labels": ['test', 'debug'],
                 "lastViewed": None,
                 "priority": {
                     "iconUrl": "https://localhost/images/icons/priorities/high.svg",
@@ -220,7 +220,7 @@ GET_ISSUE_RESPONSE = {
                        'self': '',
                        'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}},
         'components': [], 'timeoriginalestimate': None,
-        'description': 'changeing again again\n\nagain gain',
+        'description': 'changing again again\n\nagain gain',
         'customfield_10013': None, 'customfield_10014': None,
         'customfield_10015': {'hasEpicLinkFieldDependency': False, 'showField': False,
                               'nonEditableReason': {'reason': 'PLUGIN_LICENSE_ERROR',
@@ -293,7 +293,7 @@ GET_ISSUE_RESPONSE_WITH_LABELS = {
                        'self': '',
                        'id': 2, 'key': 'new', 'colorName': 'blue-gray', 'name': 'To Do'}},
         'components': [], 'timeoriginalestimate': None,
-        'description': 'changeing again again\n\nagain gain',
+        'description': 'changing again again\n\nagain gain',
         'creator': {
             'accountId': 'accountid',
             'accountType': 'atlassian',

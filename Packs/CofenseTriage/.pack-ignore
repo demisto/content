@@ -7,3 +7,6 @@ ignore=RM102
 
 [file:CofenseTriagev2_image.png]
 ignore=IM111
+
+[file:CofenseTriage_image.png]
+ignore=IM111
