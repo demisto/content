@@ -48,7 +48,7 @@ def logger(func):
             if not result:
                 raise Exception(f"Failed when running validation - {func.__name__}")
 
-            logging.info(f"Successful {MSG_DICT[func.__name__]} for pack {pack_id}.")
+            logging.info(f"[{pack_id}] {MSG_DICT[func.__name__]}")
 
         except FileNotFoundError as e:
             logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
