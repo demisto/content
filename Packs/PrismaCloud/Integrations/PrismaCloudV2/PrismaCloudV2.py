@@ -6,10 +6,6 @@ from typing import Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-MAX_INCIDENTS_TO_FETCH = 200
-FETCH_DEFAULT_TIME = '3 days'
-FETCH_LOOK_BACK_TIME = 20
-
 ''' CONSTANTS '''
 
 HEADERS = {'Content-Type': 'application/json; charset=UTF-8', 'Accept': 'application/json; charset=UTF-8'}
@@ -34,6 +30,16 @@ TO_NOW_TIME_UNIT_OPTIONS = ('day',
                             )
 TIME_FILTER_BASE_CASE = {'type': 'to_now', 'value': 'epoch'}
 ALERT_SEARCH_BASE_TIME_FILTER = {'type': 'relative', 'value': {'amount': 7, 'unit': 'day'}}
+ERROR_TOO_MANY_ARGS = 'Too many arguments provided. You cannot specify absolute times ("time_range_date_from", ' \
+                      '"time_range_date_to") with relative times ("time_range_unit", "time_range_value").'
+ERROR_NOT_ENOUGH_ARGS = 'Not enough arguments provided. You cannot specify "time_range_date_from" without ' \
+                        '"time_range_date_to", or "time_range_value" without "time_range_unit".'
+ERROR_RELATIVE_TIME_UNIT = f'Time unit for relative time must be one of the following: {", ".join(RELATIVE_TIME_UNIT_OPTIONS)}.'
+ERROR_TO_NOW_TIME_UNIT = f'Time unit for to_now time must be one of the following: {", ".join(TO_NOW_TIME_UNIT_OPTIONS)}'
+
+MAX_INCIDENTS_TO_FETCH = 200
+FETCH_DEFAULT_TIME = '3 days'
+FETCH_LOOK_BACK_TIME = 20
 
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
@@ -63,6 +69,9 @@ SOURCE_TYPES_OPTIONS = ['Github', 'Bitbucket', 'Gitlab', 'AzureRepos', 'cli', 'A
                         'githubEnterprise', 'gitlabEnterprise', 'bitbucketEnterprise', 'terraformCloud', 'githubActions',
                         'circleci', 'codebuild', 'jenkins', 'tfcRunTasks', 'admissionController', 'terraformEnterprise']
 STATUSES_OPTIONS = ['Errors', 'Suppressed', 'Passed', 'Fixed']
+
+TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdated', 'insertTs', 'createdTs', 'lastModifiedTs',
+               'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn']
 
 ''' CLIENT CLASS '''
 
@@ -303,16 +312,23 @@ class Client(BaseClient):
 
 
 def format_url(url: str):
+    """
+    Formats the URL from the regular one (with 'app') to the API one (with 'api'), in order to support providing both options.
+    """
     return urljoin(url.replace('https://app', 'https://api'), '')
 
 
 def extract_nested_values(readable_response: dict, nested_headers: Dict[str, str]):
+    """
+    Extracts nested fields from readable_response according to nested_headers keys,
+    and names them according to nested_headers values.
+    """
     for nested_name, new_name in nested_headers.items():
         nested_name_parts = nested_name.split('.')
 
         nested_value = readable_response
         for index, part in enumerate(nested_name_parts):
-            nested_value = nested_value.get(part)
+            nested_value = nested_value.get(part)  # type: ignore[assignment]
             if index == (len(nested_name_parts) - 1):
                 readable_response[new_name] = nested_value
             elif not nested_value:
@@ -320,9 +336,10 @@ def extract_nested_values(readable_response: dict, nested_headers: Dict[str, str
 
 
 def change_timestamp_to_datestring_in_dict(readable_response: dict):
-    time_fields = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdated', 'insertTs', 'createdTs',
-                   'lastModifiedTs', 'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn']
-    for field in time_fields:
+    """
+    Changes the values of the time fields in the given response from epoch timestamp to human readable date format.
+    """
+    for field in TIME_FIELDS:
         if epoch_value := readable_response.get(field):
             readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT)
 
@@ -332,32 +349,31 @@ def convert_date_to_unix(date_str: str) -> int:
     Convert the given string to milliseconds since epoch.
     """
     date = dateparser.parse(date_str, settings={"TIMEZONE": "UTC"})
-    return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
+    return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)  # type: ignore[operator]
 
 
 def handle_time_filter(base_case: Dict[str, Any] = None, unit_value: str = None, amount_value: int = None, time_from: str = None,
-                       time_to: str = None) -> Optional[Dict[str, Any]]:
+                       time_to: str = None) -> Dict[str, Any]:
     """
     Create the relevant time filter to be sent in the POST request body, under "timeRange".
-    This doesn't deal with the way it should be sent in the GET request parameters.
+    This doesn't deal with the way the time range should be sent in the GET request parameters.
     """
     if (time_from or time_to) and (unit_value or amount_value):
-        raise DemistoException('Too many arguments provided. You cannot specify absolute times ("time_range_date_from", '
-                               '"time_range_date_to") with relative times ("time_range_unit", "time_range_value").')
+        raise DemistoException(ERROR_TOO_MANY_ARGS)
+    elif (time_from and not time_to) or (amount_value and not unit_value):
+        raise DemistoException(ERROR_NOT_ENOUGH_ARGS)
 
     if unit_value:
         if amount_value:
             # amount is only for relative time - defines a window of time from a given point of time in the past until now
             if unit_value not in RELATIVE_TIME_UNIT_OPTIONS:
-                raise DemistoException(
-                    f'Time unit for relative time must be one of the following: {", ".join(RELATIVE_TIME_UNIT_OPTIONS)}.')
+                raise DemistoException(ERROR_RELATIVE_TIME_UNIT)
             return {'type': 'relative', 'value': {'amount': arg_to_number(amount_value), 'unit': unit_value}}
 
         else:
             # using to_now time - represents a window of time from the start of the time unit given until now
             if unit_value not in TO_NOW_TIME_UNIT_OPTIONS:
-                raise DemistoException(
-                    f'Time unit for to_now time must be one of the following: {", ".join(TO_NOW_TIME_UNIT_OPTIONS)}')
+                raise DemistoException(ERROR_TO_NOW_TIME_UNIT)
             return {'type': 'to_now', 'value': unit_value}
 
     elif time_to:
@@ -369,41 +385,57 @@ def handle_time_filter(base_case: Dict[str, Any] = None, unit_value: str = None,
             # alert dismissal requires only an end time in the future
             return {'type': 'absolute', 'value': {'endTime': convert_date_to_unix(time_to)}}
 
-    return base_case
+    return base_case or TIME_FILTER_BASE_CASE
 
 
-def handle_filters(filters: List[str]):
+def handle_filters(filters: Optional[List[str]]):
+    """
+    Creates the list of filters in the format that the request expects.
+    The filters are given from the user as a comma-separated list, in the format of filtername=filtervalue.
+    """
     filters_to_send = []
-    for filter_ in filters:
-        split_filter = filter_.split('=')
-        if len(split_filter) != 2 or not split_filter[0] or not split_filter[1]:
-            raise DemistoException('Filters should be in the format of "filtername1=filtervalue1,filtername2=filtervalue2". '
-                                   f'The filter "{filter_}" doesn\'t meet this requirement.')
-        filters_to_send.append({'name': split_filter[0],
-                                'operator': '=',
-                                'value': split_filter[1]})
+    if filters:
+        for filter_ in filters:
+            split_filter = filter_.split('=')
+            if len(split_filter) != 2 or not split_filter[0] or not split_filter[1]:
+                raise DemistoException('Filters should be in the format of "filtername1=filtervalue1,filtername2=filtervalue2". '
+                                       f'The filter "{filter_}" doesn\'t meet this requirement.')
+            filters_to_send.append({'name': split_filter[0],
+                                    'operator': '=',
+                                    'value': split_filter[1]})
     return filters_to_send
 
 
-def handle_tags(tags: List[str]):
+def handle_tags(tags: Optional[List[str]]):
+    """
+    Creates the list of tags in the format that the request expects.
+    The tags are given from the user as a comma-separated list, in the format of tagkey=tagvalue.
+    """
     tags_to_send = []
-    for tag in tags:
-        split_tag = tag.split('=')
-        if len(split_tag) != 2 or not split_tag[0] or not split_tag[1]:
-            raise DemistoException('Tags should be in the format of "tagkey1=tagvalue1,tagkey2=tagvalue2". '
-                                   f'The tag "{tag}" doesn\'t meet this requirement.')
-        tags_to_send.append({'key': split_tag[0],
-                             'value': split_tag[1]})
+    if tags:
+        for tag in tags:
+            split_tag = tag.split('=')
+            if len(split_tag) != 2 or not split_tag[0] or not split_tag[1]:
+                raise DemistoException('Tags should be in the format of "tagkey1=tagvalue1,tagkey2=tagvalue2". '
+                                       f'The tag "{tag}" doesn\'t meet this requirement.')
+            tags_to_send.append({'key': split_tag[0],
+                                 'value': split_tag[1]})
     return tags_to_send
 
 
 def validate_array_arg(array_arg: List[str], arg_name: str, arg_options: List[str]):
+    """
+    Validates that all comma-separated provided arg values are in the available options.
+    """
     if any(arg_value not in arg_options for arg_value in array_arg):
-        raise DemistoException(f'{arg_name} must be of the following: {", ".join(arg_options)}.')
+        raise DemistoException(f'{arg_name} values must be of the following: {", ".join(arg_options)}.')
 
 
 def error_file_list_command_args_validation(source_types: List[str], categories: List[str], statuses: List[str],
                                             file_types: List[str], search_options: List[str], severities: List[str]):
+    """
+    Validates values for all multi-select args in 'prisma-cloud-error-file-list' command.
+    """
     validate_array_arg(categories, 'Categories', CATEGORIES_OPTIONS)
     validate_array_arg(file_types, 'File types', FILE_TYPES_OPTIONS)
     validate_array_arg(search_options, 'Search options', SEARCH_OPTIONS_OPTIONS)
@@ -414,7 +446,7 @@ def error_file_list_command_args_validation(source_types: List[str], categories:
 
 def remove_empty_values_from_dict(dict_to_reduce: Dict[str, Any]):
     """
-    Removes empty values from given dict and from the nested dicts in it.
+    Removes empty values from given dict and from the nested dicts and lists in it.
     """
     reduced_dict = {}
     for key, value in dict_to_reduce.items():
@@ -440,7 +472,11 @@ def remove_empty_values_from_dict(dict_to_reduce: Dict[str, Any]):
     return reduced_dict
 
 
-def get_response_status_header(response):
+def get_response_status_header(response: Any):
+    """
+    The status of the error raised from Prisma Cloud appears in the response header.
+    This function returns the status header from the response got from Prisma Cloud.
+    """
     if hasattr(response, 'headers'):
         return response.headers.get(RESPONSE_STATUS_HEADER, '')
     return ''
@@ -451,6 +487,7 @@ def calculate_offset(page_size: int, page_number: int) -> Tuple[int, int]:
     Prisma Cloud receives offset and limit arguments. To follow our convention, we receive page_size and page_number arguments and
     calculate the offset from them.
     The offset is the start point from which to retrieve values, zero based. It starts at 0.
+    NOTICE: Currently the offset argument is not working in the API, so this is not used until further update by Prisma Cloud.
 
     :param page_size: The number of results to show in one page.
     :param page_number: The page number to show, starts at 1.
@@ -574,7 +611,7 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
 
         demisto.debug(f'{alert.get("id")} has not been fetched yet. Processing it now.')
         incidents.append(alert_to_incident_context(alert))
-        fetched_ids[alert.get('id')] = alert.get('alertTime')
+        fetched_ids[str(alert.get('id'))] = alert.get('alertTime')  # type: ignore[assignment]
 
         if len(incidents) == limit:
             break
@@ -679,7 +716,7 @@ def alert_get_details_command(client: Client, args: Dict[str, Any]) -> CommandRe
     alert_id = args.get('alert_id')
     detailed = args.get('detailed', 'true')
 
-    response = client.alert_get_details_request(alert_id, detailed)
+    response = client.alert_get_details_request(str(alert_id), detailed)
     change_timestamp_to_datestring_in_dict(response)
 
     readable_response = deepcopy(response)
@@ -743,7 +780,7 @@ def alert_dismiss_command(client: Client, args: Dict[str, Any]) -> CommandResult
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
 
-    client.alert_dismiss_request(dismissal_note, time_filter, alert_ids, policy_ids, dismissal_time_filter, filters)
+    client.alert_dismiss_request(str(dismissal_note), time_filter, alert_ids, policy_ids, dismissal_time_filter, filters)
 
     command_results = CommandResults(
         readable_output=(f'### Alerts snoozed successfully.\nSnooze note: {dismissal_note}.'
@@ -825,7 +862,7 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
     alert_id = args.get('alert_id')
 
     try:
-        client.alert_remediate_request(alert_id)
+        client.alert_remediate_request(str(alert_id))
 
     except DemistoException as de:
         if de.res.status_code == 405:
@@ -854,7 +891,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     if any([sort_direction, sort_field]) and not all([sort_direction, sort_field]):
         raise DemistoException('Both sort direction and field must be specified if sorting.')
 
-    response = client.config_search_request(time_filter, query, limit, search_id, sort_direction, sort_field)
+    response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field)
     response_items = response.get('data', {}).get('items', [])
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
@@ -884,7 +921,7 @@ def event_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
 
-    response = client.event_search_request(time_filter, query, limit)
+    response = client.event_search_request(time_filter, str(query), limit)
     response_items = response.get('data', {}).get('items', [])
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
@@ -915,7 +952,7 @@ def network_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
 
-    response = client.network_search_request(query, time_filter, search_id, cloud_type)
+    response = client.network_search_request(str(query), time_filter, search_id, cloud_type)
     response_items = response.get('data', {})
     nodes = response_items.get('nodes', [])
     connections = response_items.get('connections', [])
@@ -979,9 +1016,9 @@ def error_file_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     error_file_list_command_args_validation(source_types, categories, statuses, file_types, search_options, severities)
 
-    response = client.error_file_list_request(repository, source_types, cicd_run_id, authors, branch, categories, code_status,
-                                              file_types, repository_id, search_options, search_text, search_title, severities,
-                                              tags, statuses)
+    response = client.error_file_list_request(str(repository), source_types, cicd_run_id, authors, branch, categories,
+                                              code_status, file_types, repository_id, search_options, search_text, search_title,
+                                              severities, tags, statuses)
     response_items = response.get('data', [])
     if not all_results and limit and response_items:
         response_items = response_items[:limit]
@@ -1005,7 +1042,7 @@ def error_file_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 def resource_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     rrn = args.get('rrn')
 
-    response = client.resource_get_request(rrn)
+    response = client.resource_get_request(str(rrn))
     change_timestamp_to_datestring_in_dict(response)
 
     headers = ['rrn', 'id', 'name', 'url', 'accountId', 'accountName', 'cloudType', 'regionId', 'regionName', 'service',
@@ -1059,8 +1096,9 @@ def account_status_get_command(client: Client, args: Dict[str, Any]) -> CommandR
     responses = []
     for account_id in account_ids:
         response = client.account_status_get_request(account_id)
-        response[0]['accountId'] = account_id
-        responses.append(response[0])
+        if response:
+            response[0]['accountId'] = account_id
+            responses.append(response[0])
 
     headers = ['accountId', 'name', 'status', 'message', 'remediation']
     command_results = CommandResults(
@@ -1111,7 +1149,7 @@ def host_finding_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     risk_factors = [risk_factor.upper() for risk_factor in risk_factors]
     validate_array_arg(risk_factors, 'Risk factors', RISK_FACTORS_OPTIONS)
 
-    response = client.host_finding_list_request(rrn, finding_types, risk_factors)
+    response = client.host_finding_list_request(str(rrn), finding_types, risk_factors)
     if not all_results and limit and response:
         response = response[:limit]
     for response_item in response:
@@ -1145,7 +1183,7 @@ def host_finding_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
 def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_id = args.get('user_id')
     query = args.get('query')
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or int(DEFAULT_LIMIT)
     next_token = args.get('next_token')
 
     if not query and not next_token:
@@ -1158,7 +1196,7 @@ def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
         response_items = response.get('data', {}).get('items', [])
         next_page_token = response.get('data', {}).get('nextPageToken')
     else:
-        response = client.permission_list_next_page_request(next_token, limit)
+        response = client.permission_list_next_page_request(str(next_token), limit)
         response_items = response.get('items', [])
         next_page_token = response.get('nextPageToken')
 
