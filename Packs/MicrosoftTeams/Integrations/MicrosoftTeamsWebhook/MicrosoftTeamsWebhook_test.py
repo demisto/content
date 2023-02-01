@@ -23,3 +23,12 @@ def test_send_teams_message_command(requests_mock):
     requests_mock.post(WEBHOOK, status_code=200, json={})
     res = send_teams_message_command(fake_client, MESSAGE, TITLE, SERVERURLS["investigation"])
     assert res.readable_output == 'message sent successfully'
+
+
+def test_test_module(requests_mock):
+    from MicrosoftTeamsWebhook import test_module
+    requests_mock.post(WEBHOOK, status_code=200, json={})
+
+    res = test_module(fake_client, 'fake')
+    assert res == 'ok'
+

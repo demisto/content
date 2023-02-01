@@ -105,7 +105,7 @@ def send_teams_message_command(client: Client, message: str, title: str, serveru
     return CommandResults(readable_output='message sent successfully')
 
 
-def main() -> None:
+def main() -> None:    # pragma: no cover
     """
     main function, parses params and runs command functions
     grab the params and the server urls, and send the message, or test message.
