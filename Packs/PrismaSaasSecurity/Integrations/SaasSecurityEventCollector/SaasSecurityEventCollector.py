@@ -260,6 +260,7 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
         elif command == 'fetch-events':
             integration_context = demisto.getIntegrationContext()
+            demisto.info(f'{integration_context=}')
             if not integration_context.get('events'):
                 events, exception = fetch_events_from_saas_security(
                     client=client, max_fetch=max_fetch, max_iterations=max_iterations
@@ -268,7 +269,7 @@ def main() -> None:  # pragma: no cover
                     demisto.info(f'got exception when trying to fetch events: [{exception}]')
             else:
                 events = integration_context.get('events')
-                demisto.info(f'fetching the following events from integration context: {events}')
+                demisto.info(f'fetching events from integration context')
             try:
                 demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
                 send_events_to_xsiam(
