@@ -14,6 +14,7 @@ def main():
         backend=default_backend()
     )
 
+    toWarRoom = demisto.getArg('OutputToWarRoom')
     cn = demisto.getArg('cn')
     email = demisto.getArg('email')
     organization = demisto.getArg('org')
@@ -60,8 +61,11 @@ def main():
         fileResult(
             filename="request.csr",
             data=pem_text
-        )
+        ),
     ]
+
+    if toWarRoom == "True":
+        results.append(pem_text)
 
     return_results(results)
 

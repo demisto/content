@@ -22,6 +22,7 @@ Output is the request.csr file placed directly into context under a "File" objec
 | country | Cert Country |
 | state | Cert State |
 | locality | Cert Locality \(City\) |
+| OutputToWarRoom | Output CSR text to war room? \(Default: False\) |
 
 ## Outputs
 ---

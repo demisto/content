@@ -174,19 +174,19 @@ tasks:
       subject:
         simple: SSL Certificate Report
       to:
-        simple: user@domain.tld
+        simple: josh0x90@gmail.com
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Sends mail using Gmail.
-      id: f8cf7017-622f-44eb-89c5-0f9bdc60befe
+      id: e00afaca-34b2-47f1-87dd-4f15e61f9a3a
       iscommand: true
       name: Send Report Email (HTML)
       script: '|||send-mail'
       type: regular
       version: -1
-    taskid: f8cf7017-622f-44eb-89c5-0f9bdc60befe
+    taskid: e00afaca-34b2-47f1-87dd-4f15e61f9a3a
     timertriggers: []
     type: regular
     view: |-
