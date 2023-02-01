@@ -4,6 +4,7 @@ import json
 from MicrosoftGraphListener import MsGraphClient
 from MicrosoftGraphListener import add_second_to_str_date
 import requests_mock
+from unittest.mock import mock_open
 from CommonServerPython import *
 
 
@@ -981,3 +982,23 @@ class TestCommandsWithLargeAttachments:
         client.get_emails(**command_args)
 
         http_mock.assert_called_with(**expected_http_params)
+
+
+def test_special_chars_in_attachment_name(mocker):
+    """
+    Given: A attachment file name containing special characters.
+    When: Running the `_get_email_attachments` function.
+    Then: Ensure the file name was decoded correctly.
+    """
+    client = oproxy_client()
+    attachment_file_name = 'Moving_Form_ชั้น_26_แผงหลัง.xlsx'
+    mocker.patch.object(client.ms_client, 'http_request', return_value={'value': [{
+        '@odata.type': '#microsoft.graph.fileAttachment',
+        'name': attachment_file_name,
+        'contentBytes': 'contentBytes'}]})
+    mocker.patch.object(demisto, 'uniqueFile')
+    mocker.patch("builtins.open", mock_open())
+
+    res = client._get_email_attachments('message_id')
+
+    assert res[0].get('name') == attachment_file_name
