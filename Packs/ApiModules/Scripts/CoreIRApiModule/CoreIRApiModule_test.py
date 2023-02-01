@@ -79,7 +79,8 @@ def test_update_incident(requests_mock):
     )
     args = {
         'incident_id': '1',
-        'status': 'new'
+        'status': 'new',
+        'add_comment': 'new comment',
     }
     readable_output, outputs, _ = update_incident_command(client, args)
 
@@ -104,7 +105,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):

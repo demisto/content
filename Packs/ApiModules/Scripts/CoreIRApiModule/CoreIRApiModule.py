@@ -149,7 +149,7 @@ class CoreClient(BaseClient):
 
     def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
                         resolve_comment=None, unassign_user=None, add_comment=None):
-        update_data = {}
+        update_data: dict[str, Any] = {}
 
         if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
             raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
