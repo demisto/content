@@ -40,7 +40,7 @@ filter
     xdm.target.application.name = "Zscaler Private Access (ZPA)",
     xdm.auth.mfa.provider = Idp,
     xdm.auth.mfa.client_details = SAMLAttributes,
-    xdm.source.application.name = ;
+    xdm.source.application.name = ClientType;
 
 filter cat in ("Connector Status")
 | alter
