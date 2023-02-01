@@ -259,16 +259,16 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
-            if not last_run.get('events'):
+            integration_context = demisto.getIntegrationContext()
+            if not integration_context.get('events'):
                 events, exception = fetch_events_from_saas_security(
                     client=client, max_fetch=max_fetch, max_iterations=max_iterations
                 )
                 if len(events) == 0 and exception:
                     demisto.info(f'got exception when trying to fetch events: [{exception}]')
             else:
-                events = last_run.get('events')
-                demisto.info(f'fetching the following events from last run: {events}')
+                events = integration_context.get('events')
+                demisto.info(f'fetching the following events from integration context: {events}')
             try:
                 demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
                 send_events_to_xsiam(
@@ -276,11 +276,11 @@ def main() -> None:  # pragma: no cover
                     vendor=VENDOR,
                     product=PRODUCT
                 )
-                demisto.setLastRun({})
+                demisto.setIntegrationContext({})
             except Exception as e:
                 demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
-                demisto.setLastRun({'events': events})
-                demisto.info(f'set the following events into last run: {events}')
+                demisto.setIntegrationContext({'events': events})
+                demisto.info(f'set the following events into integration context: {events}')
         elif command == 'saas-security-get-events':
             return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
         else:
