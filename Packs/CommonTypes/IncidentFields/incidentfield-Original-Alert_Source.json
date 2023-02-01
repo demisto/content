@@ -31,8 +31,8 @@
             "type": "shortText",
             "name": "Alert Source"
         }
-	],
+    ],
     "marketplaces": [
-		"marketplacev2"
-    ]	
+        "marketplacev2"
+    ]
 }

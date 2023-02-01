@@ -30,8 +30,8 @@
             "type": "shortText",
             "name": "Description"
         }
-	],
+    ],
     "marketplaces": [
-		"marketplacev2"
+        "marketplacev2"
     ]	
 }
