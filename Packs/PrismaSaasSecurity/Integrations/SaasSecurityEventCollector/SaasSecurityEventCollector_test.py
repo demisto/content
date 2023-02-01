@@ -342,7 +342,7 @@ class TestFetchEvents:
         mocker.patch.object(
             SaasSecurityEventCollector, 'send_events_to_xsiam', side_effect=Exception('error')
         )
-        set_last_run_mock = mocker.patch.object(demisto, 'setLastRun')
+        set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
 
         mocker.patch.object(demisto, 'params', return_value={
             "url": "https://test.com/",
@@ -355,7 +355,7 @@ class TestFetchEvents:
         mocker.patch.object(demisto, 'command', return_value='fetch-events')
         SaasSecurityEventCollector.main()
 
-        assert expected_events == set_last_run_mock.call_args.args[0]
+        assert expected_events == set_integration_context_mock.call_args.args[0]
 
     def test_main_flow_fetch_events_with_max_iterations(self, mocker):
         """
