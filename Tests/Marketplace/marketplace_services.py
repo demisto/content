@@ -1719,8 +1719,18 @@ class Pack(object):
             else:
                 # if there is no changelog file for the pack, this is a new pack, and we start it's changelog at it's
                 # current version
+                first_pack_release_notes = ''
+                first_release_notes_path = os.path.join(release_notes_dir, '1_0_0.md')
+
+                # If an 1_0_0.md release notes file exist then add it to the changelog, otherwise take the pack description
+                if os.path.exists(first_release_notes_path):
+                    with open(first_release_notes_path, 'r') as rn_file:
+                        first_pack_release_notes = rn_file.read()
+                else:
+                    first_pack_release_notes = self.description
+
                 version_changelog, not_updated_build = self._create_changelog_entry(
-                    release_notes=self.description,
+                    release_notes=first_pack_release_notes,
                     version_display_name=self._current_version,
                     build_number=build_number,
                     new_version=True,
@@ -2676,6 +2686,7 @@ class Pack(object):
         if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
+                                      and not v.get("is_test", False)
                                       and k not in core_packs
                                       and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()
                                       and k not in self._user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, [])]
