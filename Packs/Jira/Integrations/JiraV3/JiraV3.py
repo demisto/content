@@ -353,9 +353,7 @@ class JiraCloudClient(JiraBaseClient):
         return res
 
     def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
-        query_params = {}
         res = self.http_request_with_access_token(method='PUT', url_suffix=f'rest/api/3/issue/{issue_id_or_key}',
-                                                  params=query_params,
                                                   json_data=json_data,
                                                   resp_type='response'
                                                   )
@@ -418,8 +416,6 @@ class JiraCloudClient(JiraBaseClient):
 
 class JiraOnPremClient(JiraBaseClient):
     # Will implement the abstract methods
-    CONTEXT_DATA_FIELDS_MAPPER = {'a': 'b'}
-    REQUEST_BODY_FIELDS_MAPPER = {'a': 'b'}
 
     def test_instance_connection(self) -> None:
         pass
@@ -454,6 +450,7 @@ def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str,
 
 
 def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_string: str, value: Any) -> Dict[str, Any]:
+    # CONFLUENCE Add why we need this and give an example
     """Create a nested dictionary from keys separated by dot(.)
 
     Args:
@@ -491,8 +488,8 @@ def create_issue_fields(issue_args: Dict[str, Any], issue_fields_mapper: Dict[st
 def create_update_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_string: str, update_key: str,
                                           value: Any,
                                           action: str = 'rewrite') -> Dict[str, Any]:
-    """Create a nested dictionary from keys separated by dot(.)
     # TODO Update documentation
+    """Create a nested dictionary from keys separated by dot(.)
 
     Args:
         dotted_string (str): A dotted string that holds the keys of the dictionary
@@ -614,7 +611,6 @@ def text_to_adf(text: str) -> Dict[str, Any]:
             }]
         }]
     }
-# def create_issue_hr_and_outputs(res: Dict[str, Any]) -> tuple[Dict[str, Any], Dict[str, Any]]:
 
 
 def create_issue_md_and_outputs(client: JiraBaseClient, res: Dict[str, Any],
@@ -682,8 +678,6 @@ def get_file(entry_id: str):
     file_name = get_file_path_res["name"]
     return file_name, open(file_path, 'rb')
 
-# CONFLUENCE
-
 
 def edit_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str) -> Any:
     """
@@ -721,6 +715,7 @@ def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transit
 
 # Issues Commands
 def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    # TODO Need to ask TPM what to do with this command
     issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
     if not issue_id_or_key:
         return_error(ID_OR_KEY_MISSING_ERROR)
@@ -790,6 +785,8 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
             markdown_dict['Id'] = outputs['Id'] = demisto.get(issue, 'id', '')
             markdown_dict['Key'] = outputs['Key'] = demisto.get(issue, 'key', '')
         if not (markdown_dict or outputs):
+            # If the markdown and outputs dictionaries are empty, that means the specific fields given do not exist,
+            # in such a case, we return the values that are returned when creating an issue.
             markdown_dict, outputs = create_issue_md_and_outputs(client=client, res=issue)
         command_results.append(
             CommandResults(
@@ -806,7 +803,6 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
 
 
 def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    # add limit and map to maxResults
     issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
     if not issue_id_or_key:
         return_error(ID_OR_KEY_MISSING_ERROR)
