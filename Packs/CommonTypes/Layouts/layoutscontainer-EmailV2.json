@@ -75,7 +75,7 @@
         ]
     },
     "group": "indicator",
-    "id": "Email Indicator",
+    "id": "emailRep",
     "indicatorsDetails": {
         "tabs": [
             {
