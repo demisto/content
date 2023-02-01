@@ -12,7 +12,7 @@ from Tests.scripts.collect_tests.collect_tests import (
     XSOARNightlyTestCollector)
 from Tests.scripts.collect_tests.constants import (
     ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2, MODELING_RULE_COMPONENT_FILES,
-    XSOAR_SANITY_TEST_NAMES)
+    XSOAR_SANITY_TEST_NAMES, ONLY_INSTALL_PACK_FILE_TYPES)
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import FilesToCollect, PackManager
 
@@ -42,6 +42,9 @@ Test Collection Unit-Test cases
 - `Q` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json,
       and a folder named Samples (should be ignored).
 - `MR1` has a pack with a modeling rule.
+- `S` has 2 packs with support level == xsoar, each pack has its own integration and both of these integrations have
+      "myOtherTestPlaybook" TPB that is not skipped in conf.json. The conf.json contains 2 records with the same
+      playbook ID "myOtherTestPlaybook".
 """
 
 
@@ -100,11 +103,13 @@ class MockerCases:
     P = CollectTestsMocker(TEST_DATA / 'P')
     Q = CollectTestsMocker(TEST_DATA / 'Q')
     R = CollectTestsMocker(TEST_DATA / 'R')
+    S = CollectTestsMocker(TEST_DATA / 'S')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
     skipped_nightly_test = CollectTestsMocker(TEST_DATA / 'skipped_nightly_test')
     MR1 = CollectTestsMocker(TEST_DATA / 'MR1')
+    RN_CONFIG = CollectTestsMocker(TEST_DATA / 'release_notes_config')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -403,6 +408,15 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None,
          (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
          ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',), (), ('MyXSIAMPack',)),
+
+        # (33) Release Notes Config
+        (MockerCases.RN_CONFIG, (), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
+         ('Packs/myPack/ReleaseNotes/2_1_3.json',), (), None),
+
+        # (34) see S definition at the top of this file - one of the integration has been changed
+        (MockerCases.S, ('myOtherTestPlaybook',), ('myXSOAROnlyPack', 'myXSOAROnlyPack2',), None, None,
+         XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
+         ('myXSOAROnlyPack',)),
     )
 )
 def test_branch(
@@ -448,7 +462,6 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.IMAGE,
     FileType.DESCRIPTION,
     FileType.METADATA,
-    FileType.RELEASE_NOTES_CONFIG,
     FileType.INCIDENT_TYPE,
     FileType.INCIDENT_FIELD,
     FileType.INDICATOR_FIELD,
@@ -471,7 +484,6 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.PRE_PROCESS_RULES,
     FileType.JOB,
     FileType.CONNECTION,
-    FileType.RELEASE_NOTES_CONFIG,
     FileType.XSOAR_CONFIG,
     FileType.AUTHOR_IMAGE,
     FileType.CHANGELOG,
@@ -572,6 +584,15 @@ def test_invalid_content_item(mocker, monkeypatch):
           expected_tests=(), expected_packs=(), expected_packs_to_upload=(), expected_machines=None,
           expected_modeling_rules_to_test=None,
           collector_class_args=XSOAR_BRANCH_ARGS)
+
+
+def test_release_note_config_in_only_install_pack():
+    """
+    Makes sure the FileType.RELEASE_NOTES_CONFIG is in ONLY_INSTALL_PACK_FILE_TYPES,
+    as we have a special treatment for it under __collect_single.
+    If this test fails, and you deliberatly removed it from the list, make sure to remove the special case (`except KeyError`...)
+    """
+    assert FileType.RELEASE_NOTES_CONFIG in ONLY_INSTALL_PACK_FILE_TYPES
 
 
 def test_number_of_file_types():

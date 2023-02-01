@@ -652,3 +652,5 @@ outputs:
 tests:
 - no test (new v2 playbook has an updated test)
 deprecated: true
+marketplaces:
+- xsoar

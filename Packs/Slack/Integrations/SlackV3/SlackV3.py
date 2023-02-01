@@ -1534,9 +1534,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         if thread:
             user = await get_user_details(user_id=user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
-            await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
-            reset_listener_health()
-            return
+            if entitlement_reply:
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
+                reset_listener_health()
+                return
 
         # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
         if MIRRORING_ENABLED:
