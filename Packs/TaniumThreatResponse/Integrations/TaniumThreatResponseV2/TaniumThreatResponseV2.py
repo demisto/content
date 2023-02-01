@@ -384,8 +384,9 @@ def alarm_to_incident(client, alarm):  # pragma: no cover
         raw_response = client.do_request('GET', f'/plugin/products/'
                                                 f'{"threat-response" if client.api_version == "4.x" else "detect3"}'
                                                 f'/api/v1/intels/{intel_doc_id}')
-        intel_doc = raw_response.get('name')
-        alarm['intelDocDetails'] = raw_response
+        raw_response_data = raw_response.get('data', raw_response)
+        intel_doc = raw_response_data.get('name')
+        alarm['intelDocDetails'] = raw_response_data
         intel_doc_labels = []
         intel_doc_labels_resp =\
             client.do_request('GET', f'/plugin/products/'
@@ -572,15 +573,18 @@ def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[li
 
     intel_docs = []
     intel_doc = {}
-    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
+
+    if client.api_version == '4.x':
+        raw_response = raw_response.get('data')
+
     # append raw response to a list in case raw_response is a dictionary
-    tmp_list = [raw_response_data] if type(raw_response_data) is dict else raw_response_data
+    tmp_list = [raw_response] if type(raw_response) is dict else raw_response
     for item in tmp_list:
         intel_doc = get_intel_doc_item(item)
         if intel_doc:
             intel_doc['LabelIds'] = str(intel_doc.get('LabelIds', [])).strip('[]')
         intel_docs.append(intel_doc)
-    context_data = format_context_data(raw_response_data)
+    context_data = format_context_data(raw_response)
     context = createContext(context_data, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
@@ -983,7 +987,7 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
                                             f'/api/v1/alerts/', params=params)
 
     alerts = []
-    raw_response_data = raw_response.get("data", raw_response) if type(raw_response) is dict else raw_response
+    raw_response_data = raw_response.get("data") if client.api_version == '4.x' else raw_response
     for item in raw_response_data:
         alert = get_alert_item(item)
         alerts.append(alert)

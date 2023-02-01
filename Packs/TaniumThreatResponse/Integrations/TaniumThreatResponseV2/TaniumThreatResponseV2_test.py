@@ -198,7 +198,7 @@ def test_get_intel_docs_single(requests_mock):
     requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/?name=test2', json=api_expected_response[1])
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/intels/?name=test2',
-                      json=api_expected_response[1])    # todo : in 4.x supposed to be {data: [one_item]}
+                      json={'data': api_expected_response[1]})
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.get_intel_docs(MOCK_CLIENT, {'name': 'test2'})
     assert '| 430 | test2 |' in human_readable
@@ -281,15 +281,16 @@ def test_add_intel_docs_label(requests_mock):
     requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
     req = requests_mock.put(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels',
                             json=api_expected_response)
-    req = requests_mock.put(BASE_URL + f'/plugin/products/threat-response/api/v1/intels/{intel_doc_id}/labels',
-                            json={'data': api_expected_response})
+    req_4 = requests_mock.put(BASE_URL + f'/plugin/products/threat-response/api/v1/intels/{intel_doc_id}/labels',
+                              json={'data': api_expected_response})
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.add_intel_docs_label(MOCK_CLIENT,
                                                                                         {'intel_doc_id': intel_doc_id,
                                                                                          'label_id': label_id})
     assert 'Successfully created a new label (3) association for the identified intel document (423).' in human_readable
     assert '| 3 | test6 |' in human_readable
-    assert json.loads(req.last_request.text) == {'id': label_id}
+    test_req = req if MOCK_CLIENT.api_version == '3.x' else req_4
+    assert json.loads(test_req.last_request.text) == {'id': label_id}
     intel_docs = outputs.get('Tanium.IntelDocLabel(val.IntelDocID && val.IntelDocID === obj.IntelDocID)', {})
     assert intel_docs.get('IntelDocID') == 423
     labels = intel_docs.get('LabelsList')
@@ -1434,7 +1435,7 @@ def test_fetch_all_incidents(requests_mock):
                       json=test_incidents)
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/alerts?'
                                  '&state=unresolved&sort=-createdAt&limit=500&offset=0&labelName=some_label',
-                      json=test_incidents)
+                      json={'data': test_incidents})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
                                  '&state=unresolved&sort=-createdAt&limit=500&offset=500',
                       json=[])
@@ -1487,13 +1488,13 @@ def test_fetch_new_incidents(requests_mock):
                                  '&state=unresolved&sort=-createdAt&limit=500&offset=0',
                       json=test_incidents)
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/alerts?'
-                                 '&state=unresolved&sort=-createdAt&limit=500&offset=0',
+                                 'state=unresolved&sort=-createdAt&limit=500&offset=0',
                       json={'data': test_incidents})
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
                                  '&state=unresolved&sort=-createdAt&limit=500&offset=500',
                       json=[])
-    requests_mock.get(BASE_URL + '/plugin/threat-response/detect3/api/v1/alerts?'
-                                 '&state=unresolved&sort=-createdAt&limit=500&offset=500',
+    requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/alerts?'
+                                 'state=unresolved&sort=-createdAt&limit=500&offset=500',
                       json=[])
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
     requests_mock.get(BASE_URL + '/plugin/products/threat-response/api/v1/intels/11', json={'data': {'name': 'test'}})
