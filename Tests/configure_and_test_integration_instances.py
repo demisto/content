@@ -1218,7 +1218,7 @@ def set_module_params(param_conf, integration_params):
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
-                'identifier': credentials['identifier'],
+                'identifier': credentials.get('identifier', ''),
                 'password': credentials['password'],
                 'passwordChanged': False
             }

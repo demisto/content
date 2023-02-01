@@ -4,7 +4,7 @@ This automation exports all custom certificate-related information from the Pyth
 
 ---
 
-After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/configure-python-docker-integrations-to-trust-custom-certificates) to update your custom certificate in `Cortex XSOAR Server`/ `Cortex XSOAR Engine`, validate the configuration applied using this script.
+After following the [tutorial](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Configure-Python-Docker-Integrations-to-Trust-Custom-Certificates) to update your custom certificate in `Cortex XSOAR Server`/ `Cortex XSOAR Engine`, validate the configuration applied using this script.
 
 The script supports two modes of operation:
 
