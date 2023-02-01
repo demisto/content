@@ -2487,8 +2487,7 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
             if custom_state_label := server_close_custom_state_dict.get(ticket_state):
                 demisto.debug(f'incident is closed using custom state. State Code: {ticket_state}, Label: {custom_state_label}')
                 return custom_state_label
-            else:
-                return 'Other'
+        return 'Other'
     elif ticket_state in ['6', '7']:
         return 'Resolved'
     else:
