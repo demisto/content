@@ -131,7 +131,7 @@ class Pack(object):
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
-        self._all_levels_dependencies = []  # initialized in set_pack_dependencies function
+        self._all_levels_dependencies = {}  # initialized in set_pack_dependencies function
         self._displayed_images_dependent_on_packs = []  # initialized in set_pack_dependencies function
         self._parsed_dependencies = None  # initialized in enhance_pack_attributes function
 
