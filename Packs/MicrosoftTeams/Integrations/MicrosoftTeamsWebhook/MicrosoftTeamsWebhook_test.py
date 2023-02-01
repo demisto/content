@@ -31,4 +31,3 @@ def test_test_module(requests_mock):
 
     res = test_module(fake_client, 'fake')
     assert res == 'ok'
-
