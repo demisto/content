@@ -65,7 +65,7 @@ tasks:
     scriptarguments:
       ignore-outputs:
         simple: "false"
-      xdrfirstssoverdict:
+      xdrinvestigationresults:
         complex:
           root: VerdictResult
     reputationcalc: 1
@@ -882,7 +882,7 @@ tasks:
       value:
         complex:
           root: incident
-          accessor: xdrfirstssoverdict
+          accessor: xdrinvestigationresults
           transformers:
           - operator: WhereFieldEquals
             args:
@@ -933,7 +933,7 @@ tasks:
       context_path:
         simple: VerdictResult
       grid_id:
-        simple: xdrfirstssoverdict
+        simple: xdrinvestigationresults
       ignore-outputs:
         simple: "false"
     reputationcalc: 1
@@ -943,7 +943,7 @@ tasks:
       {
         "position": {
           "x": -2330,
-          "y": 910
+          "y": 900
         }
       }
     note: false

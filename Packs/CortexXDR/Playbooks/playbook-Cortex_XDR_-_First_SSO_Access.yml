@@ -868,7 +868,7 @@ tasks:
                   simple: inputs.Country
                 iscontext: true
               country_name: {}
-      xdrrelatedalerts:
+      xdralertsearchresults:
         complex:
           root: PaloAltoNetworksXDR
           accessor: Alert
@@ -915,7 +915,7 @@ tasks:
           root: ActiveDirectory.Users
           accessor: name
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "123":
@@ -1137,7 +1137,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Containment Status
+    - incidentfield: User Disabled Status
       output:
         simple: Contained
     skipunavailable: false

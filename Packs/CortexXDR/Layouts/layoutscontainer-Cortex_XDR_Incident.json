@@ -1124,7 +1124,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "containmentstatus",
+                                "fieldId": "userdisabledstatus",
                                 "height": 22,
                                 "id": "b5f0e930-90dd-11ed-be71-736de8263a17",
                                 "index": 0,
@@ -1194,7 +1194,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "xdrrelatedalerts",
+                                "fieldId": "xdralertsearchresults",
                                 "height": 106,
                                 "id": "e982e840-8b6d-11ed-8f68-b3bf4a3a1ddf",
                                 "index": 2,
@@ -1240,9 +1240,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xdrfirstssoverdict",
-                                "height": 22,
-                                "id": "57ab3820-9d40-11ed-ae40-7f264ef1f727",
+                                "fieldId": "xdrinvestigationresults",
+                                "height": 106,
+                                "id": "482ac9c0-a23a-11ed-b1e2-670240eb75b1",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
