@@ -51,7 +51,7 @@ def grab_domains(data: list) -> List:
 
 
 def grab_ip_table(html_section: element.Tag) -> List:
-    """ Gets the IP table as an html, parses it and 
+    """ Gets the IP table as an html, parses it and
     returns a list of lists each one contains a row from the table
     """
     rows = html_section.find_all('ul')

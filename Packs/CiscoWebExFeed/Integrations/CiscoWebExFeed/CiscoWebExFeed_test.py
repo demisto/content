@@ -3,7 +3,6 @@ import pytest
 import CiscoWebExFeed
 import io
 import json
-from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -136,12 +135,12 @@ def test_get_indicators_command__diffrent_indicator_type_as_input(mocker, input,
     assert res.readable_output == expected
 
 
-def test_fetch_indicators_command(mocker):
+def test_fetch_indicators_command__different_inputs(mocker):
     """
     Given:
         -  tags and tlp_color
     When:
-        - the fetch_indicators_command is called
+        - the fetch_indicators_command is called and uses the output of parse_indicators_from_response as input
     Then:
         - the function should return the expectetd result with the correct tags and tlp_color
     """
