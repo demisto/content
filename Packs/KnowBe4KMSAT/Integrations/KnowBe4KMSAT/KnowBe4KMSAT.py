@@ -393,7 +393,7 @@ def kmsat_account_info_list_command(client: Client, args: dict) -> CommandResult
             "current_risk_score",
         ],
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_account_info_list_command`.",
             res=response,
@@ -424,7 +424,7 @@ def kmsat_account_risk_score_history_list_command(
     """
     params = get_pagination(args)
     response = client.kmsat_account_risk_score_history(params)
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_account_risk_score_history_list_command`.",
             res=response,
@@ -458,7 +458,7 @@ def kmsat_groups_list_command(client: Client, args: dict) -> CommandResults:
             "status"
         ]
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_groups_list_command`.",
             res=response,
@@ -493,7 +493,7 @@ def kmsat_groups_risk_score_history_list_command(
     markdown = tableToMarkdown(
         "Groups Risk Score History", response, headers=["risk_score", "date"]
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_groups_risk_score_history_list_command`.",
             res=response,
@@ -565,7 +565,7 @@ def kmsat_groups_members_list_command(
             "custom_date_2",
         ]
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_groups_members_list_command`.",
             res=response,
@@ -600,7 +600,7 @@ def kmsat_users_risk_score_history_list_command(
     markdown = tableToMarkdown(
         "Users Risk Score History", response, headers=["risk_score", "date"]
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_users_risk_score_history_list_command`.",
             res=response,
@@ -659,7 +659,7 @@ def kmsat_phishing_security_tests_list_command(
             "bounced_count",
         ],
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_phishing_security_tests_list_command`.",
             res=response,
@@ -717,7 +717,7 @@ def kmsat_phishing_security_tests_recipients_list_command(
             "os",
         ],
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `phishing_security_tests_recipients`.",
             res=response,
@@ -810,7 +810,7 @@ def kmsat_phishing_security_tests_failed_recipients_list_command(
             "os",
         ],
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_phishing_security_tests_failed_recipients_list_command`.",
             res=response,
@@ -868,7 +868,7 @@ def kmsat_phishing_campaign_security_tests_list_command(client: Client, args) ->
             "bounced_count",
         ]
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_phishing_campaign_security_tests_list_command`.",
             res=response,
@@ -915,7 +915,7 @@ def kmsat_training_campaigns_list_command(client: Client, args: dict) -> Command
             "completion_percentage",
         ],
     )
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_training_campaigns_list_command`.",
             res=response,
@@ -996,7 +996,7 @@ def kmsat_training_enrollments_list_command(
         ]
     )
 
-    if data is None:
+    if not data:
         raise DemistoException(
             "Translation failed: the response from server did not include `kmsat_training_enrollments_list_command`.",
             res=data,
@@ -1026,7 +1026,7 @@ def kmsat_user_events_list_command(
         CommandResults: Returns context data for user events
     """
     response = client.user_events(args)
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include user event `data`.",
             res=response,
@@ -1057,7 +1057,7 @@ def kmsat_user_event_types_list_command(
         CommandResults: Returns context data for user event types
     """
     response = client.user_event_types(args)
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include user event types`data`.",
             res=response,
@@ -1088,7 +1088,7 @@ def kmsat_user_event_create_command(
         CommandResults: Returns context data user create event
     """
     response = client.create_user_event(args)
-    if response is None:
+    if not response:
         raise DemistoException(
             "Translation failed: the response from server did not include user event types`data`.",
             res=response,
