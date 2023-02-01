@@ -647,5 +647,4 @@ tests:
 contentitemexportablefields:
   contentitemfields: {}
 marketplaces:
-  - xsoar
   - marketplacev2
