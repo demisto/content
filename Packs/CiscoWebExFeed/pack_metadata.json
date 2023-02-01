@@ -1,6 +1,6 @@
 {
     "name": "Cisco WebEx Feed",
-    "description": "Whitelist feed for Cisco WebEx using a screen scrape of the website.",
+    "description": "Whitelist feed for Cisco Webex using a screen scrape of the website.",
     "support": "xsoar",
     "currentVersion": "1.2.0",
     "author": "Cortex XSOAR",

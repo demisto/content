@@ -132,9 +132,12 @@ def test_check_indicator_type__diffrent_inputs(input, expected):
 
 
 @pytest.mark.parametrize('input, limit, expected', [
-    ('Both', 1, '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock1 | mocked_type |\n| domainmock1 | mocked_type |\n'),
-    ('CIDR', 2, '### Indicators from WebEx:\n|value|type|\n|---|---|\n| ipmock1 | mocked_type |\n| ipmock2 | mocked_type |\n'),
-    ('DOMAIN', 5, '### Indicators from WebEx:\n|value|type|\n|---|---|\n| domainmock1 | mocked_type |\n| domainmock2 | mocked_type |\n')])
+    ('Both', 1,
+     '### Indicators from Webex:\n|value|type|\n|---|---|\n| ipmock1 | mocked_type |\n| domainmock1 | mocked_type |\n'),
+    ('CIDR', 2,
+     '### Indicators from Webex:\n|value|type|\n|---|---|\n| ipmock1 | mocked_type |\n| ipmock2 | mocked_type |\n'),
+    ('DOMAIN', 5,
+     '### Indicators from Webex:\n|value|type|\n|---|---|\n| domainmock1 | mocked_type |\n| domainmock2 | mocked_type |\n')])
 def test_get_indicators_command__diffrent_indicator_type_and_limit_as_input(mocker, input, expected, limit):
     """
     Given:
@@ -166,7 +169,7 @@ def test_fetch_indicators_command__different_sizes_of_inputs(mocker, input, expe
     Then:
         - the function should return the expectetd result with the correct tags and tlp_color
     """
-    from CiscoWebExFeed import fetch_indicators_command, Client
+    from CiscoWebexFeed import fetch_indicators_command, Client
     client = MockedClient(Client)
     mocker.patch.object(Client, 'all_raw_data', return_value='gg')
     mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',

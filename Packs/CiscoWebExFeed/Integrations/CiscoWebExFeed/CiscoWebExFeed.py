@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 
 CIDR = 'CIDR'
 DOMAIN = 'DOMAIN'
-INTEGRATION_NAME = 'WebEx'
+INTEGRATION_NAME = 'Webex'
 BASE_URL = "https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network"
 DOMAIN_REGEX = r"([\^]*[\*\.]*[a-z0-9+\-]+\.+.*)*"
 
@@ -77,7 +77,7 @@ def grab_CIDR_ips(data: list) -> List:
 
 
 def parse_indicators_from_response(response: requests.Response) -> Dict[str, List[str]]:
-    """ Recives an html page from the WebEx website that contains a IP table and a DOMAIN table.
+    """ Recives an html page from the Webex website that contains a IP table and a DOMAIN table.
     Parses the page, and returns a dict with two keys: DOMAIN and CIDR(ip ranges),
     while the value is a list of the related indicators.
     """
@@ -149,7 +149,7 @@ def test_module(client: Client) -> str:     # pragma: no cover
 
 
 def get_indicators_command(client: Client, **args) -> CommandResults:
-    """ Gets indicators from the WebEx website and sends them to the war-room."""
+    """ Gets indicators from the Webex website and sends them to the war-room."""
     client = client
     limit = arg_to_number(args.get('limit', 20))
     requested_indicator_type = args.get('indicator_type', 'Both')
@@ -171,7 +171,7 @@ def get_indicators_command(client: Client, **args) -> CommandResults:
         }
         final_indicators_lst.append(indicators_and_type)
 
-    md = tableToMarkdown('Indicators from WebEx:', final_indicators_lst,
+    md = tableToMarkdown('Indicators from Webex:', final_indicators_lst,
                          headers=['value', 'type'], removeNull=True)
 
     return CommandResults(

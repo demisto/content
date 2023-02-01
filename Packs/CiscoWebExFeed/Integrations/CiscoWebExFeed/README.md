@@ -1,9 +1,9 @@
-Use the Cisco WebEx Feed integration to fetch indicators from WeBex.
+Use the Cisco Webex Feed integration to fetch indicators from WeBex.
 
-## Configure Cisco WebEx Feed on Cortex XSOAR
+## Configure Cisco Webex Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco WebEx Feed.
+2. Search for Cisco Webex Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -47,7 +47,7 @@ There is no context output for this command.
 ```!webex-get-indicators indicator_type=Both limit=3```
 #### Human Readable Output
 
->### Indicators from WebEx:
+>### Indicators from Webex:
 >|value|type|
 >|---|---|
 >| 23.89.0.0/16 | CIDR |

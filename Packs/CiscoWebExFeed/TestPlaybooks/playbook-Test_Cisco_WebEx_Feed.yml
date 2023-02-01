@@ -2,7 +2,7 @@ id: Test_Cisco_WebEx_Feed
 version: 5
 vcShouldKeepItemLegacyProdMachine: false
 name: Test_Cisco_WebEx_Feed
-description: Test the connectivity of the CisciWebExFeed integratin
+description: Test the connectivity of the CisciWebexFeed integratin
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
     task:
       id: 35b2c450-8b98-4bb3-849e-9b78a0671981
       version: -1
-      name: Pull Indicators from WebEx web page
+      name: Pull Indicators from Webex web page
       description: Gets indicators from the feed.
       script: "|||webex-get-indicators"
       type: regular
@@ -113,7 +113,7 @@ tasks:
     task:
       id: df71f9fc-d34e-42f2-8bb2-6edc4097fb31
       version: -1
-      name: Set WebEx Status Ok
+      name: Set Webex Status Ok
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -124,7 +124,7 @@ tasks:
         - "5"
     scriptarguments:
       key:
-        simple: WebEx.status
+        simple: Webex.status
       value:
         simple: ok
     separatecontext: false
