@@ -41,6 +41,11 @@ class RevokedAccessTokenError(Exception):
 
 
 class JiraBaseClient(BaseClient, metaclass=ABCMeta):
+    """
+    This class is an abstract class. By using metaclass=ABCMeta, we tell python that this class behaves as an abstract
+    class, where we want to define the definition of methods without implementing them, and the child classes will need to
+    implement these methods.
+    """
     # CONFLUENCE Add a simple description about the class hierarchy and why it was needed
 
     # CONFLUENCE Add the purpose of the two mappers
@@ -101,7 +106,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
                                        json_data=None, resp_type='json',
                                        ok_codes=None, full_url='', files: Dict[str, Any] = None):
         access_token = self.get_access_token()
-        request_headers = headers | {'Authorization': f'Bearer {access_token}'} | self._headers
+        # TODO Add why we need to concatenate the headers (Because some requests request extra headers to work)
+        request_headers = self._headers | headers | {'Authorization': f'Bearer {access_token}'}
         return self._http_request(method, url_suffix=url_suffix, full_url=full_url, params=params, data=data,
                                   json_data=json_data, resp_type=resp_type, ok_codes=ok_codes, files=files,
                                   headers=request_headers)
@@ -122,10 +128,9 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     # Query Requests
     def run_query(self, jql: str, specific_fields: List[str] | None = None, start_at: int | None = None,
                   max_results: int | None = None) -> Dict[str, Any]:
-        if(start_at is None):
-            start_at = 0
-        if(max_results is None):
-            max_results = 50
+        # TODO Maybe split it to two methods
+        start_at = start_at if start_at else 0
+        max_results = max_results if max_results else 50
         demisto.debug(
             f'Querying with: {jql}\nstart_at: {start_at}\nmax_results: {max_results}\nspecific_fields: {specific_fields}')
         query_params = {
@@ -139,6 +144,11 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         res = self.http_request_with_access_token(method='GET', url_suffix='rest/api/3/search',
                                                   params=query_params)
         return res
+
+    # Issue Fields Requests
+    @abstractmethod
+    def get_issue_fields(self) -> List[Dict[str, Any]]:
+        pass
 
     # Issue Requests
     @abstractmethod
@@ -158,48 +168,52 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
-        pass
-
-    @abstractmethod
-    def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
-        pass
-
-    @abstractmethod
-    def delete_issue(self, issue_id_or_key: str) -> requests.Response:
-        pass
-
-    @abstractmethod
-    def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
-        pass
-
-    @abstractmethod
-    def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
-        pass
-
-    @abstractmethod
     def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
+    def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @ abstractmethod
+    def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
+        pass
+
+    @ abstractmethod
+    def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+        pass
+
+    @ abstractmethod
+    def delete_issue(self, issue_id_or_key: str) -> requests.Response:
+        pass
+
+    @ abstractmethod
+    def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
+        pass
+
+    @ abstractmethod
+    def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @ abstractmethod
     def get_custom_fields_name(self) -> List[Dict[str, Any]]:
         pass
 
     # Attachments Requests
-    @abstractmethod
+    @ abstractmethod
     def add_attachment(self, issue_id_or_key: str, files: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         pass
 
-    @abstractmethod
+    @ abstractmethod
     def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
         pass
 
-    @abstractmethod
+    @ abstractmethod
     def get_attachment_content(self, attachment_id: str) -> str:
         pass
 
     # User Requests
-    @abstractmethod
+    @ abstractmethod
     def get_id_by_attribute(self, attribute: str, max_results: int) -> List[Dict[str, Any]]:
         pass
 
@@ -316,6 +330,13 @@ class JiraCloudClient(JiraBaseClient):
         integration_context |= new_authorization_context
         set_integration_context(integration_context)
 
+    # Issue Fields Requests
+    def get_issue_fields(self) -> List[Dict[str, Any]]:
+        res = self.http_request_with_access_token(method='GET',
+                                                  url_suffix='rest/api/3/field'
+                                                  )
+        return res
+
     #  Issue Requests
     def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
         res = self.http_request_with_access_token(method='POST',
@@ -342,6 +363,14 @@ class JiraCloudClient(JiraBaseClient):
                                                   url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
                                                   resp_type='response',
                                                   )
+        return res
+
+    def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        query_params = {'expand': 'renderedBody'}
+        res = self.http_request_with_access_token(method='PUT',
+                                                  url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
+                                                  json_data=json_data,
+                                                  params=query_params)
         return res
 
     def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
@@ -758,6 +787,15 @@ def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandRes
 
 
 def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults] | CommandResults:
+    """_summary_
+
+    Args:
+        client (JiraBaseClient): _description_
+        args (Dict[str, str]): _description_
+
+    Returns:
+        List[CommandResults] | CommandResults: _description_
+    """
     jql_query = args.get('query', '')
     start_at = arg_to_number(args.get('start_at', ''))
     max_results = arg_to_number(args.get('max_results', ''))
@@ -802,47 +840,16 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     return command_results
 
 
-def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
-    if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
-    limit = arg_to_number(args.get('limit', None))
-    if not limit:
-        limit = 50
-    res = client.get_comments(issue_id_or_key=issue_id_or_key, max_results=limit)
-    response_comments = res.get('comments', [])
-    comments = []
-    for comment in response_comments:
-        comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
-        ) if comment.get('renderedBody') else comment.get('body')
-        comments.append({
-            'Id': comment.get('id'),
-            'Comment': comment_body,
-            'User': demisto.get(comment, 'author.displayName'),
-            'Created': comment.get('created')
-        })
-    if(response_comments):
-        is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
-        outputs: Dict[str, Any] = {'Comments': comments}
-        if(is_id):
-            outputs |= {'Id': issue_id_or_key}
-        else:
-            extracted_issue_id = extract_issue_id_from_comment_url(comment_url=response_comments[0].get('self', ''))
-            outputs |= {'Id': extracted_issue_id, 'Key': issue_id_or_key}
-        human_readable = tableToMarkdown("Comments", comments)
-        return CommandResults(
-            outputs_prefix='Ticket',
-            outputs=outputs,
-            outputs_key_field='Id',
-            readable_output=human_readable,
-            raw_response=res
-        )
-        # {'Ticket((val.Id && val.Id == obj.Id) || (val.Key && val.Key == obj.Key))': outputs},
-    else:
-        return CommandResults(readable_output='No comments were found in the ticket')
-
-
 def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults]:
+    """_summary_
+
+    Args:
+        client (JiraBaseClient): _description_
+        args (Dict[str, str]): _description_
+
+    Returns:
+        List[CommandResults]: _description_
+    """
     issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
     if not issue_id_or_key:
         return_error(ID_OR_KEY_MISSING_ERROR)
@@ -948,6 +955,123 @@ def delete_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comm
     return CommandResults(readable_output='Comment deleted successfully.')
 
 
+def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """_summary_
+
+    Args:
+        client (JiraBaseClient): _description_
+        args (Dict[str, str]): _description_
+
+    Returns:
+        CommandResults: _description_
+    """
+    issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
+    if not issue_id_or_key:
+        return_error(ID_OR_KEY_MISSING_ERROR)
+    limit = arg_to_number(args.get('limit', None))
+    if not limit:
+        limit = 50
+    res = client.get_comments(issue_id_or_key=issue_id_or_key, max_results=limit)
+    response_comments = res.get('comments', [])
+    comments = []
+    for comment in response_comments:
+        comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
+        ) if comment.get('renderedBody') else comment.get('body')
+        comments.append({
+            'Id': comment.get('id'),
+            'Comment': comment_body,
+            'User': demisto.get(comment, 'author.displayName'),
+            'Created': comment.get('created')
+        })
+    if(response_comments):
+        is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
+        outputs: Dict[str, Any] = {'Comments': comments}
+        if(is_id):
+            outputs |= {'Id': issue_id_or_key}
+        else:
+            extracted_issue_id = extract_issue_id_from_comment_url(comment_url=response_comments[0].get('self', ''))
+            outputs |= {'Id': extracted_issue_id, 'Key': issue_id_or_key}
+        human_readable = tableToMarkdown("Comments", comments)
+        return CommandResults(
+            outputs_prefix='Ticket',
+            outputs=outputs,
+            outputs_key_field='Id',
+            readable_output=human_readable,
+            raw_response=res
+        )
+    else:
+        return CommandResults(readable_output='No comments were found in the ticket')
+
+
+def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
+    if not issue_id_or_key:
+        return_error(ID_OR_KEY_MISSING_ERROR)
+    comment_id = args.get('comment_id', '')
+    comment = args.get('comment', '')
+    visibility = args.get('visibility', '')
+    payload = {
+        'body': text_to_adf(text=comment)
+    }
+    if(visibility):
+        payload['visibility'] = {
+            "type": "role",
+            "value": visibility
+        }
+    res = client.edit_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id, json_data=payload)
+    comment_body = BeautifulSoup(res.get('renderedBody')).get_text(
+    ) if res.get('renderedBody') else res.get('body')
+    comment_data = {
+        'Id': res.get('id'),
+        'Comment': comment_body,
+        'User': demisto.get(res, 'author.displayName'),
+        'Created': res.get('created')
+    }
+    is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
+    outputs: Dict[str, Any] = {'Comments': comment_data}
+    if(is_id):
+        outputs |= {'Id': issue_id_or_key}
+    else:
+        extracted_issue_id = extract_issue_id_from_comment_url(comment_url=res.get('self', ''))
+        outputs |= {'Id': extracted_issue_id, 'Key': issue_id_or_key}
+    human_readable = tableToMarkdown("Comments", comment_data)
+
+    # {'Ticket((val.Id && val.Id == obj.Id) || (val.Key && val.Key == obj.Key))': outputs},
+    # TODO How to update the comment Id that is found in Ticket.Comments.Id == comment_id??
+    return CommandResults(
+        outputs_prefix='Ticket',
+        outputs=outputs,
+        outputs_key_field='Comments.Id',
+        readable_output=human_readable,
+        raw_response=res
+    )
+
+
+def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
+    if not issue_id_or_key:
+        return_error(ID_OR_KEY_MISSING_ERROR)
+    comment = args.get('comment', '')
+    visibility = args.get('visibility', )
+    payload = {
+        'body': text_to_adf(text=comment)
+    }
+    if(visibility):
+        payload['visibility'] = {
+            "type": "role",
+            "value": visibility
+        }
+    res = client.add_comment(issue_id_or_key=issue_id_or_key, json_data=payload)
+    markdown_dict = {
+        'Comment': BeautifulSoup(res.get('renderedBody')).get_text() if res.get('renderedBody') else res.get('body'),
+        'Id': res.get('id', ''),
+        'Ticket Link': res.get('self', ''),
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown('Comment added successfully', markdown_dict)
+    )
+
+
 def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
     if not issue_id_or_key:
@@ -969,31 +1093,6 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
         outputs_key_field='Id',
         readable_output=readable_output,
         raw_response=res
-    )
-
-
-def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    issue_id_or_key = args.get('issue_id', '') if args.get('issue_id', '') else args.get('issue_key', '')
-    if not issue_id_or_key:
-        return_error(ID_OR_KEY_MISSING_ERROR)
-    comment = args.get('comment', '')
-    visibility = args.get('visibility', )
-    paylod = {
-        'body': text_to_adf(text=comment)
-    }
-    if(visibility):
-        paylod['visibility'] = {
-            "type": "role",
-            "value": visibility
-        }
-    res = client.add_comment(issue_id_or_key=issue_id_or_key, json_data=paylod)
-    markdown_dict = {
-        'Comment': BeautifulSoup(res.get('renderedBody')).get_text() if res.get('renderedBody') else res.get('body'),
-        'Id': res.get('id', ''),
-        'Ticket Link': res.get('self', ''),
-    }
-    return CommandResults(
-        readable_output=tableToMarkdown('Comment added successfully', markdown_dict)
     )
 
 
@@ -1074,6 +1173,28 @@ def get_specific_fields_command(client: JiraBaseClient, args: Dict[str, str]) ->
         readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict,
                                         headerTransform=pascalToSpace),
         raw_response=[res, custom_fields_res]
+    )
+
+
+def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    res = client.get_issue_fields()
+    markdown_dict: List[Dict[str, Any]] = []
+    for field in res:
+        markdown_dict.append(
+            {
+                'Id': field.get('id', ''),
+                'Name': field.get('name', ''),
+                'Custom': field.get('custom', ''),
+                'Searchable': field.get('searchable', ''),
+                'Schema Type': demisto.get(field, 'schema.type')
+            }
+        )
+    return CommandResults(
+        outputs_prefix='Jira.IssueField',
+        outputs=res,
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(name='Issue Fields', t=markdown_dict),
+        raw_response=res
     )
 
 
@@ -1187,6 +1308,8 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    # TODO Add which configuration is for which
+    # Cloud or OnPrem
     cloud_id = params.get('cloud_id', '')
     server_url = params.get('server_url')
     client_id = params.get('client_id', '')
@@ -1204,7 +1327,6 @@ def main() -> None:
         'jira-create-issue': create_issue_command,
         'jira-edit-issue': edit_issue_command,
         'jira-delete-issue': delete_issue_command,
-        'jira-issue-delete-comment': delete_comment_command,
         'jira-list-transitions': get_transitions_command,
         'jira-issue-upload-file': upload_file_command,
         'jira-issue-add-comment': add_comment_command,
@@ -1214,7 +1336,10 @@ def main() -> None:
         'jira-issue-query': issue_query_command,
         'jira-issue-add-link': add_link_command,
         # New Commands
-        'jira-issue-get-attachment': issue_get_attachment_command
+        'jira-issue-get-attachment': issue_get_attachment_command,
+        'jira-issue-delete-comment': delete_comment_command,
+        'jira-issue-edit-comment': edit_comment_command,
+        'jira-issue-list-fields': list_fields_command
     }
     try:
         client: JiraBaseClient

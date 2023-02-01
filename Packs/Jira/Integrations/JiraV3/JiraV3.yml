@@ -55,19 +55,19 @@ script:
     execution: false
     name: jira-issue-get-attachment
     outputs:
-    - contextPath: InfoFile.Name
+    - contextPath: File.Name
       description: FileName
       type: String
-    - contextPath: InfoFile.EntryID
+    - contextPath: File.EntryID
       description: The EntryID of the report
       type: String
-    - contextPath: InfoFile.Size
+    - contextPath: File.Size
       description: File Size
       type: Number
-    - contextPath: InfoFile.Type
+    - contextPath: File.Type
       description: File type e.g. "PE"
       type: String
-    - contextPath: InfoFile.Info
+    - contextPath: File.Info
       description: Basic information of the file
       type: String
   - arguments:
@@ -286,7 +286,7 @@ script:
     - contextPath: Ticket.Priority
       description: The ticket priority.
       type: String
-    - contextPath: Ticket.ProjectName
+    - contextPath: Ticket.projectName
       description: The ticket project name.
       type: String
     - contextPath: Ticket.DueDate
@@ -747,7 +747,7 @@ script:
     - contextPath: Ticket.Priority
       description: The ticket priority.
       type: String
-    - contextPath: Ticket.ProjectName
+    - contextPath: Ticket.projectName
       description: The ticket project name.
       type: String
     - contextPath: Ticket.DueDate
@@ -840,6 +840,155 @@ script:
     description: Delete a comment that's part of an issue.
     execution: false
     name: jira-issue-delete-comment
+  - arguments:
+    - default: false
+      description: The issue ID (Issue ID or key is required).
+      isArray: false
+      name: issue_id
+      required: false
+      secret: false
+    - default: false
+      description: The issue key (Issue ID or key is required).
+      isArray: false
+      name: issue_key
+      required: false
+      secret: false
+    - default: false
+      description: The comment ID.
+      isArray: false
+      name: comment_id
+      required: false
+      secret: false
+    - default: false
+      description: The content of the comment.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: 'The roles that can view the comment, for example: Administrators.'
+      isArray: false
+      name: visibility
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit a comment that's part of an issue.
+    execution: false
+    name: jira-issue-edit-comment
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+      type: string
+    - contextPath: Ticket.Comment.Id
+      description: The ID of the comment.
+      type: string
+    - contextPath: Ticket.Comment.Comment
+      description: The text of the comment.
+      type: string
+    - contextPath: Ticket.Comment.Created
+      description: The issue creation date.
+      type: string
+    - contextPath: Ticket.Comment.User
+      description: The user that created the comment.
+      type: string
+  - deprecated: false
+    description: This command returns the issue fields, both system and custom fields.
+    execution: false
+    name: jira-issue-list-fields
+    outputs:
+    - contextPath: Jira.IssueField.id
+      description: The ID of the field.
+      type: string
+    - contextPath: Jira.IssueField.key
+      description: The key of the field.
+      type: string
+    - contextPath: Jira.IssueField.name
+      description: The name of the field.
+      type: string
+    - contextPath: Jira.IssueField.custom
+      description: Whether the field is a custom field.
+      type: string
+    - contextPath: Jira.IssueField.orderable
+      description: Whether the content of the field can be used to order lists.
+      type: string
+    - contextPath: Jira.IssueField.navigable
+      description: Whether the field can be used as a column on the issue navigator.
+      type: string
+    - contextPath: Jira.IssueField.searchable
+      description: Whether the content of the field can be searched.
+      type: string
+    - contextPath: Jira.IssueField.clauseNames
+      description: The names that can be used to reference the field in an advanced search.
+      type: List
+    - contextPath: Jira.IssueField.scope
+      description: The scope of the field.
+      type: Object
+    - contextPath: Jira.IssueField.scope.type
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
+      type: string
+    - contextPath: Jira.IssueField.scope.project
+      description: The project the item has scope in.
+      type: object
+    - contextPath: Jira.IssueField.scope.project.self
+      description: The URL of the project details.
+      type: string
+    - contextPath: Jira.IssueField.scope.project.id
+      description: The ID of the project.
+      type: string
+    - contextPath: Jira.IssueField.scope.project.key
+      description: The key of the project.
+      type: string
+    - contextPath: Jira.IssueField.scope.project.name
+      description: The name of the project.
+      type: string
+    - contextPath: Jira.IssueField.scope.project.projectTypeKey
+      description: 'The project type of the project. Valid values: software, service_desk, business'
+      type: string
+    - contextPath: Jira.IssueField.scope.project.simplified
+      description: Whether or not the project is simplified.
+      type: boolean
+    - contextPath: Jira.IssueField.scope.project.avatarUrls
+      description: The URLs of the project's avatars.
+      type: object
+    - contextPath: Jira.IssueField.scope.project.projectCategory
+      description: The category the project belongs to.
+      type: object
+    - contextPath: Jira.IssueField.scope.project.projectCategory.self
+      description: The URL of the project category.
+      type: string
+    - contextPath: Jira.IssueField.scope.project.projectCategory.id
+      description: The ID of the project category.
+      type: string
+    - contextPath: Jira.IssueField.scope.project.projectCategory.description
+      description: The name of the project category.
+      type: string
+    - contextPath: Jira.IssueField.scope.project.projectCategory.name
+      description: The description of the project category.
+      type: string
+    - contextPath: Jira.IssueField.scope.type
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
+      type: string
+    - contextPath: Jira.IssueField.schema
+      description: The data schema for the field.
+      type: object
+    - contextPath: Jira.IssueField.schema.type
+      description: The data type of the field.
+      type: string
+    - contextPath: Jira.IssueField.schema.items
+      description: When the data type is an array, the name of the field items within the array.
+      type: string
+    - contextPath: Jira.IssueField.schema.system
+      description: If the field is a system field, the name of the field.
+      type: string
+    - contextPath: Jira.IssueField.schema.custom
+      description: If the field is a custom field, the URI of the field.
+      type: string
+    - contextPath: Jira.IssueField.schema.customId
+      description: If the field is a custom field, the custom ID of the field.
+      type: number
+    - contextPath: Jira.IssueField.schema.configuration
+      description: If the field is a custom field, the configuration of the field.
+      type: object
   dockerimage: demisto/btfl-soup:1.0.1.45563
   script: ''
   type: python
