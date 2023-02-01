@@ -128,6 +128,6 @@ def test_main(mocker):
         main()
 
     assert len(events.call_args[0][0]) == 6
-    assert events.call_args[0][0][0].get('_time') == events.call_args[0][0][0].get('createdAt')
+    assert events.call_args[0][0][0].get('_time') == events.call_args[0][0][0].get('updatedAt')
     assert events.call_args[1].get('vendor') == VENDOR
     assert events.call_args[1].get('product') == PRODUCT
