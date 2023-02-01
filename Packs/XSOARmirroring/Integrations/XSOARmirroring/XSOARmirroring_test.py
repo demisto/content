@@ -102,12 +102,10 @@ INCIDENTS = [
 ]
 
 INCIDENTS_MIRRORING_PLAYBOOK_ID = [
-    {
-        "id": 1,
-        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
-        "playbookId": "test"
-    },
-    ]
+    {"id": 1,
+     "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+     "playbookId": "test"}
+]
 
 REMOTE_INCIDENT = {
     "id": 1,
@@ -160,8 +158,8 @@ def test_fetch_incidents_mirroring_playbook_id(mocker):
 
     assert len(incidents_result) == 1
     assert "playbookId" in incidents_result[0]
-    
-    
+
+
 def test_fetch_incidents_drop_playbook_id(mocker):
     """
     Given:
