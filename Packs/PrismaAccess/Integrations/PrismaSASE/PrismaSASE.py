@@ -973,9 +973,10 @@ def build_recurring_according_to_params(args: dict) -> dict:
             day_of_month = args.get('day_of_month')
             if not day_of_month:
                 raise DemistoException('Please provide the day_of_month argument when using monthly frequency')
-            if arg_to_number(day_of_month) < 1 or arg_to_number(day_of_month) > 31:
+            day_of_month = arg_to_number(day_of_month) or 0
+            if day_of_month < 1 or day_of_month > 31:
                 raise DemistoException('day_of_month argument must be between 1 and 31')
-            frequency_object[frequency]['day_of_month'] = day_of_month
+            frequency_object[frequency]['day_of_month'] = str(day_of_month)
 
     return frequency_object
 
@@ -1000,6 +1001,8 @@ def validate_recurring_is_type_compatible(args: dict, original_frequency_obj: di
         if not frequency_hour:
             raise DemistoException('Please provide the frequency_hour argument when using daily, '
                                    'weekly or monthly frequency')
+        if not re.match(FREQUENCY_HOUR_REGEX, frequency_hour):
+            raise DemistoException('frequency_hour argument should be 00,01,02...-23 only')
         frequency_object[frequency]['at'] = frequency_hour or original_frequency_obj[original_frequency].get('at')
         if frequency == 'weekly':
             day_of_week = args.get('day_of_week') or original_frequency_obj[original_frequency].get('day_of_week')
@@ -1011,7 +1014,10 @@ def validate_recurring_is_type_compatible(args: dict, original_frequency_obj: di
             day_of_month = args.get('day_of_month') or original_frequency_obj[original_frequency].get('day_of_month')
             if not day_of_month:
                 raise DemistoException('Please provide the day_of_month argument when using monthly frequency')
-            frequency_object[frequency]['day_of_month'] = day_of_month
+            day_of_month = arg_to_number(day_of_month) or 0
+            if day_of_month < 1 or day_of_month > 31:
+                raise DemistoException('day_of_month argument must be between 1 and 31')
+            frequency_object[frequency]['day_of_month'] = str(day_of_month)
 
     return frequency_object if frequency_object else original_frequency_obj
 
@@ -1847,9 +1853,14 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
 
     overwrite = argToBoolean(args.get('overwrite'))
     original_dynamic_list_type_object = original_dynamic_list['type']
-    original_dynamic_list_type = list(original_dynamic_list_type_object.keys())[0]
+    try:
+        original_dynamic_list_type = list(original_dynamic_list_type_object.keys())[0]
+    except IndexError:
+        raise DemistoException(f'Could not parse the type of the Dynamic list. '
+                               f'Type is missing. Dynamic list as returned by the API: {original_dynamic_list}')
     original_dynamic_list_url = original_dynamic_list_type_object[original_dynamic_list_type]['url']
-    original_frequency_object = original_dynamic_list_type_object[original_dynamic_list_type].get('recurring', {'recurring': {}})
+    original_frequency_object = original_dynamic_list_type_object[original_dynamic_list_type].get('recurring',
+                                                                                                  {'recurring': {}})
     type_changed = False
     if dynamic_list_type := args.get('type'):
         if original_dynamic_list_type != dynamic_list_type:
