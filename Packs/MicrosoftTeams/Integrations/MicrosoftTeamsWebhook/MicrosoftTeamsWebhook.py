@@ -1,7 +1,5 @@
-from typing import Any, Dict
-
-import demistomock as demisto  # noqa: F401
 import urllib3
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -9,6 +7,16 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
+
+    def __init__(self, base_url: str, proxy: bool, verify: bool):
+        """
+        Client to use in the. Overrides BaseClient.
+
+        Args:
+            base_url (str): URL to access when doing a http request. Webhook url.
+
+        """
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
     def create_teams_message(self, message: str, title: str, serverurls: str) -> dict:
         """
@@ -107,7 +115,11 @@ def main() -> None:
 
     title = args.get('url_title', 'Cortex XSOAR URL')
     webhook = args.get('team_webhook', params.get('webhookurl'))
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+
     serverurls = demisto.demistoUrls()
+    args = demisto.args()
 
     if args.get('alternative_url'):
         serverurls = args.get('alternative_url')
@@ -115,12 +127,12 @@ def main() -> None:
         serverurls = serverurls.get("investigation", serverurls["server"])
 
     command = demisto.command()
-
     try:
         client = Client(
             base_url=webhook,
-            verify=True,
-            proxy=params.get('proxy', False))
+            verify=verify_certificate,
+            proxy=proxy
+        )
 
         if command == 'test-module':
             return_results(test_module(client, serverurls))
