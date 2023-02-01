@@ -7,7 +7,7 @@ import re
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/',
                        "https://urldefense.com/"]
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com/'
-DOMAIN_REGEX = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[^0-9_/\\\.@\s\"',()\[\]{}<>:?=]{2,})(?:[_/\s\"',)\]}>]|[.]\s|%2F|$)"  # noqa: E501
+DOMAIN_REGEX = r"(?i)(?P<scheme>(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?(?P<domain>(?:[\w\-–_]+(?:\.|\[\.\]))+[^\W\d_]{2,})(?:[_/\s\"',)\]}>]|[.]\s?|%2F|.?$)"  # noqa: E501
 
 
 def atp_get_original_url(safe_url):  # pragma: no cover
@@ -71,9 +71,9 @@ def pre_process_input(the_input):
     the_input = the_input.removesuffix('.')
     the_input = the_input.removeprefix('/')
 
-    match = re.match(DOMAIN_REGEX, the_input)
+    match = re.search(DOMAIN_REGEX, the_input)
     if match:
-        the_input = match.group(1)
+        the_input = match.group('domain')
 
     return the_input
 

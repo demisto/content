@@ -17,6 +17,11 @@ configuration:
   additionalinfo: Username and password used to login into the system.
   displaypassword: ""
   hiddenusername: false
+- name: redirect_std_out
+  display: Redirect stdout
+  required: false
+  type: 8
+  additionalinfo: Used for troubleshooting purposes. 
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -617,7 +622,7 @@ script:
       required: true
       isArray: true
     outputs: []
-  dockerimage: demisto/vmware:2.0.0.37077
+  dockerimage: demisto/vmware:2.0.0.43555
   runonce: false
   script: ""
   subtype: python3

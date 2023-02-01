@@ -11,7 +11,8 @@ This script gets content files as input from the context, commits the files in t
 ## Used In
 ---
 This script is used in the following playbooks and scripts.
-Pull Request Creation - Generic
+* Pull Request Creation - Github
+* Pull Request Creation - Bitbucket
 
 ## Inputs
 ---
@@ -20,9 +21,11 @@ Pull Request Creation - Generic
 | --- | --- |
 | files | The files to commit. |
 | branch | The branch name to commit. |
+| git_integration | Which version control integration to use. |
 | pack | The name of the pack. |
 | user | The current user details from the command "getUsers". |
 | comment | Short description to add to the pull request text. |
+| template | Pull request description template. |
 
 ## Outputs
 ---

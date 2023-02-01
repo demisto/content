@@ -2,6 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: McAfee Threat Intelligence Exchange
   version: -1
+deprecated: true
 configuration:
 - display: Broker CA certificates content (see `brokercerts.crt` in Integration Tips)
   name: broker_ca_bundle
@@ -50,8 +51,8 @@ configuration:
   display: ''
   required: false
   type: 1
-description: Connect to McAfee TIE using the McAfee DXL client.
-display: McAfee Threat Intelligence Exchange
+description: Deprecated. Use McAfee Threat Intelligence Exchange V2 integration instead.
+display: McAfee Threat Intelligence Exchange (Deprecated)
 name: McAfee Threat Intelligence Exchange
 script:
   commands:

@@ -87,7 +87,18 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'url': FeedIndicatorType.URL,
     'file': FeedIndicatorType.File,
     'windows-registry-key': FeedIndicatorType.Registry,
+    'indicator': (FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.DomainGlob,
+                  FeedIndicatorType.Domain, FeedIndicatorType.Account, FeedIndicatorType.Email,
+                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry)
 }
+
+HASH_TYPE_TO_STIX_HASH_TYPE = {
+    'md5': 'MD5',
+    'sha1': 'SHA-1',
+    'sha256': 'SHA-256',
+    'sha512': 'SHA-512',
+}
+
 
 ''' TAXII2 Server '''
 
@@ -683,16 +694,39 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
     object_type = stix_object['type']
     stix_type = 'indicator'
 
+    pattern = ''
+    if object_type == 'file':
+        hash_type = HASH_TYPE_TO_STIX_HASH_TYPE.get(get_hash_type(indicator_value), 'Unknown')
+        pattern = f"[file:hashes.'{hash_type}' = '{indicator_pattern_value}']"
+    else:
+        pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
+
+    labels = get_labels_for_indicator(xsoar_indicator.get('score'))
+
     stix_domain_object: Dict[str, Any] = assign_params(
         type=stix_type,
         id=create_sdo_stix_uuid(xsoar_indicator, stix_type),
-        pattern=f"[{object_type}:value = '{indicator_pattern_value}']",
+        pattern=pattern,
         valid_from=stix_object['created'],
         valid_until=expiration_parsed,
-        description=xsoar_indicator.get('CustomFields', {}).get('description', '')
+        description=xsoar_indicator.get('CustomFields', {}).get('description', ''),
+        pattern_type='stix',
+        labels=labels
     )
     return dict({k: v for k, v in stix_object.items()
                  if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
+
+
+def get_labels_for_indicator(score):
+    """Get indicator label based on the DBot score"""
+    if int(score) == 0:
+        return ['']
+    elif int(score) == 1:
+        return ['benign']
+    elif int(score) == 2:
+        return ['anomalous-activity']
+    elif int(score) == 3:
+        return ['malicious-activity']
 
 
 def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:

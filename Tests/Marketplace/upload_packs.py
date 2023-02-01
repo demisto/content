@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import argparse
 import shutil
@@ -21,52 +22,31 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
-    CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH, \
-    SKIPPED_STATUS_CODES
-from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
+    CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES
+from demisto_sdk.commands.common.tools import str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
 
+METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
-def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
-    """Detects and returns packs names to upload.
 
-    In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
-    current and previous and greps only ones with prefix Packs/.
-    By default this function will receive `All` as target_packs and will return all packs names from content repo.
+def get_packs_names(packs_to_upload: str) -> set:
+    """Returns a set of pack's names to upload.
 
     Args:
-        target_packs (str): csv packs names or `All` for all available packs in content
-                            or `Modified` for only modified packs (currently not in use).
-        previous_commit_hash (str): the previous commit to diff with.
+        packs_to_upload (str): csv list of packs names to upload.
 
     Returns:
         set: unique collection of packs names to upload.
 
     """
-    if target_packs.lower() == "all":
-        if os.path.exists(PACKS_FULL_PATH):
-            all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
-            logging.info(f"Number of selected packs to upload is: {len(all_packs)}")
-            # return all available packs names
-            return all_packs
-        else:
-            logging.error(f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
-            sys.exit(1)
-    elif target_packs.lower() == "modified":
-        cmd = f"git diff --name-only HEAD..{previous_commit_hash} | grep 'Packs/'"
-        modified_packs_path = run_command(cmd).splitlines()
-        modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
-        logging.info(f"Number of modified packs is: {len(modified_packs)}")
-        # return only modified packs between two commits
-        return modified_packs
-    elif target_packs and isinstance(target_packs, str):
-        modified_packs = {p.strip() for p in target_packs.split(',') if p not in IGNORED_FILES}
-        logging.info(f"Number of selected packs to upload is: {len(modified_packs)}")
+    if packs_to_upload and isinstance(packs_to_upload, str):
+        packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
+        logging.info(f"Number of selected packs to upload is: {len(packs)}")
         # return only packs from csv list
-        return modified_packs
+        return packs
     else:
         logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
         sys.exit(1)
@@ -141,7 +121,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
 
 
 def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, pack_version: str = '',
-                        hidden_pack: bool = False) -> bool:
+                        hidden_pack: bool = False, pack_versions_to_keep: list = None) -> bool:
     """
     Copies pack folder into index folder.
 
@@ -151,6 +131,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         pack_path (str): pack folder full path.
         pack_version (str): pack latest version.
         hidden_pack (bool): whether pack is hidden/internal or regular pack.
+        pack_versions_to_keep (list): pack versions to keep its metadata. If empty, do not remove any versions.
 
     Returns:
         bool: whether the operation succeeded.
@@ -174,6 +155,10 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             for d in os.scandir(index_pack_path):
                 if d.path not in metadata_files_in_index:
                     os.remove(d.path)
+                elif (metadata_version := re.findall(METADATA_FILE_REGEX_GET_VERSION, d.name)) \
+                        and pack_versions_to_keep:
+                    if metadata_version[0] not in pack_versions_to_keep:
+                        os.remove(d.path)
 
         # skipping index update in case hidden is set to True
         if hidden_pack:
@@ -269,7 +254,6 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
                             previous_commit_hash: str = None, landing_page_sections: dict = None,
                             artifacts_dir: Optional[str] = None,
                             storage_bucket: Optional[Bucket] = None,
-                            id_set=None,
                             ):
     """
     Upload updated index zip to cloud storage.
@@ -343,7 +327,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
             # Store index.json in CircleCI artifacts
             shutil.copyfile(
                 os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
-                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}{"" if id_set else "-graph"}.json'),
+                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}.json'),
             )
         shutil.rmtree(index_folder_path)
 
@@ -813,22 +797,25 @@ def get_packs_summary(packs_list):
     Args:
         packs_list (list): The full packs list
 
-    Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
+    Returns: 4 lists of packs - successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs & failed_packs
 
     """
 
     successful_packs = []
+    successful_uploaded_dependencies_zip_packs = []
     skipped_packs = []
     failed_packs = []
     for pack in packs_list:
         if pack.status == PackStatus.SUCCESS.name:
             successful_packs.append(pack)
+        elif pack.status == PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name:
+            successful_uploaded_dependencies_zip_packs.append(pack)
         elif pack.status in SKIPPED_STATUS_CODES:
             skipped_packs.append(pack)
         else:
             failed_packs.append(pack)
 
-    return successful_packs, skipped_packs, failed_packs
+    return successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs
 
 
 def handle_private_content(public_index_folder_path, private_bucket_name, extract_destination_path, storage_client,
@@ -945,8 +932,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
     logging.info("Starting to collect pack with dependencies zips")
     for pack_name, pack in packs_for_current_marketplace_dict.items():
         try:
-            if pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]:
-                # avoid trying to upload dependencies zip for failed packs
+            if (pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]) or pack.hidden:
+                # avoid trying to upload dependencies zip for failed or hidden packs
                 continue
             pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in
                                          pack.all_levels_dependencies] + [pack]
@@ -958,6 +945,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
                 Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
                 for current_pack in pack_and_its_dependencies:
+                    if current_pack.hidden:
+                        continue
                     logging.debug(f"Starting to collect zip of pack {current_pack.name}")
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
                     if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
@@ -983,6 +972,9 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
+                else:
+                    if pack.status != PackStatus.SUCCESS.name:
+                        pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
         except Exception as e:
             logging.error(traceback.format_exc())
             logging.error(f"Failed uploading packs with dependencies: {e}")
@@ -998,7 +990,7 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=True)
+    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
@@ -1011,10 +1003,8 @@ def option_handler():
                         required=False)
     parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
     parser.add_argument('-p', '--pack_names',
-                        help=("Target packs to upload to gcs. Optional values are: `All`, "
-                              "`Modified` or csv list of packs "
-                              "Default is set to `All`"),
-                        required=False, default="All")
+                        help=("Target packs to upload to gcs."),
+                        required=True)
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
@@ -1042,18 +1032,15 @@ def main():
     packs_artifacts_path = option.packs_artifacts_path
     id_set = None
     try:
+        with Neo4jContentGraphInterface():
+            pass
+    except Exception as e:
+        logging.warning(f"Database is not ready, using id_set.json instead.\n{e}")
         id_set = open_id_set_file(option.id_set_path)
-    except IOError:
-        logging.warning("No ID_SET file, will try to use graph")
-        try:
-            with Neo4jContentGraphInterface():
-                pass
-        except Exception:
-            raise Exception("Database is not ready")
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    target_packs = option.pack_names if option.pack_names else ""
+    modified_packs_to_upload = option.pack_names or ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
@@ -1088,20 +1075,23 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs, previous_commit_hash)  # list of the pack's ids to upload
+    pack_names_to_upload = get_packs_names(modified_packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    # this is a list of all packs from `content_packs.zip`
-    content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name))
-                     for pack_name in os.listdir(extract_destination_path)]
+    # list of all packs from `content_packs.zip` given from create artifacts
+    all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
+                              is_modified=pack_name in pack_names_to_upload)
+                         for pack_name in os.listdir(extract_destination_path)]
 
-    # this is a list of packs given to this script
-    packs_list = list(filter(lambda x: x.name in pack_names, content_packs))
+    # pack's list to update their index metadata and upload them.
+    # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
+    packs_list = list(filter(lambda x: x.name not in IGNORED_FILES, all_content_packs)) if is_bucket_upload_flow else \
+        list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
+        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
     )
 
     if not override_all_packs:
@@ -1112,7 +1102,7 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, content_packs, marketplace)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
 
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
@@ -1190,9 +1180,12 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                    modified_rn_files_paths,
-                                                                    marketplace, id_set)
+        task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
+            index_folder_path,
+            build_number,
+            modified_rn_files_paths,
+            marketplace, id_set
+        )
 
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
@@ -1219,7 +1212,7 @@ def main():
         if not task_status:
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
             pack.cleanup()
-            return False
+            continue
 
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:
@@ -1232,9 +1225,9 @@ def main():
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
             pack.cleanup()
             continue
-
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden,
+                                          pack_versions_to_keep=pack_versions_to_keep)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
@@ -1283,7 +1276,7 @@ def main():
                             force_upload=force_upload, previous_commit_hash=previous_commit_hash,
                             landing_page_sections=statistics_handler.landing_page_sections,
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
-                            storage_bucket=storage_bucket, id_set=id_set)
+                            storage_bucket=storage_bucket)
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
@@ -1292,13 +1285,14 @@ def main():
                                            packs_for_current_marketplace_dict)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
-        updated_private_packs_ids, images_data=get_images_data(packs_list)
+        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+        successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
+        images_data=get_images_data(packs_list)
     )
 
     # summary of packs status

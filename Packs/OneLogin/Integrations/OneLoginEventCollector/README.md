@@ -2,7 +2,7 @@ Simple customer authentication and streamlined workforce identity operations.
 
 ## Configure OneLogin Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Data Sources**.
 2. Search for OneLogin Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 

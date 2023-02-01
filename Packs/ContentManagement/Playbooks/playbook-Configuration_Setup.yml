@@ -384,8 +384,8 @@ tasks:
       id: f79ad792-f32e-45e2-8801-9ffc97e1685a
       version: -1
       name: Install Marketplace Packs
-      description: Marketplace packs installer for the content management pack.
-      scriptName: MarketplacePackInstaller
+      description: Content packs installer from marketplace.
+      scriptName: ContentPackInstaller
       type: regular
       iscommand: false
       brand: ''
@@ -393,6 +393,8 @@ tasks:
       '#none#':
       - '6'
     scriptarguments:
+      install_dependencies:
+        simple: "true"
       pack_id_key:
         simple: packid
       pack_version_key:
@@ -496,6 +498,9 @@ tasks:
     scriptarguments:
       job_name:
         simple: ${ConfigurationSetup.Jobs.name}
+      using:
+        complex:
+          root: inputs.InstanceName
     separatecontext: false
     view: |-
       {
@@ -1094,3 +1099,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+marketplaces:
+- xsoar

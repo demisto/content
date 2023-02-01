@@ -2,6 +2,7 @@
     "name": "Unit 42 Feed (Deprecated)",
     "description": "Deprecated. Use Unit 42 ATOMs Feed instead.",
     "support": "xsoar",
+    "hidden": true,
     "serverMinVersion": "5.5.0",
     "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",

@@ -175,9 +175,9 @@ class EWSClient:
         :param insecure: Trust any certificate (not secure)
         """
 
-        client_id = kwargs.get('client_id') or kwargs.get('_client_id')
-        tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
-        client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
+        client_id = kwargs.get('_client_id') or kwargs.get('client_id')
+        tenant_id = kwargs.get('_tenant_id') or kwargs.get('tenant_id')
+        client_secret = (kwargs.get('credentials') or {}).get('password') or kwargs.get('client_secret')
         access_type = kwargs.get('access_type', IMPERSONATION) or IMPERSONATION
 
         if not client_secret:
@@ -210,6 +210,7 @@ class EWSClient:
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
+        self.mark_as_read = kwargs.get('mark_as_read', False)
 
     def __prepare(self, insecure):
         """
@@ -1108,11 +1109,9 @@ def move_item_between_mailboxes(
         destination_folder_path, destination_account, is_public
     )
     item = client.get_item_from_mailbox(source_account, item_id)
-
     exported_items = source_account.export([item])
     destination_account.upload([(destination_folder, exported_items[0])])
     source_account.bulk_delete([item])
-
     move_result = {
         MOVED_TO_MAILBOX: destination_mailbox,
         MOVED_TO_FOLDER: destination_folder_path,
@@ -2235,6 +2234,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
         incidents = []
         incident: Dict[str, str] = {}
+        emails_ids = []  # Used for mark emails as read
         demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
         current_fetch_ids = set()
         for item in last_emails:
@@ -2242,6 +2242,8 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
+                if item.id:
+                    emails_ids.append(item.id)
 
                 if len(incidents) >= client.max_fetch:
                     break
@@ -2278,6 +2280,10 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         }
 
         demisto.setLastRun(new_last_run)
+
+        if client.mark_as_read:
+            mark_item_as_read(client, emails_ids)
+
         return incidents
 
     except RateLimitError:
@@ -2377,16 +2383,14 @@ def sub_main():
     params = demisto.params()
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
-    params['default_target_mailbox'] = args.get('target_mailbox',
-                                                args.get('source_mailbox', params['default_target_mailbox']))
-
+    params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
+    if params.get('upn_mailbox') and not(args.get('target_mailbox')):
+        params['default_target_mailbox'] = params.get('upn_mailbox')
     try:
         client = EWSClient(**params)
         start_logging()
-
         # replace sensitive access_token value in logs
         add_sensitive_log_strs(client.credentials.access_token.get('access_token', ''))
-
         command = demisto.command()
         # commands that return a single note result
         normal_commands = {

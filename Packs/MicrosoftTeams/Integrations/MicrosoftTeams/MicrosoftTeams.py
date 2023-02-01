@@ -1407,9 +1407,12 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
         if bot_id in member_id:
             # The bot was added to a team, caching team ID and team members
             demisto.info(f'The bot was added to team {team_name}')
-            integration_context['tenant_id'] = tenant_id
-            integration_context['bot_name'] = recipient_name
-            break
+        else:
+            demisto.info(f'Someone was added to team {team_name}')
+        integration_context['tenant_id'] = tenant_id
+        integration_context['bot_name'] = recipient_name
+        break
+
     team_members: list = get_team_members(service_url, team_id)
 
     found_team: bool = False
@@ -1595,10 +1598,12 @@ def messages() -> Response:
 
             channel_data: dict = request_body.get('channelData', {})
             event_type: str = channel_data.get('eventType', '')
+            demisto.debug(f"Event Type is: {event_type}")
 
             conversation: dict = request_body.get('conversation', {})
             conversation_type: str = conversation.get('conversationType', '')
             conversation_id: str = conversation.get('id', '')
+            demisto.debug(f"conversation type is: {conversation_type}")
 
             message_text: str = request_body.get('text', '')
 
@@ -1611,15 +1616,21 @@ def messages() -> Response:
             if event_type == 'teamMemberAdded':
                 demisto.info('New Microsoft Teams team member was added')
                 member_added_handler(integration_context, request_body, channel_data)
+                demisto.debug(f'Updated team in the integration context. '
+                              f'Current saved teams: {json.dumps(get_integration_context().get("teams"))}')
             elif value:
                 # In TeamsAsk process
                 demisto.info('Got response from user in MicrosoftTeamsAsk process')
                 entitlement_handler(integration_context, request_body, value, conversation_id)
             elif conversation_type == 'personal':
                 demisto.info('Got direct message to the bot')
+                demisto.debug(f"Text is : {request_body.get('text')}")
+                if request_body.get("membersAdded", []):
+                    demisto.debug("the bot was added to a one-to-one chat")
                 direct_message_handler(integration_context, request_body, conversation, formatted_message)
             else:
                 demisto.info('Got message mentioning the bot')
+                demisto.debug(f"the message is from: {request_body.get('from', {})}")
                 message_handler(integration_context, request_body, channel_data, formatted_message)
         demisto.info('Finished processing Microsoft Teams activity successfully')
         demisto.updateModuleHealth('')

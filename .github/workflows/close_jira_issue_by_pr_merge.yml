@@ -32,11 +32,10 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_LINK: ${{ github.event.pull_request.html_url }}
           PR_BODY: ${{ github.event.pull_request.body }}
-          IS_MERGED: True
           USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
           PASSWORD: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_PASSWORD }}
           INSTANCE_URL: ${{ secrets.ENGINE_URL }}
         run: |
           echo "Checking for related Jira issues to PR: $PR_NUMBER"
           cd Utils/github_workflow_scripts/jira_integration_scripts
-          poetry run python ./link_pr_to_jira_issue.py --url "$INSTANCE_URL" --pr_num "$PR_NUMBER" --pr_link "$PR_LINK" --pr_title "$PR_TITLE" --pr_body "$PR_BODY" --is_merged $IS_MERGED --username $USERNAME --password $PASSWORD
+          poetry run python ./link_pr_to_jira_issue.py --url "$INSTANCE_URL" --pr_num "$PR_NUMBER" --pr_link "$PR_LINK" --pr_title "$PR_TITLE" --pr_body "$PR_BODY" --is_merged --username $USERNAME --password $PASSWORD

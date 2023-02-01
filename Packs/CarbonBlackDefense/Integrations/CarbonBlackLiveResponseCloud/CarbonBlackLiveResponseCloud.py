@@ -4,7 +4,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from cbc_sdk import platform, CBCloudAPI, errors
 import ntpath
-import requests
+import urllib3
 
 # Disable insecure warnings
 CONNECTION_ERROR_MSG = 'Connection Error - check your server URL'
@@ -12,7 +12,7 @@ AUTHORIZATION_ERROR_MSG = 'Authorization Error - check your API Credentials'
 ORG_ID_ERROR_MSG = 'Authorization Error - check your Organization Key'
 PROXY_ERROR_MSG = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                   ' selected, try clearing the checkbox.'
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
