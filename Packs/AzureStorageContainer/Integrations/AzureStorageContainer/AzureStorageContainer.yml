@@ -281,7 +281,7 @@ script:
       name: container_name
       required: true
     - defaultValue: '1'
-      description: 'Expiry time for sas token in hours. '
+      description: Expiry time for sas token(hours).
       name: expiry_time
       required: true
     - auto: PREDEFINED
@@ -304,7 +304,7 @@ script:
       type: unknown
     description: create SAS token for container
     name: azure-storage-container-sas-create
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.9.46032
   runonce: false
   script: ''
   subtype: python3
