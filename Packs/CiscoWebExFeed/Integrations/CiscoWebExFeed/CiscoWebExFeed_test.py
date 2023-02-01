@@ -61,7 +61,7 @@ def test_grab_CIDR_ips():
     """
     from CiscoWebExFeed import grab_CIDR_ips
     expected_result = ['1.1.1.1/1', '1.2.3.4/5']
-    assert grab_CIDR_ips(IP_LIST) == expected_result
+    assert sorted(grab_CIDR_ips(IP_LIST)) == expected_result
 
 
 def test_grab_domain_table():
@@ -135,7 +135,11 @@ def test_get_indicators_command__diffrent_indicator_type_as_input(mocker, input,
     assert res.readable_output == expected
 
 
-def test_fetch_indicators_command__different_inputs(mocker):
+@pytest.mark.parametrize('input, expected', [({'CIDR': ['ipmock'], 'DOMAIN': ['domainmock']}, [{'value': 'ipmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                                                                                                'trafficlightprotocol': 'very_yellow'}},
+                                                                                               {'value': 'domainmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+                                                                                                                                                    'trafficlightprotocol': 'very_yellow'}}])])
+def test_fetch_indicators_command__different_inputs(mocker, input, expected):
     """
     Given:
         -  tags and tlp_color
@@ -148,10 +152,7 @@ def test_fetch_indicators_command__different_inputs(mocker):
     client = MockedClient(Client)
     mocker.patch.object(Client, 'all_raw_data', return_value='gg')
     mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
-                        return_value={'CIDR': ['ipmock'], 'DOMAIN': ['domainmock']})
+                        return_value=input)
+    expected_result = expected
 
-    expected_result = [{'value': 'ipmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
-                                                                        'trafficlightprotocol': 'very_yellow'}},
-                       {'value': 'domainmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
-                                                                            'trafficlightprotocol': 'very_yellow'}}]
     assert fetch_indicators_command(client=client, tags=("very_good", "very_bad"), tlp_color="very_yellow") == expected_result
