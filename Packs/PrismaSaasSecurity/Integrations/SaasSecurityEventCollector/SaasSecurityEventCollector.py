@@ -269,7 +269,7 @@ def main() -> None:  # pragma: no cover
                     demisto.info(f'got exception when trying to fetch events: [{exception}]')
             else:
                 events = integration_context.get('events')
-                demisto.info(f'fetching events from integration context')
+                demisto.info('fetching events from integration context')
             try:
                 demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
                 send_events_to_xsiam(
