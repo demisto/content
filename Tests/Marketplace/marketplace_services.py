@@ -131,7 +131,7 @@ class Pack(object):
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
-        self._all_levels_dependencies = {}  # initialized in set_pack_dependencies function
+        self._all_levels_dependencies = []  # initialized in set_pack_dependencies function
         self._displayed_images_dependent_on_packs = []  # initialized in set_pack_dependencies function
         self._parsed_dependencies = None  # initialized in enhance_pack_attributes function
 
@@ -2626,10 +2626,10 @@ class Pack(object):
         """
         pack_dependencies_mapping = packs_dependencies_mapping.get(self._pack_name, {})
         first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
-        all_levels_dependencies_dict = pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {})
+        all_levels_dependencies = list(pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {}))
         displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
         logging.debug(f'(0) {first_level_dependencies=}')
-        logging.debug(f'(0) {all_levels_dependencies_dict=}')
+        logging.debug(f'(0) {all_levels_dependencies=}')
 
         if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
             self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
@@ -2640,9 +2640,9 @@ class Pack(object):
         if self._pack_name != GCPConfig.BASE_PACK:
             # add base as a mandatory pack dependency, by design for all packs
             first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-            all_levels_dependencies_dict.update(BASE_PACK_DEPENDENCY_DICT)
+            all_levels_dependencies.append(GCPConfig.BASE_PACK)
             logging.debug(f'(1) {first_level_dependencies=}')
-            logging.debug(f'(1) {all_levels_dependencies_dict=}')
+            logging.debug(f'(1) {all_levels_dependencies=}')
 
         # update the calculated dependencies with the hardcoded dependencies
         first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
@@ -2666,7 +2666,7 @@ class Pack(object):
 
         self._user_metadata[Metadata.DEPENDENCIES] = first_level_dependencies
         self._first_level_dependencies = first_level_dependencies
-        self._all_levels_dependencies = all_levels_dependencies_dict
+        self._all_levels_dependencies = all_levels_dependencies
         self._displayed_images_dependent_on_packs = displayed_images_dependent_on_packs
 
     def prepare_for_index_upload(self):
