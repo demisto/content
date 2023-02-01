@@ -3372,7 +3372,8 @@
         {
             "integrations": "Palo Alto Networks - Prisma SASE",
             "playbookID": "PrismaSASE Test",
-            "fromversion": "6.5.0"
+            "fromversion": "6.5.0",
+            "timeout": 3000
         },
 
         {
